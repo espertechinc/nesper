@@ -8,6 +8,7 @@
 
 using System;
 using System.Linq;
+
 using XLR8.CGLib;
 
 namespace com.espertech.esper.common.@internal.util

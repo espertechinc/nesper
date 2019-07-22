@@ -9,6 +9,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.context;
 using com.espertech.esper.common.@internal.collection;
@@ -76,7 +77,10 @@ namespace com.espertech.esper.common.@internal.context.mgr
                 // now post-initialize, this may actually call back
                 var childPath = controllerPathId.AddToEnd(subpathId);
                 nextContext.Activate(
-                    childPath, nestedPartitionKeys, optionalTriggeringEvent, optionalPatternForInclusiveEval);
+                    childPath,
+                    nestedPartitionKeys,
+                    optionalTriggeringEvent,
+                    optionalPatternForInclusiveEval);
 
                 return new ContextPartitionInstantiationResult(subpathId, Collections.GetEmptyList<AgentInstance>());
             }
@@ -87,7 +91,9 @@ namespace com.espertech.esper.common.@internal.context.mgr
 
             // build built-in context properties
             var contextBean = ContextManagerUtil.BuildContextProperties(
-                assignedContextId, allPartitionKeys, ContextManager.ContextDefinition,
+                assignedContextId,
+                allPartitionKeys,
+                ContextManager.ContextDefinition,
                 AgentInstanceContextCreate.StatementContext);
 
             // handle leaf creation
@@ -105,8 +111,11 @@ namespace com.espertech.esper.common.@internal.context.mgr
                 AgentInstanceFilterProxy proxy = new AgentInstanceFilterProxyImpl(generator);
 
                 var agentInstance = AgentInstanceUtil.StartStatement(
-                    ContextManager.StatementContextCreate.StatementContextRuntimeServices, assignedContextId,
-                    statementDesc, contextBean, proxy);
+                    ContextManager.StatementContextCreate.StatementContextRuntimeServices,
+                    assignedContextId,
+                    statementDesc,
+                    contextBean,
+                    proxy);
                 startedInstances.Add(agentInstance);
             }
 
@@ -114,7 +123,9 @@ namespace com.espertech.esper.common.@internal.context.mgr
             if (optionalTriggeringEvent != null || optionalPatternForInclusiveEval != null) {
                 // comment-in: log.info("Thread " + Thread.currentThread().getId() + " event " + optionalTriggeringEvent.getUnderlying() + " evaluateEventForStatement assignedContextId=" + assignedContextId);
                 AgentInstanceUtil.EvaluateEventForStatement(
-                    optionalTriggeringEvent, optionalPatternForInclusiveEval, startedInstances,
+                    optionalTriggeringEvent,
+                    optionalPatternForInclusiveEval,
+                    startedInstances,
                     AgentInstanceContextCreate);
             }
 
@@ -166,7 +177,11 @@ namespace com.espertech.esper.common.@internal.context.mgr
             contextControllerStatementDescList.Reverse();
             foreach (var statementDesc in contextControllerStatementDescList) {
                 AgentInstanceUtil.ContextPartitionTerminate(
-                    agentInstanceId, statementDesc, terminationProperties, leaveLocksAcquired, agentInstancesLocksHeld);
+                    agentInstanceId,
+                    statementDesc,
+                    terminationProperties,
+                    leaveLocksAcquired,
+                    agentInstancesLocksHeld);
             }
 
             // remove all context partition statement resources
@@ -184,7 +199,8 @@ namespace com.espertech.esper.common.@internal.context.mgr
                     () => new ContextStateEventContextPartitionDeallocated(
                         AgentInstanceContextCreate.RuntimeURI,
                         ContextManager.ContextRuntimeDescriptor.ContextDeploymentId,
-                        ContextManager.ContextDefinition.ContextName, agentInstanceId),
+                        ContextManager.ContextDefinition.ContextName,
+                        agentInstanceId),
                     (
                         listener,
                         context) => listener.OnContextPartitionDeallocated(context));
@@ -207,7 +223,10 @@ namespace com.espertech.esper.common.@internal.context.mgr
                 var childController = ContextControllers[nestingLevel];
                 var subPath = controllerPath.AddToEnd(subpathOrAgentInstanceId);
                 childController.VisitSelectedPartitions(
-                    subPath, selectorPerLevel[nestingLevel], visitor, selectorPerLevel);
+                    subPath,
+                    selectorPerLevel[nestingLevel],
+                    visitor,
+                    selectorPerLevel);
                 return;
             }
 
@@ -244,19 +263,27 @@ namespace com.espertech.esper.common.@internal.context.mgr
 
                 // create context properties bean
                 var contextBean = ContextManagerUtil.BuildContextProperties(
-                    cpid, partitionKeys, ContextManager.ContextDefinition, AgentInstanceContextCreate.StatementContext);
+                    cpid,
+                    partitionKeys,
+                    ContextManager.ContextDefinition,
+                    AgentInstanceContextCreate.StatementContext);
 
                 // create filter proxies
                 Func<AgentInstanceContext, IDictionary<FilterSpecActivatable, FilterValueSetParam[][]>> generator =
                     agentInstanceContext =>
                         ContextManagerUtil.ComputeAddendumForStatement(
-                            statement, ContextManager.ContextDefinition.ControllerFactories, partitionKeys,
+                            statement,
+                            ContextManager.ContextDefinition.ControllerFactories,
+                            partitionKeys,
                             agentInstanceContext);
                 AgentInstanceFilterProxy proxy = new AgentInstanceFilterProxyImpl(generator);
 
                 // start
                 AgentInstanceUtil.StartStatement(
-                    ContextManager.StatementContextCreate.StatementContextRuntimeServices, cpid, statement, contextBean,
+                    ContextManager.StatementContextCreate.StatementContextRuntimeServices,
+                    cpid,
+                    statement,
+                    contextBean,
                     proxy);
             }
         }
@@ -282,7 +309,9 @@ namespace com.espertech.esper.common.@internal.context.mgr
             if (selector is ContextPartitionSelectorNested) {
                 if (ContextControllers.Length == 1) {
                     throw ContextControllerSelectorUtil.GetInvalidSelector(
-                        new[] {typeof(ContextPartitionSelectorNested)}, selector, true);
+                        new[] {typeof(ContextPartitionSelectorNested)},
+                        selector,
+                        true);
                 }
 
                 var nested = (ContextPartitionSelectorNested) selector;
@@ -299,12 +328,18 @@ namespace com.espertech.esper.common.@internal.context.mgr
                         new[] {
                             typeof(ContextPartitionSelectorAll), typeof(ContextPartitionSelectorById),
                             typeof(ContextPartitionSelectorNested)
-                        }, selector, true);
+                        },
+                        selector,
+                        true);
                 }
 
                 var visitor = new ContextPartitionVisitorAgentInstanceId(ContextControllers.Length);
-                ContextControllers[0].VisitSelectedPartitions(
-                    IntSeqKeyRoot.INSTANCE, selector, visitor, new[] {selector});
+                ContextControllers[0]
+                    .VisitSelectedPartitions(
+                        IntSeqKeyRoot.INSTANCE,
+                        selector,
+                        visitor,
+                        new[] {selector});
                 return visitor.Ids;
             }
         }
@@ -340,7 +375,8 @@ namespace com.espertech.esper.common.@internal.context.mgr
             var ids = ContextManager.ContextPartitionIdService.Ids;
             foreach (var stmt in ContextManager.Statements) {
                 var agentInstances = ContextManagerUtil.GetAgentInstancesFiltered(
-                    stmt.Value, ids,
+                    stmt.Value,
+                    ids,
                     agentInstance => agentInstance.AgentInstanceContext.FilterVersionAfterAllocation >= version);
                 AgentInstanceUtil.EvaluateEventForStatement(theEvent, null, agentInstances, AgentInstanceContextCreate);
             }

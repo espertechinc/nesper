@@ -9,6 +9,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.configuration.common;
 using com.espertech.esper.common.client.meta;
@@ -74,7 +75,14 @@ namespace com.espertech.esper.common.@internal.@event.variant
             foreach (var desc in propertyDesc) {
                 var type = desc.Value.PropertyType;
                 var descriptor = new EventPropertyDescriptor(
-                    desc.Key, type, null, false, false, false, false, desc.Value.PropertyType.IsFragmentableType());
+                    desc.Key,
+                    type,
+                    null,
+                    false,
+                    false,
+                    false,
+                    false,
+                    desc.Value.PropertyType.IsFragmentableType());
                 PropertyDescriptors[count++] = descriptor;
                 propertyDescriptorMap.Put(desc.Key, descriptor);
             }
@@ -280,8 +288,11 @@ namespace com.espertech.esper.common.@internal.@event.variant
             }
 
             throw new EPException(
-                "Failed to determine event type for event object of type '" + @event.GetType() +
-                "' for use with variant stream '" + Name + "'");
+                "Failed to determine event type for event object of type '" +
+                @event.GetType() +
+                "' for use with variant stream '" +
+                Name +
+                "'");
         }
     }
 } // end of namespace

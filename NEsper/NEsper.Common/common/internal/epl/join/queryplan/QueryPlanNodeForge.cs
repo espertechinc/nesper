@@ -57,19 +57,16 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplan
             StringBuilder buffer = new StringBuilder();
             buffer.Append("QueryPlanNode[]\n");
 
-            for (int i = 0; i < planNodeSpecs.Length; i++)
-            {
+            for (int i = 0; i < planNodeSpecs.Length; i++) {
                 buffer.Append("  node spec " + i + " :\n");
 
                 StringWriter writer = new StringWriter();
                 IndentWriter indentWriter = new IndentWriter(writer, 4, 2);
 
-                if (planNodeSpecs[i] != null)
-                {
+                if (planNodeSpecs[i] != null) {
                     planNodeSpecs[i].Print(indentWriter);
                 }
-                else
-                {
+                else {
                     indentWriter.WriteLine("no plan (historical)");
                 }
 

@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.meta;
 using com.espertech.esper.common.client.util;
@@ -89,7 +90,9 @@ namespace com.espertech.esper.common.@internal.@event.path
                 }
 
                 try {
-                    var pair = path.GetAnyModuleExpectSingle(metadata.Name, Collections.SingletonSet(metadata.ModuleName));
+                    var pair = path.GetAnyModuleExpectSingle(
+                        metadata.Name,
+                        Collections.SingletonSet(metadata.ModuleName));
                     type = pair == null ? null : pair.First;
                 }
                 catch (PathException e) {
@@ -102,7 +105,8 @@ namespace com.espertech.esper.common.@internal.@event.path
 
             if (type == null) {
                 throw new EPException(
-                    "Failed to find event type '" + metadata.Name +
+                    "Failed to find event type '" +
+                    metadata.Name +
                     "' among public types, modules-in-path or the current module itself");
             }
 

@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -16,6 +17,7 @@ using com.espertech.esper.common.@internal.epl.resultset.select.core;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
@@ -49,10 +51,14 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            CodegenMethod methodNode = codegenMethodScope.MakeChild(typeof(EventBean), this.GetType(), codegenClassScope);
+            CodegenMethod methodNode = codegenMethodScope.MakeChild(
+                typeof(EventBean),
+                this.GetType(),
+                codegenClassScope);
             CodegenExpressionRef refEPS = exprSymbol.GetAddEPS(methodNode);
             CodegenExpression bean = ExprDotMethod(ArrayAtIndex(refEPS, Constant(streamNumber)), "getUnderlying");
-            methodNode.Block.MethodReturn(ExprDotMethod(eventBeanFactory, "adapterForTypedBean", bean, resultEventType));
+            methodNode.Block.MethodReturn(
+                ExprDotMethod(eventBeanFactory, "adapterForTypedBean", bean, resultEventType));
             return methodNode;
         }
 

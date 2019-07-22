@@ -10,6 +10,7 @@ using com.espertech.esper.common.@internal.epl.agg.core;
 using com.espertech.esper.common.@internal.epl.agg.method.avg;
 using com.espertech.esper.common.@internal.epl.expression.agg.@base;
 using com.espertech.esper.common.@internal.epl.expression.core;
+
 using System;
 
 namespace com.espertech.esper.common.@internal.epl.expression.agg.method
@@ -43,7 +44,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.method
 
             Type childType = base.ValidateNumericChildAllowFilter(HasFilter);
             return new AggregationFactoryMethodAvg(
-                this, childType, validationContext.ImportService.DefaultMathContext);
+                this,
+                childType,
+                validationContext.ImportService.DefaultMathContext);
         }
 
         public override bool EqualsNodeAggregateMethodOnly(ExprAggregateNode node)

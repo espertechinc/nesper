@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.collection;
@@ -48,7 +49,11 @@ namespace com.espertech.esper.common.@internal.@event.core
             var path = ResolvePath(typeName);
             var preconfigured = ResolvePreconfigured(typeName);
             return CompileTimeResolverUtil.ValidateAmbiguous(
-                local, path, preconfigured, PathRegistryObjectType.EVENTTYPE, typeName);
+                local,
+                path,
+                preconfigured,
+                PathRegistryObjectType.EVENTTYPE,
+                typeName);
         }
 
         private EventType ResolvePreconfigured(string typeName)
@@ -71,7 +76,9 @@ namespace com.espertech.esper.common.@internal.@event.core
                 }
 
                 if (!NameAccessModifierExtensions.Visible(
-                    typeAndModule.First.Metadata.AccessModifier, typeAndModule.Second, moduleName)) {
+                    typeAndModule.First.Metadata.AccessModifier,
+                    typeAndModule.Second,
+                    moduleName)) {
                     return null;
                 }
 

@@ -33,18 +33,17 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
 
         public void Render(
             StringBuilder builder,
-            IDictionary<Type, string> imports,
             bool isInnerClass)
         {
             builder.Append("(");
-            _first.Render(builder, imports, isInnerClass);
+            _first.Render(builder, isInnerClass);
             builder.Append(_isAnd ? "&&" : "||");
-            _second.Render(builder, imports, isInnerClass);
+            _second.Render(builder, isInnerClass);
 
             if (_optionalMore != null) {
                 foreach (var expr in _optionalMore) {
                     builder.Append(_isAnd ? "&&" : "||");
-                    expr.Render(builder, imports, isInnerClass);
+                    expr.Render(builder, isInnerClass);
                 }
             }
 

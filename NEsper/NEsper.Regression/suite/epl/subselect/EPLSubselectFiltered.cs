@@ -407,12 +407,12 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
             public void Run(RegressionEnvironment env)
             {
                 var subquery = new EPStatementObjectModel();
-                subquery.SelectClause = SelectClause.Create().Add(Expressions.Previous(1, "id"));
+                subquery.SelectClause = SelectClause.Create().Add(Expressions.Previous(1, "Id"));
                 subquery.FromClause =
                     FromClause.Create(
                         FilterStream.Create("SupportBean_S1")
                             .AddView(View.Create("length", Expressions.Constant(1000))));
-                subquery.WhereClause = Expressions.EqProperty("id", "s0.Id");
+                subquery.WhereClause = Expressions.EqProperty("Id", "s0.Id");
 
                 var model = new EPStatementObjectModel();
                 model.FromClause = FromClause.Create(FilterStream.Create("SupportBean_S0", "s0"));
@@ -450,16 +450,16 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
         {
             public void Run(RegressionEnvironment env)
             {
-                var text = "@Name('s0') select irstream s0.price as s0price, " +
-                           " (select price from SupportMarketDataBean(Symbol='S1')#length(10) s1" +
-                           " where s0.Volume = s1.Volume) as s1price " +
+                var text = "@Name('s0') select irstream s0.Price as s0Price, " +
+                           " (select Price from SupportMarketDataBean(Symbol='S1')#length(10) s1" +
+                           " where s0.Volume = s1.Volume) as s1Price " +
                            " from  SupportMarketDataBean(Symbol='S0')#length(2) s0";
                 env.CompileDeployAddListenerMileZero(text, "s0");
 
                 env.SendEventBean(MakeMarketDataEvent("S0", 100, 1));
                 EPAssertionUtil.AssertPropsPerRow(
                     env.Listener("s0").NewDataListFlattened,
-                    new[] {"s0price", "s1price"},
+                    new[] {"s0Price", "s1Price"},
                     new[] {new object[] {100.0, null}});
                 Assert.AreEqual(0, env.Listener("s0").OldDataListFlattened.Length);
                 env.Listener("s0").Reset();
@@ -474,7 +474,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
                 env.SendEventBean(MakeMarketDataEvent("S0", 200, 2));
                 EPAssertionUtil.AssertPropsPerRow(
                     env.Listener("s0").NewDataListFlattened,
-                    new[] {"s0price", "s1price"},
+                    new[] {"s0Price", "s1Price"},
                     new[] {new object[] {200.0, -10.0}});
                 Assert.AreEqual(0, env.Listener("s0").OldDataListFlattened.Length);
                 env.Listener("s0").Reset();
@@ -489,11 +489,11 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
                 env.SendEventBean(MakeMarketDataEvent("S0", 300, 3));
                 EPAssertionUtil.AssertPropsPerRow(
                     env.Listener("s0").NewDataListFlattened,
-                    new[] {"s0price", "s1price"},
+                    new[] {"s0Price", "s1Price"},
                     new[] {new object[] {300.0, -20.0}});
                 EPAssertionUtil.AssertPropsPerRow(
                     env.Listener("s0").OldDataListFlattened,
-                    new[] {"s0price", "s1price"},
+                    new[] {"s0Price", "s1Price"},
                     new[] {new object[] {100.0, null}});
                 env.Listener("s0").Reset();
 
@@ -724,18 +724,18 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
 
                 env.SendEventBean(new SupportBean_S1(1));
                 env.SendEventBean(new SupportBean_S0(1));
-                Assert.AreEqual(1, env.Listener("s0").AssertOneGetNewAndReset().Get("id"));
+                Assert.AreEqual(1, env.Listener("s0").AssertOneGetNewAndReset().Get("Id"));
 
                 env.SendEventBean(new SupportBean_S2(2));
                 env.SendEventBean(new SupportBean_S0(2));
-                Assert.AreEqual(2, env.Listener("s0").AssertOneGetNewAndReset().Get("id"));
+                Assert.AreEqual(2, env.Listener("s0").AssertOneGetNewAndReset().Get("Id"));
 
                 env.SendEventBean(new SupportBean_S0(3));
                 Assert.IsFalse(env.Listener("s0").IsInvoked);
 
                 env.SendEventBean(new SupportBean_S1(3));
                 env.SendEventBean(new SupportBean_S0(3));
-                Assert.AreEqual(3, env.Listener("s0").AssertOneGetNewAndReset().Get("id"));
+                Assert.AreEqual(3, env.Listener("s0").AssertOneGetNewAndReset().Get("Id"));
 
                 env.UndeployAll();
             }

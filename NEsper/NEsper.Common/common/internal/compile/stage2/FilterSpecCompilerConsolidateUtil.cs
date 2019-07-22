@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.collection;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.filterspec;
@@ -30,7 +31,8 @@ namespace com.espertech.esper.common.@internal.compile.stage2
             // i.e. we are looking for "a!=5 and a!=6"  to transform to "a not in (5,6)" which can match faster
             // considering that "a not in (5,6) and a not in (7,8)" is "a not in (5, 6, 7, 8)" therefore
             // we need to consolidate until there is no more work to do
-            var mapOfParams = new Dictionary<Pair<ExprFilterSpecLookupableForge, FilterOperator>, IList<FilterSpecParamForge>>();
+            var mapOfParams =
+                new Dictionary<Pair<ExprFilterSpecLookupableForge, FilterOperator>, IList<FilterSpecParamForge>>();
 
             bool haveConsolidated;
             do {
@@ -100,15 +102,22 @@ namespace com.espertech.esper.common.@internal.compile.stage2
                     var eventProp = (FilterSpecParamEventPropForge) paramForge;
                     values.Add(
                         new FilterForEvalEventPropForge(
-                            eventProp.ResultEventAsName, eventProp.ResultEventProperty,
-                            eventProp.ExprIdentNodeEvaluator, eventProp.IsMustCoerce, eventProp.CoercionType.GetBoxedType()));
+                            eventProp.ResultEventAsName,
+                            eventProp.ResultEventProperty,
+                            eventProp.ExprIdentNodeEvaluator,
+                            eventProp.IsMustCoerce,
+                            eventProp.CoercionType.GetBoxedType()));
                 }
                 else if (paramForge is FilterSpecParamEventPropIndexedForge) {
                     var eventProp = (FilterSpecParamEventPropIndexedForge) paramForge;
                     values.Add(
                         new FilterForEvalEventPropIndexedForge(
-                            eventProp.ResultEventAsName, eventProp.ResultEventIndex, eventProp.ResultEventProperty,
-                            eventProp.EventType, eventProp.IsMustCoerce, eventProp.CoercionType.GetBoxedType()));
+                            eventProp.ResultEventAsName,
+                            eventProp.ResultEventIndex,
+                            eventProp.ResultEventProperty,
+                            eventProp.EventType,
+                            eventProp.IsMustCoerce,
+                            eventProp.CoercionType.GetBoxedType()));
                 }
                 else {
                     throw new ArgumentException("Unknown filter parameter:" + paramForge);
@@ -117,7 +126,10 @@ namespace com.espertech.esper.common.@internal.compile.stage2
                 lastNotEqualsExprNode = filterParamExprMap.RemoveEntry(paramForge);
             }
 
-            var param = new FilterSpecParamInForge(parameters[0].Lookupable, FilterOperator.NOT_IN_LIST_OF_VALUES, values);
+            var param = new FilterSpecParamInForge(
+                parameters[0].Lookupable,
+                FilterOperator.NOT_IN_LIST_OF_VALUES,
+                values);
             filterParamExprMap.Put(lastNotEqualsExprNode, param);
         }
     }

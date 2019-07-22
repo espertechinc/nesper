@@ -43,7 +43,8 @@ namespace com.espertech.esper.common.client.context
         public override String ToString()
         {
             return "ContextPartitionIdentifierHash{" +
-                   "hash=" + _hash +
+                   "hash=" +
+                   _hash +
                    '}';
         }
     }

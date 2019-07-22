@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
@@ -31,7 +32,13 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.core
             Consumer<CodegenMethod> code)
         {
             return AddMethodWithSymbols(
-                returnType, methodName, @params, generator, classScope, code, CodegenSymbolProviderEmpty.INSTANCE);
+                returnType,
+                methodName,
+                @params,
+                generator,
+                classScope,
+                code,
+                CodegenSymbolProviderEmpty.INSTANCE);
         }
 
         public CodegenMethod AddMethodWithSymbols(

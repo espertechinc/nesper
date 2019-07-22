@@ -51,16 +51,22 @@ namespace com.espertech.esper.common.@internal.epl.output.condition
             BeanEventTypeFactory beanEventTypeFactory)
         {
             var metadata = new EventTypeMetadata(
-                "anonymous", moduleName, EventTypeTypeClass.STREAM, EventTypeApplicationType.OBJECTARR, NameAccessModifier.TRANSIENT,
-                EventTypeBusModifier.NONBUS, false, EventTypeIdPair.Unassigned());
+                "anonymous",
+                moduleName,
+                EventTypeTypeClass.STREAM,
+                EventTypeApplicationType.OBJECTARR,
+                NameAccessModifier.TRANSIENT,
+                EventTypeBusModifier.NONBUS,
+                false,
+                EventTypeIdPair.Unassigned());
             return BaseNestableEventUtil.MakeOATypeCompileTime(
-                metadata, 
-                TYPEINFO, 
+                metadata,
+                TYPEINFO,
                 null,
-                null, 
-                null, 
-                null, 
-                beanEventTypeFactory, 
+                null,
+                null,
+                null,
+                beanEventTypeFactory,
                 null);
         }
     }

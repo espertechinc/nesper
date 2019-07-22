@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.@internal.compile.stage1.spec;
 using com.espertech.esper.common.@internal.compile.stage2;
 using com.espertech.esper.common.@internal.epl.expression.core;
@@ -52,12 +53,20 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
 
         public ResultSetSpec(StatementSpecCompiled statementSpec)
             : this(
-                statementSpec.Raw.SelectStreamSelectorEnum, statementSpec.Raw.OrderByList, statementSpec.SelectClauseCompiled,
-                statementSpec.Raw.InsertIntoDesc, statementSpec.GroupByExpressions, statementSpec.Raw.WhereClause, statementSpec.Raw.HavingClause,
+                statementSpec.Raw.SelectStreamSelectorEnum,
+                statementSpec.Raw.OrderByList,
+                statementSpec.SelectClauseCompiled,
+                statementSpec.Raw.InsertIntoDesc,
+                statementSpec.GroupByExpressions,
+                statementSpec.Raw.WhereClause,
+                statementSpec.Raw.HavingClause,
                 statementSpec.Raw.OutputLimitSpec,
-                statementSpec.Raw.RowLimitSpec, statementSpec.Raw.OptionalContextName, statementSpec.Raw.ForClauseSpec,
+                statementSpec.Raw.RowLimitSpec,
+                statementSpec.Raw.OptionalContextName,
+                statementSpec.Raw.ForClauseSpec,
                 statementSpec.Raw.IntoTableSpec,
-                statementSpec.StreamSpecs, statementSpec.Annotations)
+                statementSpec.StreamSpecs,
+                statementSpec.Annotations)
         {
         }
 

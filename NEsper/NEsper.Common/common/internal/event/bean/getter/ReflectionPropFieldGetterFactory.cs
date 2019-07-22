@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Reflection;
+
 using com.espertech.esper.common.@internal.@event.bean.introspect;
 using com.espertech.esper.common.@internal.@event.bean.service;
 using com.espertech.esper.common.@internal.@event.core;
@@ -15,18 +16,18 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
 {
     public class ReflectionPropFieldGetterFactory : EventPropertyGetterSPIFactory
     {
-        private readonly FieldInfo field;
+        private readonly FieldInfo _field;
 
         public ReflectionPropFieldGetterFactory(FieldInfo field)
         {
-            this.field = field;
+            _field = field;
         }
 
         public EventPropertyGetterSPI Make(
             EventBeanTypedEventFactory eventBeanTypedEventFactory,
             BeanEventTypeFactory beanEventTypeFactory)
         {
-            return new ReflectionPropFieldGetter(field, eventBeanTypedEventFactory, beanEventTypeFactory);
+            return new ReflectionPropFieldGetter(_field, eventBeanTypedEventFactory, beanEventTypeFactory);
         }
     }
 } // end of namespace

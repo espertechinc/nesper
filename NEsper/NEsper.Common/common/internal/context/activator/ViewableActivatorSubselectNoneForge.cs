@@ -12,6 +12,7 @@ using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.context.module;
 using com.espertech.esper.common.@internal.@event.core;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.context.activator
@@ -31,11 +32,13 @@ namespace com.espertech.esper.common.@internal.context.activator
             CodegenClassScope classScope)
         {
             var type = classScope.AddFieldUnshared(
-                true, typeof(EventType),
+                true,
+                typeof(EventType),
                 EventTypeUtility.ResolveTypeCodegen(eventType, EPStatementInitServicesConstants.REF));
             var method = parent.MakeChild(typeof(ViewableActivatorSubselectNone), GetType(), classScope);
-            method.Block.DeclareVar(
-                    typeof(ViewableActivatorSubselectNone), "none", NewInstance(typeof(ViewableActivatorSubselectNone)))
+            method.Block.DeclareVar<ViewableActivatorSubselectNone>(
+                    "none",
+                    NewInstance(typeof(ViewableActivatorSubselectNone)))
                 .SetProperty(Ref("none"), "EventType", type)
                 .MethodReturn(Ref("none"));
             return LocalMethod(method);

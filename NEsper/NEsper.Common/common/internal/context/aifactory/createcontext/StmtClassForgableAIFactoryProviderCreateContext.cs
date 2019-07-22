@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -15,6 +16,7 @@ using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.context.controller.core;
 using com.espertech.esper.common.@internal.context.module;
 using com.espertech.esper.common.@internal.@event.core;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 using static com.espertech.esper.common.@internal.context.aifactory.core.SAIFFInitializeSymbol;
 
@@ -54,11 +56,15 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createcontext
         {
             var saiffInitializeSymbol = new SAIFFInitializeSymbol();
             CodegenMethod method = parent
-                .MakeChildWithScope(TypeOfFactory(), GetType(), saiffInitializeSymbol, classScope).AddParam(
-                    typeof(EPStatementInitServices), REF_STMTINITSVC.Ref);
+                .MakeChildWithScope(TypeOfFactory(), GetType(), saiffInitializeSymbol, classScope)
+                .AddParam(
+                    typeof(EPStatementInitServices),
+                    REF_STMTINITSVC.Ref);
             method.Block
                 .ExprDotMethod(
-                    REF_STMTINITSVC, "activateContext", Constant(contextName),
+                    REF_STMTINITSVC,
+                    "ActivateContext",
+                    Constant(contextName),
                     GetDefinition(method, saiffInitializeSymbol, classScope))
                 .MethodReturn(LocalMethod(forge.InitializeCodegen(classScope, method, saiffInitializeSymbol)));
             return method;
@@ -72,22 +78,29 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createcontext
             var method = parent.MakeChild(typeof(ContextDefinition), GetType(), classScope);
 
             // controllers
-            method.Block.DeclareVar(
-                typeof(ContextControllerFactory[]), "controllers",
+            method.Block.DeclareVar<ContextControllerFactory[]>(
+                "controllers",
                 NewArrayByLength(typeof(ContextControllerFactory), Constant(forges.Length)));
             for (var i = 0; i < forges.Length; i++) {
                 method.Block.AssignArrayElement(
-                        "controllers", Constant(i), LocalMethod(forges[i].MakeCodegen(classScope, method, symbols)))
+                        "controllers",
+                        Constant(i),
+                        LocalMethod(forges[i].MakeCodegen(classScope, method, symbols)))
                     .ExprDotMethod(
-                        ArrayAtIndex(Ref("controllers"), Constant(i)), "setFactoryEnv",
+                        ArrayAtIndex(Ref("controllers"), Constant(i)),
+                        "SetFactoryEnv",
                         forges[i].FactoryEnv.ToExpression());
             }
 
-            method.Block.DeclareVar(typeof(ContextDefinition), "def", NewInstance(typeof(ContextDefinition)))
+            method.Block.DeclareVar<ContextDefinition>("def", NewInstance(typeof(ContextDefinition)))
                 .SetProperty(Ref("def"), "ContextName", Constant(contextName))
                 .SetProperty(Ref("def"), "ControllerFactories", Ref("controllers"))
-                .SetProperty(Ref("def"), "EventTypeContextProperties",
-                    EventTypeUtility.ResolveTypeCodegen(eventTypeContextProperties, EPStatementInitServicesConstants.REF))
+                .SetProperty(
+                    Ref("def"),
+                    "EventTypeContextProperties",
+                    EventTypeUtility.ResolveTypeCodegen(
+                        eventTypeContextProperties,
+                        EPStatementInitServicesConstants.REF))
                 .MethodReturn(Ref("def"));
             return LocalMethod(method);
         }

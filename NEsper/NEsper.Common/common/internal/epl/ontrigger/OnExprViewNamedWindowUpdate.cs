@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.compile.stage1.spec;
@@ -41,7 +42,9 @@ namespace com.espertech.esper.common.@internal.epl.ontrigger
             EventBean[] matchingEvents)
         {
             agentInstanceContext.InstrumentationProvider.QInfraOnAction(
-                OnTriggerType.ON_UPDATE, triggerEvents, matchingEvents);
+                OnTriggerType.ON_UPDATE,
+                triggerEvents,
+                matchingEvents);
 
             if (matchingEvents == null || matchingEvents.Length == 0) {
                 agentInstanceContext.InstrumentationProvider.AInfraOnAction();
@@ -57,7 +60,9 @@ namespace com.espertech.esper.common.@internal.epl.ontrigger
                 eventsPerStream[1] = triggerEvent;
                 foreach (var matchingEvent in matchingEvents) {
                     var copy = parent.UpdateHelperNamedWindow.UpdateWCopy(
-                        matchingEvent, eventsPerStream, ExprEvaluatorContext);
+                        matchingEvent,
+                        eventsPerStream,
+                        ExprEvaluatorContext);
                     newData.Add(copy);
                     oldData.Add(matchingEvent);
                 }

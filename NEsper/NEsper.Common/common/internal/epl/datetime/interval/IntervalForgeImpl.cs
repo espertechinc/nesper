@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -22,6 +23,7 @@ using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.settings;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.datetime.interval
@@ -51,7 +53,10 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
                 parameterPropertyStart = type.StartTimestampPropertyName;
                 if (parameterPropertyStart == null) {
                     throw new ExprValidationException(
-                        "For date-time method '" + methodNameUse + "' the first parameter is event type '" + type.Name +
+                        "For date-time method '" +
+                        methodNameUse +
+                        "' the first parameter is event type '" +
+                        type.Name +
                         "', however no timestamp property has been defined for this event type");
                 }
 
@@ -65,7 +70,9 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
                     var getterEndTimestamp =
                         ((EventTypeSPI) type).GetGetterSPI(type.EndTimestampPropertyName);
                     forgeEndTimestamp = new ExprEvaluatorStreamDTProp(
-                        parameterStreamNum, getterEndTimestamp, getterReturnTypeBoxed);
+                        parameterStreamNum,
+                        getterEndTimestamp,
+                        getterReturnTypeBoxed);
                 }
                 else {
                     parameterPropertyEnd = parameterPropertyStart;
@@ -88,13 +95,19 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
                     // ident node may represent a fragment
                     if (unresolvedPropertyName != null) {
                         var propertyDesc = ExprIdentNodeUtil.GetTypeFromStream(
-                            streamTypeService, unresolvedPropertyName, false, true, tableCompileTimeResolver);
+                            streamTypeService,
+                            unresolvedPropertyName,
+                            false,
+                            true,
+                            tableCompileTimeResolver);
                         if (propertyDesc.First.FragmentEventType != null) {
                             var type = propertyDesc.First.FragmentEventType.FragmentType;
                             parameterPropertyStart = type.StartTimestampPropertyName;
                             if (parameterPropertyStart == null) {
                                 throw new ExprValidationException(
-                                    "For date-time method '" + methodNameUse + "' the first parameter is event type '" +
+                                    "For date-time method '" +
+                                    methodNameUse +
+                                    "' the first parameter is event type '" +
                                     type.Name +
                                     "', however no timestamp property has been defined for this event type");
                             }
@@ -106,14 +119,18 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
                             var getterStartTimestamp =
                                 ((EventTypeSPI) type).GetGetterSPI(parameterPropertyStart);
                             ForgeTimestamp = new ExprEvaluatorStreamDTPropFragment(
-                                parameterStreamNum, getterFragment, getterStartTimestamp);
+                                parameterStreamNum,
+                                getterFragment,
+                                getterStartTimestamp);
 
                             if (type.EndTimestampPropertyName != null) {
                                 parameterPropertyEnd = type.EndTimestampPropertyName;
                                 var getterEndTimestamp =
                                     ((EventTypeSPI) type).GetGetterSPI(type.EndTimestampPropertyName);
                                 forgeEndTimestamp = new ExprEvaluatorStreamDTPropFragment(
-                                    parameterStreamNum, getterFragment, getterEndTimestamp);
+                                    parameterStreamNum,
+                                    getterFragment,
+                                    getterEndTimestamp);
                             }
                             else {
                                 parameterPropertyEnd = parameterPropertyStart;
@@ -122,7 +139,9 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
                     }
                     else {
                         throw new ExprValidationException(
-                            "For date-time method '" + methodNameUse + "' the first parameter expression returns '" +
+                            "For date-time method '" +
+                            methodNameUse +
+                            "' the first parameter expression returns '" +
                             ForgeTimestamp.EvaluationType +
                             "', however requires a Date, DateTimeEx, Long-type return value or event (with timestamp)");
                     }
@@ -159,7 +178,8 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
                 }
                 else if (TypeHelper.IsSubclassOrImplementsInterface(timestampType, typeof(DateTimeOffset))) {
                     IntervalOpForge = new IntervalOpDateTimeOffsetWithEndForge(
-                        intervalComputerForge, forgeEndTimestamp);
+                        intervalComputerForge,
+                        forgeEndTimestamp);
                 }
                 else if (TypeHelper.IsSubclassOrImplementsInterface(timestampType, typeof(DateTime))) {
                     IntervalOpForge = new IntervalOpDateTimeWithEndForge(intervalComputerForge, forgeEndTimestamp);
@@ -233,9 +253,14 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
             }
 
             return new FilterExprAnalyzerDTIntervalAffector(
-                currentMethod, typesPerStream,
-                targetStreamNum, targetPropertyStart, targetPropertyEnd,
-                parameterStreamNum, parameterPropertyStart, parameterPropertyEnd);
+                currentMethod,
+                typesPerStream,
+                targetStreamNum,
+                targetPropertyStart,
+                targetPropertyEnd,
+                parameterStreamNum,
+                parameterPropertyStart,
+                parameterPropertyEnd);
         }
 
         public interface IIntervalOpForge
@@ -324,7 +349,13 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
                 CodegenClassScope codegenClassScope)
             {
                 return IntervalOpEvalLong.Codegen(
-                    intervalComputer, startTs, endTs, parameter, codegenMethodScope, exprSymbol, codegenClassScope);
+                    intervalComputer,
+                    startTs,
+                    endTs,
+                    parameter,
+                    codegenMethodScope,
+                    exprSymbol,
+                    codegenClassScope);
             }
         }
 
@@ -357,7 +388,13 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
                 CodegenClassScope codegenClassScope)
             {
                 return intervalComputer.Codegen(
-                    startTs, endTs, parameter, parameter, codegenMethodScope, exprSymbol, codegenClassScope);
+                    startTs,
+                    endTs,
+                    parameter,
+                    parameter,
+                    codegenMethodScope,
+                    exprSymbol,
+                    codegenClassScope);
             }
         }
 
@@ -383,7 +420,13 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
                 CodegenClassScope codegenClassScope)
             {
                 return IntervalOpDateTimeExEval.Codegen(
-                    this, start, end, parameter, codegenMethodScope, exprSymbol, codegenClassScope);
+                    this,
+                    start,
+                    end,
+                    parameter,
+                    codegenMethodScope,
+                    exprSymbol,
+                    codegenClassScope);
             }
         }
 
@@ -416,15 +459,23 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
                 CodegenClassScope codegenClassScope)
             {
                 var methodNode = codegenMethodScope.MakeChild(
-                        typeof(bool?), typeof(IIntervalOpEval), codegenClassScope)
-                    .AddParam(typeof(long), "startTs").AddParam(typeof(long), "endTs")
+                        typeof(bool?),
+                        typeof(IIntervalOpEval),
+                        codegenClassScope)
+                    .AddParam(typeof(long), "startTs")
+                    .AddParam(typeof(long), "endTs")
                     .AddParam(typeof(DateTimeEx), "parameter");
 
                 methodNode.Block
-                    .DeclareVar(typeof(long), "time", ExprDotMethod(Ref("parameter"), "getTimeInMillis"))
+                    .DeclareVar<long>("time", ExprDotMethod(Ref("parameter"), "getTimeInMillis"))
                     .MethodReturn(
                         forge.intervalComputer.Codegen(
-                            Ref("startTs"), Ref("endTs"), Ref("time"), Ref("time"), methodNode, exprSymbol,
+                            Ref("startTs"),
+                            Ref("endTs"),
+                            Ref("time"),
+                            Ref("time"),
+                            methodNode,
+                            exprSymbol,
                             codegenClassScope));
                 return LocalMethod(methodNode, start, end, parameter);
             }
@@ -452,7 +503,14 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
                 CodegenClassScope codegenClassScope)
             {
                 return IntervalOpDateTimeOffsetEval.Codegen(
-                    this, start, end, parameter, parameterType, codegenMethodScope, exprSymbol, codegenClassScope);
+                    this,
+                    start,
+                    end,
+                    parameter,
+                    parameterType,
+                    codegenMethodScope,
+                    exprSymbol,
+                    codegenClassScope);
             }
         }
 
@@ -489,18 +547,26 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
                     codegenClassScope.AddOrGetFieldSharable(RuntimeSettingsTimeZoneField.INSTANCE);
                 var methodNode = codegenMethodScope
                     .MakeChild(typeof(bool?), typeof(IntervalOpDateTimeOffsetEval), codegenClassScope)
-                    .AddParam(typeof(long), "startTs").AddParam(typeof(long), "endTs")
+                    .AddParam(typeof(long), "startTs")
+                    .AddParam(typeof(long), "endTs")
                     .AddParam(typeof(DateTimeOffset), "parameter");
 
                 methodNode.Block
-                    .DeclareVar(
-                        typeof(long), "time",
+                    .DeclareVar<long>(
+                        "time",
                         StaticMethod(
-                            typeof(DatetimeLongCoercerDateTimeOffset), "CoerceToMillis", Ref("parameter"),
+                            typeof(DatetimeLongCoercerDateTimeOffset),
+                            "CoerceToMillis",
+                            Ref("parameter"),
                             timeZoneField))
                     .MethodReturn(
                         forge.intervalComputer.Codegen(
-                            Ref("startTs"), Ref("endTs"), Ref("time"), Ref("time"), methodNode, exprSymbol,
+                            Ref("startTs"),
+                            Ref("endTs"),
+                            Ref("time"),
+                            Ref("time"),
+                            methodNode,
+                            exprSymbol,
                             codegenClassScope));
                 return LocalMethod(methodNode, start, end, parameter);
             }
@@ -528,7 +594,13 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
                 CodegenClassScope codegenClassScope)
             {
                 return IntervalOpDateTimeEval.Codegen(
-                    this, start, end, parameter, codegenMethodScope, exprSymbol, codegenClassScope);
+                    this,
+                    start,
+                    end,
+                    parameter,
+                    codegenMethodScope,
+                    exprSymbol,
+                    codegenClassScope);
             }
         }
 
@@ -562,16 +634,22 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
             {
                 var methodNode = codegenMethodScope
                     .MakeChild(typeof(bool?), typeof(IntervalOpDateTimeEval), codegenClassScope)
-                    .AddParam(typeof(long), "startTs").AddParam(typeof(long), "endTs")
+                    .AddParam(typeof(long), "startTs")
+                    .AddParam(typeof(long), "endTs")
                     .AddParam(typeof(DateTime), "parameter");
 
                 methodNode.Block
-                    .DeclareVar(
-                        typeof(long), "time",
+                    .DeclareVar<long>(
+                        "time",
                         StaticMethod(typeof(DatetimeLongCoercerDateTime), "CoerceToMillis", Ref("parameter")))
                     .MethodReturn(
                         forge.intervalComputer.Codegen(
-                            Ref("startTs"), Ref("endTs"), Ref("time"), Ref("time"), methodNode, exprSymbol,
+                            Ref("startTs"),
+                            Ref("endTs"),
+                            Ref("time"),
+                            Ref("time"),
+                            methodNode,
+                            exprSymbol,
                             codegenClassScope));
                 return LocalMethod(methodNode, start, end, parameter);
             }
@@ -603,19 +681,26 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
             {
                 var methodNode = codegenMethodScope
                     .MakeChild(typeof(bool?), typeof(IntervalOpForgeDateWithEndBase), codegenClassScope)
-                    .AddParam(typeof(long), "startTs").AddParam(typeof(long), "endTs")
+                    .AddParam(typeof(long), "startTs")
+                    .AddParam(typeof(long), "endTs")
                     .AddParam(parameterType, "paramStartTs");
 
                 var evaluationType = forgeEndTimestamp.EvaluationType;
                 methodNode.Block.DeclareVar(
-                    evaluationType, "paramEndTs",
+                    evaluationType,
+                    "paramEndTs",
                     forgeEndTimestamp.EvaluateCodegen(evaluationType, methodNode, exprSymbol, codegenClassScope));
                 if (!evaluationType.IsPrimitive) {
                     methodNode.Block.IfRefNullReturnNull("paramEndTs");
                 }
 
                 var expression = CodegenEvaluate(
-                    Ref("startTs"), Ref("endTs"), Ref("paramStartTs"), Ref("paramEndTs"), methodNode, exprSymbol,
+                    Ref("startTs"),
+                    Ref("endTs"),
+                    Ref("paramStartTs"),
+                    Ref("paramEndTs"),
+                    methodNode,
+                    exprSymbol,
                     codegenClassScope);
                 methodNode.Block.MethodReturn(expression);
                 return LocalMethod(methodNode, start, end, parameter);
@@ -682,7 +767,8 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
             public override IIntervalOpEval MakeEval()
             {
                 return new IntervalOpLongWithEndEval(
-                    intervalComputer.MakeComputerEval(), forgeEndTimestamp.ExprEvaluator);
+                    intervalComputer.MakeComputerEval(),
+                    forgeEndTimestamp.ExprEvaluator);
             }
 
             protected override CodegenExpression CodegenEvaluate(
@@ -695,7 +781,13 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
                 CodegenClassScope codegenClassScope)
             {
                 return intervalComputer.Codegen(
-                    startTs, endTs, paramStartTs, paramEndTs, parentNode, exprSymbol, codegenClassScope);
+                    startTs,
+                    endTs,
+                    paramStartTs,
+                    paramEndTs,
+                    parentNode,
+                    exprSymbol,
+                    codegenClassScope);
             }
         }
 
@@ -719,10 +811,13 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
                 ExprEvaluatorContext context)
             {
                 return intervalComputer.Compute(
-                    startTs, endTs,
+                    startTs,
+                    endTs,
                     parameterStartTs.AsLong(),
                     parameterEndTs.AsLong(),
-                    eventsPerStream, isNewData, context);
+                    eventsPerStream,
+                    isNewData,
+                    context);
             }
         }
 
@@ -738,7 +833,8 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
             public override IIntervalOpEval MakeEval()
             {
                 return new IntervalOpCalWithEndEval(
-                    intervalComputer.MakeComputerEval(), forgeEndTimestamp.ExprEvaluator);
+                    intervalComputer.MakeComputerEval(),
+                    forgeEndTimestamp.ExprEvaluator);
             }
 
             protected override CodegenExpression CodegenEvaluate(
@@ -751,8 +847,13 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
                 CodegenClassScope codegenClassScope)
             {
                 return intervalComputer.Codegen(
-                    startTs, endTs, ExprDotMethod(paramStartTs, "getTimeInMillis"),
-                    ExprDotMethod(paramEndTs, "getTimeInMillis"), parentNode, exprSymbol, codegenClassScope);
+                    startTs,
+                    endTs,
+                    ExprDotMethod(paramStartTs, "getTimeInMillis"),
+                    ExprDotMethod(paramEndTs, "getTimeInMillis"),
+                    parentNode,
+                    exprSymbol,
+                    codegenClassScope);
             }
         }
 
@@ -776,8 +877,13 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
                 ExprEvaluatorContext context)
             {
                 return intervalComputer.Compute(
-                    startTs, endTs, ((DateTimeEx) parameterStartTs).TimeInMillis,
-                    ((DateTimeEx) parameterEndTs).TimeInMillis, eventsPerStream, isNewData, context);
+                    startTs,
+                    endTs,
+                    ((DateTimeEx) parameterStartTs).TimeInMillis,
+                    ((DateTimeEx) parameterEndTs).TimeInMillis,
+                    eventsPerStream,
+                    isNewData,
+                    context);
             }
         }
 
@@ -793,7 +899,8 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
             public override IIntervalOpEval MakeEval()
             {
                 return new IntervalOpDateTimeOffsetWithEndEval(
-                    intervalComputer.MakeComputerEval(), forgeEndTimestamp.ExprEvaluator);
+                    intervalComputer.MakeComputerEval(),
+                    forgeEndTimestamp.ExprEvaluator);
             }
 
             protected override CodegenExpression CodegenEvaluate(
@@ -808,14 +915,21 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
                 CodegenExpression timeZoneField =
                     codegenClassScope.AddOrGetFieldSharable(RuntimeSettingsTimeZoneField.INSTANCE);
                 return intervalComputer.Codegen(
-                    startTs, endTs,
+                    startTs,
+                    endTs,
                     StaticMethod(
-                        typeof(DatetimeLongCoercerDateTimeOffset), "CoerceToMillis", paramStartTs,
+                        typeof(DatetimeLongCoercerDateTimeOffset),
+                        "CoerceToMillis",
+                        paramStartTs,
                         timeZoneField),
                     StaticMethod(
-                        typeof(DatetimeLongCoercerDateTimeOffset), "CoerceToMillis", paramEndTs,
+                        typeof(DatetimeLongCoercerDateTimeOffset),
+                        "CoerceToMillis",
+                        paramEndTs,
                         timeZoneField),
-                    parentNode, exprSymbol, codegenClassScope);
+                    parentNode,
+                    exprSymbol,
+                    codegenClassScope);
             }
         }
 
@@ -838,10 +952,13 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
                 ExprEvaluatorContext context)
             {
                 return intervalComputer.Compute(
-                    startTs, endTs,
+                    startTs,
+                    endTs,
                     DatetimeLongCoercerDateTimeOffset.CoerceToMillis((DateTimeOffset) parameterStartTs),
                     DatetimeLongCoercerDateTimeOffset.CoerceToMillis((DateTimeOffset) parameterEndTs),
-                    eventsPerStream, isNewData, context);
+                    eventsPerStream,
+                    isNewData,
+                    context);
             }
         }
 
@@ -858,7 +975,8 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
             public override IIntervalOpEval MakeEval()
             {
                 return new IntervalOpDateTimeWithEndEval(
-                    intervalComputer.MakeComputerEval(), forgeEndTimestamp.ExprEvaluator);
+                    intervalComputer.MakeComputerEval(),
+                    forgeEndTimestamp.ExprEvaluator);
             }
 
             protected override CodegenExpression CodegenEvaluate(
@@ -871,10 +989,13 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
                 CodegenClassScope codegenClassScope)
             {
                 return intervalComputer.Codegen(
-                    startTs, endTs,
+                    startTs,
+                    endTs,
                     StaticMethod(typeof(DatetimeLongCoercerDateTime), "CoerceToMillis", paramStartTs),
-                    StaticMethod(typeof(DatetimeLongCoercerDateTime), "CoerceToMillis", paramEndTs), parentNode,
-                    exprSymbol, codegenClassScope);
+                    StaticMethod(typeof(DatetimeLongCoercerDateTime), "CoerceToMillis", paramEndTs),
+                    parentNode,
+                    exprSymbol,
+                    codegenClassScope);
             }
         }
 
@@ -898,10 +1019,13 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
                 ExprEvaluatorContext context)
             {
                 return intervalComputer.Compute(
-                    startTs, endTs,
+                    startTs,
+                    endTs,
                     DatetimeLongCoercerDateTime.CoerceToMillis((DateTime) parameterStartTs),
                     DatetimeLongCoercerDateTime.CoerceToMillis((DateTime) parameterEndTs),
-                    eventsPerStream, isNewData, context);
+                    eventsPerStream,
+                    isNewData,
+                    context);
             }
         }
     }

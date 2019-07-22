@@ -7,12 +7,14 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.expression.time.abacus;
 using com.espertech.esper.common.@internal.epl.pattern.core;
 using com.espertech.esper.common.@internal.filterspec;
 using com.espertech.esper.common.@internal.schedule;
+
 using static com.espertech.esper.common.@internal.epl.pattern.observer.TimerScheduleObserverForge;
 
 namespace com.espertech.esper.common.@internal.epl.pattern.observer
@@ -42,7 +44,11 @@ namespace com.espertech.esper.common.@internal.epl.pattern.observer
             EventBean[] events,
             ExprEvaluatorContext exprEvaluatorContext)
         {
-            object param = PatternExpressionUtil.EvaluateChecked(NAME_OBSERVER, parameter, events, exprEvaluatorContext);
+            object param = PatternExpressionUtil.EvaluateChecked(
+                NAME_OBSERVER,
+                parameter,
+                events,
+                exprEvaluatorContext);
             string iso = (string) param;
             if (iso == null) {
                 throw new ScheduleParameterException("Received null parameter value");

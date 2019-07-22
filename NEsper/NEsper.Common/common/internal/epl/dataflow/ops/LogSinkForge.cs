@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.dataflow.annotations;
 using com.espertech.esper.common.client.dataflow.util;
@@ -18,6 +19,7 @@ using com.espertech.esper.common.@internal.epl.dataflow.interfaces;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+
 using static com.espertech.esper.common.@internal.epl.dataflow.core.EPDataFlowServiceImpl;
 
 namespace com.espertech.esper.common.@internal.epl.dataflow.ops
@@ -60,7 +62,13 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.ops
             SAIFFInitializeSymbol symbols,
             CodegenClassScope classScope)
         {
-            return new SAIFFInitializeBuilder(OP_PACKAGE_NAME + ".logsink.LogSinkFactory", this.GetType(), "log", parent, symbols, classScope)
+            return new SAIFFInitializeBuilder(
+                    OP_PACKAGE_NAME + ".logsink.LogSinkFactory",
+                    this.GetType(),
+                    "log",
+                    parent,
+                    symbols,
+                    classScope)
                 .Exprnode("title", title)
                 .Exprnode("layout", layout)
                 .Exprnode("format", format)

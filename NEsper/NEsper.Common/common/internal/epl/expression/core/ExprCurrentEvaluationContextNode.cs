@@ -8,11 +8,13 @@
 
 using System;
 using System.IO;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.hook.expr;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.expression.core
@@ -48,7 +50,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
         {
             var refExprEvalCtx = exprSymbol.GetAddExprEvalCtx(codegenMethodScope);
             return StaticMethod(
-                typeof(ExprCurrentEvaluationContextNode), "exprCurrentEvaluationContextMake", refExprEvalCtx);
+                typeof(ExprCurrentEvaluationContextNode),
+                "exprCurrentEvaluationContextMake",
+                refExprEvalCtx);
         }
 
         public ExprForgeConstantType ForgeConstantType => ExprForgeConstantType.NONCONST;
@@ -75,8 +79,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             ExprEvaluatorContext exprEvaluatorContext)
         {
             return new EPLExpressionEvaluationContext(
-                exprEvaluatorContext.StatementName, exprEvaluatorContext.AgentInstanceId,
-                exprEvaluatorContext.RuntimeURI, exprEvaluatorContext.UserObjectCompileTime);
+                exprEvaluatorContext.StatementName,
+                exprEvaluatorContext.AgentInstanceId,
+                exprEvaluatorContext.RuntimeURI,
+                exprEvaluatorContext.UserObjectCompileTime);
         }
 
         public override void ToPrecedenceFreeEPL(TextWriter writer)

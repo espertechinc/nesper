@@ -45,7 +45,10 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
 
         public CodegenExpression ToExpression()
         {
-            return NewInstance<AggregationUseFlags>(Constant(isUnidirectional), Constant(isFireAndForget), Constant(isOnSelect));
+            return NewInstance<AggregationUseFlags>(
+                Constant(isUnidirectional),
+                Constant(isFireAndForget),
+                Constant(isOnSelect));
         }
     }
 } // end of namespace

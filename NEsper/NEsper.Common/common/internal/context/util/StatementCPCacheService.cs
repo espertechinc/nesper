@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Linq;
+
 using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.context.airegistry;
 using com.espertech.esper.common.@internal.context.module;
@@ -69,12 +70,15 @@ namespace com.espertech.esper.common.@internal.context.util
                     }
 
                     var agentInstanceContext = MakeNewAgentInstanceContextCanNull(
-                        DEFAULT_AGENT_INSTANCE_ID, statementContext, false);
+                        DEFAULT_AGENT_INSTANCE_ID,
+                        statementContext,
+                        false);
                     var result =
                         statementContext.StatementAIFactoryProvider.Factory.NewContext(agentInstanceContext, true);
                     HookUpNewRealization(result, statementContext);
                     resources = statementContext.StatementContextRuntimeServices.StatementResourceHolderBuilder.Build(
-                        agentInstanceContext, result);
+                        agentInstanceContext,
+                        result);
                     // for consistency with context partition behavior we are holding on to resources for now
                     StatementResourceService.Unpartitioned = resources;
                 }
@@ -111,7 +115,8 @@ namespace com.espertech.esper.common.@internal.context.util
                     .NewContext(agentInstanceContext, true);
                 HookUpNewRealization(result, statementContext);
                 resources = statementContext.StatementContextRuntimeServices.StatementResourceHolderBuilder.Build(
-                    agentInstanceContext, result);
+                    agentInstanceContext,
+                    result);
 
                 // we need to hold onto the handle for now even if it gets removed in order to correctly handle filter faults
                 // i.e. for example context partitioned and context partition gets destroyed the statement should not fire for same event
@@ -133,7 +138,9 @@ namespace com.espertech.esper.common.@internal.context.util
             var @lock = statementContext.StatementAIFactoryProvider.Factory
                 .ObtainAgentInstanceLock(statementContext, agentInstanceId);
             var epStatementAgentInstanceHandle = new EPStatementAgentInstanceHandle(
-                statementContext.EpStatementHandle, agentInstanceId, @lock);
+                statementContext.EpStatementHandle,
+                agentInstanceId,
+                @lock);
 
             // filter fault handler for create-context statements
             var contextName = statementContext.ContextName;
@@ -147,7 +154,8 @@ namespace com.espertech.esper.common.@internal.context.util
 
                 // the context partition may have been deleted
                 var info = contextManager.GetContextAgentInstanceInfo(
-                    statementContext, agentInstanceId);
+                    statementContext,
+                    agentInstanceId);
                 if (info == null) {
                     return null;
                 }
@@ -161,8 +169,13 @@ namespace com.espertech.esper.common.@internal.context.util
             var instrumentationProvider =
                 statementContext.StatementInformationals.InstrumentationProvider;
             return new AgentInstanceContext(
-                statementContext, agentInstanceId, epStatementAgentInstanceHandle, agentInstanceFilterProxy,
-                contextProperties, auditProvider, instrumentationProvider);
+                statementContext,
+                agentInstanceId,
+                epStatementAgentInstanceHandle,
+                agentInstanceFilterProxy,
+                contextProperties,
+                auditProvider,
+                instrumentationProvider);
         }
 
         private void HookUpNewRealization(
@@ -177,7 +190,9 @@ namespace com.espertech.esper.common.@internal.context.util
             if (statementContext.ContextName == null) {
                 StatementAIFactoryAssignments assignments = new StatementAIFactoryAssignmentsImpl(
                     result.OptionalAggegationService,
-                    result.PriorStrategies, result.PreviousGetterStrategies, result.SubselectStrategies,
+                    result.PriorStrategies,
+                    result.PreviousGetterStrategies,
+                    result.SubselectStrategies,
                     result.TableAccessStrategies,
                     result.RowRecogPreviousStrategy);
                 statementContext.StatementAIFactoryProvider.Assign(assignments);
@@ -189,7 +204,8 @@ namespace com.espertech.esper.common.@internal.context.util
             StatementResourceHolder holder)
         {
             AIRegistryUtil.AssignFutures(
-                statementAgentInstanceRegistry, agentInstanceId,
+                statementAgentInstanceRegistry,
+                agentInstanceId,
                 holder.AggregationService,
                 holder.PriorEvalStrategies,
                 holder.PreviousGetterStrategies,

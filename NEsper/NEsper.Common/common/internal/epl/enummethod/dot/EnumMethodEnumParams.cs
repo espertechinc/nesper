@@ -20,7 +20,8 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
         public static readonly DotMethodFP[] COUNTOF_FIRST_LAST = {
             new DotMethodFP(DotMethodFPInputEnum.ANY),
             new DotMethodFP(
-                DotMethodFPInputEnum.ANY, new DotMethodFPParam(1, "predicate", EPLExpressionParamType.BOOLEAN))
+                DotMethodFPInputEnum.ANY,
+                new DotMethodFPParam(1, "predicate", EPLExpressionParamType.BOOLEAN))
         };
 
         public static readonly DotMethodFP[] TAKELAST = {
@@ -40,22 +41,27 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
 
         public static readonly DotMethodFP[] ALLOF_ANYOF = {
             new DotMethodFP(
-                DotMethodFPInputEnum.ANY, new DotMethodFPParam(1, "predicate", EPLExpressionParamType.BOOLEAN))
+                DotMethodFPInputEnum.ANY,
+                new DotMethodFPParam(1, "predicate", EPLExpressionParamType.BOOLEAN))
         };
 
         public static readonly DotMethodFP[] MIN_MAX = {
             new DotMethodFP(DotMethodFPInputEnum.SCALAR_ANY),
             new DotMethodFP(
-                DotMethodFPInputEnum.SCALAR_ANY, new DotMethodFPParam(1, "value-selector", EPLExpressionParamType.ANY)),
+                DotMethodFPInputEnum.SCALAR_ANY,
+                new DotMethodFPParam(1, "value-selector", EPLExpressionParamType.ANY)),
             new DotMethodFP(
-                DotMethodFPInputEnum.EVENTCOLL, new DotMethodFPParam(1, "value-selector", EPLExpressionParamType.ANY))
+                DotMethodFPInputEnum.EVENTCOLL,
+                new DotMethodFPParam(1, "value-selector", EPLExpressionParamType.ANY))
         };
 
         public static readonly DotMethodFP[] SELECTFROM_MINBY_MAXBY = {
             new DotMethodFP(
-                DotMethodFPInputEnum.SCALAR_ANY, new DotMethodFPParam(1, "value-selector", EPLExpressionParamType.ANY)),
+                DotMethodFPInputEnum.SCALAR_ANY,
+                new DotMethodFPParam(1, "value-selector", EPLExpressionParamType.ANY)),
             new DotMethodFP(
-                DotMethodFPInputEnum.EVENTCOLL, new DotMethodFPParam(1, "value-selector", EPLExpressionParamType.ANY))
+                DotMethodFPInputEnum.EVENTCOLL,
+                new DotMethodFPParam(1, "value-selector", EPLExpressionParamType.ANY))
         };
 
         public static readonly DotMethodFP[] AVERAGE_SUMOF = {
@@ -71,9 +77,11 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
         public static readonly DotMethodFP[] MOST_LEAST_FREQ = {
             new DotMethodFP(DotMethodFPInputEnum.SCALAR_ANY),
             new DotMethodFP(
-                DotMethodFPInputEnum.SCALAR_ANY, new DotMethodFPParam(1, "value-selector", EPLExpressionParamType.ANY)),
+                DotMethodFPInputEnum.SCALAR_ANY,
+                new DotMethodFPParam(1, "value-selector", EPLExpressionParamType.ANY)),
             new DotMethodFP(
-                DotMethodFPInputEnum.EVENTCOLL, new DotMethodFPParam(1, "value-selector", EPLExpressionParamType.ANY))
+                DotMethodFPInputEnum.EVENTCOLL,
+                new DotMethodFPParam(1, "value-selector", EPLExpressionParamType.ANY))
         };
 
         public static readonly DotMethodFP[] MAP = {
@@ -89,9 +97,11 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
 
         public static readonly DotMethodFP[] GROUP = {
             new DotMethodFP(
-                DotMethodFPInputEnum.SCALAR_ANY, new DotMethodFPParam(1, "key-selector", EPLExpressionParamType.ANY)),
+                DotMethodFPInputEnum.SCALAR_ANY,
+                new DotMethodFPParam(1, "key-selector", EPLExpressionParamType.ANY)),
             new DotMethodFP(
-                DotMethodFPInputEnum.EVENTCOLL, new DotMethodFPParam(1, "key-selector", EPLExpressionParamType.ANY)),
+                DotMethodFPInputEnum.EVENTCOLL,
+                new DotMethodFPParam(1, "key-selector", EPLExpressionParamType.ANY)),
             new DotMethodFP(
                 DotMethodFPInputEnum.SCALAR_ANY,
                 new DotMethodFPParam(1, "key-selector", EPLExpressionParamType.ANY),
@@ -108,14 +118,17 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
                 DotMethodFPInputEnum.SCALAR_ANY,
                 new DotMethodFPParam(1, "compare-selector", EPLExpressionParamType.ANY)),
             new DotMethodFP(
-                DotMethodFPInputEnum.EVENTCOLL, new DotMethodFPParam(1, "compare-selector", EPLExpressionParamType.ANY))
+                DotMethodFPInputEnum.EVENTCOLL,
+                new DotMethodFPParam(1, "compare-selector", EPLExpressionParamType.ANY))
         };
 
         public static readonly DotMethodFP[] WHERE_FP = {
             new DotMethodFP(
-                DotMethodFPInputEnum.ANY, new DotMethodFPParam(1, "predicate", EPLExpressionParamType.BOOLEAN)),
+                DotMethodFPInputEnum.ANY,
+                new DotMethodFPParam(1, "predicate", EPLExpressionParamType.BOOLEAN)),
             new DotMethodFP(
-                DotMethodFPInputEnum.ANY, new DotMethodFPParam(2, "(predicate, index)", EPLExpressionParamType.BOOLEAN))
+                DotMethodFPInputEnum.ANY,
+                new DotMethodFPParam(2, "(predicate, index)", EPLExpressionParamType.BOOLEAN))
         };
 
         public static readonly DotMethodFP[] SET_LOGIC_FP = {
@@ -124,7 +137,8 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
 
         public static readonly DotMethodFP[] SEQ_EQUALS_FP = {
             new DotMethodFP(
-                DotMethodFPInputEnum.SCALAR_ANY, new DotMethodFPParam(0, "sequence", EPLExpressionParamType.ANY))
+                DotMethodFPInputEnum.SCALAR_ANY,
+                new DotMethodFPParam(0, "sequence", EPLExpressionParamType.ANY))
         };
     }
 } // end of namespace

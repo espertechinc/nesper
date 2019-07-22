@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.compat;
 
 namespace com.espertech.esper.common.client.hook.type

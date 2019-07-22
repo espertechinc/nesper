@@ -59,12 +59,18 @@ namespace com.espertech.esper.common.@internal.epl.pattern.observer
             else {
                 var agentInstanceContext = observerEventEvaluator.Context.AgentInstanceContext;
                 scheduleHandle = new EPStatementHandleCallbackSchedule(
-                    agentInstanceContext.EpStatementAgentInstanceHandle, this);
+                    agentInstanceContext.EpStatementAgentInstanceHandle,
+                    this);
                 agentInstanceContext.AuditProvider.ScheduleAdd(
-                    deltaTime, agentInstanceContext, scheduleHandle, ScheduleObjectType.pattern,
+                    deltaTime,
+                    agentInstanceContext,
+                    scheduleHandle,
+                    ScheduleObjectType.pattern,
                     NAME_AUDITPROVIDER_SCHEDULE);
                 observerEventEvaluator.Context.StatementContext.SchedulingService.Add(
-                    deltaTime, scheduleHandle, scheduleSlot);
+                    deltaTime,
+                    scheduleHandle,
+                    scheduleSlot);
                 isTimerActive = true;
             }
         }
@@ -74,7 +80,10 @@ namespace com.espertech.esper.common.@internal.epl.pattern.observer
             if (isTimerActive) {
                 var agentInstanceContext = observerEventEvaluator.Context.AgentInstanceContext;
                 agentInstanceContext.AuditProvider.ScheduleRemove(
-                    agentInstanceContext, scheduleHandle, ScheduleObjectType.pattern, NAME_AUDITPROVIDER_SCHEDULE);
+                    agentInstanceContext,
+                    scheduleHandle,
+                    ScheduleObjectType.pattern,
+                    NAME_AUDITPROVIDER_SCHEDULE);
                 agentInstanceContext.SchedulingService.Remove(scheduleHandle, scheduleSlot);
                 isTimerActive = false;
                 scheduleHandle = null;
@@ -91,7 +100,9 @@ namespace com.espertech.esper.common.@internal.epl.pattern.observer
             var agentInstanceContext = observerEventEvaluator.Context.AgentInstanceContext;
             agentInstanceContext.InstrumentationProvider.QPatternObserverScheduledEval();
             agentInstanceContext.AuditProvider.ScheduleFire(
-                agentInstanceContext, ScheduleObjectType.pattern, NAME_AUDITPROVIDER_SCHEDULE);
+                agentInstanceContext,
+                ScheduleObjectType.pattern,
+                NAME_AUDITPROVIDER_SCHEDULE);
             observerEventEvaluator.ObserverEvaluateTrue(BeginState, true);
             isTimerActive = false;
             agentInstanceContext.InstrumentationProvider.APatternObserverScheduledEval();

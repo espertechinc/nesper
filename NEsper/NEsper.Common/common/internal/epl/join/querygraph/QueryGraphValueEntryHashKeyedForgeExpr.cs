@@ -10,6 +10,7 @@ using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.epl.expression.core;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.join.querygraph
@@ -40,12 +41,13 @@ namespace com.espertech.esper.common.@internal.epl.join.querygraph
         {
             var method = parent.MakeChild(typeof(QueryGraphValueEntryHashKeyedExpr), GetType(), classScope);
             method.Block
-                .DeclareVar(
-                    typeof(ExprEvaluator), "expression",
+                .DeclareVar<ExprEvaluator>(
+                    "expression",
                     ExprNodeUtilityCodegen.CodegenEvaluatorNoCoerce(KeyExpr.Forge, method, GetType(), classScope))
                 .MethodReturn(
                     NewInstance<QueryGraphValueEntryHashKeyedExpr>(
-                        Ref("expression"), Constant(IsRequiresKey)));
+                        Ref("expression"),
+                        Constant(IsRequiresKey)));
             return LocalMethod(method);
         }
     }

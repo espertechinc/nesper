@@ -8,6 +8,7 @@
 
 using System;
 using System.IO;
+
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.type;
 using com.espertech.esper.common.@internal.util;
@@ -90,7 +91,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             }
 
             Type compareType = TypeHelper.GetCompareToCoercionType(typeOne, typeTwo);
-            RelationalOpEnum.Computer computer = relationalOpEnum.GetComputer(compareType, typeOne, typeTwo);
+            RelationalOpEnumComputer computer = relationalOpEnum.GetComputer(compareType, typeOne, typeTwo);
             forge = new ExprRelationalOpNodeForge(this, computer);
             return null;
         }
@@ -98,7 +99,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
         public override void ToPrecedenceFreeEPL(TextWriter writer)
         {
             this.ChildNodes[0].ToEPL(writer, Precedence);
-            writer.Write(relationalOpEnum.ExpressionText);
+            writer.Write(relationalOpEnum.GetExpressionText());
             this.ChildNodes[1].ToEPL(writer, Precedence);
         }
 

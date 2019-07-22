@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.context.util;
@@ -76,7 +77,10 @@ namespace com.espertech.esper.common.@internal.view.groupwin
                 var index = 0;
                 foreach (var newEvent in newData) {
                     var theEvent = AddProperty(
-                        newEvent, groupByViewFactory.propertyNames, propertyValues, groupByViewFactory.eventType,
+                        newEvent,
+                        groupByViewFactory.propertyNames,
+                        propertyValues,
+                        groupByViewFactory.eventType,
                         agentInstanceContext.EventBeanTypedEventFactory);
                     newEvents[index++] = theEvent;
 
@@ -95,7 +99,10 @@ namespace com.espertech.esper.common.@internal.view.groupwin
                     }
                     else {
                         var theEvent = AddProperty(
-                            oldEvent, groupByViewFactory.propertyNames, propertyValues, groupByViewFactory.eventType,
+                            oldEvent,
+                            groupByViewFactory.propertyNames,
+                            propertyValues,
+                            groupByViewFactory.eventType,
                             agentInstanceContext.EventBeanTypedEventFactory);
                         oldEvents[index++] = theEvent;
                     }
@@ -153,8 +160,11 @@ namespace com.espertech.esper.common.@internal.view.groupwin
 
         public override string ToString()
         {
-            return GetType().Name + " propertyNames=" + groupByViewFactory.criteriaEvals.RenderAny() +
-                   " propertyValue=" + propertyValues;
+            return GetType().Name +
+                   " propertyNames=" +
+                   groupByViewFactory.criteriaEvals.RenderAny() +
+                   " propertyValue=" +
+                   propertyValues;
         }
     }
 } // end of namespace

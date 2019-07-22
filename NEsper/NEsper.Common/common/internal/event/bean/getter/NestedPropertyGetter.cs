@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -15,6 +16,7 @@ using com.espertech.esper.common.@internal.@event.bean.core;
 using com.espertech.esper.common.@internal.@event.bean.service;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.compat;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.@event.bean.getter
@@ -25,7 +27,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
     public class NestedPropertyGetter : BaseNativePropertyGetter,
         BeanEventPropertyGetter
     {
-        private readonly BeanEventPropertyGetter[] getterChain;
+        private readonly BeanEventPropertyGetter[] _getterChain;
 
         public NestedPropertyGetter(
             IList<EventPropertyGetter> getterChain,
@@ -34,12 +36,15 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
             Type finalGenericType,
             BeanEventTypeFactory beanEventTypeFactory)
             : base(
-                eventBeanTypedEventFactory, beanEventTypeFactory, finalPropertyType, finalGenericType)
+                eventBeanTypedEventFactory,
+                beanEventTypeFactory,
+                finalPropertyType,
+                finalGenericType)
         {
-            this.getterChain = new BeanEventPropertyGetter[getterChain.Count];
+            _getterChain = new BeanEventPropertyGetter[getterChain.Count];
 
             for (var i = 0; i < getterChain.Count; i++) {
-                this.getterChain[i] = (BeanEventPropertyGetter) getterChain[i];
+                _getterChain[i] = (BeanEventPropertyGetter) getterChain[i];
             }
         }
 
@@ -49,8 +54,8 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
                 return value;
             }
 
-            for (var i = 0; i < getterChain.Length; i++) {
-                value = getterChain[i].GetBeanProp(value);
+            for (var i = 0; i < _getterChain.Length; i++) {
+                value = _getterChain[i].GetBeanProp(value);
 
                 if (value == null) {
                     return null;
@@ -66,19 +71,19 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
                 return false;
             }
 
-            var lastElementIndex = getterChain.Length - 1;
+            var lastElementIndex = _getterChain.Length - 1;
 
             // walk the getter chain up to the previous-to-last element, returning its object value.
             // any null values in between mean the property does not exists
-            for (var i = 0; i < getterChain.Length - 1; i++) {
-                value = getterChain[i].GetBeanProp(value);
+            for (var i = 0; i < _getterChain.Length - 1; i++) {
+                value = _getterChain[i].GetBeanProp(value);
 
                 if (value == null) {
                     return false;
                 }
             }
 
-            return getterChain[lastElementIndex].IsBeanExistsProperty(value);
+            return _getterChain[lastElementIndex].IsBeanExistsProperty(value);
         }
 
         public override object Get(EventBean eventBean)
@@ -91,9 +96,9 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
             return IsBeanExistsProperty(eventBean.Underlying);
         }
 
-        public override Type BeanPropType => getterChain[getterChain.Length - 1].BeanPropType;
+        public override Type BeanPropType => _getterChain[_getterChain.Length - 1].BeanPropType;
 
-        public override Type TargetType => getterChain[0].TargetType;
+        public override Type TargetType => _getterChain[0].TargetType;
 
         public override CodegenExpression EventBeanGetCodegen(
             CodegenExpression beanExpression,
@@ -101,7 +106,9 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
             CodegenClassScope codegenClassScope)
         {
             return UnderlyingGetCodegen(
-                CastUnderlying(TargetType, beanExpression), codegenMethodScope, codegenClassScope);
+                CastUnderlying(TargetType, beanExpression),
+                codegenMethodScope,
+                codegenClassScope);
         }
 
         public override CodegenExpression EventBeanExistsCodegen(
@@ -110,7 +117,9 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
             CodegenClassScope codegenClassScope)
         {
             return UnderlyingExistsCodegen(
-                CastUnderlying(TargetType, beanExpression), codegenMethodScope, codegenClassScope);
+                CastUnderlying(TargetType, beanExpression),
+                codegenMethodScope,
+                codegenClassScope);
         }
 
         public override CodegenExpression UnderlyingGetCodegen(
@@ -135,8 +144,11 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
             bool exists)
         {
             var block = codegenMethodScope.MakeChild(
-                exists ? typeof(bool) : getterChain[getterChain.Length - 1].BeanPropType.GetBoxedType(), GetType(),
-                codegenClassScope).AddParam(getterChain[0].TargetType, "value").Block;
+                    exists ? typeof(bool) : _getterChain[_getterChain.Length - 1].BeanPropType.GetBoxedType(),
+                    GetType(),
+                    codegenClassScope)
+                .AddParam(_getterChain[0].TargetType, "value")
+                .Block;
             if (!exists) {
                 block.IfRefNullReturnNull("value");
             }
@@ -145,11 +157,12 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
             }
 
             var lastName = "value";
-            for (var i = 0; i < getterChain.Length - 1; i++) {
+            for (var i = 0; i < _getterChain.Length - 1; i++) {
                 var varName = "l" + i;
                 block.DeclareVar(
-                    getterChain[i].BeanPropType, varName,
-                    getterChain[i].UnderlyingGetCodegen(Ref(lastName), codegenMethodScope, codegenClassScope));
+                    _getterChain[i].BeanPropType,
+                    varName,
+                    _getterChain[i].UnderlyingGetCodegen(Ref(lastName), codegenMethodScope, codegenClassScope));
                 lastName = varName;
                 if (!exists) {
                     block.IfRefNullReturnNull(lastName);
@@ -161,13 +174,19 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
 
             if (!exists) {
                 return block.MethodReturn(
-                    getterChain[getterChain.Length - 1].UnderlyingGetCodegen(
-                        Ref(lastName), codegenMethodScope, codegenClassScope));
+                    _getterChain[_getterChain.Length - 1]
+                        .UnderlyingGetCodegen(
+                            Ref(lastName),
+                            codegenMethodScope,
+                            codegenClassScope));
             }
 
             return block.MethodReturn(
-                getterChain[getterChain.Length - 1].UnderlyingExistsCodegen(
-                    Ref(lastName), codegenMethodScope, codegenClassScope));
+                _getterChain[_getterChain.Length - 1]
+                    .UnderlyingExistsCodegen(
+                        Ref(lastName),
+                        codegenMethodScope,
+                        codegenClassScope));
         }
     }
 } // end of namespace

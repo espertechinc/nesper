@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.context.aifactory.core;
@@ -53,7 +54,10 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createschema
             AgentInstanceContext agentInstanceContext,
             bool isRecoveringResilient)
         {
-            return new StatementAgentInstanceFactoryCreateSchemaResult(viewable, AgentInstanceStopCallbackNoAction.INSTANCE, agentInstanceContext);
+            return new StatementAgentInstanceFactoryCreateSchemaResult(
+                viewable,
+                AgentInstanceStopCallbackNoAction.INSTANCE,
+                agentInstanceContext);
         }
 
         public AIRegistryRequirements RegistryRequirements {

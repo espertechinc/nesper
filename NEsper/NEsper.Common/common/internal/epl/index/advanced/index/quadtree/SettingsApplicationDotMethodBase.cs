@@ -9,6 +9,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+
 using com.espertech.esper.collection;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.expression.declared.compiletime;
@@ -119,7 +120,10 @@ namespace com.espertech.esper.common.@internal.epl.index.advanced.index.quadtree
                 }
 
                 return new FilterExprAnalyzerAffectorIndexProvision(
-                    OperationName, Lhs, keyExpressions, streamNumIndex);
+                    OperationName,
+                    Lhs,
+                    keyExpressions,
+                    streamNumIndex);
             }
         }
 
@@ -130,7 +134,11 @@ namespace com.espertech.esper.common.@internal.epl.index.advanced.index.quadtree
                 }
 
                 return new FilterSpecCompilerAdvIndexDesc(
-                    Lhs, Rhs, optionalIndexConfig, IndexTypeName, optionalIndexName);
+                    Lhs,
+                    Rhs,
+                    optionalIndexConfig,
+                    IndexTypeName,
+                    optionalIndexName);
             }
         }
 
@@ -179,7 +187,10 @@ namespace com.espertech.esper.common.@internal.epl.index.advanced.index.quadtree
             }
 
             optionalIndexConfig = provider.ValidateConfigureFilterIndex(
-                optionalIndexName, indexTypeName, ExprNodeUtilityQuery.ToArray(@params), validationContext);
+                optionalIndexName,
+                indexTypeName,
+                ExprNodeUtilityQuery.ToArray(@params),
+                validationContext);
         }
 
         private ExprValidationException GetIndexNameMessage(string message)

@@ -32,7 +32,8 @@ namespace NEsper.Avro.Core
 {
     public abstract class EventTypeAvroHandlerBase : EventTypeAvroHandler
     {
-        private static readonly SelectExprProcessorRepresentationFactoryAvro FACTORY_SELECT = new SelectExprProcessorRepresentationFactoryAvro();
+        private static readonly SelectExprProcessorRepresentationFactoryAvro FACTORY_SELECT =
+            new SelectExprProcessorRepresentationFactoryAvro();
 
         private ConfigurationCommonEventTypeMeta.AvroSettingsConfig _avroSettings;
         private TypeRepresentationMapper _optionalTypeMapper;
@@ -48,34 +49,29 @@ namespace NEsper.Avro.Core
             var avroSchemaObj = requiredConfig.AvroSchema;
             var avroSchemaText = requiredConfig.AvroSchemaText;
 
-            if (avroSchemaObj == null && avroSchemaText == null)
-            {
+            if (avroSchemaObj == null && avroSchemaText == null) {
                 throw new ArgumentException("Null value for schema and schema text");
             }
 
-            if (avroSchemaObj != null && avroSchemaText != null)
-            {
-                throw new ArgumentException("Both avro schema and avro schema text are supplied and one can be provided");
+            if (avroSchemaObj != null && avroSchemaText != null) {
+                throw new ArgumentException(
+                    "Both avro schema and avro schema text are supplied and one can be provided");
             }
 
-            if (avroSchemaObj != null && !(avroSchemaObj is Schema))
-            {
-                throw new ArgumentException("Schema expected of type " + typeof(Schema).Name + " but received " + avroSchemaObj.GetType().Name);
+            if (avroSchemaObj != null && !(avroSchemaObj is Schema)) {
+                throw new ArgumentException(
+                    "Schema expected of type " + typeof(Schema).Name + " but received " + avroSchemaObj.GetType().Name);
             }
 
             Schema schema;
-            if (avroSchemaObj != null)
-            {
+            if (avroSchemaObj != null) {
                 schema = (Schema) avroSchemaObj;
             }
-            else
-            {
-                try
-                {
+            else {
+                try {
                     schema = Schema.Parse(avroSchemaText);
                 }
-                catch (Exception ex)
-                {
+                catch (Exception ex) {
                     throw new EPException("Failed for parse avro schema: " + ex.Message, ex);
                 }
             }
@@ -99,15 +95,11 @@ namespace NEsper.Avro.Core
 
             // add supertypes first so the positions are comparable
             var added = new HashSet<string>();
-            if (superTypes != null)
-            {
-                for (var i = 0; i < superTypes.Length; i++)
-                {
+            if (superTypes != null) {
+                for (var i = 0; i < superTypes.Length; i++) {
                     var superType = (AvroEventType) superTypes[i];
-                    foreach (var field in superType.SchemaAvro.AsRecordSchema().Fields)
-                    {
-                        if (properties.ContainsKey(field.Name) || added.Contains(field.Name))
-                        {
+                    foreach (var field in superType.SchemaAvro.AsRecordSchema().Fields) {
+                        if (properties.ContainsKey(field.Name) || added.Contains(field.Name)) {
                             continue;
                         }
 
@@ -118,13 +110,13 @@ namespace NEsper.Avro.Core
                 }
             }
 
-            foreach (var prop in properties)
-            {
-                if (!added.Contains(prop.Key))
-                {
+            foreach (var prop in properties) {
+                if (!added.Contains(prop.Key)) {
                     AvroSchemaUtil.AssembleField(
-                        prop.Key, prop.Value,
-                        assembler, annotations,
+                        prop.Key,
+                        prop.Value,
+                        assembler,
+                        annotations,
                         _avroSettings,
                         eventTypeNameResolver,
                         statementName,
@@ -167,23 +159,31 @@ namespace NEsper.Avro.Core
             EventType existingType,
             AvroSchemaEventType proposedType)
         {
-            if (!(existingType is AvroSchemaEventType))
-            {
+            if (!(existingType is AvroSchemaEventType)) {
                 throw new EventAdapterException(
-                    "Type by name '" + proposedType.Name + "' is not a compatible type " +
-                    "(target type underlying is '" + existingType.UnderlyingType.Name + "', " +
-                    "source type underlying is '" + proposedType.UnderlyingType.Name + "')");
+                    "Type by name '" +
+                    proposedType.Name +
+                    "' is not a compatible type " +
+                    "(target type underlying is '" +
+                    existingType.UnderlyingType.Name +
+                    "', " +
+                    "source type underlying is '" +
+                    proposedType.UnderlyingType.Name +
+                    "')");
             }
 
             var proposed = (Schema) proposedType.Schema;
             var existing = (Schema) ((AvroSchemaEventType) existingType).Schema;
-            if (!proposed.Equals(existing))
-            {
+            if (!proposed.Equals(existing)) {
                 throw new EventAdapterException(
-                    "Event type named '" + existingType.Name +
-                    "' has already been declared with differing column name or type information\n"
-                    + "schemaExisting: " + AvroSchemaUtil.ToSchemaStringSafe(existing) + "\n"
-                    + "schemaProposed: " + AvroSchemaUtil.ToSchemaStringSafe(proposed));
+                    "Event type named '" +
+                    existingType.Name +
+                    "' has already been declared with differing column name or type information\n" +
+                    "schemaExisting: " +
+                    AvroSchemaUtil.ToSchemaStringSafe(existing) +
+                    "\n" +
+                    "schemaProposed: " +
+                    AvroSchemaUtil.ToSchemaStringSafe(proposed));
             }
         }
 
@@ -193,38 +193,47 @@ namespace NEsper.Avro.Core
         {
             var schema = ((AvroEventType) existingType).SchemaAvro;
 
-            foreach (var selected in selPropertyTypes)
-            {
+            foreach (var selected in selPropertyTypes) {
                 var propertyName = selected.Key;
                 var targetField = schema.GetField(selected.Key);
 
-                if (targetField == null)
-                {
+                if (targetField == null) {
                     throw new ExprValidationException(
-                        "Property '" + propertyName + "' is not found among the fields for event type '" + existingType.Name + "'");
+                        "Property '" +
+                        propertyName +
+                        "' is not found among the fields for event type '" +
+                        existingType.Name +
+                        "'");
                 }
 
-                if (selected.Value is EventType targetEventTypeX)
-                {
+                if (selected.Value is EventType targetEventTypeX) {
                     var targetAvro = CheckAvroEventTpe(selected.Key, targetEventTypeX);
-                    if (targetField.Schema.Tag != Schema.Type.Record || !targetField.Schema.Equals(targetAvro.SchemaAvro))
-                    {
+                    if (targetField.Schema.Tag != Schema.Type.Record ||
+                        !targetField.Schema.Equals(targetAvro.SchemaAvro)) {
                         throw new ExprValidationException(
-                            "Property '" + propertyName + "' is incompatible, expecting a compatible schema '" + targetField.Schema.Name +
-                            "' but received schema '" + targetAvro.SchemaAvro.Name + "'");
+                            "Property '" +
+                            propertyName +
+                            "' is incompatible, expecting a compatible schema '" +
+                            targetField.Schema.Name +
+                            "' but received schema '" +
+                            targetAvro.SchemaAvro.Name +
+                            "'");
                     }
                 }
-                else if (selected.Value is EventType[] targetEventTypes)
-                {
+                else if (selected.Value is EventType[] targetEventTypes) {
                     var targetEventType = targetEventTypes[0];
                     var targetAvro = CheckAvroEventTpe(selected.Key, targetEventType);
                     if (targetField.Schema.Tag != Schema.Type.Array ||
                         targetField.Schema.AsArraySchema().ItemSchema.Tag != Schema.Type.Record ||
-                        !targetField.Schema.AsArraySchema().ItemSchema.Equals(targetAvro.SchemaAvro))
-                    {
+                        !targetField.Schema.AsArraySchema().ItemSchema.Equals(targetAvro.SchemaAvro)) {
                         throw new ExprValidationException(
-                            "Property '" + propertyName + "' is incompatible, expecting an array of compatible schema '" + targetField.Schema.Name +
-                            "' but received schema '" + targetAvro.SchemaAvro.Name + "'");
+                            "Property '" +
+                            propertyName +
+                            "' is incompatible, expecting an array of compatible schema '" +
+                            targetField.Schema.Name +
+                            "' but received schema '" +
+                            targetAvro.SchemaAvro.Name +
+                            "'");
                     }
                 }
             }
@@ -238,32 +247,25 @@ namespace NEsper.Avro.Core
             var targetSchema = (Schema) targetType.Schema;
             var target = new GenericRecord(targetSchema.AsRecordSchema());
 
-            foreach (var field in original.Schema.Fields)
-            {
+            foreach (var field in original.Schema.Fields) {
                 var targetField = targetSchema.GetField(field.Name);
-                if (targetField == null)
-                {
+                if (targetField == null) {
                     continue;
                 }
 
-                if (field.Schema.Tag == Schema.Type.Array)
-                {
+                if (field.Schema.Tag == Schema.Type.Array) {
                     var originalColl = (ICollection<object>) original.Get(field);
-                    if (originalColl != null)
-                    {
+                    if (originalColl != null) {
                         target.Put(targetField, new List<object>(originalColl));
                     }
                 }
-                else if (field.Schema.Tag == Schema.Type.Map)
-                {
+                else if (field.Schema.Tag == Schema.Type.Map) {
                     var originalMap = (IDictionary<string, object>) original.Get(field);
-                    if (originalMap != null)
-                    {
+                    if (originalMap != null) {
                         target.Put(targetField, new Dictionary<string, object>(originalMap));
                     }
                 }
-                else
-                {
+                else {
                     target.Put(targetField, original.Get(field));
                 }
             }
@@ -292,15 +294,13 @@ namespace NEsper.Avro.Core
         {
             _avroSettings = avroSettings;
 
-            if (avroSettings.TypeRepresentationMapperClass != null)
-            {
+            if (avroSettings.TypeRepresentationMapperClass != null) {
                 _optionalTypeMapper = TypeHelper.Instantiate<TypeRepresentationMapper>(
                     avroSettings.TypeRepresentationMapperClass,
                     importService.ClassForNameProvider);
             }
 
-            if (avroSettings.ObjectValueTypeWidenerFactoryClass != null)
-            {
+            if (avroSettings.ObjectValueTypeWidenerFactoryClass != null) {
                 _optionalWidenerFactory = TypeHelper.Instantiate<ObjectValueTypeWidenerFactory>(
                     avroSettings.ObjectValueTypeWidenerFactoryClass,
                     importService.ClassForNameProvider);
@@ -311,10 +311,13 @@ namespace NEsper.Avro.Core
             string propertyName,
             EventType eventType)
         {
-            if (!(eventType is AvroEventType))
-            {
+            if (!(eventType is AvroEventType)) {
                 throw new ExprValidationException(
-                    "Property '" + propertyName + "' is incompatible with event type '" + eventType.Name + "' underlying type " +
+                    "Property '" +
+                    propertyName +
+                    "' is incompatible with event type '" +
+                    eventType.Name +
+                    "' underlying type " +
                     eventType.UnderlyingType.Name);
             }
 

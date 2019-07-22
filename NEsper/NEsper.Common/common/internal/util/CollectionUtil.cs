@@ -11,10 +11,12 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.compat.collections;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.util
@@ -649,12 +651,14 @@ namespace com.espertech.esper.common.@internal.util
 
             var block = codegenMethodScope
                 .MakeChild(typeof(ICollection<object>), typeof(CollectionUtil), codegenClassScope)
-                .AddParam(arrayType, "array").Block
+                .AddParam(arrayType, "array")
+                .Block
                 .IfRefNullReturnNull("array");
             if (!arrayType.GetElementType().IsPrimitive) {
                 return LocalMethodBuild(
                         block.MethodReturn(StaticMethod(typeof(CompatExtensions), "AsList", Ref("array"))))
-                    .Pass(array).Call();
+                    .Pass(array)
+                    .Call();
             }
 
             var method = block.IfCondition(EqualsIdentity(ArrayLength(Ref("array")), Constant(0)))
@@ -662,8 +666,8 @@ namespace com.espertech.esper.common.@internal.util
                 .IfCondition(EqualsIdentity(ArrayLength(Ref("array")), Constant(1)))
                 .BlockReturn(
                     StaticMethod(typeof(Collections), "singletonList", ArrayAtIndex(Ref("array"), Constant(0))))
-                .DeclareVar(
-                    typeof(ArrayDeque<object>), "dq",
+                .DeclareVar<ArrayDeque<object>>(
+                    "dq",
                     NewInstance<ArrayDeque<object>>(ArrayLength(Ref("array"))))
                 .ForLoopIntSimple("i", ArrayLength(Ref("array")))
                 .Expression(ExprDotMethod(Ref("dq"), "add", ArrayAtIndex(Ref("array"), Ref("i"))))

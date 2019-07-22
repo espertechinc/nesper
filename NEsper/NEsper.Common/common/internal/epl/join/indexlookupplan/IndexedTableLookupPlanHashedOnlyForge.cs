@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -38,7 +39,11 @@ namespace com.espertech.esper.common.@internal.epl.join.indexlookupplan
             QueryPlanIndexForge indexSpecs,
             Type[] optionalCoercionTypes)
             : base(
-                lookupStream, indexedStream, indexedStreamIsVDW, typesPerStream, new[] {indexNum})
+                lookupStream,
+                indexedStream,
+                indexedStreamIsVDW,
+                typesPerStream,
+                new[] {indexNum})
         {
             HashKeys = hashKeys;
             this.indexSpecs = indexSpecs;
@@ -46,7 +51,8 @@ namespace com.espertech.esper.common.@internal.epl.join.indexlookupplan
         }
 
         public override TableLookupKeyDesc KeyDescriptor => new TableLookupKeyDesc(
-            Arrays.AsList(HashKeys), Collections.GetEmptyList<QueryGraphValueEntryRangeForge>());
+            Arrays.AsList(HashKeys),
+            Collections.GetEmptyList<QueryGraphValueEntryRangeForge>());
 
         public QueryGraphValueEntryHashKeyedForge[] HashKeys { get; }
 
@@ -54,7 +60,8 @@ namespace com.espertech.esper.common.@internal.epl.join.indexlookupplan
         {
             return "IndexedTableLookupPlan " +
                    base.ToString() +
-                   " keyProperty=" + KeyDescriptor;
+                   " keyProperty=" +
+                   KeyDescriptor;
         }
 
         public override Type TypeOfPlanFactory()
@@ -84,11 +91,21 @@ namespace com.espertech.esper.common.@internal.epl.join.indexlookupplan
             CodegenExpression getter;
             if (getterSPIS != null) {
                 getter = EventTypeUtility.CodegenGetterMayMultiKeyWCoerce(
-                    typesPerStream[LookupStream], getterSPIS, types, coercionTypes, method, GetType(), classScope);
+                    typesPerStream[LookupStream],
+                    getterSPIS,
+                    types,
+                    coercionTypes,
+                    method,
+                    GetType(),
+                    classScope);
             }
             else {
                 getter = ExprNodeUtilityCodegen.CodegenEvaluatorMayMultiKeyWCoerce(
-                    forges, coercionTypes, method, GetType(), classScope);
+                    forges,
+                    coercionTypes,
+                    method,
+                    GetType(),
+                    classScope);
             }
 
             return Collections.SingletonList(getter);

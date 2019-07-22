@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.hook.expr;
 using com.espertech.esper.common.client.render;
@@ -102,7 +103,8 @@ namespace com.espertech.esper.common.@internal.context.util
             StatementResultService = statementResultService;
             UpdateDispatchView = updateDispatchView;
             StatementContextFilterEvalEnv = new StatementContextFilterEvalEnv(
-                statementContextRuntimeServices.ImportServiceRuntime, statementInformationals.Annotations,
+                statementContextRuntimeServices.ImportServiceRuntime,
+                statementInformationals.Annotations,
                 statementContextRuntimeServices.VariableManagementService,
                 statementContextRuntimeServices.TableExprEvaluatorContext);
         }
@@ -252,7 +254,13 @@ namespace com.espertech.esper.common.@internal.context.util
             var auditProvider = StatementInformationals.AuditProvider;
             var instrumentationProvider = StatementInformationals.InstrumentationProvider;
             return new AgentInstanceContext(
-                this, -1, epStatementAgentInstanceHandle, null, null, auditProvider, instrumentationProvider);
+                this,
+                -1,
+                epStatementAgentInstanceHandle,
+                null,
+                null,
+                auditProvider,
+                instrumentationProvider);
         }
 
         public ContextManagementService ContextManagementService =>
@@ -326,10 +334,9 @@ namespace com.espertech.esper.common.@internal.context.util
 
         public InstrumentationCommon InstrumentationProvider => InstrumentationCommonDefault.INSTANCE;
 
-        public INamingContext RuntimeEnvContext
-	    {
-	        get => StatementContextRuntimeServices.RuntimeEnvContext;
-	    }
+        public INamingContext RuntimeEnvContext {
+            get => StatementContextRuntimeServices.RuntimeEnvContext;
+        }
 
         public object UserObjectRuntime { get; }
 

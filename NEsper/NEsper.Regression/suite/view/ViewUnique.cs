@@ -68,7 +68,7 @@ namespace com.espertech.esper.regressionlib.suite.view
             public void Run(RegressionEnvironment env)
             {
                 var text =
-                    "@Name('s0') select irstream Symbol, price from SupportMarketDataBean#unique(Symbol) order by Symbol";
+                    "@Name('s0') select irstream Symbol, Price from SupportMarketDataBean#unique(Symbol) order by Symbol";
                 if (optionalAnnotation != null) {
                     text = optionalAnnotation + text;
                 }
@@ -151,7 +151,7 @@ namespace com.espertech.esper.regressionlib.suite.view
             public void Run(RegressionEnvironment env)
             {
                 var text =
-                    "@Name('s0') select irstream Symbol, Feed, price from  SupportMarketDataBean#unique(Symbol, Feed) order by Symbol, Feed";
+                    "@Name('s0') select irstream Symbol, Feed, Price from  SupportMarketDataBean#unique(Symbol, Feed) order by Symbol, Feed";
                 if (optionalAnnotation != null) {
                     text = optionalAnnotation + text;
                 }

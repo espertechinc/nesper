@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.epl.agg.core;
 using com.espertech.esper.common.@internal.epl.expression.core;
@@ -31,7 +32,12 @@ namespace com.espertech.esper.common.@internal.epl.table.strategy
             AggregationRow aggs = GetRow(eventsPerStream, isNewData, exprEvaluatorContext);
             return aggs == null
                 ? null
-                : factory.AccessAggReader.GetValue(factory.AggColumnNum, aggs, eventsPerStream, isNewData, exprEvaluatorContext);
+                : factory.AccessAggReader.GetValue(
+                    factory.AggColumnNum,
+                    aggs,
+                    eventsPerStream,
+                    isNewData,
+                    exprEvaluatorContext);
         }
 
         public override ICollection<EventBean> EvaluateGetROCollectionEvents(
@@ -58,7 +64,12 @@ namespace com.espertech.esper.common.@internal.epl.table.strategy
                 return null;
             }
 
-            return factory.AccessAggReader.GetValueEventBean(factory.AggColumnNum, aggs, eventsPerStream, isNewData, context);
+            return factory.AccessAggReader.GetValueEventBean(
+                factory.AggColumnNum,
+                aggs,
+                eventsPerStream,
+                isNewData,
+                context);
         }
 
         public override ICollection<object> EvaluateGetROCollectionScalar(
@@ -71,7 +82,12 @@ namespace com.espertech.esper.common.@internal.epl.table.strategy
                 return null;
             }
 
-            return factory.AccessAggReader.GetValueCollectionScalar(factory.AggColumnNum, aggs, eventsPerStream, isNewData, context);
+            return factory.AccessAggReader.GetValueCollectionScalar(
+                factory.AggColumnNum,
+                aggs,
+                eventsPerStream,
+                isNewData,
+                context);
         }
 
         public override object[] EvaluateTypableSingle(

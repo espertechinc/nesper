@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+
 using com.espertech.esper.collection;
 using com.espertech.esper.common.client.soda;
 using com.espertech.esper.common.@internal.compile.stage1.spec;
@@ -33,9 +34,15 @@ namespace com.espertech.esper.common.@internal.epl.expression.declared.compileti
                 foreach (var declNode in stmtLocalExpressions) {
                     if (declNode.Name.Equals(name)) {
                         var pair = GetExprDeclaredNode(
-                            declNode.OptionalSoda, stmtLocalExpressions, contextCompileTimeDescriptor, mapEnv);
+                            declNode.OptionalSoda,
+                            stmtLocalExpressions,
+                            contextCompileTimeDescriptor,
+                            mapEnv);
                         var declared = new ExprDeclaredNodeImpl(
-                            declNode, parameters, contextCompileTimeDescriptor, pair.First);
+                            declNode,
+                            parameters,
+                            contextCompileTimeDescriptor,
+                            pair.First);
                         return new Pair<ExprDeclaredNodeImpl, StatementSpecMapContext>(declared, pair.Second);
                     }
                 }

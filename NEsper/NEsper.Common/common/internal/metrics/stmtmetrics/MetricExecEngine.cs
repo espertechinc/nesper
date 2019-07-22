@@ -51,7 +51,11 @@ namespace com.espertech.esper.common.@internal.metrics.stmtmetrics
             long schedDepth = context.SchedulingService.ScheduleHandleCount;
             var deltaInputCount = lastMetric == null ? inputCount : inputCount - lastMetric.InputCount;
             var metric = new RuntimeMetric(
-                runtimeURI, metricScheduleService.CurrentTime, inputCount, deltaInputCount, schedDepth);
+                runtimeURI,
+                metricScheduleService.CurrentTime,
+                inputCount,
+                deltaInputCount,
+                schedDepth);
             lastMetric = metric;
             metricEventRouter.Route(metric);
             metricScheduleService.Add(Interval, this);

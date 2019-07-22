@@ -9,9 +9,11 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.core;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.core.CodeGenerationHelper;
 
 namespace com.espertech.esper.common.@internal.bytecodemodel.model.statement
@@ -44,21 +46,20 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.statement
 
         public override void Render(
             StringBuilder builder,
-            IDictionary<Type, string> imports,
             bool isInnerClass,
             int level,
             CodegenIndent indent)
         {
             builder.Append("for (");
-            AppendClassName(builder, type, null, imports);
+            AppendClassName(builder, type);
             builder.Append(" ").Append(name).Append("=");
-            initialization.Render(builder, imports, isInnerClass);
+            initialization.Render(builder, isInnerClass);
             builder.Append("; ");
-            termination.Render(builder, imports, isInnerClass);
+            termination.Render(builder, isInnerClass);
             builder.Append("; ");
-            increment.Render(builder, imports, isInnerClass);
+            increment.Render(builder, isInnerClass);
             builder.Append(") {\n");
-            Block.Render(builder, imports, isInnerClass, level + 1, indent);
+            Block.Render(builder, isInnerClass, level + 1, indent);
             indent.Indent(builder, level);
             builder.Append("}\n");
         }

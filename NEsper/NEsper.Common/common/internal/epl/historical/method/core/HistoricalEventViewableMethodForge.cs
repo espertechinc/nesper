@@ -9,6 +9,7 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
+
 using com.espertech.esper.collection;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
@@ -22,6 +23,7 @@ using com.espertech.esper.common.@internal.epl.historical.common;
 using com.espertech.esper.common.@internal.epl.historical.method.poll;
 using com.espertech.esper.common.@internal.epl.streamtype;
 using com.espertech.esper.common.@internal.util;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.historical.method.core
@@ -51,13 +53,16 @@ namespace com.espertech.esper.common.@internal.epl.historical.method.core
         {
             // validate and visit
             var validationContext = new ExprValidationContextBuilder(typeService, @base.StatementRawInfo, services)
-                .WithAllowBindingConsumption(true).Build();
+                .WithAllowBindingConsumption(true)
+                .Build();
 
             var visitor = new ExprNodeIdentifierAndStreamRefVisitor(true);
             IList<ExprNode> validatedInputParameters = new List<ExprNode>();
             foreach (var exprNode in methodStreamSpec.Expressions) {
                 var validated = ExprNodeUtilityValidate.GetValidatedSubtree(
-                    ExprNodeOrigin.METHODINVJOIN, exprNode, validationContext);
+                    ExprNodeOrigin.METHODINVJOIN,
+                    exprNode,
+                    validationContext);
                 validatedInputParameters.Add(validated);
                 validated.Accept(visitor);
             }
@@ -82,20 +87,29 @@ namespace com.espertech.esper.common.@internal.epl.historical.method.core
                         var resultTypes = ExprNodeUtilityQuery.GetExprResultTypes(validatedInputParameters);
                         return new ExprValidationException(
                             "Method footprint does not match the number or type of expression parameters, expecting a method where parameters are typed '" +
-                            TypeHelper.GetParameterAsString(resultTypes) + "': " + e.Message);
+                            TypeHelper.GetParameterAsString(resultTypes) +
+                            "': " +
+                            e.Message);
                     }
                 };
                 var desc = ExprNodeUtilityResolve.ResolveMethodAllowWildcardAndStream(
-                    metadata.MethodProviderClass.Name, metadata.IsStaticMethod ? null : metadata.MethodProviderClass,
-                    methodStreamSpec.MethodName, validatedInputParameters, false, null, handler,
+                    metadata.MethodProviderClass.Name,
+                    metadata.IsStaticMethod ? null : metadata.MethodProviderClass,
                     methodStreamSpec.MethodName,
-                    @base.StatementRawInfo, services);
+                    validatedInputParameters,
+                    false,
+                    null,
+                    handler,
+                    methodStreamSpec.MethodName,
+                    @base.StatementRawInfo,
+                    services);
                 inputParamEvaluators = desc.ChildForges;
                 targetMethod = desc.ReflectionMethod;
             }
             else {
                 // script-based evaluation
-                inputParamEvaluators = ExprNodeUtilityQuery.GetForges(ExprNodeUtilityQuery.ToArray(validatedInputParameters));
+                inputParamEvaluators =
+                    ExprNodeUtilityQuery.GetForges(ExprNodeUtilityQuery.ToArray(validatedInputParameters));
             }
 
             Pair<MethodTargetStrategyForge, MethodConversionStrategyForge> strategies =

@@ -8,6 +8,7 @@
 
 using System.Collections.Generic;
 using System.Linq;
+
 using com.espertech.esper.common.client.dataflow.core;
 using com.espertech.esper.compat.collections;
 
@@ -15,7 +16,8 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.core
 {
     public class DataFlowConfigurationStateServiceImpl : DataFlowConfigurationStateService
     {
-        private readonly IDictionary<string, EPDataFlowSavedConfiguration> savedConfigs = new Dictionary<string, EPDataFlowSavedConfiguration>();
+        private readonly IDictionary<string, EPDataFlowSavedConfiguration> savedConfigs =
+            new Dictionary<string, EPDataFlowSavedConfiguration>();
 
         public bool Exists(string savedConfigName)
         {

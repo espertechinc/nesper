@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat.collections;
@@ -60,8 +61,11 @@ namespace com.espertech.esper.common.@internal.@event.eventtyperepo
             var sameIdType = idToTypeMap.Get(publicId);
             if (sameIdType != null) {
                 throw new ArgumentException(
-                    "Event type by name '" + name + "' has a public crc32 id overlap with event type by name '" +
-                    sameIdType.Name + "', please consider renaming either of these types");
+                    "Event type by name '" +
+                    name +
+                    "' has a public crc32 id overlap with event type by name '" +
+                    sameIdType.Name +
+                    "', please consider renaming either of these types");
             }
 
             idToTypeMap.Put(publicId, eventType);

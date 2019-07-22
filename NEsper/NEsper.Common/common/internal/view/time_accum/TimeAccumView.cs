@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.context.util;
@@ -59,14 +60,17 @@ namespace com.espertech.esper.common.@internal.view.time_accum
             ScheduleHandleCallback callback = new ProxyScheduleHandleCallback {
                 ProcScheduledTrigger = () => {
                     agentInstanceContext.AuditProvider.ScheduleFire(
-                        agentInstanceContext.AgentInstanceContext, ScheduleObjectType.view, factory.ViewName);
+                        agentInstanceContext.AgentInstanceContext,
+                        ScheduleObjectType.view,
+                        factory.ViewName);
                     agentInstanceContext.InstrumentationProvider.QViewScheduledEval(factory);
                     SendRemoveStream();
                     agentInstanceContext.InstrumentationProvider.AViewScheduledEval();
                 }
             };
             handle = new EPStatementHandleCallbackSchedule(
-                agentInstanceContext.EpStatementAgentInstanceHandle, callback);
+                agentInstanceContext.EpStatementAgentInstanceHandle,
+                callback);
         }
 
         /// <summary>
@@ -81,7 +85,10 @@ namespace com.espertech.esper.common.@internal.view.time_accum
         {
             if (handle != null) {
                 agentInstanceContext.AuditProvider.ScheduleRemove(
-                    agentInstanceContext, handle, ScheduleObjectType.view, factory.ViewName);
+                    agentInstanceContext,
+                    handle,
+                    ScheduleObjectType.view,
+                    factory.ViewName);
                 agentInstanceContext.StatementContext.SchedulingService.Remove(handle, scheduleSlot);
             }
         }
@@ -119,14 +126,21 @@ namespace com.espertech.esper.common.@internal.view.time_accum
 
             if (removeSchedule) {
                 agentInstanceContext.AuditProvider.ScheduleRemove(
-                    agentInstanceContext, handle, ScheduleObjectType.view, factory.ViewName);
+                    agentInstanceContext,
+                    handle,
+                    ScheduleObjectType.view,
+                    factory.ViewName);
                 agentInstanceContext.StatementContext.SchedulingService.Remove(handle, scheduleSlot);
             }
 
             if (addSchedule) {
                 long timeIntervalSize = timePeriodProvide.DeltaAdd(timestamp, null, true, agentInstanceContext);
                 agentInstanceContext.AuditProvider.ScheduleAdd(
-                    timeIntervalSize, agentInstanceContext, handle, ScheduleObjectType.view, factory.ViewName);
+                    timeIntervalSize,
+                    agentInstanceContext,
+                    handle,
+                    ScheduleObjectType.view,
+                    factory.ViewName);
                 agentInstanceContext.StatementContext.SchedulingService.Add(timeIntervalSize, handle, scheduleSlot);
                 callbackScheduledTime = timeIntervalSize + timestamp;
             }

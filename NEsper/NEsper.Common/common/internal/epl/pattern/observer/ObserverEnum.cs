@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.compat;
 
 namespace com.espertech.esper.common.@internal.epl.pattern.observer
@@ -59,8 +60,10 @@ namespace com.espertech.esper.common.@internal.epl.pattern.observer
             switch (observerEnum) {
                 case ObserverEnum.TIMER_INTERVAL:
                     return "interval";
+
                 case ObserverEnum.TIMER_CRON:
                     return "at";
+
                 case ObserverEnum.TIMER_ISO8601:
                     return "schedule";
             }
@@ -77,8 +80,10 @@ namespace com.espertech.esper.common.@internal.epl.pattern.observer
             switch (observerEnum) {
                 case ObserverEnum.TIMER_INTERVAL:
                     return typeof(TimerIntervalObserverFactory);
+
                 case ObserverEnum.TIMER_CRON:
                     return typeof(TimerAtObserverFactory);
+
                 case ObserverEnum.TIMER_ISO8601:
                     return typeof(TimerScheduleObserverFactory);
             }

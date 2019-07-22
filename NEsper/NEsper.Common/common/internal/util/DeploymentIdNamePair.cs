@@ -31,8 +31,12 @@ namespace com.espertech.esper.common.@internal.util
         public override string ToString()
         {
             return "DeploymentIdNamePair{" +
-                   "deploymentId='" + DeploymentId + '\'' +
-                   ", name='" + Name + '\'' +
+                   "deploymentId='" +
+                   DeploymentId +
+                   '\'' +
+                   ", name='" +
+                   Name +
+                   '\'' +
                    '}';
         }
 
@@ -61,7 +65,8 @@ namespace com.espertech.esper.common.@internal.util
         public override int GetHashCode()
         {
             unchecked {
-                return ((DeploymentId != null ? DeploymentId.GetHashCode() : 0) * 397) ^ (Name != null ? Name.GetHashCode() : 0);
+                return ((DeploymentId != null ? DeploymentId.GetHashCode() : 0) * 397) ^
+                       (Name != null ? Name.GetHashCode() : 0);
             }
         }
     }

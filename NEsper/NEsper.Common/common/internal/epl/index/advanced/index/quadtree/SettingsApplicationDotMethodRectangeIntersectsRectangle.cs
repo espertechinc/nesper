@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -16,6 +17,7 @@ using com.espertech.esper.common.@internal.epl.expression.dot.core;
 using com.espertech.esper.common.@internal.epl.spatial.quadtree.core;
 using com.espertech.esper.common.@internal.epl.util;
 using com.espertech.esper.compat;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.index.advanced.index.quadtree
@@ -51,11 +53,17 @@ namespace com.espertech.esper.common.@internal.epl.index.advanced.index.quadtree
         {
             EPLValidationUtil.ValidateParameterNumber(lhsName, LHS_VALIDATION_NAME, false, 4, lhs.Length);
             EPLValidationUtil.ValidateParametersTypePredefined(
-                lhs, lhsName, LHS_VALIDATION_NAME, EPLExpressionParamType.NUMERIC);
+                lhs,
+                lhsName,
+                LHS_VALIDATION_NAME,
+                EPLExpressionParamType.NUMERIC);
 
             EPLValidationUtil.ValidateParameterNumber(rhsName, RHS_VALIDATION_NAME, true, 4, rhs.Length);
             EPLValidationUtil.ValidateParametersTypePredefined(
-                rhs, rhsName, RHS_VALIDATION_NAME, EPLExpressionParamType.NUMERIC);
+                rhs,
+                rhsName,
+                RHS_VALIDATION_NAME,
+                EPLExpressionParamType.NUMERIC);
 
             var meXEval = lhs[0].Forge;
             var meYEval = lhs[1].Forge;
@@ -67,7 +75,14 @@ namespace com.espertech.esper.common.@internal.epl.index.advanced.index.quadtree
             var otherWidthEval = rhs[2].Forge;
             var otherHeightEval = rhs[3].Forge;
             return new RectangleIntersectsRectangleForge(
-                parent, meXEval, meYEval, meWidthEval, meHeightEval, otherXEval, otherYEval, otherWidthEval,
+                parent,
+                meXEval,
+                meYEval,
+                meWidthEval,
+                meHeightEval,
+                otherXEval,
+                otherYEval,
+                otherWidthEval,
                 otherHeightEval);
         }
 
@@ -107,8 +122,13 @@ namespace com.espertech.esper.common.@internal.epl.index.advanced.index.quadtree
             }
 
             public ExprEvaluator ExprEvaluator => new RectangleIntersectsRectangleEvaluator(
-                meXEval.ExprEvaluator, meYEval.ExprEvaluator, meWidthEval.ExprEvaluator, meHeightEval.ExprEvaluator,
-                otherXEval.ExprEvaluator, otherYEval.ExprEvaluator, otherWidthEval.ExprEvaluator,
+                meXEval.ExprEvaluator,
+                meYEval.ExprEvaluator,
+                meWidthEval.ExprEvaluator,
+                meHeightEval.ExprEvaluator,
+                otherXEval.ExprEvaluator,
+                otherYEval.ExprEvaluator,
+                otherWidthEval.ExprEvaluator,
                 otherHeightEval.ExprEvaluator);
 
             public CodegenExpression EvaluateCodegen(
@@ -118,7 +138,10 @@ namespace com.espertech.esper.common.@internal.epl.index.advanced.index.quadtree
                 CodegenClassScope codegenClassScope)
             {
                 return RectangleIntersectsRectangleEvaluator.Codegen(
-                    this, codegenMethodScope, exprSymbol, codegenClassScope);
+                    this,
+                    codegenMethodScope,
+                    exprSymbol,
+                    codegenClassScope);
             }
 
             public ExprForgeConstantType ForgeConstantType => ExprForgeConstantType.NONCONST;
@@ -210,8 +233,14 @@ namespace com.espertech.esper.common.@internal.epl.index.advanced.index.quadtree
                 var width = TypeExtensions.AsDouble(meWidth);
                 var height = TypeExtensions.AsDouble(meHeight);
                 return BoundingBox.IntersectsBoxIncludingEnd(
-                    x, y, x + width, y + height, TypeExtensions.AsDouble(otherX), TypeExtensions.AsDouble(otherY),
-                    TypeExtensions.AsDouble(otherWidth), TypeExtensions.AsDouble(otherHeight));
+                    x,
+                    y,
+                    x + width,
+                    y + height,
+                    TypeExtensions.AsDouble(otherX),
+                    TypeExtensions.AsDouble(otherY),
+                    TypeExtensions.AsDouble(otherWidth),
+                    TypeExtensions.AsDouble(otherHeight));
             }
 
             public static CodegenExpression Codegen(
@@ -221,30 +250,79 @@ namespace com.espertech.esper.common.@internal.epl.index.advanced.index.quadtree
                 CodegenClassScope codegenClassScope)
             {
                 var methodNode = codegenMethodScope.MakeChild(
-                    typeof(bool?), typeof(RectangleIntersectsRectangleEvaluator), codegenClassScope);
+                    typeof(bool?),
+                    typeof(RectangleIntersectsRectangleEvaluator),
+                    codegenClassScope);
 
                 var block = methodNode.Block;
                 CodegenLegoCast.AsDoubleNullReturnNull(
-                    block, "meX", forge.meXEval, methodNode, exprSymbol, codegenClassScope);
+                    block,
+                    "meX",
+                    forge.meXEval,
+                    methodNode,
+                    exprSymbol,
+                    codegenClassScope);
                 CodegenLegoCast.AsDoubleNullReturnNull(
-                    block, "meY", forge.meYEval, methodNode, exprSymbol, codegenClassScope);
+                    block,
+                    "meY",
+                    forge.meYEval,
+                    methodNode,
+                    exprSymbol,
+                    codegenClassScope);
                 CodegenLegoCast.AsDoubleNullReturnNull(
-                    block, "meWidth", forge.meWidthEval, methodNode, exprSymbol, codegenClassScope);
+                    block,
+                    "meWidth",
+                    forge.meWidthEval,
+                    methodNode,
+                    exprSymbol,
+                    codegenClassScope);
                 CodegenLegoCast.AsDoubleNullReturnNull(
-                    block, "meHeight", forge.meHeightEval, methodNode, exprSymbol, codegenClassScope);
+                    block,
+                    "meHeight",
+                    forge.meHeightEval,
+                    methodNode,
+                    exprSymbol,
+                    codegenClassScope);
                 CodegenLegoCast.AsDoubleNullReturnNull(
-                    block, "otherX", forge.otherXEval, methodNode, exprSymbol, codegenClassScope);
+                    block,
+                    "otherX",
+                    forge.otherXEval,
+                    methodNode,
+                    exprSymbol,
+                    codegenClassScope);
                 CodegenLegoCast.AsDoubleNullReturnNull(
-                    block, "otherY", forge.otherYEval, methodNode, exprSymbol, codegenClassScope);
+                    block,
+                    "otherY",
+                    forge.otherYEval,
+                    methodNode,
+                    exprSymbol,
+                    codegenClassScope);
                 CodegenLegoCast.AsDoubleNullReturnNull(
-                    block, "otherWidth", forge.otherWidthEval, methodNode, exprSymbol, codegenClassScope);
+                    block,
+                    "otherWidth",
+                    forge.otherWidthEval,
+                    methodNode,
+                    exprSymbol,
+                    codegenClassScope);
                 CodegenLegoCast.AsDoubleNullReturnNull(
-                    block, "otherHeight", forge.otherHeightEval, methodNode, exprSymbol, codegenClassScope);
+                    block,
+                    "otherHeight",
+                    forge.otherHeightEval,
+                    methodNode,
+                    exprSymbol,
+                    codegenClassScope);
                 block.MethodReturn(
                     StaticMethod(
-                        typeof(BoundingBox), "intersectsBoxIncludingEnd", Ref("meX"), Ref("meY"),
-                        Op(Ref("meX"), "+", Ref("meWidth")), Op(Ref("meY"), "+", Ref("meHeight")),
-                        Ref("otherX"), Ref("otherY"), Ref("otherWidth"), Ref("otherHeight")));
+                        typeof(BoundingBox),
+                        "intersectsBoxIncludingEnd",
+                        Ref("meX"),
+                        Ref("meY"),
+                        Op(Ref("meX"), "+", Ref("meWidth")),
+                        Op(Ref("meY"), "+", Ref("meHeight")),
+                        Ref("otherX"),
+                        Ref("otherY"),
+                        Ref("otherWidth"),
+                        Ref("otherHeight")));
                 return LocalMethod(methodNode);
             }
         }

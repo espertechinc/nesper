@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.client.hook.aggfunc;
 using com.espertech.esper.common.client.hook.forgeinject;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
@@ -15,6 +16,7 @@ using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.agg.method.core;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 using static com.espertech.esper.common.@internal.epl.agg.method.core.AggregatorCodegenUtil;
 
@@ -38,7 +40,8 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.plugin
             var injectionStrategy =
                 (InjectionStrategyClassNewInstance) mode.InjectionStrategyAggregationFunctionFactory;
             var factoryField = classScope.AddFieldUnshared<AggregationFunctionFactory>(
-                true, injectionStrategy.GetInitializationExpression(classScope));
+                true,
+                injectionStrategy.GetInitializationExpression(classScope));
 
             plugin = membersColumnized.AddMember(col, typeof(AggregationFunction), "plugin");
             rowCtor.Block.AssignRef(plugin, ExprDotMethod(factoryField, "newAggregator", ConstantNull()));
@@ -104,7 +107,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.plugin
             CodegenClassScope classScope)
         {
             if (mode.HasHA) {
-                method.Block.StaticMethod(mode.Serde, "write", output, RowDotRef(row, plugin));
+                method.Block.StaticMethod(mode.Serde, "Write", output, RowDotRef(row, plugin));
             }
         }
 
@@ -117,7 +120,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.plugin
             CodegenClassScope classScope)
         {
             if (mode.HasHA) {
-                method.Block.AssignRef(RowDotRef(row, plugin), StaticMethod(mode.Serde, "read", input));
+                method.Block.AssignRef(RowDotRef(row, plugin), StaticMethod(mode.Serde, "Read", input));
             }
         }
 
@@ -136,11 +139,14 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.plugin
                 expression = forges[0].EvaluateCodegen(typeof(object), method, symbols, classScope);
             }
             else {
-                method.Block.DeclareVar(
-                    typeof(object[]), "params", NewArrayByLength(typeof(object), Constant(forges.Length)));
+                method.Block.DeclareVar<object[]>(
+                    "params",
+                    NewArrayByLength(typeof(object), Constant(forges.Length)));
                 for (var i = 0; i < forges.Length; i++) {
                     method.Block.AssignArrayElement(
-                        "params", Constant(i), forges[i].EvaluateCodegen(typeof(object), method, symbols, classScope));
+                        "params",
+                        Constant(i),
+                        forges[i].EvaluateCodegen(typeof(object), method, symbols, classScope));
                 }
 
                 expression = Ref("params");

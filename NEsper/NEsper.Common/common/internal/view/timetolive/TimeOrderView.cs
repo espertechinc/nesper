@@ -8,6 +8,7 @@
 
 using System.Collections.Generic;
 using System.Linq;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.context.util;
@@ -69,14 +70,17 @@ namespace com.espertech.esper.common.@internal.view.timetolive
             ScheduleHandleCallback callback = new ProxyScheduleHandleCallback {
                 ProcScheduledTrigger = () => {
                     agentInstanceContext.AuditProvider.ScheduleFire(
-                        agentInstanceContext.AgentInstanceContext, ScheduleObjectType.view, factory.ViewName);
+                        agentInstanceContext.AgentInstanceContext,
+                        ScheduleObjectType.view,
+                        factory.ViewName);
                     agentInstanceContext.InstrumentationProvider.QViewScheduledEval(factory);
                     Expire();
                     agentInstanceContext.InstrumentationProvider.AViewScheduledEval();
                 }
             };
             handle = new EPStatementHandleCallbackSchedule(
-                agentInstanceContext.EpStatementAgentInstanceHandle, callback);
+                agentInstanceContext.EpStatementAgentInstanceHandle,
+                callback);
         }
 
         /// <summary>
@@ -91,7 +95,10 @@ namespace com.espertech.esper.common.@internal.view.timetolive
         {
             if (handle != null) {
                 agentInstanceContext.AuditProvider.ScheduleRemove(
-                    agentInstanceContext, handle, ScheduleObjectType.view, factory.ViewName);
+                    agentInstanceContext,
+                    handle,
+                    ScheduleObjectType.view,
+                    factory.ViewName);
                 agentInstanceContext.StatementContext.SchedulingService.Remove(handle, scheduleSlot);
             }
         }
@@ -129,7 +136,8 @@ namespace com.espertech.esper.common.@internal.view.timetolive
                 // figure out the current tail time
                 var runtimeTime = agentInstanceContext.StatementContext.SchedulingService.Time;
                 var windowTailTime = runtimeTime -
-                                     timePeriodProvide.DeltaAdd(runtimeTime, null, true, agentInstanceContext) + 1;
+                                     timePeriodProvide.DeltaAdd(runtimeTime, null, true, agentInstanceContext) +
+                                     1;
                 var oldestEvent = long.MaxValue;
                 if (!sortedEvents.IsEmpty()) {
                     oldestEvent = sortedEvents.First().Key.AsLong();
@@ -170,7 +178,11 @@ namespace com.espertech.esper.common.@internal.view.timetolive
                     if (!isCallbackScheduled) {
                         var callbackWait = oldestEvent - windowTailTime + 1;
                         agentInstanceContext.AuditProvider.ScheduleAdd(
-                            callbackWait, agentInstanceContext, handle, ScheduleObjectType.view, factory.ViewName);
+                            callbackWait,
+                            agentInstanceContext,
+                            handle,
+                            ScheduleObjectType.view,
+                            factory.ViewName);
                         agentInstanceContext.StatementContext.SchedulingService.Add(callbackWait, handle, scheduleSlot);
                         isCallbackScheduled = true;
                     }
@@ -180,12 +192,21 @@ namespace com.espertech.esper.common.@internal.view.timetolive
                             oldestEvent = sortedEvents.First().Key.AsLong();
                             var callbackWait = oldestEvent - windowTailTime + 1;
                             agentInstanceContext.AuditProvider.ScheduleRemove(
-                                agentInstanceContext, handle, ScheduleObjectType.view, factory.ViewName);
+                                agentInstanceContext,
+                                handle,
+                                ScheduleObjectType.view,
+                                factory.ViewName);
                             agentInstanceContext.StatementContext.SchedulingService.Remove(handle, scheduleSlot);
                             agentInstanceContext.AuditProvider.ScheduleAdd(
-                                callbackWait, agentInstanceContext, handle, ScheduleObjectType.view, factory.ViewName);
+                                callbackWait,
+                                agentInstanceContext,
+                                handle,
+                                ScheduleObjectType.view,
+                                factory.ViewName);
                             agentInstanceContext.StatementContext.SchedulingService.Add(
-                                callbackWait, handle, scheduleSlot);
+                                callbackWait,
+                                handle,
+                                scheduleSlot);
                             isCallbackScheduled = true;
                         }
                     }
@@ -303,7 +324,11 @@ namespace com.espertech.esper.common.@internal.view.timetolive
             // Next callback
             long callbackWait = oldestKey.Value - expireBeforeTimestamp + 1;
             agentInstanceContext.AuditProvider.ScheduleAdd(
-                callbackWait, agentInstanceContext, handle, ScheduleObjectType.view, factory.ViewName);
+                callbackWait,
+                agentInstanceContext,
+                handle,
+                ScheduleObjectType.view,
+                factory.ViewName);
             agentInstanceContext.StatementContext.SchedulingService.Add(callbackWait, handle, scheduleSlot);
             isCallbackScheduled = true;
         }

@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.expression.prev;
 using com.espertech.esper.common.@internal.epl.expression.prior;
@@ -87,7 +88,8 @@ namespace com.espertech.esper.common.@internal.epl.util
                 }
 
                 perStream[i] = new ViewResourceDelegateDesc(
-                    previousPerStream[i], new SortedSet<int>(priorPerStream[i].Keys));
+                    previousPerStream[i],
+                    new SortedSet<int>(priorPerStream[i].Keys));
             }
 
             return perStream;

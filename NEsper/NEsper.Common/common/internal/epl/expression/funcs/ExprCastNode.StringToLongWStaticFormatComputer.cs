@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.module;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
@@ -62,8 +63,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
                 CodegenClassScope codegenClassScope)
             {
                 return CodegenExpressionBuilder.StaticMethod(
-                    typeof(StringToLongWStaticFormatComputer), "stringToLongWStaticFormatParseSafe",
-                    FormatField(dateFormatString, codegenClassScope), input);
+                    typeof(StringToLongWStaticFormatComputer),
+                    "stringToLongWStaticFormatParseSafe",
+                    FormatField(dateFormatString, codegenClassScope),
+                    input);
             }
         }
     }

@@ -862,7 +862,7 @@ namespace com.espertech.esper.regressionlib.suite.context
 
                 var eplCtx = "@Name('ctx') create context NestedContext as " +
                              "context ByCat as group IntPrimitive < 0 as g1, group IntPrimitive > 0 as g2, group IntPrimitive = 0 as g3 from SupportBean, " +
-                             "context InitCtx as initiated by pattern [every a=SupportBean_S0 => b=SupportBean_S1(Id = a.Id)] terminated after 10 sec";
+                             "context InitCtx as initiated by pattern [every a=SupportBean_S0 -> b=SupportBean_S1(Id = a.Id)] terminated after 10 sec";
                 env.CompileDeploy(eplCtx, path);
 
                 var fields = "c0,c1,c2,c3".SplitCsv();

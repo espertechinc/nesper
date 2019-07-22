@@ -44,7 +44,9 @@ namespace com.espertech.esper.common.client.context
         public override String ToString()
         {
             return "ContextPartitionIdentifierCategory{" +
-                   "label='" + Label + '\'' +
+                   "label='" +
+                   Label +
+                   '\'' +
                    '}';
         }
     }

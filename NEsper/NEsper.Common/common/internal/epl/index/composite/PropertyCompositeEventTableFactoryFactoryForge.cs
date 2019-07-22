@@ -9,6 +9,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -16,6 +17,7 @@ using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.epl.index.@base;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.compat.collections;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.index.composite
@@ -54,8 +56,11 @@ namespace com.espertech.esper.common.@internal.epl.index.composite
         public string ToQueryPlan()
         {
             return GetType().Name +
-                   " streamNum=" + _indexedStreamNum +
-                   " keys=" + _optKeyProps == null
+                   " streamNum=" +
+                   _indexedStreamNum +
+                   " keys=" +
+                   _optKeyProps ==
+                   null
                 ? "none"
                 : _optKeyProps.RenderAny() + " ranges=" + _rangeProps.RenderAny();
         }
@@ -74,17 +79,28 @@ namespace com.espertech.esper.common.@internal.epl.index.composite
                 var propertyTypes = EventTypeUtility.GetPropertyTypes(_eventType, _optKeyProps);
                 var getters = EventTypeUtility.GetGetters(_eventType, _optKeyProps);
                 hashGetter = EventTypeUtility.CodegenGetterMayMultiKeyWCoerce(
-                    _eventType, getters, propertyTypes, _optKeyTypes, method, GetType(), classScope);
+                    _eventType,
+                    getters,
+                    propertyTypes,
+                    _optKeyTypes,
+                    method,
+                    GetType(),
+                    classScope);
             }
 
-            method.Block.DeclareVar(
-                typeof(EventPropertyValueGetter[]), "rangeGetters",
+            method.Block.DeclareVar<EventPropertyValueGetter[]>(
+                "rangeGetters",
                 NewArrayByLength(typeof(EventPropertyValueGetter), Constant(_rangeProps.Length)));
             for (var i = 0; i < _rangeProps.Length; i++) {
                 var propertyType = _eventType.GetPropertyType(_rangeProps[i]);
                 var getterSPI = ((EventTypeSPI) _eventType).GetGetterSPI(_rangeProps[i]);
                 var getter = EventTypeUtility.CodegenGetterWCoerce(
-                    getterSPI, propertyType, _rangeTypes[i], method, GetType(), classScope);
+                    getterSPI,
+                    propertyType,
+                    _rangeTypes[i],
+                    method,
+                    GetType(),
+                    classScope);
                 method.Block.AssignArrayElement(Ref("rangeGetters"), Constant(i), getter);
             }
 

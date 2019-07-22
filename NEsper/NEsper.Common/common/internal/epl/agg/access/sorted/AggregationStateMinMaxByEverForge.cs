@@ -38,7 +38,12 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
             CodegenClassScope classScope)
         {
             aggregator = new AggregatorAccessSortedMinMaxByEver(
-                this, col, ctor, membersColumnized, classScope, factory.Parent.OptionalFilter);
+                this,
+                col,
+                ctor,
+                membersColumnized,
+                classScope,
+                factory.Parent.OptionalFilter);
         }
 
         public CodegenExpression CodegenGetAccessTableState(

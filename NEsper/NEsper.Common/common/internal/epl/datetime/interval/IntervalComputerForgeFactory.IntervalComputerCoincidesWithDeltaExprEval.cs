@@ -8,6 +8,7 @@
 
 using System;
 using System.Reflection;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -55,7 +56,12 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
                 }
 
                 return IntervalComputerConstantCoincides.ComputeIntervalCoincides(
-                    leftStart, leftEnd, rightStart, rightEnd, startValue, endValue);
+                    leftStart,
+                    leftEnd,
+                    rightStart,
+                    rightEnd,
+                    startValue,
+                    endValue);
             }
 
             public static CodegenExpression Codegen(
@@ -69,35 +75,58 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
                 CodegenClassScope codegenClassScope)
             {
                 var methodNode = codegenMethodScope.MakeChild(
-                        typeof(bool?), typeof(IntervalComputerCoincidesWithDeltaExprEval), codegenClassScope)
+                        typeof(bool?),
+                        typeof(IntervalComputerCoincidesWithDeltaExprEval),
+                        codegenClassScope)
                     .AddParam(IntervalForgeCodegenNames.PARAMS);
 
                 var block = methodNode.Block
-                    .DeclareVar(
-                        typeof(long), "startValue",
+                    .DeclareVar<long>(
+                        "startValue",
                         forge.start.Codegen(
                             CodegenExpressionBuilder.StaticMethod(
-                                typeof(Math), "min", IntervalForgeCodegenNames.REF_LEFTSTART,
-                                IntervalForgeCodegenNames.REF_RIGHTSTART), methodNode, exprSymbol, codegenClassScope))
-                    .DeclareVar(
-                        typeof(long), "endValue",
+                                typeof(Math),
+                                "min",
+                                IntervalForgeCodegenNames.REF_LEFTSTART,
+                                IntervalForgeCodegenNames.REF_RIGHTSTART),
+                            methodNode,
+                            exprSymbol,
+                            codegenClassScope))
+                    .DeclareVar<long>(
+                        "endValue",
                         forge.finish.Codegen(
                             CodegenExpressionBuilder.StaticMethod(
-                                typeof(Math), "min", IntervalForgeCodegenNames.REF_LEFTEND,
-                                IntervalForgeCodegenNames.REF_RIGHTEND), methodNode, exprSymbol, codegenClassScope));
+                                typeof(Math),
+                                "min",
+                                IntervalForgeCodegenNames.REF_LEFTEND,
+                                IntervalForgeCodegenNames.REF_RIGHTEND),
+                            methodNode,
+                            exprSymbol,
+                            codegenClassScope));
                 block.IfCondition(
                         CodegenExpressionBuilder.Or(
-                            CodegenExpressionBuilder.Relational(CodegenExpressionBuilder.Ref("startValue"), CodegenExpressionRelational.CodegenRelational.LT, CodegenExpressionBuilder.Constant(0)),
-                            CodegenExpressionBuilder.Relational(CodegenExpressionBuilder.Ref("endValue"), CodegenExpressionRelational.CodegenRelational.LT, CodegenExpressionBuilder.Constant(0))))
+                            CodegenExpressionBuilder.Relational(
+                                CodegenExpressionBuilder.Ref("startValue"),
+                                CodegenExpressionRelational.CodegenRelational.LT,
+                                CodegenExpressionBuilder.Constant(0)),
+                            CodegenExpressionBuilder.Relational(
+                                CodegenExpressionBuilder.Ref("endValue"),
+                                CodegenExpressionRelational.CodegenRelational.LT,
+                                CodegenExpressionBuilder.Constant(0))))
                     .StaticMethod(
-                        typeof(IntervalComputerCoincidesWithDeltaExprEval), METHOD_WARNCOINCIDESTARTENDLESSZERO)
+                        typeof(IntervalComputerCoincidesWithDeltaExprEval),
+                        METHOD_WARNCOINCIDESTARTENDLESSZERO)
                     .BlockReturn(CodegenExpressionBuilder.ConstantNull());
                 block.MethodReturn(
                     CodegenExpressionBuilder.StaticMethod(
-                        typeof(IntervalComputerConstantCoincides), "computeIntervalCoincides",
-                        IntervalForgeCodegenNames.REF_LEFTSTART, IntervalForgeCodegenNames.REF_LEFTEND,
-                        IntervalForgeCodegenNames.REF_RIGHTSTART, IntervalForgeCodegenNames.REF_RIGHTEND,
-                        CodegenExpressionBuilder.Ref("startValue"), CodegenExpressionBuilder.Ref("endValue")));
+                        typeof(IntervalComputerConstantCoincides),
+                        "computeIntervalCoincides",
+                        IntervalForgeCodegenNames.REF_LEFTSTART,
+                        IntervalForgeCodegenNames.REF_LEFTEND,
+                        IntervalForgeCodegenNames.REF_RIGHTSTART,
+                        IntervalForgeCodegenNames.REF_RIGHTEND,
+                        CodegenExpressionBuilder.Ref("startValue"),
+                        CodegenExpressionBuilder.Ref("endValue")));
                 return CodegenExpressionBuilder.LocalMethod(methodNode, leftStart, leftEnd, rightStart, rightEnd);
             }
 

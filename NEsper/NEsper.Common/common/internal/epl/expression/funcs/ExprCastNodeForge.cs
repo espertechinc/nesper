@@ -7,11 +7,13 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.metrics.instrumentation;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.expression.funcs
@@ -62,7 +64,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
                 }
 
                 return new ExprCastNodeForgeNonConstEval(
-                    this, 
+                    this,
                     ForgeRenderableCast.ChildNodes[0].Forge.ExprEvaluator,
                     CasterParserComputerForge.EvaluatorComputer);
             }
@@ -94,7 +96,13 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
             CodegenClassScope codegenClassScope)
         {
             return new InstrumentationBuilderExpr(
-                GetType(), this, "ExprCast", requiredType, codegenMethodScope, exprSymbol, codegenClassScope).Build();
+                GetType(),
+                this,
+                "ExprCast",
+                requiredType,
+                codegenMethodScope,
+                exprSymbol,
+                codegenClassScope).Build();
         }
     }
 } // end of namespace

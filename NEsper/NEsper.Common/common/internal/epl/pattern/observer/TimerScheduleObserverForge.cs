@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -19,6 +20,7 @@ using com.espertech.esper.common.@internal.epl.pattern.core;
 using com.espertech.esper.common.@internal.schedule;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.pattern.observer
@@ -63,7 +65,8 @@ namespace com.espertech.esper.common.@internal.epl.pattern.observer
             if (namedExpressions.Count == 1 && isoStringExpr != null) {
                 try {
                     allConstantResult = ExprNodeUtilityValidate.ValidateNamedExpectType(
-                        isoStringExpr, new[] {typeof(string)});
+                        isoStringExpr,
+                        new[] {typeof(string)});
                 }
                 catch (ExprValidationException ex) {
                     throw new ObserverParameterException(ex.Message, ex);
@@ -102,12 +105,14 @@ namespace com.espertech.esper.common.@internal.epl.pattern.observer
 
                     if (repetitionsNamedNode != null) {
                         allConstantResult &= ExprNodeUtilityValidate.ValidateNamedExpectType(
-                            repetitionsNamedNode, new[] {typeof(int), typeof(long)});
+                            repetitionsNamedNode,
+                            new[] {typeof(int), typeof(long)});
                     }
 
                     if (periodNamedNode != null) {
                         allConstantResult &= ExprNodeUtilityValidate.ValidateNamedExpectType(
-                            periodNamedNode, new[] {typeof(TimePeriod)});
+                            periodNamedNode,
+                            new[] {typeof(TimePeriod)});
                     }
                 }
                 catch (ExprValidationException ex) {
@@ -144,17 +149,22 @@ namespace com.espertech.esper.common.@internal.epl.pattern.observer
             }
 
             var method = parent.MakeChild(
-                typeof(TimerScheduleObserverFactory), typeof(TimerIntervalObserverForge), classScope);
+                typeof(TimerScheduleObserverFactory),
+                typeof(TimerIntervalObserverForge),
+                classScope);
 
             method.Block
-                .DeclareVar(
-                    typeof(TimerScheduleObserverFactory), "factory",
+                .DeclareVar<TimerScheduleObserverFactory>(
+                    "factory",
                     ExprDotMethodChain(symbols.GetAddInitSvc(method))
-                        .Add(EPStatementInitServicesConstants.GETPATTERNFACTORYSERVICE).Add("observerTimerSchedule"))
+                        .Add(EPStatementInitServicesConstants.GETPATTERNFACTORYSERVICE)
+                        .Add("observerTimerSchedule"))
                 .SetProperty(Ref("factory"), "ScheduleCallbackId", Constant(scheduleCallbackId))
                 .SetProperty(Ref("factory"), "AllConstant", Constant(allConstantResult))
                 .SetProperty(Ref("factory"), "ScheduleComputer", scheduleComputer.Make(method, classScope))
-                .SetProperty(Ref("factory"), "OptionalConvertor",
+                .SetProperty(
+                    Ref("factory"),
+                    "OptionalConvertor",
                     convertor == null ? null : convertor.MakeAnonymous(method, classScope))
                 .MethodReturn(Ref("factory"));
             return LocalMethod(method);

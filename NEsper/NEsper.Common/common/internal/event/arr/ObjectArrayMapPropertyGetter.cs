@@ -8,11 +8,13 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.@event.map;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.@event.arr
@@ -84,7 +86,9 @@ namespace com.espertech.esper.common.@internal.@event.arr
             CodegenClassScope codegenClassScope)
         {
             return UnderlyingGetCodegen(
-                CastUnderlying(typeof(object[]), beanExpression), codegenMethodScope, codegenClassScope);
+                CastUnderlying(typeof(object[]), beanExpression),
+                codegenMethodScope,
+                codegenClassScope);
         }
 
         public CodegenExpression EventBeanExistsCodegen(
@@ -93,7 +97,9 @@ namespace com.espertech.esper.common.@internal.@event.arr
             CodegenClassScope codegenClassScope)
         {
             return UnderlyingExistsCodegen(
-                CastUnderlying(typeof(object[]), beanExpression), codegenMethodScope, codegenClassScope);
+                CastUnderlying(typeof(object[]), beanExpression),
+                codegenMethodScope,
+                codegenClassScope);
         }
 
         public CodegenExpression EventBeanFragmentCodegen(
@@ -118,7 +124,8 @@ namespace com.espertech.esper.common.@internal.@event.arr
             CodegenClassScope codegenClassScope)
         {
             return LocalMethod(
-                IsObjectArrayExistsPropertyCodegen(codegenMethodScope, codegenClassScope), underlyingExpression);
+                IsObjectArrayExistsPropertyCodegen(codegenMethodScope, codegenClassScope),
+                underlyingExpression);
         }
 
         public CodegenExpression UnderlyingFragmentCodegen(
@@ -134,12 +141,15 @@ namespace com.espertech.esper.common.@internal.@event.arr
             CodegenClassScope codegenClassScope)
         {
             return codegenMethodScope.MakeChild(typeof(object), GetType(), codegenClassScope)
-                .AddParam(typeof(object[]), "array").Block
-                .DeclareVar(typeof(object), "valueTopObj", ArrayAtIndex(Ref("array"), Constant(index)))
+                .AddParam(typeof(object[]), "array")
+                .Block
+                .DeclareVar<object>("valueTopObj", ArrayAtIndex(Ref("array"), Constant(index)))
                 .IfRefNotTypeReturnConst("valueTopObj", typeof(Map), null)
                 .MethodReturn(
                     getter.UnderlyingGetCodegen(
-                        Cast(typeof(Map), Ref("valueTopObj")), codegenMethodScope, codegenClassScope));
+                        Cast(typeof(Map), Ref("valueTopObj")),
+                        codegenMethodScope,
+                        codegenClassScope));
         }
 
         private CodegenMethod IsObjectArrayExistsPropertyCodegen(
@@ -147,12 +157,15 @@ namespace com.espertech.esper.common.@internal.@event.arr
             CodegenClassScope codegenClassScope)
         {
             return codegenMethodScope.MakeChild(typeof(bool), GetType(), codegenClassScope)
-                .AddParam(typeof(object[]), "array").Block
-                .DeclareVar(typeof(object), "valueTopObj", ArrayAtIndex(Ref("array"), Constant(index)))
+                .AddParam(typeof(object[]), "array")
+                .Block
+                .DeclareVar<object>("valueTopObj", ArrayAtIndex(Ref("array"), Constant(index)))
                 .IfRefNotTypeReturnConst("valueTopObj", typeof(Map), false)
                 .MethodReturn(
                     getter.UnderlyingExistsCodegen(
-                        Cast(typeof(Map), Ref("valueTopObj")), codegenMethodScope, codegenClassScope));
+                        Cast(typeof(Map), Ref("valueTopObj")),
+                        codegenMethodScope,
+                        codegenClassScope));
         }
     }
 } // end of namespace

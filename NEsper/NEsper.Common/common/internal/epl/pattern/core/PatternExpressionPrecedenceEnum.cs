@@ -44,18 +44,25 @@ namespace com.espertech.esper.common.@internal.epl.pattern.core
             switch (value) {
                 case PatternExpressionPrecedenceEnum.MINIMUM:
                     return int.MinValue;
+
                 case PatternExpressionPrecedenceEnum.FOLLOWEDBY:
                     return 1;
+
                 case PatternExpressionPrecedenceEnum.OR:
                     return 2;
+
                 case PatternExpressionPrecedenceEnum.AND:
                     return 3;
+
                 case PatternExpressionPrecedenceEnum.REPEAT_UNTIL:
                     return 4;
+
                 case PatternExpressionPrecedenceEnum.UNARY:
                     return 5;
+
                 case PatternExpressionPrecedenceEnum.GUARD_POSTFIX:
                     return 6;
+
                 case PatternExpressionPrecedenceEnum.ATOM:
                     return int.MaxValue;
             }

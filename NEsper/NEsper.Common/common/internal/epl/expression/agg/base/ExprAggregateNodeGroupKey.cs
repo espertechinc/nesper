@@ -8,6 +8,7 @@
 
 using System;
 using System.IO;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -16,6 +17,7 @@ using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.epl.agg.core;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.expression.agg.@base
@@ -56,19 +58,23 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.@base
             CodegenClassScope classScope)
         {
             CodegenExpression future = classScope.NamespaceScope.AddOrGetFieldWellKnown(
-                aggregationResultFutureMemberName, typeof(AggregationResultFuture));
+                aggregationResultFutureMemberName,
+                typeof(AggregationResultFuture));
             CodegenMethod method = parent.MakeChild(returnType, this.GetType(), classScope);
             CodegenExpression getGroupKey = ExprDotMethod(
-                future, "getGroupKey", ExprDotMethod(symbol.GetAddExprEvalCtx(method), "getAgentInstanceId"));
+                future,
+                "getGroupKey",
+                ExprDotMethod(symbol.GetAddExprEvalCtx(method), "getAgentInstanceId"));
             if (numGroupKeys == 1) {
                 method.Block.MethodReturn(CodegenLegoCast.CastSafeFromObjectType(returnType, getGroupKey));
             }
             else {
                 method.Block
-                    .DeclareVar(typeof(HashableMultiKey), "mk", Cast(typeof(HashableMultiKey), getGroupKey))
+                    .DeclareVar<HashableMultiKey>("mk", Cast(typeof(HashableMultiKey), getGroupKey))
                     .MethodReturn(
                         CodegenLegoCast.CastSafeFromObjectType(
-                            returnType, ArrayAtIndex(ExprDotMethod(@Ref("mk"), "getKeys"), Constant(groupKeyIndex))));
+                            returnType,
+                            ArrayAtIndex(ExprDotMethod(@Ref("mk"), "getKeys"), Constant(groupKeyIndex))));
             }
 
             return LocalMethod(method);

@@ -8,6 +8,7 @@
 
 using System;
 using System.Reflection;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -15,6 +16,7 @@ using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.expression.dot.core;
 using com.espertech.esper.common.@internal.metrics.instrumentation;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.expression.funcs
@@ -61,7 +63,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
             var initMethod = codegenClassScope.NamespaceScope.InitMethod;
             var evaluate = CodegenLegoMethodExpression.CodegenExpression(inner, initMethod, codegenClassScope);
             return codegenClassScope.AddFieldUnshared(
-                true, EvaluationType, LocalMethod(evaluate, ConstantNull(), ConstantTrue(), ConstantNull()));
+                true,
+                EvaluationType,
+                LocalMethod(evaluate, ConstantNull(), ConstantTrue(), ConstantNull()));
         }
 
         public override CodegenExpression EvaluateCodegen(
@@ -71,9 +75,15 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
             CodegenClassScope codegenClassScope)
         {
             return new InstrumentationBuilderExpr(
-                    GetType(), this, "ExprPlugInSingleRow", requiredType, codegenMethodScope, exprSymbol,
+                    GetType(),
+                    this,
+                    "ExprPlugInSingleRow",
+                    requiredType,
+                    codegenMethodScope,
+                    exprSymbol,
                     codegenClassScope)
-                .Qparams(MethodAsParams).Build();
+                .Qparams(MethodAsParams)
+                .Build();
         }
 
         public override CodegenExpression EventBeanGetCodegen(

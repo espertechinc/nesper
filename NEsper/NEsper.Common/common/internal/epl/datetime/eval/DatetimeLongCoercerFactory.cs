@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 
@@ -15,9 +16,15 @@ namespace com.espertech.esper.common.@internal.epl.datetime.eval
     public class DatetimeLongCoercerFactory
     {
         private static readonly DatetimeLongCoercerLong DATETIME_LONG_COERCER_LONG = new DatetimeLongCoercerLong();
-        private static readonly DatetimeLongCoercerDateTime DATETIME_LONG_COERCER_DATETIME = new DatetimeLongCoercerDateTime();
-        private static readonly DatetimeLongCoercerDateTime DATETIME_LONG_COERCER_DATETIME_OFFSET = new DatetimeLongCoercerDateTime();
-        private static readonly DatetimeLongCoercerDateTimeEx DATETIME_LONG_COERCER_DTX = new DatetimeLongCoercerDateTimeEx();
+
+        private static readonly DatetimeLongCoercerDateTime DATETIME_LONG_COERCER_DATETIME =
+            new DatetimeLongCoercerDateTime();
+
+        private static readonly DatetimeLongCoercerDateTime DATETIME_LONG_COERCER_DATETIME_OFFSET =
+            new DatetimeLongCoercerDateTime();
+
+        private static readonly DatetimeLongCoercerDateTimeEx DATETIME_LONG_COERCER_DTX =
+            new DatetimeLongCoercerDateTimeEx();
 
         public static DatetimeLongCoercer GetCoercer(Type clazz)
         {

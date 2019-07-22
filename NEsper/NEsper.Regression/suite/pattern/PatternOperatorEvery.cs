@@ -101,7 +101,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 var fields = "c0,c1,c2".SplitCsv();
 
                 var epl = "@Name('s0') select a.TheString as c0, a.IntPrimitive as c1, b.IntPrimitive as c2 " +
-                          "from pattern [every a=SupportBean => b=SupportBean(TheString=a.TheString)]";
+                          "from pattern [every a=SupportBean -> b=SupportBean(TheString=a.TheString)]";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 env.Milestone(0);
@@ -136,7 +136,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
 
                 env.AdvanceTime(0);
                 var epl = "@Name('s0') select a.TheString as c0, a.IntPrimitive as c1, b.IntPrimitive as c2 " +
-                          "from pattern [every a=SupportBean => b=SupportBean(TheString=a.TheString) where timer:within(10 sec)]";
+                          "from pattern [every a=SupportBean -> b=SupportBean(TheString=a.TheString) where timer:within(10 sec)]";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 env.Milestone(0);

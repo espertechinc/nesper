@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.@join.assemble;
@@ -163,9 +164,12 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.outer
         {
             writer.WriteLine(
                 "LookupInstructionExecNode" +
-                " rootStream=" + rootStream +
-                " name=" + rootStreamName +
-                " requiredPerStream=" + requiredPerStream.RenderAny());
+                " rootStream=" +
+                rootStream +
+                " name=" +
+                rootStreamName +
+                " requiredPerStream=" +
+                requiredPerStream.RenderAny());
 
             writer.IncrIndent();
             for (var i = 0; i < lookupInstructions.Length; i++) {

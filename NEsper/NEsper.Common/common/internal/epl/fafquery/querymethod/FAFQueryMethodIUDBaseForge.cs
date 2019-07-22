@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -29,6 +30,7 @@ using com.espertech.esper.common.@internal.epl.util;
 using com.espertech.esper.common.@internal.statement.helper;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 using static com.espertech.esper.common.@internal.epl.annotation.AnnotationUtil;
 
@@ -69,7 +71,8 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.querymethod
             this.annotations = spec.Annotations;
             this.hasTableAccess = spec.Raw.IntoTableSpec != null ||
                                   (spec.TableAccessNodes != null && spec.TableAccessNodes.Count > 0);
-            if (spec.Raw.InsertIntoDesc != null && services.TableCompileTimeResolver.Resolve(spec.Raw.InsertIntoDesc.EventTypeName) != null) {
+            if (spec.Raw.InsertIntoDesc != null &&
+                services.TableCompileTimeResolver.Resolve(spec.Raw.InsertIntoDesc.EventTypeName) != null) {
                 hasTableAccess = true;
             }
 
@@ -97,18 +100,35 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.querymethod
 
             // compile filter to optimize access to named window
             StreamTypeServiceImpl typeService = new StreamTypeServiceImpl(
-                new EventType[] {eventType}, new string[] {aliasName}, new bool[] {true}, true, false);
-            ExcludePlanHint excludePlanHint = ExcludePlanHint.GetHint(typeService.StreamNames, statementRawInfo, services);
+                new EventType[] {eventType},
+                new string[] {aliasName},
+                new bool[] {true},
+                true,
+                false);
+            ExcludePlanHint excludePlanHint = ExcludePlanHint.GetHint(
+                typeService.StreamNames,
+                statementRawInfo,
+                services);
             if (spec.Raw.WhereClause != null) {
                 queryGraph = new QueryGraphForge(1, excludePlanHint, false);
-                EPLValidationUtil.ValidateFilterWQueryGraphSafe(queryGraph, spec.Raw.WhereClause, typeService, statementRawInfo, services);
+                EPLValidationUtil.ValidateFilterWQueryGraphSafe(
+                    queryGraph,
+                    spec.Raw.WhereClause,
+                    typeService,
+                    statementRawInfo,
+                    services);
             }
             else {
                 queryGraph = null;
             }
 
             // validate expressions
-            whereClause = EPStatementStartMethodHelperValidate.ValidateNodes(spec.Raw, typeService, null, statementRawInfo, services);
+            whereClause = EPStatementStartMethodHelperValidate.ValidateNodes(
+                spec.Raw,
+                typeService,
+                null,
+                statementRawInfo,
+                services);
 
             // get executor
             InitExec(aliasName, spec, statementRawInfo, services);
@@ -134,14 +154,32 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.querymethod
             CodegenExpressionRef queryMethod = @Ref("qm");
             method.Block
                 .DeclareVar(TypeOfMethod(), queryMethod.Ref, NewInstance(TypeOfMethod()))
-                .SetProperty(queryMethod, "Annotations",
-                    annotations == null ? ConstantNull() : LocalMethod(MakeAnnotations(typeof(Attribute[]), annotations, method, classScope)))
+                .SetProperty(
+                    queryMethod,
+                    "Annotations",
+                    annotations == null
+                        ? ConstantNull()
+                        : LocalMethod(MakeAnnotations(typeof(Attribute[]), annotations, method, classScope)))
                 .SetProperty(queryMethod, "Processor", processor.Make(method, symbols, classScope))
-                .SetProperty(queryMethod, "QueryGraph", queryGraph == null ? ConstantNull() : queryGraph.Make(method, symbols, classScope))
-                .SetProperty(queryMethod, "InternalEventRouteDest",
-                    ExprDotMethod(symbols.GetAddInitSvc(method), EPStatementInitServicesConstants.GETINTERNALEVENTROUTEDEST))
-                .SetProperty(queryMethod, "TableAccesses",
-                    ExprTableEvalStrategyUtil.CodegenInitMap(tableAccessForges, this.GetType(), method, symbols, classScope))
+                .SetProperty(
+                    queryMethod,
+                    "QueryGraph",
+                    queryGraph == null ? ConstantNull() : queryGraph.Make(method, symbols, classScope))
+                .SetProperty(
+                    queryMethod,
+                    "InternalEventRouteDest",
+                    ExprDotMethod(
+                        symbols.GetAddInitSvc(method),
+                        EPStatementInitServicesConstants.GETINTERNALEVENTROUTEDEST))
+                .SetProperty(
+                    queryMethod,
+                    "TableAccesses",
+                    ExprTableEvalStrategyUtil.CodegenInitMap(
+                        tableAccessForges,
+                        this.GetType(),
+                        method,
+                        symbols,
+                        classScope))
                 .SetProperty(queryMethod, "HasTableAccess", Constant(hasTableAccess));
             MakeInlineSpecificSetter(queryMethod, method, symbols, classScope);
             method.Block.MethodReturn(queryMethod);

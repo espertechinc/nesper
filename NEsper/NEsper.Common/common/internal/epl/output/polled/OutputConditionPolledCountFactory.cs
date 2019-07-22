@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.epl.variable.core;
 using com.espertech.esper.compat;
@@ -36,7 +37,11 @@ namespace com.espertech.esper.common.@internal.epl.output.polled
 
         public OutputConditionPolled MakeNew(AgentInstanceContext agentInstanceContext)
         {
-            OutputConditionPolledCountState state = new OutputConditionPolledCountState(eventRate, eventRate, eventRate, true);
+            OutputConditionPolledCountState state = new OutputConditionPolledCountState(
+                eventRate,
+                eventRate,
+                eventRate,
+                true);
             return new OutputConditionPolledCount(state, GetVariableReader(agentInstanceContext));
         }
 
@@ -44,7 +49,9 @@ namespace com.espertech.esper.common.@internal.epl.output.polled
             AgentInstanceContext agentInstanceContext,
             OutputConditionPolledState state)
         {
-            return new OutputConditionPolledCount((OutputConditionPolledCountState) state, GetVariableReader(agentInstanceContext));
+            return new OutputConditionPolledCount(
+                (OutputConditionPolledCountState) state,
+                GetVariableReader(agentInstanceContext));
         }
 
         private VariableReader GetVariableReader(AgentInstanceContext agentInstanceContext)
@@ -54,7 +61,9 @@ namespace com.espertech.esper.common.@internal.epl.output.polled
             }
 
             return agentInstanceContext.VariableManagementService.GetReader(
-                variable.DeploymentId, variable.MetaData.VariableName, agentInstanceContext.AgentInstanceId);
+                variable.DeploymentId,
+                variable.MetaData.VariableName,
+                agentInstanceContext.AgentInstanceId);
         }
     }
 } // end of namespace

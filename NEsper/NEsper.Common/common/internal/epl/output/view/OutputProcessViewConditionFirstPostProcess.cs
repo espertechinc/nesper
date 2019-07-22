@@ -22,7 +22,7 @@ namespace com.espertech.esper.common.@internal.epl.output.view
     /// </summary>
     public class OutputProcessViewConditionFirstPostProcess : OutputProcessViewConditionFirst
     {
-        private readonly OutputStrategyPostProcess postProcessor;
+        private readonly OutputStrategyPostProcess _postProcessor;
 
         public OutputProcessViewConditionFirstPostProcess(
             ResultSetProcessor resultSetProcessor,
@@ -33,10 +33,14 @@ namespace com.espertech.esper.common.@internal.epl.output.view
             AgentInstanceContext agentInstanceContext,
             OutputStrategyPostProcess postProcessor)
             : base(
-                resultSetProcessor, afterConditionTime, afterConditionNumberOfEvents, afterConditionSatisfied, parent,
+                resultSetProcessor,
+                afterConditionTime,
+                afterConditionNumberOfEvents,
+                afterConditionSatisfied,
+                parent,
                 agentInstanceContext)
         {
-            this.postProcessor = postProcessor;
+            _postProcessor = postProcessor;
         }
 
         protected override void Output(
@@ -45,7 +49,7 @@ namespace com.espertech.esper.common.@internal.epl.output.view
         {
             // Child view can be null in replay from named window
             if (child != null) {
-                postProcessor.Output(forceUpdate, results, child);
+                _postProcessor.Output(forceUpdate, results, child);
             }
         }
     }

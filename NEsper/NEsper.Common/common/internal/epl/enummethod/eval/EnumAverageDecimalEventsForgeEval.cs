@@ -9,6 +9,7 @@
 using System.Collections.Generic;
 using System.Numerics;
 using System.Reflection;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -18,6 +19,7 @@ using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.type;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.logging;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 using static com.espertech.esper.common.@internal.epl.agg.method.avg.AggregatorAvgBig;
 
@@ -74,16 +76,21 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
 
             var scope = new ExprForgeCodegenSymbol(false, null);
             var methodNode = codegenMethodScope.MakeChildWithScope(
-                    typeof(decimal), typeof(EnumAverageDecimalEventsForgeEval), scope, codegenClassScope)
+                    typeof(decimal),
+                    typeof(EnumAverageDecimalEventsForgeEval),
+                    scope,
+                    codegenClassScope)
                 .AddParam(EnumForgeCodegenNames.PARAMS);
 
             var block = methodNode.Block;
-            block.DeclareVar(
-                typeof(AggregatorAvgBigDecimal), "agg", NewInstance<AggregatorAvgBigDecimal>(math));
+            block.DeclareVar<AggregatorAvgBigDecimal>(
+                "agg",
+                NewInstance<AggregatorAvgBigDecimal>(math));
             var forEach = block.ForEach(typeof(EventBean), "next", EnumForgeCodegenNames.REF_ENUMCOLL)
                 .AssignArrayElement(EnumForgeCodegenNames.REF_EPS, Constant(forge.streamNumLambda), Ref("next"))
                 .DeclareVar(
-                    innerType, "num",
+                    innerType,
+                    "num",
                     forge.innerExpression.EvaluateCodegen(innerType, methodNode, scope, codegenClassScope));
             if (!innerType.IsPrimitive) {
                 forEach.IfRefNull("num").BlockContinue();
@@ -107,7 +114,8 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                 _optionalMathContext = optionalMathContext;
             }
 
-            public decimal Value => GetValueDecimalDivide(_cnt, _optionalMathContext, _sum) ?? throw new IllegalStateException();
+            public decimal Value => GetValueDecimalDivide(_cnt, _optionalMathContext, _sum) ??
+                                    throw new IllegalStateException();
 
             public void Enter(object @object)
             {

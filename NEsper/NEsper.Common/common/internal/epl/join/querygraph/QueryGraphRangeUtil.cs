@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+
 using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.compat.collections;
 
@@ -23,7 +24,10 @@ namespace com.espertech.esper.common.@internal.epl.join.querygraph
 
         static QueryGraphRangeUtil()
         {
-            Add(QueryGraphRangeEnum.LESS_OR_EQUAL, QueryGraphRangeEnum.GREATER_OR_EQUAL, QueryGraphRangeEnum.RANGE_CLOSED);
+            Add(
+                QueryGraphRangeEnum.LESS_OR_EQUAL,
+                QueryGraphRangeEnum.GREATER_OR_EQUAL,
+                QueryGraphRangeEnum.RANGE_CLOSED);
             Add(QueryGraphRangeEnum.LESS, QueryGraphRangeEnum.GREATER, QueryGraphRangeEnum.RANGE_OPEN);
             Add(QueryGraphRangeEnum.LESS_OR_EQUAL, QueryGraphRangeEnum.GREATER, QueryGraphRangeEnum.RANGE_HALF_CLOSED);
             Add(QueryGraphRangeEnum.LESS, QueryGraphRangeEnum.GREATER_OR_EQUAL, QueryGraphRangeEnum.RANGE_HALF_OPEN);

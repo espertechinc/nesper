@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
@@ -16,6 +17,7 @@ using com.espertech.esper.common.@internal.context.module;
 using com.espertech.esper.common.@internal.epl.expression.declared.core;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.expression.declared.runtime
@@ -29,20 +31,30 @@ namespace com.espertech.esper.common.@internal.epl.expression.declared.runtime
         {
             if (expression.Visibility == NameAccessModifier.TRANSIENT) {
                 // for private expression that cache key is simply an Object shared by the name of the expression (fields are per-statement already so its safe)
-                return classScope.NamespaceScope.AddOrGetFieldSharable(new ExprDeclaredCacheKeyLocalCodegenField(expression.Name));
+                return classScope.NamespaceScope.AddOrGetFieldSharable(
+                    new ExprDeclaredCacheKeyLocalCodegenField(expression.Name));
             }
 
             // global expressions need a cache key that derives from the deployment id of the expression and the expression name
-            CodegenMethod keyInit = classScope.NamespaceScope.InitMethod.MakeChild(typeof(ExprDeclaredCacheKeyGlobal), generator, classScope).AddParam(
-                typeof(EPStatementInitServices), EPStatementInitServicesConstants.REF.Ref);
-            keyInit.Block.DeclareVar(
-                    typeof(string), "deploymentId", StaticMethod(
-                        typeof(ExpressionDeployTimeResolver), "resolveDeploymentId",
-                        Constant(expression.Name), Constant(expression.Visibility), Constant(expression.ModuleName),
+            CodegenMethod keyInit = classScope.NamespaceScope.InitMethod
+                .MakeChild(typeof(ExprDeclaredCacheKeyGlobal), generator, classScope)
+                .AddParam(
+                    typeof(EPStatementInitServices),
+                    EPStatementInitServicesConstants.REF.Ref);
+            keyInit.Block.DeclareVar<string>(
+                    "deploymentId",
+                    StaticMethod(
+                        typeof(ExpressionDeployTimeResolver),
+                        "resolveDeploymentId",
+                        Constant(expression.Name),
+                        Constant(expression.Visibility),
+                        Constant(expression.ModuleName),
                         EPStatementInitServicesConstants.REF))
                 .MethodReturn(NewInstance<ExprDeclaredCacheKeyGlobal>(@Ref("deploymentId"), Constant(expression.Name)));
             return classScope.NamespaceScope.AddFieldUnshared(
-                true, typeof(ExprDeclaredCacheKeyGlobal), LocalMethod(keyInit, EPStatementInitServicesConstants.REF));
+                true,
+                typeof(ExprDeclaredCacheKeyGlobal),
+                LocalMethod(keyInit, EPStatementInitServicesConstants.REF));
         }
 
         /// <summary>

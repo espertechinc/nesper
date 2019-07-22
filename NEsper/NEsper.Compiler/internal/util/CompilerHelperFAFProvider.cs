@@ -8,7 +8,9 @@
 
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 
+using com.espertech.esper.collection;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
@@ -86,9 +88,10 @@ namespace com.espertech.esper.compiler.@internal.util
             var fafSpec = specCompiled.Raw.FireAndForgetSpec;
 
             var packageName = "generated";
-            IDictionary<string, byte[]> moduleBytes = new Dictionary<string, byte[]>();
-            EPCompiledManifest manifest;
             var classPostfix = IdentifierUtil.GetIdentifierMayStartNumeric(statementName);
+
+            EPCompiledManifest manifest;
+            Assembly assembly;
 
             FAFQueryMethodForge query;
             if (specCompiled.Raw.InsertIntoDesc != null) {
@@ -114,9 +117,9 @@ namespace com.espertech.esper.compiler.@internal.util
             VerifySubstitutionParams(raw.SubstitutionParameters);
 
             try {
-                manifest = CompileToBytes(query, classPostfix, packageName, moduleBytes, args.Options, services);
+                manifest = CompileToAssembly(query, classPostfix, packageName, args.Options, services, out assembly);
             }
-            catch (EPCompileException ex) {
+            catch (EPCompileException) {
                 throw;
             }
             catch (Exception ex) {
@@ -124,21 +127,21 @@ namespace com.espertech.esper.compiler.@internal.util
                     new EmptyList<EPCompileExceptionItem>());
             }
 
-            return new EPCompiled(moduleBytes, manifest);
+            return new EPCompiled(assembly, manifest);
         }
 
-        private static EPCompiledManifest CompileToBytes(
+        private static EPCompiledManifest CompileToAssembly(
             FAFQueryMethodForge query,
             string classPostfix,
             string packageName,
-            IDictionary<string, byte[]> moduleBytes,
             CompilerOptions compilerOptions,
-            ModuleCompileTimeServices compileTimeServices)
+            ModuleCompileTimeServices compileTimeServices,
+            out Assembly assembly)
         {
             string queryMethodProviderClassName;
             try {
                 queryMethodProviderClassName = CompilerHelperFAFQuery.CompileQuery(
-                    query, classPostfix, packageName, moduleBytes, compileTimeServices);
+                    query, classPostfix, packageName, compileTimeServices, out assembly);
             }
             catch (StatementSpecCompileException ex) {
                 EPCompileExceptionItem first;
@@ -154,7 +157,12 @@ namespace com.espertech.esper.compiler.@internal.util
             }
 
             // compile query provider
-            var fafProviderClassName = MakeFAFProvider(queryMethodProviderClassName, classPostfix, moduleBytes, packageName, compileTimeServices);
+            var fafProviderClassName = MakeFAFProvider(
+                queryMethodProviderClassName, 
+                classPostfix, 
+                packageName, 
+                compileTimeServices,
+                out assembly);
 
             // create manifest
             return new EPCompiledManifest(COMPILER_VERSION, null, fafProviderClassName);
@@ -163,9 +171,9 @@ namespace com.espertech.esper.compiler.@internal.util
         private static string MakeFAFProvider(
             string queryMethodProviderClassName,
             string classPostfix,
-            IDictionary<string, byte[]> moduleBytes,
             string @namespace,
-            ModuleCompileTimeServices compileTimeServices)
+            ModuleCompileTimeServices compileTimeServices,
+            out Assembly assembly)
         {
             var packageScope = new CodegenNamespaceScope(@namespace, null, compileTimeServices.IsInstrumented());
             var fafProviderClassName = CodeGenerationIDGenerator.GenerateClassNameSimple(typeof(FAFProvider), classPostfix);
@@ -194,13 +202,17 @@ namespace com.espertech.esper.compiler.@internal.util
 
             IList<CodegenTypedParam> members = new List<CodegenTypedParam>();
             var typedParam = new CodegenTypedParam(typeof(FAFQueryMethodProvider), MEMBERNAME_QUERY_METHOD_PROVIDER);
-            typedParam.IsFinal = false;
+            typedParam.IsReadonly = false;
             members.Add(typedParam);
 
             var clazz = new CodegenClass(
                 typeof(FAFProvider), @namespace, fafProviderClassName, classScope, members,
                 null, methods, new EmptyList<CodegenInnerClass>());
-            RoslynCompiler.Compile(clazz, moduleBytes, compileTimeServices.Configuration.Compiler.Logging.IsEnableCode);
+            var compiler = new RoslynCompiler()
+                .WithCodeLogging(compileTimeServices.Configuration.Compiler.Logging.IsEnableCode)
+                .WithCodegenClass(clazz);
+
+            assembly = compiler.Compile();
 
             return CodeGenerationIDGenerator.GenerateClassNameWithNamespace(@namespace, typeof(FAFProvider), classPostfix);
         }

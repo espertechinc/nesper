@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.IO;
+
 using com.espertech.esper.common.@internal.type;
 
 namespace com.espertech.esper.common.client.soda

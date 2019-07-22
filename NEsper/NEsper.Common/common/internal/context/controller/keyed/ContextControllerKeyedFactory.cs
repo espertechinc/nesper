@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client.context;
 using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.context.airegistry;
@@ -56,10 +57,15 @@ namespace com.espertech.esper.common.@internal.context.controller.keyed
                 }
             }
 
-            var includePartitionKey = forStatement || nestingLevel != FactoryEnv.NestingLevel; //factoryContext.NestingLevel;
+            var includePartitionKey =
+                forStatement || nestingLevel != FactoryEnv.NestingLevel; //factoryContext.NestingLevel;
             var getterKey = GetGetterKey(partitionKey);
             return ContextControllerKeyedUtil.GetAddendumFilters(
-                getterKey, filterSpec, keyedSpec, includePartitionKey, optionalStatementDesc,
+                getterKey,
+                filterSpec,
+                keyedSpec,
+                includePartitionKey,
+                optionalStatementDesc,
                 agentInstanceContextStatement);
         }
 

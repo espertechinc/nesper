@@ -47,8 +47,7 @@ namespace NEsper.Avro.Core
         public object MakeUnderlying(object[] properties)
         {
             var record = new GenericRecord(_schema.AsRecordSchema());
-            for (var i = 0; i < properties.Length; i++)
-            {
+            for (var i = 0; i < properties.Length; i++) {
                 var indexToWrite = _indexPerWritable[i];
                 record.Put(indexToWrite, properties[i]);
             }

@@ -8,12 +8,14 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.compat.collections;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.expression.ops
@@ -110,17 +112,22 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
         {
             var forgeRenderable = forge.ForgeRenderableArray;
             var methodNode = codegenMethodScope.MakeChild(
-                forge.EvaluationType, typeof(ExprArrayNodeForgeEval), codegenClassScope);
+                forge.EvaluationType,
+                typeof(ExprArrayNodeForgeEval),
+                codegenClassScope);
             var block = methodNode.Block
                 .DeclareVar(
-                    forge.EvaluationType, "array",
+                    forge.EvaluationType,
+                    "array",
                     NewArrayByLength(forge.ArrayReturnType, Constant(forgeRenderable.ChildNodes.Length)));
             for (var i = 0; i < forgeRenderable.ChildNodes.Length; i++) {
                 var child = forgeRenderable.ChildNodes[i].Forge;
                 var childType = child.EvaluationType;
                 var refname = "r" + i;
                 block.DeclareVar(
-                    childType, refname, child.EvaluateCodegen(childType, methodNode, exprSymbol, codegenClassScope));
+                    childType,
+                    refname,
+                    child.EvaluateCodegen(childType, methodNode, exprSymbol, codegenClassScope));
 
                 if (child.EvaluationType.IsPrimitive) {
                     if (!forge.IsMustCoerce) {
@@ -128,7 +135,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                     }
                     else {
                         block.AssignArrayElement(
-                            "array", Constant(i), forge.Coercer.CoerceCodegen(Ref(refname), child.EvaluationType));
+                            "array",
+                            Constant(i),
+                            forge.Coercer.CoerceCodegen(Ref(refname), child.EvaluationType));
                     }
                 }
                 else {
@@ -138,7 +147,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                     }
                     else {
                         ifNotNull.AssignArrayElement(
-                            "array", Constant(i), forge.Coercer.CoerceCodegen(Ref(refname), child.EvaluationType));
+                            "array",
+                            Constant(i),
+                            forge.Coercer.CoerceCodegen(Ref(refname), child.EvaluationType));
                     }
                 }
             }
@@ -159,10 +170,12 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             }
 
             var methodNode = codegenMethodScope.MakeChild(
-                typeof(ICollection<object>), typeof(ExprArrayNodeForgeEval), codegenClassScope);
+                typeof(ICollection<object>),
+                typeof(ExprArrayNodeForgeEval),
+                codegenClassScope);
             var block = methodNode.Block
-                .DeclareVar(
-                    typeof(ArrayDeque<object>), "resultList",
+                .DeclareVar<ArrayDeque<object>>(
+                    "resultList",
                     NewInstance<ArrayDeque<object>>(Constant(children.Length)));
             var count = -1;
             foreach (var child in children) {
@@ -175,7 +188,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                 }
 
                 block.DeclareVar(
-                    returnType, refname,
+                    returnType,
+                    refname,
                     childForge.EvaluateCodegen(returnType, methodNode, exprSymbol, codegenClassScope));
                 var nonNullTest = returnType.IsPrimitive ? ConstantTrue() : NotEqualsNull(Ref(refname));
                 var blockIfNotNull = block.IfCondition(nonNullTest);

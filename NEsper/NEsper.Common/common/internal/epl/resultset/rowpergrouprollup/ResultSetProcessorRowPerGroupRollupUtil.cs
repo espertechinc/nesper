@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.epl.agg.core;
@@ -117,7 +118,11 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
             var outputFirstHelpers = new ResultSetProcessorGroupedOutputFirstHelper[groupByRollupDesc.Levels.Length];
             for (var i = 0; i < groupByRollupDesc.Levels.Length; i++) {
                 outputFirstHelpers[i] = resultSetProcessorHelperFactory.MakeRSGroupedOutputFirst(
-                    agentInstanceContext, groupKeyTypes, outputConditionPolledFactory, groupByRollupDesc, i);
+                    agentInstanceContext,
+                    groupKeyTypes,
+                    outputConditionPolledFactory,
+                    groupByRollupDesc,
+                    i);
             }
 
             return outputFirstHelpers;

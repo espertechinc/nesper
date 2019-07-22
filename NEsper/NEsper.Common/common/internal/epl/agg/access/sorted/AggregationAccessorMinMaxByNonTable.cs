@@ -8,6 +8,7 @@
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.epl.agg.core;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
@@ -26,8 +27,8 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
         public override void GetValueCodegen(AggregationAccessorForgeGetCodegenContext context)
         {
             var forge = (AggregatorAccessSorted) context.AccessStateForge.Aggregator;
-            context.Method.Block.DeclareVar(
-                    typeof(EventBean), "event",
+            context.Method.Block.DeclareVar<EventBean>(
+                    "event",
                     max
                         ? forge.GetLastValueCodegen(context.ClassScope, context.Method)
                         : forge.GetFirstValueCodegen(context.ClassScope, context.Method))

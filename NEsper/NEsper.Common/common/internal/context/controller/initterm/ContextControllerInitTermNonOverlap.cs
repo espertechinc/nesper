@@ -7,12 +7,14 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.context.controller.condition;
 using com.espertech.esper.common.@internal.context.mgr;
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.compat.collections;
+
 using static com.espertech.esper.common.@internal.context.controller.initterm.ContextControllerInitTermUtil;
 
 namespace com.espertech.esper.common.@internal.context.controller.initterm
@@ -24,7 +26,8 @@ namespace com.espertech.esper.common.@internal.context.controller.initterm
             ContextControllerInitTermFactory factory,
             ContextManagerRealization realization)
             : base(
-                factory, realization)
+                factory,
+                realization)
         {
         }
 
@@ -39,7 +42,12 @@ namespace com.espertech.esper.common.@internal.context.controller.initterm
             initTermSvc.MgmtCreate(path, parentPartitionKeys);
 
             var startCondition = ContextControllerConditionFactory.GetEndpoint(
-                path, parentPartitionKeys, factory.initTermSpec.StartCondition, this, this, true);
+                path,
+                parentPartitionKeys,
+                factory.initTermSpec.StartCondition,
+                this,
+                this,
+                true);
             var currentlyRunning = DetermineCurrentlyRunning(startCondition, this);
 
             if (!currentlyRunning) {
@@ -51,7 +59,10 @@ namespace com.espertech.esper.common.@internal.context.controller.initterm
             }
             else {
                 InstantiateAndActivateEndCondition(
-                    path, optionalTriggeringEvent, optionalTriggeringPattern, optionalTriggeringPattern,
+                    path,
+                    optionalTriggeringEvent,
+                    optionalTriggeringPattern,
+                    optionalTriggeringPattern,
                     startCondition);
             }
         }
@@ -67,13 +78,19 @@ namespace com.espertech.esper.common.@internal.context.controller.initterm
             bool endConditionNotification = originCondition.Descriptor != factory.InitTermSpec.StartCondition;
             if (endConditionNotification) {
                 RangeNotificationEnd(
-                    conditionPath, originCondition, optionalTriggeringEvent, optionalTriggeringPattern,
+                    conditionPath,
+                    originCondition,
+                    optionalTriggeringEvent,
+                    optionalTriggeringPattern,
                     optionalTriggeringEventPattern);
             }
             else {
                 LastTriggerEvent = optionalTriggeringEvent;
                 RangeNotificationStart(
-                    conditionPath, optionalTriggeringEvent, optionalTriggeringPattern, optionalTriggeringEventPattern,
+                    conditionPath,
+                    optionalTriggeringEvent,
+                    optionalTriggeringPattern,
+                    optionalTriggeringEventPattern,
                     optionalPatternForInclusiveEval);
             }
         }
@@ -91,7 +108,10 @@ namespace com.espertech.esper.common.@internal.context.controller.initterm
             }
 
             var agentInstances = InstantiateAndActivateEndCondition(
-                controllerPath, optionalTriggeringEvent, optionalTriggeringPattern, optionalPatternForInclusiveEval,
+                controllerPath,
+                optionalTriggeringEvent,
+                optionalTriggeringPattern,
+                optionalPatternForInclusiveEval,
                 startCondition);
             InstallFilterFaultHandler(agentInstances, controllerPath);
         }
@@ -121,7 +141,11 @@ namespace com.espertech.esper.common.@internal.context.controller.initterm
             }
 
             realization.ContextPartitionTerminate(
-                conditionPath.RemoveFromEnd(), instance.SubpathIdOrCPId, this, optionalTriggeringPattern, startNow,
+                conditionPath.RemoveFromEnd(),
+                instance.SubpathIdOrCPId,
+                this,
+                optionalTriggeringPattern,
+                startNow,
                 agentInstancesLocksHeld);
 
             try {
@@ -130,7 +154,12 @@ namespace com.espertech.esper.common.@internal.context.controller.initterm
 
                 var startDesc = factory.initTermSpec.StartCondition;
                 var startCondition = ContextControllerConditionFactory.GetEndpoint(
-                    controllerPath, partitionKeys, startDesc, this, this, true);
+                    controllerPath,
+                    partitionKeys,
+                    startDesc,
+                    this,
+                    this,
+                    true);
                 if (!startCondition.IsImmediate) {
                     startCondition.Activate(optionalTriggeringEvent, null);
                     initTermSvc.MgmtUpdSetStartCondition(controllerPath, startCondition);
@@ -202,7 +231,9 @@ namespace com.espertech.esper.common.@internal.context.controller.initterm
                     var trigger = contextControllerInitTerm.LastTriggerEvent;
                     if (theEvent != trigger) {
                         AgentInstanceUtil.EvaluateEventForStatement(
-                            theEvent, null, Collections.SingletonList(new AgentInstance(null, aiCreate, null)),
+                            theEvent,
+                            null,
+                            Collections.SingletonList(new AgentInstance(null, aiCreate, null)),
                             aiCreate);
                     }
 

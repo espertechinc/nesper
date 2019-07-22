@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.@event.arr;
 using com.espertech.esper.common.@internal.@event.bean.core;
@@ -83,7 +84,11 @@ namespace com.espertech.esper.common.@internal.@event.map
             BeanEventTypeFactory beanEventTypeFactory)
         {
             return new MapArrayPONOEntryIndexedPropertyGetter(
-                propertyNameAtomic, index, eventBeanTypedEventFactory, beanEventTypeFactory, componentType);
+                propertyNameAtomic,
+                index,
+                eventBeanTypedEventFactory,
+                beanEventTypeFactory,
+                componentType);
         }
 
         public EventPropertyGetterSPI GetGetterMappedProperty(
@@ -110,7 +115,11 @@ namespace com.espertech.esper.common.@internal.@event.map
             Type propertyTypeGetter)
         {
             return new MapArrayPONOBeanEntryIndexedPropertyGetter(
-                propertyNameAtomic, index, nestedGetter, eventBeanTypedEventFactory, beanEventTypeFactory,
+                propertyNameAtomic,
+                index,
+                nestedGetter,
+                eventBeanTypedEventFactory,
+                beanEventTypeFactory,
                 propertyTypeGetter);
         }
 
@@ -130,7 +139,11 @@ namespace com.espertech.esper.common.@internal.@event.map
             Type nestedComponentType)
         {
             return new MapPONOEntryPropertyGetter(
-                propertyName, nestedGetter, eventBeanTypedEventFactory, nestedReturnType, nestedComponentType,
+                propertyName,
+                nestedGetter,
+                eventBeanTypedEventFactory,
+                nestedReturnType,
+                nestedComponentType,
                 beanEventTypeFactory);
         }
 
@@ -149,11 +162,17 @@ namespace com.espertech.esper.common.@internal.@event.map
         {
             if (getter is ObjectArrayEventPropertyGetter) {
                 return new MapNestedEntryPropertyGetterObjectArray(
-                    propertyName, innerType, eventBeanTypedEventFactory, (ObjectArrayEventPropertyGetter) getter);
+                    propertyName,
+                    innerType,
+                    eventBeanTypedEventFactory,
+                    (ObjectArrayEventPropertyGetter) getter);
             }
 
             return new MapNestedEntryPropertyGetterMap(
-                propertyName, innerType, eventBeanTypedEventFactory, (MapEventPropertyGetter) getter);
+                propertyName,
+                innerType,
+                eventBeanTypedEventFactory,
+                (MapEventPropertyGetter) getter);
         }
 
         public EventPropertyGetterSPI GetGetterNestedEntryBeanArray(
@@ -165,12 +184,19 @@ namespace com.espertech.esper.common.@internal.@event.map
         {
             if (getter is ObjectArrayEventPropertyGetter) {
                 return new MapNestedEntryPropertyGetterArrayObjectArray(
-                    propertyNameAtomic, innerType, eventBeanTypedEventFactory, index,
+                    propertyNameAtomic,
+                    innerType,
+                    eventBeanTypedEventFactory,
+                    index,
                     (ObjectArrayEventPropertyGetter) getter);
             }
 
             return new MapNestedEntryPropertyGetterArrayMap(
-                propertyNameAtomic, innerType, eventBeanTypedEventFactory, index, (MapEventPropertyGetter) getter);
+                propertyNameAtomic,
+                innerType,
+                eventBeanTypedEventFactory,
+                index,
+                (MapEventPropertyGetter) getter);
         }
 
         public EventPropertyGetterSPI GetGetterNestedPropertyProvidedGetterDynamic(
@@ -180,7 +206,10 @@ namespace com.espertech.esper.common.@internal.@event.map
             EventBeanTypedEventFactory eventBeanTypedEventFactory)
         {
             return new MapNestedEntryPropertyGetterPropertyProvidedDynamic(
-                propertyName, null, eventBeanTypedEventFactory, nestedGetter);
+                propertyName,
+                null,
+                eventBeanTypedEventFactory,
+                nestedGetter);
         }
 
 

@@ -35,24 +35,28 @@ namespace NEsper.Avro.Core
             string statementName)
         {
             TypeWidenerSPI widener;
-            try
-            {
+            try {
                 var context = new ObjectValueTypeWidenerFactoryContext(
-                    columnType, writeablePropertyName, _eventType, statementName);
+                    columnType,
+                    writeablePropertyName,
+                    _eventType,
+                    statementName);
                 widener = _factory.Make(context);
             }
-            catch (Exception ex)
-            {
+            catch (Exception ex) {
                 throw new TypeWidenerException("Widener not available: " + ex.Message, ex);
             }
 
-            if (widener != null)
-            {
+            if (widener != null) {
                 return widener;
             }
 
             return AvroTypeWidenerCustomizerDefault.INSTANCE.WidenerFor(
-                columnName, columnType, writeablePropertyType, writeablePropertyName, statementName); // default behavior applies otherwise
+                columnName,
+                columnType,
+                writeablePropertyType,
+                writeablePropertyName,
+                statementName); // default behavior applies otherwise
         }
     }
 } // end of namespace

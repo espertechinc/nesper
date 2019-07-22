@@ -10,6 +10,7 @@ using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.expression.time.abacus;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.expression.time.eval
@@ -27,7 +28,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.time.eval
             _timeAbacus = timeAbacus;
         }
 
-        public TimePeriodCompute Evaluator => new TimePeriodComputeNCGivenExprEval(_secondsEvaluator.ExprEvaluator, _timeAbacus);
+        public TimePeriodCompute Evaluator =>
+            new TimePeriodComputeNCGivenExprEval(_secondsEvaluator.ExprEvaluator, _timeAbacus);
 
         public CodegenExpression MakeEvaluator(
             CodegenMethodScope parent,
@@ -35,9 +37,12 @@ namespace com.espertech.esper.common.@internal.epl.expression.time.eval
         {
             var method = parent.MakeChild(typeof(TimePeriodComputeNCGivenExprEval), GetType(), classScope);
             method.Block
-                .DeclareVar(typeof(TimePeriodComputeNCGivenExprEval), "eval", NewInstance(typeof(TimePeriodComputeNCGivenExprEval)))
+                .DeclareVar<TimePeriodComputeNCGivenExprEval>(
+                    "eval",
+                    NewInstance(typeof(TimePeriodComputeNCGivenExprEval)))
                 .SetProperty(
-                    Ref("eval"), "SecondsEvaluator",
+                    Ref("eval"),
+                    "SecondsEvaluator",
                     ExprNodeUtilityCodegen.CodegenEvaluator(_secondsEvaluator, method, GetType(), classScope))
                 .SetProperty(Ref("eval"), "TimeAbacus", classScope.AddOrGetFieldSharable(TimeAbacusField.INSTANCE))
                 .MethodReturn(Ref("eval"));

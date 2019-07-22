@@ -8,6 +8,7 @@
 
 using System;
 using System.IO;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -16,6 +17,7 @@ using com.espertech.esper.common.@internal.settings;
 using com.espertech.esper.common.@internal.type;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.expression.core
@@ -28,7 +30,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
         ExprForge,
         ExprNodeDeployTimeConst
     {
-        private CodegenExpressionField field;
+        private CodegenExpressionField _field;
 
         public ExprSubstitutionNode(
             string optionalName,
@@ -88,7 +90,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                 Type clazz = null;
                 try {
                     clazz = TypeHelper.GetClassForName(
-                        OptionalType.ClassIdentifier, validationContext.ImportService.ClassForNameProvider);
+                        OptionalType.ClassIdentifier,
+                        validationContext.ImportService.ClassForNameProvider);
                 }
                 catch (TypeLoadException) {
                 }
@@ -105,18 +108,23 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                 else {
                     try {
                         ResolvedType = validationContext.ImportService.ResolveClass(
-                            OptionalType.ClassIdentifier, false);
+                            OptionalType.ClassIdentifier,
+                            false);
                     }
                     catch (ImportException e) {
                         throw new ExprValidationException(
-                            "Failed to resolve type '" + OptionalType.ClassIdentifier + "': " + e.Message, e);
+                            "Failed to resolve type '" + OptionalType.ClassIdentifier + "': " + e.Message,
+                            e);
                     }
                 }
 
                 if (ResolvedType != null && OptionalType.IsArrayOfPrimitive && !ResolvedType.IsPrimitive) {
                     throw new ExprValidationException(
-                        "Invalid use of the '" + ClassIdentifierWArray.PRIMITIVE_KEYWORD +
-                        "' keyword for non-primitive type '" + ResolvedType.Name + "'");
+                        "Invalid use of the '" +
+                        ClassIdentifierWArray.PRIMITIVE_KEYWORD +
+                        "' keyword for non-primitive type '" +
+                        ResolvedType.Name +
+                        "'");
                 }
 
                 if (!OptionalType.IsArrayOfPrimitive) {
@@ -155,11 +163,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
 
         private CodegenExpressionField AsField(CodegenClassScope classScope)
         {
-            if (field == null) {
-                field = Field(classScope.AddSubstitutionParameter(OptionalName, ResolvedType));
+            if (_field == null) {
+                _field = Field(classScope.AddSubstitutionParameter(OptionalName, ResolvedType));
             }
 
-            return field;
+            return _field;
         }
     }
 } // end of namespace

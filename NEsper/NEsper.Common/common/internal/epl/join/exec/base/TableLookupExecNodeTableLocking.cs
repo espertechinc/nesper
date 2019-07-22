@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.compat.threading.locks;
@@ -25,7 +26,8 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.@base
             JoinExecTableLookupStrategy lookupStrategy,
             ILockable @lock)
             : base(
-                indexedStream, lookupStrategy)
+                indexedStream,
+                lookupStrategy)
         {
             _lock = @lock;
         }

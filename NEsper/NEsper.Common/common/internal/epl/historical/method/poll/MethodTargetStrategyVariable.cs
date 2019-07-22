@@ -8,6 +8,7 @@
 
 using System;
 using System.Reflection;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.context.util;
@@ -46,23 +47,36 @@ namespace com.espertech.esper.common.@internal.epl.historical.method.poll
                 switch (factory.invokeType) {
                     case MethodTargetStrategyStaticMethodInvokeType.NOPARAM:
                         return factory.method.Invoke(target, null);
+
                     case MethodTargetStrategyStaticMethodInvokeType.SINGLE:
-                        return factory.method.Invoke(target, new object[] { lookupValues });
+                        return factory.method.Invoke(target, new object[] {lookupValues});
+
                     case MethodTargetStrategyStaticMethodInvokeType.MULTIKEY:
                         return factory.method.Invoke(target, ((HashableMultiKey) lookupValues).Keys);
+
                     default:
                         throw new IllegalStateException("Unrecognized value for " + factory.invokeType);
                 }
             }
             catch (TargetException ex) {
                 throw new EPException(
-                    "Method '" + factory.method.Name + "' of class '" + factory.method.DeclaringType.Name +
-                    "' reported an exception: " + ex.InnerException, ex.InnerException);
+                    "Method '" +
+                    factory.method.Name +
+                    "' of class '" +
+                    factory.method.DeclaringType.Name +
+                    "' reported an exception: " +
+                    ex.InnerException,
+                    ex.InnerException);
             }
             catch (MemberAccessException ex) {
                 throw new EPException(
-                    "Method '" + factory.method.Name + "' of class '" + factory.method.DeclaringType.Name +
-                    "' reported an exception: " + ex, ex);
+                    "Method '" +
+                    factory.method.Name +
+                    "' of class '" +
+                    factory.method.DeclaringType.Name +
+                    "' reported an exception: " +
+                    ex,
+                    ex);
             }
         }
 

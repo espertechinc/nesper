@@ -12,6 +12,7 @@ using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.util;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.expression.funcs
@@ -64,7 +65,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
             }
 
             var methodNode = codegenMethodScope.MakeChild(
-                forge.EvaluationType, typeof(ExprCoalesceNodeForgeEval), codegenClassScope);
+                forge.EvaluationType,
+                typeof(ExprCoalesceNodeForgeEval),
+                codegenClassScope);
 
             var block = methodNode.Block;
             var num = 0;
@@ -74,7 +77,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
                 if (reftype != null) {
                     var refname = "r" + num;
                     block.DeclareVar(
-                        reftype, refname,
+                        reftype,
+                        refname,
                         node.Forge.EvaluateCodegen(reftype, methodNode, exprSymbol, codegenClassScope));
 
                     if (reftype.IsPrimitive) {

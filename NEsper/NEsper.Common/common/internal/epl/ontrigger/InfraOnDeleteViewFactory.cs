@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.epl.lookupplansubord;
@@ -34,7 +35,8 @@ namespace com.espertech.esper.common.@internal.epl.ontrigger
             AgentInstanceContext agentInstanceContext)
         {
             return new InfraOnExprBaseViewResult(
-                new OnExprViewNamedWindowDelete(lookupStrategy, namedWindowRootViewInstance, agentInstanceContext), null);
+                new OnExprViewNamedWindowDelete(lookupStrategy, namedWindowRootViewInstance, agentInstanceContext),
+                null);
         }
 
         public override InfraOnExprBaseViewResult MakeTable(
@@ -42,7 +44,9 @@ namespace com.espertech.esper.common.@internal.epl.ontrigger
             TableInstance tableInstance,
             AgentInstanceContext agentInstanceContext)
         {
-            return new InfraOnExprBaseViewResult(new OnExprViewTableDelete(lookupStrategy, tableInstance, agentInstanceContext), null);
+            return new InfraOnExprBaseViewResult(
+                new OnExprViewTableDelete(lookupStrategy, tableInstance, agentInstanceContext),
+                null);
         }
     }
 } // end of namespace

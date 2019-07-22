@@ -27,8 +27,7 @@ namespace NEsper.Avro.Core
 
         public GenericRecord Properties { get; private set; }
 
-        public object GenericRecordDotData
-        {
+        public object GenericRecordDotData {
             get => Properties;
             set => Properties = (GenericRecord) value;
         }
@@ -40,9 +39,9 @@ namespace NEsper.Avro.Core
         public object Get(string property)
         {
             var getter = EventType.GetGetter(property);
-            if (getter == null)
-            {
-                throw new PropertyAccessException("Property named '" + property + "' is not a valid property name for this type");
+            if (getter == null) {
+                throw new PropertyAccessException(
+                    "Property named '" + property + "' is not a valid property name for this type");
             }
 
             return getter.Get(this);
@@ -51,8 +50,7 @@ namespace NEsper.Avro.Core
         public object GetFragment(string propertyExpression)
         {
             var getter = EventType.GetGetter(propertyExpression);
-            if (getter == null)
-            {
+            if (getter == null) {
                 throw PropertyAccessException.NotAValidProperty(propertyExpression);
             }
 

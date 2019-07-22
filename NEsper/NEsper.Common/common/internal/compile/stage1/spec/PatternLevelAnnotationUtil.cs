@@ -8,6 +8,7 @@
 
 using System;
 using System.Linq;
+
 using com.espertech.esper.common.client.soda;
 using com.espertech.esper.compat.collections;
 
@@ -63,7 +64,10 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
             if (string.Equals(annotation, DISCARDPARTIALSONMATCH, StringComparison.InvariantCultureIgnoreCase)) {
                 flags.IsDiscardPartialsOnMatch = true;
             }
-            else if (string.Equals(annotation, SUPPRESSOVERLAPPINGMATCHES, StringComparison.InvariantCultureIgnoreCase)) {
+            else if (string.Equals(
+                annotation,
+                SUPPRESSOVERLAPPINGMATCHES,
+                StringComparison.InvariantCultureIgnoreCase)) {
                 flags.IsSuppressSameEventMatches = true;
             }
             else {

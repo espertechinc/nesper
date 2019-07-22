@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.resultset.select.core;
@@ -35,7 +36,12 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
             CodegenClassScope codegenClassScope)
         {
             return SelectEvalInsertNoWildcardSingleColCoercionMapWrap.ProcessFirstColCodegen(
-                expression, eventBeanFactory, codegenClassScope, wrapper, "adapterForTypedObjectArray", typeof(object[]));
+                expression,
+                eventBeanFactory,
+                codegenClassScope,
+                wrapper,
+                "adapterForTypedObjectArray",
+                typeof(object[]));
         }
     }
 } // end of namespace

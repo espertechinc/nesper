@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.@internal.epl.datetime.eval;
 using com.espertech.esper.common.@internal.epl.datetime.interval.deltaexpr;
 using com.espertech.esper.common.@internal.epl.expression.core;
@@ -16,6 +17,7 @@ using com.espertech.esper.common.@internal.epl.expression.time.eval;
 using com.espertech.esper.common.@internal.epl.expression.time.node;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.datetime.interval
@@ -84,16 +86,20 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
                     IntervalStartEndParameterPairForge.FromParamsWithSameEnd(parameters);
                 if (parameters.Length == 1) {
                     return new IntervalComputerDuringAndIncludesThresholdForge(
-                        method == DateTimeMethodEnum.DURING, pair.Start.Forge);
+                        method == DateTimeMethodEnum.DURING,
+                        pair.Start.Forge);
                 }
 
                 if (parameters.Length == 2) {
                     return new IntervalComputerDuringAndIncludesMinMax(
-                        method == DateTimeMethodEnum.DURING, pair.Start.Forge, pair.End.Forge);
+                        method == DateTimeMethodEnum.DURING,
+                        pair.Start.Forge,
+                        pair.End.Forge);
                 }
 
                 return new IntervalComputerDuringMinMaxStartEndForge(
-                    method == DateTimeMethodEnum.DURING, GetEvaluators(expressions, timeAbacus));
+                    method == DateTimeMethodEnum.DURING,
+                    GetEvaluators(expressions, timeAbacus));
             }
 
             if (method == DateTimeMethodEnum.FINISHES) {
@@ -143,11 +149,14 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
 
                 if (parameters.Length == 1) {
                     return new IntervalComputerOverlapsAndByThreshold(
-                        method == DateTimeMethodEnum.OVERLAPS, parameters[0].Forge);
+                        method == DateTimeMethodEnum.OVERLAPS,
+                        parameters[0].Forge);
                 }
 
                 return new IntervalComputerOverlapsAndByMinMaxForge(
-                    method == DateTimeMethodEnum.OVERLAPS, parameters[0].Forge, parameters[1].Forge);
+                    method == DateTimeMethodEnum.OVERLAPS,
+                    parameters[0].Forge,
+                    parameters[1].Forge);
             }
 
             if (method == DateTimeMethodEnum.STARTS) {
@@ -220,7 +229,8 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
                     }
 
                     return new ExprOptionalConstantForge(
-                        new IntervalDeltaExprTimePeriodNonConstForge(timePeriod, timeAbacus), null);
+                        new IntervalDeltaExprTimePeriodNonConstForge(timePeriod, timeAbacus),
+                        null);
                 }
 
                 // has-month and not constant
@@ -234,7 +244,10 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
                                     isNewData,
                                     context) =>
                                 timePeriodCompute.DeltaAdd(
-                                    reference, eventsPerStream, isNewData, context)
+                                    reference,
+                                    eventsPerStream,
+                                    isNewData,
+                                    context)
                         };
                     },
 
@@ -244,12 +257,18 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
                         exprSymbol,
                         codegenClassScope) => {
                         var field = codegenClassScope.AddFieldUnshared(
-                            true, typeof(TimePeriodCompute),
+                            true,
+                            typeof(TimePeriodCompute),
                             timePeriod.TimePeriodComputeForge.MakeEvaluator(
-                                codegenClassScope.NamespaceScope.InitMethod, codegenClassScope));
+                                codegenClassScope.NamespaceScope.InitMethod,
+                                codegenClassScope));
                         return ExprDotMethod(
-                            field, "deltaAdd", reference, exprSymbol.GetAddEPS(parent),
-                            exprSymbol.GetAddIsNewData(parent), exprSymbol.GetAddExprEvalCtx(parent));
+                            field,
+                            "deltaAdd",
+                            reference,
+                            exprSymbol.GetAddEPS(parent),
+                            exprSymbol.GetAddIsNewData(parent),
+                            exprSymbol.GetAddExprEvalCtx(parent));
                     }
                 };
                 return new ExprOptionalConstantForge(forge, null);
@@ -273,7 +292,10 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
                                     isNewData,
                                     context) =>
                                 evaluator.Evaluate(
-                                    eventsPerStream, isNewData, context).AsLong()
+                                        eventsPerStream,
+                                        isNewData,
+                                        context)
+                                    .AsLong()
                         };
                     },
 
@@ -283,7 +305,10 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
                         exprSymbol,
                         codegenClassScope) => SimpleNumberCoercerFactory.CoercerLong.CodegenLong(
                         forge.EvaluateCodegen(
-                            forge.EvaluationType, codegenMethodScope, exprSymbol, codegenClassScope),
+                            forge.EvaluationType,
+                            codegenMethodScope,
+                            exprSymbol,
+                            codegenClassScope),
                         forge.EvaluationType)
                 };
                 return new ExprOptionalConstantForge(eval, null);

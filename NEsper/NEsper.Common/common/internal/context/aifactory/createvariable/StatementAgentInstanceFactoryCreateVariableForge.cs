@@ -9,6 +9,7 @@
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.epl.expression.core;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.context.aifactory.createvariable
@@ -36,15 +37,19 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createvariable
         {
             var method = parent.MakeChild(typeof(StatementAgentInstanceFactoryCreateVariable), GetType(), classScope);
             method.Block
-                .DeclareVar(
-                    typeof(StatementAgentInstanceFactoryCreateVariable), "saiff",
+                .DeclareVar<StatementAgentInstanceFactoryCreateVariable>(
+                    "saiff",
                     NewInstance(typeof(StatementAgentInstanceFactoryCreateVariable)))
                 .SetProperty(Ref("saiff"), "VariableName", Constant(variableName))
-                .SetProperty(Ref("saiff"), "ResultSetProcessorFactoryProvider",
+                .SetProperty(
+                    Ref("saiff"),
+                    "ResultSetProcessorFactoryProvider",
                     NewInstance(resultSetProcessorProviderClassName, symbols.GetAddInitSvc(method)));
             if (optionalInitialValue != null) {
                 method.Block
-                    .SetProperty(Ref("saiff"), "VariableInitialValueExpr",
+                    .SetProperty(
+                        Ref("saiff"),
+                        "VariableInitialValueExpr",
                         ExprNodeUtilityCodegen.CodegenEvaluator(optionalInitialValue, method, GetType(), classScope))
                     .Expression(
                         ExprDotMethodChain(symbols.GetAddInitSvc(method)).Add("addReadyCallback", Ref("saiff")));

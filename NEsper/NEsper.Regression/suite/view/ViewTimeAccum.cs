@@ -484,7 +484,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 var events = Get100Events();
 
                 var epl =
-                    "@Name('s0') select irstream price, prev(1, price) as prevPrice, prior(1, price) as priorPrice " +
+                    "@Name('s0') select irstream Price, prev(1, Price) as prevPrice, prior(1, Price) as priorPrice " +
                     "from SupportMarketDataBean#time_accum(10 sec)";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
@@ -525,12 +525,12 @@ namespace com.espertech.esper.regressionlib.suite.view
             {
                 SendTimer(env, 1000);
 
-                var text = "@Name('s0') select irstream price, " +
-                           "prev(1, price) as prevPrice, " +
-                           "prior(1, price) as priorPrice, " +
-                           "prevtail(price) as prevtailPrice, " +
-                           "prevcount(price) as prevCountPrice, " +
-                           "prevwindow(price) as prevWindowPrice " +
+                var text = "@Name('s0') select irstream Price, " +
+                           "prev(1, Price) as prevPrice, " +
+                           "prior(1, Price) as priorPrice, " +
+                           "prevtail(Price) as prevtailPrice, " +
+                           "prevcount(Price) as prevCountPrice, " +
+                           "prevwindow(Price) as prevWindowPrice " +
                            "from SupportMarketDataBean#time_accum(10 sec)";
                 env.CompileDeployAddListenerMileZero(text, "s0");
 
@@ -600,7 +600,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 var events = Get100Events();
 
                 var epl =
-                    "@Name('s0') select irstream sum(price) as sumPrice from SupportMarketDataBean#time_accum(10 sec)";
+                    "@Name('s0') select irstream sum(Price) as sumPrice from SupportMarketDataBean#time_accum(10 sec)";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
                 // 1st event

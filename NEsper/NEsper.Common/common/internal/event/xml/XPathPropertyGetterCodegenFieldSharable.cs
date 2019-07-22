@@ -7,11 +7,13 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.context.module;
 using com.espertech.esper.common.@internal.@event.core;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.@event.xml
@@ -37,7 +39,8 @@ namespace com.espertech.esper.common.@internal.@event.xml
         public CodegenExpression InitCtorScoped()
         {
             return StaticMethod(
-                typeof(XPathPropertyGetterCodegenFieldSharable), "resolveXPathPropertyGetter",
+                typeof(XPathPropertyGetterCodegenFieldSharable),
+                "resolveXPathPropertyGetter",
                 EventTypeUtility.ResolveTypeCodegen(baseXMLEventType, EPStatementInitServicesConstants.REF),
                 Constant(xPathPropertyGetter.Property));
         }
@@ -48,15 +51,21 @@ namespace com.espertech.esper.common.@internal.@event.xml
         {
             if (!(eventType is BaseXMLEventType)) {
                 throw new EPException(
-                    "Failed to obtain xpath property getter, expected an xml event type but received type '" + eventType.Metadata.Name + "'");
+                    "Failed to obtain xpath property getter, expected an xml event type but received type '" +
+                    eventType.Metadata.Name +
+                    "'");
             }
 
             var type = (BaseXMLEventType) eventType;
             var getter = type.GetGetter(propertyName);
             if (!(getter is XPathPropertyGetter)) {
                 throw new EPException(
-                    "Failed to obtain xpath property getter for property '" + propertyName + "', expected " + typeof(XPathPropertyGetter).Name +
-                    " but received " + getter);
+                    "Failed to obtain xpath property getter for property '" +
+                    propertyName +
+                    "', expected " +
+                    typeof(XPathPropertyGetter).Name +
+                    " but received " +
+                    getter);
             }
 
             return (XPathPropertyGetter) getter;

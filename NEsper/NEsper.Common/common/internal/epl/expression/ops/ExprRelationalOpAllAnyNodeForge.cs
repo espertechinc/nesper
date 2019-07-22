@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
@@ -15,6 +16,7 @@ using com.espertech.esper.common.@internal.metrics.instrumentation;
 using com.espertech.esper.common.@internal.type;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.expression.ops
@@ -22,12 +24,12 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
     public class ExprRelationalOpAllAnyNodeForge : ExprForgeInstrumentable
     {
         private readonly ExprRelationalOpAllAnyNode parent;
-        private readonly RelationalOpEnum.Computer computer;
+        private readonly RelationalOpEnumComputer computer;
         private readonly bool hasCollectionOrArray;
 
         public ExprRelationalOpAllAnyNodeForge(
             ExprRelationalOpAllAnyNode parent,
-            RelationalOpEnum.Computer computer,
+            RelationalOpEnumComputer computer,
             bool hasCollectionOrArray)
         {
             this.parent = parent;
@@ -36,7 +38,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
         }
 
         public ExprEvaluator ExprEvaluator {
-            get => new ExprRelationalOpAllAnyNodeForgeEval(this, ExprNodeUtilityQuery.GetEvaluatorsNoCompile(parent.ChildNodes));
+            get => new ExprRelationalOpAllAnyNodeForgeEval(
+                this,
+                ExprNodeUtilityQuery.GetEvaluatorsNoCompile(parent.ChildNodes));
         }
 
         public ExprForgeConstantType ForgeConstantType {
@@ -50,8 +54,15 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             CodegenClassScope codegenClassScope)
         {
             return new InstrumentationBuilderExpr(
-                    this.GetType(), this, "ExprRelOpAnyOrAll", requiredType, codegenMethodScope, exprSymbol, codegenClassScope)
-                .Qparam(Constant(parent.RelationalOpEnum.ExpressionText)).Build();
+                    this.GetType(),
+                    this,
+                    "ExprRelOpAnyOrAll",
+                    requiredType,
+                    codegenMethodScope,
+                    exprSymbol,
+                    codegenClassScope)
+                .Qparam(Constant(parent.RelationalOpEnum.GetExpressionText()))
+                .Build();
         }
 
         public CodegenExpression EvaluateCodegenUninstrumented(
@@ -73,7 +84,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
 
         ExprNodeRenderable ExprForge.ExprForgeRenderable => ForgeRenderable;
 
-        public RelationalOpEnum.Computer Computer {
+        public RelationalOpEnumComputer Computer {
             get { return computer; }
         }
 

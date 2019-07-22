@@ -9,6 +9,7 @@
 using System;
 using System.Collections.Generic;
 using System.Numerics;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.compile.stage2;
 using com.espertech.esper.common.@internal.compile.stage3;
@@ -33,7 +34,12 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             StatementCompileTimeServices services)
         {
             return ExprDotNodeUtility.GetSingleLambdaParamEventType(
-                enumMethodUsedName, goesToNames, inputEventType, collectionComponentType, statementRawInfo, services);
+                enumMethodUsedName,
+                goesToNames,
+                inputEventType,
+                collectionComponentType,
+                statementRawInfo,
+                services);
         }
 
         public override EnumForge GetEnumForge(
@@ -51,7 +57,8 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                 if (collectionComponentType == typeof(decimal) || collectionComponentType == typeof(BigInteger)) {
                     TypeInfo = EPTypeHelper.SingleValue(typeof(decimal));
                     return new EnumAverageDecimalScalarForge(
-                        numStreamsIncoming, services.ImportServiceCompileTime.DefaultMathContext);
+                        numStreamsIncoming,
+                        services.ImportServiceCompileTime.DefaultMathContext);
                 }
 
                 TypeInfo = EPTypeHelper.SingleValue(typeof(double?));
@@ -65,20 +72,23 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                 TypeInfo = EPTypeHelper.SingleValue(typeof(decimal));
                 if (inputEventType == null) {
                     return new EnumAverageDecimalScalarLambdaForge(
-                        first.BodyForge, first.StreamCountIncoming,
+                        first.BodyForge,
+                        first.StreamCountIncoming,
                         (ObjectArrayEventType) first.GoesToTypes[0],
                         services.ImportServiceCompileTime.DefaultMathContext);
                 }
 
                 return new EnumAverageDecimalEventsForge(
-                    first.BodyForge, first.StreamCountIncoming,
+                    first.BodyForge,
+                    first.StreamCountIncoming,
                     services.ImportServiceCompileTime.DefaultMathContext);
             }
 
             TypeInfo = EPTypeHelper.SingleValue(typeof(double?));
             if (inputEventType == null) {
                 return new EnumAverageScalarLambdaForge(
-                    first.BodyForge, first.StreamCountIncoming,
+                    first.BodyForge,
+                    first.StreamCountIncoming,
                     (ObjectArrayEventType) first.GoesToTypes[0]);
             }
 

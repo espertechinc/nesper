@@ -30,7 +30,9 @@ namespace com.espertech.esper.common.@internal.support
             return MakeEmpty(container);
         }
 
-        public static ExprValidationContext Make(IContainer container, StreamTypeService streamTypeService)
+        public static ExprValidationContext Make(
+            IContainer container,
+            StreamTypeService streamTypeService)
         {
             var moduleServices = new ModuleCompileTimeServices(container);
             moduleServices.Configuration = new Configuration();

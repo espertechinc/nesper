@@ -78,7 +78,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
             mapOneL2.Put("nestedNestedValue", 101);
             IDictionary<string, object> mapOneL1 = new Dictionary<string, object>();
             mapOneL1.Put("nestedNested", mapOneL2);
-            mapOneL1.Put("nestedValue", 100);
+            mapOneL1.Put("NestedValue", 100);
             IDictionary<string, object> mapOneL0 = new Dictionary<string, object>();
             mapOneL0.Put("nested", mapOneL1);
             var mapOne = Collections.SingletonDataMap("item", mapOneL0);
@@ -103,7 +103,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
             Pair<object, object>[] xmlTests = {
                 new Pair<object, object>(
                     "<item>\n" +
-                    "\t<nested nestedValue=\"100\">\n" +
+                    "\t<nested NestedValue=\"100\">\n" +
                     "\t\t<nestedNested nestedNestedValue=\"101\">\n" +
                     "\t\t</nestedNested>\n" +
                     "\t</nested>\n" +
@@ -129,7 +129,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
             var nestedNestedDatum = new GenericRecord(nestedNestedSchema.AsRecordSchema());
             nestedNestedDatum.Put("nestedNestedValue", 101);
             var nestedDatum = new GenericRecord(nestedSchema.AsRecordSchema());
-            nestedDatum.Put("nestedValue", 100);
+            nestedDatum.Put("NestedValue", 100);
             nestedDatum.Put("nestedNested", nestedNestedDatum);
             var emptyDatum = new GenericRecord(SchemaBuilder.Record(AVRO_TYPENAME));
             Pair<object, object>[] avroTests = {
@@ -177,10 +177,10 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
             Type expectedPropertyType)
         {
             var stmtText = "@Name('s0') select " +
-                           " item.nested?.nestedValue as n1, " +
-                           " exists(item.nested?.nestedValue) as exists_n1, " +
-                           " item.nested?.nestedValue? as n2, " +
-                           " exists(item.nested?.nestedValue?) as exists_n2, " +
+                           " item.nested?.NestedValue as n1, " +
+                           " exists(item.nested?.NestedValue) as exists_n1, " +
+                           " item.nested?.NestedValue? as n2, " +
+                           " exists(item.nested?.NestedValue?) as exists_n2, " +
                            " item.nested?.nestedNested.nestedNestedValue as n3, " +
                            " exists(item.nested?.nestedNested.nestedNestedValue) as exists_n3, " +
                            " item.nested?.nestedNested?.nestedNestedValue as n4, " +

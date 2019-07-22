@@ -9,7 +9,9 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.core.CodeGenerationHelper;
 
 namespace com.espertech.esper.common.@internal.bytecodemodel.core
@@ -56,11 +58,10 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.core
         public string Name { get; }
 
         public void Render(
-            StringBuilder builder,
-            IDictionary<Type, string> imports)
+            StringBuilder builder)
         {
             if (Type != null) {
-                AppendClassName(builder, Type, null, imports);
+                AppendClassName(builder, Type);
             }
             else {
                 builder.Append(typeName);
@@ -227,13 +228,12 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.core
 
         public static void Render(
             StringBuilder builder,
-            IList<CodegenNamedParam> @params,
-            IDictionary<Type, string> imports)
+            IList<CodegenNamedParam> @params)
         {
             var delimiter = "";
             foreach (var param in @params) {
                 builder.Append(delimiter);
-                param.Render(builder, imports);
+                param.Render(builder);
                 delimiter = ",";
             }
         }
@@ -251,7 +251,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.core
             var delimiter = "";
             foreach (var param in @params) {
                 builder.Append(delimiter);
-                param.Render(builder, imports);
+                param.Render(builder);
                 delimiter = ",";
             }
         }

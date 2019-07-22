@@ -9,6 +9,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.compile.stage2;
@@ -20,6 +21,7 @@ using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.table.compiletime;
 using com.espertech.esper.common.@internal.epl.table.strategy;
 using com.espertech.esper.compat.collections;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.expression.table
@@ -151,7 +153,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.table
             }
 
             return ExprNodeUtilityCompare.DeepEquals(
-                aggregateAccessMultiValueNode, that.aggregateAccessMultiValueNode, false);
+                aggregateAccessMultiValueNode,
+                that.aggregateAccessMultiValueNode,
+                false);
         }
     }
 } // end of namespace

@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.meta;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
@@ -22,8 +23,10 @@ using com.espertech.esper.common.@internal.@event.util;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
-using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionRelational.CodegenRelational;
+using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionRelational.
+    CodegenRelational;
 
 namespace com.espertech.esper.common.@internal.@event.core
 {
@@ -47,8 +50,13 @@ namespace com.espertech.esper.common.@internal.@event.core
 
             IDictionary<string, object> verified = ResolvePropertyTypes(propertyTypes, eventTypeCompileTimeResolver);
             return new MapEventType(
-                metadata, verified, optionalSuperTypes, optionalDeepSupertypes, startTimestampPropertyName,
-                endTimestampPropertyName, beanEventTypeFactory);
+                metadata,
+                verified,
+                optionalSuperTypes,
+                optionalDeepSupertypes,
+                startTimestampPropertyName,
+                endTimestampPropertyName,
+                beanEventTypeFactory);
         }
 
         public static ObjectArrayEventType MakeOATypeCompileTime(
@@ -67,7 +75,12 @@ namespace com.espertech.esper.common.@internal.@event.core
 
             IDictionary<string, object> verified = ResolvePropertyTypes(properyTypes, eventTypeCompileTimeResolver);
             return new ObjectArrayEventType(
-                metadata, verified, optionalSuperTypes, optionalDeepSupertypes, startTimestampName, endTimestampName,
+                metadata,
+                verified,
+                optionalSuperTypes,
+                optionalDeepSupertypes,
+                startTimestampName,
+                endTimestampName,
                 beanEventTypeFactory);
         }
 
@@ -80,7 +93,9 @@ namespace com.espertech.esper.common.@internal.@event.core
                 var propertyName = prop.Key;
                 var propertyType = prop.Value;
 
-                if (propertyType is Type || propertyType is EventType || propertyType == null ||
+                if (propertyType is Type ||
+                    propertyType is EventType ||
+                    propertyType == null ||
                     propertyType is TypeBeanOrUnderlying) {
                     verified.Put(propertyName, propertyType);
                     continue;
@@ -108,7 +123,8 @@ namespace com.espertech.esper.common.@internal.@event.core
 
                 if (propertyType is IDictionary<string, object>) {
                     IDictionary<string, object> inner = ResolvePropertyTypes(
-                        (IDictionary<string, object>) propertyType, eventTypeNameResolver);
+                        (IDictionary<string, object>) propertyType,
+                        eventTypeNameResolver);
                     verified.Put(propertyName, inner);
                     continue;
                 }
@@ -157,8 +173,10 @@ namespace com.espertech.esper.common.@internal.@event.core
             string propertyName)
         {
             return new EPException(
-                "Nestable type configuration encountered an unexpected property type name '"
-                + propertyTypeName + "' for property '" + propertyName +
+                "Nestable type configuration encountered an unexpected property type name '" +
+                propertyTypeName +
+                "' for property '" +
+                propertyName +
                 "', expected java.lang.Class or java.util.Map or the name of a previously-declared Map or ObjectArray type");
         }
 
@@ -322,10 +340,15 @@ namespace com.espertech.esper.common.@internal.@event.core
             Type generator)
         {
             var method = CodegenLegoPropertyBeanOrUnd.From(
-                codegenMethodScope, codegenClassScope, typeof(Map), getter, CodegenLegoPropertyBeanOrUnd.AccessType.GET,
+                codegenMethodScope,
+                codegenClassScope,
+                typeof(Map),
+                getter,
+                CodegenLegoPropertyBeanOrUnd.AccessType.GET,
                 generator);
             return LocalMethod(
-                method, StaticMethod(typeof(BaseNestableEventUtil), "getBNArrayValueAtIndex", @ref, Constant(index)));
+                method,
+                StaticMethod(typeof(BaseNestableEventUtil), "getBNArrayValueAtIndex", @ref, Constant(index)));
         }
 
         public static object HandleBNNestedValueArrayWithMapFragment(
@@ -346,7 +369,8 @@ namespace com.espertech.esper.common.@internal.@event.core
 
             // If the map does not contain the key, this is allowed and represented as null
             EventBean eventBean = eventBeanTypedEventFactory.AdapterForTypedMap(
-                (IDictionary<string, object>) valueMap, fragmentType);
+                (IDictionary<string, object>) valueMap,
+                fragmentType);
             return getter.GetFragment(eventBean);
         }
 
@@ -361,10 +385,15 @@ namespace com.espertech.esper.common.@internal.@event.core
             Type generator)
         {
             var method = CodegenLegoPropertyBeanOrUnd.From(
-                codegenMethodScope, codegenClassScope, typeof(Map), getter,
-                CodegenLegoPropertyBeanOrUnd.AccessType.FRAGMENT, generator);
+                codegenMethodScope,
+                codegenClassScope,
+                typeof(Map),
+                getter,
+                CodegenLegoPropertyBeanOrUnd.AccessType.FRAGMENT,
+                generator);
             return LocalMethod(
-                method, StaticMethod(typeof(BaseNestableEventUtil), "getBNArrayValueAtIndex", @ref, Constant(index)));
+                method,
+                StaticMethod(typeof(BaseNestableEventUtil), "getBNArrayValueAtIndex", @ref, Constant(index)));
         }
 
         public static bool HandleNestedValueArrayWithMapExists(
@@ -395,10 +424,15 @@ namespace com.espertech.esper.common.@internal.@event.core
             Type generator)
         {
             var method = CodegenLegoPropertyBeanOrUnd.From(
-                codegenMethodScope, codegenClassScope, typeof(Map), getter,
-                CodegenLegoPropertyBeanOrUnd.AccessType.EXISTS, generator);
+                codegenMethodScope,
+                codegenClassScope,
+                typeof(Map),
+                getter,
+                CodegenLegoPropertyBeanOrUnd.AccessType.EXISTS,
+                generator);
             return LocalMethod(
-                method, StaticMethod(typeof(BaseNestableEventUtil), "getBNArrayValueAtIndex", @ref, Constant(index)));
+                method,
+                StaticMethod(typeof(BaseNestableEventUtil), "getBNArrayValueAtIndex", @ref, Constant(index)));
         }
 
         public static object HandleNestedValueArrayWithObjectArray(
@@ -427,10 +461,15 @@ namespace com.espertech.esper.common.@internal.@event.core
             Type generator)
         {
             var method = CodegenLegoPropertyBeanOrUnd.From(
-                codegenMethodScope, codegenClassScope, typeof(object[]), getter,
-                CodegenLegoPropertyBeanOrUnd.AccessType.GET, generator);
+                codegenMethodScope,
+                codegenClassScope,
+                typeof(object[]),
+                getter,
+                CodegenLegoPropertyBeanOrUnd.AccessType.GET,
+                generator);
             return LocalMethod(
-                method, StaticMethod(typeof(BaseNestableEventUtil), "getBNArrayValueAtIndex", @ref, Constant(index)));
+                method,
+                StaticMethod(typeof(BaseNestableEventUtil), "getBNArrayValueAtIndex", @ref, Constant(index)));
         }
 
         public static bool HandleNestedValueArrayWithObjectArrayExists(
@@ -459,10 +498,15 @@ namespace com.espertech.esper.common.@internal.@event.core
             Type generator)
         {
             var method = CodegenLegoPropertyBeanOrUnd.From(
-                codegenMethodScope, codegenClassScope, typeof(object[]), getter,
-                CodegenLegoPropertyBeanOrUnd.AccessType.EXISTS, generator);
+                codegenMethodScope,
+                codegenClassScope,
+                typeof(object[]),
+                getter,
+                CodegenLegoPropertyBeanOrUnd.AccessType.EXISTS,
+                generator);
             return LocalMethod(
-                method, StaticMethod(typeof(BaseNestableEventUtil), "getBNArrayValueAtIndex", @ref, Constant(index)));
+                method,
+                StaticMethod(typeof(BaseNestableEventUtil), "getBNArrayValueAtIndex", @ref, Constant(index)));
         }
 
         public static object HandleNestedValueArrayWithObjectArrayFragment(
@@ -496,10 +540,15 @@ namespace com.espertech.esper.common.@internal.@event.core
             Type generator)
         {
             var method = CodegenLegoPropertyBeanOrUnd.From(
-                codegenMethodScope, codegenClassScope, typeof(object[]), getter,
-                CodegenLegoPropertyBeanOrUnd.AccessType.FRAGMENT, generator);
+                codegenMethodScope,
+                codegenClassScope,
+                typeof(object[]),
+                getter,
+                CodegenLegoPropertyBeanOrUnd.AccessType.FRAGMENT,
+                generator);
             return LocalMethod(
-                method, StaticMethod(typeof(BaseNestableEventUtil), "getBNArrayValueAtIndex", @ref, Constant(index)));
+                method,
+                StaticMethod(typeof(BaseNestableEventUtil), "getBNArrayValueAtIndex", @ref, Constant(index)));
         }
 
         public static object GetMappedPropertyValue(
@@ -591,11 +640,13 @@ namespace com.espertech.esper.common.@internal.@event.core
 
             if (fragmentEventType is MapEventType) {
                 return eventBeanTypedEventFactory.AdapterForTypedMap(
-                    (IDictionary<string, object>) fragmentUnderlying, fragmentEventType);
+                    (IDictionary<string, object>) fragmentUnderlying,
+                    fragmentEventType);
             }
 
             return eventBeanTypedEventFactory.AdapterForTypedObjectArray(
-                (object[]) fragmentUnderlying, fragmentEventType);
+                (object[]) fragmentUnderlying,
+                fragmentEventType);
         }
 
         /// <summary>
@@ -687,17 +738,22 @@ namespace com.espertech.esper.common.@internal.@event.core
             int index)
         {
             return codegenMethodScope.MakeChild(typeof(object), typeof(BaseNestableEventUtil), codegenClassScope)
-                .AddParam(typeof(object), "value").Block
+                .AddParam(typeof(object), "value")
+                .Block
                 .IfRefNullReturnNull("value")
                 .IfConditionReturnConst(Not(ExprDotMethodChain(Ref("value")).Add("getClass").Add("isArray")), null)
                 .IfConditionReturnConst(
-                    Relational(StaticMethod(typeof(Array), "getLength", Ref("value")), LE, Constant(index)), null)
-                .DeclareVar(
-                    typeof(object), "arrayItem", StaticMethod(typeof(Array), "get", Ref("value"), Constant(index)))
+                    Relational(StaticMethod(typeof(Array), "getLength", Ref("value")), LE, Constant(index)),
+                    null)
+                .DeclareVar<object>(
+                    "arrayItem",
+                    StaticMethod(typeof(Array), "get", Ref("value"), Constant(index)))
                 .IfRefNullReturnNull("arrayItem")
                 .MethodReturn(
                     nestedGetter.UnderlyingGetCodegen(
-                        Cast(nestedGetter.TargetType, Ref("arrayItem")), codegenMethodScope, codegenClassScope));
+                        Cast(nestedGetter.TargetType, Ref("arrayItem")),
+                        codegenMethodScope,
+                        codegenClassScope));
         }
 
         public static object GetArrayPropertyValue(
@@ -724,10 +780,11 @@ namespace com.espertech.esper.common.@internal.@event.core
             EventPropertyGetterSPI nestedGetter)
         {
             return codegenMethodScope.MakeChild(typeof(object), typeof(BaseNestableEventUtil), codegenClassScope)
-                .AddParam(typeof(EventBean[]), "wrapper").Block
+                .AddParam(typeof(EventBean[]), "wrapper")
+                .Block
                 .IfRefNullReturnNull("wrapper")
                 .IfConditionReturnConst(Relational(ArrayLength(Ref("wrapper")), LE, Constant(index)), null)
-                .DeclareVar(typeof(EventBean), "inner", ArrayAtIndex(Ref("wrapper"), Constant(index)))
+                .DeclareVar<EventBean>("inner", ArrayAtIndex(Ref("wrapper"), Constant(index)))
                 .MethodReturn(nestedGetter.EventBeanGetCodegen(Ref("inner"), codegenMethodScope, codegenClassScope));
         }
 
@@ -755,10 +812,11 @@ namespace com.espertech.esper.common.@internal.@event.core
             EventPropertyGetterSPI nestedGetter)
         {
             return codegenMethodScope.MakeChild(typeof(object), typeof(BaseNestableEventUtil), codegenClassScope)
-                .AddParam(typeof(EventBean[]), "wrapper").Block
+                .AddParam(typeof(EventBean[]), "wrapper")
+                .Block
                 .IfRefNullReturnNull("wrapper")
                 .IfConditionReturnConst(Relational(ArrayLength(Ref("wrapper")), LE, Constant(index)), null)
-                .DeclareVar(typeof(EventBean), "inner", ArrayAtIndex(Ref("wrapper"), Constant(index)))
+                .DeclareVar<EventBean>("inner", ArrayAtIndex(Ref("wrapper"), Constant(index)))
                 .MethodReturn(
                     nestedGetter.EventBeanFragmentCodegen(Ref("inner"), codegenMethodScope, codegenClassScope));
         }
@@ -827,14 +885,17 @@ namespace com.espertech.esper.common.@internal.@event.core
             CodegenClassScope codegenClassScope)
         {
             return codegenMethodScope.MakeChild(typeof(object), typeof(BaseNestableEventUtil), codegenClassScope)
-                .AddParam(typeof(EventBean[]), "wrapper").Block
+                .AddParam(typeof(EventBean[]), "wrapper")
+                .Block
                 .IfRefNullReturnNull("wrapper")
                 .DeclareVar(
-                    TypeHelper.GetArrayType(underlyingType), "array",
+                    TypeHelper.GetArrayType(underlyingType),
+                    "array",
                     NewArrayByLength(underlyingType, ArrayLength(Ref("wrapper"))))
                 .ForLoopIntSimple("i", ArrayLength(Ref("wrapper")))
                 .AssignArrayElement(
-                    "array", Ref("i"),
+                    "array",
+                    Ref("i"),
                     Cast(underlyingType, ExprDotMethod(ArrayAtIndex(Ref("wrapper"), Ref("i")), "getUnderlying")))
                 .BlockEnd()
                 .MethodReturn(Ref("array"));
@@ -866,7 +927,10 @@ namespace com.espertech.esper.common.@internal.@event.core
 
             if (setOneType == null) {
                 return new ExprValidationException(
-                    "Type by name '" + otherName + "' in property '" + propName +
+                    "Type by name '" +
+                    otherName +
+                    "' in property '" +
+                    propName +
                     "' incompatible with null-type or property name not found in target");
             }
 
@@ -876,8 +940,14 @@ namespace com.espertech.esper.common.@internal.@event.core
                 if (!boxedOther.Equals(boxedThis)) {
                     if (!TypeHelper.IsSubclassOrImplementsInterface(boxedOther, boxedThis)) {
                         return new ExprValidationException(
-                            "Type by name '" + otherName + "' in property '" + propName + "' expected " + boxedThis +
-                            " but receives " + boxedOther);
+                            "Type by name '" +
+                            otherName +
+                            "' in property '" +
+                            propName +
+                            "' expected " +
+                            boxedThis +
+                            " but receives " +
+                            boxedOther);
                     }
                 }
             }
@@ -886,23 +956,39 @@ namespace com.espertech.esper.common.@internal.@event.core
                 var boxedThis = ((Type) setOneType).GetBoxedType();
                 if (!boxedOther.Equals(boxedThis)) {
                     return new ExprValidationException(
-                        "Type by name '" + otherName + "' in property '" + propName + "' expected " + boxedThis +
-                        " but receives " + boxedOther);
+                        "Type by name '" +
+                        otherName +
+                        "' in property '" +
+                        propName +
+                        "' expected " +
+                        boxedThis +
+                        " but receives " +
+                        boxedOther);
                 }
             }
-            else if (setTwoType is EventType[] && ((EventType[]) setTwoType)[0] is BeanEventType &&
-                     setOneType is Type && ((Type) setOneType).IsArray) {
+            else if (setTwoType is EventType[] &&
+                     ((EventType[]) setTwoType)[0] is BeanEventType &&
+                     setOneType is Type &&
+                     ((Type) setOneType).IsArray) {
                 var boxedOther = ((EventType[]) setTwoType)[0].UnderlyingType.GetBoxedType();
                 var boxedThis = ((Type) setOneType).GetElementType().GetBoxedType();
                 if (!boxedOther.Equals(boxedThis)) {
                     return new ExprValidationException(
-                        "Type by name '" + otherName + "' in property '" + propName + "' expected " + boxedThis +
-                        " but receives " + boxedOther);
+                        "Type by name '" +
+                        otherName +
+                        "' in property '" +
+                        propName +
+                        "' expected " +
+                        boxedThis +
+                        " but receives " +
+                        boxedOther);
                 }
             }
             else if (setTwoType is Map && setOneType is Map) {
                 var messageIsDeepEquals = BaseNestableEventType.IsDeepEqualsProperties(
-                    propName, (IDictionary<string, object>) setOneType, (IDictionary<string, object>) setTwoType);
+                    propName,
+                    (IDictionary<string, object>) setOneType,
+                    (IDictionary<string, object>) setTwoType);
                 if (messageIsDeepEquals != null) {
                     return messageIsDeepEquals;
                 }
@@ -960,8 +1046,14 @@ namespace com.espertech.esper.common.@internal.@event.core
                 }
 
                 return new ExprValidationException(
-                    "Type by name '" + otherName + "' in property '" + propName + "' expected " + typeOne +
-                    " but receives " + typeTwo);
+                    "Type by name '" +
+                    otherName +
+                    "' in property '" +
+                    propName +
+                    "' expected " +
+                    typeOne +
+                    " but receives " +
+                    typeTwo);
             }
 
             return null;
@@ -974,8 +1066,15 @@ namespace com.espertech.esper.common.@internal.@event.core
             EventType setTwoEventType)
         {
             return new ExprValidationException(
-                "Type by name '" + otherName + "' in property '" + propName + "' expected event type '" +
-                setOneEventType.Name + "' but receives event type '" + setTwoEventType.Name + "'");
+                "Type by name '" +
+                otherName +
+                "' in property '" +
+                propName +
+                "' expected event type '" +
+                setOneEventType.Name +
+                "' but receives event type '" +
+                setTwoEventType.Name +
+                "'");
         }
 
         private static bool IsNestedType(object type)

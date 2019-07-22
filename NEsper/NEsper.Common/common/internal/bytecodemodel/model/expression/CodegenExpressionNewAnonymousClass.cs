@@ -10,11 +10,13 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+
 using com.espertech.esper.collection;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.core;
 using com.espertech.esper.common.@internal.bytecodemodel.model.statement;
 using com.espertech.esper.common.@internal.bytecodemodel.util;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.core.CodeGenerationHelper;
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
@@ -40,10 +42,9 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
 
         public void Render(
             StringBuilder builder,
-            IDictionary<Type, string> imports,
             bool isInnerClass)
         {
-            Render(builder, imports, isInnerClass, 4, new CodegenIndent(true));
+            Render(builder, isInnerClass, 4, new CodegenIndent(true));
         }
 
         public override void MergeClasses(ISet<Type> classes)
@@ -60,15 +61,14 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
 
         public override void Render(
             StringBuilder builder,
-            IDictionary<Type, string> imports,
             bool isInnerClass,
             int level,
             CodegenIndent indent)
         {
             builder.Append("new ");
-            AppendClassName(builder, interfaceOrSuperClass, null, imports);
+            AppendClassName(builder, interfaceOrSuperClass);
             builder.Append("(");
-            RenderExpressions(builder, ctorParams.ToArray(), imports, isInnerClass);
+            RenderExpressions(builder, ctorParams.ToArray(), isInnerClass);
             builder.Append(") {\n");
 
             var methods = new CodegenClassMethods();
@@ -80,14 +80,14 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
             var delimiter = "";
             foreach (var publicMethod in methods.PublicMethods) {
                 builder.Append(delimiter);
-                publicMethod.Render(builder, imports, true, isInnerClass, indent, level + 1);
+                publicMethod.Render(builder, true, isInnerClass, indent, level + 1);
                 delimiter = "\n";
             }
 
             // private methods
             foreach (var method in methods.PrivateMethods) {
                 builder.Append(delimiter);
-                method.Render(builder, imports, false, isInnerClass, indent, level + 1);
+                method.Render(builder, false, isInnerClass, indent, level + 1);
                 delimiter = "\n";
             }
 

@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.collection;
 using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.collection;
@@ -51,7 +52,10 @@ namespace com.espertech.esper.common.@internal.context.compile
             try {
                 Pair<ContextMetaData, string> pair = path.GetAnyModuleExpectSingle(contextName, moduleUses);
                 if (pair != null) {
-                    if (!NameAccessModifierExtensions.Visible(pair.First.ContextVisibility, pair.First.ContextModuleName, moduleName)) {
+                    if (!NameAccessModifierExtensions.Visible(
+                        pair.First.ContextVisibility,
+                        pair.First.ContextModuleName,
+                        moduleName)) {
                         return null;
                     }
 

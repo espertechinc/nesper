@@ -730,7 +730,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
             public void Run(RegressionEnvironment env)
             {
                 string[] fieldsCreate = {"a", "b"};
-                string[] fieldsOnSelect = {"a", "b", "id"};
+                string[] fieldsOnSelect = {"a", "b", "Id"};
                 var path = new RegressionPath();
 
                 // create window

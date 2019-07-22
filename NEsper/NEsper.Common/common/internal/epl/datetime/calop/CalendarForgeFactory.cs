@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+
 using com.espertech.esper.common.@internal.epl.datetime.eval;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.compat;
@@ -45,7 +46,8 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
                     return new CalendarWithMinForge(fieldNum);
                 }
 
-                if (method == DateTimeMethodEnum.ROUNDCEILING || method == DateTimeMethodEnum.ROUNDFLOOR ||
+                if (method == DateTimeMethodEnum.ROUNDCEILING ||
+                    method == DateTimeMethodEnum.ROUNDFLOOR ||
                     method == DateTimeMethodEnum.ROUNDHALF) {
                     return new CalendarForgeRound(fieldNum, method);
                 }

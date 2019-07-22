@@ -9,6 +9,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.core;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -34,27 +35,26 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.statement
 
         public override void Render(
             StringBuilder builder,
-            IDictionary<Type, string> imports,
             bool isInnerClass,
             int level,
             CodegenIndent indent)
         {
             if (isWhile) {
                 builder.Append("while (");
-                condition.Render(builder, imports, isInnerClass);
+                condition.Render(builder, isInnerClass);
                 builder.Append(") {\n");
             }
             else {
                 builder.Append("do {\n");
             }
 
-            Block.Render(builder, imports, isInnerClass, level + 1, indent);
+            Block.Render(builder, isInnerClass, level + 1, indent);
             indent.Indent(builder, level);
             builder.Append("}\n");
             if (!isWhile) {
                 indent.Indent(builder, level);
                 builder.Append("while (");
-                condition.Render(builder, imports, isInnerClass);
+                condition.Render(builder, isInnerClass);
                 builder.Append(");\n");
             }
         }

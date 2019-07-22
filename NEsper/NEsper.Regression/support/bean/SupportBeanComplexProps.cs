@@ -106,7 +106,7 @@ namespace com.espertech.esper.regressionlib.support.bean
                 new[] {1, 2},
                 mapProp,
                 arrayProp,
-                "nestedValue",
+                "NestedValue",
                 "nestedNestedValue");
         }
 

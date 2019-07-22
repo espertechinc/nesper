@@ -54,56 +54,66 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
         {
             var r0Type = nodes[0].Forge.EvaluationType;
             var r1Type = nodes[1].Forge.EvaluationType;
-            if (r0Type == null || r1Type == null)
-            {
+            if (r0Type == null || r1Type == null) {
                 return ConstantNull();
             }
 
             var methodNode = codegenMethodScope.MakeChild(
-                returnType, typeof(MaxComputerDoubleCoerce), codegenClassScope);
+                returnType,
+                typeof(MaxComputerDoubleCoerce),
+                codegenClassScope);
             var block = methodNode.Block;
 
             block.DeclareVar(
-                r0Type, "r0", nodes[0].Forge.EvaluateCodegen(r0Type, methodNode, exprSymbol, codegenClassScope));
-            if (!r0Type.IsPrimitive)
-            {
+                r0Type,
+                "r0",
+                nodes[0].Forge.EvaluateCodegen(r0Type, methodNode, exprSymbol, codegenClassScope));
+            if (!r0Type.IsPrimitive) {
                 block.IfRefNullReturnNull("r0");
             }
 
             block.DeclareVar(
-                r1Type, "r1", nodes[1].Forge.EvaluateCodegen(r1Type, methodNode, exprSymbol, codegenClassScope));
-            if (!r1Type.IsPrimitive)
-            {
+                r1Type,
+                "r1",
+                nodes[1].Forge.EvaluateCodegen(r1Type, methodNode, exprSymbol, codegenClassScope));
+            if (!r1Type.IsPrimitive) {
                 block.IfRefNullReturnNull("r1");
             }
 
             block.DeclareVarNoInit(returnType, "result");
             block.IfCondition(
                     CodegenCompareRelop(
-                        returnType, min ? RelationalOpEnum.LT : RelationalOpEnum.GT, Ref("r0"), r0Type, Ref("r1"),
+                        returnType,
+                        min ? RelationalOpEnum.LT : RelationalOpEnum.GT,
+                        Ref("r0"),
+                        r0Type,
+                        Ref("r1"),
                         r1Type))
                 .AssignRef("result", TypeHelper.CoerceNumberToBoxedCodegen(Ref("r0"), r0Type, returnType))
                 .IfElse()
                 .AssignRef("result", TypeHelper.CoerceNumberToBoxedCodegen(Ref("r1"), r1Type, returnType))
                 .BlockEnd();
 
-            for (var i = 2; i < nodes.Length; i++)
-            {
+            for (var i = 2; i < nodes.Length; i++) {
                 var nodeType = nodes[i].Forge.EvaluationType;
                 var refname = "r" + i;
                 block.DeclareVar(
-                    nodeType, refname,
+                    nodeType,
+                    refname,
                     nodes[i].Forge.EvaluateCodegen(nodeType, methodNode, exprSymbol, codegenClassScope));
-                if (!nodeType.IsPrimitive)
-                {
+                if (!nodeType.IsPrimitive) {
                     block.IfRefNullReturnNull(refname);
                 }
 
                 block.IfCondition(
                         Not(
                             CodegenCompareRelop(
-                                returnType, min ? RelationalOpEnum.LT : RelationalOpEnum.GT, Ref("result"), returnType,
-                                Ref(refname), r1Type)))
+                                returnType,
+                                min ? RelationalOpEnum.LT : RelationalOpEnum.GT,
+                                Ref("result"),
+                                returnType,
+                                Ref(refname),
+                                r1Type)))
                     .AssignRef("result", TypeHelper.CoerceNumberToBoxedCodegen(Ref(refname), nodeType, returnType))
                     .BlockEnd();
             }
@@ -120,7 +130,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             CodegenExpression rhs,
             Type rhsType)
         {
-            return Op(lhs, op.ExpressionText, rhs);
+            return Op(lhs, op.GetExpressionText(), rhs);
         }
 
         private static CodegenExpression CodegenCompareCompareTo(
@@ -132,7 +142,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                 ExprDotMethod(lhs, "compareTo", rhs),
                 max
                     ? CodegenExpressionRelational.CodegenRelational.GT
-                    : CodegenExpressionRelational.CodegenRelational.LT, Constant(0));
+                    : CodegenExpressionRelational.CodegenRelational.LT,
+                Constant(0));
         }
     }
 } // end of namespace

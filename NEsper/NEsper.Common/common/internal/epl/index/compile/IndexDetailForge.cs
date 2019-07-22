@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.context.aifactory.core;
@@ -14,6 +15,7 @@ using com.espertech.esper.common.@internal.epl.join.lookup;
 using com.espertech.esper.common.@internal.epl.join.queryplan;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.index.compile
@@ -36,7 +38,9 @@ namespace com.espertech.esper.common.@internal.epl.index.compile
             ModuleIndexesInitializeSymbol symbols,
             CodegenClassScope classScope)
         {
-            return NewInstance<IndexDetail>(indexMultiKey.Make(parent, classScope), queryPlanIndexItem.Make(parent, classScope));
+            return NewInstance<IndexDetail>(
+                indexMultiKey.Make(parent, classScope),
+                queryPlanIndexItem.Make(parent, classScope));
         }
     }
 } // end of namespace

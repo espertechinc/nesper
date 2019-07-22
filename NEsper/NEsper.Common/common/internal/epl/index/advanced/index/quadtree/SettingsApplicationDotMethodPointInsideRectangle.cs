@@ -37,10 +37,18 @@ namespace com.espertech.esper.common.@internal.epl.index.advanced.index.quadtree
             ExprValidationContext validationContext)
         {
             EPLValidationUtil.ValidateParameterNumber(lhsName, LHS_VALIDATION_NAME, false, 2, lhs.Length);
-            EPLValidationUtil.ValidateParametersTypePredefined(lhs, lhsName, LHS_VALIDATION_NAME, EPLExpressionParamType.NUMERIC);
+            EPLValidationUtil.ValidateParametersTypePredefined(
+                lhs,
+                lhsName,
+                LHS_VALIDATION_NAME,
+                EPLExpressionParamType.NUMERIC);
 
             EPLValidationUtil.ValidateParameterNumber(rhsName, RHS_VALIDATION_NAME, true, 4, rhs.Length);
-            EPLValidationUtil.ValidateParametersTypePredefined(rhs, rhsName, RHS_VALIDATION_NAME, EPLExpressionParamType.NUMERIC);
+            EPLValidationUtil.ValidateParametersTypePredefined(
+                rhs,
+                rhsName,
+                RHS_VALIDATION_NAME,
+                EPLExpressionParamType.NUMERIC);
 
             ExprForge pxEval = lhs[0].Forge;
             ExprForge pyEval = lhs[1].Forge;

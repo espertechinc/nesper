@@ -9,6 +9,7 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.hook.vdw;
 using com.espertech.esper.common.@internal.epl.expression.core;
@@ -60,7 +61,9 @@ namespace com.espertech.esper.common.@internal.epl.virtualdw
                     var evaluatorStart = range.ExprStart;
                     var evaluatorEnd = range.ExprEnd;
                     evaluators[count] = new ExternalEvaluatorBtreeRange(
-                        evaluatorStart, evaluatorEnd, rangeCoercionTypes[i]);
+                        evaluatorStart,
+                        evaluatorEnd,
+                        rangeCoercionTypes[i]);
                 }
                 else {
                     var relOp = (QueryGraphValueEntryRangeRelOp) rangeKey;
@@ -100,7 +103,10 @@ namespace com.espertech.esper.common.@internal.epl.virtualdw
             catch (Exception ex) {
                 Log.Warn(
                     "Exception encountered invoking virtual data window external index for window '" +
-                    factory.NamedWindowName + "': " + ex.Message, ex);
+                    factory.NamedWindowName +
+                    "': " +
+                    ex.Message,
+                    ex);
             }
 
             return data;

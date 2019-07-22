@@ -8,6 +8,7 @@
 
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.approx.countminsketch
@@ -30,13 +31,14 @@ namespace com.espertech.esper.common.@internal.epl.approx.countminsketch
 
         public int Seed { get; set; }
 
-        public CodegenExpression CodegenMake(CodegenMethod method, CodegenClassScope classScope)
+        public CodegenExpression CodegenMake(
+            CodegenMethod method,
+            CodegenClassScope classScope)
         {
             return NewInstance<CountMinSketchSpecHashes>(
                 Constant(EpsOfTotalCount),
                 Constant(Confidence),
                 Constant(Seed));
         }
-
-}
+    }
 }

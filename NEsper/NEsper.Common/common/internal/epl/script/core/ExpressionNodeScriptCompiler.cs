@@ -26,8 +26,7 @@ namespace com.espertech.esper.common.@internal.epl.script.core
 #if NOT_USED
             ExpressionScriptCompiled compiled;
 #endif
-            if (optionalPrecompiled != null)
-            {
+            if (optionalPrecompiled != null) {
                 return optionalPrecompiled;
             }
 

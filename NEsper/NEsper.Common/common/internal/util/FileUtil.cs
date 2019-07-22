@@ -36,13 +36,11 @@ namespace com.espertech.esper.common.@internal.util
 
             string text;
             // repeat until all lines is read
-            while ((text = reader.ReadLine()) != null)
-            {
+            while ((text = reader.ReadLine()) != null) {
                 list.Add(text);
             }
 
             return list;
         }
-
     }
 } // end of namespace

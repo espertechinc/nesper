@@ -36,8 +36,7 @@ namespace com.espertech.esper.regressionlib.support.extend.aggfunc
             CodegenClassScope classScope)
         {
             method.Block
-                .DeclareVar(
-                    typeof(string),
+                .DeclareVar<string>(
                     "value",
                     Cast(typeof(string), forges[0].EvaluateCodegen(typeof(string), method, symbols, classScope)))
                 .ExprDotMethod(builder, "append", Ref("value"));

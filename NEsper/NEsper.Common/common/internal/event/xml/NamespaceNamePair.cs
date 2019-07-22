@@ -63,7 +63,8 @@ namespace com.espertech.esper.common.@internal.@event.xml
         public override int GetHashCode()
         {
             unchecked {
-                return ((Name != null ? Name.GetHashCode() : 0) * 397) ^ (Namespace != null ? Namespace.GetHashCode() : 0);
+                return ((Name != null ? Name.GetHashCode() : 0) * 397) ^
+                       (Namespace != null ? Namespace.GetHashCode() : 0);
             }
         }
 

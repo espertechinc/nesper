@@ -9,6 +9,7 @@
 using System;
 using System.IO;
 using System.Reflection;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -17,6 +18,7 @@ using com.espertech.esper.common.@internal.type;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.logging;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.expression.core
@@ -85,13 +87,17 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             var valueLower = ChildNodes[0].Forge;
             var valueUpper = ChildNodes[1].Forge;
             var methodNode = codegenMethodScope.MakeChild(
-                typeof(RangeParameter), typeof(ExprNumberSetRange), codegenClassScope);
+                typeof(RangeParameter),
+                typeof(ExprNumberSetRange),
+                codegenClassScope);
             var block = methodNode.Block
                 .DeclareVar(
-                    valueLower.EvaluationType, "valueLower",
+                    valueLower.EvaluationType,
+                    "valueLower",
                     valueLower.EvaluateCodegen(requiredType, methodNode, exprSymbol, codegenClassScope))
                 .DeclareVar(
-                    valueUpper.EvaluationType, "valueUpper",
+                    valueUpper.EvaluationType,
+                    "valueUpper",
                     valueUpper.EvaluateCodegen(requiredType, methodNode, exprSymbol, codegenClassScope));
             if (!valueLower.EvaluationType.IsPrimitive) {
                 block.IfRefNull("valueLower")
@@ -110,9 +116,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             block.MethodReturn(
                 NewInstance<RangeParameter>(
                     SimpleNumberCoercerFactory.CoercerInt.CodegenInt(
-                        Ref("valueLower"), valueLower.EvaluationType),
+                        Ref("valueLower"),
+                        valueLower.EvaluationType),
                     SimpleNumberCoercerFactory.CoercerInt.CodegenInt(
-                        Ref("valueUpper"), valueUpper.EvaluationType)
+                        Ref("valueUpper"),
+                        valueUpper.EvaluationType)
                 ));
             return LocalMethod(methodNode);
         }

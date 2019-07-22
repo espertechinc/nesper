@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -17,6 +18,7 @@ using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.rettype;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.enummethod.dot
@@ -74,17 +76,21 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
         {
             Type type = EPTypeHelper.GetCodegenReturnType(returnType);
             if (innerType == typeof(EventBean)) {
-                return CodegenLegoCast.CastSafeFromObjectType(type, getter.EventBeanGetCodegen(inner, codegenMethodScope, codegenClassScope));
+                return CodegenLegoCast.CastSafeFromObjectType(
+                    type,
+                    getter.EventBeanGetCodegen(inner, codegenMethodScope, codegenClassScope));
             }
 
-            CodegenMethod methodNode = codegenMethodScope.MakeChild(type, typeof(ExprDotForgeProperty), codegenClassScope)
+            CodegenMethod methodNode = codegenMethodScope
+                .MakeChild(type, typeof(ExprDotForgeProperty), codegenClassScope)
                 .AddParam(innerType, "target");
 
             methodNode.Block
                 .IfInstanceOf("target", typeof(EventBean))
                 .BlockReturn(
                     CodegenLegoCast.CastSafeFromObjectType(
-                        type, getter.EventBeanGetCodegen(Cast(typeof(EventBean), inner), methodNode, codegenClassScope)))
+                        type,
+                        getter.EventBeanGetCodegen(Cast(typeof(EventBean), inner), methodNode, codegenClassScope)))
                 .MethodReturn(ConstantNull());
             return LocalMethod(methodNode, inner);
         }

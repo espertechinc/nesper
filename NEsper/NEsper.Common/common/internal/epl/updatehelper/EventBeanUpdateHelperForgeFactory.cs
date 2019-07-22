@@ -8,6 +8,7 @@
 
 using System.Collections.Generic;
 using System.Linq;
+
 using com.espertech.esper.collection;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.compile.stage1.spec;
@@ -53,7 +54,10 @@ namespace com.espertech.esper.common.@internal.epl.updatehelper
                     // check assignment to indexed or mapped property
                     if (writableProperty == null) {
                         var nameWriteablePair = CheckIndexedOrMappedProp(
-                            possibleAssignment.First, updatedWindowOrTableName, updatedAlias, eventTypeSPI);
+                            possibleAssignment.First,
+                            updatedWindowOrTableName,
+                            updatedAlias,
+                            eventTypeSPI);
                         propertyName = nameWriteablePair.First;
                         writableProperty = nameWriteablePair.Second;
                     }
@@ -68,7 +72,11 @@ namespace com.espertech.esper.common.@internal.epl.updatehelper
                         widener = TypeWidenerFactory.GetCheckPropertyAssignType(
                             ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(possibleAssignment.Second),
                             possibleAssignment.Second.Forge.EvaluationType,
-                            writableProperty.PropertyType, propertyName, false, typeWidenerCustomizer, statementName);
+                            writableProperty.PropertyType,
+                            propertyName,
+                            false,
+                            typeWidenerCustomizer,
+                            statementName);
                     }
                     catch (TypeWidenerException ex) {
                         throw new ExprValidationException(ex.Message, ex);
@@ -79,17 +87,28 @@ namespace com.espertech.esper.common.@internal.epl.updatehelper
                         var node = (ExprIdentNode) possibleAssignment.Second;
                         var fragmentRHS = optionalTriggeringEventType.GetFragmentType(node.ResolvedPropertyName);
                         var fragmentLHS = eventTypeSPI.GetFragmentType(possibleAssignment.First);
-                        if (fragmentRHS != null && fragmentLHS != null && !EventTypeUtility.IsTypeOrSubTypeOf(
-                                fragmentRHS.FragmentType, fragmentLHS.FragmentType)) {
+                        if (fragmentRHS != null &&
+                            fragmentLHS != null &&
+                            !EventTypeUtility.IsTypeOrSubTypeOf(
+                                fragmentRHS.FragmentType,
+                                fragmentLHS.FragmentType)) {
                             throw new ExprValidationException(
                                 "Invalid assignment to property '" +
-                                possibleAssignment.First + "' event type '" + fragmentLHS.FragmentType.Name +
-                                "' from event type '" + fragmentRHS.FragmentType.Name + "'");
+                                possibleAssignment.First +
+                                "' event type '" +
+                                fragmentLHS.FragmentType.Name +
+                                "' from event type '" +
+                                fragmentRHS.FragmentType.Name +
+                                "'");
                         }
                     }
 
                     updateItem = new EventBeanUpdateItemForge(
-                        evaluator, propertyName, writers, notNullableField, widener);
+                        evaluator,
+                        propertyName,
+                        writers,
+                        notNullableField,
+                        widener);
                 }
                 else {
                     // handle non-assignment, i.e. UDF or other expression

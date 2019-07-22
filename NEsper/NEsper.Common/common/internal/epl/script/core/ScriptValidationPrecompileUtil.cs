@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.compile.stage1.spec;
 using com.espertech.esper.common.@internal.compile.stage3;
@@ -34,10 +35,13 @@ namespace com.espertech.esper.common.@internal.epl.script.core
                 ValidateScript(script, defaultDialect, compileTimeServices.ImportServiceCompileTime);
 
                 var key = new NameParameterCountKey(
-                    script.Name, script.ParameterNames.Length);
+                    script.Name,
+                    script.ParameterNames.Length);
                 if (scriptsSet.Contains(key)) {
                     throw new ExprValidationException(
-                        "Script name '" + script.Name + "' has already been defined with the same number of parameters");
+                        "Script name '" +
+                        script.Name +
+                        "' has already been defined with the same number of parameters");
                 }
 
                 scriptsSet.Add(key);
@@ -61,7 +65,8 @@ namespace com.espertech.esper.common.@internal.epl.script.core
             var dialect = script.OptionalDialect ?? defaultDialect;
             if (dialect == null) {
                 throw new ExprValidationException(
-                    "Failed to determine script dialect for script '" + script.Name +
+                    "Failed to determine script dialect for script '" +
+                    script.Name +
                     "', please configure a default dialect or provide a dialect explicitly");
             }
 

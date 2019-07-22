@@ -10,6 +10,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -19,6 +20,7 @@ using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.rettype;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.enummethod.dot
@@ -52,11 +54,19 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope classScope)
         {
-            CodegenExpressionField eventSvcMember = classScope.AddOrGetFieldSharable(EventBeanTypedEventFactoryCodegenField.INSTANCE);
+            CodegenExpressionField eventSvcMember =
+                classScope.AddOrGetFieldSharable(EventBeanTypedEventFactoryCodegenField.INSTANCE);
             CodegenExpressionField typeMember = classScope.AddFieldUnshared(
-                true, typeof(BeanEventType),
-                Cast(typeof(BeanEventType), EventTypeUtility.ResolveTypeCodegen(type, EPStatementInitServicesConstants.REF)));
-            return NewInstance(typeof(ExprDotStaticMethodWrapArrayEvents.WrappingCollection), eventSvcMember, typeMember, result);
+                true,
+                typeof(BeanEventType),
+                Cast(
+                    typeof(BeanEventType),
+                    EventTypeUtility.ResolveTypeCodegen(type, EPStatementInitServicesConstants.REF)));
+            return NewInstance(
+                typeof(ExprDotStaticMethodWrapArrayEvents.WrappingCollection),
+                eventSvcMember,
+                typeMember,
+                result);
         }
 
         public class WrappingCollection : ICollection<EventBean>
@@ -90,7 +100,8 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
             {
                 for (int ii = 0; ii < array.Length; ii++) {
                     yield return eventBeanTypedEventFactory.AdapterForTypedBean(
-                        array.GetValue(ii), type);
+                        array.GetValue(ii),
+                        type);
                 }
             }
 

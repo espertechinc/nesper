@@ -42,8 +42,7 @@ namespace NEsper.Avro.SelectExprRep
             ExprEvaluatorContext exprEvaluatorContext)
         {
             EventBean streamEvent = eventsPerStream[_streamNum];
-            if (streamEvent == null)
-            {
+            if (streamEvent == null) {
                 return null;
             }
 
@@ -60,11 +59,17 @@ namespace NEsper.Avro.SelectExprRep
 
             CodegenExpressionRef refEPS = exprSymbol.GetAddEPS(methodNode);
             methodNode.Block
-                .DeclareVar(typeof(EventBean), "streamEvent", CodegenExpressionBuilder.ArrayAtIndex(refEPS, CodegenExpressionBuilder.Constant(_streamNum)))
+                .DeclareVar<EventBean>(
+                    "streamEvent",
+                    CodegenExpressionBuilder.ArrayAtIndex(refEPS, CodegenExpressionBuilder.Constant(_streamNum)))
                 .IfRefNullReturnNull("streamEvent")
                 .MethodReturn(
                     CodegenLegoCast.CastSafeFromObjectType(
-                        _returnType, _getter.EventBeanGetCodegen(CodegenExpressionBuilder.Ref("streamEvent"), methodNode, codegenClassScope)));
+                        _returnType,
+                        _getter.EventBeanGetCodegen(
+                            CodegenExpressionBuilder.Ref("streamEvent"),
+                            methodNode,
+                            codegenClassScope)));
             return CodegenExpressionBuilder.LocalMethod(methodNode);
         }
 
@@ -75,23 +80,19 @@ namespace NEsper.Avro.SelectExprRep
             writer.Write(GetType().Name);
         }
 
-        public ExprEvaluator ExprEvaluator
-        {
+        public ExprEvaluator ExprEvaluator {
             get => this;
         }
 
-        public Type EvaluationType
-        {
+        public Type EvaluationType {
             get => _returnType;
         }
 
-        public ExprForgeConstantType ForgeConstantType
-        {
+        public ExprForgeConstantType ForgeConstantType {
             get => ExprForgeConstantType.NONCONST;
         }
 
-        public ExprNodeRenderable ForgeRenderable
-        {
+        public ExprNodeRenderable ForgeRenderable {
             get => this;
         }
 

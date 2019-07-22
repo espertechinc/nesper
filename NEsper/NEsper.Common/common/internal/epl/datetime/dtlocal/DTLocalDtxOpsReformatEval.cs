@@ -27,7 +27,8 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
             IList<CalendarOp> calendarOps,
             ReformatOp reformatOp)
             : base(
-                calendarOps, reformatOp)
+                calendarOps,
+                reformatOp)
         {
         }
 
@@ -50,15 +51,24 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
             CodegenClassScope codegenClassScope)
         {
             var methodNode = codegenMethodScope.MakeChild(
-                    forge.reformatForge.ReturnType, typeof(DTLocalDtxOpsReformatEval), codegenClassScope)
+                    forge.reformatForge.ReturnType,
+                    typeof(DTLocalDtxOpsReformatEval),
+                    codegenClassScope)
                 .AddParam(typeof(DateTimeEx), "target");
 
             var block = methodNode.Block
-                .DeclareVar(
-                    typeof(DateTimeEx), "dtx", Cast(typeof(DateTimeEx), ExprDotMethod(Ref("target"), "clone")));
+                .DeclareVar<DateTimeEx>(
+                    "dtx",
+                    Cast(typeof(DateTimeEx), ExprDotMethod(Ref("target"), "clone")));
             DTLocalUtil.EvaluateCalOpsCalendarCodegen(
-                block, forge.calendarForges, Ref("dtx"), methodNode, exprSymbol, codegenClassScope);
-            block.MethodReturn(forge.reformatForge.CodegenDateTimeEx(Ref("dtx"), methodNode, exprSymbol, codegenClassScope));
+                block,
+                forge.calendarForges,
+                Ref("dtx"),
+                methodNode,
+                exprSymbol,
+                codegenClassScope);
+            block.MethodReturn(
+                forge.reformatForge.CodegenDateTimeEx(Ref("dtx"), methodNode, exprSymbol, codegenClassScope));
             return LocalMethod(methodNode, inner);
         }
     }

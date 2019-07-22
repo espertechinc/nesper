@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.epl.expression.core;
@@ -39,11 +40,21 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.onspl
             EventType = eventType;
             if (isFirst) {
                 handler = new RouteResultViewHandlerFirst(
-                    epStatementHandle, internalEventRouter, tableInstances, items, processors, agentInstanceContext);
+                    epStatementHandle,
+                    internalEventRouter,
+                    tableInstances,
+                    items,
+                    processors,
+                    agentInstanceContext);
             }
             else {
                 handler = new RouteResultViewHandlerAll(
-                    epStatementHandle, internalEventRouter, tableInstances, items, processors, agentInstanceContext);
+                    epStatementHandle,
+                    internalEventRouter,
+                    tableInstances,
+                    items,
+                    processors,
+                    agentInstanceContext);
             }
         }
 

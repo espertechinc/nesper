@@ -32,7 +32,11 @@ namespace com.espertech.esper.common.@internal.epl.ontrigger
                 NewInstance<InfraOnMergeActionDel>(
                     OptionalFilter == null
                         ? ConstantNull()
-                        : ExprNodeUtilityCodegen.CodegenEvaluator(OptionalFilter.Forge, method, GetType(), classScope)));
+                        : ExprNodeUtilityCodegen.CodegenEvaluator(
+                            OptionalFilter.Forge,
+                            method,
+                            GetType(),
+                            classScope)));
             return LocalMethod(method);
         }
     }

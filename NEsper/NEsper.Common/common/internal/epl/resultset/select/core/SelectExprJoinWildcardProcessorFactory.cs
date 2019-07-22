@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.meta;
 using com.espertech.esper.common.client.util;
@@ -55,7 +56,9 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
 
             // If we have a name for this type, add it
             var representation = EventRepresentationUtil.GetRepresentation(
-                args.Annotations, args.Configuration, AssignedType.NONE);
+                args.Annotations,
+                args.Configuration,
+                AssignedType.NONE);
             EventType resultEventType;
 
             SelectExprProcessorForge processor = null;
@@ -63,7 +66,11 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
                 var existingType = args.EventTypeCompileTimeResolver.GetTypeByName(insertIntoDesc.EventTypeName);
                 if (existingType != null) {
                     processor = SelectExprInsertEventBeanFactory.GetInsertUnderlyingJoinWildcard(
-                        existingType, streamNames, streamTypesWTables, args.ImportService, args.StatementName,
+                        existingType,
+                        streamNames,
+                        streamTypesWTables,
+                        args.ImportService,
+                        args.StatementName,
                         args.EventTypeAvroHandler);
                 }
             }
@@ -73,30 +80,55 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
                     var eventTypeName = eventTypeNamePostfix.Invoke(insertIntoDesc.EventTypeName);
                     var visibility =
                         args.CompileTimeServices.ModuleVisibilityRules.GetAccessModifierEventType(
-                            args.StatementRawInfo, eventTypeName);
+                            args.StatementRawInfo,
+                            eventTypeName);
                     var metadata = new Func<EventTypeApplicationType, EventTypeMetadata>(
                         apptype => new EventTypeMetadata(
-                            eventTypeName, moduleName, EventTypeTypeClass.STREAM, apptype, visibility,
-                            EventTypeBusModifier.NONBUS, false, EventTypeIdPair.Unassigned()));
+                            eventTypeName,
+                            moduleName,
+                            EventTypeTypeClass.STREAM,
+                            apptype,
+                            visibility,
+                            EventTypeBusModifier.NONBUS,
+                            false,
+                            EventTypeIdPair.Unassigned()));
                     if (representation == EventUnderlyingType.MAP) {
                         IDictionary<string, object> propertyTypes =
                             EventTypeUtility.GetPropertyTypesNonPrimitive(selectProperties);
                         resultEventType = BaseNestableEventUtil.MakeMapTypeCompileTime(
-                            metadata.Invoke(EventTypeApplicationType.MAP), propertyTypes, null, null, null, null,
-                            args.BeanEventTypeFactoryPrivate, args.EventTypeCompileTimeResolver);
+                            metadata.Invoke(EventTypeApplicationType.MAP),
+                            propertyTypes,
+                            null,
+                            null,
+                            null,
+                            null,
+                            args.BeanEventTypeFactoryPrivate,
+                            args.EventTypeCompileTimeResolver);
                     }
                     else if (representation == EventUnderlyingType.OBJECTARRAY) {
                         IDictionary<string, object> propertyTypes =
                             EventTypeUtility.GetPropertyTypesNonPrimitive(selectProperties);
                         resultEventType = BaseNestableEventUtil.MakeOATypeCompileTime(
-                            metadata.Invoke(EventTypeApplicationType.OBJECTARR), propertyTypes, null, null, null, null,
-                            args.BeanEventTypeFactoryPrivate, args.EventTypeCompileTimeResolver);
+                            metadata.Invoke(EventTypeApplicationType.OBJECTARR),
+                            propertyTypes,
+                            null,
+                            null,
+                            null,
+                            null,
+                            args.BeanEventTypeFactoryPrivate,
+                            args.EventTypeCompileTimeResolver);
                     }
                     else if (representation == EventUnderlyingType.AVRO) {
                         resultEventType = args.EventTypeAvroHandler.NewEventTypeFromNormalized(
-                            metadata.Invoke(EventTypeApplicationType.AVRO), args.EventTypeCompileTimeResolver,
-                            EventBeanTypedEventFactoryCompileTime.INSTANCE, selectProperties, args.Annotations, null,
-                            null, null, args.StatementName);
+                            metadata.Invoke(EventTypeApplicationType.AVRO),
+                            args.EventTypeCompileTimeResolver,
+                            EventBeanTypedEventFactoryCompileTime.INSTANCE,
+                            selectProperties,
+                            args.Annotations,
+                            null,
+                            null,
+                            null,
+                            args.StatementName);
                     }
                     else {
                         throw new IllegalStateException("Unrecognized code " + representation);
@@ -111,24 +143,47 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
                         EventTypeUtility.GetPropertyTypesNonPrimitive(selectProperties);
                     var metadata = new Func<EventTypeApplicationType, EventTypeMetadata>(
                         type => new EventTypeMetadata(
-                            eventTypeName, moduleName, EventTypeTypeClass.STATEMENTOUT, type,
+                            eventTypeName,
+                            moduleName,
+                            EventTypeTypeClass.STATEMENTOUT,
+                            type,
                             NameAccessModifier.TRANSIENT,
-                            EventTypeBusModifier.NONBUS, false, EventTypeIdPair.Unassigned()));
+                            EventTypeBusModifier.NONBUS,
+                            false,
+                            EventTypeIdPair.Unassigned()));
                     if (representation == EventUnderlyingType.MAP) {
                         resultEventType = BaseNestableEventUtil.MakeMapTypeCompileTime(
-                            metadata.Invoke(EventTypeApplicationType.MAP), propertyTypes, null, null, null, null,
-                            args.BeanEventTypeFactoryPrivate, args.EventTypeCompileTimeResolver);
+                            metadata.Invoke(EventTypeApplicationType.MAP),
+                            propertyTypes,
+                            null,
+                            null,
+                            null,
+                            null,
+                            args.BeanEventTypeFactoryPrivate,
+                            args.EventTypeCompileTimeResolver);
                     }
                     else if (representation == EventUnderlyingType.OBJECTARRAY) {
                         resultEventType = BaseNestableEventUtil.MakeOATypeCompileTime(
-                            metadata.Invoke(EventTypeApplicationType.OBJECTARR), propertyTypes, null, null, null, null,
-                            args.BeanEventTypeFactoryPrivate, args.EventTypeCompileTimeResolver);
+                            metadata.Invoke(EventTypeApplicationType.OBJECTARR),
+                            propertyTypes,
+                            null,
+                            null,
+                            null,
+                            null,
+                            args.BeanEventTypeFactoryPrivate,
+                            args.EventTypeCompileTimeResolver);
                     }
                     else if (representation == EventUnderlyingType.AVRO) {
                         resultEventType = args.EventTypeAvroHandler.NewEventTypeFromNormalized(
-                            metadata.Invoke(EventTypeApplicationType.AVRO), args.EventTypeCompileTimeResolver,
-                            args.BeanEventTypeFactoryPrivate.EventBeanTypedEventFactory, selectProperties,
-                            args.Annotations, null, null, null, args.StatementName);
+                            metadata.Invoke(EventTypeApplicationType.AVRO),
+                            args.EventTypeCompileTimeResolver,
+                            args.BeanEventTypeFactoryPrivate.EventBeanTypedEventFactory,
+                            selectProperties,
+                            args.Annotations,
+                            null,
+                            null,
+                            null,
+                            args.StatementName);
                     }
                     else {
                         throw new IllegalStateException("Unrecognized enum " + representation);

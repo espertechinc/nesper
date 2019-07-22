@@ -9,6 +9,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.core.CodeGenerationHelper;
 
 namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
@@ -39,11 +40,10 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
 
         public void Render(
             StringBuilder builder,
-            IDictionary<Type, string> imports,
             bool isInnerClass)
         {
             if (enumType != null) {
-                AppendClassName(builder, enumType, null, imports);
+                AppendClassName(builder, enumType);
             }
             else {
                 builder.Append(enumTypeString);

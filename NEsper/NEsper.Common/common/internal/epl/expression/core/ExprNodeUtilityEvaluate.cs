@@ -9,6 +9,7 @@
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.compat.logging;
+
 using System;
 using System.Collections.Generic;
 using System.Reflection;
@@ -122,7 +123,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                     throw;
                 }
                 catch (Exception ex) {
-                    string message = "Failed expression evaluation in crontab timer-at for parameter " + count + ": " + ex.Message;
+                    string message = "Failed expression evaluation in crontab timer-at for parameter " +
+                                     count +
+                                     ": " +
+                                     ex.Message;
                     Log.Error(message, ex);
                     throw new ArgumentException(message);
                 }

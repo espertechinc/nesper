@@ -23,7 +23,9 @@ namespace com.espertech.esper.common.@internal.db.drivers
         {
         }
 
-        protected DbDriverSqlServer(SerializationInfo info, StreamingContext context)
+        protected DbDriverSqlServer(
+            SerializationInfo info,
+            StreamingContext context)
             : base(info, context)
         {
         }
@@ -54,8 +56,7 @@ namespace com.espertech.esper.common.@internal.db.drivers
         /// <value>
         /// 	<c>true</c> if [use position parameters]; otherwise, <c>false</c>.
         /// </value>
-        protected override bool UsePositionalParameters
-        {
+        protected override bool UsePositionalParameters {
             get { return false; }
         }
 
@@ -63,8 +64,7 @@ namespace com.espertech.esper.common.@internal.db.drivers
         /// Gets the parameter prefix.
         /// </summary>
         /// <value>The param prefix.</value>
-        protected override string ParamPrefix
-        {
+        protected override string ParamPrefix {
             get { return "@"; }
         }
     }

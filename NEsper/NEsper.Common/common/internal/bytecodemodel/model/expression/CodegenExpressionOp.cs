@@ -30,13 +30,12 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
 
         public void Render(
             StringBuilder builder,
-            IDictionary<Type, string> imports,
             bool isInnerClass)
         {
             builder.Append("(");
-            _left.Render(builder, imports, isInnerClass);
+            _left.Render(builder, isInnerClass);
             builder.Append(_expressionText);
-            _right.Render(builder, imports, isInnerClass);
+            _right.Render(builder, isInnerClass);
             builder.Append(")");
         }
 

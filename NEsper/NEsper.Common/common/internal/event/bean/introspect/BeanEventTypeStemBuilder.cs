@@ -9,6 +9,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.configuration.common;
 using com.espertech.esper.common.client.util;
@@ -52,7 +53,8 @@ namespace com.espertech.esper.common.@internal.@event.bean.introspect
             var properties = propertyListBuilder.AssessProperties(clazz);
 
             var propertyDescriptors = new EventPropertyDescriptor[properties.Count];
-            IDictionary<string, EventPropertyDescriptor> propertyDescriptorMap = new Dictionary<string, EventPropertyDescriptor>();
+            IDictionary<string, EventPropertyDescriptor> propertyDescriptorMap =
+                new Dictionary<string, EventPropertyDescriptor>();
             var propertyNames = new string[properties.Count];
             IDictionary<string, PropertyInfo> simpleProperties = new Dictionary<string, PropertyInfo>();
             IDictionary<string, PropertyStem> mappedPropertyDescriptors = new Dictionary<string, PropertyStem>();
@@ -213,7 +215,13 @@ namespace com.espertech.esper.common.@internal.@event.bean.introspect
                 propertyNames[count] = desc.PropertyName;
                 var descriptor = new EventPropertyDescriptor(
                     desc.PropertyName,
-                    underlyingType, componentType, isRequiresIndex, isRequiresMapkey, isIndexed, isMapped, isFragment);
+                    underlyingType,
+                    componentType,
+                    isRequiresIndex,
+                    isRequiresMapkey,
+                    isIndexed,
+                    isMapped,
+                    isFragment);
                 propertyDescriptors[count++] = descriptor;
                 propertyDescriptorMap.Put(descriptor.PropertyName, descriptor);
             }
@@ -231,10 +239,20 @@ namespace com.espertech.esper.common.@internal.@event.bean.introspect
             RemovePlatformInterfaces(deepSuperTypes);
 
             return new BeanEventTypeStem(
-                clazz, optionalConfig, propertyNames, simpleProperties, mappedPropertyDescriptors, indexedPropertyDescriptors,
-                superTypes, deepSuperTypes, propertyResolutionStyle,
-                simpleSmartPropertyTable, indexedSmartPropertyTable, mappedSmartPropertyTable,
-                propertyDescriptors, propertyDescriptorMap);
+                clazz,
+                optionalConfig,
+                propertyNames,
+                simpleProperties,
+                mappedPropertyDescriptors,
+                indexedPropertyDescriptors,
+                superTypes,
+                deepSuperTypes,
+                propertyResolutionStyle,
+                simpleSmartPropertyTable,
+                indexedSmartPropertyTable,
+                mappedSmartPropertyTable,
+                propertyDescriptors,
+                propertyDescriptorMap);
         }
 
         private static Type[] GetSuperTypes(Type clazz)

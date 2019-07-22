@@ -9,6 +9,7 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.context.activator;
 using com.espertech.esper.common.@internal.context.aifactory.core;
@@ -80,9 +81,12 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createwindow
             // The filter lookupables for the as-type apply to this type, when used with contexts, as contexts generated filters for types
             if (statementContext.ContextRuntimeDescriptor != null && asEventType != null) {
                 var namedWindow = statementContext.NamedWindowManagementService.GetNamedWindow(
-                    statementContext.DeploymentId, namedWindowName);
+                    statementContext.DeploymentId,
+                    namedWindowName);
                 statementContext.FilterSharedLookupableRepository.ApplyLookupableFromType(
-                    asEventType, namedWindow.RootView.EventType, statementContext.StatementId);
+                    asEventType,
+                    namedWindow.RootView.EventType,
+                    statementContext.StatementId);
             }
         }
 
@@ -93,7 +97,8 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createwindow
             }
 
             statementContext.NamedWindowManagementService.DestroyNamedWindow(
-                statementContext.DeploymentId, namedWindowName);
+                statementContext.DeploymentId,
+                namedWindowName);
         }
 
         public void StatementDestroyPreconditions(StatementContext statementContext)
@@ -121,7 +126,8 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createwindow
 
                 // Obtain processor for this named window
                 var namedWindow = agentInstanceContext.NamedWindowManagementService.GetNamedWindow(
-                    agentInstanceContext.DeploymentId, namedWindowName);
+                    agentInstanceContext.DeploymentId,
+                    namedWindowName);
                 if (namedWindow == null) {
                     throw new EPRuntimeException("Failed to obtain named window '" + namedWindowName + "'");
                 }
@@ -134,7 +140,10 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createwindow
                 var viewFactoryChainContext =
                     new AgentInstanceViewFactoryChainContext(agentInstanceContext, true, null, null);
                 var viewables = ViewFactoryUtil.Materialize(
-                    viewFactories, eventStreamParentViewable, viewFactoryChainContext, stopCallbacks);
+                    viewFactories,
+                    eventStreamParentViewable,
+                    viewFactoryChainContext,
+                    stopCallbacks);
 
                 eventStreamParentViewable.Child = rootView;
                 rootView.Parent = eventStreamParentViewable;
@@ -194,7 +203,10 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createwindow
 
                 // Attach output view
                 var pair = StatementAgentInstanceFactoryUtil.StartResultSetAndAggregation(
-                    resultSetProcessorFactoryProvider, agentInstanceContext, false, null);
+                    resultSetProcessorFactoryProvider,
+                    agentInstanceContext,
+                    false,
+                    null);
                 var @out = new OutputProcessViewSimpleWProcessor(agentInstanceContext, pair.First);
                 finalView.Child = @out;
                 @out.Parent = finalView;
@@ -216,7 +228,12 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createwindow
 
             var stopCallback = AgentInstanceUtil.FinalizeSafeStopCallbacks(stopCallbacks);
             return new StatementAgentInstanceFactoryCreateNWResult(
-                finalView, stopCallback, agentInstanceContext, eventStreamParentViewable, topView, namedWindowInstance,
+                finalView,
+                stopCallback,
+                agentInstanceContext,
+                eventStreamParentViewable,
+                topView,
+                namedWindowInstance,
                 viewableActivationResult);
         }
 
@@ -235,7 +252,8 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createwindow
             bool recovery)
         {
             var namedWindow = statementContext.NamedWindowManagementService.GetNamedWindow(
-                statementContext.DeploymentId, namedWindowName);
+                statementContext.DeploymentId,
+                namedWindowName);
             namedWindow.StatementContext = statementContext;
         }
 
@@ -266,7 +284,9 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createwindow
             if (events.Count > 0) {
                 var rootViewType = processorInstance.RootViewInstance.EventType;
                 var convertedEvents = EventTypeUtility.TypeCast(
-                    events, rootViewType, agentInstanceContext.EventBeanTypedEventFactory,
+                    events,
+                    rootViewType,
+                    agentInstanceContext.EventBeanTypedEventFactory,
                     agentInstanceContext.EventTypeAvroHandler);
                 processorInstance.RootViewInstance.Update(convertedEvents, null);
             }

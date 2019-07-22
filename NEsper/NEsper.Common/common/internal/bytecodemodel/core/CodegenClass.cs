@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.compat.collections;
 
@@ -60,16 +61,12 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.core
             ISet<Type> classes = new HashSet<Type>();
             AddReferencedClasses(InterfaceImplemented, methods, classes);
             AddReferencedClasses(ExplicitMembers, classes);
-            if (OptionalCtor != null) {
-                OptionalCtor.MergeClasses(classes);
-            }
+            OptionalCtor?.MergeClasses(classes);
 
             foreach (var inner in InnerClasses) {
                 AddReferencedClasses(inner.InterfaceImplemented, inner.Methods, classes);
                 AddReferencedClasses(inner.ExplicitMembers, classes);
-                if (inner.Ctor != null) {
-                    inner.Ctor.MergeClasses(classes);
-                }
+                inner.Ctor?.MergeClasses(classes);
             }
 
             return classes;

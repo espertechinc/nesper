@@ -33,16 +33,15 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
 
         public void Render(
             StringBuilder builder,
-            IDictionary<Type, string> imports,
             bool isInnerClass)
         {
             if (_isNot) {
                 builder.Append("!(");
-                Expression.Render(builder, imports, isInnerClass);
+                Expression.Render(builder, isInnerClass);
                 builder.Append(")");
             }
             else {
-                Expression.Render(builder, imports, isInnerClass);
+                Expression.Render(builder, isInnerClass);
             }
         }
     }

@@ -7,12 +7,14 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.@event.map;
 using com.espertech.esper.common.@internal.@event.util;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.@event.arr
@@ -59,7 +61,8 @@ namespace com.espertech.esper.common.@internal.@event.arr
 
             // If the map does not contain the key, this is allowed and represented as null
             EventBean eventBean = eventBeanTypedEventFactory.AdapterForTypedMap(
-                (IDictionary<string, object>) value, fragmentType);
+                (IDictionary<string, object>) value,
+                fragmentType);
             return mapGetter.GetFragment(eventBean);
         }
 
@@ -83,8 +86,13 @@ namespace com.espertech.esper.common.@internal.@event.arr
         {
             return LocalMethod(
                 CodegenLegoPropertyBeanOrUnd.From(
-                    codegenMethodScope, codegenClassScope, typeof(IDictionary<object, object>), mapGetter,
-                    CodegenLegoPropertyBeanOrUnd.AccessType.GET, GetType()), refName);
+                    codegenMethodScope,
+                    codegenClassScope,
+                    typeof(IDictionary<object, object>),
+                    mapGetter,
+                    CodegenLegoPropertyBeanOrUnd.AccessType.GET,
+                    GetType()),
+                refName);
         }
 
         public override CodegenExpression HandleNestedValueExistsCodegen(
@@ -94,8 +102,13 @@ namespace com.espertech.esper.common.@internal.@event.arr
         {
             return LocalMethod(
                 CodegenLegoPropertyBeanOrUnd.From(
-                    codegenMethodScope, codegenClassScope, typeof(IDictionary<object, object>), mapGetter,
-                    CodegenLegoPropertyBeanOrUnd.AccessType.EXISTS, GetType()), refName);
+                    codegenMethodScope,
+                    codegenClassScope,
+                    typeof(IDictionary<object, object>),
+                    mapGetter,
+                    CodegenLegoPropertyBeanOrUnd.AccessType.EXISTS,
+                    GetType()),
+                refName);
         }
 
         public override CodegenExpression HandleNestedValueFragmentCodegen(
@@ -105,8 +118,13 @@ namespace com.espertech.esper.common.@internal.@event.arr
         {
             return LocalMethod(
                 CodegenLegoPropertyBeanOrUnd.From(
-                    codegenMethodScope, codegenClassScope, typeof(IDictionary<object, object>), mapGetter,
-                    CodegenLegoPropertyBeanOrUnd.AccessType.FRAGMENT, GetType()), refName);
+                    codegenMethodScope,
+                    codegenClassScope,
+                    typeof(IDictionary<object, object>),
+                    mapGetter,
+                    CodegenLegoPropertyBeanOrUnd.AccessType.FRAGMENT,
+                    GetType()),
+                refName);
         }
     }
 } // end of namespace

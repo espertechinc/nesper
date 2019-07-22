@@ -14,7 +14,8 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
 {
     public class CodegenExpressionConstantFalse : CodegenExpression
     {
-        protected internal static readonly CodegenExpressionConstantFalse INSTANCE = new CodegenExpressionConstantFalse();
+        protected internal static readonly CodegenExpressionConstantFalse INSTANCE =
+            new CodegenExpressionConstantFalse();
 
         private CodegenExpressionConstantFalse()
         {
@@ -22,7 +23,6 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
 
         public void Render(
             StringBuilder builder,
-            IDictionary<Type, string> imports,
             bool isInnerClass)
         {
             builder.Append("false");

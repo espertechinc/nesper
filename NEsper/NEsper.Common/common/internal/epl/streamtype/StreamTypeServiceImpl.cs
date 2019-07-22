@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.collection;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.meta;
@@ -30,7 +31,11 @@ namespace com.espertech.esper.common.@internal.epl.streamtype
         /// <param name="isOnDemandStreams">for on-demand stream</param>
         public StreamTypeServiceImpl(bool isOnDemandStreams)
             : this(
-                new EventType[0], new string[0], new bool[0], isOnDemandStreams, false)
+                new EventType[0],
+                new string[0],
+                new bool[0],
+                isOnDemandStreams,
+                false)
         {
         }
 
@@ -184,7 +189,8 @@ namespace com.espertech.esper.common.@internal.epl.streamtype
             var desc = FindByPropertyName(propertyName, obtainFragment);
             if (requireStreamNames && desc.StreamNum != 0) {
                 throw new PropertyNotFoundException(
-                    "Property named '" + propertyName +
+                    "Property named '" +
+                    propertyName +
                     "' must be prefixed by a stream name, use the stream name itself or use the as-clause to name the stream with the property in the format \"stream.property\"",
                     null);
             }
@@ -203,7 +209,8 @@ namespace com.espertech.esper.common.@internal.epl.streamtype
             var desc = FindByPropertyNameExplicitProps(propertyName, obtainFragment);
             if (requireStreamNames && desc.StreamNum != 0) {
                 throw new PropertyNotFoundException(
-                    "Property named '" + propertyName +
+                    "Property named '" +
+                    propertyName +
                     "' must be prefixed by a stream name, use the stream name itself or use the as-clause to name the stream with the property in the format \"stream.property\"",
                     null);
             }
@@ -278,7 +285,10 @@ namespace com.espertech.esper.common.@internal.epl.streamtype
 
                     try {
                         return FindByStreamNameOnly(
-                            propertyNoEnginePair.First, propertyNoEnginePair.Second, false, obtainFragment);
+                            propertyNoEnginePair.First,
+                            propertyNoEnginePair.Second,
+                            false,
+                            obtainFragment);
                     }
                     catch (StreamNotFoundException) {
                         throw ex;
@@ -334,7 +344,12 @@ namespace com.espertech.esper.common.@internal.epl.streamtype
                         // If the property could be resolved from stream 0 then we don't need to look further
                         if (i == 0 && IsStreamZeroUnambigous) {
                             return new PropertyResolutionDescriptor(
-                                StreamNames[0], EventTypes[0], propertyName, 0, propertyType, fragmentEventTypeX);
+                                StreamNames[0],
+                                EventTypes[0],
+                                propertyName,
+                                0,
+                                propertyType,
+                                fragmentEventTypeX);
                         }
                     }
                 }
@@ -350,8 +365,12 @@ namespace com.espertech.esper.common.@internal.epl.streamtype
             }
 
             return new PropertyResolutionDescriptor(
-                StreamNames[foundIndex], EventTypes[foundIndex], propertyName, foundIndex,
-                streamType.GetPropertyType(propertyName), fragmentEventType);
+                StreamNames[foundIndex],
+                EventTypes[foundIndex],
+                propertyName,
+                foundIndex,
+                streamType.GetPropertyType(propertyName),
+                fragmentEventType);
         }
 
         private PropertyResolutionDescriptor FindByPropertyNameExplicitProps(
@@ -388,7 +407,12 @@ namespace com.espertech.esper.common.@internal.epl.streamtype
                         // If the property could be resolved from stream 0 then we don't need to look further
                         if (i == 0 && IsStreamZeroUnambigous) {
                             return new PropertyResolutionDescriptor(
-                                StreamNames[0], EventTypes[0], propertyName, 0, propertyType, fragmentEventTypeX);
+                                StreamNames[0],
+                                EventTypes[0],
+                                propertyName,
+                                0,
+                                propertyType,
+                                fragmentEventTypeX);
                         }
                     }
                 }
@@ -404,8 +428,12 @@ namespace com.espertech.esper.common.@internal.epl.streamtype
             }
 
             return new PropertyResolutionDescriptor(
-                StreamNames[foundIndex], EventTypes[foundIndex], propertyName, foundIndex,
-                streamType.GetPropertyType(propertyName), fragmentEventType);
+                StreamNames[foundIndex],
+                EventTypes[foundIndex],
+                propertyName,
+                foundIndex,
+                streamType.GetPropertyType(propertyName),
+                fragmentEventType);
         }
 
         private void HandleFindExceptions(
@@ -527,7 +555,12 @@ namespace com.espertech.esper.common.@internal.epl.streamtype
             }
 
             return new PropertyResolutionDescriptor(
-                streamName, streamType, propertyName, index, propertyType, fragmentEventType);
+                streamName,
+                streamType,
+                propertyName,
+                index,
+                propertyType,
+                fragmentEventType);
         }
 
         private PropertyNotFoundException HandlePropertyNotFound(

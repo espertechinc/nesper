@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.hook.vdw;
 using com.espertech.esper.common.@internal.context.module;
@@ -38,10 +39,17 @@ namespace com.espertech.esper.common.@internal.epl.virtualdw
         {
             try {
                 eventBeanFactory = EventTypeUtility.GetFactoryForType(
-                    EventType, services.EventBeanTypedEventFactory, services.EventTypeAvroHandler);
+                    EventType,
+                    services.EventBeanTypedEventFactory,
+                    services.EventTypeAvroHandler);
                 var factoryContext = new VirtualDataWindowFactoryContext(
-                    EventType, Parameters, ParameterExpressions, NamedWindowName, CompileTimeConfiguration,
-                    viewFactoryContext, services);
+                    EventType,
+                    Parameters,
+                    ParameterExpressions,
+                    NamedWindowName,
+                    CompileTimeConfiguration,
+                    viewFactoryContext,
+                    services);
                 Factory.Initialize(factoryContext);
             }
             catch (Exception ex) {
@@ -57,12 +65,16 @@ namespace com.espertech.esper.common.@internal.epl.virtualdw
             VirtualDataWindow window;
             try {
                 var context = new VirtualDataWindowContext(
-                    this, agentInstanceViewFactoryContext, eventBeanFactory, outputStream);
+                    this,
+                    agentInstanceViewFactoryContext,
+                    eventBeanFactory,
+                    outputStream);
                 window = Factory.Create(context);
             }
             catch (Exception ex) {
                 throw new EPException(
-                    "Exception returned by virtual data window factory upon creation: " + ex.Message, ex);
+                    "Exception returned by virtual data window factory upon creation: " + ex.Message,
+                    ex);
             }
 
             var view = new VirtualDWViewImpl(this, agentInstanceViewFactoryContext.AgentInstanceContext, window);

@@ -9,6 +9,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.context.module;
@@ -51,7 +52,10 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.querymethod
 
             // get RSP
             var pair = StatementAgentInstanceFactoryUtil.StartResultSetAndAggregation(
-                processorProvider, agentInstanceContext, false, null);
+                processorProvider,
+                agentInstanceContext,
+                false,
+                null);
 
             // assign
             assignerSetter.Assign(
@@ -73,7 +77,10 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.querymethod
         {
             ArrayDeque<EventBean> deque = new ArrayDeque<EventBean>(Math.Min(snapshot.Count, 16));
             ExprNodeUtilityEvaluate.ApplyFilterExpressionIterable(
-                snapshot.GetEnumerator(), filterExpressions, agentInstanceContext, deque);
+                snapshot.GetEnumerator(),
+                filterExpressions,
+                agentInstanceContext,
+                deque);
             return deque;
         }
 

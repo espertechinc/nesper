@@ -56,8 +56,11 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
         {
             var eventSvcMember = classScope.AddOrGetFieldSharable(EventBeanTypedEventFactoryCodegenField.INSTANCE);
             var typeMember = classScope.AddFieldUnshared(
-                true, typeof(BeanEventType),
-                Cast(typeof(BeanEventType), EventTypeUtility.ResolveTypeCodegen(type, EPStatementInitServicesConstants.REF)));
+                true,
+                typeof(BeanEventType),
+                Cast(
+                    typeof(BeanEventType),
+                    EventTypeUtility.ResolveTypeCodegen(type, EPStatementInitServicesConstants.REF)));
             return StaticMethod(
                 typeof(ExprDotStaticMethodWrapIterableEvents),
                 "UnwrapEventBeans",

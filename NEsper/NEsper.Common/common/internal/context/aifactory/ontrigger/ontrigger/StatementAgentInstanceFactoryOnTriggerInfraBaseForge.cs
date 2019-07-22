@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -22,6 +23,7 @@ using com.espertech.esper.common.@internal.epl.subselect;
 using com.espertech.esper.common.@internal.epl.table.compiletime;
 using com.espertech.esper.common.@internal.epl.table.core;
 using com.espertech.esper.common.@internal.epl.table.strategy;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.ontrigger
@@ -65,17 +67,24 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.ontri
             CodegenClassScope classScope)
         {
             method.Block
-                .SetProperty(saiff, "NamedWindow",
+                .SetProperty(
+                    saiff,
+                    "NamedWindow",
                     namedWindow == null
                         ? ConstantNull()
                         : NamedWindowDeployTimeResolver.MakeResolveNamedWindow(
-                            namedWindow, symbols.GetAddInitSvc(method)))
-                .SetProperty(saiff, "Table",
+                            namedWindow,
+                            symbols.GetAddInitSvc(method)))
+                .SetProperty(
+                    saiff,
+                    "Table",
                     table == null
                         ? ConstantNull()
                         : TableDeployTimeResolver.MakeResolveTable(table, symbols.GetAddInitSvc(method)))
                 .SetProperty(saiff, "QueryPlan", queryPlanForge.Make(method, symbols, classScope))
-                .SetProperty(saiff, "NonSelectRSPFactoryProvider",
+                .SetProperty(
+                    saiff,
+                    "NonSelectRSPFactoryProvider",
                     nonSelectRSPProviderClassName == null
                         ? ConstantNull()
                         : NewInstance(nonSelectRSPProviderClassName, symbols.GetAddInitSvc(method)))

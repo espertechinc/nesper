@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -47,13 +48,20 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            CodegenMethod methodNode = codegenMethodScope.MakeChild(typeof(EventBean), this.GetType(), codegenClassScope);
+            CodegenMethod methodNode = codegenMethodScope.MakeChild(
+                typeof(EventBean),
+                this.GetType(),
+                codegenClassScope);
             ExprForge first = selectExprForgeContext.ExprForges[0];
             Type evaluationType = first.EvaluationType;
             methodNode.Block.MethodReturn(
                 ProcessFirstColCodegen(
-                    evaluationType, first.EvaluateCodegen(evaluationType, methodNode, exprSymbol, codegenClassScope), resultEventType,
-                    eventBeanFactory, methodNode, codegenClassScope));
+                    evaluationType,
+                    first.EvaluateCodegen(evaluationType, methodNode, exprSymbol, codegenClassScope),
+                    resultEventType,
+                    eventBeanFactory,
+                    methodNode,
+                    codegenClassScope));
             return methodNode;
         }
 

@@ -37,7 +37,7 @@ namespace com.espertech.esper.regressionlib.suite.view
             string epl,
             AtomicLong milestone)
         {
-            var fields = "id".SplitCsv();
+            var fields = "Id".SplitCsv();
             env.CompileDeployAddListenerMile(epl, "s0", milestone.GetAndIncrement());
 
             env.SendEventBean(SupportEventIdWithTimestamp.MakeTime("E1", "8:00:00.000"));
@@ -209,7 +209,7 @@ namespace com.espertech.esper.regressionlib.suite.view
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "id".SplitCsv();
+                var fields = "Id".SplitCsv();
                 var epl =
                     "@Name('s0') select irstream * from SupportEventIdWithTimestamp#ext_timed_batch(mytimestamp, 1 minute)";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
@@ -318,17 +318,17 @@ namespace com.espertech.esper.regressionlib.suite.view
                         .SplitCsv();
                 var epl = "@Name('s0') select irstream Symbol as currSymbol, " +
                           "prev(0, Symbol) as prev0Symbol, " +
-                          "prev(0, price) as prev0Price, " +
+                          "prev(0, Price) as prev0Price, " +
                           "prev(1, Symbol) as prev1Symbol, " +
-                          "prev(1, price) as prev1Price, " +
+                          "prev(1, Price) as prev1Price, " +
                           "prev(2, Symbol) as prev2Symbol, " +
-                          "prev(2, price) as prev2Price," +
+                          "prev(2, Price) as prev2Price," +
                           "prevtail(0, Symbol) as prevTail0Symbol, " +
-                          "prevtail(0, price) as prevTail0Price, " +
+                          "prevtail(0, Price) as prevTail0Price, " +
                           "prevtail(1, Symbol) as prevTail1Symbol, " +
-                          "prevtail(1, price) as prevTail1Price, " +
-                          "prevcount(price) as prevCountPrice, " +
-                          "prevwindow(price) as prevWindowPrice " +
+                          "prevtail(1, Price) as prevTail1Price, " +
+                          "prevcount(Price) as prevCountPrice, " +
+                          "prevwindow(Price) as prevWindowPrice " +
                           "from SupportMarketDataBean#ext_timed_batch(Volume, 10, 0L) ";
                 env.CompileDeploy(epl).AddListener("s0");
 

@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.context.controller.condition;
@@ -85,15 +86,28 @@ namespace com.espertech.esper.common.@internal.context.controller.initterm
             var endConditionPath = controllerPath.AddToEnd(subpathId);
             var partitionKeys = initTermSvc.MgmtGetParentPartitionKeys(controllerPath);
             var endCondition = ContextControllerConditionFactory.GetEndpoint(
-                endConditionPath, partitionKeys, factory.initTermSpec.EndCondition, this, this, false);
+                endConditionPath,
+                partitionKeys,
+                factory.initTermSpec.EndCondition,
+                this,
+                this,
+                false);
             endCondition.Activate(optionalTriggeringEvent, this);
 
             var partitionKey = ContextControllerInitTermUtil.BuildPartitionKey(
-                optionalTriggeringEvent, optionalTriggeringPattern, endCondition, this);
+                optionalTriggeringEvent,
+                optionalTriggeringPattern,
+                endCondition,
+                this);
 
             var result = realization.ContextPartitionInstantiate(
-                controllerPath, subpathId, this, optionalTriggeringEvent, optionalPatternForInclusiveEval,
-                partitionKeys, partitionKey);
+                controllerPath,
+                subpathId,
+                this,
+                optionalTriggeringEvent,
+                optionalPatternForInclusiveEval,
+                partitionKeys,
+                partitionKey);
             var subpathIdOrCPId = result.SubpathOrCPId;
 
             initTermSvc.EndCreate(endConditionPath, subpathIdOrCPId, endCondition, partitionKey);

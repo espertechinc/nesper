@@ -32,7 +32,8 @@ namespace NEsper.Avro.Core
         public CodegenExpression InitCtorScoped()
         {
             return CodegenExpressionBuilder.StaticMethod<Schema>(
-                    "Parse", CodegenExpressionBuilder.Constant(_schema.ToString()));
+                "Parse",
+                CodegenExpressionBuilder.Constant(_schema.ToString()));
         }
     }
 } // end of namespace

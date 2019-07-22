@@ -10,6 +10,7 @@ using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.epl.historical.common;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.context.activator
@@ -29,8 +30,9 @@ namespace com.espertech.esper.common.@internal.context.activator
             CodegenClassScope classScope)
         {
             var method = parent.MakeChild(typeof(ViewableActivatorHistorical), GetType(), classScope);
-            method.Block.DeclareVar(
-                    typeof(ViewableActivatorHistorical), "hist", NewInstance(typeof(ViewableActivatorHistorical)))
+            method.Block.DeclareVar<ViewableActivatorHistorical>(
+                    "hist",
+                    NewInstance(typeof(ViewableActivatorHistorical)))
                 .SetProperty(Ref("hist"), "Factory", viewableForge.Make(method, symbols, classScope))
                 .MethodReturn(Ref("hist"));
             return LocalMethod(method);

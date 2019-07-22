@@ -8,6 +8,7 @@
 
 using System;
 using System.IO;
+
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
@@ -53,7 +54,14 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            return new InstrumentationBuilderExpr(this.GetType(), this, "ExprAnd", requiredType, codegenMethodScope, exprSymbol, codegenClassScope)
+            return new InstrumentationBuilderExpr(
+                    this.GetType(),
+                    this,
+                    "ExprAnd",
+                    requiredType,
+                    codegenMethodScope,
+                    exprSymbol,
+                    codegenClassScope)
                 .Build();
         }
 
@@ -75,7 +83,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             foreach (ExprNode child in ChildNodes) {
                 Type childType = child.Forge.EvaluationType;
                 if (!TypeHelper.IsBoolean(childType)) {
-                    throw new ExprValidationException("Incorrect use of AND clause, sub-expressions do not return boolean");
+                    throw new ExprValidationException(
+                        "Incorrect use of AND clause, sub-expressions do not return boolean");
                 }
             }
 

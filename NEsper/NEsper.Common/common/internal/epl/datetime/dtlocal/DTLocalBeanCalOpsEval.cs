@@ -7,11 +7,13 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
@@ -56,7 +58,8 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
                 .AddParam(typeof(EventBean), "target");
 
             methodNode.Block.DeclareVar(
-                forge.getterReturnType, "timestamp",
+                forge.getterReturnType,
+                "timestamp",
                 CodegenLegoCast.CastSafeFromObjectType(
                     forge.getterReturnType,
                     forge.getter.EventBeanGetCodegen(Ref("target"), methodNode, codegenClassScope)));
@@ -66,7 +69,11 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
 
             methodNode.Block.MethodReturn(
                 forge.inner.Codegen(
-                    Ref("timestamp"), forge.getterReturnType, methodNode, exprSymbol, codegenClassScope));
+                    Ref("timestamp"),
+                    forge.getterReturnType,
+                    methodNode,
+                    exprSymbol,
+                    codegenClassScope));
             return LocalMethod(methodNode, inner);
         }
     }

@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.context.util;
@@ -30,7 +31,10 @@ namespace com.espertech.esper.common.@internal.epl.output.view
             this.resultSetProcessor = resultSetProcessor;
             this.agentInstanceContext = agentInstanceContext;
             OptionalAfterConditionState = agentInstanceContext.ResultSetProcessorHelperFactory.MakeOutputConditionAfter(
-                afterConditionTime, afterConditionNumberOfEvents, afterConditionSatisfied, agentInstanceContext);
+                afterConditionTime,
+                afterConditionNumberOfEvents,
+                afterConditionSatisfied,
+                agentInstanceContext);
         }
 
         public virtual OutputProcessViewAfterState OptionalAfterConditionState { get; }

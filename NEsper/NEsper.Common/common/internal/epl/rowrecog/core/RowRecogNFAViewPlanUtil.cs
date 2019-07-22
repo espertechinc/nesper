@@ -9,6 +9,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+
 using com.espertech.esper.collection;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.annotation;
@@ -118,7 +119,13 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
 
                 // stream-type visibilities handled here
                 var typeServiceDefines = BuildDefineStreamTypeServiceDefine(
-                    defineIndex, variableStreams, defineItem, visibility, parentEventType, statementRawInfo, services);
+                    defineIndex,
+                    variableStreams,
+                    defineItem,
+                    visibility,
+                    parentEventType,
+                    statementRawInfo,
+                    services);
 
                 var exprNodeResult = HandlePreviousFunctions(defineItem.Expression, previousNodes);
                 var validationContext = new ExprValidationContextBuilder(typeServiceDefines, statementRawInfo, services)
@@ -130,7 +137,9 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
                 try {
                     // validate
                     validated = ExprNodeUtilityValidate.GetValidatedSubtree(
-                        ExprNodeOrigin.MATCHRECOGDEFINE, exprNodeResult, validationContext);
+                        ExprNodeOrigin.MATCHRECOGDEFINE,
+                        exprNodeResult,
+                        validationContext);
 
                     // check aggregates
                     defineItem.Expression = validated;
@@ -141,8 +150,11 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
                 }
                 catch (ExprValidationException ex) {
                     throw new ExprValidationException(
-                        "Failed to validate condition expression for variable '" + defineItem.Identifier + "': " +
-                        ex.Message, ex);
+                        "Failed to validate condition expression for variable '" +
+                        defineItem.Identifier +
+                        "': " +
+                        ex.Message,
+                        ex);
                 }
 
                 // determine access to event properties from multi-matches
@@ -172,11 +184,22 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
 
             var compositeTypeName = services.EventTypeNameGeneratorStatement.AnonymousRowrecogCompositeName;
             var compositeTypeMetadata = new EventTypeMetadata(
-                compositeTypeName, @base.ModuleName, EventTypeTypeClass.MATCHRECOGDERIVED,
-                EventTypeApplicationType.OBJECTARR, NameAccessModifier.TRANSIENT, EventTypeBusModifier.NONBUS, false,
+                compositeTypeName,
+                @base.ModuleName,
+                EventTypeTypeClass.MATCHRECOGDERIVED,
+                EventTypeApplicationType.OBJECTARR,
+                NameAccessModifier.TRANSIENT,
+                EventTypeBusModifier.NONBUS,
+                false,
                 EventTypeIdPair.Unassigned());
             var compositeEventType = BaseNestableEventUtil.MakeOATypeCompileTime(
-                compositeTypeMetadata, measureTypeDef, null, null, null, null, services.BeanEventTypeFactoryPrivate,
+                compositeTypeMetadata,
+                measureTypeDef,
+                null,
+                null,
+                null,
+                null,
+                services.BeanEventTypeFactoryPrivate,
                 services.EventTypeCompileTimeResolver);
             services.EventTypeCompileTimeRegistry.NewType(compositeEventType);
             StreamTypeService compositeTypeServiceMeasure =
@@ -192,8 +215,14 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
             AggregationServiceForgeDesc[] aggregationServices = null;
             if (!measureAggregateExprNodes.IsEmpty()) {
                 aggregationServices = PlanAggregations(
-                    measureAggregateExprNodes, compositeTypeServiceMeasure, allStreamNames, allTypes, streamVariables,
-                    variablesMultiple, @base, services);
+                    measureAggregateExprNodes,
+                    compositeTypeServiceMeasure,
+                    allStreamNames,
+                    allTypes,
+                    streamVariables,
+                    variablesMultiple,
+                    @base,
+                    services);
             }
 
             // validate each MEASURE clause expression
@@ -206,7 +235,11 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
                 }
 
                 var validated = ValidateMeasureClause(
-                    measureItem.Expr, compositeTypeServiceMeasure, variablesMultiple, variablesSingle, statementRawInfo,
+                    measureItem.Expr,
+                    compositeTypeServiceMeasure,
+                    variablesMultiple,
+                    variablesSingle,
+                    statementRawInfo,
                     services);
                 measureItem.Expr = validated;
                 rowTypeDef.Put(measureItem.Name, validated.Forge.EvaluationType);
@@ -241,10 +274,22 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
             // create rowevent type
             var rowTypeName = services.EventTypeNameGeneratorStatement.AnonymousRowrecogRowName;
             var rowTypeMetadata = new EventTypeMetadata(
-                rowTypeName, @base.ModuleName, EventTypeTypeClass.MATCHRECOGDERIVED, EventTypeApplicationType.MAP,
-                NameAccessModifier.TRANSIENT, EventTypeBusModifier.NONBUS, false, EventTypeIdPair.Unassigned());
+                rowTypeName,
+                @base.ModuleName,
+                EventTypeTypeClass.MATCHRECOGDERIVED,
+                EventTypeApplicationType.MAP,
+                NameAccessModifier.TRANSIENT,
+                EventTypeBusModifier.NONBUS,
+                false,
+                EventTypeIdPair.Unassigned());
             var rowEventType = BaseNestableEventUtil.MakeMapTypeCompileTime(
-                rowTypeMetadata, rowTypeDef, null, null, null, null, services.BeanEventTypeFactoryPrivate,
+                rowTypeMetadata,
+                rowTypeDef,
+                null,
+                null,
+                null,
+                null,
+                services.BeanEventTypeFactoryPrivate,
                 services.EventTypeCompileTimeResolver);
             services.EventTypeCompileTimeRegistry.NewType(rowEventType);
 
@@ -252,15 +297,20 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
             ExprNode[] partitionBy;
             if (!matchRecognizeSpec.PartitionByExpressions.IsEmpty()) {
                 StreamTypeService typeServicePartition = new StreamTypeServiceImpl(
-                    parentEventType, "MATCH_RECOGNIZE_PARTITION", true);
+                    parentEventType,
+                    "MATCH_RECOGNIZE_PARTITION",
+                    true);
                 IList<ExprNode> validated = new List<ExprNode>();
                 var validationContext =
                     new ExprValidationContextBuilder(typeServicePartition, statementRawInfo, services)
-                        .WithAllowBindingConsumption(true).Build();
+                        .WithAllowBindingConsumption(true)
+                        .Build();
                 foreach (var partitionExpr in matchRecognizeSpec.PartitionByExpressions) {
                     validated.Add(
                         ExprNodeUtilityValidate.GetValidatedSubtree(
-                            ExprNodeOrigin.MATCHRECOGPARTITION, partitionExpr, validationContext));
+                            ExprNodeOrigin.MATCHRECOGPARTITION,
+                            partitionExpr,
+                            validationContext));
                 }
 
                 matchRecognizeSpec.PartitionByExpressions = validated;
@@ -274,9 +324,12 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
             if (matchRecognizeSpec.Interval != null) {
                 var validationContext =
                     new ExprValidationContextBuilder(new StreamTypeServiceImpl(false), statementRawInfo, services)
-                        .WithAllowBindingConsumption(true).Build();
+                        .WithAllowBindingConsumption(true)
+                        .Build();
                 var validated = (ExprTimePeriod) ExprNodeUtilityValidate.GetValidatedSubtree(
-                    ExprNodeOrigin.MATCHRECOGINTERVAL, matchRecognizeSpec.Interval.TimePeriodExpr, validationContext);
+                    ExprNodeOrigin.MATCHRECOGINTERVAL,
+                    matchRecognizeSpec.Interval.TimePeriodExpr,
+                    validationContext);
                 matchRecognizeSpec.Interval.TimePeriodExpr = validated;
             }
 
@@ -298,7 +351,10 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
 
             // build states
             var strand = RowRecogHelper.BuildStartStates(
-                expandedPatternNode, variableDefinitions, variableStreams, isExprRequiresMultimatchState);
+                expandedPatternNode,
+                variableDefinitions,
+                variableStreams,
+                isExprRequiresMultimatchState);
             var startStates = strand.StartStates.ToArray();
             RowRecogNFAStateForge[] allStates = strand.AllStates.ToArray();
 
@@ -365,16 +421,31 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
             }
 
             return new RowRecogDescForge(
-                parentEventType, rowEventType, compositeEventType, multimatchEventType,
-                multimatchStreamNumToVariable, multimatchVariableToStreamNum,
-                partitionBy, variableStreams,
-                matchRecognizeSpec.Interval != null, iterateOnly, unbound,
-                orTerminated, collectMultimatches, defineAsksMultimatches,
-                numEventsEventsPerStreamDefine, multimatchVariablesArray,
-                startStates, allStates,
-                matchRecognizeSpec.IsAllMatches, matchRecognizeSpec.Skip.Skip,
-                columnForges, columnNames,
-                intervalCompute, previousRandomAccessIndexes, aggregationServices);
+                parentEventType,
+                rowEventType,
+                compositeEventType,
+                multimatchEventType,
+                multimatchStreamNumToVariable,
+                multimatchVariableToStreamNum,
+                partitionBy,
+                variableStreams,
+                matchRecognizeSpec.Interval != null,
+                iterateOnly,
+                unbound,
+                orTerminated,
+                collectMultimatches,
+                defineAsksMultimatches,
+                numEventsEventsPerStreamDefine,
+                multimatchVariablesArray,
+                startStates,
+                allStates,
+                matchRecognizeSpec.IsAllMatches,
+                matchRecognizeSpec.Skip.Skip,
+                columnForges,
+                columnNames,
+                intervalCompute,
+                previousRandomAccessIndexes,
+                aggregationServices);
         }
 
         private static AggregationServiceForgeDesc[] PlanAggregations(
@@ -387,7 +458,8 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
             StatementBaseInfo @base,
             StatementCompileTimeServices services)
         {
-            IDictionary<int, IList<ExprAggregateNode>> measureExprAggNodesPerStream = new Dictionary<int, IList<ExprAggregateNode>>();
+            IDictionary<int, IList<ExprAggregateNode>> measureExprAggNodesPerStream =
+                new Dictionary<int, IList<ExprAggregateNode>>();
 
             foreach (var aggregateNode in measureAggregateExprNodes) {
                 // validate node and params
@@ -395,11 +467,16 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
                 var visitor = new ExprNodeIdentifierVisitor(true);
                 var isIStreamOnly = new bool[allStreamNames.Length];
                 var typeServiceAggregateMeasure = new StreamTypeServiceImpl(
-                    allTypes, allStreamNames, isIStreamOnly, false, true);
+                    allTypes,
+                    allStreamNames,
+                    isIStreamOnly,
+                    false,
+                    true);
 
                 var validationContext =
                     new ExprValidationContextBuilder(typeServiceAggregateMeasure, @base.StatementRawInfo, services)
-                        .WithAllowBindingConsumption(true).Build();
+                        .WithAllowBindingConsumption(true)
+                        .Build();
                 aggregateNode.ValidatePositionals(validationContext);
 
                 if (aggregateNode.OptionalLocalGroupBy != null) {
@@ -409,7 +486,9 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
 
                 foreach (var child in aggregateNode.ChildNodes) {
                     var validated = ExprNodeUtilityValidate.GetValidatedSubtree(
-                        ExprNodeOrigin.MATCHRECOGMEASURE, child, validationContext);
+                        ExprNodeOrigin.MATCHRECOGMEASURE,
+                        child,
+                        validationContext);
                     validated.Accept(visitor);
                     aggregateNode.SetChildNode(count++, new ExprNodeValidated(validated));
                 }
@@ -452,7 +531,9 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
             foreach (var entry in measureExprAggNodesPerStream) {
                 foreach (var aggregateNode in entry.Value) {
                     var validationContext = new ExprValidationContextBuilder(
-                            compositeTypeServiceMeasure, @base.StatementRawInfo, services)
+                            compositeTypeServiceMeasure,
+                            @base.StatementRawInfo,
+                            services)
                         .WithAllowBindingConsumption(true)
                         .WithMemberName(new ExprValidationMemberNameQualifiedRowRecogAgg(entry.Key))
                         .Build();
@@ -473,10 +554,22 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
                     new EmptyList<ExprAggregateNode>(),
                     new EmptyList<ExprAggregateNode>(),
                     new EmptyList<ExprAggregateNodeGroupKey>(),
-                    false, @base.StatementRawInfo.Annotations,
-                    services.VariableCompileTimeResolver, true, null, null,
-                    typesPerStream, null, @base.ContextName, null, services.TableCompileTimeResolver,
-                    false, true, false, services.ImportServiceCompileTime, @base.StatementName);
+                    false,
+                    @base.StatementRawInfo.Annotations,
+                    services.VariableCompileTimeResolver,
+                    true,
+                    null,
+                    null,
+                    typesPerStream,
+                    null,
+                    @base.ContextName,
+                    null,
+                    services.TableCompileTimeResolver,
+                    false,
+                    true,
+                    false,
+                    services.ImportServiceCompileTime,
+                    @base.StatementName);
                 aggServices[entry.Key] = desc;
             }
 
@@ -498,11 +591,22 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
 
             var multimatchAllTypeName = services.EventTypeNameGeneratorStatement.AnonymousRowrecogMultimatchAllName;
             var multimatchAllTypeMetadata = new EventTypeMetadata(
-                multimatchAllTypeName, @base.ModuleName, EventTypeTypeClass.MATCHRECOGDERIVED,
-                EventTypeApplicationType.OBJECTARR, NameAccessModifier.TRANSIENT, EventTypeBusModifier.NONBUS, false,
+                multimatchAllTypeName,
+                @base.ModuleName,
+                EventTypeTypeClass.MATCHRECOGDERIVED,
+                EventTypeApplicationType.OBJECTARR,
+                NameAccessModifier.TRANSIENT,
+                EventTypeBusModifier.NONBUS,
+                false,
                 EventTypeIdPair.Unassigned());
             var multimatchAllEventType = BaseNestableEventUtil.MakeOATypeCompileTime(
-                multimatchAllTypeMetadata, multievent, null, null, null, null, services.BeanEventTypeFactoryPrivate,
+                multimatchAllTypeMetadata,
+                multievent,
+                null,
+                null,
+                null,
+                null,
+                services.BeanEventTypeFactoryPrivate,
                 services.EventTypeCompileTimeResolver);
             services.EventTypeCompileTimeRegistry.NewType(multimatchAllEventType);
             return multimatchAllEventType;
@@ -519,22 +623,27 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
             try {
                 var validationContext = new ExprValidationContextBuilder(typeServiceMeasure, statementRawInfo, services)
                     .WithAllowBindingConsumption(true)
-                    .WithDisablePropertyExpressionEventCollCache(true).WithAggregationFutureNameAlreadySet(true)
+                    .WithDisablePropertyExpressionEventCollCache(true)
+                    .WithAggregationFutureNameAlreadySet(true)
                     .Build();
                 return ExprNodeUtilityValidate.GetValidatedSubtree(
-                    ExprNodeOrigin.MATCHRECOGMEASURE, measureNode, validationContext);
+                    ExprNodeOrigin.MATCHRECOGMEASURE,
+                    measureNode,
+                    validationContext);
             }
             catch (ExprValidationPropertyException e) {
                 var grouped = CollectionUtil.ToString(variablesMultiple);
                 var single = CollectionUtil.ToString(variablesSingle);
                 var message = e.Message;
                 if (!variablesMultiple.IsEmpty()) {
-                    message += ", ensure that grouped variables (variables " + grouped +
+                    message += ", ensure that grouped variables (variables " +
+                               grouped +
                                ") are accessed via index (i.e. variable[0].property) or appear within an aggregation";
                 }
 
                 if (!variablesSingle.IsEmpty()) {
-                    message += ", ensure that singleton variables (variables " + single +
+                    message += ", ensure that singleton variables (variables " +
+                               single +
                                ") are not accessed via index";
                 }
 
@@ -582,7 +691,9 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
                 }
                 else {
                     ExprNodeUtilityModify.ReplaceChildNode(
-                        previousNodePair.First, previousNodePair.Second, matchRecogPrevNode);
+                        previousNodePair.First,
+                        previousNodePair.Second,
+                        matchRecogPrevNode);
                 }
 
                 // store in a list per index such that we can consolidate this into a single buffer
@@ -655,11 +766,22 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
                 var multimatchTypeName =
                     services.EventTypeNameGeneratorStatement.GetAnonymousRowrecogMultimatchDefineName(defineNum);
                 var multimatchTypeMetadata = new EventTypeMetadata(
-                    multimatchTypeName, statementRawInfo.ModuleName, EventTypeTypeClass.MATCHRECOGDERIVED,
-                    EventTypeApplicationType.OBJECTARR, NameAccessModifier.TRANSIENT, EventTypeBusModifier.NONBUS,
-                    false, EventTypeIdPair.Unassigned());
+                    multimatchTypeName,
+                    statementRawInfo.ModuleName,
+                    EventTypeTypeClass.MATCHRECOGDERIVED,
+                    EventTypeApplicationType.OBJECTARR,
+                    NameAccessModifier.TRANSIENT,
+                    EventTypeBusModifier.NONBUS,
+                    false,
+                    EventTypeIdPair.Unassigned());
                 var multimatchEventType = BaseNestableEventUtil.MakeOATypeCompileTime(
-                    multimatchTypeMetadata, multievent, null, null, null, null, services.BeanEventTypeFactoryPrivate,
+                    multimatchTypeMetadata,
+                    multievent,
+                    null,
+                    null,
+                    null,
+                    null,
+                    services.BeanEventTypeFactoryPrivate,
                     services.EventTypeCompileTimeResolver);
 
                 typesDefine[typesDefine.Length - 1] = multimatchEventType;

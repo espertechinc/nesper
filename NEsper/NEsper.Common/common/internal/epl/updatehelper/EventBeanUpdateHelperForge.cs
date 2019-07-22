@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -17,6 +18,7 @@ using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.compat.logging;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 using static com.espertech.esper.common.@internal.epl.expression.codegen.ExprForgeCodegenNames;
 using static com.espertech.esper.common.@internal.metrics.instrumentation.InstrumentationCode;
@@ -61,7 +63,9 @@ namespace com.espertech.esper.common.@internal.epl.updatehelper
             CodegenClassScope classScope)
         {
             var copyMethodField = classScope.AddFieldUnshared(
-                true, typeof(EventBeanCopyMethod), copyMethod.MakeCopyMethodClassScoped(classScope));
+                true,
+                typeof(EventBeanCopyMethod),
+                copyMethod.MakeCopyMethodClassScoped(classScope));
 
             var method = scope.MakeChild(typeof(EventBeanUpdateHelperWCopy), GetType(), classScope);
             var updateInternal = MakeUpdateInternal(method, classScope);
@@ -76,12 +80,16 @@ namespace com.espertech.esper.common.@internal.epl.updatehelper
             updateWCopy.Block
                 .Apply(
                     Instblock(
-                        classScope, "qInfraUpdate", Ref("matchingEvent"), REF_EPS, Constant(UpdateItems.Length),
+                        classScope,
+                        "qInfraUpdate",
+                        Ref("matchingEvent"),
+                        REF_EPS,
+                        Constant(UpdateItems.Length),
                         ConstantTrue()))
-                .DeclareVar(typeof(EventBean), "copy", ExprDotMethod(copyMethodField, "copy", Ref("matchingEvent")))
+                .DeclareVar<EventBean>("copy", ExprDotMethod(copyMethodField, "copy", Ref("matchingEvent")))
                 .AssignArrayElement(REF_EPS, Constant(0), Ref("copy"))
                 .AssignArrayElement(REF_EPS, Constant(2), Ref("matchingEvent"))
-                .LocalMethod(updateInternal, REF_EPS, REF_EXPREVALCONTEXT, Ref("copy"))
+                .InstanceMethod(updateInternal, REF_EPS, REF_EXPREVALCONTEXT, Ref("copy"))
                 .Apply(Instblock(classScope, "aInfraUpdate", Ref("copy")))
                 .MethodReturn(Ref("copy"));
 
@@ -107,13 +115,17 @@ namespace com.espertech.esper.common.@internal.epl.updatehelper
             updateNoCopy.Block
                 .Apply(
                     Instblock(
-                        classScope, "qInfraUpdate", Ref("matchingEvent"), REF_EPS, Constant(UpdateItems.Length),
+                        classScope,
+                        "qInfraUpdate",
+                        Ref("matchingEvent"),
+                        REF_EPS,
+                        Constant(UpdateItems.Length),
                         ConstantFalse()))
-                .LocalMethod(updateInternal, REF_EPS, REF_EXPREVALCONTEXT, Ref("matchingEvent"))
+                .InstanceMethod(updateInternal, REF_EPS, REF_EXPREVALCONTEXT, Ref("matchingEvent"))
                 .Apply(Instblock(classScope, "aInfraUpdate", Ref("matchingEvent")));
 
             var getUpdatedProperties = CodegenMethod.MakeParentNode(typeof(string[]), GetType(), classScope);
-            clazz.AddMethod("getUpdatedProperties", getUpdatedProperties);
+            clazz.AddMethod("GetUpdatedProperties", getUpdatedProperties);
             getUpdatedProperties.Block.MethodReturn(Constant(UpdateItemsPropertyNames));
 
             var isRequiresStream2InitialValueEvent = CodegenMethod.MakeParentNode(typeof(bool), GetType(), classScope);
@@ -130,26 +142,39 @@ namespace com.espertech.esper.common.@internal.epl.updatehelper
             CodegenClassScope classScope)
         {
             var method = scope.MakeChildWithScope(
-                    typeof(void), GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope)
+                    typeof(void),
+                    GetType(),
+                    CodegenSymbolProviderEmpty.INSTANCE,
+                    classScope)
                 .AddParam(typeof(EventBean[]), NAME_EPS)
                 .AddParam(typeof(ExprEvaluatorContext), NAME_EXPREVALCONTEXT)
                 .AddParam(typeof(EventBean), "target");
 
             var exprSymbol = new ExprForgeCodegenSymbol(true, true);
             var exprMethod = method.MakeChildWithScope(
-                typeof(void), typeof(CodegenLegoMethodExpression), exprSymbol, classScope).AddParam(PARAMS);
+                    typeof(void),
+                    typeof(CodegenLegoMethodExpression),
+                    exprSymbol,
+                    classScope)
+                .AddParam(PARAMS);
             var expressions = new CodegenExpression[UpdateItems.Length];
             var types = new Type[UpdateItems.Length];
             for (var i = 0; i < UpdateItems.Length; i++) {
                 types[i] = UpdateItems[i].Expression.EvaluationType;
-                expressions[i] = UpdateItems[i].Expression.EvaluateCodegen(
-                    types[i], exprMethod, exprSymbol, classScope);
+                expressions[i] = UpdateItems[i]
+                    .Expression.EvaluateCodegen(
+                        types[i],
+                        exprMethod,
+                        exprSymbol,
+                        classScope);
             }
 
             exprSymbol.DerivedSymbolsCodegen(method, method.Block, classScope);
 
             method.Block.DeclareVar(
-                eventType.UnderlyingType, "und", Cast(eventType.UnderlyingType, ExprDotUnderlying(Ref("target"))));
+                eventType.UnderlyingType,
+                "und",
+                Cast(eventType.UnderlyingType, ExprDotUnderlying(Ref("target"))));
 
             for (var i = 0; i < UpdateItems.Length; i++) {
                 var updateItem = UpdateItems[i];
@@ -158,7 +183,11 @@ namespace com.espertech.esper.common.@internal.epl.updatehelper
                 if (types[i] == null && updateItem.OptionalWriter != null) {
                     method.Block.Expression(
                         updateItem.OptionalWriter.WriteCodegen(
-                            ConstantNull(), Ref("und"), Ref("target"), method, classScope));
+                            ConstantNull(),
+                            Ref("und"),
+                            Ref("target"),
+                            method,
+                            classScope));
                     continue;
                 }
 
@@ -181,18 +210,27 @@ namespace com.espertech.esper.common.@internal.epl.updatehelper
                     method.Block
                         .IfRefNull(@ref)
                         .StaticMethod(
-                            typeof(EventBeanUpdateHelperForge), "logWarnWhenNullAndNotNullable",
+                            typeof(EventBeanUpdateHelperForge),
+                            "logWarnWhenNullAndNotNullable",
                             Constant(updateItem.OptionalPropertyName))
                         .IfElse()
                         .Expression(
                             updateItem.OptionalWriter.WriteCodegen(
-                                assigned, Ref("und"), Ref("target"), method, classScope))
+                                assigned,
+                                Ref("und"),
+                                Ref("target"),
+                                method,
+                                classScope))
                         .BlockEnd();
                 }
                 else {
                     method.Block.Expression(
                         updateItem.OptionalWriter.WriteCodegen(
-                            assigned, Ref("und"), Ref("target"), method, classScope));
+                            assigned,
+                            Ref("und"),
+                            Ref("target"),
+                            method,
+                            classScope));
                 }
 
                 method.Block.Apply(Instblock(classScope, "aInfraUpdateRHSExpr", assigned));
@@ -208,7 +246,8 @@ namespace com.espertech.esper.common.@internal.epl.updatehelper
         public static void LogWarnWhenNullAndNotNullable(string propertyName)
         {
             Log.Warn(
-                "Null value returned by expression for assignment to property '" + propertyName +
+                "Null value returned by expression for assignment to property '" +
+                propertyName +
                 " is ignored as the property type is not nullable for expression");
         }
     }

@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.compile.stage1.spec;
@@ -48,21 +49,33 @@ namespace com.espertech.esper.common.@internal.epl.ontrigger
             EventBean[] triggerEvents,
             EventBean[] matchingEvents)
         {
-            agentInstanceContext.InstrumentationProvider.QInfraOnAction(OnTriggerType.ON_SELECT, triggerEvents, matchingEvents);
+            agentInstanceContext.InstrumentationProvider.QInfraOnAction(
+                OnTriggerType.ON_SELECT,
+                triggerEvents,
+                matchingEvents);
 
             // clear state from prior results
             resultSetProcessor.Clear();
 
             // build join result
             // use linked hash set to retain order of join results for last/first/window to work most intuitively
-            ISet<MultiKey<EventBean>> newEvents = OnExprViewNamedWindowSelect.BuildJoinResult(triggerEvents, matchingEvents);
+            ISet<MultiKey<EventBean>> newEvents =
+                OnExprViewNamedWindowSelect.BuildJoinResult(triggerEvents, matchingEvents);
 
             // process matches
-            UniformPair<EventBean[]> pair = resultSetProcessor.ProcessJoinResult(newEvents, Collections.GetEmptySet<MultiKey<EventBean>>(), false);
+            UniformPair<EventBean[]> pair = resultSetProcessor.ProcessJoinResult(
+                newEvents,
+                Collections.GetEmptySet<MultiKey<EventBean>>(),
+                false);
             EventBean[] newData = pair?.First;
 
             // handle distinct and insert
-            newData = InfraOnSelectUtil.HandleDistintAndInsert(newData, parent, agentInstanceContext, tableInstanceInsertInto, audit);
+            newData = InfraOnSelectUtil.HandleDistintAndInsert(
+                newData,
+                parent,
+                agentInstanceContext,
+                tableInstanceInsertInto,
+                audit);
 
             // The on-select listeners receive the events selected
             if ((newData != null) && (newData.Length > 0)) {

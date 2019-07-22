@@ -10,11 +10,13 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.type;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat.collections;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.schedule
@@ -243,7 +245,9 @@ namespace com.espertech.esper.common.@internal.schedule
                     if (value < unit.Min() || value > unit.Max()) {
                         throw new ArgumentException(
                             "Invalid value found for schedule unit, value of " +
-                            value + " is not valid for unit " + unit);
+                            value +
+                            " is not valid for unit " +
+                            unit);
                     }
                 }
             }
@@ -255,7 +259,7 @@ namespace com.espertech.esper.common.@internal.schedule
         {
             var method = parent.MakeChild(typeof(ScheduleSpec), GetType(), classScope);
             var spec = Ref("spec");
-            method.Block.DeclareVar(typeof(ScheduleSpec), spec.Ref, NewInstance(typeof(ScheduleSpec)));
+            method.Block.DeclareVar<ScheduleSpec>(spec.Ref, NewInstance(typeof(ScheduleSpec)));
             if (_optionalTimeZone != null) {
                 method.Block.SetProperty(spec, "OptionalTimeZone", Constant(_optionalTimeZone));
             }
@@ -266,7 +270,8 @@ namespace com.espertech.esper.common.@internal.schedule
                 if (values != null) {
                     valuesExpr = NewInstance<SortedSet<object>>(
                         StaticMethod(
-                            typeof(CompatExtensions), "AsList",
+                            typeof(CompatExtensions),
+                            "AsList",
                             Constant(IntArrayUtil.ToBoxedArray(values))));
                 }
 

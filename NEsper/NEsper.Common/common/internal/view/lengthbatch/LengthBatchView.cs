@@ -9,6 +9,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.context.util;
@@ -141,7 +142,9 @@ namespace com.espertech.esper.common.@internal.view.lengthbatch
                 // Post new data (current batch) and old data (prior batch)
                 if (newData != null || oldData != null) {
                     agentInstanceContext.InstrumentationProvider.QViewIndicate(
-                        lengthBatchViewFactory, newData, oldData);
+                        lengthBatchViewFactory,
+                        newData,
+                        oldData);
                     child.Update(newData, oldData);
                     agentInstanceContext.InstrumentationProvider.AViewIndicate();
                 }
@@ -169,7 +172,8 @@ namespace com.espertech.esper.common.@internal.view.lengthbatch
         public override string ToString()
         {
             return GetType().Name +
-                   " size=" + Size;
+                   " size=" +
+                   Size;
         }
     }
 } // end of namespace

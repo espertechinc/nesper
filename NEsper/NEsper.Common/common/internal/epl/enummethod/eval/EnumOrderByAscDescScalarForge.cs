@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -15,6 +16,7 @@ using com.espertech.esper.common.@internal.epl.enummethod.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.enummethod.eval
@@ -62,13 +64,24 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            CodegenBlock block = codegenMethodScope.MakeChild(typeof(ICollection<object>), typeof(EnumOrderByAscDescScalarForge), codegenClassScope)
-                .AddParam(EnumForgeCodegenNames.PARAMS).Block
-                .IfCondition(Or(EqualsNull(EnumForgeCodegenNames.REF_ENUMCOLL), ExprDotMethod(EnumForgeCodegenNames.REF_ENUMCOLL, "isEmpty")))
+            CodegenBlock block = codegenMethodScope.MakeChild(
+                    typeof(ICollection<object>),
+                    typeof(EnumOrderByAscDescScalarForge),
+                    codegenClassScope)
+                .AddParam(EnumForgeCodegenNames.PARAMS)
+                .Block
+                .IfCondition(
+                    Or(
+                        EqualsNull(EnumForgeCodegenNames.REF_ENUMCOLL),
+                        ExprDotMethod(EnumForgeCodegenNames.REF_ENUMCOLL, "isEmpty")))
                 .BlockReturn(EnumForgeCodegenNames.REF_ENUMCOLL)
-                .DeclareVar(typeof(IList<object>), "list", NewInstance<List<object>>(EnumForgeCodegenNames.REF_ENUMCOLL));
+                .DeclareVar<IList<object>>("list", NewInstance<List<object>>(EnumForgeCodegenNames.REF_ENUMCOLL));
             if (descending) {
-                block.StaticMethod(typeof(Collections), "sort", @Ref("list"), StaticMethod(typeof(Collections), "reverseOrder"));
+                block.StaticMethod(
+                    typeof(Collections),
+                    "sort",
+                    @Ref("list"),
+                    StaticMethod(typeof(Collections), "reverseOrder"));
             }
             else {
                 block.StaticMethod(typeof(Collections), "sort", @Ref("list"));

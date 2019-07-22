@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client.context;
 using com.espertech.esper.common.@internal.context.airegistry;
 using com.espertech.esper.common.@internal.context.controller.core;
@@ -16,6 +17,7 @@ using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.filterspec;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+
 using static com.espertech.esper.common.@internal.context.util.ContextPropertyEventType;
 
 namespace com.espertech.esper.common.@internal.context.controller.category
@@ -44,7 +46,8 @@ namespace com.espertech.esper.common.@internal.context.controller.category
         {
             if (!forStatement) {
                 if (!EventTypeUtility.IsTypeOrSubTypeOf(
-                    filterSpec.FilterForEventType, CategorySpec.FilterSpecActivatable.FilterForEventType)) {
+                    filterSpec.FilterForEventType,
+                    CategorySpec.FilterSpecActivatable.FilterForEventType)) {
                     return null;
                 }
             }
@@ -52,7 +55,9 @@ namespace com.espertech.esper.common.@internal.context.controller.category
             int categoryNum = partitionKey.AsInt();
             ContextControllerDetailCategoryItem item = CategorySpec.Items[categoryNum];
             return FilterSpecActivatable.EvaluateValueSet(
-                item.CompiledFilterParam, null, agentInstanceContextStatement);
+                item.CompiledFilterParam,
+                null,
+                agentInstanceContextStatement);
         }
 
         public override void PopulateContextProperties(

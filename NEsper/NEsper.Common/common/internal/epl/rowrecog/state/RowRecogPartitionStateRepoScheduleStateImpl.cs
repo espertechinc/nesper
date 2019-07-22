@@ -9,6 +9,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+
 using com.espertech.esper.common.@internal.epl.rowrecog.core;
 using com.espertech.esper.common.@internal.epl.rowrecog.nfa;
 using com.espertech.esper.compat;
@@ -21,7 +22,8 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.state
         private readonly RowRecogPartitionTerminationStateComparator terminationStateCompare;
         private readonly OrderedDictionary<long, object> schedule = new OrderedDictionary<long, object>();
 
-        public RowRecogPartitionStateRepoScheduleStateImpl(RowRecogPartitionTerminationStateComparator terminationStateCompare)
+        public RowRecogPartitionStateRepoScheduleStateImpl(
+            RowRecogPartitionTerminationStateComparator terminationStateCompare)
         {
             this.terminationStateCompare = terminationStateCompare;
         }
@@ -111,7 +113,7 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.state
             var entries = (IList<RowRecogNFAStateEntry>) entry;
             var removed = false;
 
-            for (var ii = 0 ; ii < entries.Count ; ii++) {
+            for (var ii = 0; ii < entries.Count; ii++) {
                 var endState = entries[ii];
                 if (terminationStateCompare.CompareTerminationStateToEndState(state, endState)) {
                     entries.RemoveAt(ii);

@@ -29,7 +29,9 @@ namespace com.espertech.esper.common.@internal.epl.join.indexlookupplan
             int indexedStream,
             TableLookupIndexReqKey[] indexNum)
             : base(
-                lookupStream, indexedStream, indexNum)
+                lookupStream,
+                indexedStream,
+                indexNum)
         {
         }
 

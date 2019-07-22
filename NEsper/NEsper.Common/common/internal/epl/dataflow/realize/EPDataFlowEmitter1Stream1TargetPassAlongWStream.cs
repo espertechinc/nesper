@@ -8,6 +8,7 @@
 
 using System;
 using System.Reflection;
+
 using com.espertech.esper.common.@internal.epl.dataflow.util;
 using com.espertech.esper.common.@internal.settings;
 
@@ -26,7 +27,12 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.realize
             int streamNum,
             ImportService importService)
             : base(
-                operatorNum, signalManager, signalHandler, exceptionHandler, target, importService)
+                operatorNum,
+                signalManager,
+                signalHandler,
+                exceptionHandler,
+                target,
+                importService)
         {
             this.streamNum = streamNum;
         }

@@ -7,11 +7,13 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.compat.collections;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.@event.map
@@ -89,7 +91,8 @@ namespace com.espertech.esper.common.@internal.@event.map
             CodegenClassScope codegenClassScope)
         {
             return UnderlyingGetCodegen(
-                CastUnderlying(typeof(IDictionary<object, object>), beanExpression), codegenMethodScope,
+                CastUnderlying(typeof(IDictionary<object, object>), beanExpression),
+                codegenMethodScope,
                 codegenClassScope);
         }
 
@@ -107,7 +110,8 @@ namespace com.espertech.esper.common.@internal.@event.map
             CodegenClassScope codegenClassScope)
         {
             return UnderlyingFragmentCodegen(
-                CastUnderlying(typeof(IDictionary<object, object>), beanExpression), codegenMethodScope,
+                CastUnderlying(typeof(IDictionary<object, object>), beanExpression),
+                codegenMethodScope,
                 codegenClassScope);
         }
 
@@ -140,10 +144,11 @@ namespace com.espertech.esper.common.@internal.@event.map
             CodegenClassScope codegenClassScope)
         {
             var block = codegenMethodScope.MakeChild(typeof(object), GetType(), codegenClassScope)
-                .AddParam(typeof(IDictionary<object, object>), "map").Block
-                .DeclareVar(typeof(object), "value", ExprDotMethod(Ref("map"), "get", Constant(propertyMap)))
+                .AddParam(typeof(IDictionary<object, object>), "map")
+                .Block
+                .DeclareVar<object>("value", ExprDotMethod(Ref("map"), "get", Constant(propertyMap)))
                 .IfRefNullReturnNull("value");
-            return block.DeclareVar(typeof(EventBean), "theEvent", Cast(typeof(EventBean), Ref("value")))
+            return block.DeclareVar<EventBean>("theEvent", Cast(typeof(EventBean), Ref("value")))
                 .MethodReturn(
                     eventBeanEntryGetter.EventBeanGetCodegen(Ref("theEvent"), codegenMethodScope, codegenClassScope));
         }
@@ -153,13 +158,16 @@ namespace com.espertech.esper.common.@internal.@event.map
             CodegenClassScope codegenClassScope)
         {
             return codegenMethodScope.MakeChild(typeof(object), GetType(), codegenClassScope)
-                .AddParam(typeof(IDictionary<object, object>), "map").Block
-                .DeclareVar(typeof(object), "value", ExprDotMethod(Ref("map"), "get", Constant(propertyMap)))
+                .AddParam(typeof(IDictionary<object, object>), "map")
+                .Block
+                .DeclareVar<object>("value", ExprDotMethod(Ref("map"), "get", Constant(propertyMap)))
                 .IfRefNullReturnNull("value")
-                .DeclareVar(typeof(EventBean), "theEvent", Cast(typeof(EventBean), Ref("value")))
+                .DeclareVar<EventBean>("theEvent", Cast(typeof(EventBean), Ref("value")))
                 .MethodReturn(
                     eventBeanEntryGetter.EventBeanFragmentCodegen(
-                        Ref("theEvent"), codegenMethodScope, codegenClassScope));
+                        Ref("theEvent"),
+                        codegenMethodScope,
+                        codegenClassScope));
         }
     }
 } // end of namespace

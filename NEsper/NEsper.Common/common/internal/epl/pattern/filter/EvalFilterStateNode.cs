@@ -8,6 +8,7 @@
 
 using System.Collections.Generic;
 using System.Text;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.epl.pattern.core;
@@ -69,7 +70,8 @@ namespace com.espertech.esper.common.@internal.epl.pattern.filter
             if (evalFilterNode.FactoryNode.FilterSpec.OptionalPropertyEvaluator != null) {
                 var propertyEvents =
                     evalFilterNode.FactoryNode.FilterSpec.OptionalPropertyEvaluator.GetProperty(
-                        theEvent, evalFilterNode.Context.AgentInstanceContext);
+                        theEvent,
+                        evalFilterNode.Context.AgentInstanceContext);
                 if (propertyEvents == null) {
                     return; // no results, ignore match
                 }
@@ -97,7 +99,9 @@ namespace com.espertech.esper.common.@internal.epl.pattern.filter
                 StopFiltering();
                 isQuitted = true;
                 agentInstanceContext.AuditProvider.PatternInstance(
-                    false, evalFilterNode.factoryNode, agentInstanceContext);
+                    false,
+                    evalFilterNode.factoryNode,
+                    agentInstanceContext);
             }
 
             EvaluateTrue(passUp, isQuitted, theEvent);
@@ -124,10 +128,13 @@ namespace com.espertech.esper.common.@internal.epl.pattern.filter
 
             var filterService = evalFilterNode.Context.FilterService;
             handle = new EPStatementHandleCallbackFilter(
-                evalFilterNode.Context.AgentInstanceContext.EpStatementAgentInstanceHandle, this);
+                evalFilterNode.Context.AgentInstanceContext.EpStatementAgentInstanceHandle,
+                this);
             var filterSpec = evalFilterNode.FactoryNode.FilterSpec;
             FilterValueSetParam[][] filterValues = filterSpec.GetValueSet(
-                beginState, evalFilterNode.AddendumFilters, agentInstanceContext,
+                beginState,
+                evalFilterNode.AddendumFilters,
+                agentInstanceContext,
                 agentInstanceContext.StatementContextFilterEvalEnv);
             filterService.Add(filterSpec.FilterForEventType, filterValues, handle);
             var filtersVersion = filterService.FiltersVersion;
@@ -156,7 +163,11 @@ namespace com.espertech.esper.common.@internal.epl.pattern.filter
         {
             var agentInstanceContext = evalFilterNode.Context.AgentInstanceContext;
             agentInstanceContext.AuditProvider.PatternTrue(
-                evalFilterNode.FactoryNode, this, theEvent, isQuitted, agentInstanceContext);
+                evalFilterNode.FactoryNode,
+                this,
+                theEvent,
+                isQuitted,
+                agentInstanceContext);
             ParentEvaluator.EvaluateTrue(theEvent, this, isQuitted, optionalTriggeringEvent);
         }
 
@@ -195,7 +206,9 @@ namespace com.espertech.esper.common.@internal.epl.pattern.filter
             var agentInstanceContext = evalFilterNode.Context.AgentInstanceContext;
             var filterSpec = evalFilterNode.FactoryNode.FilterSpec;
             FilterValueSetParam[][] filterValues = filterSpec.GetValueSet(
-                beginState, evalFilterNode.AddendumFilters, agentInstanceContext,
+                beginState,
+                evalFilterNode.AddendumFilters,
+                agentInstanceContext,
                 agentInstanceContext.StatementContextFilterEvalEnv);
             var filterService = evalFilterNode.Context.FilterService;
             if (handle != null) {

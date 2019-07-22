@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -16,6 +17,7 @@ using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.magic;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionRelational.
     CodegenRelational;
@@ -153,23 +155,30 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             var forges = ExprNodeUtilityQuery.GetForges(forge.ForgeRenderable.ChildNodes);
             var isNot = forge.ForgeRenderable.IsNotIn;
             var methodNode = codegenMethodScope.MakeChild(
-                typeof(bool?), typeof(ExprInNodeForgeEvalWColl), codegenClassScope);
+                typeof(bool?),
+                typeof(ExprInNodeForgeEvalWColl),
+                codegenClassScope);
 
             var block = methodNode.Block
-                .DeclareVar(typeof(bool), "hasNullRow", ConstantFalse());
+                .DeclareVar<bool>("hasNullRow", ConstantFalse());
 
             var leftTypeUncoerced = forges[0].EvaluationType;
             var leftTypeCoerced = forge.CoercionType;
 
             block.DeclareVar(
-                leftTypeUncoerced, "left",
+                leftTypeUncoerced,
+                "left",
                 forges[0].EvaluateCodegen(leftTypeUncoerced, methodNode, exprSymbol, codegenClassScope));
             block.DeclareVar(
-                forge.CoercionType, "leftCoerced",
+                forge.CoercionType,
+                "leftCoerced",
                 !forge.IsMustCoerce
                     ? Ref("left")
                     : forge.Coercer.CoerceCodegenMayNullBoxed(
-                        Ref("left"), leftTypeUncoerced, methodNode, codegenClassScope));
+                        Ref("left"),
+                        leftTypeUncoerced,
+                        methodNode,
+                        codegenClassScope));
 
             for (var i = 1; i < forges.Length; i++) {
                 var reftype = forges[i].EvaluationType;
@@ -182,7 +191,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                 }
 
                 block.DeclareVar(
-                    reftype, refname, refforge.EvaluateCodegen(reftype, methodNode, exprSymbol, codegenClassScope));
+                    reftype,
+                    refname,
+                    refforge.EvaluateCodegen(reftype, methodNode, exprSymbol, codegenClassScope));
 
                 if (reftype.IsImplementsInterface(typeof(ICollection<object>))) {
                     var ifRightNotNull = block.IfCondition(NotEqualsNull(Ref(refname)));
@@ -219,9 +230,12 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
 
                         var forLoop = ifRightNotNull.ForLoopIntSimple("index", ArrayLength(Ref(refname)));
                         {
-                            forLoop.DeclareVar(reftype.GetElementType(), "item", ArrayAtIndex(Ref(refname), Ref("index")));
                             forLoop.DeclareVar(
-                                typeof(bool), "itemNull",
+                                reftype.GetElementType(),
+                                "item",
+                                ArrayAtIndex(Ref(refname), Ref("index")));
+                            forLoop.DeclareVar<bool>(
+                                "itemNull",
                                 reftype.GetElementType().IsPrimitive ? ConstantFalse() : EqualsNull(Ref("item")));
                             var itemNotNull = forLoop.IfCondition(Ref("itemNull"))
                                 .AssignRef("hasNullRow", ConstantTrue())
@@ -230,7 +244,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                                 if (!forge.IsMustCoerce) {
                                     itemNotNull.IfCondition(
                                             CodegenLegoCompareEquals.CodegenEqualsNonNullNoCoerce(
-                                                Ref("leftCoerced"), leftTypeCoerced, Ref("item"),
+                                                Ref("leftCoerced"),
+                                                leftTypeCoerced,
+                                                Ref("item"),
                                                 reftype.GetElementType()))
                                         .BlockReturn(!isNot ? ConstantTrue() : ConstantFalse());
                                 }
@@ -238,7 +254,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                                     if (TypeHelper.IsNumeric(reftype.GetElementType())) {
                                         itemNotNull.IfCondition(
                                                 CodegenLegoCompareEquals.CodegenEqualsNonNullNoCoerce(
-                                                    Ref("leftCoerced"), leftTypeCoerced,
+                                                    Ref("leftCoerced"),
+                                                    leftTypeCoerced,
                                                     forge.Coercer.CoerceCodegen(Ref("item"), reftype.GetElementType()),
                                                     forge.CoercionType))
                                             .BlockReturn(!isNot ? ConstantTrue() : ConstantFalse());
@@ -258,14 +275,19 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                         if (!forge.IsMustCoerce) {
                             ifRightNotNull.IfCondition(
                                     CodegenLegoCompareEquals.CodegenEqualsNonNullNoCoerce(
-                                        Ref("leftCoerced"), leftTypeCoerced, Ref(refname), reftype))
+                                        Ref("leftCoerced"),
+                                        leftTypeCoerced,
+                                        Ref(refname),
+                                        reftype))
                                 .BlockReturn(!isNot ? ConstantTrue() : ConstantFalse());
                         }
                         else {
                             ifRightNotNull.IfCondition(
                                     CodegenLegoCompareEquals.CodegenEqualsNonNullNoCoerce(
-                                        Ref("leftCoerced"), leftTypeCoerced,
-                                        forge.Coercer.CoerceCodegen(Ref(refname), reftype), forge.CoercionType))
+                                        Ref("leftCoerced"),
+                                        leftTypeCoerced,
+                                        forge.Coercer.CoerceCodegen(Ref(refname), reftype),
+                                        forge.CoercionType))
                                 .BlockReturn(!isNot ? ConstantTrue() : ConstantFalse());
                         }
                     }

@@ -51,10 +51,14 @@ namespace com.espertech.esper.common.@internal.epl.pattern.guard
 
             // Start the stopwatch timer
             scheduleHandle = new EPStatementHandleCallbackSchedule(
-                quitable.Context.AgentInstanceContext.EpStatementAgentInstanceHandle, this);
+                quitable.Context.AgentInstanceContext.EpStatementAgentInstanceHandle,
+                this);
             var agentInstanceContext = quitable.Context.AgentInstanceContext;
             agentInstanceContext.AuditProvider.ScheduleAdd(
-                deltaTime, agentInstanceContext, scheduleHandle, ScheduleObjectType.pattern,
+                deltaTime,
+                agentInstanceContext,
+                scheduleHandle,
+                ScheduleObjectType.pattern,
                 NAME_AUDITPROVIDER_SCHEDULE);
             agentInstanceContext.SchedulingService.Add(deltaTime, scheduleHandle, scheduleSlot);
             isTimerActive = true;
@@ -65,7 +69,10 @@ namespace com.espertech.esper.common.@internal.epl.pattern.guard
             if (isTimerActive) {
                 var agentInstanceContext = quitable.Context.AgentInstanceContext;
                 agentInstanceContext.AuditProvider.ScheduleRemove(
-                    agentInstanceContext, scheduleHandle, ScheduleObjectType.pattern, NAME_AUDITPROVIDER_SCHEDULE);
+                    agentInstanceContext,
+                    scheduleHandle,
+                    ScheduleObjectType.pattern,
+                    NAME_AUDITPROVIDER_SCHEDULE);
                 agentInstanceContext.SchedulingService.Remove(scheduleHandle, scheduleSlot);
                 scheduleHandle = null;
                 isTimerActive = false;
@@ -89,7 +96,9 @@ namespace com.espertech.esper.common.@internal.epl.pattern.guard
             var agentInstanceContext = quitable.Context.AgentInstanceContext;
             agentInstanceContext.InstrumentationProvider.QPatternGuardScheduledEval();
             agentInstanceContext.AuditProvider.ScheduleFire(
-                agentInstanceContext, ScheduleObjectType.pattern, NAME_AUDITPROVIDER_SCHEDULE);
+                agentInstanceContext,
+                ScheduleObjectType.pattern,
+                NAME_AUDITPROVIDER_SCHEDULE);
             isTimerActive = false;
             quitable.GuardQuit();
             agentInstanceContext.InstrumentationProvider.APatternGuardScheduledEval();

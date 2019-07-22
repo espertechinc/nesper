@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.compile.stage1.spec;
@@ -35,6 +36,7 @@ using com.espertech.esper.common.@internal.serde;
 using com.espertech.esper.common.@internal.settings;
 using com.espertech.esper.common.@internal.statement.resource;
 using com.espertech.esper.common.@internal.view.core;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.context.module
@@ -141,7 +143,7 @@ namespace com.espertech.esper.common.@internal.context.module
         public const string GETRUNTIMESETTINGSSERVICE = "getRuntimeSettingsService";
         public const string GETEVENTBEANTYPEDEVENTFACTORY = "getEventBeanTypedEventFactory";
         public const string GETEVENTTABLEINDEXSERVICE = "getEventTableIndexService";
-        public const string GETEVENTTYPERESOLVER = "getEventTypeResolver";
+        public const string EVENTTYPERESOLVER = "EventTypeResolver";
         public const string GETFILTERSHAREDBOOLEXPRREGISTERY = "getFilterSharedBoolExprRegistery";
         public const string GETFILTERSHAREDLOOKUPABLEREGISTERY = "getFilterSharedLookupableRegistery";
         public const string GETFILTERSPECACTIVATABLEREGISTRY = "getFilterSpecActivatableRegistry";

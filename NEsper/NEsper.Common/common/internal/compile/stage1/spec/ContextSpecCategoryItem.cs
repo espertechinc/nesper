@@ -13,6 +13,7 @@ using com.espertech.esper.common.@internal.context.controller.category;
 using com.espertech.esper.common.@internal.context.module;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.filterspec;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.compile.stage1.spec
@@ -43,12 +44,14 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
 
             var makeFilter = FilterSpecParamForge.MakeParamArrayArrayCodegen(CompiledFilterParam, classScope, method);
             method.Block
-                .DeclareVar(
-                    typeof(FilterSpecParam[][]), "params", LocalMethod(makeFilter, 
-                        SAIFFInitializeSymbolWEventType.REF_EVENTTYPE, 
+                .DeclareVar<FilterSpecParam[][]>(
+                    "params",
+                    LocalMethod(
+                        makeFilter,
+                        SAIFFInitializeSymbolWEventType.REF_EVENTTYPE,
                         SAIFFInitializeSymbol.REF_STMTINITSVC))
-                .DeclareVar(
-                    typeof(ContextControllerDetailCategoryItem), "item",
+                .DeclareVar<ContextControllerDetailCategoryItem>(
+                    "item",
                     NewInstance(typeof(ContextControllerDetailCategoryItem)))
                 .SetProperty(Ref("item"), "CompiledFilterParam", Ref("params"))
                 .SetProperty(Ref("item"), "Name", Constant(Name))

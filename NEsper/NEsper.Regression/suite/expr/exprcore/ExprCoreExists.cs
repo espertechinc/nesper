@@ -95,7 +95,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                           " exists(item?.indexed[0]?) as t3, " +
                           " exists(item?.mapped('keyOne')?) as t4, " +
                           " exists(item?.nested?) as t5, " +
-                          " exists(item?.nested.nestedValue?) as t6, " +
+                          " exists(item?.nested.NestedValue?) as t6, " +
                           " exists(item?.nested.nestedNested?) as t7, " +
                           " exists(item?.nested.nestedNested.nestedNestedValue?) as t8, " +
                           " exists(item?.nested.nestedNested.nestedNestedValue.dummy?) as t9, " +

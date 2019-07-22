@@ -8,6 +8,7 @@
 
 using System;
 using System.Reflection;
+
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
@@ -45,7 +46,11 @@ namespace com.espertech.esper.common.@internal.@event.bean.manufacturer
             CodegenClassScope codegenClassScope)
         {
             return InstanceManufacturerFastCtor.Codegen(
-                codegenMethodScope, exprSymbol, codegenClassScope, TargetClass, forges);
+                codegenMethodScope,
+                exprSymbol,
+                codegenClassScope,
+                TargetClass,
+                forges);
         }
     }
 } // end of namespace

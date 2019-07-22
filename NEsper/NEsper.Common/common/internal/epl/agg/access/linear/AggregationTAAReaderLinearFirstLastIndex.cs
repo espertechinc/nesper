@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.hook.aggmultifunc;
 using com.espertech.esper.common.@internal.epl.agg.core;
@@ -29,7 +30,10 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
             ExprEvaluatorContext exprEvaluatorContext)
         {
             var events = (IList<EventBean>) row.GetCollectionOfEvents(
-                aggColNum, eventsPerStream, isNewData, exprEvaluatorContext);
+                aggColNum,
+                eventsPerStream,
+                isNewData,
+                exprEvaluatorContext);
             if (events == null) {
                 return null;
             }

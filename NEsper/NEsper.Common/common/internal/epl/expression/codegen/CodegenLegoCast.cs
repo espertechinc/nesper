@@ -7,12 +7,14 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.expression.codegen
@@ -52,17 +54,25 @@ namespace com.espertech.esper.common.@internal.epl.expression.codegen
         {
             Type type = forge.EvaluationType;
             if (type == typeof(double)) {
-                block.DeclareVar(type, variable, forge.EvaluateCodegen(type, codegenMethodScope, exprSymbol, codegenClassScope));
+                block.DeclareVar(
+                    type,
+                    variable,
+                    forge.EvaluateCodegen(type, codegenMethodScope, exprSymbol, codegenClassScope));
                 return;
             }
 
             string holder = variable + "_";
-            block.DeclareVar(type, holder, forge.EvaluateCodegen(type, codegenMethodScope, exprSymbol, codegenClassScope));
+            block.DeclareVar(
+                type,
+                holder,
+                forge.EvaluateCodegen(type, codegenMethodScope, exprSymbol, codegenClassScope));
             if (!type.IsPrimitive) {
                 block.IfRefNullReturnNull(holder);
             }
 
-            block.DeclareVar(typeof(double), variable, SimpleNumberCoercerFactory.CoercerDouble.CodegenDouble(@Ref(holder), type));
+            block.DeclareVar<double>(
+                variable,
+                SimpleNumberCoercerFactory.CoercerDouble.CodegenDouble(@Ref(holder), type));
         }
     }
 } // end of namespace

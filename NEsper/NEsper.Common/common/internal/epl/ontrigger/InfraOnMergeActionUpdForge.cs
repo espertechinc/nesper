@@ -40,17 +40,19 @@ namespace com.espertech.esper.common.@internal.epl.ontrigger
             CodegenClassScope classScope)
         {
             CodegenMethod method = parent.MakeChild(typeof(InfraOnMergeActionUpd), this.GetType(), classScope);
-            if (_table == null)
-            {
+            if (_table == null) {
                 method.Block.MethodReturn(
-                    NewInstance<InfraOnMergeActionUpd>(MakeFilter(method, classScope), _updateHelper.MakeWCopy(method, classScope)));
+                    NewInstance<InfraOnMergeActionUpd>(
+                        MakeFilter(method, classScope),
+                        _updateHelper.MakeWCopy(method, classScope)));
             }
-            else
-            {
+            else {
                 method.Block
-                    .DeclareVar(
-                        typeof(InfraOnMergeActionUpd), "upd", NewInstance<InfraOnMergeActionUpd>(
-                            MakeFilter(method, classScope), _updateHelper.MakeNoCopy(method, classScope),
+                    .DeclareVar<InfraOnMergeActionUpd>(
+                        "upd",
+                        NewInstance<InfraOnMergeActionUpd>(
+                            MakeFilter(method, classScope),
+                            _updateHelper.MakeNoCopy(method, classScope),
                             TableDeployTimeResolver.MakeResolveTable(_table, symbols.GetAddInitSvc(method))))
                     .ExprDotMethod(symbols.GetAddInitSvc(method), "addReadyCallback", @Ref("upd"))
                     .MethodReturn(@Ref("upd"));

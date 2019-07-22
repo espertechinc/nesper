@@ -7,11 +7,13 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.epl.script.core;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.compile.stage1.spec
@@ -70,7 +72,7 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
         {
             var method = parent.MakeChild(typeof(ExpressionScriptProvided), GetType(), classScope);
             method.Block
-                .DeclareVar(typeof(ExpressionScriptProvided), "sp", NewInstance(typeof(ExpressionScriptProvided)))
+                .DeclareVar<ExpressionScriptProvided>("sp", NewInstance(typeof(ExpressionScriptProvided)))
                 .SetProperty(Ref("sp"), "Name", Constant(Name))
                 .SetProperty(Ref("sp"), "Expression", Constant(Expression))
                 .SetProperty(Ref("sp"), "ParameterNames", Constant(ParameterNames))

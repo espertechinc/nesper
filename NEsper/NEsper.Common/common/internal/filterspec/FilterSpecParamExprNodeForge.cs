@@ -129,11 +129,10 @@ namespace com.espertech.esper.common.@internal.filterspec
 
             var method = parent.MakeChild(typeof(FilterSpecParamExprNode), GetType(), classScope);
             method.Block
-                .DeclareVar(
-                    typeof(ExprFilterSpecLookupable),
+                .DeclareVar<ExprFilterSpecLookupable>(
                     "lookupable",
                     LocalMethod(lookupable.MakeCodegen(method, symbols, classScope)))
-                .DeclareVar(typeof(FilterOperator), "op", EnumValue(typeof(FilterOperator), filterOperator.GetName()));
+                .DeclareVar<FilterOperator>("op", EnumValue(typeof(FilterOperator), filterOperator.GetName()));
 
             // getFilterValue-FilterSpecParamExprNode code
             var param = NewAnonymousClass(
@@ -142,14 +141,13 @@ namespace com.espertech.esper.common.@internal.filterspec
                 Arrays.AsList<CodegenExpression>(Ref("lookupable"), Ref("op")));
             var getFilterValue = CodegenMethod.MakeParentNode(typeof(object), GetType(), classScope)
                 .AddParam(GET_FILTER_VALUE_FP);
-            param.AddMethod("getFilterValue", getFilterValue);
+            param.AddMethod("GetFilterValue", getFilterValue);
 
             if (TaggedEventTypes != null && !TaggedEventTypes.IsEmpty() ||
                 _arrayEventTypes != null && !_arrayEventTypes.IsEmpty()) {
                 var size = TaggedEventTypes != null ? TaggedEventTypes.Count : 0;
                 size += _arrayEventTypes != null ? _arrayEventTypes.Count : 0;
-                getFilterValue.Block.DeclareVar(
-                    typeof(EventBean[]),
+                getFilterValue.Block.DeclareVar<EventBean[]>(
                     "events",
                     NewArrayByLength(typeof(EventBean), Constant(size + 1)));
 
@@ -186,7 +184,7 @@ namespace com.espertech.esper.common.@internal.filterspec
                 }
             }
             else {
-                getFilterValue.Block.DeclareVar(typeof(EventBean[]), "events", ConstantNull());
+                getFilterValue.Block.DeclareVar<EventBean[]>("events", ConstantNull());
             }
 
             getFilterValue.Block
@@ -209,7 +207,7 @@ namespace com.espertech.esper.common.@internal.filterspec
 
             // setter calls
             method.Block
-                .DeclareVar(typeof(FilterSpecParamExprNode), "node", param)
+                .DeclareVar<FilterSpecParamExprNode>("node", param)
                 .SetProperty(
                     Ref("node"),
                     "ExprText",
@@ -237,8 +235,7 @@ namespace com.espertech.esper.common.@internal.filterspec
                 _arrayEventTypes != null && !_arrayEventTypes.IsEmpty()) {
                 var size = TaggedEventTypes != null ? TaggedEventTypes.Count : 0;
                 size += _arrayEventTypes != null ? _arrayEventTypes.Count : 0;
-                method.Block.DeclareVar(
-                    typeof(EventType[]),
+                method.Block.DeclareVar<EventType[]>(
                     "providedTypes",
                     NewArrayByLength(typeof(EventType), Constant(size + 1)));
                 for (var i = 1; i < _streamTypeService.StreamNames.Length; i++) {

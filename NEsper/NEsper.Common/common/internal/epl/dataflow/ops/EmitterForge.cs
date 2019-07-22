@@ -12,6 +12,7 @@ using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.epl.dataflow.interfaces;
 using com.espertech.esper.common.@internal.epl.expression.core;
+
 using static com.espertech.esper.common.@internal.epl.dataflow.core.EPDataFlowServiceImpl;
 
 namespace com.espertech.esper.common.@internal.epl.dataflow.ops
@@ -34,7 +35,12 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.ops
             CodegenClassScope classScope)
         {
             return new SAIFFInitializeBuilder(
-                    OP_PACKAGE_NAME + ".emitter.EmitterFactory", GetType(), "emitter", parent, symbols, classScope)
+                    OP_PACKAGE_NAME + ".emitter.EmitterFactory",
+                    GetType(),
+                    "emitter",
+                    parent,
+                    symbols,
+                    classScope)
                 .Exprnode("name", name)
                 .Build();
         }

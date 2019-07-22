@@ -7,12 +7,14 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.context.module;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.script.core
@@ -55,24 +57,38 @@ namespace com.espertech.esper.common.@internal.epl.script.core
             CodegenMethodScope parentInitMethod,
             CodegenClassScope classScope)
         {
-            var method = parentInitMethod.MakeChild(typeof(ScriptDescriptorRuntime), GetType(), classScope).AddParam(
-                typeof(EPStatementInitServices), EPStatementInitServicesConstants.REF.Ref);
+            var method = parentInitMethod.MakeChild(typeof(ScriptDescriptorRuntime), GetType(), classScope)
+                .AddParam(
+                    typeof(EPStatementInitServices),
+                    EPStatementInitServicesConstants.REF.Ref);
             method.Block
-                .DeclareVar(typeof(ScriptDescriptorRuntime), "sd", NewInstance(typeof(ScriptDescriptorRuntime)))
+                .DeclareVar<ScriptDescriptorRuntime>("sd", NewInstance(typeof(ScriptDescriptorRuntime)))
                 .SetProperty(Ref("sd"), "OptionalDialect", Constant(OptionalDialect))
                 .SetProperty(Ref("sd"), "ScriptName", Constant(ScriptName))
                 .SetProperty(Ref("sd"), "Expression", Constant(Expression))
                 .SetProperty(Ref("sd"), "ParameterNames", Constant(ParameterNames))
-                .SetProperty(Ref("sd"), "EvaluationTypes", Constant(ExprNodeUtilityQuery.GetExprResultTypes(Parameters)))
-                .SetProperty(Ref("sd"), "Parameters", ExprNodeUtilityCodegen.CodegenEvaluators(Parameters, method, GetType(), classScope))
+                .SetProperty(
+                    Ref("sd"),
+                    "EvaluationTypes",
+                    Constant(ExprNodeUtilityQuery.GetExprResultTypes(Parameters)))
+                .SetProperty(
+                    Ref("sd"),
+                    "Parameters",
+                    ExprNodeUtilityCodegen.CodegenEvaluators(Parameters, method, GetType(), classScope))
                 .SetProperty(Ref("sd"), "DefaultDialect", Constant(_defaultDialect))
                 .SetProperty(
-                    Ref("sd"), "ClasspathImportService",
-                    ExprDotMethodChain(EPStatementInitServicesConstants.REF).Add(EPStatementInitServicesConstants.GETCLASSPATHIMPORTSERVICERUNTIME))
+                    Ref("sd"),
+                    "ClasspathImportService",
+                    ExprDotMethodChain(EPStatementInitServicesConstants.REF)
+                        .Add(EPStatementInitServicesConstants.GETCLASSPATHIMPORTSERVICERUNTIME))
                 .SetProperty(
-                    Ref("sd"), "Coercer", ReturnType.IsNumeric()
+                    Ref("sd"),
+                    "Coercer",
+                    ReturnType.IsNumeric()
                         ? StaticMethod(
-                            typeof(SimpleNumberCoercerFactory), "GetCoercer", Constant(typeof(object)),
+                            typeof(SimpleNumberCoercerFactory),
+                            "GetCoercer",
+                            Constant(typeof(object)),
                             Constant(ReturnType.GetBoxedType()))
                         : ConstantNull())
                 .MethodReturn(Ref("sd"));

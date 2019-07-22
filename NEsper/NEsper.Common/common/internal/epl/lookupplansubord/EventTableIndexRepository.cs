@@ -9,6 +9,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+
 using com.espertech.esper.collection;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.collection;
@@ -62,7 +63,8 @@ namespace com.espertech.esper.common.@internal.epl.lookupplansubord
             object optionalSerde)
         {
             IndexMultiKey indexMultiKey = desc.ToIndexMultiKey();
-            if (desc.HashPropsAsList.IsEmpty() && desc.BtreePropsAsList.IsEmpty() &&
+            if (desc.HashPropsAsList.IsEmpty() &&
+                desc.BtreePropsAsList.IsEmpty() &&
                 desc.AdvancedIndexProvisionDesc == null) {
                 throw new ArgumentException("Invalid zero element list for hash and btree columns");
             }
@@ -73,11 +75,18 @@ namespace com.espertech.esper.common.@internal.epl.lookupplansubord
             if (indexPropKeyMatch != null) {
                 EventTableIndexRepositoryEntry refTablePair = tableIndexesRefCount.Get(indexPropKeyMatch);
                 return new Pair<IndexMultiKey, EventTableAndNamePair>(
-                    indexPropKeyMatch, new EventTableAndNamePair(refTablePair.Table, refTablePair.OptionalIndexName));
+                    indexPropKeyMatch,
+                    new EventTableAndNamePair(refTablePair.Table, refTablePair.OptionalIndexName));
             }
 
             return AddIndex(
-                desc, prefilledEvents, indexedType, indexName, indexModuleName, false, agentInstanceContext,
+                desc,
+                prefilledEvents,
+                indexedType,
+                indexName,
+                indexModuleName,
+                false,
+                agentInstanceContext,
                 optionalSerde);
         }
 
@@ -116,14 +125,18 @@ namespace com.espertech.esper.common.@internal.epl.lookupplansubord
             IList<IndexHintInstruction> optionalIndexHintInstructions)
         {
             Pair<IndexMultiKey, EventTableIndexEntryBase> pair = EventTableIndexUtil.FindIndexBestAvailable(
-                tableIndexesRefCount, keyPropertyNames, rangePropertyNames, optionalIndexHintInstructions);
+                tableIndexesRefCount,
+                keyPropertyNames,
+                rangePropertyNames,
+                optionalIndexHintInstructions);
             if (pair == null) {
                 return null;
             }
 
             EventTable tableFound = ((EventTableIndexRepositoryEntry) pair.Second).Table;
             return new Pair<IndexMultiKey, EventTableAndNamePair>(
-                pair.First, new EventTableAndNamePair(tableFound, pair.Second.OptionalIndexName));
+                pair.First,
+                new EventTableAndNamePair(tableFound, pair.Second.OptionalIndexName));
         }
 
         public IndexMultiKey[] IndexDescriptors {
@@ -156,8 +169,13 @@ namespace com.espertech.esper.common.@internal.epl.lookupplansubord
             }
 
             AddExplicitIndex(
-                explicitIndexName, explicitIndexModuleName, explicitIndexDesc, eventType, dataWindowContents,
-                agentInstanceContext, optionalSerde);
+                explicitIndexName,
+                explicitIndexModuleName,
+                explicitIndexDesc,
+                eventType,
+                dataWindowContents,
+                agentInstanceContext,
+                optionalSerde);
         }
 
         public void AddExplicitIndex(
@@ -170,7 +188,12 @@ namespace com.espertech.esper.common.@internal.epl.lookupplansubord
             object optionalSerde)
         {
             Pair<IndexMultiKey, EventTableAndNamePair> pair = AddExplicitIndexOrReuse(
-                desc, dataWindowContents, eventType, explicitIndexName, explicitIndexModuleName, agentInstanceContext,
+                desc,
+                dataWindowContents,
+                eventType,
+                explicitIndexName,
+                explicitIndexModuleName,
+                agentInstanceContext,
                 optionalSerde);
             explicitIndexes.Put(explicitIndexName, pair.Second.EventTable);
         }
@@ -204,7 +227,14 @@ namespace com.espertech.esper.common.@internal.epl.lookupplansubord
             IndexMultiKey indexPropKey = indexItem.ToIndexMultiKey();
 
             EventTable table = EventTableUtil.BuildIndex(
-                agentInstanceContext, 0, indexItem, indexedType, true, indexItem.IsUnique, indexName, optionalSerde,
+                agentInstanceContext,
+                0,
+                indexItem,
+                indexedType,
+                true,
+                indexItem.IsUnique,
+                indexName,
+                optionalSerde,
                 false);
 
             try {
@@ -225,10 +255,12 @@ namespace com.espertech.esper.common.@internal.epl.lookupplansubord
 
             // add index, reference counted
             tableIndexesRefCount.Put(
-                indexPropKey, new EventTableIndexRepositoryEntry(indexName, indexModuleName, table));
+                indexPropKey,
+                new EventTableIndexRepositoryEntry(indexName, indexModuleName, table));
 
             return new Pair<IndexMultiKey, EventTableAndNamePair>(
-                indexPropKey, new EventTableAndNamePair(table, indexName));
+                indexPropKey,
+                new EventTableAndNamePair(table, indexName));
         }
 
         public string[] ExplicitIndexNames {

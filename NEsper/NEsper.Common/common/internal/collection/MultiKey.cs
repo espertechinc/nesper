@@ -8,6 +8,7 @@
 
 
 using System;
+
 using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.collection

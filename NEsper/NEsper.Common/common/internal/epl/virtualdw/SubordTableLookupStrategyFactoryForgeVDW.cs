@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -86,7 +87,12 @@ namespace com.espertech.esper.common.@internal.epl.virtualdw
             }
 
             var builder = new SAIFFInitializeBuilder(
-                typeof(SubordTableLookupStrategyFactoryVDW), GetType(), "lookup", parent, symbols, classScope);
+                typeof(SubordTableLookupStrategyFactoryVDW),
+                GetType(),
+                "lookup",
+                parent,
+                symbols,
+                classScope);
             builder
                 .Expression("indexHashedProps", IndexedPropDesc.MakeArray(_hashAndRanges.HashedProps))
                 .Expression("indexBtreeProps", IndexedPropDesc.MakeArray(_hashAndRanges.BtreeProps))
@@ -97,7 +103,8 @@ namespace com.espertech.esper.common.@internal.epl.virtualdw
                     ExprNodeUtilityCodegen.CodegenEvaluators(hashes, builder.Method(), GetType(), classScope))
                 .Constant("hashCoercionTypes", hashTypes)
                 .Expression(
-                    "rangeEvals", QueryGraphValueEntryRangeForge.MakeArray(ranges, builder.Method(), symbols, classScope))
+                    "rangeEvals",
+                    QueryGraphValueEntryRangeForge.MakeArray(ranges, builder.Method(), symbols, classScope))
                 .Constant("rangeCoercionTypes", rangesTypes);
             return builder.Build();
         }

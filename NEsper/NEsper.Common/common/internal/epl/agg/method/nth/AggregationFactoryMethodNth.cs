@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.core;
@@ -58,7 +59,14 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.nth
         {
             var distinctValueType = !parent.IsDistinct ? null : childType;
             aggregator = new AggregatorNth(
-                this, col, rowCtor, membersColumnized, classScope, distinctValueType, false, parent.OptionalFilter);
+                this,
+                col,
+                rowCtor,
+                membersColumnized,
+                classScope,
+                distinctValueType,
+                false,
+                parent.OptionalFilter);
         }
 
         public override ExprForge[] GetMethodAggregationForge(

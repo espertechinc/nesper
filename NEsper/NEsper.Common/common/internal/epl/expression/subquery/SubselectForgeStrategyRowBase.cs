@@ -71,8 +71,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                     subselect.FilterExpr, method, GetType(), classScope);
                 method.Block
                     .ApplyTri(SubselectForgeCodegenUtil.DECLARE_EVENTS_SHIFTED, method, symbols)
-                    .DeclareVar(
-                        typeof(EventBean), "subselectResult", StaticMethod(
+                    .DeclareVar<EventBean>(
+"subselectResult", StaticMethod(
                             typeof(EventBeanUtility), "evaluateFilterExpectSingleMatch",
                             REF_EVENTS_SHIFTED, symbols.GetAddIsNewData(method), symbols.GetAddMatchingEvents(method),
                             symbols.GetAddExprEvalCtx(method),
@@ -81,8 +81,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                     .AssignArrayElement(REF_EVENTS_SHIFTED, Constant(0), Ref("subselectResult"));
             }
 
-            method.Block.DeclareVar(
-                typeof(object[]), "results", NewArrayByLength(typeof(object), Constant(subselect.SelectClause.Length)));
+            method.Block.DeclareVar<object[]>(
+"results", NewArrayByLength(typeof(object), Constant(subselect.SelectClause.Length)));
             for (var i = 0; i < subselect.SelectClause.Length; i++) {
                 var eval = CodegenLegoMethodExpression.CodegenExpression(
                     subselect.SelectClause[i].Forge, method, classScope);
@@ -109,10 +109,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
             if (subselect.FilterExpr == null) {
                 var method = parent.MakeChild(typeof(object[][]), GetType(), classScope);
                 method.Block
-                    .DeclareVar(
-                        typeof(object[][]), "rows",
+                    .DeclareVar<object[][]>(
+"rows",
                         NewArrayByLength(typeof(object[]), ExprDotMethod(symbols.GetAddMatchingEvents(method), "size")))
-                    .DeclareVar(typeof(int), "index", Constant(-1))
+                    .DeclareVar<int>("index", Constant(-1))
                     .ApplyTri(SubselectForgeCodegenUtil.DECLARE_EVENTS_SHIFTED, method, symbols);
                 var foreachEvent = method.Block.ForEach(
                     typeof(EventBean), "event", symbols.GetAddMatchingEvents(method));
@@ -120,8 +120,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                     foreachEvent
                         .Increment("index")
                         .AssignArrayElement(REF_EVENTS_SHIFTED, Constant(0), Ref("event"))
-                        .DeclareVar(
-                            typeof(object[]), "results",
+                        .DeclareVar<object[]>(
+"results",
                             NewArrayByLength(typeof(object), Constant(subselect.SelectClause.Length)))
                         .AssignArrayElement("rows", Ref("index"), Ref("results"));
                     for (var i = 0; i < subselect.SelectClause.Length; i++) {
@@ -140,8 +140,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
             else {
                 var method = parent.MakeChild(typeof(object[][]), GetType(), classScope);
                 method.Block
-                    .DeclareVar(
-                        typeof(ArrayDeque<object>), typeof(object[]), "rows", NewInstance(typeof(ArrayDeque<object>)))
+                    .DeclareVar<ArrayDeque<object[]>>("rows", NewInstance(typeof(ArrayDeque<object[]>)))
                     .ApplyTri(SubselectForgeCodegenUtil.DECLARE_EVENTS_SHIFTED, method, symbols);
                 var foreachEvent = method.Block.ForEach(
                     typeof(EventBean), "event", symbols.GetAddMatchingEvents(method));
@@ -157,8 +156,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                             symbols.GetAddExprEvalCtx(method)));
 
                     foreachEvent
-                        .DeclareVar(
-                            typeof(object[]), "results",
+                        .DeclareVar<object[]>(
+"results",
                             NewArrayByLength(typeof(object), Constant(subselect.SelectClause.Length)))
                         .ExprDotMethod(Ref("rows"), "add", Ref("results"));
                     for (var i = 0; i < subselect.SelectClause.Length; i++) {

@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client.util;
 
 namespace com.espertech.esper.common.client.configuration.compiler
@@ -50,7 +51,10 @@ namespace com.espertech.esper.common.client.configuration.compiler
         ///     Returns the list of plug-in aggregation multi-functions.
         /// </summary>
         /// <value>plug-in aggregation multi-functions</value>
-        public IList<ConfigurationCompilerPlugInAggregationMultiFunction> PlugInAggregationMultiFunctions { get; private set; }
+        public IList<ConfigurationCompilerPlugInAggregationMultiFunction> PlugInAggregationMultiFunctions {
+            get;
+            private set;
+        }
 
         /// <summary>
         ///     Returns the list of plug-in single-row functions.
@@ -174,7 +178,9 @@ namespace com.espertech.esper.common.client.configuration.compiler
             string methodName)
         {
             AddPlugInSingleRowFunction(
-                functionName, className, methodName,
+                functionName,
+                className,
+                methodName,
                 ConfigurationCompilerPlugInSingleRowFunction.ValueCacheEnum.DISABLED);
         }
 
@@ -184,7 +190,9 @@ namespace com.espertech.esper.common.client.configuration.compiler
             string methodName)
         {
             AddPlugInSingleRowFunction(
-                functionName, clazz.FullName, methodName,
+                functionName,
+                clazz.FullName,
+                methodName,
                 ConfigurationCompilerPlugInSingleRowFunction.ValueCacheEnum.DISABLED);
         }
 
@@ -205,7 +213,10 @@ namespace com.espertech.esper.common.client.configuration.compiler
             ConfigurationCompilerPlugInSingleRowFunction.ValueCacheEnum valueCache)
         {
             AddPlugInSingleRowFunction(
-                functionName, className, methodName, valueCache,
+                functionName,
+                className,
+                methodName,
+                valueCache,
                 ConfigurationCompilerPlugInSingleRowFunction.FilterOptimizableEnum.ENABLED);
         }
 
@@ -216,7 +227,10 @@ namespace com.espertech.esper.common.client.configuration.compiler
             ConfigurationCompilerPlugInSingleRowFunction.ValueCacheEnum valueCache)
         {
             AddPlugInSingleRowFunction(
-                functionName, clazz.FullName, methodName, valueCache,
+                functionName,
+                clazz.FullName,
+                methodName,
+                valueCache,
                 ConfigurationCompilerPlugInSingleRowFunction.FilterOptimizableEnum.ENABLED);
         }
 
@@ -240,8 +254,11 @@ namespace com.espertech.esper.common.client.configuration.compiler
             ConfigurationCompilerPlugInSingleRowFunction.FilterOptimizableEnum filterOptimizable)
         {
             AddPlugInSingleRowFunction(
-                functionName, className, methodName,
-                ConfigurationCompilerPlugInSingleRowFunction.ValueCacheEnum.DISABLED, filterOptimizable);
+                functionName,
+                className,
+                methodName,
+                ConfigurationCompilerPlugInSingleRowFunction.ValueCacheEnum.DISABLED,
+                filterOptimizable);
         }
 
         public void AddPlugInSingleRowFunction(
@@ -251,8 +268,11 @@ namespace com.espertech.esper.common.client.configuration.compiler
             ConfigurationCompilerPlugInSingleRowFunction.FilterOptimizableEnum filterOptimizable)
         {
             AddPlugInSingleRowFunction(
-                functionName, clazz.FullName, methodName,
-                ConfigurationCompilerPlugInSingleRowFunction.ValueCacheEnum.DISABLED, filterOptimizable);
+                functionName,
+                clazz.FullName,
+                methodName,
+                ConfigurationCompilerPlugInSingleRowFunction.ValueCacheEnum.DISABLED,
+                filterOptimizable);
         }
 
         /// <summary>
@@ -406,12 +426,12 @@ namespace com.espertech.esper.common.client.configuration.compiler
 
 
         /// <summary>
-            ///     Add a pattern event observer for plug-in.
-            /// </summary>
-            /// <param name="namespace">is the namespace the observer should be available under</param>
-            /// <param name="name">is the name of the observer</param>
-            /// <param name="observerForgeClass">is the observer forge class to use</param>
-            public void AddPlugInPatternObserver(
+        ///     Add a pattern event observer for plug-in.
+        /// </summary>
+        /// <param name="namespace">is the namespace the observer should be available under</param>
+        /// <param name="name">is the name of the observer</param>
+        /// <param name="observerForgeClass">is the observer forge class to use</param>
+        public void AddPlugInPatternObserver(
             string @namespace,
             string name,
             string observerForgeClass)

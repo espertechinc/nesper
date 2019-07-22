@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -21,6 +22,7 @@ using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.view.core;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.context.aifactory.createwindow
@@ -58,26 +60,52 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createwindow
             SAIFFInitializeSymbol symbols,
             CodegenClassScope classScope)
         {
-            CodegenMethod method = parent.MakeChild(typeof(StatementAgentInstanceFactoryCreateNW), this.GetType(), classScope);
+            CodegenMethod method = parent.MakeChild(
+                typeof(StatementAgentInstanceFactoryCreateNW),
+                this.GetType(),
+                classScope);
             method.Block
-                .DeclareVar(typeof(StatementAgentInstanceFactoryCreateNW), "saiff", NewInstance(typeof(StatementAgentInstanceFactoryCreateNW)));
+                .DeclareVar<StatementAgentInstanceFactoryCreateNW>(
+                    "saiff",
+                    NewInstance(typeof(StatementAgentInstanceFactoryCreateNW)));
 
             method.Block
                 .SetProperty(Ref("saiff"), "Activator", activator.MakeCodegen(method, symbols, classScope))
                 .SetProperty(Ref("saiff"), "NamedWindowName", Constant(namedWindowName))
-                .SetProperty(Ref("saiff"), "ViewFactories", ViewFactoryForgeUtil.CodegenForgesWInit(views, 0, null, method, symbols, classScope))
-                .SetProperty(Ref("saiff"), "InsertFromNamedWindow",
+                .SetProperty(
+                    Ref("saiff"),
+                    "ViewFactories",
+                    ViewFactoryForgeUtil.CodegenForgesWInit(views, 0, null, method, symbols, classScope))
+                .SetProperty(
+                    Ref("saiff"),
+                    "InsertFromNamedWindow",
                     insertFromNamedWindow == null
                         ? ConstantNull()
-                        : NamedWindowDeployTimeResolver.MakeResolveNamedWindow(insertFromNamedWindow, symbols.GetAddInitSvc(method)))
-                .SetProperty(Ref("saiff"), "InsertFromFilter",
+                        : NamedWindowDeployTimeResolver.MakeResolveNamedWindow(
+                            insertFromNamedWindow,
+                            symbols.GetAddInitSvc(method)))
+                .SetProperty(
+                    Ref("saiff"),
+                    "InsertFromFilter",
                     insertFromFilter == null
                         ? ConstantNull()
-                        : ExprNodeUtilityCodegen.CodegenEvaluator(insertFromFilter.Forge, method, this.GetType(), classScope))
-                .SetProperty(Ref("saiff"), "AsEventType",
-                    asEventType == null ? ConstantNull() : EventTypeUtility.ResolveTypeCodegen(asEventType, EPStatementInitServicesConstants.REF))
-                .SetProperty(Ref("saiff"), "ResultSetProcessorFactoryProvider",
-                    CodegenExpressionBuilder.NewInstance(resultSetProcessorProviderClassName, symbols.GetAddInitSvc(method)))
+                        : ExprNodeUtilityCodegen.CodegenEvaluator(
+                            insertFromFilter.Forge,
+                            method,
+                            this.GetType(),
+                            classScope))
+                .SetProperty(
+                    Ref("saiff"),
+                    "AsEventType",
+                    asEventType == null
+                        ? ConstantNull()
+                        : EventTypeUtility.ResolveTypeCodegen(asEventType, EPStatementInitServicesConstants.REF))
+                .SetProperty(
+                    Ref("saiff"),
+                    "ResultSetProcessorFactoryProvider",
+                    CodegenExpressionBuilder.NewInstance(
+                        resultSetProcessorProviderClassName,
+                        symbols.GetAddInitSvc(method)))
                 .ExprDotMethod(symbols.GetAddInitSvc(method), "addReadyCallback", @Ref("saiff"));
 
             method.Block.MethodReturn(@Ref("saiff"));

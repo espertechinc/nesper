@@ -54,7 +54,10 @@ namespace com.espertech.esper.common.@internal.view.expression
                     var variableName = variable.MetaData.VariableName;
                     int agentInstanceId = agentInstanceContext.AgentInstanceId;
                     agentInstanceContext.StatementContext.VariableManagementService.RegisterCallback(
-                        variable.DeploymentId, variableName, agentInstanceId, this);
+                        variable.DeploymentId,
+                        variableName,
+                        agentInstanceId,
+                        this);
                     agentInstanceContext.AgentInstanceContext.AddTerminationCallback(
                         new ProxyAgentInstanceStopCallback {
                             ProcStop = services => {
@@ -67,7 +70,9 @@ namespace com.espertech.esper.common.@internal.view.expression
                 ScheduleHandleCallback callback = new ProxyScheduleHandleCallback {
                     ProcScheduledTrigger = () => {
                         agentInstanceContext.AuditProvider.ScheduleFire(
-                            agentInstanceContext.AgentInstanceContext, ScheduleObjectType.view, factory.ViewName);
+                            agentInstanceContext.AgentInstanceContext,
+                            ScheduleObjectType.view,
+                            factory.ViewName);
                         agentInstanceContext.InstrumentationProvider.QViewScheduledEval(factory);
                         ScheduleCallback();
                         agentInstanceContext.InstrumentationProvider.AViewScheduledEval();
@@ -75,7 +80,8 @@ namespace com.espertech.esper.common.@internal.view.expression
                 };
                 scheduleSlot = agentInstanceContext.StatementContext.ScheduleBucket.AllocateSlot();
                 scheduleHandle = new EPStatementHandleCallbackSchedule(
-                    agentInstanceContext.EpStatementAgentInstanceHandle, callback);
+                    agentInstanceContext.EpStatementAgentInstanceHandle,
+                    callback);
             }
             else {
                 scheduleSlot = -1;
@@ -84,7 +90,10 @@ namespace com.espertech.esper.common.@internal.view.expression
 
             if (factory.AggregationServiceFactory != null) {
                 aggregationService = factory.AggregationServiceFactory.MakeService(
-                    agentInstanceContext.AgentInstanceContext, agentInstanceContext.ImportService, false, null,
+                    agentInstanceContext.AgentInstanceContext,
+                    agentInstanceContext.ImportService,
+                    false,
+                    null,
                     null);
             }
             else {
@@ -129,7 +138,10 @@ namespace com.espertech.esper.common.@internal.view.expression
 
                 if (agentInstanceContext.StatementContext.SchedulingService.IsScheduled(scheduleHandle)) {
                     agentInstanceContext.AuditProvider.ScheduleRemove(
-                        agentInstanceContext, scheduleHandle, ScheduleObjectType.view, factory.ViewName);
+                        agentInstanceContext,
+                        scheduleHandle,
+                        ScheduleObjectType.view,
+                        factory.ViewName);
                     agentInstanceContext.StatementContext.SchedulingService.Remove(scheduleHandle, scheduleSlot);
                 }
             }
@@ -142,7 +154,11 @@ namespace com.espertech.esper.common.@internal.view.expression
         {
             if (!agentInstanceContext.StatementContext.SchedulingService.IsScheduled(scheduleHandle)) {
                 agentInstanceContext.AuditProvider.ScheduleAdd(
-                    0, agentInstanceContext, scheduleHandle, ScheduleObjectType.view, factory.ViewName);
+                    0,
+                    agentInstanceContext,
+                    scheduleHandle,
+                    ScheduleObjectType.view,
+                    factory.ViewName);
                 agentInstanceContext.StatementContext.SchedulingService.Add(0, scheduleHandle, scheduleSlot);
             }
         }

@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -15,6 +16,7 @@ using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.view.core;
 using com.espertech.esper.common.@internal.view.util;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 using static com.espertech.esper.common.@internal.epl.expression.core.ExprNodeUtilityCodegen;
 
@@ -79,7 +81,12 @@ namespace com.espertech.esper.common.@internal.view.rank
 
             // validate
             var validated = ViewForgeSupport.Validate(
-                NAME, parentEventType, viewParameters, true, viewForgeEnv, streamNumber);
+                NAME,
+                parentEventType,
+                viewParameters,
+                true,
+                viewForgeEnv,
+                streamNumber);
 
             // find size-parameter index
             var indexNumericSize = -1;
@@ -157,15 +164,23 @@ namespace com.espertech.esper.common.@internal.view.rank
         {
             method.Block
                 .SetProperty(factory, "Size", CodegenEvaluator(sizeForge, method, GetType(), classScope))
-                .SetProperty(factory, "SortCriteriaEvaluators",
+                .SetProperty(
+                    factory,
+                    "SortCriteriaEvaluators",
                     CodegenEvaluators(sortCriteriaExpressions, method, GetType(), classScope))
-                .SetProperty(factory, "SortCriteriaTypes",
+                .SetProperty(
+                    factory,
+                    "SortCriteriaTypes",
                     Constant(ExprNodeUtilityQuery.GetExprResultTypes(sortCriteriaExpressions)))
                 .SetProperty(factory, "IsDescendingValues", Constant(isDescendingValues))
                 .SetProperty(factory, "UseCollatorSort", Constant(useCollatorSort))
-                .SetProperty(factory, "UniqueEvaluators",
+                .SetProperty(
+                    factory,
+                    "UniqueEvaluators",
                     CodegenEvaluators(uniqueCriteriaExpressions, method, GetType(), classScope))
-                .SetProperty(factory, "UniqueTypes",
+                .SetProperty(
+                    factory,
+                    "UniqueTypes",
                     Constant(ExprNodeUtilityQuery.GetExprResultTypes(uniqueCriteriaExpressions)));
         }
     }

@@ -125,7 +125,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 var model = new EPStatementObjectModel();
                 model.Select(SelectClause.CreateWildcard());
                 model = env.CopyMayFail(model);
-                Expression filter = Expressions.Eq("id", "B3");
+                Expression filter = Expressions.Eq("Id", "B3");
                 PatternExpr pattern = Patterns.TimerWithin(
                     10.001,
                     Patterns.Filter(Filter.Create("SupportBean_B", filter), "b"));
@@ -394,11 +394,11 @@ namespace com.espertech.esper.regressionlib.suite.pattern
 
                 SendTimer(2000, env);
                 env.SendEventBean(new SupportBean("E2", -1));
-                Assert.AreEqual("E2", env.Listener("s0").AssertOneGetNewAndReset().Get("id"));
+                Assert.AreEqual("E2", env.Listener("s0").AssertOneGetNewAndReset().Get("Id"));
 
                 SendTimer(2999, env);
                 env.SendEventBean(new SupportBean("E3", -1));
-                Assert.AreEqual("E3", env.Listener("s0").AssertOneGetNewAndReset().Get("id"));
+                Assert.AreEqual("E3", env.Listener("s0").AssertOneGetNewAndReset().Get("Id"));
 
                 SendTimer(3000, env);
                 Assert.IsFalse(env.Listener("s0").IsInvoked);

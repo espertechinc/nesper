@@ -7,12 +7,14 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.table.core
@@ -66,7 +68,11 @@ namespace com.espertech.esper.common.@internal.epl.table.core
         {
             CodegenExpression eval;
             if (forges.Length == 0) {
-                eval = ExprNodeUtilityCodegen.CodegenEvaluator(new ExprConstantNodeImpl((object) null).Forge, method, this.GetType(), classScope);
+                eval = ExprNodeUtilityCodegen.CodegenEvaluator(
+                    new ExprConstantNodeImpl((object) null).Forge,
+                    method,
+                    this.GetType(),
+                    classScope);
             }
             else if (forges.Length == 1) {
                 eval = ExprNodeUtilityCodegen.CodegenEvaluator(forges[0], method, this.GetType(), classScope);

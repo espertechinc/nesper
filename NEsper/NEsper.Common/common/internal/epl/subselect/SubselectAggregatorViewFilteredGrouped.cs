@@ -20,7 +20,10 @@ namespace com.espertech.esper.common.@internal.epl.subselect
             ExprEvaluatorContext exprEvaluatorContext,
             ExprEvaluator groupKeys)
             : base(
-                aggregationService, optionalFilterExpr, exprEvaluatorContext, groupKeys)
+                aggregationService,
+                optionalFilterExpr,
+                exprEvaluatorContext,
+                groupKeys)
         {
         }
 

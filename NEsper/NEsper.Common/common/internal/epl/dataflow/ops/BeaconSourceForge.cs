@@ -9,6 +9,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.dataflow.annotations;
 using com.espertech.esper.common.client.dataflow.util;
@@ -25,6 +26,7 @@ using com.espertech.esper.common.@internal.epl.util;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat.collections;
+
 using static com.espertech.esper.common.@internal.epl.dataflow.core.EPDataFlowServiceImpl;
 
 namespace com.espertech.esper.common.@internal.epl.dataflow.ops
@@ -32,7 +34,9 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.ops
     public class BeaconSourceForge : DataFlowOperatorForge
     {
         private static readonly IList<string> PARAMETER_PROPERTIES = Collections.List(
-            "interval", "iterations", "initialDelay");
+            "interval",
+            "iterations",
+            "initialDelay");
 
         private readonly IDictionary<string, ExprNode> allProperties = new LinkedHashMap<string, ExprNode>();
         private ExprForge[] evaluatorForges;
@@ -56,7 +60,8 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.ops
 
             if (context.OutputPorts.Count != 1) {
                 throw new ArgumentException(
-                    "BeaconSource operator requires one output stream but produces " + context.OutputPorts.Count +
+                    "BeaconSource operator requires one output stream but produces " +
+                    context.OutputPorts.Count +
                     " streams");
             }
 
@@ -76,7 +81,11 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.ops
             CodegenClassScope classScope)
         {
             return new SAIFFInitializeBuilder(
-                    OP_PACKAGE_NAME + ".beaconsource.BeaconSourceFactory", GetType(), "factory", parent, symbols,
+                    OP_PACKAGE_NAME + ".beaconsource.BeaconSourceFactory",
+                    GetType(),
+                    "factory",
+                    parent,
+                    symbols,
                     classScope)
                 .Exprnode("iterations", iterations)
                 .Exprnode("initialDelay", initialDelay)
@@ -109,12 +118,16 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.ops
             var writables = SetupProperties(props.ToArray(), outputEventType);
             try {
                 eventBeanManufacturer = EventTypeUtility.GetManufacturer(
-                    outputEventType, writables, context.Services.ImportServiceCompileTime, false,
+                    outputEventType,
+                    writables,
+                    context.Services.ImportServiceCompileTime,
+                    false,
                     context.Services.EventTypeAvroHandler);
             }
             catch (EventBeanManufactureException e) {
                 throw new ExprValidationException(
-                    "Cannot manufacture event for the provided type '" + outputEventType.Name + "': " + e.Message, e);
+                    "Cannot manufacture event for the provided type '" + outputEventType.Name + "': " + e.Message,
+                    e);
             }
 
             var index = 0;
@@ -125,7 +138,11 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.ops
                 object providedProperty = allProperties.Get(writable.PropertyName);
                 var exprNode = (ExprNode) providedProperty;
                 var validated = EPLValidationUtil.ValidateSimpleGetSubtree(
-                    ExprNodeOrigin.DATAFLOWBEACON, exprNode, null, false, context.Base.StatementRawInfo,
+                    ExprNodeOrigin.DATAFLOWBEACON,
+                    exprNode,
+                    null,
+                    false,
+                    context.Base.StatementRawInfo,
                     context.Services);
                 TypeWidenerSPI widener;
                 try {
@@ -133,7 +150,8 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.ops
                         ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(validated),
                         validated.Forge.EvaluationType,
                         writable.PropertyType,
-                        writable.PropertyName, false,
+                        writable.PropertyName,
+                        false,
                         typeWidenerCustomizer,
                         context.Base.StatementName);
                 }
@@ -166,7 +184,12 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.ops
             foreach (var propertyName in props) {
                 var exprNode = allProperties.Get(propertyName);
                 var validated = EPLValidationUtil.ValidateSimpleGetSubtree(
-                    ExprNodeOrigin.DATAFLOWBEACON, exprNode, null, false, context.StatementRawInfo, context.Services);
+                    ExprNodeOrigin.DATAFLOWBEACON,
+                    exprNode,
+                    null,
+                    false,
+                    context.StatementRawInfo,
+                    context.Services);
                 types.Put(propertyName, validated.Forge.EvaluationType);
                 evaluatorForges[count] = validated.Forge;
                 count++;
@@ -175,11 +198,22 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.ops
             var eventTypeName =
                 context.Services.EventTypeNameGeneratorStatement.GetDataflowOperatorTypeName(context.OperatorNumber);
             var metadata = new EventTypeMetadata(
-                eventTypeName, context.Base.ModuleName, EventTypeTypeClass.DBDERIVED,
-                EventTypeApplicationType.OBJECTARR, NameAccessModifier.TRANSIENT, EventTypeBusModifier.NONBUS, false,
+                eventTypeName,
+                context.Base.ModuleName,
+                EventTypeTypeClass.DBDERIVED,
+                EventTypeApplicationType.OBJECTARR,
+                NameAccessModifier.TRANSIENT,
+                EventTypeBusModifier.NONBUS,
+                false,
                 EventTypeIdPair.Unassigned());
             outputEventType = BaseNestableEventUtil.MakeOATypeCompileTime(
-                metadata, types, null, null, null, null, context.Services.BeanEventTypeFactoryPrivate,
+                metadata,
+                types,
+                null,
+                null,
+                null,
+                null,
+                context.Services.BeanEventTypeFactoryPrivate,
                 context.Services.EventTypeCompileTimeResolver);
             context.Services.EventTypeCompileTimeRegistry.NewType(outputEventType);
 
@@ -200,8 +234,11 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.ops
                 var writable = EventTypeUtility.FindWritable(propertyName, writeables);
                 if (writable == null) {
                     throw new ExprValidationException(
-                        "Failed to find writable property '" + propertyName + "' for event type '" +
-                        outputEventType.Name + "'");
+                        "Failed to find writable property '" +
+                        propertyName +
+                        "' for event type '" +
+                        outputEventType.Name +
+                        "'");
                 }
 
                 writablesList.Add(writable);

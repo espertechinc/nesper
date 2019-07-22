@@ -11,6 +11,7 @@ using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.core;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionRelational.
     CodegenRelational;
@@ -35,9 +36,12 @@ namespace com.espertech.esper.common.@internal.epl.resultset.order
             var limit1 = EqualsIdentity(ExprDotMethod(REF_ROWLIMITPROCESSOR, "getCurrentRowLimit"), Constant(1));
             var offset0 = EqualsIdentity(ExprDotMethod(REF_ROWLIMITPROCESSOR, "getCurrentOffset"), Constant(0));
             var haveOutgoing = And(
-                NotEqualsNull(REF_OUTGOINGEVENTS), Relational(ArrayLength(REF_OUTGOINGEVENTS), GT, Constant(1)));
+                NotEqualsNull(REF_OUTGOINGEVENTS),
+                Relational(ArrayLength(REF_OUTGOINGEVENTS), GT, Constant(1)));
             var determineLocalMinMax = OrderByProcessorImpl.DetermineLocalMinMaxCodegen(
-                forge.OrderByProcessorForge, classScope, namedMethods);
+                forge.OrderByProcessorForge,
+                classScope,
+                namedMethods);
 
             var sortPlain = method.MakeChild(typeof(EventBean[]), typeof(OrderByProcessorOrderedLimit), classScope)
                 .AddParam(SORTPLAIN_PARAMS);
@@ -45,17 +49,23 @@ namespace com.espertech.esper.common.@internal.epl.resultset.order
 
             method.Block.ExprDotMethod(REF_ROWLIMITPROCESSOR, "determineCurrentLimit")
                 .IfCondition(And(limit1, offset0, haveOutgoing))
-                .DeclareVar(
-                    typeof(EventBean), "minmax",
+                .DeclareVar<EventBean>(
+                    "minmax",
                     LocalMethod(
-                        determineLocalMinMax, REF_OUTGOINGEVENTS, REF_GENERATINGEVENTS,
+                        determineLocalMinMax,
+                        REF_OUTGOINGEVENTS,
+                        REF_GENERATINGEVENTS,
                         ExprForgeCodegenNames.REF_ISNEWDATA,
-                        REF_EXPREVALCONTEXT, REF_AGGREGATIONSVC))
+                        REF_EXPREVALCONTEXT,
+                        REF_AGGREGATIONSVC))
                 .BlockReturn(NewArrayWithInit(typeof(EventBean), Ref("minmax")))
-                .DeclareVar(
-                    typeof(EventBean[]), "sorted",
+                .DeclareVar<EventBean[]>(
+                    "sorted",
                     LocalMethod(
-                        sortPlain, REF_OUTGOINGEVENTS, REF_GENERATINGEVENTS, ExprForgeCodegenNames.REF_ISNEWDATA,
+                        sortPlain,
+                        REF_OUTGOINGEVENTS,
+                        REF_GENERATINGEVENTS,
+                        ExprForgeCodegenNames.REF_ISNEWDATA,
                         REF_EXPREVALCONTEXT,
                         REF_AGGREGATIONSVC))
                 .MethodReturn(ExprDotMethod(REF_ROWLIMITPROCESSOR, "applyLimit", Ref("sorted")));
@@ -70,11 +80,15 @@ namespace com.espertech.esper.common.@internal.epl.resultset.order
             var sortRollup = method.MakeChild(typeof(EventBean[]), typeof(OrderByProcessorOrderedLimit), classScope)
                 .AddParam(SORTROLLUP_PARAMS);
             OrderByProcessorImpl.SortRollupCodegen(forge.OrderByProcessorForge, sortRollup, classScope, namedMethods);
-            method.Block.DeclareVar(
-                    typeof(EventBean[]), "sorted",
+            method.Block.DeclareVar<EventBean[]>(
+                    "sorted",
                     LocalMethod(
-                        sortRollup, REF_OUTGOINGEVENTS, REF_ORDERCURRENTGENERATORS, ExprForgeCodegenNames.REF_ISNEWDATA,
-                        REF_AGENTINSTANCECONTEXT, REF_AGGREGATIONSVC))
+                        sortRollup,
+                        REF_OUTGOINGEVENTS,
+                        REF_ORDERCURRENTGENERATORS,
+                        ExprForgeCodegenNames.REF_ISNEWDATA,
+                        REF_AGENTINSTANCECONTEXT,
+                        REF_AGGREGATIONSVC))
                 .MethodReturn(ExprDotMethod(REF_ROWLIMITPROCESSOR, "determineLimitAndApply", Ref("sorted")));
         }
 
@@ -87,14 +101,21 @@ namespace com.espertech.esper.common.@internal.epl.resultset.order
             var sortWGroupKeys = method.MakeChild(typeof(EventBean[]), typeof(OrderByProcessorOrderedLimit), classScope)
                 .AddParam(SORTWGROUPKEYS_PARAMS);
             OrderByProcessorImpl.SortWGroupKeysCodegen(
-                forge.OrderByProcessorForge, sortWGroupKeys, classScope, namedMethods);
+                forge.OrderByProcessorForge,
+                sortWGroupKeys,
+                classScope,
+                namedMethods);
 
-            method.Block.DeclareVar(
-                    typeof(EventBean[]), "sorted",
+            method.Block.DeclareVar<EventBean[]>(
+                    "sorted",
                     LocalMethod(
-                        sortWGroupKeys, REF_OUTGOINGEVENTS, REF_GENERATINGEVENTS, REF_ORDERGROUPBYKEYS,
+                        sortWGroupKeys,
+                        REF_OUTGOINGEVENTS,
+                        REF_GENERATINGEVENTS,
+                        REF_ORDERGROUPBYKEYS,
                         ExprForgeCodegenNames.REF_ISNEWDATA,
-                        REF_EXPREVALCONTEXT, REF_AGGREGATIONSVC))
+                        REF_EXPREVALCONTEXT,
+                        REF_AGGREGATIONSVC))
                 .MethodReturn(ExprDotMethod(REF_ROWLIMITPROCESSOR, "determineLimitAndApply", Ref("sorted")));
         }
 
@@ -108,10 +129,13 @@ namespace com.espertech.esper.common.@internal.epl.resultset.order
                 .AddParam(SORTTWOKEYS_PARAMS);
             OrderByProcessorImpl.SortTwoKeysCodegen(forge.OrderByProcessorForge, sortTwoKeys, classScope, namedMethods);
 
-            method.Block.DeclareVar(
-                    typeof(EventBean[]), "sorted",
+            method.Block.DeclareVar<EventBean[]>(
+                    "sorted",
                     LocalMethod(
-                        sortTwoKeys, REF_ORDERFIRSTEVENT, REF_ORDERFIRSTSORTKEY, REF_ORDERSECONDEVENT,
+                        sortTwoKeys,
+                        REF_ORDERFIRSTEVENT,
+                        REF_ORDERFIRSTSORTKEY,
+                        REF_ORDERSECONDEVENT,
                         REF_ORDERSECONDSORTKEY))
                 .MethodReturn(ExprDotMethod(REF_ROWLIMITPROCESSOR, "determineLimitAndApply", Ref("sorted")));
         }
@@ -125,7 +149,11 @@ namespace com.espertech.esper.common.@internal.epl.resultset.order
             CodegenExpression comparator = classScope.AddOrGetFieldSharable(forge.OrderByProcessorForge.IComparer);
             method.Block.MethodReturn(
                 StaticMethod(
-                    typeof(OrderByProcessorUtil), "sortWOrderKeysWLimit", REF_OUTGOINGEVENTS, REF_ORDERKEYS, comparator,
+                    typeof(OrderByProcessorUtil),
+                    "sortWOrderKeysWLimit",
+                    REF_OUTGOINGEVENTS,
+                    REF_ORDERKEYS,
+                    comparator,
                     REF_ROWLIMITPROCESSOR));
         }
     }

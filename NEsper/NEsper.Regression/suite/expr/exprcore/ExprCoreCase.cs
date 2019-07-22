@@ -225,7 +225,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                 // Furthermore the test checks the different when clauses and actions related.
                 var epl = "@Name('s0') select case " +
                           " when Symbol='GE' then Volume " +
-                          " when Symbol='DELL' then sum(price) " +
+                          " when Symbol='DELL' then sum(Price) " +
                           "end as p1 from SupportMarketDataBean#length(10)";
 
                 env.CompileDeploy(epl).AddListener("s0");
@@ -255,7 +255,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 
                 var epl = "select case" +
                           " when Symbol=\"GE\" then Volume" +
-                          " when Symbol=\"DELL\" then sum(price) " +
+                          " when Symbol=\"DELL\" then sum(Price) " +
                           "end as p1 from SupportMarketDataBean.win:length(10)";
 
                 Assert.AreEqual(epl, model.ToEPL());
@@ -276,7 +276,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
             {
                 var epl = "@Name('s0') select case" +
                           " when Symbol=\"GE\" then Volume" +
-                          " when Symbol=\"DELL\" then sum(price) " +
+                          " when Symbol=\"DELL\" then sum(Price) " +
                           "end as p1 from SupportMarketDataBean#length(10)";
                 env.EplToModelCompileDeploy(epl).AddListener("s0").Milestone(0);
 

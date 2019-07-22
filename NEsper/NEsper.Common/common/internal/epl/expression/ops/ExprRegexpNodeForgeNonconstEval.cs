@@ -8,10 +8,12 @@
 
 using System;
 using System.Text.RegularExpressions;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 using static com.espertech.esper.common.@internal.epl.expression.ops.ExprRegexpNodeForgeConstEval;
 
@@ -83,29 +85,33 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             CodegenClassScope codegenClassScope)
         {
             var methodNode = codegenMethodScope.MakeChild(
-                typeof(bool?), typeof(ExprRegexpNodeForgeNonconstEval), codegenClassScope);
+                typeof(bool?),
+                typeof(ExprRegexpNodeForgeNonconstEval),
+                codegenClassScope);
             var blockMethod = methodNode.Block
-                .DeclareVar(
-                    typeof(string), "patternText",
+                .DeclareVar<string>(
+                    "patternText",
                     pattern.Forge.EvaluateCodegen(typeof(string), methodNode, exprSymbol, codegenClassScope))
                 .IfRefNullReturnNull("patternText");
 
             // initial like-setup
-            blockMethod.DeclareVar(
-                typeof(Regex), "pattern",
+            blockMethod.DeclareVar<Regex>(
+                "pattern",
                 StaticMethod(
-                    typeof(ExprRegexpNodeForgeNonconstEval), "exprRegexNodeCompilePattern", Ref("patternText")));
+                    typeof(ExprRegexpNodeForgeNonconstEval),
+                    "exprRegexNodeCompilePattern",
+                    Ref("patternText")));
 
             if (!forge.IsNumericValue) {
-                blockMethod.DeclareVar(
-                        typeof(string), "value",
+                blockMethod.DeclareVar<string>(
+                        "value",
                         lhs.Forge.EvaluateCodegen(typeof(string), methodNode, exprSymbol, codegenClassScope))
                     .IfRefNullReturnNull("value")
                     .MethodReturn(GetRegexpCode(forge, Ref("pattern"), Ref("value")));
             }
             else {
-                blockMethod.DeclareVar(
-                        typeof(object), "value",
+                blockMethod.DeclareVar<object>(
+                        "value",
                         lhs.Forge.EvaluateCodegen(typeof(object), methodNode, exprSymbol, codegenClassScope))
                     .IfRefNullReturnNull("value")
                     .MethodReturn(GetRegexpCode(forge, Ref("pattern"), ExprDotMethod(Ref("value"), "toString")));

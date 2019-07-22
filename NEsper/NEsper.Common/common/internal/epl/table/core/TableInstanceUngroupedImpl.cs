@@ -7,7 +7,9 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+
 using Antlr4.Runtime.Sharpen;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.epl.expression.core;
@@ -55,7 +57,9 @@ namespace com.espertech.esper.common.@internal.epl.table.core
 
             if (eventReference.Get() != null) {
                 throw new EPException(
-                    "Unique index violation, table '" + table.MetaData.TableName + "' " +
+                    "Unique index violation, table '" +
+                    table.MetaData.TableName +
+                    "' " +
                     "is a declared to hold a single un-keyed row");
             }
 
@@ -101,7 +105,11 @@ namespace com.espertech.esper.common.@internal.epl.table.core
             if (indexName.Equals(table.Name)) {
                 var org = new EventTableOrganization(
                     table.Name,
-                    true, false, 0, new string[0], EventTableOrganizationType.UNORGANIZED);
+                    true,
+                    false,
+                    0,
+                    new string[0],
+                    EventTableOrganizationType.UNORGANIZED);
                 return new SingleReferenceEventTable(org, eventReference);
             }
 

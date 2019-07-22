@@ -7,11 +7,13 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.agg.method.core;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 using static com.espertech.esper.common.@internal.epl.agg.method.core.AggregatorCodegenUtil;
 
@@ -47,7 +49,10 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.leaving
         {
             if (factory.AggregationExpression.PositionalParams.Length > 0) {
                 PrefixWithFilterCheck(
-                    factory.AggregationExpression.PositionalParams[0].Forge, method, symbols, classScope);
+                    factory.AggregationExpression.PositionalParams[0].Forge,
+                    method,
+                    symbols,
+                    classScope);
             }
 
             method.Block.AssignRef(leaving, ConstantTrue());

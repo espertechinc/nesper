@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.util;
 
@@ -29,7 +30,8 @@ namespace com.espertech.esper.common.@internal.settings
             }
             catch (MemberAccessException e) {
                 throw new ExprValidationException(
-                    "Exception accessing field '" + enumValue.EnumField.Name + "': " + e.Message, e);
+                    "Exception accessing field '" + enumValue.EnumField.Name + "': " + e.Message,
+                    e);
             }
         }
 

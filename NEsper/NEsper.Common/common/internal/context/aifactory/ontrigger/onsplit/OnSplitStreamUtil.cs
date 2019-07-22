@@ -8,6 +8,7 @@
 
 using System.Collections.Generic;
 using System.Linq;
+
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.core;
 using com.espertech.esper.common.@internal.compile.stage1.spec;
@@ -49,7 +50,8 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.onspl
                     "Required insert-into clause is not provided, the clause is required for split-stream syntax");
             }
 
-            if (raw.GroupByExpressions != null && raw.GroupByExpressions.Count > 0 || raw.HavingClause != null ||
+            if (raw.GroupByExpressions != null && raw.GroupByExpressions.Count > 0 ||
+                raw.HavingClause != null ||
                 raw.OrderByList.Count > 0) {
                 throw new ExprValidationException(
                     "A group-by clause, having-clause or order-by clause is not allowed for the split stream syntax");
@@ -61,18 +63,29 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.onspl
             }
 
             StreamTypeService typeServiceTrigger = new StreamTypeServiceImpl(
-                new[] {activatorResult.ActivatorResultEventType}, new[] {streamName}, new[] {true}, false, false);
+                new[] {activatorResult.ActivatorResultEventType},
+                new[] {streamName},
+                new[] {true},
+                false,
+                false);
 
             // materialize sub-select views
             var subselectForges = SubSelectHelperForgePlanner.PlanSubSelect(
-                @base, subselectActivation, new[] {streamSpec.OptionalStreamName},
-                new[] {activatorResult.ActivatorResultEventType}, new[] {activatorResult.TriggerEventTypeName},
+                @base,
+                subselectActivation,
+                new[] {streamSpec.OptionalStreamName},
+                new[] {activatorResult.ActivatorResultEventType},
+                new[] {activatorResult.TriggerEventTypeName},
                 services);
 
             // compile top-level split
             var items = new OnSplitItemForge[desc.SplitStreams.Count + 1];
             items[0] = OnSplitValidate(
-                typeServiceTrigger, @base.StatementSpec, @base.ContextPropertyRegistry, null, @base.StatementRawInfo,
+                typeServiceTrigger,
+                @base.StatementSpec,
+                @base.ContextPropertyRegistry,
+                null,
+                @base.StatementRawInfo,
                 services);
 
             // compile each additional split
@@ -88,19 +101,29 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.onspl
                 StreamTypeService typeServiceProperty;
                 if (splits.FromClause != null) {
                     optionalPropertyEvaluator = PropertyEvaluatorForgeFactory.MakeEvaluator(
-                        splits.FromClause.PropertyEvalSpec, activatorResult.ActivatorResultEventType, streamName,
-                        @base.StatementRawInfo, services);
+                        splits.FromClause.PropertyEvalSpec,
+                        activatorResult.ActivatorResultEventType,
+                        streamName,
+                        @base.StatementRawInfo,
+                        services);
                     typeServiceProperty = new StreamTypeServiceImpl(
                         new[] {optionalPropertyEvaluator.FragmentEventType},
-                        new[] {splits.FromClause.OptionalStreamName}, new[] {true}, false, false);
+                        new[] {splits.FromClause.OptionalStreamName},
+                        new[] {true},
+                        false,
+                        false);
                 }
                 else {
                     typeServiceProperty = typeServiceTrigger;
                 }
 
                 items[index] = OnSplitValidate(
-                    typeServiceProperty, splitSpec, @base.ContextPropertyRegistry, optionalPropertyEvaluator,
-                    @base.StatementRawInfo, services);
+                    typeServiceProperty,
+                    splitSpec,
+                    @base.ContextPropertyRegistry,
+                    optionalPropertyEvaluator,
+                    @base.StatementRawInfo,
+                    services);
                 index++;
             }
 
@@ -108,10 +131,14 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.onspl
             IList<StmtClassForgable> forgables = new List<StmtClassForgable>();
             for (var i = 0; i < items.Length; i++) {
                 var classNameRSP = CodeGenerationIDGenerator.GenerateClassNameSimple(
-                    typeof(ResultSetProcessorFactoryProvider), classPostfix + "_" + i);
+                    typeof(ResultSetProcessorFactoryProvider),
+                    classPostfix + "_" + i);
                 forgables.Add(
                     new StmtClassForgableRSPFactoryProvider(
-                        classNameRSP, items[i].ResultSetProcessorDesc, namespaceScope, @base.StatementRawInfo));
+                        classNameRSP,
+                        items[i].ResultSetProcessorDesc,
+                        namespaceScope,
+                        @base.StatementRawInfo));
                 items[i].ResultSetProcessorClassName = classNameRSP;
             }
 
@@ -121,9 +148,15 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.onspl
             // build forge
             var splitStreamForge = new StatementAgentInstanceFactoryOnTriggerSplitStreamForge(
                 activatorResult.Activator,
-                activatorResult.ActivatorResultEventType, subselectForges, tableAccessForges, items, desc.IsFirst);
+                activatorResult.ActivatorResultEventType,
+                subselectForges,
+                tableAccessForges,
+                items,
+                desc.IsFirst);
             var triggerForge = new StmtClassForgableAIFactoryProviderOnTrigger(
-                aiFactoryProviderClassName, namespaceScope, splitStreamForge);
+                aiFactoryProviderClassName,
+                namespaceScope,
+                splitStreamForge);
 
             return new OnTriggerPlan(triggerForge, forgables, new SelectSubscriberDescriptor());
         }
@@ -140,13 +173,29 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.onspl
             var isNamedWindowInsert = services.NamedWindowCompileTimeResolver.Resolve(insertIntoName) != null;
             var table = services.TableCompileTimeResolver.Resolve(insertIntoName);
             EPStatementStartMethodHelperValidate.ValidateNodes(
-                statementSpecCompiled.Raw, typeServiceTrigger, null, rawInfo, services);
+                statementSpecCompiled.Raw,
+                typeServiceTrigger,
+                null,
+                rawInfo,
+                services);
             var spec = new ResultSetSpec(statementSpecCompiled);
             var factoryDescs = ResultSetProcessorFactoryFactory.GetProcessorPrototype(
-                spec, typeServiceTrigger,
-                null, new bool[0], false, contextPropertyRegistry, false, true, rawInfo, services);
+                spec,
+                typeServiceTrigger,
+                null,
+                new bool[0],
+                false,
+                contextPropertyRegistry,
+                false,
+                true,
+                rawInfo,
+                services);
             return new OnSplitItemForge(
-                statementSpecCompiled.Raw.WhereClause, isNamedWindowInsert, table, factoryDescs, optionalPropertyEval);
+                statementSpecCompiled.Raw.WhereClause,
+                isNamedWindowInsert,
+                table,
+                factoryDescs,
+                optionalPropertyEval);
         }
 
         /// <summary>
@@ -167,7 +216,9 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.onspl
                     rawExpr.SelectExpression.Accept(visitor);
                     selectElements.Add(
                         new SelectClauseExprCompiledSpec(
-                            rawExpr.SelectExpression, rawExpr.OptionalAsName, rawExpr.OptionalAsName,
+                            rawExpr.SelectExpression,
+                            rawExpr.OptionalAsName,
+                            rawExpr.OptionalAsName,
                             rawExpr.IsEvents));
                 }
                 else if (raw is SelectClauseStreamRawSpec) {

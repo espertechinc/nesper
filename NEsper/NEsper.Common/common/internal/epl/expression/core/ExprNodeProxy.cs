@@ -8,7 +8,9 @@
 
 using System;
 using System.Reflection;
+
 using com.espertech.esper.common.client;
+
 using Castle.DynamicProxy;
 
 namespace com.espertech.esper.common.@internal.epl.expression.core
@@ -45,7 +47,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             }
             else {
                 invocation.ReturnValue = invocation.Method.Invoke(
-                    invocation.Proxy, invocation.Arguments);
+                    invocation.Proxy,
+                    invocation.Arguments);
             }
         }
 

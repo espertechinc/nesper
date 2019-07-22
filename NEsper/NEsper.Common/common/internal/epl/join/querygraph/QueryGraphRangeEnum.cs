@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.@internal.filterspec;
 using com.espertech.esper.common.@internal.type;
 using com.espertech.esper.compat;
@@ -93,8 +94,10 @@ namespace com.espertech.esper.common.@internal.epl.join.querygraph
                     throw new UnsupportedOperationException("Cannot determine endpoint-start included for op " + this);
                 }
 
-                return this == RANGE_HALF_OPEN || this == RANGE_CLOSED ||
-                       this == NOT_RANGE_HALF_OPEN || this == NOT_RANGE_CLOSED;
+                return this == RANGE_HALF_OPEN ||
+                       this == RANGE_CLOSED ||
+                       this == NOT_RANGE_HALF_OPEN ||
+                       this == NOT_RANGE_CLOSED;
             }
         }
 
@@ -104,8 +107,10 @@ namespace com.espertech.esper.common.@internal.epl.join.querygraph
                     throw new UnsupportedOperationException("Cannot determine endpoint-end included for op " + this);
                 }
 
-                return this == RANGE_HALF_CLOSED || this == RANGE_CLOSED ||
-                       this == NOT_RANGE_HALF_CLOSED || this == NOT_RANGE_CLOSED;
+                return this == RANGE_HALF_CLOSED ||
+                       this == RANGE_CLOSED ||
+                       this == NOT_RANGE_HALF_CLOSED ||
+                       this == NOT_RANGE_CLOSED;
             }
         }
 
@@ -221,8 +226,11 @@ namespace com.espertech.esper.common.@internal.epl.join.querygraph
 
         public bool IsRangeInverted()
         {
-            return IsRange && (this == NOT_RANGE_HALF_CLOSED || this == NOT_RANGE_HALF_OPEN ||
-                               this == NOT_RANGE_OPEN || this == NOT_RANGE_CLOSED);
+            return IsRange &&
+                   (this == NOT_RANGE_HALF_CLOSED ||
+                    this == NOT_RANGE_HALF_OPEN ||
+                    this == NOT_RANGE_OPEN ||
+                    this == NOT_RANGE_CLOSED);
         }
     }
 } // end of namespace

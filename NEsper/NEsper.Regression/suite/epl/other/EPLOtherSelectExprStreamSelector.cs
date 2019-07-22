@@ -104,14 +104,14 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                     typeof(SupportBeanComplexProps.SupportBeanSpecialGetterNested),
                     env.Statement("l1").EventType.UnderlyingType);
 
-                var stmtTwoText = "@Name('l2') select nestedValue from StreamA";
+                var stmtTwoText = "@Name('l2') select NestedValue from StreamA";
                 env.CompileDeploy(stmtTwoText, path).AddListener("l2");
-                Assert.AreEqual(typeof(string), env.Statement("l2").EventType.GetPropertyType("nestedValue"));
+                Assert.AreEqual(typeof(string), env.Statement("l2").EventType.GetPropertyType("NestedValue"));
 
                 env.SendEventBean(SupportBeanComplexProps.MakeDefaultBean());
 
-                Assert.AreEqual("nestedValue", env.Listener("l1").AssertOneGetNewAndReset().Get("nestedValue"));
-                Assert.AreEqual("nestedValue", env.Listener("l2").AssertOneGetNewAndReset().Get("nestedValue"));
+                Assert.AreEqual("NestedValue", env.Listener("l1").AssertOneGetNewAndReset().Get("NestedValue"));
+                Assert.AreEqual("NestedValue", env.Listener("l2").AssertOneGetNewAndReset().Get("NestedValue"));
 
                 env.UndeployAll();
                 env.UndeployAll();

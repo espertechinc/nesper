@@ -43,64 +43,64 @@ namespace NEsper.Avro.SelectExprRep
             _resultEventTypeAvro = (AvroEventType) resultEventTypeAvro;
 
             _forges = new ExprForge[selectExprForgeContext.ExprForges.Length];
-            var typeWidenerCustomizer = selectExprForgeContext.EventTypeAvroHandler.GetTypeWidenerCustomizer(resultEventTypeAvro);
-            for (var i = 0; i < _forges.Length; i++)
-            {
+            var typeWidenerCustomizer =
+                selectExprForgeContext.EventTypeAvroHandler.GetTypeWidenerCustomizer(resultEventTypeAvro);
+            for (var i = 0; i < _forges.Length; i++) {
                 _forges[i] = selectExprForgeContext.ExprForges[i];
                 var forge = exprForges[i];
                 var forgeEvaluationType = forge.EvaluationType;
 
-                if (forge is ExprEvalByGetterFragment)
-                {
+                if (forge is ExprEvalByGetterFragment) {
                     _forges[i] = HandleFragment((ExprEvalByGetterFragment) forge);
                 }
-                else if (forge is ExprEvalStreamInsertUnd)
-                {
+                else if (forge is ExprEvalStreamInsertUnd) {
                     var und = (ExprEvalStreamInsertUnd) forge;
-                    _forges[i] = new SelectExprInsertEventBeanFactory.ExprForgeStreamUnderlying(und.StreamNum, typeof(object));
+                    _forges[i] =
+                        new SelectExprInsertEventBeanFactory.ExprForgeStreamUnderlying(und.StreamNum, typeof(object));
                 }
-                else if (forge is SelectExprProcessorTypableMapForge)
-                {
+                else if (forge is SelectExprProcessorTypableMapForge) {
                     var typableMap = (SelectExprProcessorTypableMapForge) forge;
                     _forges[i] = new SelectExprProcessorEvalAvroMapToAvro(
-                        typableMap.InnerForge, ((AvroEventType) resultEventTypeAvro).SchemaAvro, selectExprForgeContext.ColumnNames[i]);
+                        typableMap.InnerForge,
+                        ((AvroEventType) resultEventTypeAvro).SchemaAvro,
+                        selectExprForgeContext.ColumnNames[i]);
                 }
-                else if (forge is ExprEvalStreamInsertNamedWindow)
-                {
+                else if (forge is ExprEvalStreamInsertNamedWindow) {
                     var nw = (ExprEvalStreamInsertNamedWindow) forge;
-                    _forges[i] = new SelectExprInsertEventBeanFactory.ExprForgeStreamUnderlying(nw.StreamNum, typeof(object));
+                    _forges[i] =
+                        new SelectExprInsertEventBeanFactory.ExprForgeStreamUnderlying(nw.StreamNum, typeof(object));
                 }
-                else if (forgeEvaluationType != null && forgeEvaluationType.IsArray)
-                {
+                else if (forgeEvaluationType != null && forgeEvaluationType.IsArray) {
                     var widener = TypeWidenerFactory.GetArrayToCollectionCoercer(forgeEvaluationType.GetElementType());
                     var resultType = typeof(ICollection<object>);
                     _forges[i] = new SelectExprProcessorEvalAvroArrayCoercer(forge, widener, resultType);
                 }
-                else
-                {
+                else {
                     var propertyName = selectExprForgeContext.ColumnNames[i];
                     var propertyType = resultEventTypeAvro.GetPropertyType(propertyName);
                     TypeWidenerSPI widener;
-                    try
-                    {
+                    try {
                         widener = TypeWidenerFactory.GetCheckPropertyAssignType(
-                            propertyName, forgeEvaluationType, propertyType, propertyName, true, typeWidenerCustomizer, statementName);
+                            propertyName,
+                            forgeEvaluationType,
+                            propertyType,
+                            propertyName,
+                            true,
+                            typeWidenerCustomizer,
+                            statementName);
                     }
-                    catch (TypeWidenerException ex)
-                    {
+                    catch (TypeWidenerException ex) {
                         throw new ExprValidationException(ex.Message, ex);
                     }
 
-                    if (widener != null)
-                    {
+                    if (widener != null) {
                         _forges[i] = new SelectExprProcessorEvalAvroArrayCoercer(forge, widener, propertyType);
                     }
                 }
             }
         }
 
-        public EventType ResultEventType
-        {
+        public EventType ResultEventType {
             get => _resultEventTypeAvro;
         }
 
@@ -113,33 +113,50 @@ namespace NEsper.Avro.SelectExprRep
             CodegenClassScope codegenClassScope)
         {
             var schema = codegenClassScope.NamespaceScope.AddFieldUnshared(
-                true, typeof(Schema),
+                true,
+                typeof(Schema),
                 CodegenExpressionBuilder.StaticMethod(
-                    typeof(AvroSchemaUtil), "resolveAvroSchema",
+                    typeof(AvroSchemaUtil),
+                    "resolveAvroSchema",
                     EventTypeUtility.ResolveTypeCodegen(_resultEventTypeAvro, EPStatementInitServicesConstants.REF)));
             var methodNode = codegenMethodScope.MakeChild(typeof(EventBean), GetType(), codegenClassScope);
             var block = methodNode.Block
-                .DeclareVar(typeof(GenericRecord), "record", CodegenExpressionBuilder.NewInstance(typeof(GenericRecord), schema));
-            for (var i = 0; i < _selectExprForgeContext.ColumnNames.Length; i++)
-            {
+                .DeclareVar<GenericRecord>(
+                    "record",
+                    CodegenExpressionBuilder.NewInstance(typeof(GenericRecord), schema));
+            for (var i = 0; i < _selectExprForgeContext.ColumnNames.Length; i++) {
                 var expression = _forges[i].EvaluateCodegen(typeof(object), methodNode, exprSymbol, codegenClassScope);
-                block.Expression(CodegenExpressionBuilder.ExprDotMethod(CodegenExpressionBuilder.Ref("record"), "put", CodegenExpressionBuilder.Constant(_selectExprForgeContext.ColumnNames[i]), expression));
+                block.Expression(
+                    CodegenExpressionBuilder.ExprDotMethod(
+                        CodegenExpressionBuilder.Ref("record"),
+                        "put",
+                        CodegenExpressionBuilder.Constant(_selectExprForgeContext.ColumnNames[i]),
+                        expression));
             }
 
-            block.MethodReturn(CodegenExpressionBuilder.ExprDotMethod(eventBeanFactory, "adapterForTypedAvro", CodegenExpressionBuilder.Ref("record"), resultEventType));
+            block.MethodReturn(
+                CodegenExpressionBuilder.ExprDotMethod(
+                    eventBeanFactory,
+                    "adapterForTypedAvro",
+                    CodegenExpressionBuilder.Ref("record"),
+                    resultEventType));
             return methodNode;
         }
 
         private ExprForge HandleFragment(ExprEvalByGetterFragment eval)
         {
-            if (eval.EvaluationType == typeof(GenericRecord[]))
-            {
-                return new SelectExprProcessorEvalByGetterFragmentAvroArray(eval.StreamNum, eval.Getter, typeof(ICollection<object>));
+            if (eval.EvaluationType == typeof(GenericRecord[])) {
+                return new SelectExprProcessorEvalByGetterFragmentAvroArray(
+                    eval.StreamNum,
+                    eval.Getter,
+                    typeof(ICollection<object>));
             }
 
-            if (eval.EvaluationType == typeof(GenericRecord))
-            {
-                return new SelectExprProcessorEvalByGetterFragmentAvro(eval.StreamNum, eval.Getter, typeof(GenericRecord));
+            if (eval.EvaluationType == typeof(GenericRecord)) {
+                return new SelectExprProcessorEvalByGetterFragmentAvro(
+                    eval.StreamNum,
+                    eval.Getter,
+                    typeof(GenericRecord));
             }
 
             throw new EPException("Unrecognized return type " + eval.EvaluationType + " for use with Avro");

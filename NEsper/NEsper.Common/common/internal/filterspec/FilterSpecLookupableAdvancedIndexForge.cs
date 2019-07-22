@@ -72,8 +72,7 @@ namespace com.espertech.esper.common.@internal.filterspec
             Func<EventPropertyGetterSPI, CodegenExpression> toEval = getter =>
                 EventTypeUtility.CodegenGetterWCoerce(getter, typeof(double?), null, method, GetType(), classScope);
             method.Block
-                .DeclareVar(
-                    typeof(FilterSpecLookupableAdvancedIndex),
+                .DeclareVar<FilterSpecLookupableAdvancedIndex>(
                     "lookupable",
                     NewInstance<FilterSpecLookupableAdvancedIndex>(
                         Constant(expression),

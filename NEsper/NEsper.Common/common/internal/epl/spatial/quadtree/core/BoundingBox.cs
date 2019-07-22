@@ -88,10 +88,14 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.core
         public override string ToString()
         {
             return "{" +
-                   "minX=" + _minX +
-                   ", minY=" + _minY +
-                   ", maxX=" + _maxX +
-                   ", maxY=" + _maxY +
+                   "minX=" +
+                   _minX +
+                   ", minY=" +
+                   _minY +
+                   ", maxX=" +
+                   _maxX +
+                   ", maxY=" +
+                   _maxY +
                    '}';
         }
 
@@ -187,7 +191,9 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.core
 
         protected bool Equals(BoundingBox other)
         {
-            return _minX.Equals(other._minX) && _minY.Equals(other._minY) && _maxX.Equals(other._maxX) &&
+            return _minX.Equals(other._minX) &&
+                   _minY.Equals(other._minY) &&
+                   _maxX.Equals(other._maxX) &&
                    _maxY.Equals(other._maxY);
         }
 
@@ -249,12 +255,15 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.core
                     case "nw":
                         quadrants[0] = subs[0].TreeForPath(path, offset + 1);
                         break;
+
                     case "ne":
                         quadrants[1] = subs[1].TreeForPath(path, offset + 1);
                         break;
+
                     case "sw":
                         quadrants[2] = subs[2].TreeForPath(path, offset + 1);
                         break;
+
                     case "se":
                         quadrants[3] = subs[3].TreeForPath(path, offset + 1);
                         break;
@@ -291,10 +300,13 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.core
                 switch (q) {
                     case QuadrantEnum.NW:
                         return nw;
+
                     case QuadrantEnum.NE:
                         return ne;
+
                     case QuadrantEnum.SW:
                         return sw;
+
                     default:
                         return se;
                 }

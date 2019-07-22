@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.core;
@@ -16,6 +17,7 @@ using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.resultset.core;
 using com.espertech.esper.common.@internal.epl.resultset.@select.core;
 using com.espertech.esper.compat.collections;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 using static com.espertech.esper.common.@internal.epl.resultset.codegen.ResultSetProcessorCodegenNames;
 
@@ -36,7 +38,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.simple
             ExprForge optionalHavingNode,
             bool isSelectRStream,
             OutputLimitSpec outputLimitSpec,
-            ResultSetProcessorOutputConditionType outputConditionType,
+            ResultSetProcessorOutputConditionType? outputConditionType,
             bool isSorting,
             EventType[] eventTypes)
         {
@@ -56,11 +58,12 @@ namespace com.espertech.esper.common.@internal.epl.resultset.simple
 
         public ExprForge OptionalHavingNode { get; }
 
-        public bool IsOutputLast => outputLimitSpec != null && outputLimitSpec.DisplayLimit == OutputLimitLimitType.LAST;
+        public bool IsOutputLast =>
+            outputLimitSpec != null && outputLimitSpec.DisplayLimit == OutputLimitLimitType.LAST;
 
         public bool IsOutputAll => outputLimitSpec != null && outputLimitSpec.DisplayLimit == OutputLimitLimitType.ALL;
 
-        public ResultSetProcessorOutputConditionType OutputConditionType { get; }
+        public ResultSetProcessorOutputConditionType? OutputConditionType { get; }
 
         public int NumStreams => EventTypes.Length;
 
@@ -77,15 +80,19 @@ namespace com.espertech.esper.common.@internal.epl.resultset.simple
             IList<CodegenTypedParam> factoryMembers)
         {
             instance.Methods.AddMethod(
-                typeof(bool), "HasHavingClause",
+                typeof(bool),
+                "HasHavingClause",
                 new EmptyList<CodegenNamedParam>(),
-                typeof(ResultSetProcessorSimple), classScope,
+                typeof(ResultSetProcessorSimple),
+                classScope,
                 methodNode => methodNode.Block.MethodReturn(Constant(OptionalHavingNode != null)));
             ResultSetProcessorUtil.EvaluateHavingClauseCodegen(OptionalHavingNode, classScope, instance);
             instance.Methods.AddMethod(
-                typeof(ExprEvaluatorContext), "GetAgentInstanceContext",
+                typeof(ExprEvaluatorContext),
+                "GetAgentInstanceContext",
                 new EmptyList<CodegenNamedParam>(),
-                GetType(), classScope,
+                GetType(),
+                classScope,
                 methodNode => methodNode.Block.MethodReturn(REF_AGENTINSTANCECONTEXT));
         }
 
@@ -158,7 +165,11 @@ namespace com.espertech.esper.common.@internal.epl.resultset.simple
             CodegenMethod method,
             CodegenInstanceAux instance)
         {
-            ResultSetProcessorSimpleImpl.ContinueOutputLimitedLastAllNonBufferedViewCodegen(this, classScope, method, instance);
+            ResultSetProcessorSimpleImpl.ContinueOutputLimitedLastAllNonBufferedViewCodegen(
+                this,
+                classScope,
+                method,
+                instance);
         }
 
         public void ContinueOutputLimitedLastAllNonBufferedJoinCodegen(
@@ -166,7 +177,11 @@ namespace com.espertech.esper.common.@internal.epl.resultset.simple
             CodegenMethod method,
             CodegenInstanceAux instance)
         {
-            ResultSetProcessorSimpleImpl.ContinueOutputLimitedLastAllNonBufferedJoinCodegen(this, classScope, method, instance);
+            ResultSetProcessorSimpleImpl.ContinueOutputLimitedLastAllNonBufferedJoinCodegen(
+                this,
+                classScope,
+                method,
+                instance);
         }
 
         public void ProcessOutputLimitedLastAllNonBufferedViewCodegen(
@@ -174,7 +189,11 @@ namespace com.espertech.esper.common.@internal.epl.resultset.simple
             CodegenMethod method,
             CodegenInstanceAux instance)
         {
-            ResultSetProcessorSimpleImpl.ProcessOutputLimitedLastAllNonBufferedViewCodegen(this, classScope, method, instance);
+            ResultSetProcessorSimpleImpl.ProcessOutputLimitedLastAllNonBufferedViewCodegen(
+                this,
+                classScope,
+                method,
+                instance);
         }
 
         public void ProcessOutputLimitedLastAllNonBufferedJoinCodegen(
@@ -182,7 +201,11 @@ namespace com.espertech.esper.common.@internal.epl.resultset.simple
             CodegenMethod method,
             CodegenInstanceAux instance)
         {
-            ResultSetProcessorSimpleImpl.ProcessOutputLimitedLastAllNonBufferedJoinCodegen(this, classScope, method, instance);
+            ResultSetProcessorSimpleImpl.ProcessOutputLimitedLastAllNonBufferedJoinCodegen(
+                this,
+                classScope,
+                method,
+                instance);
         }
 
         public void AcceptHelperVisitorCodegen(

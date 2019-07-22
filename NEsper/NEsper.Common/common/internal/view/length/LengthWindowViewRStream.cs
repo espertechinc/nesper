@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.view.core;
@@ -69,7 +70,9 @@ namespace com.espertech.esper.common.@internal.view.length
         {
             agentInstanceContext.AuditProvider.View(newData, oldData, agentInstanceContext, lengthWindowViewFactory);
             agentInstanceContext.InstrumentationProvider.QViewProcessIRStream(
-                lengthWindowViewFactory, newData, oldData);
+                lengthWindowViewFactory,
+                newData,
+                oldData);
 
             EventBean[] expiredArr = null;
             if (oldData != null) {
@@ -108,7 +111,9 @@ namespace com.espertech.esper.common.@internal.view.length
             // If there are child views, call update method
             if (child != null) {
                 agentInstanceContext.InstrumentationProvider.QViewIndicate(
-                    lengthWindowViewFactory, newData, expiredArr);
+                    lengthWindowViewFactory,
+                    newData,
+                    expiredArr);
                 child.Update(newData, expiredArr);
                 agentInstanceContext.InstrumentationProvider.AViewIndicate();
             }

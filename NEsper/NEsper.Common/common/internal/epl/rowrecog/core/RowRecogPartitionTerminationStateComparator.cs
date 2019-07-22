@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+
 using com.espertech.esper.collection;
 using com.espertech.esper.common.@internal.epl.rowrecog.nfa;
 using com.espertech.esper.common.@internal.@event.core;
@@ -47,17 +48,23 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
                 var multi = entry.Value.Second;
                 if (multi) {
                     var termStreamEvents = RowRecogNFAViewUtil.GetMultimatchArray(
-                        multimatchStreamNumToVariable, terminationState, stream);
+                        multimatchStreamNumToVariable,
+                        terminationState,
+                        stream);
                     var endStreamEvents = RowRecogNFAViewUtil.GetMultimatchArray(
-                        multimatchStreamNumToVariable, endState, stream);
+                        multimatchStreamNumToVariable,
+                        endState,
+                        stream);
                     if (endStreamEvents != null) {
                         if (termStreamEvents == null) {
                             return false;
                         }
 
                         for (var i = 0; i < endStreamEvents.Length; i++) {
-                            if (termStreamEvents.Length > i && !EventBeanUtility.EventsAreEqualsAllowNull(
-                                    endStreamEvents[i], termStreamEvents[i])) {
+                            if (termStreamEvents.Length > i &&
+                                !EventBeanUtility.EventsAreEqualsAllowNull(
+                                    endStreamEvents[i],
+                                    termStreamEvents[i])) {
                                 return false;
                             }
                         }

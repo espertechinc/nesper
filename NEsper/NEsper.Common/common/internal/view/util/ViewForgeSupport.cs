@@ -9,6 +9,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.expression.visitor;
@@ -29,7 +30,12 @@ namespace com.espertech.esper.common.@internal.view.util
             int streamNumber)
         {
             return ValidateAndEvaluateExpr(
-                viewName, expression, new StreamTypeServiceImpl(false), viewForgeEnv, 0, streamNumber);
+                viewName,
+                expression,
+                new StreamTypeServiceImpl(false),
+                viewForgeEnv,
+                0,
+                streamNumber);
         }
 
         public static object EvaluateAssertNoProperties(
@@ -54,7 +60,9 @@ namespace com.espertech.esper.common.@internal.view.util
             int index)
         {
             if (expression.Forge.ForgeConstantType.IsCompileTimeConstant) {
-                var message = "Invalid view parameter expression " + index + GetViewDesc(viewName) +
+                var message = "Invalid view parameter expression " +
+                              index +
+                              GetViewDesc(viewName) +
                               ", the expression returns a constant result value, are you sure?";
                 throw new ViewParameterException(message);
             }
@@ -68,8 +76,12 @@ namespace com.espertech.esper.common.@internal.view.util
             var visitor = new ExprNodeSummaryVisitor();
             expression.Accept(visitor);
             if (!visitor.IsPlain) {
-                var message = "Invalid view parameter expression " + index + GetViewDesc(viewName) + ", " +
-                              visitor.Message + " are not allowed within the expression";
+                var message = "Invalid view parameter expression " +
+                              index +
+                              GetViewDesc(viewName) +
+                              ", " +
+                              visitor.Message +
+                              " are not allowed within the expression";
                 throw new ViewParameterException(message);
             }
         }
@@ -83,7 +95,12 @@ namespace com.espertech.esper.common.@internal.view.util
             int streamNumber)
         {
             var validated = ValidateExpr(
-                viewName, expression, streamTypeService, viewForgeEnv, expressionNumber, streamNumber);
+                viewName,
+                expression,
+                streamTypeService,
+                viewForgeEnv,
+                expressionNumber,
+                streamNumber);
 
             try {
                 return validated.Forge.ExprEvaluator.Evaluate(null, true, null);
@@ -170,11 +187,18 @@ namespace com.espertech.esper.common.@internal.view.util
             StreamTypeService streamTypeService = new StreamTypeServiceImpl(eventType, null, false);
             foreach (var expr in expressions) {
                 var validated = ValidateExpr(
-                    viewName, expr, streamTypeService, viewForgeEnv, expressionNumber, streamNumber);
+                    viewName,
+                    expr,
+                    streamTypeService,
+                    viewForgeEnv,
+                    expressionNumber,
+                    streamNumber);
                 results.Add(validated);
 
                 if (!allowConstantResult && validated.Forge.ForgeConstantType.IsCompileTimeConstant) {
-                    var message = "Invalid view parameter expression " + expressionNumber + GetViewDesc(viewName) +
+                    var message = "Invalid view parameter expression " +
+                                  expressionNumber +
+                                  GetViewDesc(viewName) +
                                   ", the expression returns a constant result value, are you sure?";
                     throw new ViewParameterException(message);
                 }
@@ -196,7 +220,12 @@ namespace com.espertech.esper.common.@internal.view.util
             StreamTypeService streamTypeService = new StreamTypeServiceImpl(false);
             foreach (var expr in expressions) {
                 results[expressionNumber] = ValidateExpr(
-                    viewName, expr, streamTypeService, viewForgeEnv, expressionNumber, streamNumber);
+                    viewName,
+                    expr,
+                    streamTypeService,
+                    viewForgeEnv,
+                    expressionNumber,
+                    streamNumber);
                 expressionNumber++;
             }
 
@@ -215,10 +244,15 @@ namespace com.espertech.esper.common.@internal.view.util
             try {
                 var names = new ExprValidationMemberNameQualifiedView(streamNumber);
                 var validationContext = new ExprValidationContextBuilder(
-                        streamTypeService, viewForgeEnv.StatementRawInfo, viewForgeEnv.StatementCompileTimeServices)
-                    .WithMemberName(names).Build();
+                        streamTypeService,
+                        viewForgeEnv.StatementRawInfo,
+                        viewForgeEnv.StatementCompileTimeServices)
+                    .WithMemberName(names)
+                    .Build();
                 validated = ExprNodeUtilityValidate.GetValidatedSubtree(
-                    ExprNodeOrigin.VIEWPARAMETER, expression, validationContext);
+                    ExprNodeOrigin.VIEWPARAMETER,
+                    expression,
+                    validationContext);
             }
             catch (ExprValidationException ex) {
                 var message = "Invalid parameter expression " + expressionNumber + GetViewDesc(viewName);

@@ -54,14 +54,18 @@ namespace com.espertech.esper.common.@internal.epl.datetime.eval
             new DotMethodFP(
                 DotMethodFPInputEnum.SCALAR_ANY,
                 new DotMethodFPParam(
-                    "a string-type calendar field name", EPLExpressionParamType.SPECIFIC, typeof(string)))
+                    "a string-type calendar field name",
+                    EPLExpressionParamType.SPECIFIC,
+                    typeof(string)))
         };
 
         protected internal static readonly DotMethodFP[] CALFIELD_PLUS_INT = {
             new DotMethodFP(
                 DotMethodFPInputEnum.SCALAR_ANY,
                 new DotMethodFPParam(
-                    "a string-type calendar field name", EPLExpressionParamType.SPECIFIC, typeof(string)),
+                    "a string-type calendar field name",
+                    EPLExpressionParamType.SPECIFIC,
+                    typeof(string)),
                 new DotMethodFPParam("an integer-type value", EPLExpressionParamType.SPECIFIC, typeof(int)))
         };
 
@@ -120,14 +124,17 @@ namespace com.espertech.esper.common.@internal.epl.datetime.eval
                 DotMethodFPInputEnum.SCALAR_ANY,
                 new DotMethodFPParam(INPUT_INTERVAL, EPLExpressionParamType.ANY),
                 new DotMethodFPParam(
-                    "maximum distance interval both start and end", EPLExpressionParamType.TIME_PERIOD_OR_SEC)),
+                    "maximum distance interval both start and end",
+                    EPLExpressionParamType.TIME_PERIOD_OR_SEC)),
             new DotMethodFP(
                 DotMethodFPInputEnum.SCALAR_ANY,
                 new DotMethodFPParam(INPUT_INTERVAL, EPLExpressionParamType.ANY),
                 new DotMethodFPParam(
-                    "minimum distance interval both start and end", EPLExpressionParamType.TIME_PERIOD_OR_SEC),
+                    "minimum distance interval both start and end",
+                    EPLExpressionParamType.TIME_PERIOD_OR_SEC),
                 new DotMethodFPParam(
-                    "maximum distance interval both start and end", EPLExpressionParamType.TIME_PERIOD_OR_SEC)),
+                    "maximum distance interval both start and end",
+                    EPLExpressionParamType.TIME_PERIOD_OR_SEC)),
             new DotMethodFP(
                 DotMethodFPInputEnum.SCALAR_ANY,
                 new DotMethodFPParam(INPUT_INTERVAL, EPLExpressionParamType.ANY),
@@ -145,14 +152,17 @@ namespace com.espertech.esper.common.@internal.epl.datetime.eval
                 DotMethodFPInputEnum.SCALAR_ANY,
                 new DotMethodFPParam(INPUT_INTERVAL, EPLExpressionParamType.ANY),
                 new DotMethodFPParam(
-                    "maximum distance interval both start and end", EPLExpressionParamType.TIME_PERIOD_OR_SEC)),
+                    "maximum distance interval both start and end",
+                    EPLExpressionParamType.TIME_PERIOD_OR_SEC)),
             new DotMethodFP(
                 DotMethodFPInputEnum.SCALAR_ANY,
                 new DotMethodFPParam(INPUT_INTERVAL, EPLExpressionParamType.ANY),
                 new DotMethodFPParam(
-                    "minimum distance interval both start and end", EPLExpressionParamType.TIME_PERIOD_OR_SEC),
+                    "minimum distance interval both start and end",
+                    EPLExpressionParamType.TIME_PERIOD_OR_SEC),
                 new DotMethodFPParam(
-                    "maximum distance interval both start and end", EPLExpressionParamType.TIME_PERIOD_OR_SEC))
+                    "maximum distance interval both start and end",
+                    EPLExpressionParamType.TIME_PERIOD_OR_SEC))
         };
 
         protected internal static readonly DotMethodFP[] INTERVAL_FINISHES_FINISHEDBY = {
@@ -163,7 +173,8 @@ namespace com.espertech.esper.common.@internal.epl.datetime.eval
                 DotMethodFPInputEnum.SCALAR_ANY,
                 new DotMethodFPParam(INPUT_INTERVAL, EPLExpressionParamType.ANY),
                 new DotMethodFPParam(
-                    "maximum distance between end timestamps", EPLExpressionParamType.TIME_PERIOD_OR_SEC))
+                    "maximum distance between end timestamps",
+                    EPLExpressionParamType.TIME_PERIOD_OR_SEC))
         };
 
         protected internal static readonly DotMethodFP[] INTERVAL_STARTS_STARTEDBY = {
@@ -174,7 +185,8 @@ namespace com.espertech.esper.common.@internal.epl.datetime.eval
                 DotMethodFPInputEnum.SCALAR_ANY,
                 new DotMethodFPParam(INPUT_INTERVAL, EPLExpressionParamType.ANY),
                 new DotMethodFPParam(
-                    "maximum distance between start timestamps", EPLExpressionParamType.TIME_PERIOD_OR_SEC))
+                    "maximum distance between start timestamps",
+                    EPLExpressionParamType.TIME_PERIOD_OR_SEC))
         };
 
         protected internal static readonly DotMethodFP[] INTERVAL_MEETS_METBY = {
@@ -185,7 +197,8 @@ namespace com.espertech.esper.common.@internal.epl.datetime.eval
                 DotMethodFPInputEnum.SCALAR_ANY,
                 new DotMethodFPParam(INPUT_INTERVAL, EPLExpressionParamType.ANY),
                 new DotMethodFPParam(
-                    "maximum distance between start and end timestamps", EPLExpressionParamType.TIME_PERIOD_OR_SEC))
+                    "maximum distance between start and end timestamps",
+                    EPLExpressionParamType.TIME_PERIOD_OR_SEC))
         };
 
         protected internal static readonly DotMethodFP[] FORMAT = {
@@ -193,7 +206,10 @@ namespace com.espertech.esper.common.@internal.epl.datetime.eval
             new DotMethodFP(
                 DotMethodFPInputEnum.SCALAR_ANY,
                 new DotMethodFPParam(
-                    "a string-type format", EPLExpressionParamType.SPECIFIC, typeof(string), typeof(DateFormat),
+                    "a string-type format",
+                    EPLExpressionParamType.SPECIFIC,
+                    typeof(string),
+                    typeof(DateFormat),
                     typeof(DateTimeFormat)))
         };
     }

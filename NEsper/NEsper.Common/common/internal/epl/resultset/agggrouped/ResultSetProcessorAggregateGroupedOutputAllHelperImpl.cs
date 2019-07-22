@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.compat.collections;
@@ -61,22 +62,39 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
                     keysSeenRemoved.Add(mk);
                     eventsPerStreamOneStream[0] = anOldData;
                     processor.AggregationService.ApplyLeave(
-                        eventsPerStreamOneStream, oldDataMultiKey[count], processor.AgentInstanceContext);
+                        eventsPerStreamOneStream,
+                        oldDataMultiKey[count],
+                        processor.AgentInstanceContext);
                     count++;
                 }
             }
 
             if (processor.IsSelectRStream) {
                 processor.GenerateOutputBatchedViewUnkeyed(
-                    oldData, oldDataMultiKey, false, isGenerateSynthetic, eventsOld, null, eventsPerStreamOneStream);
+                    oldData,
+                    oldDataMultiKey,
+                    false,
+                    isGenerateSynthetic,
+                    eventsOld,
+                    null,
+                    eventsPerStreamOneStream);
             }
 
             processor.GenerateOutputBatchedViewUnkeyed(
-                newData, newDataMultiKey, true, isGenerateSynthetic, eventsNew, null, eventsPerStreamOneStream);
+                newData,
+                newDataMultiKey,
+                true,
+                isGenerateSynthetic,
+                eventsNew,
+                null,
+                eventsPerStreamOneStream);
 
             foreach (var keySeen in keysSeenRemoved) {
                 var newEvent = processor.GenerateOutputBatchedSingle(
-                    keySeen, repsPerGroup.Get(keySeen), true, isGenerateSynthetic);
+                    keySeen,
+                    repsPerGroup.Get(keySeen),
+                    true,
+                    isGenerateSynthetic);
                 if (newEvent != null) {
                     eventsNew.Add(newEvent);
                 }
@@ -112,22 +130,37 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
                     lastSeenKeys.Add(mk);
                     keysSeenRemoved.Add(mk);
                     processor.AggregationService.ApplyLeave(
-                        anOldData.Array, oldDataMultiKey[count], processor.AgentInstanceContext);
+                        anOldData.Array,
+                        oldDataMultiKey[count],
+                        processor.AgentInstanceContext);
                     count++;
                 }
             }
 
             if (processor.IsSelectRStream) {
                 processor.GenerateOutputBatchedJoinUnkeyed(
-                    oldData, oldDataMultiKey, false, isGenerateSynthetic, eventsOld, null);
+                    oldData,
+                    oldDataMultiKey,
+                    false,
+                    isGenerateSynthetic,
+                    eventsOld,
+                    null);
             }
 
             processor.GenerateOutputBatchedJoinUnkeyed(
-                newData, newDataMultiKey, false, isGenerateSynthetic, eventsNew, null);
+                newData,
+                newDataMultiKey,
+                false,
+                isGenerateSynthetic,
+                eventsNew,
+                null);
 
             foreach (var keySeen in keysSeenRemoved) {
                 var newEvent = processor.GenerateOutputBatchedSingle(
-                    keySeen, repsPerGroup.Get(keySeen), true, isGenerateSynthetic);
+                    keySeen,
+                    repsPerGroup.Get(keySeen),
+                    true,
+                    isGenerateSynthetic);
                 if (newEvent != null) {
                     eventsNew.Add(newEvent);
                 }

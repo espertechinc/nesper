@@ -15,6 +15,7 @@ using com.espertech.esper.common.@internal.context.controller.core;
 using com.espertech.esper.common.@internal.context.module;
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.compat.collections;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.context.controller.initterm
@@ -50,11 +51,15 @@ namespace com.espertech.esper.common.@internal.context.controller.initterm
             CodegenMethodScope parent,
             SAIFFInitializeSymbol symbols)
         {
-            CodegenMethod method = parent.MakeChild(typeof(ContextControllerInitTermFactory), this.GetType(), classScope);
+            CodegenMethod method = parent.MakeChild(
+                typeof(ContextControllerInitTermFactory),
+                this.GetType(),
+                classScope);
             method.Block
-                .DeclareVar(
-                    typeof(ContextControllerInitTermFactory), "factory",
-                    ExprDotMethodChain(symbols.GetAddInitSvc(method)).Add(EPStatementInitServicesConstants.GETCONTEXTSERVICEFACTORY)
+                .DeclareVar<ContextControllerInitTermFactory>(
+                    "factory",
+                    ExprDotMethodChain(symbols.GetAddInitSvc(method))
+                        .Add(EPStatementInitServicesConstants.GETCONTEXTSERVICEFACTORY)
                         .Add("initTermFactory"))
                 .SetProperty(Ref("factory"), "InitTermSpec", detail.MakeCodegen(method, symbols, classScope))
                 .MethodReturn(@Ref("factory"));

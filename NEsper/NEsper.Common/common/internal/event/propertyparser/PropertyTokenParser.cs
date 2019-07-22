@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+
 using com.espertech.esper.common.@internal.@event.property;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
@@ -147,8 +148,14 @@ namespace com.espertech.esper.common.@internal.@event.propertyparser
         {
             if (lookahead.token != expected) {
                 throw new PropertyParseNodepException(
-                    "Unexpected token " + lookahead.token + " value '" + lookahead.sequence + "', expecting " +
-                    expected + " after " + before);
+                    "Unexpected token " +
+                    lookahead.token +
+                    " value '" +
+                    lookahead.sequence +
+                    "', expecting " +
+                    expected +
+                    " after " +
+                    before);
             }
         }
 
@@ -156,7 +163,11 @@ namespace com.espertech.esper.common.@internal.@event.propertyparser
         {
             if (lookahead.token != expected) {
                 throw new PropertyParseNodepException(
-                    "Unexpected token " + lookahead.token + " value '" + lookahead.sequence + "', expecting " +
+                    "Unexpected token " +
+                    lookahead.token +
+                    " value '" +
+                    lookahead.sequence +
+                    "', expecting " +
                     expected);
             }
         }

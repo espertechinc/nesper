@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -17,6 +18,7 @@ using com.espertech.esper.common.@internal.epl.resultset.select.core;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
@@ -46,10 +48,18 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
             CodegenClassScope codegenClassScope)
         {
             CodegenExpressionField innerType = codegenClassScope.AddFieldUnshared(
-                true, typeof(EventType), EventTypeUtility.ResolveTypeCodegen(innerWrapperType, EPStatementInitServicesConstants.REF));
+                true,
+                typeof(EventType),
+                EventTypeUtility.ResolveTypeCodegen(innerWrapperType, EPStatementInitServicesConstants.REF));
             CodegenExpressionRef refEPS = exprSymbol.GetAddEPS(methodNode);
             return StaticMethod(
-                this.GetType(), "wildcardNestedWrapper", ArrayAtIndex(refEPS, Constant(0)), innerType, resultEventType, eventBeanFactory, props);
+                this.GetType(),
+                "wildcardNestedWrapper",
+                ArrayAtIndex(refEPS, Constant(0)),
+                innerType,
+                resultEventType,
+                eventBeanFactory,
+                props);
         }
 
         public static EventBean WildcardNestedWrapper(
@@ -59,7 +69,10 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
             EventBeanTypedEventFactory factory,
             IDictionary<string, object> props)
         {
-            EventBean inner = factory.AdapterForTypedWrapper(@event, new EmptyDictionary<string, object>(), innerWrapperType);
+            EventBean inner = factory.AdapterForTypedWrapper(
+                @event,
+                new EmptyDictionary<string, object>(),
+                innerWrapperType);
             return factory.AdapterForTypedWrapper(inner, props, outerWrapperType);
         }
     }

@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.annotation;
 using com.espertech.esper.common.client.hook.type;
@@ -47,7 +48,10 @@ namespace com.espertech.esper.common.@internal.epl.historical.database.core
             ConnectionCache connectionCache = null;
             try {
                 connectionCache =
-                    agentInstanceContext.DatabaseConfigService.GetConnectionCache(DatabaseName, PreparedStatementText, ContextAttributes);
+                    agentInstanceContext.DatabaseConfigService.GetConnectionCache(
+                        DatabaseName,
+                        PreparedStatementText,
+                        ContextAttributes);
             }
             catch (DatabaseConfigException e) {
                 throw new EPException("Failed to obtain connection cache: " + e.Message, e);
@@ -65,11 +69,15 @@ namespace com.espertech.esper.common.@internal.epl.historical.database.core
             try {
                 ColumnTypeConversionHook = (SQLColumnTypeConversion) ImportUtil
                     .GetAnnotationHook(
-                        statementContext.Annotations, HookType.SQLCOL, typeof(SQLColumnTypeConversion),
+                        statementContext.Annotations,
+                        HookType.SQLCOL,
+                        typeof(SQLColumnTypeConversion),
                         statementContext.ImportServiceRuntime);
                 OutputRowConversionHook = (SQLOutputRowConversion) ImportUtil
                     .GetAnnotationHook(
-                        statementContext.Annotations, HookType.SQLROW, typeof(SQLOutputRowConversion),
+                        statementContext.Annotations,
+                        HookType.SQLROW,
+                        typeof(SQLOutputRowConversion),
                         statementContext.ImportServiceRuntime);
             }
             catch (ExprValidationException e) {

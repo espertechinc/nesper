@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 
 namespace com.espertech.esper.common.@internal.util
@@ -54,7 +55,9 @@ namespace com.espertech.esper.common.@internal.util
         ///     Initializes a new instance of the <see cref="ProxyDatabaseTypeBinding&lt;T&gt;" /> class.
         /// </summary>
         /// <param name="retriever">The retriever.</param>
-        public ProxyDatabaseTypeBinding(DataRetriever retriever, Func<CodegenExpression> codeGenerator)
+        public ProxyDatabaseTypeBinding(
+            DataRetriever retriever,
+            Func<CodegenExpression> codeGenerator)
         {
             dataRetriever = retriever;
         }

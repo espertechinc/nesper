@@ -33,8 +33,7 @@ namespace com.espertech.esper.common.@internal.epl.historical.common
         protected internal static readonly EventBean[][] NULL_ROWS;
 
         private static readonly PollResultIndexingStrategy ITERATOR_INDEXING_STRATEGY =
-            new ProxyPollResultIndexingStrategy
-            {
+            new ProxyPollResultIndexingStrategy {
                 ProcIndex = (
                     pollResult,
                     _,
@@ -88,8 +87,7 @@ namespace com.espertech.esper.common.@internal.epl.historical.common
 
             // Get input parameters for each row
             EventBean[] eventsPerStream;
-            for (var row = 0; row < lookupEventsPerStream.Length; row++)
-            {
+            for (var row = 0; row < lookupEventsPerStream.Length; row++) {
                 // Build lookup keys
                 eventsPerStream = lookupEventsPerStream[row];
                 var lookupValue = factory.evaluator.Evaluate(eventsPerStream, true, exprEvaluatorContext);
@@ -97,35 +95,28 @@ namespace com.espertech.esper.common.@internal.epl.historical.common
                 EventTable[] result = null;
 
                 // try the threadlocal iteration cache, if set
-                if (localDataCache != null)
-                {
+                if (localDataCache != null) {
                     result = localDataCache.GetCached(lookupValue);
                 }
 
                 // try the connection cache
-                if (result == null)
-                {
+                if (result == null) {
                     var multi = dataCache.GetCached(lookupValue);
-                    if (multi != null)
-                    {
+                    if (multi != null) {
                         result = multi;
                         localDataCache?.Put(lookupValue, multi);
                     }
                 }
 
                 // use the result from cache
-                if (result != null)
-                {
+                if (result != null) {
                     // found in cache
                     resultPerInputRow[row] = result;
                 }
-                else
-                {
+                else {
                     // not found in cache, get from actual polling (db query)
-                    try
-                    {
-                        if (!strategyStarted)
-                        {
+                    try {
+                        if (!strategyStarted) {
                             pollExecStrategy.Start();
                             strategyStarted = true;
                         }
@@ -142,15 +133,12 @@ namespace com.espertech.esper.common.@internal.epl.historical.common
                         // save in cache
                         dataCache.Put(lookupValue, indexTable);
 
-                        if (localDataCache != null)
-                        {
+                        if (localDataCache != null) {
                             localDataCache.Put(lookupValue, indexTable);
                         }
                     }
-                    catch (EPException)
-                    {
-                        if (strategyStarted)
-                        {
+                    catch (EPException) {
+                        if (strategyStarted) {
                             pollExecStrategy.Done();
                         }
 
@@ -159,8 +147,7 @@ namespace com.espertech.esper.common.@internal.epl.historical.common
                 }
             }
 
-            if (strategyStarted)
-            {
+            if (strategyStarted) {
                 pollExecStrategy.Done();
             }
 
@@ -171,8 +158,7 @@ namespace com.espertech.esper.common.@internal.epl.historical.common
 
         public bool HasRequiredStreams => factory.HasRequiredStreams;
 
-        public View Child
-        {
+        public View Child {
             get => child;
             set => child = value;
         }

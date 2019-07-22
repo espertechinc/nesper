@@ -50,12 +50,20 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            CodegenMethod methodNode = codegenMethodScope.MakeChild(typeof(DateTimeEx), typeof(DTLocalDtxOpsDtxEval), codegenClassScope)
+            CodegenMethod methodNode = codegenMethodScope
+                .MakeChild(typeof(DateTimeEx), typeof(DTLocalDtxOpsDtxEval), codegenClassScope)
                 .AddParam(typeof(DateTimeEx), "target");
 
-            CodegenBlock block = methodNode.Block.DeclareVar(
-                typeof(DateTimeEx), "dtx", Cast(typeof(DateTimeEx), ExprDotMethod(@Ref("target"), "Clone")));
-            EvaluateCalOpsCalendarCodegen(block, forge.calendarForges, @Ref("dtx"), methodNode, exprSymbol, codegenClassScope);
+            CodegenBlock block = methodNode.Block.DeclareVar<DateTimeEx>(
+                "dtx",
+                Cast(typeof(DateTimeEx), ExprDotMethod(@Ref("target"), "Clone")));
+            EvaluateCalOpsCalendarCodegen(
+                block,
+                forge.calendarForges,
+                @Ref("dtx"),
+                methodNode,
+                exprSymbol,
+                codegenClassScope);
             block.MethodReturn(@Ref("dtx"));
             return LocalMethod(methodNode, inner);
         }

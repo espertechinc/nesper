@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.epl.index.@base;
@@ -44,7 +45,12 @@ namespace com.espertech.esper.common.@internal.epl.index.sorted
         public Type ValueType => valueType;
 
         public EventTableOrganization Organization => new EventTableOrganization(
-            null, false, false, streamNum, new[] {propertyName}, EventTableOrganizationType.BTREE);
+            null,
+            false,
+            false,
+            streamNum,
+            new[] {propertyName},
+            EventTableOrganizationType.BTREE);
 
         public EventTable[] MakeEventTables(
             AgentInstanceContext agentInstanceContext,
@@ -58,8 +64,10 @@ namespace com.espertech.esper.common.@internal.epl.index.sorted
         public string ToQueryPlan()
         {
             return GetType().GetSimpleName() +
-                   " streamNum=" + streamNum +
-                   " propertyName=" + propertyName;
+                   " streamNum=" +
+                   streamNum +
+                   " propertyName=" +
+                   propertyName;
         }
     }
 } // end of namespace

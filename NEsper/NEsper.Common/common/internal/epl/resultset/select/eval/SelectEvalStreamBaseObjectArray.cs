@@ -7,11 +7,13 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.resultset.@select.core;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
@@ -47,13 +49,18 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
             var refEPS = exprSymbol.GetAddEPS(methodNode);
 
             var block = methodNode.Block
-                .DeclareVar(typeof(object[]), "props", NewArrayByLength(typeof(object), Constant(size)));
+                .DeclareVar<object[]>("props", NewArrayByLength(typeof(object), Constant(size)));
             var count = 0;
             foreach (var forge in context.ExprForges) {
                 block.AssignArrayElement(
-                    Ref("props"), Constant(count),
+                    Ref("props"),
+                    Constant(count),
                     CodegenLegoMayVoid.ExpressionMayVoid(
-                        typeof(object), forge, methodNode, exprSymbol, codegenClassScope));
+                        typeof(object),
+                        forge,
+                        methodNode,
+                        exprSymbol,
+                        codegenClassScope));
                 count++;
             }
 

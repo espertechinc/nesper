@@ -9,6 +9,7 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.compile.stage1;
 using com.espertech.esper.common.@internal.compile.stage1.spec;
@@ -74,7 +75,8 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.querymethod
             // check context partition use
             if (statementSpec.Raw.OptionalContextName != null) {
                 if (numStreams > 1) {
-                    throw new ExprValidationException("Joins in runtime queries for context partitions are not supported");
+                    throw new ExprValidationException(
+                        "Joins in runtime queries for context partitions are not supported");
                 }
             }
 
@@ -83,7 +85,8 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.querymethod
                 var streamSpec = statementSpec.StreamSpecs[i];
                 Processors[i] = FireAndForgetProcessorForgeFactory.ValidateResolveProcessor(streamSpec);
                 if (numStreams > 1 && Processors[i].ContextName != null) {
-                    throw new ExprValidationException("Joins against named windows that are under context are not supported");
+                    throw new ExprValidationException(
+                        "Joins against named windows that are under context are not supported");
                 }
 
                 var streamName = Processors[i].NamedWindowOrTableName;
@@ -110,16 +113,24 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.querymethod
             // compile filter to optimize access to named window
             var optionalStreamsIfAny = OuterJoinAnalyzer.OptionalStreamsIfAny(statementSpec.Raw.OuterJoinDescList);
             var types = new StreamTypeServiceImpl(
-                typesPerStream, namesPerStream, new bool[numStreams], false, optionalStreamsIfAny);
+                typesPerStream,
+                namesPerStream,
+                new bool[numStreams],
+                false,
+                optionalStreamsIfAny);
             var excludePlanHint = ExcludePlanHint.GetHint(types.StreamNames, statementRawInfo, services);
             QueryGraph = new QueryGraphForge(numStreams, excludePlanHint, false);
             if (statementSpec.Raw.WhereClause != null) {
                 for (var i = 0; i < numStreams; i++) {
                     try {
                         var validationContext = new ExprValidationContextBuilder(types, statementRawInfo, services)
-                            .WithAllowBindingConsumption(true).WithIsFilterExpression(true).Build();
+                            .WithAllowBindingConsumption(true)
+                            .WithIsFilterExpression(true)
+                            .Build();
                         var validated = ExprNodeUtilityValidate.GetValidatedSubtree(
-                            ExprNodeOrigin.FILTER, statementSpec.Raw.WhereClause, validationContext);
+                            ExprNodeOrigin.FILTER,
+                            statementSpec.Raw.WhereClause,
+                            validationContext);
                         FilterExprAnalyzer.Analyze(validated, QueryGraph, false);
                     }
                     catch (Exception ex) {
@@ -131,14 +142,31 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.querymethod
             // obtain result set processor
             var isIStreamOnly = new bool[namesPerStream.Length];
             isIStreamOnly.Fill(true);
-            StreamTypeService typeService = new StreamTypeServiceImpl(typesPerStream, namesPerStream, isIStreamOnly, true, optionalStreamsIfAny);
-            WhereClause = EPStatementStartMethodHelperValidate.ValidateNodes(statementSpec.Raw, typeService, null, statementRawInfo, services);
+            StreamTypeService typeService = new StreamTypeServiceImpl(
+                typesPerStream,
+                namesPerStream,
+                isIStreamOnly,
+                true,
+                optionalStreamsIfAny);
+            WhereClause = EPStatementStartMethodHelperValidate.ValidateNodes(
+                statementSpec.Raw,
+                typeService,
+                null,
+                statementRawInfo,
+                services);
 
             var resultSetSpec = new ResultSetSpec(statementSpec);
             ResultSetProcessor = ResultSetProcessorFactoryFactory.GetProcessorPrototype(
                 resultSetSpec,
-                typeService, null, new bool[0], true, null,
-                true, false, statementRawInfo, services);
+                typeService,
+                null,
+                new bool[0],
+                true,
+                null,
+                true,
+                false,
+                statementRawInfo,
+                services);
 
             // plan table access
             TableAccessForges = ExprTableEvalHelperPlan.PlanTableAccess(statementSpec.Raw.TableExpressions);
@@ -154,8 +182,14 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.querymethod
 
                 var hasAggregations = ResultSetProcessor.ResultSetProcessorType.IsAggregated();
                 Joins = JoinSetComposerPrototypeForgeFactory.MakeComposerPrototype(
-                    statementSpec, streamJoinAnalysisResult,
-                    types, new HistoricalViewableDesc(numStreams), true, hasAggregations, statementRawInfo, services);
+                    statementSpec,
+                    streamJoinAnalysisResult,
+                    types,
+                    new HistoricalViewableDesc(numStreams),
+                    true,
+                    hasAggregations,
+                    statementRawInfo,
+                    services);
             }
             else {
                 Joins = null;

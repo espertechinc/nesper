@@ -187,14 +187,14 @@ namespace com.espertech.esper.regressionlib.suite.@event.map
             public void Run(RegressionEnvironment env)
             {
                 var statementText = "@Name('s0') select beanA.simpleProperty as simple," +
-                                    "beanA.nested.nestedValue as nested," +
+                                    "beanA.nested.NestedValue as nested," +
                                     "beanA.indexed[1] as indexed," +
                                     "beanA.nested.nestedNested.nestedNestedValue as nestednested " +
                                     "from myMapEvent#length(5)";
                 env.CompileDeploy(statementText).AddListener("s0");
 
                 env.SendEventMap(map, "myMapEvent");
-                Assert.AreEqual("nestedValue", env.Listener("s0").LastNewData[0].Get("nested"));
+                Assert.AreEqual("NestedValue", env.Listener("s0").LastNewData[0].Get("nested"));
                 Assert.AreEqual(2, env.Listener("s0").LastNewData[0].Get("indexed"));
                 Assert.AreEqual("nestedNestedValue", env.Listener("s0").LastNewData[0].Get("nestednested"));
 

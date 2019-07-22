@@ -60,7 +60,7 @@ namespace com.espertech.esper.regressionlib.support.bean
             return "SupportMarketDataBean " +
                    "symbol=" +
                    Symbol +
-                   " price=" +
+                   " Price=" +
                    Price +
                    " Volume=" +
                    Volume +

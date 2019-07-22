@@ -8,6 +8,7 @@
 
 using System.Collections.Generic;
 using System.Linq;
+
 using com.espertech.esper.common.@internal.epl.@join.lookup;
 
 namespace com.espertech.esper.common.@internal.epl.lookupplansubord

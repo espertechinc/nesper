@@ -8,6 +8,7 @@
 
 using System;
 using System.IO;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -16,6 +17,7 @@ using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.metrics.instrumentation;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.expression.core
@@ -70,14 +72,17 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             CodegenClassScope codegenClassScope)
         {
             var methodNode = codegenMethodScope.MakeChild(
-                EvaluationType, typeof(ExprContextPropertyNodeImpl), codegenClassScope);
+                EvaluationType,
+                typeof(ExprContextPropertyNodeImpl),
+                codegenClassScope);
             var refExprEvalCtx = exprSymbol.GetAddExprEvalCtx(methodNode);
             var block = methodNode.Block
-                .DeclareVar(typeof(EventBean), "props", ExprDotMethod(refExprEvalCtx, "getContextProperties"))
+                .DeclareVar<EventBean>("props", ExprDotMethod(refExprEvalCtx, "getContextProperties"))
                 .IfRefNullReturnNull("props");
             block.MethodReturn(
                 CodegenLegoCast.CastSafeFromObjectType(
-                    Type, getter.EventBeanGetCodegen(Ref("props"), methodNode, codegenClassScope)));
+                    Type,
+                    getter.EventBeanGetCodegen(Ref("props"), methodNode, codegenClassScope)));
             return LocalMethod(methodNode);
         }
 
@@ -88,7 +93,13 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             CodegenClassScope codegenClassScope)
         {
             return new InstrumentationBuilderExpr(
-                    GetType(), this, "ExprContextProp", requiredType, codegenMethodScope, exprSymbol, codegenClassScope)
+                    GetType(),
+                    this,
+                    "ExprContextProp",
+                    requiredType,
+                    codegenMethodScope,
+                    exprSymbol,
+                    codegenClassScope)
                 .Build();
         }
 
@@ -110,7 +121,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             getter = eventType.GetGetterSPI(PropertyName);
             if (getter == null) {
                 throw new ExprValidationException(
-                    "Context property '" + PropertyName + "' is not a known property, known properties are " +
+                    "Context property '" +
+                    PropertyName +
+                    "' is not a known property, known properties are " +
                     eventType.PropertyNames.RenderAny());
             }
 

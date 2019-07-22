@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.context.util;
@@ -30,7 +31,7 @@ namespace com.espertech.esper.common.@internal.epl.output.view
     {
         private static readonly ILog log = LogManager.GetLogger(typeof(OutputProcessViewDirectDistinctOrAfter));
 
-        private readonly OutputProcessViewDirectDistinctOrAfterFactory parent;
+        private readonly OutputProcessViewDirectDistinctOrAfterFactory _parent;
 
         public OutputProcessViewDirectDistinctOrAfter(
             AgentInstanceContext agentInstanceContext,
@@ -40,10 +41,13 @@ namespace com.espertech.esper.common.@internal.epl.output.view
             bool afterConditionSatisfied,
             OutputProcessViewDirectDistinctOrAfterFactory parent)
             : base(
-                agentInstanceContext, resultSetProcessor, afterConditionTime, afterConditionNumberOfEvents,
+                agentInstanceContext,
+                resultSetProcessor,
+                afterConditionTime,
+                afterConditionNumberOfEvents,
                 afterConditionSatisfied)
         {
-            this.parent = parent;
+            _parent = parent;
         }
 
         public override int NumChangesetRows => 0;
@@ -71,9 +75,9 @@ namespace com.espertech.esper.common.@internal.epl.output.view
                 return;
             }
 
-            if (parent.IsDistinct && newOldEvents != null) {
-                newOldEvents.First = EventBeanUtility.GetDistinctByProp(newOldEvents.First, parent.EventBeanReader);
-                newOldEvents.Second = EventBeanUtility.GetDistinctByProp(newOldEvents.Second, parent.EventBeanReader);
+            if (_parent.IsDistinct && newOldEvents != null) {
+                newOldEvents.First = EventBeanUtility.GetDistinctByProp(newOldEvents.First, _parent.EventBeanReader);
+                newOldEvents.Second = EventBeanUtility.GetDistinctByProp(newOldEvents.Second, _parent.EventBeanReader);
             }
 
             if (!isGenerateSynthetic && !isGenerateNatural) {
@@ -85,7 +89,8 @@ namespace com.espertech.esper.common.@internal.epl.output.view
             }
 
             var forceOutput = false;
-            if (newData == null && oldData == null &&
+            if (newData == null &&
+                oldData == null &&
                 (newOldEvents == null || newOldEvents.First == null && newOldEvents.Second == null)) {
                 forceOutput = true;
             }
@@ -109,8 +114,10 @@ namespace com.espertech.esper.common.@internal.epl.output.view
             if (ExecutionPathDebugLog.IsDebugEnabled && log.IsDebugEnabled) {
                 log.Debug(
                     ".process Received update, " +
-                    "  newData.length==" + (newEvents == null ? 0 : newEvents.Count) +
-                    "  oldData.length==" + (oldEvents == null ? 0 : oldEvents.Count));
+                    "  newData.length==" +
+                    (newEvents == null ? 0 : newEvents.Count) +
+                    "  oldData.length==" +
+                    (oldEvents == null ? 0 : oldEvents.Count));
             }
 
             var statementResultService = agentInstanceContext.StatementResultService;
@@ -123,9 +130,9 @@ namespace com.espertech.esper.common.@internal.epl.output.view
                 return;
             }
 
-            if (parent.IsDistinct && newOldEvents != null) {
-                newOldEvents.First = EventBeanUtility.GetDistinctByProp(newOldEvents.First, parent.EventBeanReader);
-                newOldEvents.Second = EventBeanUtility.GetDistinctByProp(newOldEvents.Second, parent.EventBeanReader);
+            if (_parent.IsDistinct && newOldEvents != null) {
+                newOldEvents.First = EventBeanUtility.GetDistinctByProp(newOldEvents.First, _parent.EventBeanReader);
+                newOldEvents.Second = EventBeanUtility.GetDistinctByProp(newOldEvents.Second, _parent.EventBeanReader);
             }
 
             if (!isGenerateSynthetic && !isGenerateNatural) {
@@ -157,7 +164,10 @@ namespace com.espertech.esper.common.@internal.epl.output.view
         public override IEnumerator<EventBean> GetEnumerator()
         {
             return OutputStrategyUtil.GetIterator(
-                joinExecutionStrategy, resultSetProcessor, parentView, parent.IsDistinct);
+                joinExecutionStrategy,
+                resultSetProcessor,
+                parentView,
+                _parent.IsDistinct);
         }
 
         public override void Terminated()

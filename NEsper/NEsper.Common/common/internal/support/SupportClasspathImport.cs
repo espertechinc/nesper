@@ -18,7 +18,13 @@ namespace com.espertech.esper.common.@internal.support
         {
             return container.ResolveSingleton(
                 () => new ImportServiceCompileTime(
-                    container, null, null, null, MathContext.DECIMAL32, false, false));
+                    container,
+                    null,
+                    null,
+                    null,
+                    MathContext.DECIMAL32,
+                    false,
+                    false));
         }
     }
 } // end of namespace

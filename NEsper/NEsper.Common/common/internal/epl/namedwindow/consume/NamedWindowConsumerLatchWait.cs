@@ -9,6 +9,7 @@
 using System.Collections.Generic;
 using System.Reflection;
 using System.Threading;
+
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.compat.logging;
 

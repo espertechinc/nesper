@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.bytecodemodel.name;
@@ -17,6 +18,7 @@ using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.expression.subquery
@@ -50,38 +52,55 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
             CodegenClassScope classScope)
         {
             CodegenExpression aggService = classScope.NamespaceScope.AddOrGetFieldWellKnown(
-                new CodegenFieldNameSubqueryAgg(subselect.SubselectNumber), typeof(AggregationResultFuture));
+                new CodegenFieldNameSubqueryAgg(subselect.SubselectNumber),
+                typeof(AggregationResultFuture));
 
             var method = parent.MakeChild(subselect.EvaluationType, this.GetType(), classScope);
             var evalCtx = symbols.GetAddExprEvalCtx(method);
             var left = symbols.GetAddLeftResult(method);
 
             method.Block
-                .DeclareVar(typeof(int), "cpid", ExprDotMethod(evalCtx, "getAgentInstanceId"))
-                .DeclareVar(
-                    typeof(AggregationService), "aggregationService",
+                .DeclareVar<int>("cpid", ExprDotMethod(evalCtx, "getAgentInstanceId"))
+                .DeclareVar<AggregationService>(
+                    "aggregationService",
                     ExprDotMethod(aggService, "getContextPartitionAggregationService", @Ref("cpid")))
-                .DeclareVar(typeof(ICollection<object>), "groupKeys", ExprDotMethod(@Ref("aggregationService"), "getGroupKeys", evalCtx))
-                .DeclareVar(typeof(bool), "hasNullRow", ConstantFalse());
+                .DeclareVar<ICollection<object>>(
+                    "groupKeys",
+                    ExprDotMethod(@Ref("aggregationService"), "getGroupKeys", evalCtx))
+                .DeclareVar<bool>("hasNullRow", ConstantFalse());
 
             var forEach = method.Block.ForEach(typeof(object), "groupKey", @Ref("groupKeys"));
             {
-                forEach.IfCondition(EqualsNull(left)).BlockReturn(ConstantNull())
-                    .ExprDotMethod(Ref("aggregationService"), "SetCurrentAccess", @Ref("groupKey"), @Ref("cpid"), ConstantNull());
+                forEach.IfCondition(EqualsNull(left))
+                    .BlockReturn(ConstantNull())
+                    .ExprDotMethod(
+                        Ref("aggregationService"),
+                        "SetCurrentAccess",
+                        @Ref("groupKey"),
+                        @Ref("cpid"),
+                        ConstantNull());
 
                 if (havingEval != null) {
                     CodegenLegoBooleanExpression.CodegenContinueIfNullOrNotPass(
-                        forEach, havingEval.EvaluationType, havingEval.EvaluateCodegen(havingEval.EvaluationType, method, symbols, classScope));
+                        forEach,
+                        havingEval.EvaluationType,
+                        havingEval.EvaluateCodegen(havingEval.EvaluationType, method, symbols, classScope));
                 }
 
                 Type valueRightType;
                 if (selectEval != null) {
                     valueRightType = Boxing.GetBoxedType(selectEval.EvaluationType);
-                    forEach.DeclareVar(valueRightType, "valueRight", selectEval.EvaluateCodegen(valueRightType, method, symbols, classScope));
+                    forEach.DeclareVar(
+                        valueRightType,
+                        "valueRight",
+                        selectEval.EvaluateCodegen(valueRightType, method, symbols, classScope));
                 }
                 else {
                     valueRightType = typeof(object);
-                    forEach.DeclareVar(valueRightType, "valueRight", ExprDotUnderlying(ArrayAtIndex(symbols.GetAddEPS(method), Constant(0))));
+                    forEach.DeclareVar(
+                        valueRightType,
+                        "valueRight",
+                        ExprDotUnderlying(ArrayAtIndex(symbols.GetAddEPS(method), Constant(0))));
                 }
 
                 var ifRightNotNull = forEach.IfCondition(EqualsNull(@Ref("valueRight")))
@@ -89,12 +108,12 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                     .IfElse();
                 {
                     if (coercer == null) {
-                        ifRightNotNull.DeclareVar(typeof(bool), "eq", ExprDotMethod(left, "equals", @Ref("valueRight")));
+                        ifRightNotNull.DeclareVar<bool>("eq", ExprDotMethod(left, "equals", @Ref("valueRight")));
                     }
                     else {
-                        ifRightNotNull.DeclareVar(typeof(object), "left", coercer.CoerceCodegen(left, symbols.LeftResultType))
-                            .DeclareVar(typeof(object), "right", coercer.CoerceCodegen(@Ref("valueRight"), valueRightType))
-                            .DeclareVar(typeof(bool), "eq", ExprDotMethod(@Ref("left"), "equals", @Ref("right")));
+                        ifRightNotNull.DeclareVar<object>("left", coercer.CoerceCodegen(left, symbols.LeftResultType))
+                            .DeclareVar<object>("right", coercer.CoerceCodegen(@Ref("valueRight"), valueRightType))
+                            .DeclareVar<bool>("eq", ExprDotMethod(@Ref("left"), "equals", @Ref("right")));
                     }
 
                     if (isNot) {
@@ -117,7 +136,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
             }
 
             method.Block
-                .IfCondition(@Ref("hasNullRow")).BlockReturn(ConstantNull())
+                .IfCondition(@Ref("hasNullRow"))
+                .BlockReturn(ConstantNull())
                 .MethodReturn(isAll ? ConstantTrue() : ConstantFalse());
 
             return LocalMethod(method);

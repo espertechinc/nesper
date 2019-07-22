@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.compat;
@@ -41,11 +42,23 @@ namespace com.espertech.esper.common.@internal.type
                 Type rtype)
             {
                 var method = codegenMethodScope.MakeChild(typeof(int?), typeof(DivideInt), codegenClassScope)
-                    .AddParam(typeof(int), "i1").AddParam(typeof(int), "i2").Block
-                    .IfCondition(CodegenExpressionBuilder.EqualsIdentity(CodegenExpressionBuilder.Ref("i2"), CodegenExpressionBuilder.Constant(0)))
+                    .AddParam(typeof(int), "i1")
+                    .AddParam(typeof(int), "i2")
+                    .Block
+                    .IfCondition(
+                        CodegenExpressionBuilder.EqualsIdentity(
+                            CodegenExpressionBuilder.Ref("i2"),
+                            CodegenExpressionBuilder.Constant(0)))
                     .BlockReturn(CodegenExpressionBuilder.ConstantNull())
-                    .MethodReturn(CodegenExpressionBuilder.Op(CodegenExpressionBuilder.Ref("i1"), "/", CodegenExpressionBuilder.Ref("i2")));
-                return CodegenExpressionBuilder.LocalMethod(method, CodegenAsInt(left, ltype), CodegenAsInt(right, rtype));
+                    .MethodReturn(
+                        CodegenExpressionBuilder.Op(
+                            CodegenExpressionBuilder.Ref("i1"),
+                            "/",
+                            CodegenExpressionBuilder.Ref("i2")));
+                return CodegenExpressionBuilder.LocalMethod(
+                    method,
+                    CodegenAsInt(left, ltype),
+                    CodegenAsInt(right, rtype));
             }
         }
     }

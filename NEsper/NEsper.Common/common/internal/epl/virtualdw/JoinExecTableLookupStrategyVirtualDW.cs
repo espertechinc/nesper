@@ -9,6 +9,7 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.hook.vdw;
 using com.espertech.esper.common.@internal.epl.expression.core;
@@ -100,8 +101,11 @@ namespace com.espertech.esper.common.@internal.epl.virtualdw
             }
             catch (Exception ex) {
                 Log.Warn(
-                    "Exception encountered invoking virtual data window external index for window '" + namedWindowName +
-                    "': " + ex.Message, ex);
+                    "Exception encountered invoking virtual data window external index for window '" +
+                    namedWindowName +
+                    "': " +
+                    ex.Message,
+                    ex);
             }
 
             return events;

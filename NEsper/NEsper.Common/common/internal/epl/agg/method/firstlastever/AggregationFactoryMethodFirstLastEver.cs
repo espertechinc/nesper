@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.core;
@@ -40,7 +41,10 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.firstlastever
 
         public override AggregationPortableValidation AggregationPortableValidation =>
             new AggregationPortableValidationFirstLastEver(
-                parent.IsDistinct, parent.HasFilter, childType, parent.IsFirst);
+                parent.IsDistinct,
+                parent.HasFilter,
+                childType,
+                parent.IsFirst);
 
         public override void InitMethodForge(
             int col,
@@ -50,12 +54,26 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.firstlastever
         {
             if (parent.IsFirst) {
                 aggregator = new AggregatorFirstEver(
-                    this, col, rowCtor, membersColumnized, classScope, null, parent.HasFilter, parent.OptionalFilter,
+                    this,
+                    col,
+                    rowCtor,
+                    membersColumnized,
+                    classScope,
+                    null,
+                    parent.HasFilter,
+                    parent.OptionalFilter,
                     childType);
             }
             else {
                 aggregator = new AggregatorLastEver(
-                    this, col, rowCtor, membersColumnized, classScope, null, parent.HasFilter, parent.OptionalFilter,
+                    this,
+                    col,
+                    rowCtor,
+                    membersColumnized,
+                    classScope,
+                    null,
+                    parent.HasFilter,
+                    parent.OptionalFilter,
                     childType);
             }
         }

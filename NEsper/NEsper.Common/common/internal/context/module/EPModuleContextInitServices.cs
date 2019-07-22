@@ -22,7 +22,7 @@ namespace com.espertech.esper.common.@internal.context.module
     public static class EPModuleContextInitServicesConstants
     {
         public static CodegenExpressionRef REF = ModuleContextInitializeSymbol.REF_INITSVC;
-        public static string GETCONTEXTCOLLECTOR = "getContextCollector";
-        public static string GETEVENTTYPERESOLVER = EPStatementInitServicesConstants.GETEVENTTYPERESOLVER;
+        public static string GETCONTEXTCOLLECTOR = "ContextCollector";
+        public static string GETEVENTTYPERESOLVER = EPStatementInitServicesConstants.EVENTTYPERESOLVER;
     }
 } // end of namespace

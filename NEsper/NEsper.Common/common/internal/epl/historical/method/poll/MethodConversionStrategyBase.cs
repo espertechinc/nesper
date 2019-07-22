@@ -8,6 +8,7 @@
 
 using System.Collections.Generic;
 using System.Reflection;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.compat.logging;
@@ -31,7 +32,8 @@ namespace com.espertech.esper.common.@internal.epl.historical.method.poll
         {
             if (value == null) {
                 Log.Warn(
-                    "Expected non-null return result from " + origin.Plan +
+                    "Expected non-null return result from " +
+                    origin.Plan +
                     ", but received null array element value");
                 return false;
             }

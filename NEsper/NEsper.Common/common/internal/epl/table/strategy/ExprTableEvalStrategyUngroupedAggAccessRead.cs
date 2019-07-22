@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.epl.expression.core;
 
@@ -33,7 +34,11 @@ namespace com.espertech.esper.common.@internal.epl.table.strategy
 
             var aggs = ExprTableEvalStrategyUtil.GetRow(row);
             return factory.AccessAggReader.GetValue(
-                factory.AggColumnNum, aggs, eventsPerStream, isNewData, exprEvaluatorContext);
+                factory.AggColumnNum,
+                aggs,
+                eventsPerStream,
+                isNewData,
+                exprEvaluatorContext);
         }
 
         public override ICollection<EventBean> EvaluateGetROCollectionEvents(
@@ -48,7 +53,11 @@ namespace com.espertech.esper.common.@internal.epl.table.strategy
 
             var aggs = ExprTableEvalStrategyUtil.GetRow(row);
             return factory.AccessAggReader.GetValueCollectionEvents(
-                factory.AggColumnNum, aggs, eventsPerStream, isNewData, context);
+                factory.AggColumnNum,
+                aggs,
+                eventsPerStream,
+                isNewData,
+                context);
         }
 
         public override EventBean EvaluateGetEventBean(
@@ -63,7 +72,11 @@ namespace com.espertech.esper.common.@internal.epl.table.strategy
 
             var aggs = ExprTableEvalStrategyUtil.GetRow(row);
             return factory.AccessAggReader.GetValueEventBean(
-                factory.AggColumnNum, aggs, eventsPerStream, isNewData, context);
+                factory.AggColumnNum,
+                aggs,
+                eventsPerStream,
+                isNewData,
+                context);
         }
 
         public override ICollection<object> EvaluateGetROCollectionScalar(
@@ -78,7 +91,11 @@ namespace com.espertech.esper.common.@internal.epl.table.strategy
 
             var aggs = ExprTableEvalStrategyUtil.GetRow(row);
             return factory.AccessAggReader.GetValueCollectionScalar(
-                factory.AggColumnNum, aggs, eventsPerStream, isNewData, context);
+                factory.AggColumnNum,
+                aggs,
+                eventsPerStream,
+                isNewData,
+                context);
         }
 
         public override object[] EvaluateTypableSingle(

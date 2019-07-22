@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.hook.aggfunc;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
@@ -58,18 +59,34 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.plugin
             if (mode is AggregationFunctionModeManaged) {
                 AggregationFunctionModeManaged singleValue = (AggregationFunctionModeManaged) mode;
                 if (parent.PositionalParams.Length == 0) {
-                    throw new ArgumentException(typeof(AggregationFunctionModeManaged).Name + " requires at least one positional parameter");
+                    throw new ArgumentException(
+                        typeof(AggregationFunctionModeManaged).Name + " requires at least one positional parameter");
                 }
 
-                Type aggregatedValueType = parent.PositionalParams.Length == 0 ? null : parent.PositionalParams[0].Forge.EvaluationType;
+                Type aggregatedValueType = parent.PositionalParams.Length == 0
+                    ? null
+                    : parent.PositionalParams[0].Forge.EvaluationType;
                 Type distinctType = !parent.IsDistinct ? null : aggregatedValueType;
                 aggregator = new AggregatorPlugInManaged(
-                    this, col, rowCtor, membersColumnized, classScope, distinctType, parent.ChildNodes.Length > 1, parent.OptionalFilter,
+                    this,
+                    col,
+                    rowCtor,
+                    membersColumnized,
+                    classScope,
+                    distinctType,
+                    parent.ChildNodes.Length > 1,
+                    parent.OptionalFilter,
                     singleValue);
             }
             else if (mode is AggregationFunctionModeMultiParam) {
                 AggregationFunctionModeMultiParam multiParam = (AggregationFunctionModeMultiParam) mode;
-                aggregator = new AggregatorPlugInMultiParam(this, col, rowCtor, membersColumnized, classScope, multiParam);
+                aggregator = new AggregatorPlugInMultiParam(
+                    this,
+                    col,
+                    rowCtor,
+                    membersColumnized,
+                    classScope,
+                    multiParam);
             }
             else if (mode is AggregationFunctionModeCodeGenerated) {
                 AggregationFunctionModeCodeGenerated codeGenerated = (AggregationFunctionModeCodeGenerated) mode;

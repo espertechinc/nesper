@@ -8,6 +8,7 @@
 
 using System.Collections.Generic;
 using System.Linq;
+
 using com.espertech.esper.common.client.hook.aggmultifunc;
 using com.espertech.esper.common.@internal.epl.expression.agg.@base;
 using com.espertech.esper.common.@internal.epl.expression.core;
@@ -39,7 +40,10 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
 
                 AggregationMultiFunctionStateKey providerKey = aggregateNode.Factory.GetAggregationStateKey(false);
                 var existing = FindExisting(
-                    accessProviderSlots, providerKey, aggregateNode.OptionalLocalGroupBy, groupByNodes);
+                    accessProviderSlots,
+                    providerKey,
+                    aggregateNode.OptionalLocalGroupBy,
+                    groupByNodes);
 
                 int slot;
                 if (existing == null) {
@@ -75,9 +79,12 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
                 }
 
                 // if there is no local-group by, but there is group-by-clause, and the ident-over matches, use that
-                if (optionalOver == null && groupByNodes.Length > 0 && ident.OptionalLocalGroupBy != null &&
+                if (optionalOver == null &&
+                    groupByNodes.Length > 0 &&
+                    ident.OptionalLocalGroupBy != null &&
                     ExprNodeUtilityCompare.DeepEqualsIgnoreDupAndOrder(
-                        groupByNodes, ident.OptionalLocalGroupBy.PartitionExpressions)) {
+                        groupByNodes,
+                        ident.OptionalLocalGroupBy.PartitionExpressions)) {
                     return ident;
                 }
 
@@ -88,7 +95,8 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
                 if (optionalOver != null &&
                     ident.OptionalLocalGroupBy != null &&
                     ExprNodeUtilityCompare.DeepEqualsIgnoreDupAndOrder(
-                        optionalOver.PartitionExpressions, ident.OptionalLocalGroupBy.PartitionExpressions)) {
+                        optionalOver.PartitionExpressions,
+                        ident.OptionalLocalGroupBy.PartitionExpressions)) {
                     return ident;
                 }
             }

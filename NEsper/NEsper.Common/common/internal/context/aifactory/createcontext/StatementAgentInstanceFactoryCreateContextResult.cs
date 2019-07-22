@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.context.mgr;
 using com.espertech.esper.common.@internal.context.util;
@@ -40,8 +41,16 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createcontext
             IList<StatementAgentInstancePreload> preloadList,
             ContextManagerRealization contextManagerRealization)
             : base(
-                finalView, stopCallback, agentInstanceContext, optionalAggegationService, subselectStrategies, priorStrategies,
-                previousGetterStrategies, regexExprPreviousEvalStrategy, tableAccessStrategies, preloadList)
+                finalView,
+                stopCallback,
+                agentInstanceContext,
+                optionalAggegationService,
+                subselectStrategies,
+                priorStrategies,
+                previousGetterStrategies,
+                regexExprPreviousEvalStrategy,
+                tableAccessStrategies,
+                preloadList)
 
         {
             this.contextManagerRealization = contextManagerRealization;

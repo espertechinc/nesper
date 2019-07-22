@@ -29,7 +29,10 @@ namespace com.espertech.esper.common.@internal.epl.agg.table
             int[] accessColumnsZeroOffset,
             AggregationGroupByRollupDesc groupByRollupDesc)
             : base(
-                tableInstance, methodPairs, accessAgents, accessColumnsZeroOffset)
+                tableInstance,
+                methodPairs,
+                accessAgents,
+                accessColumnsZeroOffset)
         {
             this.groupByRollupDesc = groupByRollupDesc;
             numKeys = tableInstance.Table.MetaData.KeyTypes.Length;

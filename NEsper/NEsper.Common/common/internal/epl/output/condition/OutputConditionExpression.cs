@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Reflection;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.epl.expression.core;
@@ -58,7 +59,8 @@ namespace com.espertech.esper.common.@internal.epl.output.condition
 
             if (parent.BuiltinPropertiesEventType != null) {
                 builtinProperties = new ObjectArrayEventBean(
-                    OutputConditionExpressionTypeUtil.OAPrototype, parent.BuiltinPropertiesEventType);
+                    OutputConditionExpressionTypeUtil.OAPrototype,
+                    parent.BuiltinPropertiesEventType);
                 lastOutputTimestamp = agentInstanceContext.StatementContext.SchedulingService.Time;
             }
 
@@ -68,12 +70,18 @@ namespace com.espertech.esper.common.@internal.epl.output.condition
                     var theVariableDepId = variable.DeploymentId;
                     var theVariableName = variable.MetaData.VariableName;
                     agentInstanceContext.VariableManagementService.RegisterCallback(
-                        theVariableDepId, theVariableName, agentInstanceContext.AgentInstanceId, this);
+                        theVariableDepId,
+                        theVariableName,
+                        agentInstanceContext.AgentInstanceId,
+                        this);
                     agentInstanceContext.AddTerminationCallback(
                         new ProxyAgentInstanceStopCallback {
                             ProcStop = services => {
                                 services.AgentInstanceContext.VariableManagementService.UnregisterCallback(
-                                    theVariableDepId, theVariableName, agentInstanceContext.AgentInstanceId, this);
+                                    theVariableDepId,
+                                    theVariableName,
+                                    agentInstanceContext.AgentInstanceId,
+                                    this);
                             }
                         });
                 }
@@ -117,7 +125,9 @@ namespace com.espertech.esper.common.@internal.epl.output.condition
                 ignoreVariableCallbacks = true;
                 try {
                     parent.VariableReadWritePackageAfterTerminated.WriteVariables(
-                        eventsPerStream, null, agentInstanceContext);
+                        eventsPerStream,
+                        null,
+                        agentInstanceContext);
                 }
                 finally {
                     ignoreVariableCallbacks = false;
@@ -133,7 +143,9 @@ namespace com.espertech.esper.common.@internal.epl.output.condition
         {
             if (scheduleHandle != null) {
                 agentInstanceContext.AuditProvider.ScheduleRemove(
-                    agentInstanceContext, scheduleHandle, ScheduleObjectType.outputratelimiting,
+                    agentInstanceContext,
+                    scheduleHandle,
+                    ScheduleObjectType.outputratelimiting,
                     NAME_AUDITPROVIDER_SCHEDULE);
                 agentInstanceContext.StatementContext.SchedulingService.Remove(scheduleHandle, scheduleSlot);
                 scheduleHandle = null;
@@ -180,7 +192,9 @@ namespace com.espertech.esper.common.@internal.epl.output.condition
                 ProcScheduledTrigger = () => {
                     agentInstanceContext.InstrumentationProvider.QOutputRateConditionScheduledEval();
                     agentInstanceContext.AuditProvider.ScheduleFire(
-                        agentInstanceContext, ScheduleObjectType.outputratelimiting, NAME_AUDITPROVIDER_SCHEDULE);
+                        agentInstanceContext,
+                        ScheduleObjectType.outputratelimiting,
+                        NAME_AUDITPROVIDER_SCHEDULE);
                     isCallbackScheduled = false;
                     outputCallback.Invoke(true, true);
                     ResetBuiltinProperties();
@@ -188,9 +202,13 @@ namespace com.espertech.esper.common.@internal.epl.output.condition
                 }
             };
             scheduleHandle = new EPStatementHandleCallbackSchedule(
-                agentInstanceContext.EpStatementAgentInstanceHandle, callback);
+                agentInstanceContext.EpStatementAgentInstanceHandle,
+                callback);
             agentInstanceContext.AuditProvider.ScheduleAdd(
-                0, agentInstanceContext, scheduleHandle, ScheduleObjectType.outputratelimiting,
+                0,
+                agentInstanceContext,
+                scheduleHandle,
+                ScheduleObjectType.outputratelimiting,
                 NAME_AUDITPROVIDER_SCHEDULE);
             agentInstanceContext.StatementContext.SchedulingService.Add(0, scheduleHandle, scheduleSlot);
 
@@ -228,8 +246,12 @@ namespace com.espertech.esper.common.@internal.epl.output.condition
         private void PopulateBuiltinProps()
         {
             OutputConditionExpressionTypeUtil.Populate(
-                builtinProperties.Properties, totalNewEventsCount, totalOldEventsCount, totalNewEventsSum,
-                totalOldEventsSum, lastOutputTimestamp);
+                builtinProperties.Properties,
+                totalNewEventsCount,
+                totalOldEventsCount,
+                totalNewEventsSum,
+                totalOldEventsSum,
+                lastOutputTimestamp);
         }
     }
 } // end of namespace

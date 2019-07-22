@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 using com.espertech.esper.common.@internal.bytecodemodel.core;
@@ -31,101 +32,57 @@ namespace com.espertech.esper.compiler.@internal.util
             return GenerateCode(imports, clazz);
         }
 
-        private static IDictionary<Type, string> CompileImports(ISet<Type> classes)
+        private static ICollection<ImportDecl> CompileImports(IEnumerable<Type> types)
         {
-            IDictionary<Type, string> imports = new Dictionary<Type, string>();
-            IDictionary<string, Type> assignments = new Dictionary<string, Type>();
-            foreach (var clazz in classes)
-            {
-                if (clazz == null || clazz.IsNested) // clazz.EnclosingClass != null
-                {
-                    continue;
-                }
-
-                if (clazz.IsArray)
-                {
-                    CompileImports(GetComponentTypeOutermost(clazz), imports, assignments);
-                }
-                else
-                {
-                    CompileImports(clazz, imports, assignments);
+            ISet<ImportDecl> imports = new SortedSet<ImportDecl>();
+            foreach (var type in types) {
+                if (type != null && !type.IsPrimitive) {
+                    imports.Add(new ImportDecl(false, type.Namespace));
                 }
             }
 
             return imports;
         }
 
-        private static void CompileImports(
-            Type clazz,
-            IDictionary<Type, string> imports,
-            IDictionary<string, Type> assignments)
-        {
-            if (clazz == null || clazz.IsPrimitive)
-            {
-                return;
-            }
-
-            try
-            {
-                if (clazz.Namespace != null &&
-                    clazz.Namespace.Equals("System"))
-                {
-                    imports.Put(clazz, clazz.Name);
-                    return;
-                }
-            }
-            catch (Exception r)
-            {
-                Console.Out.WriteLine(r);
-            }
-
-            if (assignments.ContainsKey(clazz.Name))
-            {
-                return;
-            }
-
-            imports.Put(clazz, clazz.Name);
-            assignments.Put(clazz.Name, clazz);
-        }
-
         private static string GenerateCode(
-            IDictionary<Type, string> imports,
+            ICollection<ImportDecl> imports,
             CodegenClass clazz)
         {
             var builder = new StringBuilder();
 
+            CodeGenerationUtil.Importsdecl(builder, imports);
             CodeGenerationUtil.NamespaceDecl(builder, clazz.PackageName);
-            CodeGenerationUtil.Importsdecl(builder, imports.Keys);
-            CodeGenerationUtil.Classimplements(builder, clazz.ClassName, clazz.InterfaceImplemented, null, true, false, imports);
+            CodeGenerationUtil.Classimplements(builder, clazz.ClassName, clazz.InterfaceImplemented, null, true, false);
 
             // members
-            GenerateCodeMembers(builder, clazz.ExplicitMembers, clazz.OptionalCtor, imports, 1);
+            GenerateCodeMembers(builder, clazz.ExplicitMembers, clazz.OptionalCtor, 2);
 
             // ctor
-            GenerateCodeCtor(builder, clazz.ClassName, false, clazz.OptionalCtor, imports, 0);
+            GenerateCodeCtor(builder, clazz.ClassName, false, clazz.OptionalCtor, 1);
 
             // methods
-            GenerateCodeMethods(builder, false, clazz.PublicMethods, clazz.PrivateMethods, imports, 0);
+            GenerateCodeMethods(builder, false, clazz.PublicMethods, clazz.PrivateMethods, 1);
 
             // inner classes
             foreach (var inner in clazz.InnerClasses)
             {
                 builder.Append("\n");
-                INDENT.Indent(builder, 1);
+                INDENT.Indent(builder, 2);
                 CodeGenerationUtil.Classimplements(
-                    builder, inner.ClassName, inner.InterfaceImplemented, inner.InterfaceGenericClass, false, true, imports);
+                    builder, inner.ClassName, inner.InterfaceImplemented, inner.InterfaceGenericClass, false, false);
 
-                GenerateCodeMembers(builder, inner.ExplicitMembers, inner.Ctor, imports, 2);
+                GenerateCodeMembers(builder, inner.ExplicitMembers, inner.Ctor, 2);
 
-                GenerateCodeCtor(builder, inner.ClassName, true, inner.Ctor, imports, 1);
+                GenerateCodeCtor(builder, inner.ClassName, true, inner.Ctor, 1);
 
-                GenerateCodeMethods(builder, true, inner.Methods.PublicMethods, inner.Methods.PrivateMethods, imports, 1);
+                GenerateCodeMethods(builder, true, inner.Methods.PublicMethods, inner.Methods.PrivateMethods, 1);
                 INDENT.Indent(builder, 1);
                 builder.Append("}\n");
             }
 
             // close
-            builder.Append("}\n");
+            builder.Append("  }\n"); // class
+            builder.Append("}\n"); // namespace
             return builder.ToString();
         }
 
@@ -134,7 +91,6 @@ namespace com.espertech.esper.compiler.@internal.util
             bool isInnerClass,
             IList<CodegenMethodWGraph> publicMethods,
             IList<CodegenMethodWGraph> privateMethods,
-            IDictionary<Type, string> imports,
             int additionalIndent)
         {
             // public methods
@@ -142,7 +98,7 @@ namespace com.espertech.esper.compiler.@internal.util
             foreach (var publicMethod in publicMethods)
             {
                 builder.Append(delimiter);
-                publicMethod.Render(builder, imports, true, isInnerClass, INDENT, additionalIndent);
+                publicMethod.Render(builder, true, isInnerClass, INDENT, additionalIndent);
                 delimiter = "\n";
             }
 
@@ -150,7 +106,7 @@ namespace com.espertech.esper.compiler.@internal.util
             foreach (var method in privateMethods)
             {
                 builder.Append(delimiter);
-                method.Render(builder, imports, false, isInnerClass, INDENT, additionalIndent);
+                method.Render(builder, false, isInnerClass, INDENT, additionalIndent);
                 delimiter = "\n";
             }
         }
@@ -160,7 +116,6 @@ namespace com.espertech.esper.compiler.@internal.util
             string className,
             bool isInnerClass,
             CodegenCtor optionalCtor,
-            IDictionary<Type, string> imports,
             int additionalIndent)
         {
             INDENT.Indent(builder, 1 + additionalIndent);
@@ -173,7 +128,7 @@ namespace com.espertech.esper.compiler.@internal.util
                 foreach (var param in optionalCtor.CtorParams)
                 {
                     builder.Append(delimiter);
-                    param.RenderAsParameter(builder, imports);
+                    param.RenderAsParameter(builder);
                     delimiter = ",";
                 }
             }
@@ -188,15 +143,17 @@ namespace com.espertech.esper.compiler.@internal.util
                     if (param.IsMemberWhenCtorParam)
                     {
                         INDENT.Indent(builder, 2 + additionalIndent);
-                        builder.Append("this.").Append(param.Name).Append("=").Append(param.Name).Append(";\n");
+                        builder
+                            .Append("this.")
+                            .Append(param.Name)
+                            .Append("=")
+                            .Append(param.Name)
+                            .Append(";\n");
                     }
                 }
             }
 
-            if (optionalCtor != null)
-            {
-                optionalCtor.Block.Render(builder, imports, isInnerClass, 2 + additionalIndent, INDENT);
-            }
+            optionalCtor?.Block.Render(builder, isInnerClass, 2 + additionalIndent, INDENT);
 
             INDENT.Indent(builder, 1 + additionalIndent);
             builder.Append("}\n");
@@ -207,7 +164,6 @@ namespace com.espertech.esper.compiler.@internal.util
             StringBuilder builder,
             IList<CodegenTypedParam> explicitMembers,
             CodegenCtor optionalCtor,
-            IDictionary<Type, string> imports,
             int indent)
         {
             if (optionalCtor != null)
@@ -217,8 +173,8 @@ namespace com.espertech.esper.compiler.@internal.util
                     if (param.IsMemberWhenCtorParam)
                     {
                         INDENT.Indent(builder, indent);
-                        builder.Append("final ");
-                        param.RenderAsMember(builder, imports);
+                        builder.Append("private readonly ");
+                        param.RenderAsMember(builder);
                         builder.Append(";\n");
                     }
                 }
@@ -227,9 +183,9 @@ namespace com.espertech.esper.compiler.@internal.util
             foreach (var param in explicitMembers)
             {
                 INDENT.Indent(builder, indent);
-                if (!param.IsPublic && param.IsFinal)
+                if (!param.IsPublic && param.IsReadonly)
                 {
-                    builder.Append("final ");
+                    builder.Append("private readonly ");
                 }
 
                 if (param.IsStatic)
@@ -237,7 +193,7 @@ namespace com.espertech.esper.compiler.@internal.util
                     builder.Append("static ");
                 }
 
-                param.RenderType(builder, imports);
+                param.RenderType(builder);
                 builder.Append(" ").Append(param.Name);
                 builder.Append(";\n");
             }

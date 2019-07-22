@@ -47,8 +47,10 @@ namespace com.espertech.esper.common.@internal.util
         public override string ToString()
         {
             return "MethodExecutableRank{" +
-                   "conversionCount=" + ConversionCount +
-                   ", varargs=" + varargs +
+                   "conversionCount=" +
+                   ConversionCount +
+                   ", varargs=" +
+                   varargs +
                    '}';
         }
     }

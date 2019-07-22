@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
@@ -33,7 +34,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
     public class ProxyExprForge : ExprForge
     {
         public Func<ExprEvaluator> ProcExprEvaluator;
-        public Func<Type, CodegenMethodScope, ExprForgeCodegenSymbol, CodegenClassScope, CodegenExpression> ProcEvaluateCodegen;
+
+        public Func<Type, CodegenMethodScope, ExprForgeCodegenSymbol, CodegenClassScope, CodegenExpression>
+            ProcEvaluateCodegen;
+
         public Func<Type> ProcEvaluationType;
         public Func<ExprForgeConstantType> ProcForgeConstantType;
         public Func<ExprNodeRenderable> ProcForgeRenderable;

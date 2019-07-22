@@ -54,8 +54,8 @@ namespace com.espertech.esper.common.@internal.supportunit.bean
         {
             return "SupportMarketDataBean " +
                    "symbol=" + Symbol +
-                   " price=" + Price +
-                   " volume=" + Volume +
+                   " Price=" + Price +
+                   " Volume=" + Volume +
                    " feed=" + Feed;
         }
     }

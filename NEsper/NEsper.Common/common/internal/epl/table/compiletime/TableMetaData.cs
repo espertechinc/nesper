@@ -97,24 +97,20 @@ namespace com.espertech.esper.common.@internal.epl.table.compiletime
         public void Init()
         {
             // add index multi-key for implicit primary-key index
-            if (KeyColumns == null || KeyColumns.Length == 0)
-            {
+            if (KeyColumns == null || KeyColumns.Length == 0) {
                 return;
             }
 
             var props = new IndexedPropDesc[KeyColumns.Length];
-            for (var i = 0; i < props.Length; i++)
-            {
+            for (var i = 0; i < props.Length; i++) {
                 props[i] = new IndexedPropDesc(KeyColumns[i], KeyTypes[i]);
             }
 
             KeyIndexMultiKey = new IndexMultiKey(true, props, new IndexedPropDesc[0], null);
-            try
-            {
+            try {
                 IndexMetadata.AddIndexExplicit(true, KeyIndexMultiKey, TableName, TableModuleName, null, "");
             }
-            catch (ExprValidationException e)
-            {
+            catch (ExprValidationException e) {
                 throw new EPException("Failed to add primary key index: " + e.Message, e);
             }
         }
@@ -126,21 +122,28 @@ namespace com.espertech.esper.common.@internal.epl.table.compiletime
         {
             var method = parent.MakeChild(typeof(TableMetaData), GetType(), classScope);
             method.Block
-                .DeclareVar(typeof(TableMetaData), "meta", NewInstance(typeof(TableMetaData)))
+                .DeclareVar<TableMetaData>("meta", NewInstance(typeof(TableMetaData)))
                 .SetProperty(Ref("meta"), "TableName", Constant(TableName))
                 .SetProperty(Ref("meta"), "TableModuleName", Constant(TableModuleName))
                 .SetProperty(Ref("meta"), "TableVisibility", Constant(TableVisibility))
                 .SetProperty(Ref("meta"), "OptionalContextName", Constant(OptionalContextName))
                 .SetProperty(Ref("meta"), "OptionalContextVisibility", Constant(OptionalContextVisibility))
                 .SetProperty(Ref("meta"), "OptionalContextModule", Constant(OptionalContextModule))
-                .SetProperty(Ref("meta"), "InternalEventType",
+                .SetProperty(
+                    Ref("meta"),
+                    "InternalEventType",
                     EventTypeUtility.ResolveTypeCodegen(InternalEventType, symbols.GetAddInitSvc(method)))
-                .SetProperty(Ref("meta"), "PublicEventType",
+                .SetProperty(
+                    Ref("meta"),
+                    "PublicEventType",
                     EventTypeUtility.ResolveTypeCodegen(PublicEventType, symbols.GetAddInitSvc(method)))
                 .SetProperty(Ref("meta"), "KeyColumns", Constant(KeyColumns))
                 .SetProperty(Ref("meta"), "KeyTypes", Constant(KeyTypes))
                 .SetProperty(Ref("meta"), "KeyColNums", Constant(KeyColNums))
-                .SetProperty(Ref("meta"), "Columns", TableMetadataColumn.MakeColumns(Columns, method, symbols, classScope))
+                .SetProperty(
+                    Ref("meta"),
+                    "Columns",
+                    TableMetadataColumn.MakeColumns(Columns, method, symbols, classScope))
                 .SetProperty(Ref("meta"), "NumMethodAggs", Constant(NumMethodAggs))
                 .ExprDotMethod(Ref("meta"), "init")
                 .MethodReturn(Ref("meta"));
@@ -151,16 +154,16 @@ namespace com.espertech.esper.common.@internal.epl.table.compiletime
         {
             return NewInstance<TableMetaData>(
                 Constant(TableName),
-                Constant(OptionalContextName), Constant(OptionalContextVisibility), Constant(OptionalContextModule),
+                Constant(OptionalContextName),
+                Constant(OptionalContextVisibility),
+                Constant(OptionalContextModule),
                 EventTypeUtility.ResolveTypeCodegen(InternalEventType, addInitSvc),
                 EventTypeUtility.ResolveTypeCodegen(PublicEventType, addInitSvc));
         }
 
-        public ISet<string> UniquenessAsSet
-        {
+        public ISet<string> UniquenessAsSet {
             get {
-                if (KeyColumns == null || KeyColumns.Length == 0)
-                {
+                if (KeyColumns == null || KeyColumns.Length == 0) {
                     return Collections.GetEmptySet<string>();
                 }
 

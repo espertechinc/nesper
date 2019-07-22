@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
@@ -50,7 +51,13 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            return ExprDotForgeArrayGetEval.Codegen(this, inner, innerType, codegenMethodScope, exprSymbol, codegenClassScope);
+            return ExprDotForgeArrayGetEval.Codegen(
+                this,
+                inner,
+                innerType,
+                codegenMethodScope,
+                exprSymbol,
+                codegenClassScope);
         }
 
         public ExprForge IndexExpression {

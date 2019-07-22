@@ -59,30 +59,43 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
                 CodegenClassScope codegenClassScope)
             {
                 var methodNode = codegenMethodScope.MakeChild(
-                        typeof(bool), typeof(IntervalComputerOverlapsAndByThresholdEval), codegenClassScope)
+                        typeof(bool),
+                        typeof(IntervalComputerOverlapsAndByThresholdEval),
+                        codegenClassScope)
                     .AddParam(IntervalForgeCodegenNames.PARAMS);
 
                 var block = methodNode.Block
-                    .DeclareVar(
-                        typeof(long), "threshold",
+                    .DeclareVar<long>(
+                        "threshold",
                         forge.thresholdExpr.Codegen(
                             forge.overlaps
                                 ? IntervalForgeCodegenNames.REF_LEFTSTART
-                                : IntervalForgeCodegenNames.REF_RIGHTSTART, methodNode, exprSymbol, codegenClassScope));
+                                : IntervalForgeCodegenNames.REF_RIGHTSTART,
+                            methodNode,
+                            exprSymbol,
+                            codegenClassScope));
                 if (forge.overlaps) {
                     block.MethodReturn(
                         CodegenExpressionBuilder.StaticMethod(
-                            typeof(IntervalComputerOverlapsAndByThresholdEval), "ComputeIntervalOverlaps",
-                            IntervalForgeCodegenNames.REF_LEFTSTART, IntervalForgeCodegenNames.REF_LEFTEND,
-                            IntervalForgeCodegenNames.REF_RIGHTSTART, IntervalForgeCodegenNames.REF_RIGHTEND,
-                            CodegenExpressionBuilder.Constant(0), CodegenExpressionBuilder.Ref("threshold")));
+                            typeof(IntervalComputerOverlapsAndByThresholdEval),
+                            "ComputeIntervalOverlaps",
+                            IntervalForgeCodegenNames.REF_LEFTSTART,
+                            IntervalForgeCodegenNames.REF_LEFTEND,
+                            IntervalForgeCodegenNames.REF_RIGHTSTART,
+                            IntervalForgeCodegenNames.REF_RIGHTEND,
+                            CodegenExpressionBuilder.Constant(0),
+                            CodegenExpressionBuilder.Ref("threshold")));
                 }
                 else {
                     block.MethodReturn(
                         CodegenExpressionBuilder.StaticMethod(
-                            typeof(IntervalComputerOverlapsAndByThresholdEval), "ComputeIntervalOverlaps",
-                            IntervalForgeCodegenNames.REF_RIGHTSTART, IntervalForgeCodegenNames.REF_RIGHTEND,
-                            IntervalForgeCodegenNames.REF_LEFTSTART, IntervalForgeCodegenNames.REF_LEFTEND, CodegenExpressionBuilder.Constant(0),
+                            typeof(IntervalComputerOverlapsAndByThresholdEval),
+                            "ComputeIntervalOverlaps",
+                            IntervalForgeCodegenNames.REF_RIGHTSTART,
+                            IntervalForgeCodegenNames.REF_RIGHTEND,
+                            IntervalForgeCodegenNames.REF_LEFTSTART,
+                            IntervalForgeCodegenNames.REF_LEFTEND,
+                            CodegenExpressionBuilder.Constant(0),
                             CodegenExpressionBuilder.Ref("threshold")));
                 }
 

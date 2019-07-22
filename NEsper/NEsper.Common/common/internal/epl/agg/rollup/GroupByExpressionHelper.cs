@@ -9,6 +9,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+
 using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.compile.stage1.spec;
 using com.espertech.esper.common.@internal.compile.stage1.specmapper;
@@ -106,7 +107,8 @@ namespace com.espertech.esper.common.@internal.epl.agg.rollup
                 }
 
                 throw new ExprValidationException(
-                    "Failed to validate the group-by clause, found duplicate specification of expressions (" + writer +
+                    "Failed to validate the group-by clause, found duplicate specification of expressions (" +
+                    writer +
                     ")");
             }
 
@@ -181,7 +183,11 @@ namespace com.espertech.esper.common.@internal.epl.agg.rollup
             }
 
             return new GroupByClauseExpressions(
-                groupByExpressions, rollupLevels, selects, optHavingNodeCopy, optOrderByCopy);
+                groupByExpressions,
+                rollupLevels,
+                selects,
+                optHavingNodeCopy,
+                optOrderByCopy);
         }
 
         private static GroupByExpressionInfo GroupByToRollupNodes(IList<GroupByClauseElement> groupByExpressions)

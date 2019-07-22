@@ -128,8 +128,7 @@ namespace com.espertech.esper.common.@internal.view.core
         /// <returns>short name of view</returns>
         public static string GetViewName(this ViewEnum value)
         {
-            switch (value)
-            {
+            switch (value) {
                 case ViewEnum.LENGTH_WINDOW:
                     return "length";
 
@@ -224,8 +223,7 @@ namespace com.espertech.esper.common.@internal.view.core
         /// <returns>view enum for the merge view</returns>
         public static ViewEnum? GetMergeView(this ViewEnum value)
         {
-            switch (value)
-            {
+            switch (value) {
                 case ViewEnum.LENGTH_WINDOW:
                 case ViewEnum.TIME_WINDOW:
                 case ViewEnum.KEEPALL_WINDOW:
@@ -268,8 +266,7 @@ namespace com.espertech.esper.common.@internal.view.core
         /// <returns>class of view factory</returns>
         public static Type GetFactoryClass(this ViewEnum value)
         {
-            switch (value)
-            {
+            switch (value) {
                 case ViewEnum.LENGTH_WINDOW:
                     return typeof(LengthWindowViewForge);
 

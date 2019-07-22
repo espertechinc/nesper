@@ -90,7 +90,7 @@ namespace com.espertech.esper.regressionlib.suite.view
             long? prevCountId,
             object[] prevWindowId)
         {
-            Assert.AreEqual(id, @event.Get("id"));
+            Assert.AreEqual(id, @event.Get("Id"));
             Assert.AreEqual(prevId, @event.Get("prevId"));
             Assert.AreEqual(priorId, @event.Get("priorId"));
             Assert.AreEqual(prevTailId, @event.Get("prevtail"));
@@ -120,37 +120,37 @@ namespace com.espertech.esper.regressionlib.suite.view
                 // 1st event
                 env.AdvanceTime(1000);
                 SendEvent(env, "E1", 3000);
-                Assert.AreEqual("E1", env.Listener("s0").AssertOneGetNewAndReset().Get("id"));
+                Assert.AreEqual("E1", env.Listener("s0").AssertOneGetNewAndReset().Get("Id"));
 
                 env.Milestone(1);
 
                 // 2nd event
                 env.AdvanceTime(2000);
                 SendEvent(env, "E2", 2000);
-                Assert.AreEqual("E2", env.Listener("s0").AssertOneGetNewAndReset().Get("id"));
+                Assert.AreEqual("E2", env.Listener("s0").AssertOneGetNewAndReset().Get("Id"));
                 EPAssertionUtil.AssertPropsPerRow(
                     env.GetEnumerator("s0"),
-                    new[] {"id"},
+                    new[] {"Id"},
                     new[] {new object[] {"E2"}, new object[] {"E1"}});
 
                 env.Milestone(2);
 
                 EPAssertionUtil.AssertPropsPerRow(
                     env.GetEnumerator("s0"),
-                    new[] {"id"},
+                    new[] {"Id"},
                     new[] {new object[] {"E2"}, new object[] {"E1"}});
 
                 // 3rd event
                 env.AdvanceTime(3000);
                 SendEvent(env, "E3", 3000);
-                Assert.AreEqual("E3", env.Listener("s0").AssertOneGetNewAndReset().Get("id"));
+                Assert.AreEqual("E3", env.Listener("s0").AssertOneGetNewAndReset().Get("Id"));
 
                 env.Milestone(3);
 
                 // 4th event
                 env.AdvanceTime(4000);
                 SendEvent(env, "E4", 2500);
-                Assert.AreEqual("E4", env.Listener("s0").AssertOneGetNewAndReset().Get("id"));
+                Assert.AreEqual("E4", env.Listener("s0").AssertOneGetNewAndReset().Get("Id"));
 
                 env.Milestone(4);
 
@@ -162,7 +162,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 var oldData = env.Listener("s0").LastOldData;
                 EPAssertionUtil.AssertPropsPerRow(
                     oldData,
-                    new[] {"id"},
+                    new[] {"Id"},
                     new[] {new object[] {"E2"}});
                 env.Listener("s0").Reset();
 
@@ -170,7 +170,7 @@ namespace com.espertech.esper.regressionlib.suite.view
 
                 EPAssertionUtil.AssertPropsPerRow(
                     env.GetEnumerator("s0"),
-                    new[] {"id"},
+                    new[] {"Id"},
                     new[] {new object[] {"E4"}, new object[] {"E1"}, new object[] {"E3"}});
 
                 // Window pushes out event E4
@@ -181,7 +181,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 oldData = env.Listener("s0").LastOldData;
                 EPAssertionUtil.AssertPropsPerRow(
                     oldData,
-                    new[] {"id"},
+                    new[] {"Id"},
                     new[] {new object[] {"E4"}});
                 env.Listener("s0").Reset();
 
@@ -193,7 +193,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 oldData = env.Listener("s0").LastOldData;
                 EPAssertionUtil.AssertPropsPerRow(
                     oldData,
-                    new[] {"id"},
+                    new[] {"Id"},
                     new[] {new object[] {"E1"}, new object[] {"E3"}});
                 env.Listener("s0").Reset();
 
@@ -202,28 +202,28 @@ namespace com.espertech.esper.regressionlib.suite.view
                 // E5
                 env.AdvanceTime(14000);
                 SendEvent(env, "E5", 14200);
-                Assert.AreEqual("E5", env.Listener("s0").AssertOneGetNewAndReset().Get("id"));
+                Assert.AreEqual("E5", env.Listener("s0").AssertOneGetNewAndReset().Get("Id"));
 
                 env.Milestone(8);
 
                 // E6
                 env.AdvanceTime(14000);
                 SendEvent(env, "E6", 14100);
-                Assert.AreEqual("E6", env.Listener("s0").AssertOneGetNewAndReset().Get("id"));
+                Assert.AreEqual("E6", env.Listener("s0").AssertOneGetNewAndReset().Get("Id"));
 
                 env.Milestone(9);
 
                 // E7
                 env.AdvanceTime(15000);
                 SendEvent(env, "E7", 15000);
-                Assert.AreEqual("E7", env.Listener("s0").AssertOneGetNewAndReset().Get("id"));
+                Assert.AreEqual("E7", env.Listener("s0").AssertOneGetNewAndReset().Get("Id"));
 
                 env.Milestone(10);
 
                 // E8
                 env.AdvanceTime(15000);
                 SendEvent(env, "E8", 14150);
-                Assert.AreEqual("E8", env.Listener("s0").AssertOneGetNewAndReset().Get("id"));
+                Assert.AreEqual("E8", env.Listener("s0").AssertOneGetNewAndReset().Get("Id"));
 
                 env.Milestone(11);
 
@@ -233,7 +233,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 oldData = env.Listener("s0").LastOldData;
                 EPAssertionUtil.AssertPropsPerRow(
                     oldData,
-                    new[] {"id"},
+                    new[] {"Id"},
                     new[] {new object[] {"E6"}, new object[] {"E8"}, new object[] {"E5"}});
                 env.Listener("s0").Reset();
 
@@ -245,7 +245,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 oldData = env.Listener("s0").LastOldData;
                 EPAssertionUtil.AssertPropsPerRow(
                     oldData,
-                    new[] {"id"},
+                    new[] {"Id"},
                     new[] {new object[] {"E7"}});
                 env.Listener("s0").Reset();
 
@@ -257,12 +257,12 @@ namespace com.espertech.esper.regressionlib.suite.view
                 var newData = env.Listener("s0").LastNewData;
                 EPAssertionUtil.AssertPropsPerRow(
                     newData,
-                    new[] {"id"},
+                    new[] {"Id"},
                     new[] {new object[] {"E9"}});
                 oldData = env.Listener("s0").LastOldData;
                 EPAssertionUtil.AssertPropsPerRow(
                     oldData,
-                    new[] {"id"},
+                    new[] {"Id"},
                     new[] {new object[] {"E9"}});
                 env.Listener("s0").Reset();
 
@@ -271,23 +271,23 @@ namespace com.espertech.esper.regressionlib.suite.view
                 // E10 at 26 sec
                 env.AdvanceTime(26000);
                 SendEvent(env, "E10", 26000);
-                Assert.AreEqual("E10", env.Listener("s0").AssertOneGetNewAndReset().Get("id"));
+                Assert.AreEqual("E10", env.Listener("s0").AssertOneGetNewAndReset().Get("Id"));
 
                 env.Milestone(15);
 
                 // E11 at 27 sec
                 env.AdvanceTime(27000);
                 SendEvent(env, "E11", 27000);
-                Assert.AreEqual("E11", env.Listener("s0").AssertOneGetNewAndReset().Get("id"));
+                Assert.AreEqual("E11", env.Listener("s0").AssertOneGetNewAndReset().Get("Id"));
 
                 env.Milestone(16);
 
                 // E12 and E13 at 25 sec
                 env.AdvanceTime(28000);
                 SendEvent(env, "E12", 25000);
-                Assert.AreEqual("E12", env.Listener("s0").AssertOneGetNewAndReset().Get("id"));
+                Assert.AreEqual("E12", env.Listener("s0").AssertOneGetNewAndReset().Get("Id"));
                 SendEvent(env, "E13", 25000);
-                Assert.AreEqual("E13", env.Listener("s0").AssertOneGetNewAndReset().Get("id"));
+                Assert.AreEqual("E13", env.Listener("s0").AssertOneGetNewAndReset().Get("Id"));
 
                 env.Milestone(17);
 
@@ -297,7 +297,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 oldData = env.Listener("s0").LastOldData;
                 EPAssertionUtil.AssertPropsPerRow(
                     oldData,
-                    new[] {"id"},
+                    new[] {"Id"},
                     new[] {new object[] {"E12"}, new object[] {"E13"}});
                 env.Listener("s0").Reset();
 
@@ -306,7 +306,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 // E10 at 26 sec
                 env.AdvanceTime(35000);
                 SendEvent(env, "E14", 26500);
-                Assert.AreEqual("E14", env.Listener("s0").AssertOneGetNewAndReset().Get("id"));
+                Assert.AreEqual("E14", env.Listener("s0").AssertOneGetNewAndReset().Get("Id"));
 
                 env.Milestone(19);
 
@@ -316,7 +316,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 oldData = env.Listener("s0").LastOldData;
                 EPAssertionUtil.AssertPropsPerRow(
                     oldData,
-                    new[] {"id"},
+                    new[] {"Id"},
                     new[] {new object[] {"E10"}});
                 env.Listener("s0").Reset();
 
@@ -426,7 +426,7 @@ namespace com.espertech.esper.regressionlib.suite.view
             {
                 env.AdvanceTime(0);
 
-                var fields = "id".SplitCsv();
+                var fields = "Id".SplitCsv();
                 var epl = "@Name('s0') select irstream * from SupportBeanTimestamp#timetolive(timestamp)";
                 env.CompileDeploy(epl).AddListener("s0").Milestone(0);
 
@@ -562,7 +562,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 SendCurrentTime(env, "2002-03-01T09:00:00.000");
                 EPAssertionUtil.AssertPropsPerRow(
                     env.Listener("s0").GetAndResetLastNewData(),
-                    "id".SplitCsv(),
+                    "Id".SplitCsv(),
                     new[] {new object[] {"E1"}});
 
                 env.UndeployAll();
@@ -608,13 +608,13 @@ namespace com.espertech.esper.regressionlib.suite.view
 
                 SendTimer(env, 31000);
                 Assert.AreEqual(1, env.Listener("s0").LastNewData.Length);
-                Assert.AreEqual("E1", env.Listener("s0").LastNewData[0].Get("id"));
+                Assert.AreEqual("E1", env.Listener("s0").LastNewData[0].Get("Id"));
                 env.Listener("s0").Reset();
 
                 // 6th event at 31 sec, however is 21 sec (old 10 sec)
                 SendEvent(env, "E6", 21000);
                 Assert.AreEqual(1, env.Listener("s0").LastNewData.Length);
-                Assert.AreEqual("E6", env.Listener("s0").LastNewData[0].Get("id"));
+                Assert.AreEqual("E6", env.Listener("s0").LastNewData[0].Get("Id"));
                 env.Listener("s0").Reset();
 
                 // 7th event at 31 sec, however is 21.3 sec (old 9.7 sec)
@@ -626,7 +626,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 SendTimer(env, 31300);
                 Assert.AreEqual(1, env.Listener("s0").NewDataList.Count);
                 Assert.AreEqual(1, env.Listener("s0").LastNewData.Length);
-                Assert.AreEqual("E7", env.Listener("s0").LastNewData[0].Get("id"));
+                Assert.AreEqual("E7", env.Listener("s0").LastNewData[0].Get("Id"));
                 env.Listener("s0").Reset();
 
                 // flush two
@@ -636,8 +636,8 @@ namespace com.espertech.esper.regressionlib.suite.view
 
                 var result = env.Listener("s0").NewDataListFlattened;
                 Assert.AreEqual(2, result.Length);
-                Assert.AreEqual("E2", result[0].Get("id"));
-                Assert.AreEqual("E5", result[1].Get("id"));
+                Assert.AreEqual("E2", result[0].Get("Id"));
+                Assert.AreEqual("E5", result[1].Get("Id"));
                 env.Listener("s0").Reset();
 
                 // flush one
@@ -646,13 +646,13 @@ namespace com.espertech.esper.regressionlib.suite.view
                 SendTimer(env, 37000);
                 Assert.AreEqual(1, env.Listener("s0").NewDataList.Count);
                 Assert.AreEqual(1, env.Listener("s0").LastNewData.Length);
-                Assert.AreEqual("E4", env.Listener("s0").LastNewData[0].Get("id"));
+                Assert.AreEqual("E4", env.Listener("s0").LastNewData[0].Get("Id"));
                 env.Listener("s0").Reset();
 
                 // rather old event
                 SendEvent(env, "E8", 21000);
                 Assert.AreEqual(1, env.Listener("s0").LastNewData.Length);
-                Assert.AreEqual("E8", env.Listener("s0").LastNewData[0].Get("id"));
+                Assert.AreEqual("E8", env.Listener("s0").LastNewData[0].Get("Id"));
                 env.Listener("s0").Reset();
 
                 // 9-second old event for posting at 38 sec
@@ -664,8 +664,8 @@ namespace com.espertech.esper.regressionlib.suite.view
                 SendTimer(env, 38000);
                 result = env.Listener("s0").NewDataListFlattened;
                 Assert.AreEqual(2, result.Length);
-                Assert.AreEqual("E3", result[0].Get("id"));
-                Assert.AreEqual("E9", result[1].Get("id"));
+                Assert.AreEqual("E3", result[0].Get("Id"));
+                Assert.AreEqual("E9", result[1].Get("Id"));
                 env.Listener("s0").Reset();
 
                 env.UndeployAll();
@@ -680,38 +680,38 @@ namespace com.espertech.esper.regressionlib.suite.view
 
                 var epl = "@Name('s0') select irstream * from SupportBeanTimestamp#time_order(timestamp, 10 sec)";
                 env.CompileDeploy(epl).AddListener("s0");
-                EPAssertionUtil.AssertPropsPerRow(env.Statement("s0").GetEnumerator(), new[] {"id"}, null);
+                EPAssertionUtil.AssertPropsPerRow(env.Statement("s0").GetEnumerator(), new[] {"Id"}, null);
 
                 SendTimer(env, 21000);
                 Assert.IsFalse(env.Listener("s0").IsInvoked);
-                EPAssertionUtil.AssertPropsPerRow(env.Statement("s0").GetEnumerator(), new[] {"id"}, null);
+                EPAssertionUtil.AssertPropsPerRow(env.Statement("s0").GetEnumerator(), new[] {"Id"}, null);
 
                 env.Milestone(0);
 
                 // 1st event at 21 sec
                 SendEvent(env, "E1", 21000);
-                Assert.AreEqual("E1", env.Listener("s0").AssertOneGetNewAndReset().Get("id"));
+                Assert.AreEqual("E1", env.Listener("s0").AssertOneGetNewAndReset().Get("Id"));
                 EPAssertionUtil.AssertPropsPerRow(
                     env.Statement("s0").GetEnumerator(),
-                    new[] {"id"},
+                    new[] {"Id"},
                     new[] {new object[] {"E1"}});
 
                 // 2nd event at 22 sec
                 SendTimer(env, 22000);
                 SendEvent(env, "E2", 22000);
-                Assert.AreEqual("E2", env.Listener("s0").AssertOneGetNewAndReset().Get("id"));
+                Assert.AreEqual("E2", env.Listener("s0").AssertOneGetNewAndReset().Get("Id"));
                 EPAssertionUtil.AssertPropsPerRow(
                     env.Statement("s0").GetEnumerator(),
-                    new[] {"id"},
+                    new[] {"Id"},
                     new[] {new object[] {"E1"}, new object[] {"E2"}});
 
                 // 3nd event at 28 sec
                 SendTimer(env, 28000);
                 SendEvent(env, "E3", 28000);
-                Assert.AreEqual("E3", env.Listener("s0").AssertOneGetNewAndReset().Get("id"));
+                Assert.AreEqual("E3", env.Listener("s0").AssertOneGetNewAndReset().Get("Id"));
                 EPAssertionUtil.AssertPropsPerRow(
                     env.Statement("s0").GetEnumerator(),
-                    new[] {"id"},
+                    new[] {"Id"},
                     new[] {new object[] {"E1"}, new object[] {"E2"}, new object[] {"E3"}});
 
                 env.Milestone(1);
@@ -719,18 +719,18 @@ namespace com.espertech.esper.regressionlib.suite.view
                 // 4th event at 30 sec, however is 27 sec (old 3 sec)
                 SendTimer(env, 30000);
                 SendEvent(env, "E4", 27000);
-                Assert.AreEqual("E4", env.Listener("s0").AssertOneGetNewAndReset().Get("id"));
+                Assert.AreEqual("E4", env.Listener("s0").AssertOneGetNewAndReset().Get("Id"));
                 EPAssertionUtil.AssertPropsPerRow(
                     env.Statement("s0").GetEnumerator(),
-                    new[] {"id"},
+                    new[] {"Id"},
                     new[] {new object[] {"E1"}, new object[] {"E2"}, new object[] {"E4"}, new object[] {"E3"}});
 
                 // 5th event at 30 sec, however is 22 sec (old 8 sec)
                 SendEvent(env, "E5", 22000);
-                Assert.AreEqual("E5", env.Listener("s0").AssertOneGetNewAndReset().Get("id"));
+                Assert.AreEqual("E5", env.Listener("s0").AssertOneGetNewAndReset().Get("Id"));
                 EPAssertionUtil.AssertPropsPerRow(
                     env.Statement("s0").GetEnumerator(),
-                    new[] {"id"},
+                    new[] {"Id"},
                     new[] {
                         new object[] {"E1"}, new object[] {"E2"}, new object[] {"E5"}, new object[] {"E4"},
                         new object[] {"E3"}
@@ -743,32 +743,32 @@ namespace com.espertech.esper.regressionlib.suite.view
                 Assert.IsNull(env.Listener("s0").LastNewData);
                 Assert.AreEqual(1, env.Listener("s0").OldDataList.Count);
                 Assert.AreEqual(1, env.Listener("s0").LastOldData.Length);
-                Assert.AreEqual("E1", env.Listener("s0").LastOldData[0].Get("id"));
+                Assert.AreEqual("E1", env.Listener("s0").LastOldData[0].Get("Id"));
                 env.Listener("s0").Reset();
                 EPAssertionUtil.AssertPropsPerRow(
                     env.Statement("s0").GetEnumerator(),
-                    new[] {"id"},
+                    new[] {"Id"},
                     new[] {new object[] {"E2"}, new object[] {"E5"}, new object[] {"E4"}, new object[] {"E3"}});
 
                 // 6th event at 31 sec, however is 21 sec (old 10 sec)
                 SendEvent(env, "E6", 21000);
                 Assert.AreEqual(1, env.Listener("s0").NewDataList.Count);
                 Assert.AreEqual(1, env.Listener("s0").LastNewData.Length);
-                Assert.AreEqual("E6", env.Listener("s0").LastNewData[0].Get("id"));
+                Assert.AreEqual("E6", env.Listener("s0").LastNewData[0].Get("Id"));
                 Assert.AreEqual(1, env.Listener("s0").LastOldData.Length);
-                Assert.AreEqual("E6", env.Listener("s0").LastOldData[0].Get("id"));
+                Assert.AreEqual("E6", env.Listener("s0").LastOldData[0].Get("Id"));
                 env.Listener("s0").Reset();
                 EPAssertionUtil.AssertPropsPerRow(
                     env.Statement("s0").GetEnumerator(),
-                    new[] {"id"},
+                    new[] {"Id"},
                     new[] {new object[] {"E2"}, new object[] {"E5"}, new object[] {"E4"}, new object[] {"E3"}});
 
                 // 7th event at 31 sec, however is 21.3 sec (old 9.7 sec)
                 SendEvent(env, "E7", 21300);
-                Assert.AreEqual("E7", env.Listener("s0").AssertOneGetNewAndReset().Get("id"));
+                Assert.AreEqual("E7", env.Listener("s0").AssertOneGetNewAndReset().Get("Id"));
                 EPAssertionUtil.AssertPropsPerRow(
                     env.Statement("s0").GetEnumerator(),
-                    new[] {"id"},
+                    new[] {"Id"},
                     new[] {
                         new object[] {"E7"}, new object[] {"E2"}, new object[] {"E5"}, new object[] {"E4"},
                         new object[] {"E3"}
@@ -781,11 +781,11 @@ namespace com.espertech.esper.regressionlib.suite.view
                 Assert.IsNull(env.Listener("s0").LastNewData);
                 Assert.AreEqual(1, env.Listener("s0").OldDataList.Count);
                 Assert.AreEqual(1, env.Listener("s0").LastOldData.Length);
-                Assert.AreEqual("E7", env.Listener("s0").LastOldData[0].Get("id"));
+                Assert.AreEqual("E7", env.Listener("s0").LastOldData[0].Get("Id"));
                 env.Listener("s0").Reset();
                 EPAssertionUtil.AssertPropsPerRow(
                     env.Statement("s0").GetEnumerator(),
-                    new[] {"id"},
+                    new[] {"Id"},
                     new[] {new object[] {"E2"}, new object[] {"E5"}, new object[] {"E4"}, new object[] {"E3"}});
 
                 // flush two
@@ -795,12 +795,12 @@ namespace com.espertech.esper.regressionlib.suite.view
                 Assert.IsNull(env.Listener("s0").LastNewData);
                 Assert.AreEqual(1, env.Listener("s0").OldDataList.Count);
                 Assert.AreEqual(2, env.Listener("s0").LastOldData.Length);
-                Assert.AreEqual("E2", env.Listener("s0").LastOldData[0].Get("id"));
-                Assert.AreEqual("E5", env.Listener("s0").LastOldData[1].Get("id"));
+                Assert.AreEqual("E2", env.Listener("s0").LastOldData[0].Get("Id"));
+                Assert.AreEqual("E5", env.Listener("s0").LastOldData[1].Get("Id"));
                 env.Listener("s0").Reset();
                 EPAssertionUtil.AssertPropsPerRow(
                     env.Statement("s0").GetEnumerator(),
-                    new[] {"id"},
+                    new[] {"Id"},
                     new[] {new object[] {"E4"}, new object[] {"E3"}});
 
                 // flush one
@@ -810,32 +810,32 @@ namespace com.espertech.esper.regressionlib.suite.view
                 Assert.IsNull(env.Listener("s0").LastNewData);
                 Assert.AreEqual(1, env.Listener("s0").OldDataList.Count);
                 Assert.AreEqual(1, env.Listener("s0").LastOldData.Length);
-                Assert.AreEqual("E4", env.Listener("s0").LastOldData[0].Get("id"));
+                Assert.AreEqual("E4", env.Listener("s0").LastOldData[0].Get("Id"));
                 env.Listener("s0").Reset();
                 EPAssertionUtil.AssertPropsPerRow(
                     env.Statement("s0").GetEnumerator(),
-                    new[] {"id"},
+                    new[] {"Id"},
                     new[] {new object[] {"E3"}});
 
                 // rather old event
                 SendEvent(env, "E8", 21000);
                 Assert.AreEqual(1, env.Listener("s0").NewDataList.Count);
                 Assert.AreEqual(1, env.Listener("s0").LastNewData.Length);
-                Assert.AreEqual("E8", env.Listener("s0").LastNewData[0].Get("id"));
+                Assert.AreEqual("E8", env.Listener("s0").LastNewData[0].Get("Id"));
                 Assert.AreEqual(1, env.Listener("s0").LastOldData.Length);
-                Assert.AreEqual("E8", env.Listener("s0").LastOldData[0].Get("id"));
+                Assert.AreEqual("E8", env.Listener("s0").LastOldData[0].Get("Id"));
                 env.Listener("s0").Reset();
                 EPAssertionUtil.AssertPropsPerRow(
                     env.Statement("s0").GetEnumerator(),
-                    new[] {"id"},
+                    new[] {"Id"},
                     new[] {new object[] {"E3"}});
 
                 // 9-second old event for posting at 38 sec
                 SendEvent(env, "E9", 28000);
-                Assert.AreEqual("E9", env.Listener("s0").AssertOneGetNewAndReset().Get("id"));
+                Assert.AreEqual("E9", env.Listener("s0").AssertOneGetNewAndReset().Get("Id"));
                 EPAssertionUtil.AssertPropsPerRow(
                     env.Statement("s0").GetEnumerator(),
-                    new[] {"id"},
+                    new[] {"Id"},
                     new[] {new object[] {"E3"}, new object[] {"E9"}});
 
                 // flush two
@@ -845,17 +845,17 @@ namespace com.espertech.esper.regressionlib.suite.view
                 Assert.IsNull(env.Listener("s0").LastNewData);
                 Assert.AreEqual(1, env.Listener("s0").OldDataList.Count);
                 Assert.AreEqual(2, env.Listener("s0").LastOldData.Length);
-                Assert.AreEqual("E3", env.Listener("s0").LastOldData[0].Get("id"));
-                Assert.AreEqual("E9", env.Listener("s0").LastOldData[1].Get("id"));
+                Assert.AreEqual("E3", env.Listener("s0").LastOldData[0].Get("Id"));
+                Assert.AreEqual("E9", env.Listener("s0").LastOldData[1].Get("Id"));
                 env.Listener("s0").Reset();
-                EPAssertionUtil.AssertPropsPerRow(env.Statement("s0").GetEnumerator(), new[] {"id"}, null);
+                EPAssertionUtil.AssertPropsPerRow(env.Statement("s0").GetEnumerator(), new[] {"Id"}, null);
 
                 // new event
                 SendEvent(env, "E10", 38000);
-                Assert.AreEqual("E10", env.Listener("s0").AssertOneGetNewAndReset().Get("id"));
+                Assert.AreEqual("E10", env.Listener("s0").AssertOneGetNewAndReset().Get("Id"));
                 EPAssertionUtil.AssertPropsPerRow(
                     env.Statement("s0").GetEnumerator(),
-                    new[] {"id"},
+                    new[] {"Id"},
                     new[] {new object[] {"E10"}});
 
                 // flush last
@@ -865,29 +865,29 @@ namespace com.espertech.esper.regressionlib.suite.view
                 Assert.IsNull(env.Listener("s0").LastNewData);
                 Assert.AreEqual(1, env.Listener("s0").OldDataList.Count);
                 Assert.AreEqual(1, env.Listener("s0").LastOldData.Length);
-                Assert.AreEqual("E10", env.Listener("s0").LastOldData[0].Get("id"));
+                Assert.AreEqual("E10", env.Listener("s0").LastOldData[0].Get("Id"));
                 env.Listener("s0").Reset();
-                EPAssertionUtil.AssertPropsPerRow(env.Statement("s0").GetEnumerator(), new[] {"id"}, null);
+                EPAssertionUtil.AssertPropsPerRow(env.Statement("s0").GetEnumerator(), new[] {"Id"}, null);
 
                 // last, in the future
                 SendEvent(env, "E11", 70000);
-                Assert.AreEqual("E11", env.Listener("s0").AssertOneGetNewAndReset().Get("id"));
+                Assert.AreEqual("E11", env.Listener("s0").AssertOneGetNewAndReset().Get("Id"));
                 EPAssertionUtil.AssertPropsPerRow(
                     env.Statement("s0").GetEnumerator(),
-                    new[] {"id"},
+                    new[] {"Id"},
                     new[] {new object[] {"E11"}});
 
                 SendTimer(env, 80000);
                 Assert.IsNull(env.Listener("s0").LastNewData);
                 Assert.AreEqual(1, env.Listener("s0").OldDataList.Count);
                 Assert.AreEqual(1, env.Listener("s0").LastOldData.Length);
-                Assert.AreEqual("E11", env.Listener("s0").LastOldData[0].Get("id"));
+                Assert.AreEqual("E11", env.Listener("s0").LastOldData[0].Get("Id"));
                 env.Listener("s0").Reset();
-                EPAssertionUtil.AssertPropsPerRow(env.Statement("s0").GetEnumerator(), new[] {"id"}, null);
+                EPAssertionUtil.AssertPropsPerRow(env.Statement("s0").GetEnumerator(), new[] {"Id"}, null);
 
                 SendTimer(env, 100000);
                 Assert.IsFalse(env.Listener("s0").IsInvoked);
-                EPAssertionUtil.AssertPropsPerRow(env.Statement("s0").GetEnumerator(), new[] {"id"}, null);
+                EPAssertionUtil.AssertPropsPerRow(env.Statement("s0").GetEnumerator(), new[] {"Id"}, null);
 
                 env.UndeployAll();
             }
@@ -906,66 +906,66 @@ namespace com.espertech.esper.regressionlib.suite.view
                 SendEvent(env, "E1", "G1", 10000);
                 Assert.AreEqual(1, env.Listener("s0").NewDataList.Count);
                 Assert.AreEqual(1, env.Listener("s0").LastNewData.Length);
-                Assert.AreEqual("E1", env.Listener("s0").LastNewData[0].Get("id"));
+                Assert.AreEqual("E1", env.Listener("s0").LastNewData[0].Get("Id"));
                 Assert.AreEqual(1, env.Listener("s0").LastOldData.Length);
-                Assert.AreEqual("E1", env.Listener("s0").LastOldData[0].Get("id"));
+                Assert.AreEqual("E1", env.Listener("s0").LastOldData[0].Get("Id"));
                 env.Listener("s0").Reset();
-                EPAssertionUtil.AssertPropsPerRow(env.Statement("s0").GetEnumerator(), new[] {"id"}, null);
+                EPAssertionUtil.AssertPropsPerRow(env.Statement("s0").GetEnumerator(), new[] {"Id"}, null);
 
                 env.Milestone(0);
 
                 // 2nd just fits
                 SendEvent(env, "E2", "G2", 10001);
-                Assert.AreEqual("E2", env.Listener("s0").AssertOneGetNewAndReset().Get("id"));
+                Assert.AreEqual("E2", env.Listener("s0").AssertOneGetNewAndReset().Get("Id"));
                 EPAssertionUtil.AssertPropsPerRow(
                     env.Statement("s0").GetEnumerator(),
-                    new[] {"id"},
+                    new[] {"Id"},
                     new[] {new object[] {"E2"}});
 
                 SendEvent(env, "E3", "G3", 20000);
-                Assert.AreEqual("E3", env.Listener("s0").AssertOneGetNewAndReset().Get("id"));
+                Assert.AreEqual("E3", env.Listener("s0").AssertOneGetNewAndReset().Get("Id"));
                 EPAssertionUtil.AssertPropsPerRow(
                     env.Statement("s0").GetEnumerator(),
-                    new[] {"id"},
+                    new[] {"Id"},
                     new[] {new object[] {"E2"}, new object[] {"E3"}});
 
                 SendEvent(env, "E4", "G2", 20000);
-                Assert.AreEqual("E4", env.Listener("s0").AssertOneGetNewAndReset().Get("id"));
+                Assert.AreEqual("E4", env.Listener("s0").AssertOneGetNewAndReset().Get("Id"));
                 EPAssertionUtil.AssertPropsPerRow(
                     env.Statement("s0").GetEnumerator(),
-                    new[] {"id"},
+                    new[] {"Id"},
                     new[] {new object[] {"E2"}, new object[] {"E4"}, new object[] {"E3"}});
 
                 SendTimer(env, 20001);
                 Assert.IsNull(env.Listener("s0").LastNewData);
                 Assert.AreEqual(1, env.Listener("s0").OldDataList.Count);
                 Assert.AreEqual(1, env.Listener("s0").LastOldData.Length);
-                Assert.AreEqual("E2", env.Listener("s0").LastOldData[0].Get("id"));
+                Assert.AreEqual("E2", env.Listener("s0").LastOldData[0].Get("Id"));
                 env.Listener("s0").Reset();
                 EPAssertionUtil.AssertPropsPerRow(
                     env.Statement("s0").GetEnumerator(),
-                    new[] {"id"},
+                    new[] {"Id"},
                     new[] {new object[] {"E4"}, new object[] {"E3"}});
 
                 env.Milestone(1);
 
                 SendTimer(env, 22000);
                 SendEvent(env, "E5", "G2", 19000);
-                Assert.AreEqual("E5", env.Listener("s0").AssertOneGetNewAndReset().Get("id"));
+                Assert.AreEqual("E5", env.Listener("s0").AssertOneGetNewAndReset().Get("Id"));
                 EPAssertionUtil.AssertPropsPerRow(
                     env.Statement("s0").GetEnumerator(),
-                    new[] {"id"},
+                    new[] {"Id"},
                     new[] {new object[] {"E5"}, new object[] {"E4"}, new object[] {"E3"}});
 
                 SendTimer(env, 29000);
                 Assert.IsNull(env.Listener("s0").LastNewData);
                 Assert.AreEqual(1, env.Listener("s0").OldDataList.Count);
                 Assert.AreEqual(1, env.Listener("s0").LastOldData.Length);
-                Assert.AreEqual("E5", env.Listener("s0").LastOldData[0].Get("id"));
+                Assert.AreEqual("E5", env.Listener("s0").LastOldData[0].Get("Id"));
                 env.Listener("s0").Reset();
                 EPAssertionUtil.AssertPropsPerRow(
                     env.Statement("s0").GetEnumerator(),
-                    new[] {"id"},
+                    new[] {"Id"},
                     new[] {new object[] {"E4"}, new object[] {"E3"}});
 
                 SendTimer(env, 30000);
@@ -974,10 +974,10 @@ namespace com.espertech.esper.regressionlib.suite.view
                 Assert.AreEqual(2, env.Listener("s0").LastOldData.Length);
                 EPAssertionUtil.AssertPropsPerRowAnyOrder(
                     env.Listener("s0").LastOldData,
-                    "id".SplitCsv(),
+                    "Id".SplitCsv(),
                     new[] {new object[] {"E4"}, new object[] {"E3"}});
                 env.Listener("s0").Reset();
-                EPAssertionUtil.AssertPropsPerRow(env.Statement("s0").GetEnumerator(), new[] {"id"}, null);
+                EPAssertionUtil.AssertPropsPerRow(env.Statement("s0").GetEnumerator(), new[] {"Id"}, null);
 
                 SendTimer(env, 100000);
                 Assert.IsFalse(env.Listener("s0").IsInvoked);
@@ -1024,21 +1024,21 @@ namespace com.espertech.esper.regressionlib.suite.view
                           " from SupportBeanTimestamp#time_order(timestamp, 10 sec)";
                 env.CompileDeploy(epl).AddListener("s0");
                 string[] fields =
-                    {"id", "prevIdZero", "prevIdOne", "priorIdOne", "prevTailIdZero", "prevTailIdOne", "prevCountId"};
+                    {"Id", "prevIdZero", "prevIdOne", "priorIdOne", "prevTailIdZero", "prevTailIdOne", "prevCountId"};
 
                 SendTimer(env, 20000);
                 SendEvent(env, "E1", 25000);
-                Assert.AreEqual("E1", env.Listener("s0").AssertOneGetNewAndReset().Get("id"));
+                Assert.AreEqual("E1", env.Listener("s0").AssertOneGetNewAndReset().Get("Id"));
                 EPAssertionUtil.AssertPropsPerRow(
                     env.Statement("s0").GetEnumerator(),
-                    new[] {"id"},
+                    new[] {"Id"},
                     new[] {new object[] {"E1"}});
 
                 env.Milestone(0);
 
                 SendEvent(env, "E2", 21000);
                 var theEvent = env.Listener("s0").AssertOneGetNewAndReset();
-                Assert.AreEqual("E2", theEvent.Get("id"));
+                Assert.AreEqual("E2", theEvent.Get("Id"));
                 Assert.AreEqual("E2", theEvent.Get("prevIdZero"));
                 Assert.AreEqual("E1", theEvent.Get("prevIdOne"));
                 Assert.AreEqual("E1", theEvent.Get("priorIdOne"));
@@ -1058,7 +1058,7 @@ namespace com.espertech.esper.regressionlib.suite.view
 
                 SendEvent(env, "E3", 22000);
                 theEvent = env.Listener("s0").AssertOneGetNewAndReset();
-                Assert.AreEqual("E3", theEvent.Get("id"));
+                Assert.AreEqual("E3", theEvent.Get("Id"));
                 Assert.AreEqual("E2", theEvent.Get("prevIdZero"));
                 Assert.AreEqual("E3", theEvent.Get("prevIdOne"));
                 Assert.AreEqual("E2", theEvent.Get("priorIdOne"));
@@ -1082,7 +1082,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 Assert.AreEqual(1, env.Listener("s0").OldDataList.Count);
                 Assert.AreEqual(1, env.Listener("s0").LastOldData.Length);
                 theEvent = env.Listener("s0").LastOldData[0];
-                Assert.AreEqual("E2", theEvent.Get("id"));
+                Assert.AreEqual("E2", theEvent.Get("Id"));
                 Assert.IsNull(theEvent.Get("prevIdZero"));
                 Assert.IsNull(theEvent.Get("prevIdOne"));
                 Assert.AreEqual("E1", theEvent.Get("priorIdOne"));

@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -17,6 +18,7 @@ using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.expression.time.abacus;
 using com.espertech.esper.common.@internal.settings;
 using com.espertech.esper.compat;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 using static com.espertech.esper.common.@internal.epl.datetime.dtlocal.DTLocalUtil;
 
@@ -61,14 +63,24 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            CodegenExpression timeZoneField = codegenClassScope.AddOrGetFieldSharable(RuntimeSettingsTimeZoneField.INSTANCE);
-            var methodNode = codegenMethodScope.MakeChild(typeof(long), typeof(DTLocalDtxOpsLongEval), codegenClassScope)
+            CodegenExpression timeZoneField =
+                codegenClassScope.AddOrGetFieldSharable(RuntimeSettingsTimeZoneField.INSTANCE);
+            var methodNode = codegenMethodScope
+                .MakeChild(typeof(long), typeof(DTLocalDtxOpsLongEval), codegenClassScope)
                 .AddParam(typeof(long), "target");
 
             var block = methodNode.Block
-                .DeclareVar(typeof(DateTimeEx), "dtx", StaticMethod(typeof(DateTimeEx), "GetInstance", timeZoneField))
-                .DeclareVar(typeof(long), "remainder", forge.timeAbacus.DateTimeSetCodegen(Ref("target"), Ref("dtx"), methodNode, codegenClassScope));
-            EvaluateCalOpsCalendarCodegen(block, forge.calendarForges, Ref("dtx"), methodNode, exprSymbol, codegenClassScope);
+                .DeclareVar<DateTimeEx>("dtx", StaticMethod(typeof(DateTimeEx), "GetInstance", timeZoneField))
+                .DeclareVar<long>(
+                    "remainder",
+                    forge.timeAbacus.DateTimeSetCodegen(Ref("target"), Ref("dtx"), methodNode, codegenClassScope));
+            EvaluateCalOpsCalendarCodegen(
+                block,
+                forge.calendarForges,
+                Ref("dtx"),
+                methodNode,
+                exprSymbol,
+                codegenClassScope);
             block.MethodReturn(forge.timeAbacus.DateTimeGetCodegen(Ref("dtx"), Ref("remainder"), codegenClassScope));
             return LocalMethod(methodNode, inner);
         }

@@ -61,7 +61,11 @@ namespace com.espertech.esper.common.@internal.context.controller.hash
                     var subpathOrCPId = GetSubpathOrCPId(path, hash);
                     if (subpathOrCPId != -1) {
                         realization.ContextPartitionRecursiveVisit(
-                            path, subpathOrCPId, this, visitor, selectorPerLevel);
+                            path,
+                            subpathOrCPId,
+                            this,
+                            visitor,
+                            selectorPerLevel);
                     }
                 }
 
@@ -73,7 +77,8 @@ namespace com.espertech.esper.common.@internal.context.controller.hash
                 var identifierHash = new ContextPartitionIdentifierHash();
 
                 VisitPartitions(
-                    path, (
+                    path,
+                    (
                         hash,
                         subpathOrCPId) => {
                         identifierHash.Hash = hash;
@@ -83,7 +88,11 @@ namespace com.espertech.esper.common.@internal.context.controller.hash
 
                         if (filter.Filter(identifierHash)) {
                             realization.ContextPartitionRecursiveVisit(
-                                path, subpathOrCPId, this, visitor, selectorPerLevel);
+                                path,
+                                subpathOrCPId,
+                                this,
+                                visitor,
+                                selectorPerLevel);
                         }
                     });
                 return;
@@ -91,29 +100,40 @@ namespace com.espertech.esper.common.@internal.context.controller.hash
 
             if (selector is ContextPartitionSelectorAll) {
                 VisitPartitions(
-                    path, (
+                    path,
+                    (
                         hash,
                         subpathOrCPId) => realization.ContextPartitionRecursiveVisit(
-                        path, subpathOrCPId, this, visitor, selectorPerLevel));
+                        path,
+                        subpathOrCPId,
+                        this,
+                        visitor,
+                        selectorPerLevel));
                 return;
             }
 
             if (selector is ContextPartitionSelectorById) {
                 var byId = (ContextPartitionSelectorById) selector;
                 VisitPartitions(
-                    path, (
+                    path,
+                    (
                         hash,
                         subpathOrCPId) => {
                         if (byId.ContextPartitionIds.Contains(subpathOrCPId)) {
                             realization.ContextPartitionRecursiveVisit(
-                                path, subpathOrCPId, this, visitor, selectorPerLevel);
+                                path,
+                                subpathOrCPId,
+                                this,
+                                visitor,
+                                selectorPerLevel);
                         }
                     });
                 return;
             }
 
             throw ContextControllerSelectorUtil.GetInvalidSelector(
-                new[] {typeof(ContextPartitionSelectorHash)}, selector);
+                new[] {typeof(ContextPartitionSelectorHash)},
+                selector);
         }
 
         protected int[] ActivateByPreallocate(
@@ -125,7 +145,13 @@ namespace com.espertech.esper.common.@internal.context.controller.hash
             var cpOrSubpathIds = new int[granularity];
             for (var i = 0; i < factory.HashSpec.Granularity; i++) {
                 var result = realization.ContextPartitionInstantiate(
-                    path, i, this, optionalTriggeringEvent, null, parentPartitionKeys, i);
+                    path,
+                    i,
+                    this,
+                    optionalTriggeringEvent,
+                    null,
+                    parentPartitionKeys,
+                    i);
                 cpOrSubpathIds[i] = result.SubpathOrCPId;
             }
 

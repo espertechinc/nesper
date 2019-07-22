@@ -45,8 +45,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.inner
         {
             Type evaluationType = forge.rootForge.EvaluationType;
             return CollectionUtil.ArrayToCollectionAllowNullCodegen(
-                codegenMethodScope, evaluationType,
-                forge.rootForge.EvaluateCodegen(evaluationType, codegenMethodScope, exprSymbol, codegenClassScope), codegenClassScope);
+                codegenMethodScope,
+                evaluationType,
+                forge.rootForge.EvaluateCodegen(evaluationType, codegenMethodScope, exprSymbol, codegenClassScope),
+                codegenClassScope);
         }
 
         public ICollection<EventBean> EvaluateGetROCollectionEvents(

@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.meta;
 using com.espertech.esper.common.client.util;
@@ -22,6 +23,7 @@ using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.expression.subquery
@@ -202,11 +204,22 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
             var eventTypeName =
                 services.EventTypeNameGeneratorStatement.GetAnonymousTypeSubselectMultirow(SubselectNumber);
             var metadata = new EventTypeMetadata(
-                eventTypeName, statementRawInfo.ModuleName, EventTypeTypeClass.SUBQDERIVED,
-                EventTypeApplicationType.MAP, NameAccessModifier.TRANSIENT, EventTypeBusModifier.NONBUS, false,
+                eventTypeName,
+                statementRawInfo.ModuleName,
+                EventTypeTypeClass.SUBQDERIVED,
+                EventTypeApplicationType.MAP,
+                NameAccessModifier.TRANSIENT,
+                EventTypeBusModifier.NONBUS,
+                false,
                 EventTypeIdPair.Unassigned());
             var maptype = BaseNestableEventUtil.MakeMapTypeCompileTime(
-                metadata, rowType, null, null, null, null, services.BeanEventTypeFactoryPrivate,
+                metadata,
+                rowType,
+                null,
+                null,
+                null,
+                null,
+                services.BeanEventTypeFactoryPrivate,
                 services.EventTypeCompileTimeResolver);
             services.EventTypeCompileTimeRegistry.NewType(maptype);
             subselectMultirowType = maptype;
@@ -236,7 +249,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
             var method = parent.MakeChild(EvaluationType, GetType(), classScope);
             method.Block
                 .ApplyTri(
-                    new SubselectForgeCodegenUtil.ReturnIfNoMatch(ConstantNull(), ConstantNull()), method, symbols)
+                    new SubselectForgeCodegenUtil.ReturnIfNoMatch(ConstantNull(), ConstantNull()),
+                    method,
+                    symbols)
                 .MethodReturn(evalStrategy.EvaluateCodegen(method, symbols, classScope));
             return LocalMethod(method);
         }
@@ -250,7 +265,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
             method.Block
                 .ApplyTri(
                     new SubselectForgeCodegenUtil.ReturnIfNoMatch(ConstantNull(), CollectionUtil.EMPTY_LIST_EXPRESSION),
-                    method, symbols)
+                    method,
+                    symbols)
                 .MethodReturn(evalStrategy.EvaluateGetCollEventsCodegen(method, symbols, classScope));
             return LocalMethod(method);
         }
@@ -264,7 +280,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
             method.Block
                 .ApplyTri(
                     new SubselectForgeCodegenUtil.ReturnIfNoMatch(ConstantNull(), CollectionUtil.EMPTY_LIST_EXPRESSION),
-                    method, symbols)
+                    method,
+                    symbols)
                 .MethodReturn(evalStrategy.EvaluateGetCollScalarCodegen(method, symbols, classScope));
             return LocalMethod(method);
         }
@@ -277,7 +294,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
             var method = parent.MakeChild(typeof(EventBean), GetType(), classScope);
             method.Block
                 .ApplyTri(
-                    new SubselectForgeCodegenUtil.ReturnIfNoMatch(ConstantNull(), ConstantNull()), method, symbols)
+                    new SubselectForgeCodegenUtil.ReturnIfNoMatch(ConstantNull(), ConstantNull()),
+                    method,
+                    symbols)
                 .MethodReturn(evalStrategy.EvaluateGetBeanCodegen(method, symbols, classScope));
             return LocalMethod(method);
         }
@@ -288,7 +307,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
         {
             var symbols = new ExprForgeCodegenSymbol(true, true);
             var method = parent.MakeChildWithScope(
-                    typeof(IDictionary<object, object>), typeof(CodegenLegoMethodExpression), symbols, classScope)
+                    typeof(IDictionary<object, object>),
+                    typeof(CodegenLegoMethodExpression),
+                    symbols,
+                    classScope)
                 .AddParam(ExprForgeCodegenNames.PARAMS);
 
             var selectClause = SelectClause;
@@ -301,8 +323,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
 
             symbols.DerivedSymbolsCodegen(method, method.Block, classScope);
 
-            method.Block.DeclareVar(
-                typeof(IDictionary<object, object>), "map", NewInstance(typeof(Dictionary<object, object>)));
+            method.Block.DeclareVar<IDictionary<object, object>>(
+                "map",
+                NewInstance(typeof(Dictionary<object, object>)));
             for (var i = 0; i < selectClause.Length; i++) {
                 method.Block.ExprDotMethod(Ref("map"), "put", Constant(selectAsNames[i]), expressions[i]);
             }
@@ -320,7 +343,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
             method.Block
                 .ApplyTri(
                     new SubselectForgeCodegenUtil.ReturnIfNoMatch(
-                        ConstantNull(), PublicConstValue(typeof(CollectionUtil), "OBJECTARRAYARRAY_EMPTY")), method,
+                        ConstantNull(),
+                        PublicConstValue(typeof(CollectionUtil), "OBJECTARRAYARRAY_EMPTY")),
+                    method,
                     symbols)
                 .MethodReturn(evalStrategy.EvaluateTypableSinglerowCodegen(method, symbols, classScope));
             return LocalMethod(method);
@@ -335,7 +360,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
             method.Block
                 .ApplyTri(
                     new SubselectForgeCodegenUtil.ReturnIfNoMatch(
-                        ConstantNull(), PublicConstValue(typeof(CollectionUtil), "OBJECTARRAYARRAY_EMPTY")), method,
+                        ConstantNull(),
+                        PublicConstValue(typeof(CollectionUtil), "OBJECTARRAYARRAY_EMPTY")),
+                    method,
                     symbols)
                 .MethodReturn(evalStrategy.EvaluateTypableMultirowCodegen(method, symbols, classScope));
             return LocalMethod(method);

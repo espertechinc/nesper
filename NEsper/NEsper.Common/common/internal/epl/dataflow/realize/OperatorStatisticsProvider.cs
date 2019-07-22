@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client.dataflow.core;
 using com.espertech.esper.common.@internal.epl.dataflow.util;
 
@@ -51,7 +52,12 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.realize
 
                     var meta = desc[i];
                     var stat = new EPDataFlowInstanceOperatorStat(
-                        meta.OperatorName, meta.OperatorPrettyPrint, i, submittedOverall, submittedPerPort, timeOverall,
+                        meta.OperatorName,
+                        meta.OperatorPrettyPrint,
+                        i,
+                        submittedOverall,
+                        submittedPerPort,
+                        timeOverall,
                         timePerPort);
                     result.Add(stat);
                 }

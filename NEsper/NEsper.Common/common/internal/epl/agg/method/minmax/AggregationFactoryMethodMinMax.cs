@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.core;
@@ -43,9 +44,13 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.minmax
             get => _aggregator;
         }
 
-        public override AggregationPortableValidation AggregationPortableValidation => new AggregationPortableValidationMinMax(
-            parent.IsDistinct, parent.HasFilter, parent.ChildNodes[0].Forge.EvaluationType, parent.MinMaxTypeEnum,
-            hasDataWindows);
+        public override AggregationPortableValidation AggregationPortableValidation =>
+            new AggregationPortableValidationMinMax(
+                parent.IsDistinct,
+                parent.HasFilter,
+                parent.ChildNodes[0].Forge.EvaluationType,
+                parent.MinMaxTypeEnum,
+                hasDataWindows);
 
         public ExprMinMaxAggrNode Parent => parent;
 
@@ -58,12 +63,24 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.minmax
             var distinctType = !parent.IsDistinct ? null : type;
             if (!hasDataWindows) {
                 _aggregator = new AggregatorMinMaxEver(
-                    this, col, rowCtor, membersColumnized, classScope, distinctType, parent.HasFilter,
+                    this,
+                    col,
+                    rowCtor,
+                    membersColumnized,
+                    classScope,
+                    distinctType,
+                    parent.HasFilter,
                     parent.OptionalFilter);
             }
             else {
                 _aggregator = new AggregatorMinMax(
-                    this, col, rowCtor, membersColumnized, classScope, distinctType, parent.HasFilter,
+                    this,
+                    col,
+                    rowCtor,
+                    membersColumnized,
+                    classScope,
+                    distinctType,
+                    parent.HasFilter,
                     parent.OptionalFilter);
             }
         }

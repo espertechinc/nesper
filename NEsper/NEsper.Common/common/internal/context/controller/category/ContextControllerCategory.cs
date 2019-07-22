@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.context;
 using com.espertech.esper.common.@internal.collection;
@@ -45,7 +46,13 @@ namespace com.espertech.esper.common.@internal.context.controller.category
 
             for (var i = 0; i < categories.Length; i++) {
                 var result = realization.ContextPartitionInstantiate(
-                    path, count, this, null, null, parentPartitionKeys, count);
+                    path,
+                    count,
+                    this,
+                    null,
+                    null,
+                    parentPartitionKeys,
+                    count);
                 subpathOrCPIds[i] = result.SubpathOrCPId;
                 count++;
             }
@@ -85,7 +92,11 @@ namespace com.espertech.esper.common.@internal.context.controller.category
                         var subpathOrCPID = ids[count];
                         if (category.Labels.Contains(categoryItem.Name)) {
                             realization.ContextPartitionRecursiveVisit(
-                                path, subpathOrCPID, this, visitor, selectorPerLevel);
+                                path,
+                                subpathOrCPID,
+                                this,
+                                visitor,
+                                selectorPerLevel);
                         }
                     }
                 }
@@ -107,7 +118,11 @@ namespace com.espertech.esper.common.@internal.context.controller.category
 
                         if (filter.Filter(identifierCategory)) {
                             realization.ContextPartitionRecursiveVisit(
-                                path, ids[count], this, visitor, selectorPerLevel);
+                                path,
+                                ids[count],
+                                this,
+                                visitor,
+                                selectorPerLevel);
                         }
                     }
                 }
@@ -137,7 +152,8 @@ namespace com.espertech.esper.common.@internal.context.controller.category
             }
 
             throw ContextControllerSelectorUtil.GetInvalidSelector(
-                new[] {typeof(ContextPartitionSelectorCategory)}, contextPartitionSelector);
+                new[] {typeof(ContextPartitionSelectorCategory)},
+                contextPartitionSelector);
         }
 
         public override void Destroy()

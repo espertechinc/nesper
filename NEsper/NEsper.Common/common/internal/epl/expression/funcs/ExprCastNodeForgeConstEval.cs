@@ -11,6 +11,7 @@ using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.expression.funcs
@@ -46,12 +47,17 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
 
             var evaluationType = forge.EvaluationType;
             var initMethod = codegenClassScope.NamespaceScope.InitMethod.MakeChildWithScope(
-                evaluationType, typeof(ExprCastNodeForgeConstEval), CodegenSymbolProviderEmpty.INSTANCE,
+                evaluationType,
+                typeof(ExprCastNodeForgeConstEval),
+                CodegenSymbolProviderEmpty.INSTANCE,
                 codegenClassScope);
 
             var exprSymbol = new ExprForgeCodegenSymbol(true, null);
             var compute = initMethod.MakeChildWithScope(
-                    evaluationType, typeof(ExprCastNodeForgeConstEval), exprSymbol, codegenClassScope)
+                    evaluationType,
+                    typeof(ExprCastNodeForgeConstEval),
+                    exprSymbol,
+                    codegenClassScope)
                 .AddParam(ExprForgeCodegenNames.PARAMS);
             compute.Block.MethodReturn(
                 ExprCastNodeForgeNonConstEval.Codegen(forge, compute, exprSymbol, codegenClassScope));

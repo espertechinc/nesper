@@ -6,11 +6,10 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
-using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.compile.stage1.spec;
 using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.context.module;
@@ -21,26 +20,26 @@ using com.espertech.esper.common.@internal.epl.resultset.core;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.schedule;
 using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.output.view
 {
     public class OutputProcessViewConditionForge : OutputProcessViewFactoryForge
     {
-        private readonly OutputStrategyPostProcessForge outputStrategyPostProcessForge;
-        private readonly bool isDistinct;
-        private readonly ExprTimePeriod afterTimePeriodExpr;
-        private readonly int? afterNumberOfEvents;
-        private readonly OutputConditionFactoryForge outputConditionFactoryForge;
-        private readonly int streamCount;
-        private readonly ResultSetProcessorOutputConditionType conditionType;
-        private readonly bool terminable;
-        private readonly bool hasAfter;
-        private readonly bool unaggregatedUngrouped;
-        private readonly SelectClauseStreamSelectorEnum selectClauseStreamSelector;
-        private readonly EventType[] eventTypes;
-        private readonly EventType resultEventType;
+        private readonly int? _afterNumberOfEvents;
+        private readonly ExprTimePeriod _afterTimePeriodExpr;
+        private readonly ResultSetProcessorOutputConditionType _conditionType;
+        private readonly EventType[] _eventTypes;
+        private readonly bool _hasAfter;
+        private readonly bool _isDistinct;
+        private readonly OutputConditionFactoryForge _outputConditionFactoryForge;
+        private readonly OutputStrategyPostProcessForge _outputStrategyPostProcessForge;
+        private readonly EventType _resultEventType;
+        private readonly SelectClauseStreamSelectorEnum _selectClauseStreamSelector;
+        private readonly int _streamCount;
+        private readonly bool _terminable;
+        private readonly bool _unaggregatedUngrouped;
 
         public OutputProcessViewConditionForge(
             OutputStrategyPostProcessForge outputStrategyPostProcessForge,
@@ -57,48 +56,71 @@ namespace com.espertech.esper.common.@internal.epl.output.view
             EventType[] eventTypes,
             EventType resultEventType)
         {
-            this.outputStrategyPostProcessForge = outputStrategyPostProcessForge;
-            this.isDistinct = isDistinct;
-            this.afterTimePeriodExpr = afterTimePeriodExpr;
-            this.afterNumberOfEvents = afterNumberOfEvents;
-            this.outputConditionFactoryForge = outputConditionFactoryForge;
-            this.streamCount = streamCount;
-            this.conditionType = conditionType;
-            this.terminable = terminable;
-            this.hasAfter = hasAfter;
-            this.unaggregatedUngrouped = unaggregatedUngrouped;
-            this.selectClauseStreamSelector = selectClauseStreamSelector;
-            this.eventTypes = eventTypes;
-            this.resultEventType = resultEventType;
+            _outputStrategyPostProcessForge = outputStrategyPostProcessForge;
+            _isDistinct = isDistinct;
+            _afterTimePeriodExpr = afterTimePeriodExpr;
+            _afterNumberOfEvents = afterNumberOfEvents;
+            _outputConditionFactoryForge = outputConditionFactoryForge;
+            _streamCount = streamCount;
+            _conditionType = conditionType;
+            _terminable = terminable;
+            _hasAfter = hasAfter;
+            _unaggregatedUngrouped = unaggregatedUngrouped;
+            _selectClauseStreamSelector = selectClauseStreamSelector;
+            _eventTypes = eventTypes;
+            _resultEventType = resultEventType;
         }
 
-        public bool IsCodeGenerated {
-            get { return false; }
-        }
+        public bool IsCodeGenerated => false;
 
         public void ProvideCodegen(
             CodegenMethod method,
             SAIFFInitializeSymbol symbols,
             CodegenClassScope classScope)
         {
-            CodegenExpressionRef spec = @Ref("spec");
+            var spec = Ref("spec");
             method.Block
-                .DeclareVar(typeof(OutputProcessViewConditionSpec), spec.Ref, NewInstance(typeof(OutputProcessViewConditionSpec)))
-                .SetProperty(spec, "ConditionType", EnumValue(typeof(ResultSetProcessorOutputConditionType), conditionType.GetName()))
-                .SetProperty(spec, "OutputConditionFactory", outputConditionFactoryForge.Make(method, symbols, classScope))
-                .SetProperty(spec, "StreamCount", Constant(streamCount))
-                .SetProperty(spec, "Terminable", Constant(terminable))
-                .SetProperty(spec, "SelectClauseStreamSelector", EnumValue(typeof(SelectClauseStreamSelectorEnum), selectClauseStreamSelector.GetName()))
-                .SetProperty(spec, "PostProcessFactory",
-                    outputStrategyPostProcessForge == null ? ConstantNull() : outputStrategyPostProcessForge.Make(method, symbols, classScope))
-                .SetProperty(spec, "HasAfter", Constant(hasAfter))
-                .SetProperty(spec, "Distinct", Constant(isDistinct))
-                .SetProperty(spec, "ResultEventType", EventTypeUtility.ResolveTypeCodegen(resultEventType, symbols.GetAddInitSvc(method)))
-                .SetProperty(spec, "AfterTimePeriod",
-                    afterTimePeriodExpr == null ? ConstantNull() : afterTimePeriodExpr.TimePeriodComputeForge.MakeEvaluator(method, classScope))
-                .SetProperty(spec, "AfterConditionNumberOfEvents", Constant(afterNumberOfEvents))
-                .SetProperty(spec, "UnaggregatedUngrouped", Constant(unaggregatedUngrouped))
-                .SetProperty(spec, "EventTypes", EventTypeUtility.ResolveTypeArrayCodegen(eventTypes, EPStatementInitServicesConstants.REF))
+                .DeclareVar<OutputProcessViewConditionSpec>(
+                    spec.Ref,
+                    NewInstance(typeof(OutputProcessViewConditionSpec)))
+                .SetProperty(
+                    spec,
+                    "ConditionType",
+                    EnumValue(typeof(ResultSetProcessorOutputConditionType), _conditionType.GetName()))
+                .SetProperty(
+                    spec,
+                    "OutputConditionFactory",
+                    _outputConditionFactoryForge.Make(method, symbols, classScope))
+                .SetProperty(spec, "StreamCount", Constant(_streamCount))
+                .SetProperty(spec, "Terminable", Constant(_terminable))
+                .SetProperty(
+                    spec,
+                    "SelectClauseStreamSelector",
+                    EnumValue(typeof(SelectClauseStreamSelectorEnum), _selectClauseStreamSelector.GetName()))
+                .SetProperty(
+                    spec,
+                    "PostProcessFactory",
+                    _outputStrategyPostProcessForge == null
+                        ? ConstantNull()
+                        : _outputStrategyPostProcessForge.Make(method, symbols, classScope))
+                .SetProperty(spec, "HasAfter", Constant(_hasAfter))
+                .SetProperty(spec, "Distinct", Constant(_isDistinct))
+                .SetProperty(
+                    spec,
+                    "ResultEventType",
+                    EventTypeUtility.ResolveTypeCodegen(_resultEventType, symbols.GetAddInitSvc(method)))
+                .SetProperty(
+                    spec,
+                    "AfterTimePeriod",
+                    _afterTimePeriodExpr == null
+                        ? ConstantNull()
+                        : _afterTimePeriodExpr.TimePeriodComputeForge.MakeEvaluator(method, classScope))
+                .SetProperty(spec, "AfterConditionNumberOfEvents", Constant(_afterNumberOfEvents))
+                .SetProperty(spec, "UnaggregatedUngrouped", Constant(_unaggregatedUngrouped))
+                .SetProperty(
+                    spec,
+                    "EventTypes",
+                    EventTypeUtility.ResolveTypeArrayCodegen(_eventTypes, EPStatementInitServicesConstants.REF))
                 .MethodReturn(NewInstance<OutputProcessViewConditionFactory>(spec));
         }
 
@@ -122,8 +144,8 @@ namespace com.espertech.esper.common.@internal.epl.output.view
 
         public void CollectSchedules(IList<ScheduleHandleCallbackProvider> scheduleHandleCallbackProviders)
         {
-            if (outputConditionFactoryForge != null) {
-                outputConditionFactoryForge.CollectSchedules(scheduleHandleCallbackProviders);
+            if (_outputConditionFactoryForge != null) {
+                _outputConditionFactoryForge.CollectSchedules(scheduleHandleCallbackProviders);
             }
         }
     }

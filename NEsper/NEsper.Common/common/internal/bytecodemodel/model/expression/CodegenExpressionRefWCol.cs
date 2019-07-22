@@ -28,10 +28,9 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
 
         public override void Render(
             StringBuilder builder,
-            IDictionary<Type, string> imports,
             bool isInnerClass)
         {
-            base.Render(builder, imports, isInnerClass);
+            base.Render(builder, isInnerClass);
             builder.Append(_col);
         }
 

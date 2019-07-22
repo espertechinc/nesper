@@ -11,6 +11,7 @@ using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
@@ -63,7 +64,8 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
 
             var block = methodNode.Block;
             block.DeclareVar(
-                forge.getterStartReturnType, "start",
+                forge.getterStartReturnType,
+                "start",
                 CodegenLegoCast.CastSafeFromObjectType(
                     forge.getterStartReturnType,
                     forge.getterStartTimestamp.EventBeanGetCodegen(Ref("target"), methodNode, codegenClassScope)));
@@ -72,7 +74,8 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
             }
 
             block.DeclareVar(
-                forge.getterEndReturnType, "end",
+                forge.getterEndReturnType,
+                "end",
                 CodegenLegoCast.CastSafeFromObjectType(
                     forge.getterEndReturnType,
                     forge.getterEndTimestamp.EventBeanGetCodegen(Ref("target"), methodNode, codegenClassScope)));

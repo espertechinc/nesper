@@ -24,7 +24,10 @@ namespace com.espertech.esper.common.@internal.epl.agg.table
             AggregationMultiFunctionAgent[] accessAgents,
             int[] accessColumnsZeroOffset)
             : base(
-                tableInstance, methodPairs, accessAgents, accessColumnsZeroOffset)
+                tableInstance,
+                methodPairs,
+                accessAgents,
+                accessColumnsZeroOffset)
         {
         }
 

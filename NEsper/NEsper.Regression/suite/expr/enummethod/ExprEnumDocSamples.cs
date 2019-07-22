@@ -125,10 +125,10 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
                 Assert.AreEqual("Z1", zones[0].Name);
 
                 // subquery with event as input
-                var epl = "create schema SettlementEvent (Symbol string, price double);" +
-                          "create schema PriceEvent (Symbol string, price double);\n" +
-                          "create schema OrderEvent (orderId string, pricedata PriceEvent);\n" +
-                          "select (select pricedata from OrderEvent#unique(orderId))\n" +
+                var epl = "create schema SettlementEvent (Symbol string, Price double);" +
+                          "create schema PriceEvent (Symbol string, Price double);\n" +
+                          "create schema OrderEvent (orderId string, Pricedata PriceEvent);\n" +
+                          "select (select Pricedata from OrderEvent#unique(orderId))\n" +
                           ".anyOf(v => v.Symbol = 'GE') as has_ge from SettlementEvent(Symbol = 'GE')";
                 env.CompileDeploy(epl);
 

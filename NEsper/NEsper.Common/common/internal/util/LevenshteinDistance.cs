@@ -53,8 +53,8 @@ namespace com.espertech.esper.common.@internal.util
                     distance[i, j] = Minimum(
                         distance[i - 1, j] + 1,
                         distance[i, j - 1] + 1,
-                        distance[i - 1, j - 1]
-                        + ((str1[i - 1] == str2[j - 1])
+                        distance[i - 1, j - 1] +
+                        ((str1[i - 1] == str2[j - 1])
                             ? 0
                             : 1));
                 }

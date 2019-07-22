@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.epl.pattern.core;
 using com.espertech.esper.common.@internal.filterspec;
@@ -71,7 +72,9 @@ namespace com.espertech.esper.common.@internal.epl.pattern.not
                 childNode = null;
                 agentInstanceContext.AuditProvider.PatternFalse(evalNotNode.FactoryNode, this, agentInstanceContext);
                 agentInstanceContext.AuditProvider.PatternInstance(
-                    false, evalNotNode.factoryNode, agentInstanceContext);
+                    false,
+                    evalNotNode.factoryNode,
+                    agentInstanceContext);
                 ParentEvaluator.EvaluateFalse(this, true);
             }
 

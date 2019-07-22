@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Reflection;
+
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
@@ -42,7 +43,14 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
                 CodegenClassScope codegenClassScope)
             {
                 return IntervalComputerFinishesThresholdEval.Codegen(
-                    this, leftStart, leftEnd, rightStart, rightEnd, codegenMethodScope, exprSymbol, codegenClassScope);
+                    this,
+                    leftStart,
+                    leftEnd,
+                    rightStart,
+                    rightEnd,
+                    codegenMethodScope,
+                    exprSymbol,
+                    codegenClassScope);
             }
         }
     }

@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.compile.stage2;
@@ -16,6 +17,7 @@ using com.espertech.esper.common.@internal.context.module;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.schedule;
 using com.espertech.esper.compat;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.output.condition
@@ -37,7 +39,11 @@ namespace com.espertech.esper.common.@internal.epl.output.condition
             StatementCompileTimeServices services)
         {
             scheduleSpecEvaluators = ScheduleExpressionUtil.CrontabScheduleValidate(
-                ExprNodeOrigin.OUTPUTLIMIT, scheduleSpecExpressionList, false, statementRawInfo, services);
+                ExprNodeOrigin.OUTPUTLIMIT,
+                scheduleSpecExpressionList,
+                false,
+                statementRawInfo,
+                services);
             this.isStartConditionOnCreation = isStartConditionOnCreation;
         }
 
@@ -51,21 +57,27 @@ namespace com.espertech.esper.common.@internal.epl.output.condition
             }
 
             var method = parent.MakeChild(typeof(OutputConditionFactory), GetType(), classScope);
-            method.Block.DeclareVar(
-                typeof(ExprEvaluator[]), "evals",
+            method.Block.DeclareVar<ExprEvaluator[]>(
+                "evals",
                 NewArrayByLength(typeof(ExprEvaluator), Constant(scheduleSpecEvaluators.Length)));
             for (var i = 0; i < scheduleSpecEvaluators.Length; i++) {
                 method.Block.AssignArrayElement(
-                    "evals", Constant(i),
+                    "evals",
+                    Constant(i),
                     ExprNodeUtilityCodegen.CodegenEvaluatorNoCoerce(
-                        scheduleSpecEvaluators[i], method, GetType(), classScope));
+                        scheduleSpecEvaluators[i],
+                        method,
+                        GetType(),
+                        classScope));
             }
 
             method.Block.MethodReturn(
                 ExprDotMethodChain(symbols.GetAddInitSvc(method))
                     .Add(EPStatementInitServicesConstants.GETRESULTSETPROCESSORHELPERFACTORY)
                     .Add(
-                        "makeOutputConditionCrontab", Ref("evals"), Constant(isStartConditionOnCreation),
+                        "makeOutputConditionCrontab",
+                        Ref("evals"),
+                        Constant(isStartConditionOnCreation),
                         Constant(scheduleCallbackId)));
             return LocalMethod(method);
         }

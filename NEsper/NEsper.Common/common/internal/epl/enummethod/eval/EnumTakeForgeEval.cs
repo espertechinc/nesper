@@ -8,6 +8,7 @@
 
 using System.Collections.Generic;
 using System.Linq;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -17,6 +18,7 @@ using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.enummethod.eval
@@ -52,19 +54,26 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
         {
             var scope = new ExprForgeCodegenSymbol(false, null);
             var methodNode = codegenMethodScope.MakeChildWithScope(
-                    typeof(ICollection<object>), typeof(EnumTakeForgeEval), scope, codegenClassScope)
+                    typeof(ICollection<object>),
+                    typeof(EnumTakeForgeEval),
+                    scope,
+                    codegenClassScope)
                 .AddParam(EnumForgeCodegenNames.PARAMS);
 
             var sizeType = forge.sizeEval.EvaluationType;
             var block = methodNode.Block.DeclareVar(
-                sizeType, "size", forge.sizeEval.EvaluateCodegen(sizeType, methodNode, scope, codegenClassScope));
+                sizeType,
+                "size",
+                forge.sizeEval.EvaluateCodegen(sizeType, methodNode, scope, codegenClassScope));
             if (!sizeType.IsPrimitive) {
                 block.IfRefNullReturnNull("size");
             }
 
             block.MethodReturn(
                 StaticMethod(
-                    typeof(EnumTakeForgeEval), "evaluateEnumTakeMethod", EnumForgeCodegenNames.REF_ENUMCOLL,
+                    typeof(EnumTakeForgeEval),
+                    "evaluateEnumTakeMethod",
+                    EnumForgeCodegenNames.REF_ENUMCOLL,
                     SimpleNumberCoercerFactory.CoercerInt.CodegenInt(Ref("size"), sizeType)));
             return LocalMethod(methodNode, args.Eps, args.Enumcoll, args.IsNewData, args.ExprCtx);
         }

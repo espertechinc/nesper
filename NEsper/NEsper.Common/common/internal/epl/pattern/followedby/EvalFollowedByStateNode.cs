@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.epl.pattern.core;
@@ -52,8 +53,13 @@ namespace com.espertech.esper.common.@internal.epl.pattern.followedby
         public override void Start(MatchedEventMap beginState)
         {
             AgentInstanceContext agentInstanceContext = evalFollowedByNode.Context.AgentInstanceContext;
-            agentInstanceContext.InstrumentationProvider.QPatternFollowedByStart(evalFollowedByNode.factoryNode, beginState);
-            agentInstanceContext.AuditProvider.PatternInstance(true, evalFollowedByNode.factoryNode, agentInstanceContext);
+            agentInstanceContext.InstrumentationProvider.QPatternFollowedByStart(
+                evalFollowedByNode.factoryNode,
+                beginState);
+            agentInstanceContext.AuditProvider.PatternInstance(
+                true,
+                evalFollowedByNode.factoryNode,
+                agentInstanceContext);
 
             EvalNode child = evalFollowedByNode.ChildNodes[0];
             EvalStateNode childState = child.NewState(this);
@@ -71,7 +77,10 @@ namespace com.espertech.esper.common.@internal.epl.pattern.followedby
         {
             AgentInstanceContext agentInstanceContext = evalFollowedByNode.Context.AgentInstanceContext;
             int? index = nodes.Get(fromNode);
-            agentInstanceContext.InstrumentationProvider.QPatternFollowedByEvaluateTrue(evalFollowedByNode.factoryNode, matchEvent, index);
+            agentInstanceContext.InstrumentationProvider.QPatternFollowedByEvaluateTrue(
+                evalFollowedByNode.factoryNode,
+                matchEvent,
+                index);
 
             if (isQuitted) {
                 nodes.Remove(fromNode);
@@ -90,11 +99,18 @@ namespace com.espertech.esper.common.@internal.epl.pattern.followedby
             if (index == (numChildNodes - 1)) {
                 if (nodes.IsEmpty()) {
                     isFollowedByQuitted = true;
-                    agentInstanceContext.AuditProvider.PatternInstance(false, evalFollowedByNode.factoryNode, agentInstanceContext);
+                    agentInstanceContext.AuditProvider.PatternInstance(
+                        false,
+                        evalFollowedByNode.factoryNode,
+                        agentInstanceContext);
                 }
 
                 agentInstanceContext.AuditProvider.PatternTrue(
-                    evalFollowedByNode.FactoryNode, this, matchEvent, isFollowedByQuitted, agentInstanceContext);
+                    evalFollowedByNode.FactoryNode,
+                    this,
+                    matchEvent,
+                    isFollowedByQuitted,
+                    agentInstanceContext);
                 this.ParentEvaluator.EvaluateTrue(matchEvent, this, isFollowedByQuitted, optionalTriggeringEvent);
             }
             else {
@@ -119,8 +135,14 @@ namespace com.espertech.esper.common.@internal.epl.pattern.followedby
             nodes.Remove(fromNode);
 
             if (nodes.IsEmpty()) {
-                agentInstanceContext.AuditProvider.PatternFalse(evalFollowedByNode.FactoryNode, this, agentInstanceContext);
-                agentInstanceContext.AuditProvider.PatternInstance(false, evalFollowedByNode.factoryNode, agentInstanceContext);
+                agentInstanceContext.AuditProvider.PatternFalse(
+                    evalFollowedByNode.FactoryNode,
+                    this,
+                    agentInstanceContext);
+                agentInstanceContext.AuditProvider.PatternInstance(
+                    false,
+                    evalFollowedByNode.factoryNode,
+                    agentInstanceContext);
                 this.ParentEvaluator.EvaluateFalse(this, true);
                 QuitInternal();
             }
@@ -132,7 +154,10 @@ namespace com.espertech.esper.common.@internal.epl.pattern.followedby
         {
             AgentInstanceContext agentInstanceContext = evalFollowedByNode.Context.AgentInstanceContext;
             agentInstanceContext.InstrumentationProvider.QPatternFollowedByQuit(evalFollowedByNode.factoryNode);
-            agentInstanceContext.AuditProvider.PatternInstance(false, evalFollowedByNode.factoryNode, agentInstanceContext);
+            agentInstanceContext.AuditProvider.PatternInstance(
+                false,
+                evalFollowedByNode.factoryNode,
+                agentInstanceContext);
 
             if (nodes.IsEmpty()) {
                 agentInstanceContext.InstrumentationProvider.APatternFollowedByQuit();

@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -89,7 +90,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
         {
             if (!method) {
                 return ExprDotNodeForgeStreamEvalEventBean.Codegen(
-                    this, codegenMethodScope, exprSymbol, codegenClassScope);
+                    this,
+                    codegenMethodScope,
+                    exprSymbol,
+                    codegenClassScope);
             }
 
             return ExprDotNodeForgeStreamEvalMethod.Codegen(this, codegenMethodScope, exprSymbol, codegenClassScope);
@@ -102,7 +106,13 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
             CodegenClassScope codegenClassScope)
         {
             return new InstrumentationBuilderExpr(
-                GetType(), this, "ExprDot", requiredType, codegenMethodScope, exprSymbol, codegenClassScope).Build();
+                GetType(),
+                this,
+                "ExprDot",
+                requiredType,
+                codegenMethodScope,
+                exprSymbol,
+                codegenClassScope).Build();
         }
     }
 } // end of namespace

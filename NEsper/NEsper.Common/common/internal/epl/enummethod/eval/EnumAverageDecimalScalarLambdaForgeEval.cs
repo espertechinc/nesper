@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -20,6 +21,7 @@ using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.type;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.enummethod.eval
@@ -72,7 +74,8 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
         {
             Type innerType = forge.innerExpression.EvaluationType;
             CodegenExpressionField resultTypeMember = codegenClassScope.AddFieldUnshared(
-                true, typeof(ObjectArrayEventType),
+                true,
+                typeof(ObjectArrayEventType),
                 Cast(
                     typeof(ObjectArrayEventType),
                     EventTypeUtility.ResolveTypeCodegen(forge.resultEventType, EPStatementInitServicesConstants.REF)));
@@ -81,24 +84,29 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
 
             ExprForgeCodegenSymbol scope = new ExprForgeCodegenSymbol(false, null);
             CodegenMethod methodNode = codegenMethodScope.MakeChildWithScope(
-                    typeof(decimal), typeof(EnumAverageDecimalScalarLambdaForgeEval), scope, codegenClassScope)
+                    typeof(decimal),
+                    typeof(EnumAverageDecimalScalarLambdaForgeEval),
+                    scope,
+                    codegenClassScope)
                 .AddParam(EnumForgeCodegenNames.PARAMS);
 
             CodegenBlock block = methodNode.Block;
-            block.DeclareVar(
-                    typeof(EnumAverageDecimalEventsForgeEval.AggregatorAvgBigDecimal), "agg",
+            block.DeclareVar<EnumAverageDecimalEventsForgeEval.AggregatorAvgBigDecimal>(
+                    "agg",
                     NewInstance(typeof(EnumAverageDecimalEventsForgeEval.AggregatorAvgBigDecimal), math))
-                .DeclareVar(
-                    typeof(ObjectArrayEventBean), "resultEvent",
+                .DeclareVar<ObjectArrayEventBean>(
+                    "resultEvent",
                     NewInstance<ObjectArrayEventBean>(
-                        NewArrayByLength(typeof(object), Constant(1)), resultTypeMember))
+                        NewArrayByLength(typeof(object), Constant(1)),
+                        resultTypeMember))
                 .AssignArrayElement(EnumForgeCodegenNames.REF_EPS, Constant(forge.streamNumLambda), @Ref("resultEvent"))
-                .DeclareVar(typeof(object[]), "props", ExprDotMethod(@Ref("resultEvent"), "getProperties"));
+                .DeclareVar<object[]>("props", ExprDotMethod(@Ref("resultEvent"), "getProperties"));
 
             CodegenBlock forEach = block.ForEach(typeof(object), "next", EnumForgeCodegenNames.REF_ENUMCOLL)
                 .AssignArrayElement("props", Constant(0), @Ref("next"))
                 .DeclareVar(
-                    innerType, "num",
+                    innerType,
+                    "num",
                     forge.innerExpression.EvaluateCodegen(typeof(object), methodNode, scope, codegenClassScope));
             if (!innerType.IsPrimitive) {
                 forEach.IfRefNull("num").BlockContinue();

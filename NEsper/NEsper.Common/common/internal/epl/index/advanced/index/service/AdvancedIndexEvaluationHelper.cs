@@ -65,8 +65,14 @@ namespace com.espertech.esper.common.@internal.epl.index.advanced.index.service
             string expected)
         {
             return new EPException(
-                "Invalid value for index '" + indexName + "' parameter '" + parameterName + "' received " +
-                (value == null ? "null" : value.ToString()) + " and expected " + expected);
+                "Invalid value for index '" +
+                indexName +
+                "' parameter '" +
+                parameterName +
+                "' received " +
+                (value == null ? "null" : value.ToString()) +
+                " and expected " +
+                expected);
         }
 
         public static EPException InvalidColumnValue(
@@ -76,8 +82,14 @@ namespace com.espertech.esper.common.@internal.epl.index.advanced.index.service
             string expected)
         {
             return new EPException(
-                "Invalid value for index '" + indexName + "' column '" + parameterName + "' received " + (value == null ? "null" : value.ToString()) +
-                " and expected " + expected);
+                "Invalid value for index '" +
+                indexName +
+                "' column '" +
+                parameterName +
+                "' received " +
+                (value == null ? "null" : value.ToString()) +
+                " and expected " +
+                expected);
         }
     }
 } // end of namespace

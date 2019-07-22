@@ -10,6 +10,7 @@ using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.epl.expression.core;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.historical.lookupstrategy
@@ -41,11 +42,13 @@ namespace com.espertech.esper.common.@internal.epl.historical.lookupstrategy
             var method = parent.MakeChild(typeof(HistoricalIndexLookupStrategyInKeywordSingle), GetType(), classScope);
 
             method.Block
-                .DeclareVar(
-                    typeof(HistoricalIndexLookupStrategyInKeywordSingle), "strat",
+                .DeclareVar<HistoricalIndexLookupStrategyInKeywordSingle>(
+                    "strat",
                     NewInstance(typeof(HistoricalIndexLookupStrategyInKeywordSingle)))
                 .SetProperty(Ref("strat"), "LookupStream", Constant(lookupStream))
-                .SetProperty(Ref("strat"), "Evaluators",
+                .SetProperty(
+                    Ref("strat"),
+                    "Evaluators",
                     ExprNodeUtilityCodegen.CodegenEvaluators(evaluators, method, GetType(), classScope))
                 .MethodReturn(Ref("strat"));
             return LocalMethod(method);

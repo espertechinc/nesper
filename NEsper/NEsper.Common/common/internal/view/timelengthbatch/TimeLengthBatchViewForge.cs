@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -18,6 +19,7 @@ using com.espertech.esper.common.@internal.schedule;
 using com.espertech.esper.common.@internal.view.core;
 using com.espertech.esper.common.@internal.view.util;
 using com.espertech.esper.compat;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.view.timelengthbatch
@@ -59,7 +61,12 @@ namespace com.espertech.esper.common.@internal.view.timelengthbatch
             }
 
             timePeriodCompute = ViewFactoryTimePeriodHelper.ValidateAndEvaluateTimeDeltaFactory(
-                ViewName, parameters[0], errorMessage, 0, viewForgeEnv, streamNumber);
+                ViewName,
+                parameters[0],
+                errorMessage,
+                0,
+                viewForgeEnv,
+                streamNumber);
 
             sizeForge = ViewForgeSupport.ValidateSizeParam(ViewName, validated[1], 1);
 
@@ -100,8 +107,11 @@ namespace com.espertech.esper.common.@internal.view.timelengthbatch
             }
 
             method.Block
-                .DeclareVar(typeof(TimePeriodCompute), "eval", timePeriodCompute.MakeEvaluator(method, classScope))
-                .SetProperty(factory, "Size", ExprNodeUtilityCodegen
+                .DeclareVar<TimePeriodCompute>("eval", timePeriodCompute.MakeEvaluator(method, classScope))
+                .SetProperty(
+                    factory,
+                    "Size",
+                    ExprNodeUtilityCodegen
                         .CodegenEvaluator(sizeForge, method, GetType(), classScope))
                 .SetProperty(factory, "TimePeriodCompute", Ref("eval"))
                 .SetProperty(factory, "ScheduleCallbackId", Constant(scheduleCallbackId))

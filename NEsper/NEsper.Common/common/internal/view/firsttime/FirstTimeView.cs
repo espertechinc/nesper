@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.context.util;
@@ -61,7 +62,10 @@ namespace com.espertech.esper.common.@internal.view.firsttime
         {
             if (handle != null) {
                 agentInstanceContext.AuditProvider.ScheduleRemove(
-                    agentInstanceContext, handle, ScheduleObjectType.view, factory.ViewName);
+                    agentInstanceContext,
+                    handle,
+                    ScheduleObjectType.view,
+                    factory.ViewName);
                 agentInstanceContext.StatementContext.SchedulingService.Remove(handle, scheduleSlot);
             }
         }
@@ -132,21 +136,31 @@ namespace com.espertech.esper.common.@internal.view.firsttime
         private void ScheduleCallback()
         {
             long afterTime = timePeriodProvide.DeltaAdd(
-                agentInstanceContext.StatementContext.SchedulingService.Time, null, true, agentInstanceContext);
+                agentInstanceContext.StatementContext.SchedulingService.Time,
+                null,
+                true,
+                agentInstanceContext);
 
             ScheduleHandleCallback callback = new ProxyScheduleHandleCallback {
                 ProcScheduledTrigger = () => {
                     agentInstanceContext.AuditProvider.ScheduleFire(
-                        agentInstanceContext, ScheduleObjectType.view, factory.ViewName);
+                        agentInstanceContext,
+                        ScheduleObjectType.view,
+                        factory.ViewName);
                     agentInstanceContext.InstrumentationProvider.QViewScheduledEval(factory);
                     isClosed = true;
                     agentInstanceContext.InstrumentationProvider.AViewScheduledEval();
                 }
             };
             handle = new EPStatementHandleCallbackSchedule(
-                agentInstanceContext.EpStatementAgentInstanceHandle, callback);
+                agentInstanceContext.EpStatementAgentInstanceHandle,
+                callback);
             agentInstanceContext.AuditProvider.ScheduleAdd(
-                afterTime, agentInstanceContext, handle, ScheduleObjectType.view, factory.ViewName);
+                afterTime,
+                agentInstanceContext,
+                handle,
+                ScheduleObjectType.view,
+                factory.ViewName);
             agentInstanceContext.StatementContext.SchedulingService.Add(afterTime, handle, scheduleSlot);
         }
     }

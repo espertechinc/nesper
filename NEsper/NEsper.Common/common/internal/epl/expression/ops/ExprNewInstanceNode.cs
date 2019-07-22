@@ -8,6 +8,7 @@
 
 using System;
 using System.IO;
+
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.@event.bean.manufacturer;
 using com.espertech.esper.common.@internal.settings;
@@ -56,7 +57,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             }
 
             InstanceManufacturerFactory manufacturerFactory =
-                InstanceManufacturerFactoryFactory.GetManufacturer(targetClass, validationContext.ImportService, this.ChildNodes);
+                InstanceManufacturerFactoryFactory.GetManufacturer(
+                    targetClass,
+                    validationContext.ImportService,
+                    this.ChildNodes);
             forge = new ExprNewInstanceNodeForge(this, targetClass, manufacturerFactory);
             return null;
         }

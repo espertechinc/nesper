@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -14,6 +15,7 @@ using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.expression.dot.propertydot
@@ -52,14 +54,23 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.propertydot
             CodegenClassScope codegenClassScope)
         {
             CodegenMethod methodNode = codegenMethodScope.MakeChild(
-                forge.EvaluationType, typeof(PropertyDotNonLambdaMappedForgeEval), codegenClassScope);
+                forge.EvaluationType,
+                typeof(PropertyDotNonLambdaMappedForgeEval),
+                codegenClassScope);
 
             CodegenExpressionRef refEPS = exprSymbol.GetAddEPS(methodNode);
             methodNode.Block
-                .DeclareVar(typeof(EventBean), "event", ArrayAtIndex(refEPS, Constant(forge.StreamId)))
+                .DeclareVar<EventBean>("event", ArrayAtIndex(refEPS, Constant(forge.StreamId)))
                 .IfRefNullReturnNull("event")
-                .DeclareVar(typeof(string), "key", forge.ParamForge.EvaluateCodegen(typeof(string), methodNode, exprSymbol, codegenClassScope))
-                .MethodReturn(forge.MappedGetter.EventBeanGetMappedCodegen(methodNode, codegenClassScope, @Ref("event"), @Ref("key")));
+                .DeclareVar<string>(
+                    "key",
+                    forge.ParamForge.EvaluateCodegen(typeof(string), methodNode, exprSymbol, codegenClassScope))
+                .MethodReturn(
+                    forge.MappedGetter.EventBeanGetMappedCodegen(
+                        methodNode,
+                        codegenClassScope,
+                        @Ref("event"),
+                        @Ref("key")));
             return LocalMethod(methodNode);
         }
     }

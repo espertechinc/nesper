@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.epl.index.@base;
@@ -41,7 +42,12 @@ namespace com.espertech.esper.common.@internal.epl.index.hash
         }
 
         public EventTableOrganization Organization => new EventTableOrganization(
-            OptionalIndexName, Unique, false, StreamNum, PropertyNames, EventTableOrganizationType.HASH);
+            OptionalIndexName,
+            Unique,
+            false,
+            StreamNum,
+            PropertyNames,
+            EventTableOrganizationType.HASH);
 
         public EventTable[] MakeEventTables(
             AgentInstanceContext agentInstanceContext,
@@ -58,10 +64,13 @@ namespace com.espertech.esper.common.@internal.epl.index.hash
         {
             return GetType().Name +
                    (Unique ? " unique" : " non-unique") +
-                   " streamNum=" + StreamNum +
-                   " propertyNames=" + Arrays.AsList(PropertyNames);
+                   " streamNum=" +
+                   StreamNum +
+                   " propertyNames=" +
+                   Arrays.AsList(PropertyNames);
         }
 
-        public Type EventTableClass => Unique ? typeof(PropertyHashedEventTableUnique) : typeof(PropertyHashedEventTableUnadorned);
+        public Type EventTableClass =>
+            Unique ? typeof(PropertyHashedEventTableUnique) : typeof(PropertyHashedEventTableUnadorned);
     }
 } // end of namespace

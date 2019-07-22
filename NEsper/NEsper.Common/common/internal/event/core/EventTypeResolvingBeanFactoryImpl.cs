@@ -9,6 +9,7 @@
 using System.Collections.Generic;
 using System.Xml;
 using System.Xml.Linq;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.@event.arr;
 using com.espertech.esper.common.@internal.@event.avro;
@@ -95,7 +96,10 @@ namespace com.espertech.esper.common.@internal.@event.core
                 resultNode = document.DocumentElement;
             }
             else if (!(node is XmlElement)) {
-                throw new EPException("Unexpected DOM node of type '" + node.GetType() + "' encountered, please supply a Document or Element node");
+                throw new EPException(
+                    "Unexpected DOM node of type '" +
+                    node.GetType() +
+                    "' encountered, please supply a Document or Element node");
             }
 
             return resultNode;
@@ -106,11 +110,15 @@ namespace com.espertech.esper.common.@internal.@event.core
             if (node is XDocument document) {
                 return document.Root;
             }
+
             if (node is XElement element) {
                 return element;
             }
 
-            throw new EPException("Unexpected DOM node of type '" + node.GetType() + "' encountered, please supply a Document or Element node");
+            throw new EPException(
+                "Unexpected DOM node of type '" +
+                node.GetType() +
+                "' encountered, please supply a Document or Element node");
         }
     }
 } // end of namespace

@@ -8,6 +8,7 @@
 
 using System.Collections.Generic;
 using System.Linq;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.compile.stage1.spec;
 using com.espertech.esper.common.@internal.compile.stage2;
@@ -75,24 +76,33 @@ namespace com.espertech.esper.common.@internal.epl.contained
                 // evaluate splitter expression
                 if (containedEventEval == null) {
                     ExprNodeUtilityValidate.ValidatePlainExpression(
-                        ExprNodeOrigin.CONTAINEDEVENT, atom.SplitterExpression);
+                        ExprNodeOrigin.CONTAINEDEVENT,
+                        atom.SplitterExpression);
 
                     var availableTypes = streamEventTypes.ToArray();
                     var availableStreamNames = streamNames.ToArray();
                     var isIStreamOnly = new bool[streamNames.Count];
                     isIStreamOnly.Fill(true);
                     StreamTypeService streamTypeService = new StreamTypeServiceImpl(
-                        availableTypes, availableStreamNames, isIStreamOnly, false, false);
+                        availableTypes,
+                        availableStreamNames,
+                        isIStreamOnly,
+                        false,
+                        false);
                     var validationContext = new ExprValidationContextBuilder(streamTypeService, rawInfo, services)
-                        .WithAllowBindingConsumption(true).Build();
+                        .WithAllowBindingConsumption(true)
+                        .Build();
                     var validatedExprNode = ExprNodeUtilityValidate.GetValidatedSubtree(
-                        ExprNodeOrigin.CONTAINEDEVENT, atom.SplitterExpression, validationContext);
+                        ExprNodeOrigin.CONTAINEDEVENT,
+                        atom.SplitterExpression,
+                        validationContext);
 
                     // determine result type
                     if (atom.OptionalResultEventType == null) {
                         throw new ExprValidationException(
                             "Missing @type(name) declaration providing the event type name of the return type for expression '" +
-                            ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(atom.SplitterExpression) + "'");
+                            ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(atom.SplitterExpression) +
+                            "'");
                     }
 
                     streamEventType = services.EventTypeCompileTimeResolver.GetTypeByName(atom.OptionalResultEventType);
@@ -113,14 +123,19 @@ namespace com.espertech.esper.common.@internal.epl.contained
                         if (writables != null && !writables.IsEmpty()) {
                             try {
                                 var manufacturer = EventTypeUtility.GetManufacturer(
-                                    streamEventType, new[] {writables.First()},
-                                    services.ImportServiceCompileTime, false, services.EventTypeAvroHandler);
+                                    streamEventType,
+                                    new[] {writables.First()},
+                                    services.ImportServiceCompileTime,
+                                    false,
+                                    services.EventTypeAvroHandler);
                                 containedEventEval = new ContainedEventEvalArrayToEventForge(
-                                    validatedExprNode.Forge, manufacturer);
+                                    validatedExprNode.Forge,
+                                    manufacturer);
                             }
                             catch (EventBeanManufactureException e) {
                                 throw new ExprValidationException(
-                                    "Event type '" + streamEventType.Name + "' cannot be populated: " + e.Message, e);
+                                    "Event type '" + streamEventType.Name + "' cannot be populated: " + e.Message,
+                                    e);
                             }
                         }
                         else {
@@ -136,9 +151,12 @@ namespace com.espertech.esper.common.@internal.epl.contained
                         // check expression result type against eventtype expected underlying type
                         if (returnType.IsArray) {
                             if (!TypeHelper.IsSubclassOrImplementsInterface(
-                                returnType.GetElementType(), streamEventType.UnderlyingType)) {
+                                returnType.GetElementType(),
+                                streamEventType.UnderlyingType)) {
                                 throw new ExprValidationException(
-                                    "Event type '" + streamEventType.Name + "' underlying type " +
+                                    "Event type '" +
+                                    streamEventType.Name +
+                                    "' underlying type " +
                                     streamEventType.UnderlyingType.Name +
                                     " cannot be assigned a value of type " +
                                     TypeHelper.GetCleanName(returnType));
@@ -151,11 +169,14 @@ namespace com.espertech.esper.common.@internal.epl.contained
                             throw new ExprValidationException(
                                 "Return type of expression '" +
                                 ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(atom.SplitterExpression) +
-                                "' is '" + returnType.Name + "', expected an Iterable or array result");
+                                "' is '" +
+                                returnType.Name +
+                                "', expected an Iterable or array result");
                         }
 
                         containedEventEval = new ContainedEventEvalExprNodeForge(
-                            validatedExprNode.Forge, streamEventType);
+                            validatedExprNode.Forge,
+                            streamEventType);
                     }
 
                     expressionText = ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(validatedExprNode);
@@ -174,11 +195,18 @@ namespace com.espertech.esper.common.@internal.epl.contained
                     var isIStreamOnly = new bool[streamNames.Count];
                     isIStreamOnly.Fill(true);
                     StreamTypeService streamTypeService = new StreamTypeServiceImpl(
-                        whereTypes, whereStreamNames, isIStreamOnly, false, false);
+                        whereTypes,
+                        whereStreamNames,
+                        isIStreamOnly,
+                        false,
+                        false);
                     var validationContext = new ExprValidationContextBuilder(streamTypeService, rawInfo, services)
-                        .WithAllowBindingConsumption(true).Build();
+                        .WithAllowBindingConsumption(true)
+                        .Build();
                     var whereClause = ExprNodeUtilityValidate.GetValidatedSubtree(
-                        ExprNodeOrigin.CONTAINEDEVENT, atom.OptionalWhereClause, validationContext);
+                        ExprNodeOrigin.CONTAINEDEVENT,
+                        atom.OptionalWhereClause,
+                        validationContext);
                     whereClauses[i] = whereClause.Forge;
                 }
 
@@ -189,9 +217,14 @@ namespace com.espertech.esper.common.@internal.epl.contained
                     var isIStreamOnly = new bool[streamNames.Count];
                     isIStreamOnly.Fill(true);
                     StreamTypeService streamTypeService = new StreamTypeServiceImpl(
-                        whereTypes, whereStreamNames, isIStreamOnly, false, false);
+                        whereTypes,
+                        whereStreamNames,
+                        isIStreamOnly,
+                        false,
+                        false);
                     var validationContext = new ExprValidationContextBuilder(streamTypeService, rawInfo, services)
-                        .WithAllowBindingConsumption(true).Build();
+                        .WithAllowBindingConsumption(true)
+                        .Build();
 
                     foreach (var raw in atom.OptionalSelectClause.SelectExprList) {
                         if (raw is SelectClauseStreamRawSpec) {
@@ -202,7 +235,8 @@ namespace com.espertech.esper.common.@internal.epl.contained
                             }
 
                             var streamSpec = new SelectClauseStreamCompiledSpec(
-                                rawStreamSpec.StreamName, rawStreamSpec.OptionalAsName);
+                                rawStreamSpec.StreamName,
+                                rawStreamSpec.OptionalAsName);
                             var streamNumber = streamNameAndNumber.Get(rawStreamSpec.StreamName);
                             streamSpec.StreamNumber = streamNumber;
                             cumulativeSelectClause.Add(streamSpec);
@@ -210,7 +244,9 @@ namespace com.espertech.esper.common.@internal.epl.contained
                         else if (raw is SelectClauseExprRawSpec) {
                             var exprSpec = (SelectClauseExprRawSpec) raw;
                             var exprCompiled = ExprNodeUtilityValidate.GetValidatedSubtree(
-                                ExprNodeOrigin.CONTAINEDEVENT, exprSpec.SelectExpression, validationContext);
+                                ExprNodeOrigin.CONTAINEDEVENT,
+                                exprSpec.SelectExpression,
+                                validationContext);
                             var resultName = exprSpec.OptionalAsName;
                             if (resultName == null) {
                                 resultName = ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(exprCompiled);
@@ -218,7 +254,10 @@ namespace com.espertech.esper.common.@internal.epl.contained
 
                             cumulativeSelectClause.Add(
                                 new SelectClauseExprCompiledSpec(
-                                    exprCompiled, resultName, exprSpec.OptionalAsName, exprSpec.IsEvents));
+                                    exprCompiled,
+                                    resultName,
+                                    exprSpec.OptionalAsName,
+                                    exprSpec.IsEvents));
 
                             var isMinimal = ExprNodeUtilityValidate.IsMinimalExpression(exprCompiled);
                             if (isMinimal != null) {
@@ -252,11 +291,17 @@ namespace com.espertech.esper.common.@internal.epl.contained
             if (cumulativeSelectClause.IsEmpty()) {
                 if (length == 1) {
                     return new PropertyEvaluatorSimpleForge(
-                        containedEventForges[0], fragmentEventTypes[0], whereClauses[0], expressionTexts[0]);
+                        containedEventForges[0],
+                        fragmentEventTypes[0],
+                        whereClauses[0],
+                        expressionTexts[0]);
                 }
 
                 return new PropertyEvaluatorNestedForge(
-                    containedEventForges, fragmentEventTypes, whereClauses, expressionTexts.ToArray());
+                    containedEventForges,
+                    fragmentEventTypes,
+                    whereClauses,
+                    expressionTexts.ToArray());
             }
 
             {
@@ -266,19 +311,35 @@ namespace com.espertech.esper.common.@internal.epl.contained
                 }
 
                 var accumulative = new PropertyEvaluatorAccumulativeForge(
-                    containedEventForges, fragmentEventTypeIsIndexed, whereClauses, expressionTexts);
+                    containedEventForges,
+                    fragmentEventTypeIsIndexed,
+                    whereClauses,
+                    expressionTexts);
 
                 var whereTypes = streamEventTypes.ToArray();
                 var whereStreamNames = streamNames.ToArray();
                 var isIStreamOnly = new bool[streamNames.Count];
                 isIStreamOnly.Fill(true);
                 StreamTypeService streamTypeService = new StreamTypeServiceImpl(
-                    whereTypes, whereStreamNames, isIStreamOnly, false, false);
+                    whereTypes,
+                    whereStreamNames,
+                    isIStreamOnly,
+                    false,
+                    false);
 
                 var cumulativeSelectArr = cumulativeSelectClause.ToArray();
                 var args = new SelectProcessorArgs(
-                    cumulativeSelectArr, null, false, null, null, streamTypeService,
-                    null, false, rawInfo.Annotations, rawInfo, services);
+                    cumulativeSelectArr,
+                    null,
+                    false,
+                    null,
+                    null,
+                    streamTypeService,
+                    null,
+                    false,
+                    rawInfo.Annotations,
+                    rawInfo,
+                    services);
                 var selectExprDesc = SelectExprProcessorFactory.GetProcessor(args, null, false);
 
                 return new PropertyEvaluatorSelectForge(selectExprDesc, accumulative);

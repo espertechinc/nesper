@@ -39,26 +39,20 @@ namespace NEsper.Avro.Core
             var original = (GenericRecord) theEvent.Underlying;
             var copy = new GenericRecord(_avroEventType.SchemaAvro.AsRecordSchema());
             var fields = _avroEventType.SchemaAvro.AsArraySchema().GetFields();
-            foreach (var field in fields)
-            {
-                if (field.Schema.Tag == Schema.Type.Array)
-                {
+            foreach (var field in fields) {
+                if (field.Schema.Tag == Schema.Type.Array) {
                     var originalColl = (ICollection<object>) original.Get(field);
-                    if (originalColl != null)
-                    {
+                    if (originalColl != null) {
                         copy.Put(field, new List<object>(originalColl));
                     }
                 }
-                else if (field.Schema.Tag == Schema.Type.Map)
-                {
+                else if (field.Schema.Tag == Schema.Type.Map) {
                     var originalMap = (IDictionary<string, object>) original.Get(field);
-                    if (originalMap != null)
-                    {
+                    if (originalMap != null) {
                         copy.Put(field, new Dictionary<string, object>(originalMap));
                     }
                 }
-                else
-                {
+                else {
                     copy.Put(field, original.Get(field));
                 }
             }

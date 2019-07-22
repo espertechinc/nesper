@@ -7,11 +7,13 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.context.module;
 using com.espertech.esper.common.@internal.@event.core;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.@event.map
@@ -41,7 +43,9 @@ namespace com.espertech.esper.common.@internal.@event.map
         {
             var factory = classScope.AddOrGetFieldSharable(EventBeanTypedEventFactoryCodegenField.INSTANCE);
             return NewInstance<MapEventBeanCopyMethod>(
-                Cast(typeof(MapEventType), EventTypeUtility.ResolveTypeCodegen(mapEventType, EPStatementInitServicesConstants.REF)),
+                Cast(
+                    typeof(MapEventType),
+                    EventTypeUtility.ResolveTypeCodegen(mapEventType, EPStatementInitServicesConstants.REF)),
                 factory);
         }
 

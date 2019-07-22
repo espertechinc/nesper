@@ -64,7 +64,8 @@ namespace com.espertech.esper.common.client.soda
             string optStreamName,
             AnnotationPart[] annotations)
             : base(
-                new List<View>(), optStreamName)
+                new List<View>(),
+                optStreamName)
         {
             this.expression = expression;
             this.annotations = annotations;

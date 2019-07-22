@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.epl.agg.core;
 using com.espertech.esper.common.@internal.epl.expression.core;
@@ -21,7 +22,9 @@ namespace com.espertech.esper.common.@internal.epl.subselect
             ExprEvaluator filterEval,
             ExprEvaluator groupKeys)
             : base(
-                aggregationService, filterEval, groupKeys)
+                aggregationService,
+                filterEval,
+                groupKeys)
         {
         }
 

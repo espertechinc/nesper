@@ -8,6 +8,7 @@
 
 using System;
 using System.IO;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -18,6 +19,7 @@ using com.espertech.esper.common.@internal.epl.rowrecog.core;
 using com.espertech.esper.common.@internal.epl.rowrecog.state;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.expression.prev
@@ -93,22 +95,24 @@ namespace com.espertech.esper.common.@internal.epl.expression.prev
             var eps = symbols.GetAddEPS(method);
 
             var strategy = classScope.NamespaceScope.AddOrGetFieldWellKnown(
-                previousStrategyFieldName, typeof(RowRecogPreviousStrategy));
+                previousStrategyFieldName,
+                typeof(RowRecogPreviousStrategy));
 
             var innerEval = CodegenLegoMethodExpression.CodegenExpression(ChildNodes[0].Forge, method, classScope);
 
             method.Block
-                .DeclareVar(
-                    typeof(RowRecogStateRandomAccess), "access",
+                .DeclareVar<RowRecogStateRandomAccess>(
+                    "access",
                     ExprDotMethod(strategy, "getAccess", symbols.GetAddExprEvalCtx(method)))
-                .DeclareVar(
-                    typeof(EventBean), "substituteEvent",
+                .DeclareVar<EventBean>(
+                    "substituteEvent",
                     ExprDotMethod(Ref("access"), "getPreviousEvent", Constant(assignedIndex)))
                 .IfRefNullReturnNull("substituteEvent")
-                .DeclareVar(typeof(EventBean), "originalEvent", ArrayAtIndex(eps, Constant(streamNumber)))
+                .DeclareVar<EventBean>("originalEvent", ArrayAtIndex(eps, Constant(streamNumber)))
                 .AssignArrayElement(eps, Constant(streamNumber), Ref("substituteEvent"))
                 .DeclareVar(
-                    EvaluationType, "evalResult",
+                    EvaluationType,
+                    "evalResult",
                     LocalMethod(innerEval, eps, symbols.GetAddIsNewData(method), symbols.GetAddExprEvalCtx(method)))
                 .AssignArrayElement(eps, Constant(streamNumber), Ref("originalEvent"))
                 .MethodReturn(Ref("evalResult"));

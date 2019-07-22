@@ -1462,7 +1462,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
             public void Run(RegressionEnvironment env)
             {
                 var epl =
-                    "@Name('s0') select * from pattern[a=SupportBean() => b=SupportBean(myCustomBigDecimalEquals(a.bigDecimal, b.bigDecimal))]";
+                    "@Name('s0') select * from pattern[a=SupportBean() -> b=SupportBean(myCustomBigDecimalEquals(a.bigDecimal, b.bigDecimal))]";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 var beanOne = new SupportBean("E1", 0);

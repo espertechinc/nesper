@@ -47,22 +47,24 @@ namespace com.espertech.esper.common.@internal.util
             string name,
             Type interfaceClass)
         {
-            if (transientConfiguration == null)
-            {
+            if (transientConfiguration == null) {
                 return defaultProvider;
             }
 
             var value = transientConfiguration.Get(name);
-            if (value == null)
-            {
+            if (value == null) {
                 return defaultProvider;
             }
 
-            if (!value.GetType().IsImplementsInterface(interfaceClass))
-            {
+            if (!value.GetType().IsImplementsInterface(interfaceClass)) {
                 log.Warn(
-                    "For transient configuration '" + name + "' expected an object implementing " +
-                    interfaceClass.Name + " but received " + value.GetType() + ", using default provider");
+                    "For transient configuration '" +
+                    name +
+                    "' expected an object implementing " +
+                    interfaceClass.Name +
+                    " but received " +
+                    value.GetType() +
+                    ", using default provider");
                 return defaultProvider;
             }
 

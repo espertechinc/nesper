@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.compile.stage2;
 using com.espertech.esper.common.@internal.compile.stage3;
@@ -34,7 +35,11 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             EventType evalEventType;
             if (inputEventType == null) {
                 evalEventType = ExprDotNodeUtility.MakeTransientOAType(
-                    enumMethodUsedName, goesToNames[1], collectionComponentType, statementRawInfo, services);
+                    enumMethodUsedName,
+                    goesToNames[1],
+                    collectionComponentType,
+                    statementRawInfo,
+                    services);
             }
             else {
                 evalEventType = inputEventType;
@@ -42,7 +47,11 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
 
             var initializationType = bodiesAndParameters[0].BodyForge.EvaluationType;
             EventType typeResult = ExprDotNodeUtility.MakeTransientOAType(
-                enumMethodUsedName, goesToNames[0], initializationType, statementRawInfo, services);
+                enumMethodUsedName,
+                goesToNames[0],
+                initializationType,
+                statementRawInfo,
+                services);
 
             return new[] {typeResult, evalEventType};
         }
@@ -67,13 +76,15 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             if (inputEventType != null) {
                 return new EnumAggregateEventsForge(
                     initValueEval,
-                    resultAndAdd.BodyForge, resultAndAdd.StreamCountIncoming,
+                    resultAndAdd.BodyForge,
+                    resultAndAdd.StreamCountIncoming,
                     (ObjectArrayEventType) resultAndAdd.GoesToTypes[0]);
             }
 
             return new EnumAggregateScalarForge(
                 initValueEval,
-                resultAndAdd.BodyForge, resultAndAdd.StreamCountIncoming,
+                resultAndAdd.BodyForge,
+                resultAndAdd.StreamCountIncoming,
                 (ObjectArrayEventType) resultAndAdd.GoesToTypes[0],
                 (ObjectArrayEventType) resultAndAdd.GoesToTypes[1]);
         }

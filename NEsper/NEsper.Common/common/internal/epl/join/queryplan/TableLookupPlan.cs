@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.epl.expression.core;
@@ -68,8 +69,12 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplan
             }
 
             if (viewExternals[indexedStream] != null) {
-                return viewExternals[indexedStream].GetJoinLookupStrategy(
-                    this, agentInstanceContext, eventTables, lookupStream);
+                return viewExternals[indexedStream]
+                    .GetJoinLookupStrategy(
+                        this,
+                        agentInstanceContext,
+                        eventTables,
+                        lookupStream);
             }
 
             return MakeStrategyInternal(eventTables, eventTypes);

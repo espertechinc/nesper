@@ -8,6 +8,7 @@
 
 using System;
 using System.IO;
+
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
@@ -46,7 +47,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.propertydot
             CodegenClassScope codegenClassScope)
         {
             return PropertyDotNonLambdaIndexedForgeEval.Codegen(
-                this, codegenMethodScope, exprSymbol, codegenClassScope);
+                this,
+                codegenMethodScope,
+                exprSymbol,
+                codegenClassScope);
         }
 
         public ExprForgeConstantType ForgeConstantType => ExprForgeConstantType.NONCONST;

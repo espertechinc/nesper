@@ -53,12 +53,18 @@ namespace com.espertech.esper.common.@internal.support
         public override string ToString()
         {
             return
-                " IntPrimitive=" + IntPrimitive +
-                " IntBoxed=" + IntBoxed +
-                " DoublePrimitive=" + DoublePrimitive +
-                " DoubleBoxed=" + DoubleBoxed +
-                " BoolPrimitive=" + BoolPrimitive +
-                " BoolBoxed=" + BoolBoxed;
+                " IntPrimitive=" +
+                IntPrimitive +
+                " IntBoxed=" +
+                IntBoxed +
+                " DoublePrimitive=" +
+                DoublePrimitive +
+                " DoubleBoxed=" +
+                DoubleBoxed +
+                " BoolPrimitive=" +
+                BoolPrimitive +
+                " BoolBoxed=" +
+                BoolBoxed;
         }
     }
 }

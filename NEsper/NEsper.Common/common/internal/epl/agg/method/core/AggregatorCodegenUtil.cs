@@ -12,6 +12,7 @@ using com.espertech.esper.common.@internal.epl.agg.core;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.compat.function;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.agg.method.core
@@ -33,7 +34,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.core
             CodegenExpressionRef writer,
             CodegenClassScope classScope)
         {
-            return ExprDotMethod(serde, "write", value, output, unitKey, writer);
+            return ExprDotMethod(serde, "Write", value, output, unitKey, writer);
         }
 
         public static CodegenExpression ReadNullable(
@@ -42,7 +43,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.core
             CodegenExpressionRef unitKey,
             CodegenClassScope classScope)
         {
-            return ExprDotMethod(serde, "read", input, unitKey);
+            return ExprDotMethod(serde, "Read", input, unitKey);
         }
 
         public static void PrefixWithFilterCheck(
@@ -53,7 +54,9 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.core
         {
             var filterType = filterForge.EvaluationType;
             method.Block.DeclareVar(
-                filterType, "pass", filterForge.EvaluateCodegen(filterType, method, symbols, classScope));
+                filterType,
+                "pass",
+                filterForge.EvaluateCodegen(filterType, method, symbols, classScope));
             if (!filterType.IsPrimitive) {
                 method.Block.IfRefNull("pass").BlockReturnNoValue();
             }

@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.epl.agg.core;
 using com.espertech.esper.common.@internal.epl.expression.core;
@@ -45,7 +46,11 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
 
                 if (resultSetProcessor.HasHavingClause &&
                     resultSetProcessor.EvaluateHavingClause(eventsPerStream, true, exprEvaluatorContext)) {
-                    yield return resultSetProcessor.SelectExprProcessor.Process(eventsPerStream, true, true, exprEvaluatorContext);
+                    yield return resultSetProcessor.SelectExprProcessor.Process(
+                        eventsPerStream,
+                        true,
+                        true,
+                        exprEvaluatorContext);
                 }
             }
         }

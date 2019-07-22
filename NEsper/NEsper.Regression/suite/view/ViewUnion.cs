@@ -770,7 +770,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 string[] fields = {"string"};
 
                 var text =
-                    "@Name('s0') select irstream a.p00||b.p10 as string from pattern [every a=SupportBean_S0 => b=SupportBean_S1]#unique(a.Id)#unique(b.Id) retain-union";
+                    "@Name('s0') select irstream a.p00||b.p10 as string from pattern [every a=SupportBean_S0 -> b=SupportBean_S1]#unique(a.Id)#unique(b.Id) retain-union";
                 env.CompileDeployAddListenerMileZero(text, "s0");
 
                 env.SendEventBean(new SupportBean_S0(1, "E1"));

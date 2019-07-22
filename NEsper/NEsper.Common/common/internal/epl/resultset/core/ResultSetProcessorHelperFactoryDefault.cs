@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.epl.agg.core;
@@ -67,7 +68,10 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
             int scheduleCallbackId)
         {
             return new OutputConditionTimeFactory(
-                hasVariable, timePeriodCompute, isStartConditionOnCreation, scheduleCallbackId);
+                hasVariable,
+                timePeriodCompute,
+                isStartConditionOnCreation,
+                scheduleCallbackId);
         }
 
         public ResultSetProcessorRowForAllOutputLastHelper MakeRSRowForAllOutputLast(

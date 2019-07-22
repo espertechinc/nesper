@@ -10,6 +10,7 @@ using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.expression.ops
@@ -57,25 +58,36 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             ExprNode rhs)
         {
             var methodNode = codegenMethodScope.MakeChild(
-                forge.EvaluationType, typeof(ExprMathNodeForgeEval), codegenClassScope);
+                forge.EvaluationType,
+                typeof(ExprMathNodeForgeEval),
+                codegenClassScope);
             var lhsType = lhs.Forge.EvaluationType;
             var rhsType = rhs.Forge.EvaluationType;
             var block = methodNode.Block
                 .DeclareVar(
-                    lhsType, "left", lhs.Forge.EvaluateCodegen(lhsType, methodNode, exprSymbol, codegenClassScope));
+                    lhsType,
+                    "left",
+                    lhs.Forge.EvaluateCodegen(lhsType, methodNode, exprSymbol, codegenClassScope));
             if (!lhsType.IsPrimitive) {
                 block.IfRefNullReturnNull("left");
             }
 
             block.DeclareVar(
-                rhsType, "right", rhs.Forge.EvaluateCodegen(rhsType, methodNode, exprSymbol, codegenClassScope));
+                rhsType,
+                "right",
+                rhs.Forge.EvaluateCodegen(rhsType, methodNode, exprSymbol, codegenClassScope));
             if (!rhsType.IsPrimitive) {
                 block.IfRefNullReturnNull("right");
             }
 
             block.MethodReturn(
                 forge.ArithTypeEnumComputer.Codegen(
-                    methodNode, codegenClassScope, Ref("left"), Ref("right"), lhsType, rhsType));
+                    methodNode,
+                    codegenClassScope,
+                    Ref("left"),
+                    Ref("right"),
+                    lhsType,
+                    rhsType));
             return methodNode;
         }
     }

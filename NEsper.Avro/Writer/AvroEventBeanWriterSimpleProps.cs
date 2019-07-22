@@ -30,8 +30,7 @@ namespace NEsper.Avro.Writer
             EventBean theEvent)
         {
             var row = (GenericRecord) theEvent.Underlying;
-            for (var i = 0; i < values.Length; i++)
-            {
+            for (var i = 0; i < values.Length; i++) {
                 row.Put(_positions[i], values[i]);
             }
         }

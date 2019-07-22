@@ -43,19 +43,16 @@ namespace com.espertech.esper.common.@internal.collection
         /// <param name="theEvent">is the event to add</param>
         public void Add(EventBean theEvent)
         {
-            if (theEvent == null)
-            {
+            if (theEvent == null) {
                 throw new ArgumentException("Null event not allowed");
             }
 
-            if (FirstEvent == null)
-            {
+            if (FirstEvent == null) {
                 FirstEvent = theEvent;
                 return;
             }
 
-            if (AdditionalEvents == null)
-            {
+            if (AdditionalEvents == null) {
                 AdditionalEvents = new LinkedList<EventBean>();
             }
 
@@ -78,22 +75,19 @@ namespace com.espertech.esper.common.@internal.collection
         /// <returns>event array</returns>
         public EventBean[] ToArray()
         {
-            if (FirstEvent == null)
-            {
+            if (FirstEvent == null) {
                 return new EventBean[0];
             }
 
-            if (AdditionalEvents == null)
-            {
-                return new[] { FirstEvent };
+            if (AdditionalEvents == null) {
+                return new[] {FirstEvent};
             }
 
             var events = new EventBean[1 + AdditionalEvents.Count];
             events[0] = FirstEvent;
 
             var count = 1;
-            foreach (var theEvent in AdditionalEvents)
-            {
+            foreach (var theEvent in AdditionalEvents) {
                 events[count] = theEvent;
                 count++;
             }
@@ -103,8 +97,7 @@ namespace com.espertech.esper.common.@internal.collection
 
         public void Add(EventBean[] events)
         {
-            foreach (var ev in events)
-            {
+            foreach (var ev in events) {
                 Add(ev);
             }
         }

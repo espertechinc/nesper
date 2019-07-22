@@ -44,12 +44,32 @@ namespace NEsper.Avro.Getter
             CodegenExpression beanExpression,
             CodegenExpression key)
         {
-            var method = codegenMethodScope.MakeChild(typeof(object), typeof(AvroEventBeanGetterIndexedRuntimeKeyed), codegenClassScope)
-                .AddParam(typeof(EventBean), "event").AddParam(typeof(int), "index").Block
-                .DeclareVar(typeof(GenericRecord), "record", CodegenExpressionBuilder.CastUnderlying(typeof(GenericRecord), CodegenExpressionBuilder.Ref("event")))
-                .DeclareVar(
-                    typeof(ICollection<object>), "values", CodegenExpressionBuilder.Cast(typeof(ICollection<object>), CodegenExpressionBuilder.ExprDotMethod(CodegenExpressionBuilder.Ref("record"), "get", CodegenExpressionBuilder.Constant(_pos))))
-                .MethodReturn(CodegenExpressionBuilder.StaticMethod(typeof(AvroEventBeanGetterIndexed), "getAvroIndexedValue", CodegenExpressionBuilder.Ref("values"), CodegenExpressionBuilder.Ref("index")));
+            var method = codegenMethodScope.MakeChild(
+                    typeof(object),
+                    typeof(AvroEventBeanGetterIndexedRuntimeKeyed),
+                    codegenClassScope)
+                .AddParam(typeof(EventBean), "event")
+                .AddParam(typeof(int), "index")
+                .Block
+                .DeclareVar<GenericRecord>(
+                    "record",
+                    CodegenExpressionBuilder.CastUnderlying(
+                        typeof(GenericRecord),
+                        CodegenExpressionBuilder.Ref("event")))
+                .DeclareVar<ICollection<object>>(
+                    "values",
+                    CodegenExpressionBuilder.Cast(
+                        typeof(ICollection<object>),
+                        CodegenExpressionBuilder.ExprDotMethod(
+                            CodegenExpressionBuilder.Ref("record"),
+                            "get",
+                            CodegenExpressionBuilder.Constant(_pos))))
+                .MethodReturn(
+                    CodegenExpressionBuilder.StaticMethod(
+                        typeof(AvroEventBeanGetterIndexed),
+                        "getAvroIndexedValue",
+                        CodegenExpressionBuilder.Ref("values"),
+                        CodegenExpressionBuilder.Ref("index")));
             return CodegenExpressionBuilder.LocalMethodBuild(method).Pass(beanExpression).Pass(key).Call();
         }
     }

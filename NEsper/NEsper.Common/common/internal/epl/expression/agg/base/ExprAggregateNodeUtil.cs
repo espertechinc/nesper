@@ -8,6 +8,7 @@
 
 using System.Collections.Generic;
 using System.Linq;
+
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.expression.declared.compiletime;
 using com.espertech.esper.compat;
@@ -37,14 +38,17 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.@base
                     else if (paramNameLower.Equals("filter")) {
                         if ((namedParameterNode.ChildNodes.Length != 1) |
                             (namedParameterNode.ChildNodes[0].Forge.EvaluationType.GetBoxedType() != typeof(bool?))) {
-                            throw new ExprValidationException("Filter named parameter requires a single expression returning a boolean-typed value");
+                            throw new ExprValidationException(
+                                "Filter named parameter requires a single expression returning a boolean-typed value");
                         }
 
                         optionalFilter = namedParameterNode.ChildNodes[0];
                     }
                     else if (builtinAggregationFunc) {
                         throw new ExprValidationException(
-                            "Invalid named parameter '" + namedParameterNode.ParameterName + "' (did you mean 'group_by' or 'filter'?)");
+                            "Invalid named parameter '" +
+                            namedParameterNode.ParameterName +
+                            "' (did you mean 'group_by' or 'filter'?)");
                     }
                 }
             }

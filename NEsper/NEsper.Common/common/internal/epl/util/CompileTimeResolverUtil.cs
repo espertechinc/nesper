@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.collection;
 
@@ -23,7 +24,10 @@ namespace com.espertech.esper.common.@internal.epl.util
         {
             if (path != null && preconfigured != null) {
                 throw new EPException(
-                    "The " + objectType.Name + " by name '" + name +
+                    "The " +
+                    objectType.Name +
+                    " by name '" +
+                    name +
                     "' is ambiguous as it exists in both the path space and the preconfigured space");
             }
 
@@ -31,7 +35,10 @@ namespace com.espertech.esper.common.@internal.epl.util
                 if (path != null || preconfigured != null) {
                     // This should not happen as any create-XXX has checked whether if it already exists; handle it anyway
                     throw new EPException(
-                        "The " + objectType.Name + " by name '" + name +
+                        "The " +
+                        objectType.Name +
+                        " by name '" +
+                        name +
                         "' is ambiguous as it exists in both the local space and the path or preconfigured space");
                 }
 
@@ -47,8 +54,13 @@ namespace com.espertech.esper.common.@internal.epl.util
             PathException e)
         {
             return new EPException(
-                "The " + objectType.Name + " by name '" + name +
-                "' is ambiguous as it exists for multiple modules: " + e.Message, e);
+                "The " +
+                objectType.Name +
+                " by name '" +
+                name +
+                "' is ambiguous as it exists for multiple modules: " +
+                e.Message,
+                e);
         }
     }
 }

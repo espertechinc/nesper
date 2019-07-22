@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.dataflow.core;
 using com.espertech.esper.common.@internal.epl.dataflow.interfaces;
@@ -126,7 +127,7 @@ namespace com.espertech.esper.common.client.dataflow.util
             string name,
             ExprEvaluator optionalEvaluator,
             T defaultValue,
-            DataFlowOpInitializeContext context) 
+            DataFlowOpInitializeContext context)
         {
             T resolvedFromProvider = TryParameterProvider<T>(name, context);
             if (resolvedFromProvider != null) {
@@ -235,8 +236,13 @@ namespace com.espertech.esper.common.client.dataflow.util
                     }
                     catch (Exception ex) {
                         throw new EPException(
-                            "Failed to evaluate value for parameter '" + name + "' for entry key '" + entry.Key +
-                            "': " + ex.Message, ex);
+                            "Failed to evaluate value for parameter '" +
+                            name +
+                            "' for entry key '" +
+                            entry.Key +
+                            "': " +
+                            ex.Message,
+                            ex);
                     }
                 }
                 else {
@@ -272,8 +278,13 @@ namespace com.espertech.esper.common.client.dataflow.util
             }
 
             throw new EPException(
-                "Parameter provider provided an unexpected object for parameter '" + name + "' of type '" +
-                value.GetType().Name + "', expected type '" + clazz.Name + "'");
+                "Parameter provider provided an unexpected object for parameter '" +
+                name +
+                "' of type '" +
+                value.GetType().Name +
+                "', expected type '" +
+                clazz.Name +
+                "'");
         }
     }
 } // end of namespace

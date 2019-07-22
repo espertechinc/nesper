@@ -11,6 +11,7 @@ using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.context.module;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.util;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.@event.bean.core
@@ -23,7 +24,9 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
         private readonly BeanEventType beanEventType;
         private readonly SerializableObjectCopier copier;
 
-        public BeanEventBeanSerializableCopyMethodForge(BeanEventType beanEventType, SerializableObjectCopier copier)
+        public BeanEventBeanSerializableCopyMethodForge(
+            BeanEventType beanEventType,
+            SerializableObjectCopier copier)
         {
             this.beanEventType = beanEventType;
             this.copier = copier;
@@ -33,7 +36,9 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
         {
             var factory = classScope.AddOrGetFieldSharable(EventBeanTypedEventFactoryCodegenField.INSTANCE);
             return NewInstance<BeanEventBeanSerializableCopyMethod>(
-                Cast(typeof(BeanEventType), EventTypeUtility.ResolveTypeCodegen(beanEventType, EPStatementInitServicesConstants.REF)),
+                Cast(
+                    typeof(BeanEventType),
+                    EventTypeUtility.ResolveTypeCodegen(beanEventType, EPStatementInitServicesConstants.REF)),
                 factory);
         }
 

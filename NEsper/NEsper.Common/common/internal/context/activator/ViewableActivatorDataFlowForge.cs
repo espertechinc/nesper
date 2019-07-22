@@ -11,6 +11,7 @@ using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.@event.core;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.context.activator
@@ -31,9 +32,12 @@ namespace com.espertech.esper.common.@internal.context.activator
         {
             var method = parent.MakeChild(typeof(ViewableActivatorDataFlow), GetType(), classScope);
             method.Block
-                .DeclareVar(
-                    typeof(ViewableActivatorDataFlow), "activator", NewInstance(typeof(ViewableActivatorDataFlow)))
-                .SetProperty(Ref("activator"), "EventType",
+                .DeclareVar<ViewableActivatorDataFlow>(
+                    "activator",
+                    NewInstance(typeof(ViewableActivatorDataFlow)))
+                .SetProperty(
+                    Ref("activator"),
+                    "EventType",
                     EventTypeUtility.ResolveTypeCodegen(eventType, symbols.GetAddInitSvc(method)))
                 .MethodReturn(Ref("activator"));
             return LocalMethod(method);

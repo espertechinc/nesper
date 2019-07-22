@@ -9,6 +9,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.collection;
 using com.espertech.esper.compat;
 
@@ -89,8 +90,9 @@ namespace com.espertech.esper.common.@internal.collection
         /// <typeparam name="V"></typeparam>
         /// <param name="key">The key.</param>
         /// <param name="value">The value.</param>
-
-        public void Put(K key, V value)
+        public void Put(
+            K key,
+            V value)
         {
             this[key] = value;
         }
@@ -127,7 +129,8 @@ namespace com.espertech.esper.common.@internal.collection
 
             int refCounter = refValue.Second;
             if (refCounter < 1) {
-                throw new IllegalStateException("Unexpected reference counter value " + refValue.Second + " encountered for key " + key);
+                throw new IllegalStateException(
+                    "Unexpected reference counter value " + refValue.Second + " encountered for key " + key);
             }
 
             // Remove key on dereference of last reference

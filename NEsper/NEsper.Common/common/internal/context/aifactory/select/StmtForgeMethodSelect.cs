@@ -25,7 +25,12 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
             StatementCompileTimeServices services)
         {
             StmtForgeMethodSelectResult forgablesResult = StmtForgeMethodSelectUtil.Make(
-                services.Container, false, packageName, classPostfix, @base, services);
+                services.Container,
+                false,
+                packageName,
+                classPostfix,
+                @base,
+                services);
             return forgablesResult.ForgeResult;
         }
     }

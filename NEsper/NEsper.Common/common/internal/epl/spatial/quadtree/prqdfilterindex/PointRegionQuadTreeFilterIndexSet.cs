@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+
 using com.espertech.esper.common.@internal.epl.spatial.quadtree.core;
 using com.espertech.esper.common.@internal.epl.spatial.quadtree.pointregion;
 using com.espertech.esper.compat;
@@ -51,18 +52,17 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.prqdfilterin
         }
 
         private static PointRegionQuadTreeNode SetOnNode(
-            double x, double y,
+            double x,
+            double y,
             TL value,
             PointRegionQuadTreeNode node,
             PointRegionQuadTree<object> tree)
         {
-            if (node is PointRegionQuadTreeNodeLeaf<object> leaf)
-            {
+            if (node is PointRegionQuadTreeNodeLeaf<object> leaf) {
                 var count = SetOnLeaf(leaf, x, y, value);
                 leaf.IncCount(count);
 
-                if (leaf.Count <= tree.LeafCapacity || node.Level >= tree.MaxTreeHeight)
-                {
+                if (leaf.Count <= tree.LeafCapacity || node.Level >= tree.MaxTreeHeight) {
                     return leaf;
                 }
 
@@ -98,21 +98,24 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.prqdfilterin
 
         private static void AddToBranch(
             PointRegionQuadTreeNodeBranch branch,
-            double x, double y,
+            double x,
+            double y,
             TL value,
             PointRegionQuadTree<object> tree)
         {
-            switch (branch.Bb.GetQuadrant(x, y))
-            {
+            switch (branch.Bb.GetQuadrant(x, y)) {
                 case QuadrantEnum.NW:
                     branch.Nw = SetOnNode(x, y, value, branch.Nw, tree);
                     break;
+
                 case QuadrantEnum.NE:
                     branch.Ne = SetOnNode(x, y, value, branch.Ne, tree);
                     break;
+
                 case QuadrantEnum.SW:
                     branch.Sw = SetOnNode(x, y, value, branch.Sw, tree);
                     break;
+
                 default:
                     branch.Se = SetOnNode(x, y, value, branch.Se, tree);
                     break;
@@ -137,7 +140,12 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.prqdfilterin
             PointRegionQuadTreeNode sw = new PointRegionQuadTreeNodeLeaf<object>(bbSW, leaf.Level + 1, null, 0);
             PointRegionQuadTreeNode se = new PointRegionQuadTreeNodeLeaf<object>(bbSE, leaf.Level + 1, null, 0);
             var branch = new PointRegionQuadTreeNodeBranch(
-                leaf.Bb, leaf.Level, nw, ne, sw, se);
+                leaf.Bb,
+                leaf.Level,
+                nw,
+                ne,
+                sw,
+                se);
 
             var points = leaf.Points;
             if (points is XYPointWValue<TL>) {
@@ -177,11 +185,11 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.prqdfilterin
 
         private static int SetOnLeaf(
             PointRegionQuadTreeNodeLeaf<object> leaf,
-            double x, double y,
+            double x,
+            double y,
             XYPointWValue<TL> pointXY)
         {
-            if (pointXY.X != x && pointXY.Y != y)
-            {
+            if (pointXY.X != x && pointXY.Y != y) {
                 throw new IllegalStateException();
             }
 
@@ -190,20 +198,18 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.prqdfilterin
 
         private static int SetOnLeaf(
             PointRegionQuadTreeNodeLeaf<object> leaf,
-            double x, double y,
+            double x,
+            double y,
             TL value)
         {
             var currentValue = leaf.Points;
-            if (currentValue == null)
-            {
+            if (currentValue == null) {
                 leaf.Points = new XYPointWValue<TL>(x, y, value);
                 return 1;
             }
 
-            if (currentValue is XYPointWValue<TL> otherXY)
-            {
-                if (otherXY.X == x && otherXY.Y == y)
-                {
+            if (currentValue is XYPointWValue<TL> otherXY) {
+                if (otherXY.X == x && otherXY.Y == y) {
                     otherXY.Value = value;
                     return 0;
                 }
@@ -216,10 +222,8 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.prqdfilterin
             }
 
             var collection = currentValue.Unwrap<XYPointWValue<TL>>();
-            foreach (var other in collection)
-            {
-                if (other.X == x && other.Y == y)
-                {
+            foreach (var other in collection) {
+                if (other.X == x && other.Y == y) {
                     other.Value = value;
                     return 0;
                 }

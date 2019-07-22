@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.configuration.compiler;
 using com.espertech.esper.common.client.hook.aggmultifunc;
@@ -22,6 +23,7 @@ using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.table.compiletime;
 using com.espertech.esper.common.@internal.rettype;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.expression.agg.accessagg
@@ -71,15 +73,23 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.accessagg
 
             // obtain handler
             var ctx = new AggregationMultiFunctionValidationContext(
-                functionName, validationContext.StreamTypeService.EventTypes, positionalParams,
-                validationContext.StatementName, validationContext, config, null, ChildNodes, optionalFilter);
+                functionName,
+                validationContext.StreamTypeService.EventTypes,
+                positionalParams,
+                validationContext.StatementName,
+                validationContext,
+                config,
+                null,
+                ChildNodes,
+                optionalFilter);
             var handler = aggregationMultiFunctionForge.ValidateGetHandler(ctx);
 
             // set of reader
             var epType = handler.ReturnType;
             Type returnType = EPTypeHelper.GetNormalizedClass(epType);
             var forge = new AggregationTableAccessAggReaderForgePlugIn(
-                returnType, (AggregationMultiFunctionTableReaderModeManaged) handler.TableReaderMode);
+                returnType,
+                (AggregationMultiFunctionTableReaderModeManaged) handler.TableReaderMode);
             EventType eventTypeCollection = EPTypeHelper.OptionalIsEventTypeColl(epType);
             EventType eventTypeSingle = EPTypeHelper.OptionalIsEventTypeSingle(epType);
             Type componentTypeCollection = EPTypeHelper.OptionalIsComponentTypeColl(epType);
@@ -109,8 +119,12 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.accessagg
         {
             var future = GetAggFuture(codegenClassScope);
             return ExprDotMethod(
-                future, "getCollectionOfEvents", Constant(column), exprSymbol.GetAddEPS(parent),
-                exprSymbol.GetAddIsNewData(parent), exprSymbol.GetAddExprEvalCtx(parent));
+                future,
+                "getCollectionOfEvents",
+                Constant(column),
+                exprSymbol.GetAddEPS(parent),
+                exprSymbol.GetAddIsNewData(parent),
+                exprSymbol.GetAddExprEvalCtx(parent));
         }
 
         public CodegenExpression EvaluateGetROCollectionScalarCodegen(
@@ -120,8 +134,12 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.accessagg
         {
             var future = GetAggFuture(codegenClassScope);
             return ExprDotMethod(
-                future, "getCollectionScalar", Constant(column), exprSymbol.GetAddEPS(parent),
-                exprSymbol.GetAddIsNewData(parent), exprSymbol.GetAddExprEvalCtx(parent));
+                future,
+                "getCollectionScalar",
+                Constant(column),
+                exprSymbol.GetAddEPS(parent),
+                exprSymbol.GetAddIsNewData(parent),
+                exprSymbol.GetAddExprEvalCtx(parent));
         }
 
         public CodegenExpression EvaluateGetEventBeanCodegen(
@@ -131,8 +149,12 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.accessagg
         {
             var future = GetAggFuture(codegenClassScope);
             return ExprDotMethod(
-                future, "getEventBean", Constant(column), exprSymbol.GetAddEPS(parent),
-                exprSymbol.GetAddIsNewData(parent), exprSymbol.GetAddExprEvalCtx(parent));
+                future,
+                "getEventBean",
+                Constant(column),
+                exprSymbol.GetAddEPS(parent),
+                exprSymbol.GetAddIsNewData(parent),
+                exprSymbol.GetAddExprEvalCtx(parent));
         }
 
         public ExprNodeRenderable EnumForgeRenderable => this;
@@ -169,8 +191,15 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.accessagg
             // at this time 'inside' expressions like 'window(IntPrimitive)' are not handled
             ExprNodeUtilityValidate.GetValidatedSubtree(ExprNodeOrigin.AGGPARAM, ChildNodes, validationContext);
             var ctx = new AggregationMultiFunctionValidationContext(
-                functionName, validationContext.StreamTypeService.EventTypes, positionalParams,
-                validationContext.StatementName, validationContext, config, null, ChildNodes, optionalFilter);
+                functionName,
+                validationContext.StreamTypeService.EventTypes,
+                positionalParams,
+                validationContext.StatementName,
+                validationContext,
+                config,
+                null,
+                ChildNodes,
+                optionalFilter);
             var handlerPlugin = aggregationMultiFunctionForge.ValidateGetHandler(ctx);
             factory = new AggregationForgeFactoryAccessPlugin(this, handlerPlugin);
             return factory;

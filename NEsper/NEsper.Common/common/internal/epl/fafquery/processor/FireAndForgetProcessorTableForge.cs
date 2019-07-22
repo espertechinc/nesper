@@ -12,6 +12,7 @@ using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.epl.table.compiletime;
 using com.espertech.esper.common.@internal.epl.table.core;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.fafquery.processor
@@ -43,9 +44,13 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.processor
             var method = parent.MakeChild(typeof(FireAndForgetProcessorTable), GetType(), classScope);
             var nw = Ref("tbl");
             method.Block
-                .DeclareVar(
-                    typeof(FireAndForgetProcessorTable), nw.Ref, NewInstance(typeof(FireAndForgetProcessorTable)))
-                .SetProperty(nw, "Table", TableDeployTimeResolver.MakeResolveTable(Table, symbols.GetAddInitSvc(method)))
+                .DeclareVar<FireAndForgetProcessorTable>(
+                    nw.Ref,
+                    NewInstance(typeof(FireAndForgetProcessorTable)))
+                .SetProperty(
+                    nw,
+                    "Table",
+                    TableDeployTimeResolver.MakeResolveTable(Table, symbols.GetAddInitSvc(method)))
                 .MethodReturn(nw);
             return LocalMethod(method);
         }

@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.epl.resultset.core;
@@ -34,7 +35,11 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowforall
 
             var eventsPerStream = new EventBean[1];
             ResultSetProcessorUtil.ApplyAggViewResult(
-                processor.AggregationService, processor.ExprEvaluatorContext, newData, oldData, eventsPerStream);
+                processor.AggregationService,
+                processor.ExprEvaluatorContext,
+                newData,
+                oldData,
+                eventsPerStream);
         }
 
         public void ProcessJoin(
@@ -47,7 +52,10 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowforall
             }
 
             ResultSetProcessorUtil.ApplyAggJoinResult(
-                processor.AggregationService, processor.ExprEvaluatorContext, newEvents, oldEvents);
+                processor.AggregationService,
+                processor.ExprEvaluatorContext,
+                newEvents,
+                oldEvents);
         }
 
         public UniformPair<EventBean[]> OutputView(bool isSynthesize)

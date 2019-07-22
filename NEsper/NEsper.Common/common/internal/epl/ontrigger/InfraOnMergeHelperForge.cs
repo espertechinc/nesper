@@ -9,6 +9,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.annotation;
 using com.espertech.esper.common.client.meta;
@@ -28,6 +29,7 @@ using com.espertech.esper.common.@internal.epl.updatehelper;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat.collections;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.ontrigger
@@ -67,21 +69,33 @@ namespace com.espertech.esper.common.@internal.epl.ontrigger
                         if (item is OnTriggerMergeActionInsert) {
                             var insertDesc = (OnTriggerMergeActionInsert) item;
                             var forge = SetupInsert(
-                                infraName, infraEventType, insertDesc, triggeringEventType, triggeringStreamName,
-                                statementRawInfo, services, table != null);
+                                infraName,
+                                infraEventType,
+                                insertDesc,
+                                triggeringEventType,
+                                triggeringStreamName,
+                                statementRawInfo,
+                                services,
+                                table != null);
                             actions.Add(forge);
                             hasInsertIntoTableAction = forge.InsertIntoTable != null;
                         }
                         else if (item is OnTriggerMergeActionUpdate) {
                             var updateDesc = (OnTriggerMergeActionUpdate) item;
                             EventBeanUpdateHelperForge updateHelper = EventBeanUpdateHelperForgeFactory.Make(
-                                infraName, infraEventType, updateDesc.Assignments, onTriggerDesc.OptionalAsName,
-                                triggeringEventType, true, statementRawInfo.StatementName,
+                                infraName,
+                                infraEventType,
+                                updateDesc.Assignments,
+                                onTriggerDesc.OptionalAsName,
+                                triggeringEventType,
+                                true,
+                                statementRawInfo.StatementName,
                                 services.EventTypeAvroHandler);
                             ExprNode filterEval = updateDesc.OptionalWhereClause;
                             if (table != null) {
                                 TableUpdateStrategyFactory.ValidateTableUpdateOnMerge(
-                                    table, updateHelper.UpdateItemsPropertyNames);
+                                    table,
+                                    updateHelper.UpdateItemsPropertyNames);
                             }
 
                             var forge = new InfraOnMergeActionUpdForge(filterEval, updateHelper, table);
@@ -102,8 +116,12 @@ namespace com.espertech.esper.common.@internal.epl.ontrigger
                     }
                     catch (Exception ex) when (ex is ExprValidationException || ex is EPException) {
                         var isNot = item is OnTriggerMergeActionInsert;
-                        var message = "Validation failed in when-" + (isNot ? "not-" : "") + "matched (clause " +
-                                      count + "): " + ex.Message;
+                        var message = "Validation failed in when-" +
+                                      (isNot ? "not-" : "") +
+                                      "matched (clause " +
+                                      count +
+                                      "): " +
+                                      ex.Message;
                         throw new ExprValidationException(message, ex);
                     }
                 }
@@ -118,8 +136,14 @@ namespace com.espertech.esper.common.@internal.epl.ontrigger
 
             if (onTriggerDesc.OptionalInsertNoMatch != null) {
                 insertUnmatched = SetupInsert(
-                    infraName, infraEventType, onTriggerDesc.OptionalInsertNoMatch, triggeringEventType,
-                    triggeringStreamName, statementRawInfo, services, table != null);
+                    infraName,
+                    infraEventType,
+                    onTriggerDesc.OptionalInsertNoMatch,
+                    triggeringEventType,
+                    triggeringStreamName,
+                    statementRawInfo,
+                    services,
+                    table != null);
             }
 
             requiresTableWriteLock = hasDeleteAction || hasInsertIntoTableAction || hasUpdateAction;
@@ -133,12 +157,15 @@ namespace com.espertech.esper.common.@internal.epl.ontrigger
             var method = parent.MakeChild(typeof(InfraOnMergeHelper), GetType(), classScope);
             method.Block
                 .DeclareVar<InfraOnMergeActionIns>(
-                    "insertUnmatched", insertUnmatched == null ? ConstantNull() : insertUnmatched.Make(method, symbols, classScope))
+                    "insertUnmatched",
+                    insertUnmatched == null ? ConstantNull() : insertUnmatched.Make(method, symbols, classScope))
                 .DeclareVar<IList<object>>("matched", MakeList(matched, method, symbols, classScope))
                 .DeclareVar<IList<object>>("unmatched", MakeList(unmatched, method, symbols, classScope))
                 .MethodReturn(
                     NewInstance<InfraOnMergeHelper>(
-                        Ref("insertUnmatched"), Ref("matched"), Ref("unmatched"),
+                        Ref("insertUnmatched"),
+                        Ref("matched"),
+                        Ref("unmatched"),
                         Constant(requiresTableWriteLock)));
             return LocalMethod(method);
         }
@@ -149,9 +176,10 @@ namespace com.espertech.esper.common.@internal.epl.ontrigger
             SAIFFInitializeSymbol symbols,
             CodegenClassScope classScope)
         {
-            var method = parent.MakeChild(typeof(IList<object>), GetType(), classScope);
-            method.Block.DeclareVar(
-                typeof(IList<object>), typeof(InfraOnMergeMatch), "list", NewInstance<List<object>>(Constant(items.Count)));
+            var method = parent.MakeChild(typeof(IList<InfraOnMergeMatch>), GetType(), classScope);
+            method.Block.DeclareVar<IList<InfraOnMergeMatch>>(
+                "list",
+                NewInstance<List<InfraOnMergeMatch>>(Constant(items.Count)));
             foreach (var item in items) {
                 method.Block.ExprDotMethod(Ref("list"), "add", item.Make(method, symbols, classScope));
             }
@@ -183,22 +211,46 @@ namespace com.espertech.esper.common.@internal.epl.ontrigger
 
             // Set up event types for select-clause evaluation: The first type does not contain anything as its the named-window or table row which is not present for insert
             var eventTypeMetadata = new EventTypeMetadata(
-                "merge_infra_insert", statementRawInfo.ModuleName, EventTypeTypeClass.STREAM,
-                EventTypeApplicationType.MAP, NameAccessModifier.TRANSIENT, EventTypeBusModifier.NONBUS, false,
+                "merge_infra_insert",
+                statementRawInfo.ModuleName,
+                EventTypeTypeClass.STREAM,
+                EventTypeApplicationType.MAP,
+                NameAccessModifier.TRANSIENT,
+                EventTypeBusModifier.NONBUS,
+                false,
                 EventTypeIdPair.Unassigned());
             EventType dummyTypeNoProperties = BaseNestableEventUtil.MakeMapTypeCompileTime(
-                eventTypeMetadata, Collections.GetEmptyMap<string, object>(), null, null, null, null,
-                services.BeanEventTypeFactoryPrivate, services.EventTypeCompileTimeResolver);
+                eventTypeMetadata,
+                Collections.GetEmptyMap<string, object>(),
+                null,
+                null,
+                null,
+                null,
+                services.BeanEventTypeFactoryPrivate,
+                services.EventTypeCompileTimeResolver);
             var eventTypes = new EventType[] {dummyTypeNoProperties, triggeringEventType};
             var streamNames = new string[] {UuidGenerator.Generate(), triggeringStreamName};
             StreamTypeService streamTypeService = new StreamTypeServiceImpl(
-                eventTypes, streamNames, new bool[1], false, false);
+                eventTypes,
+                streamNames,
+                new bool[1],
+                false,
+                false);
 
             // Get select expr processor
             var selectClause = selectNoWildcard.ToArray();
             var args = new SelectProcessorArgs(
-                selectClause, null, false, null, null, streamTypeService,
-                null, false, statementRawInfo.Annotations, statementRawInfo, services);
+                selectClause,
+                null,
+                false,
+                null,
+                null,
+                streamTypeService,
+                null,
+                false,
+                statementRawInfo.Annotations,
+                statementRawInfo,
+                services);
             if (isTable && streamName.Equals(infraName)) {
                 args.OptionalInsertIntoEventType = infraType;
             }

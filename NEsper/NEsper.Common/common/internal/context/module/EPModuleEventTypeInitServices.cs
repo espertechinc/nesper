@@ -8,6 +8,7 @@
 
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.@event.path;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.context.module
@@ -20,8 +21,8 @@ namespace com.espertech.esper.common.@internal.context.module
 
     public static class EPModuleEventTypeInitServicesConstants
     {
-        public static readonly string GETEVENTTYPECOLLECTOR = "getEventTypeCollector";
-        public static readonly string GETEVENTTYPERESOLVER = EPStatementInitServicesConstants.GETEVENTTYPERESOLVER;
+        public static readonly string GETEVENTTYPECOLLECTOR = "EventTypeCollector";
+        public static readonly string GETEVENTTYPERESOLVER = EPStatementInitServicesConstants.EVENTTYPERESOLVER;
         public static readonly CodegenExpressionRef REF = Ref("epModuleETInit");
     }
 } // end of namespace

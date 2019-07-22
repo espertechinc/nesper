@@ -11,6 +11,7 @@ using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.@event.core;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.historical.indexingstrategy
@@ -43,20 +44,25 @@ namespace com.espertech.esper.common.@internal.epl.historical.indexingstrategy
         {
             var method = parent.MakeChild(typeof(PollResultIndexingStrategyInKeywordMulti), GetType(), classScope);
 
-            method.Block.DeclareVar(
-                typeof(EventPropertyValueGetter[]), "getters",
+            method.Block.DeclareVar<EventPropertyValueGetter[]>(
+                "getters",
                 NewArrayByLength(typeof(EventPropertyValueGetter), Constant(propertyNames.Length)));
             for (var i = 0; i < propertyNames.Length; i++) {
                 var getter = ((EventTypeSPI) eventType).GetGetterSPI(propertyNames[i]);
                 var getterType = eventType.GetPropertyType(propertyNames[i]);
                 var eval = EventTypeUtility.CodegenGetterWCoerce(
-                    getter, getterType, getterType, method, GetType(), classScope);
+                    getter,
+                    getterType,
+                    getterType,
+                    method,
+                    GetType(),
+                    classScope);
                 method.Block.AssignArrayElement(Ref("getters"), Constant(i), eval);
             }
 
             method.Block
-                .DeclareVar(
-                    typeof(PollResultIndexingStrategyInKeywordMulti), "strat",
+                .DeclareVar<PollResultIndexingStrategyInKeywordMulti>(
+                    "strat",
                     NewInstance(typeof(PollResultIndexingStrategyInKeywordMulti)))
                 .SetProperty(Ref("strat"), "StreamNum", Constant(streamNum))
                 .SetProperty(Ref("strat"), "PropertyNames", Constant(propertyNames))

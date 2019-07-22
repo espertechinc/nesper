@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
@@ -79,9 +80,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             Type typeOne = ChildNodes[0].Forge.EvaluationType.GetBoxedType();
 
             // collections, array or map not supported
-            if (typeOne.IsArray
-                || typeOne.IsGenericCollection()
-                || typeOne.IsGenericStringDictionary()) {
+            if (typeOne.IsArray || typeOne.IsGenericCollection() || typeOne.IsGenericStringDictionary()) {
                 throw new ExprValidationException(
                     "Collection or array comparison is not allowed for the IN, ANY, SOME or ALL keywords");
             }

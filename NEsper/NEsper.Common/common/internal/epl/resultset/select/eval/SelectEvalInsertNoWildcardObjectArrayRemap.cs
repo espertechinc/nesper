@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -46,8 +47,15 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
             CodegenClassScope codegenClassScope)
         {
             return SelectEvalInsertNoWildcardObjectArrayRemapWWiden.ProcessCodegen(
-                resultEventTypeExpr, eventBeanFactory, codegenMethodScope, exprSymbol, codegenClassScope, context.ExprForges,
-                resultEventType.PropertyNames, remapped, null);
+                resultEventTypeExpr,
+                eventBeanFactory,
+                codegenMethodScope,
+                exprSymbol,
+                codegenClassScope,
+                context.ExprForges,
+                resultEventType.PropertyNames,
+                remapped,
+                null);
         }
     }
 } // end of namespace

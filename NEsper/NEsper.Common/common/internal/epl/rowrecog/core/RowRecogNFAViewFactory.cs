@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.collection;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.configuration.runtime;
@@ -58,7 +59,8 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
             ViewFactoryContext viewFactoryContext,
             EPStatementInitServices services)
         {
-            ConfigurationRuntimeMatchRecognize matchRecognize = services.RuntimeSettingsService.ConfigurationRuntime.MatchRecognize;
+            ConfigurationRuntimeMatchRecognize matchRecognize =
+                services.RuntimeSettingsService.ConfigurationRuntime.MatchRecognize;
             this.trackMaxStates = matchRecognize != null && matchRecognize.MaxStates != null;
 
             // build start states

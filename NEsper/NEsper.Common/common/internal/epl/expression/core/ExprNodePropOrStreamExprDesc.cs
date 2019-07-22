@@ -22,7 +22,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
 
         public int StreamNum { get; }
 
-        public string Textual => "expression '" + ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(Originator) 
-                                                + "' against stream " + StreamNum;
+        public string Textual => "expression '" +
+                                 ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(Originator) +
+                                 "' against stream " +
+                                 StreamNum;
     }
 } // end of namespace

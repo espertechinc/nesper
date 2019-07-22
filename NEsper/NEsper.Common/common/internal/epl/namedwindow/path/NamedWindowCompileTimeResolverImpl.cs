@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.collection;
 using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.collection;
@@ -52,7 +53,10 @@ namespace com.espertech.esper.common.@internal.epl.namedwindow.path
             try {
                 var pair = path.GetAnyModuleExpectSingle(namedWindowName, moduleUses);
                 if (pair != null) {
-                    if (!NameAccessModifierExtensions.Visible(pair.First.EventType.Metadata.AccessModifier, pair.First.NamedWindowModuleName, moduleName)) {
+                    if (!NameAccessModifierExtensions.Visible(
+                        pair.First.EventType.Metadata.AccessModifier,
+                        pair.First.NamedWindowModuleName,
+                        moduleName)) {
                         return null;
                     }
 

@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.compile.stage1.spec;
@@ -63,7 +64,8 @@ namespace com.espertech.esper.common.@internal.statement.helper
             StatementCompileTimeServices compileTimeServices)
         {
             var validationContext = new ExprValidationContextBuilder(streamTypeService, raw, compileTimeServices)
-                .WithAllowBindingConsumption(allowTableConsumption).Build();
+                .WithAllowBindingConsumption(allowTableConsumption)
+                .Build();
             var validated = ExprNodeUtilityValidate.GetValidatedSubtree(exprNodeOrigin, exprNode, validationContext);
             ValidateNoAggregations(validated, errorMsg);
             return validated;
@@ -85,7 +87,8 @@ namespace com.espertech.esper.common.@internal.statement.helper
             }
 
             if (hasDataWindow.Get()) {
-                throw new ExprValidationException(NamedWindowManagementServiceConstants.ERROR_MSG_NO_DATAWINDOW_ALLOWED);
+                throw new ExprValidationException(
+                    NamedWindowManagementServiceConstants.ERROR_MSG_NO_DATAWINDOW_ALLOWED);
             }
         }
 
@@ -104,14 +107,22 @@ namespace com.espertech.esper.common.@internal.statement.helper
 
                 // Validate where clause, initializing nodes to the stream ids used
                 try {
-                    var validationContext = new ExprValidationContextBuilder(typeService, statementRawInfo, compileTimeServices)
+                    var validationContext = new ExprValidationContextBuilder(
+                            typeService,
+                            statementRawInfo,
+                            compileTimeServices)
                         .WithViewResourceDelegate(viewResourceDelegate)
                         .WithAllowBindingConsumption(true)
                         .WithIntoTableName(intoTableName)
                         .Build();
-                    whereClause = ExprNodeUtilityValidate.GetValidatedSubtree(ExprNodeOrigin.FILTER, whereClause, validationContext);
-                    if (whereClause.Forge.EvaluationType != typeof(bool) && whereClause.Forge.EvaluationType != typeof(bool?)) {
-                        throw new ExprValidationException("The where-clause filter expression must return a boolean value");
+                    whereClause = ExprNodeUtilityValidate.GetValidatedSubtree(
+                        ExprNodeOrigin.FILTER,
+                        whereClause,
+                        validationContext);
+                    if (whereClause.Forge.EvaluationType != typeof(bool) &&
+                        whereClause.Forge.EvaluationType != typeof(bool?)) {
+                        throw new ExprValidationException(
+                            "The where-clause filter expression must return a boolean value");
                     }
 
                     whereClauseValidated = whereClause;
@@ -120,7 +131,8 @@ namespace com.espertech.esper.common.@internal.statement.helper
                     IList<ExprAggregateNode> aggregateNodes = new List<ExprAggregateNode>();
                     ExprAggregateNodeUtil.GetAggregatesBottomUp(whereClause, aggregateNodes);
                     if (!aggregateNodes.IsEmpty()) {
-                        throw new ExprValidationException("An aggregate function may not appear in a WHERE clause (use the HAVING clause)");
+                        throw new ExprValidationException(
+                            "An aggregate function may not appear in a WHERE clause (use the HAVING clause)");
                     }
                 }
                 catch (ExprValidationException ex) {
@@ -128,52 +140,75 @@ namespace com.espertech.esper.common.@internal.statement.helper
                 }
             }
 
-            if (statementSpec.OutputLimitSpec != null && (statementSpec.OutputLimitSpec.WhenExpressionNode != null ||
-                                                          statementSpec.OutputLimitSpec.AndAfterTerminateExpr != null)) {
+            if (statementSpec.OutputLimitSpec != null &&
+                (statementSpec.OutputLimitSpec.WhenExpressionNode != null ||
+                 statementSpec.OutputLimitSpec.AndAfterTerminateExpr != null)) {
                 // Validate where clause, initializing nodes to the stream ids used
                 EventType outputLimitType = OutputConditionExpressionTypeUtil.GetBuiltInEventType(
-                    statementRawInfo.ModuleName, compileTimeServices.BeanEventTypeFactoryPrivate);
+                    statementRawInfo.ModuleName,
+                    compileTimeServices.BeanEventTypeFactoryPrivate);
                 StreamTypeService typeServiceOutputWhen = new StreamTypeServiceImpl(
-                    new[] {outputLimitType}, new string[] {null}, new[] {true}, false, false);
-                var validationContext = new ExprValidationContextBuilder(typeServiceOutputWhen, statementRawInfo, compileTimeServices)
-                    .WithIntoTableName(intoTableName).Build();
+                    new[] {outputLimitType},
+                    new string[] {null},
+                    new[] {true},
+                    false,
+                    false);
+                var validationContext = new ExprValidationContextBuilder(
+                        typeServiceOutputWhen,
+                        statementRawInfo,
+                        compileTimeServices)
+                    .WithIntoTableName(intoTableName)
+                    .Build();
 
                 var outputLimitWhenNode = statementSpec.OutputLimitSpec.WhenExpressionNode;
                 if (outputLimitWhenNode != null) {
                     outputLimitWhenNode = ExprNodeUtilityValidate.GetValidatedSubtree(
-                        ExprNodeOrigin.OUTPUTLIMIT, outputLimitWhenNode, validationContext);
+                        ExprNodeOrigin.OUTPUTLIMIT,
+                        outputLimitWhenNode,
+                        validationContext);
                     statementSpec.OutputLimitSpec.WhenExpressionNode = outputLimitWhenNode;
 
                     if (outputLimitWhenNode.Forge.EvaluationType.GetBoxedType() != typeof(bool?)) {
-                        throw new ExprValidationException("The when-trigger expression in the OUTPUT WHEN clause must return a boolean-type value");
+                        throw new ExprValidationException(
+                            "The when-trigger expression in the OUTPUT WHEN clause must return a boolean-type value");
                     }
 
-                    ValidateNoAggregations(outputLimitWhenNode, "An aggregate function may not appear in a OUTPUT LIMIT clause");
+                    ValidateNoAggregations(
+                        outputLimitWhenNode,
+                        "An aggregate function may not appear in a OUTPUT LIMIT clause");
                 }
 
                 // validate and-terminate expression if provided
                 if (statementSpec.OutputLimitSpec.AndAfterTerminateExpr != null) {
                     if (statementSpec.OutputLimitSpec.RateType != OutputLimitRateType.WHEN_EXPRESSION &&
                         statementSpec.OutputLimitSpec.RateType != OutputLimitRateType.TERM) {
-                        throw new ExprValidationException("A terminated-and expression must be used with the OUTPUT WHEN clause");
+                        throw new ExprValidationException(
+                            "A terminated-and expression must be used with the OUTPUT WHEN clause");
                     }
 
                     var validated = ExprNodeUtilityValidate.GetValidatedSubtree(
-                        ExprNodeOrigin.OUTPUTLIMIT, statementSpec.OutputLimitSpec.AndAfterTerminateExpr, validationContext);
+                        ExprNodeOrigin.OUTPUTLIMIT,
+                        statementSpec.OutputLimitSpec.AndAfterTerminateExpr,
+                        validationContext);
                     statementSpec.OutputLimitSpec.AndAfterTerminateExpr = validated;
 
                     if (validated.Forge.EvaluationType.GetBoxedType() != typeof(bool?)) {
-                        throw new ExprValidationException("The terminated-and expression must return a boolean-type value");
+                        throw new ExprValidationException(
+                            "The terminated-and expression must return a boolean-type value");
                     }
 
-                    ValidateNoAggregations(validated, "An aggregate function may not appear in a terminated-and clause");
+                    ValidateNoAggregations(
+                        validated,
+                        "An aggregate function may not appear in a terminated-and clause");
                 }
 
                 // validate then-expression
                 ValidateThenSetAssignments(statementSpec.OutputLimitSpec.ThenExpressions, validationContext);
 
                 // validate after-terminated then-expression
-                ValidateThenSetAssignments(statementSpec.OutputLimitSpec.AndAfterTerminateThenExpressions, validationContext);
+                ValidateThenSetAssignments(
+                    statementSpec.OutputLimitSpec.AndAfterTerminateThenExpressions,
+                    validationContext);
             }
 
             for (var outerJoinCount = 0; outerJoinCount < statementSpec.OuterJoinDescList.Count; outerJoinCount++) {
@@ -182,7 +217,12 @@ namespace com.espertech.esper.common.@internal.statement.helper
                 // validate on-expression nodes, if provided
                 if (outerJoinDesc.OptLeftNode != null) {
                     var streamIdPair = ValidateOuterJoinPropertyPair(
-                        outerJoinDesc.OptLeftNode, outerJoinDesc.OptRightNode, outerJoinCount, typeService, viewResourceDelegate, statementRawInfo,
+                        outerJoinDesc.OptLeftNode,
+                        outerJoinDesc.OptRightNode,
+                        outerJoinCount,
+                        typeService,
+                        viewResourceDelegate,
+                        statementRawInfo,
                         compileTimeServices
                     );
 
@@ -192,14 +232,21 @@ namespace com.espertech.esper.common.@internal.statement.helper
                         streamSet.Add(streamIdPair.Second);
                         for (var i = 0; i < outerJoinDesc.AdditionalLeftNodes.Length; i++) {
                             var streamIdPairAdd = ValidateOuterJoinPropertyPair(
-                                outerJoinDesc.AdditionalLeftNodes[i], outerJoinDesc.AdditionalRightNodes[i], outerJoinCount, typeService,
-                                viewResourceDelegate, statementRawInfo, compileTimeServices
+                                outerJoinDesc.AdditionalLeftNodes[i],
+                                outerJoinDesc.AdditionalRightNodes[i],
+                                outerJoinCount,
+                                typeService,
+                                viewResourceDelegate,
+                                statementRawInfo,
+                                compileTimeServices
                             );
 
                             // make sure all additional properties point to the same two streams
-                            if (!streamSet.Contains(streamIdPairAdd.First) || !streamSet.Contains(streamIdPairAdd.Second)) {
-                                var message = "Outer join ON-clause columns must refer to properties of the same joined streams" +
-                                              " when using multiple columns in the on-clause";
+                            if (!streamSet.Contains(streamIdPairAdd.First) ||
+                                !streamSet.Contains(streamIdPairAdd.Second)) {
+                                var message =
+                                    "Outer join ON-clause columns must refer to properties of the same joined streams" +
+                                    " when using multiple columns in the on-clause";
                                 throw new ExprValidationException("Error validating outer-join expression: " + message);
                             }
                         }
@@ -226,8 +273,14 @@ namespace com.espertech.esper.common.@internal.statement.helper
             equalsNode.AddChildNode(leftNode);
             equalsNode.AddChildNode(rightNode);
             try {
-                var validationContext = new ExprValidationContextBuilder(typeService, statementRawInfo, compileTimeServices)
-                    .WithViewResourceDelegate(viewResourceDelegate).WithAllowBindingConsumption(true).WithIsFilterExpression(true).Build();
+                var validationContext = new ExprValidationContextBuilder(
+                        typeService,
+                        statementRawInfo,
+                        compileTimeServices)
+                    .WithViewResourceDelegate(viewResourceDelegate)
+                    .WithAllowBindingConsumption(true)
+                    .WithIsFilterExpression(true)
+                    .Build();
                 ExprNodeUtilityValidate.GetValidatedSubtree(ExprNodeOrigin.JOINON, equalsNode, validationContext);
             }
             catch (ExprValidationException ex) {
@@ -246,7 +299,8 @@ namespace com.espertech.esper.common.@internal.statement.helper
             var expectedStreamJoined = outerJoinCount + 1;
             if (streamIdLeft != expectedStreamJoined && streamIdRight != expectedStreamJoined) {
                 var message = "Outer join ON-clause must refer to at least one property of the joined stream" +
-                              " for stream " + expectedStreamJoined;
+                              " for stream " +
+                              expectedStreamJoined;
                 throw new ExprValidationException("Error validating outer-join expression: " + message);
             }
 
@@ -262,7 +316,9 @@ namespace com.espertech.esper.common.@internal.statement.helper
 
             if (badPropertyName != null) {
                 var message = "Outer join ON-clause invalid scope for property" +
-                              " '" + badPropertyName + "', expecting the current or a prior stream scope";
+                              " '" +
+                              badPropertyName +
+                              "', expecting the current or a prior stream scope";
                 throw new ExprValidationException("Error validating outer-join expression: " + message);
             }
 

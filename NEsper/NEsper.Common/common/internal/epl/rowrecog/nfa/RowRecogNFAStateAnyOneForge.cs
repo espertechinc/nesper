@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.context.aifactory.core;
@@ -31,7 +32,12 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.nfa
             int streamNum,
             bool multiple)
             : base(
-                nodeNum, variableName, streamNum, multiple, null, false)
+                nodeNum,
+                variableName,
+                streamNum,
+                multiple,
+                null,
+                false)
         {
         }
 

@@ -41,12 +41,12 @@ namespace com.espertech.esper.regressionlib.suite.client.instrument
         {
             public void Run(RegressionEnvironment env)
             {
-                var compiled = env.CompileWBusPublicType("create schema OrderEvent(price double)");
+                var compiled = env.CompileWBusPublicType("create schema OrderEvent(Price double)");
                 env.Deploy(compiled);
                 var path = new RegressionPath();
                 path.Add(compiled);
 
-                var epl = "@Name('All-Order-Events') @Audit('stream,property') select price from OrderEvent";
+                var epl = "@Name('All-Order-Events') @Audit('stream,property') select Price from OrderEvent";
                 env.CompileDeploy(epl, path).AddListener("All-Order-Events");
 
                 if (EventRepresentationChoiceExtensions.GetEngineDefault(env.Configuration).IsObjectArrayEvent()) {
@@ -155,7 +155,7 @@ namespace com.espertech.esper.regressionlib.suite.client.instrument
                 // pattern
                 AUDITLOG.Info("*** Pattern: ");
                 env.CompileDeploy(
-                        "@Name('ABC') @Audit('pattern') select a.IntPrimitive as val0 from pattern [a=SupportBean => b=SupportBean_ST0]")
+                        "@Name('ABC') @Audit('pattern') select a.IntPrimitive as val0 from pattern [a=SupportBean -> b=SupportBean_ST0]")
                     .AddListener("ABC");
                 env.SendEventBean(new SupportBean("E1", 1));
                 env.SendEventBean(new SupportBean_ST0("E2", 2));

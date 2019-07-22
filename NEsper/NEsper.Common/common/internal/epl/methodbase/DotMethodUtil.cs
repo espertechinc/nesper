@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+
 using com.espertech.esper.common.@internal.epl.enummethod.dot;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.util;
@@ -114,7 +115,10 @@ namespace com.espertech.esper.common.@internal.epl.methodbase
                 }
             }
 
-            var message = string.Format("Parameters mismatch for {0} method '{1}', the method ", methodType.GetTypeName(), methodUsedName);
+            var message = string.Format(
+                "Parameters mismatch for {0} method '{1}', the method ",
+                methodType.GetTypeName(),
+                methodUsedName);
             if (bestMatch != null) {
                 var buf = new StringWriter();
                 buf.Write(bestMatch.ToStringFootprint(isLambdaApplies));
@@ -138,8 +142,11 @@ namespace com.espertech.esper.common.@internal.epl.methodbase
                 }
 
                 throw new ExprValidationException(
-                    message + "has multiple footprints accepting " + buf +
-                    ", but receives " + DotMethodFP.ToStringProvided(providedFootprint, isLambdaApplies));
+                    message +
+                    "has multiple footprints accepting " +
+                    buf +
+                    ", but receives " +
+                    DotMethodFP.ToStringProvided(providedFootprint, isLambdaApplies));
             }
         }
 
@@ -160,10 +167,12 @@ namespace com.espertech.esper.common.@internal.epl.methodbase
 
                 EPLValidationUtil.ValidateParameterType(
                     methodUsedName,
-                    type.GetTypeName(), false,
+                    type.GetTypeName(),
+                    false,
                     found.Type,
                     found.SpecificType,
-                    provided.ReturnType, i,
+                    provided.ReturnType,
+                    i,
                     provided.Expression);
             }
         }

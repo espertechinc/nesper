@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.compile.stage1.spec;
 using com.espertech.esper.common.@internal.epl.expression.core;
@@ -57,7 +58,11 @@ namespace com.espertech.esper.common.@internal.context.aifactory.update
                     wideners[i] = TypeWidenerFactory.GetCheckPropertyAssignType(
                         ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(assignmentPair.Second),
                         assignmentPair.Second.Forge.EvaluationType,
-                        writableProperty.PropertyType, assignmentPair.First, false, null, null);
+                        writableProperty.PropertyType,
+                        assignmentPair.First,
+                        false,
+                        null,
+                        null);
                 }
                 catch (TypeWidenerException ex) {
                     throw new ExprValidationException(ex.Message, ex);
@@ -72,8 +77,13 @@ namespace com.espertech.esper.common.@internal.context.aifactory.update
             }
 
             return new InternalEventRouterDescForge(
-                copyMethod, wideners, eventType, annotations, desc.OptionalWhereClause,
-                properties, expressions);
+                copyMethod,
+                wideners,
+                eventType,
+                annotations,
+                desc.OptionalWhereClause,
+                properties,
+                expressions);
         }
     }
 } // end of namespace

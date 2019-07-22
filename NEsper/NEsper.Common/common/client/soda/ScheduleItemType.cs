@@ -50,10 +50,13 @@ namespace com.espertech.esper.common.client.soda
             switch (value) {
                 case ScheduleItemType.WILDCARD:
                     return ("*");
+
                 case ScheduleItemType.LASTDAY:
                     return ("last");
+
                 case ScheduleItemType.WEEKDAY:
                     return ("weekday");
+
                 case ScheduleItemType.LASTWEEKDAY:
                     return ("lastweekday");
             }

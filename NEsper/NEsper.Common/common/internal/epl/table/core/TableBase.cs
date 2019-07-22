@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.epl.agg.core;
@@ -86,7 +87,12 @@ namespace com.espertech.esper.common.@internal.epl.table.core
             IndexMultiKey indexMultiKey)
         {
             metaData.IndexMetadata.AddIndexExplicit(
-                false, indexMultiKey, indexName, indexModuleName, explicitIndexDesc, deploymentId);
+                false,
+                indexMultiKey,
+                indexName,
+                indexModuleName,
+                explicitIndexDesc,
+                deploymentId);
             foreach (var callback in updateStrategyRedoCallbacks) {
                 callback.InitTableUpdateStrategy(this);
             }
@@ -151,7 +157,8 @@ namespace com.espertech.esper.common.@internal.epl.table.core
 
         public TableInstance TableInstanceNoContextNoRemake {
             get {
-                var statementResourceService = statementContextCreateTable.StatementCPCacheService.StatementResourceService;
+                var statementResourceService =
+                    statementContextCreateTable.StatementCPCacheService.StatementResourceService;
                 var holder = statementResourceService.Unpartitioned;
                 return holder == null ? null : holder.TableInstance;
             }

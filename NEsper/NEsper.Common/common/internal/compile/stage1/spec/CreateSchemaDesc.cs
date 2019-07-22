@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.soda;
 
@@ -99,16 +100,21 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
             switch (keywordNodeText.ToLowerInvariant()) {
                 case "variant":
                     return AssignedType.VARIANT;
+
                 case "map":
                     return AssignedType.MAP;
+
                 case "objectarray":
                     return AssignedType.OBJECTARRAY;
+
                 case "avro":
                     return AssignedType.AVRO;
             }
 
             throw new EPException(
-                "Expected 'variant', 'map', 'objectarray' or 'avro' keyword after create-schema clause but encountered '" + keywordNodeText + "'");
+                "Expected 'variant', 'map', 'objectarray' or 'avro' keyword after create-schema clause but encountered '" +
+                keywordNodeText +
+                "'");
         }
 
         public static AssignedType MapFrom(CreateSchemaClauseTypeDef? typeDefinition)
@@ -117,10 +123,13 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
                 switch (typeDefinition.Value) {
                     case CreateSchemaClauseTypeDef.NONE:
                         return AssignedType.NONE;
+
                     case CreateSchemaClauseTypeDef.MAP:
                         return AssignedType.MAP;
+
                     case CreateSchemaClauseTypeDef.OBJECTARRAY:
                         return AssignedType.OBJECTARRAY;
+
                     case CreateSchemaClauseTypeDef.AVRO:
                         return AssignedType.AVRO;
                 }
@@ -134,12 +143,16 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
             switch (value) {
                 case AssignedType.VARIANT:
                     return CreateSchemaClauseTypeDef.VARIANT;
+
                 case AssignedType.MAP:
                     return CreateSchemaClauseTypeDef.MAP;
+
                 case AssignedType.OBJECTARRAY:
                     return CreateSchemaClauseTypeDef.OBJECTARRAY;
+
                 case AssignedType.AVRO:
                     return CreateSchemaClauseTypeDef.AVRO;
+
                 default:
                     return CreateSchemaClauseTypeDef.NONE;
             }

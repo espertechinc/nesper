@@ -43,8 +43,11 @@ namespace com.espertech.esper.common.@internal.epl.join.indexlookupplan
         {
             var index = (PropertyCompositeEventTable) eventTables[0];
             return new CompositeTableLookupStrategy(
-                eventTypes[LookupStream], LookupStream,
-                hashKeys, rangeKeyPairs, index);
+                eventTypes[LookupStream],
+                LookupStream,
+                hashKeys,
+                rangeKeyPairs,
+                index);
         }
     }
 } // end of namespace

@@ -11,6 +11,7 @@ using com.espertech.esper.common.client.hook.forgeinject;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.agg.core;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 using static com.espertech.esper.common.@internal.epl.expression.codegen.ExprForgeCodegenNames;
 
@@ -20,7 +21,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.plugin
     {
         private readonly AggregationForgeFactoryAccessPlugin parent;
         private readonly AggregationMultiFunctionAccessorModeManaged mode;
-        private CodegenExpressionField accessorField;
+        private CodegenExpressionField _accessorField;
 
         public AggregationAccessorForgePlugin(
             AggregationForgeFactoryAccessPlugin parent,
@@ -56,16 +57,26 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.plugin
             CodegenMethod method,
             CodegenClassScope classScope)
         {
-            if (accessorField == null) {
+            if (_accessorField == null) {
                 InjectionStrategyClassNewInstance injectionStrategy =
                     (InjectionStrategyClassNewInstance) mode.InjectionStrategyAggregationAccessorFactory;
-                accessorField = classScope.AddFieldUnshared(
-                    true, typeof(AggregationMultiFunctionAccessor),
-                    ExprDotMethod(injectionStrategy.GetInitializationExpression(classScope), "newAccessor", ConstantNull()));
+                _accessorField = classScope.AddFieldUnshared(
+                    true,
+                    typeof(AggregationMultiFunctionAccessor),
+                    ExprDotMethod(
+                        injectionStrategy.GetInitializationExpression(classScope),
+                        "newAccessor",
+                        ConstantNull()));
             }
 
             method.Block.MethodReturn(
-                ExprDotMethod(accessorField, getterMethod, RefCol("state", column), REF_EPS, REF_ISNEWDATA, REF_EXPREVALCONTEXT));
+                ExprDotMethod(
+                    _accessorField,
+                    getterMethod,
+                    RefCol("state", column),
+                    REF_EPS,
+                    REF_ISNEWDATA,
+                    REF_EXPREVALCONTEXT));
         }
     }
 } // end of namespace

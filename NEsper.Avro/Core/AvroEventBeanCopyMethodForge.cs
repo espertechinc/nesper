@@ -30,7 +30,9 @@ namespace NEsper.Avro.Core
             var factory = classScope.AddOrGetFieldSharable(EventBeanTypedEventFactoryCodegenField.INSTANCE);
             return CodegenExpressionBuilder.NewInstance(
                 typeof(AvroEventBeanCopyMethod),
-                CodegenExpressionBuilder.Cast(typeof(AvroEventType), EventTypeUtility.ResolveTypeCodegen(_avroEventType, EPStatementInitServicesConstants.REF)),
+                CodegenExpressionBuilder.Cast(
+                    typeof(AvroEventType),
+                    EventTypeUtility.ResolveTypeCodegen(_avroEventType, EPStatementInitServicesConstants.REF)),
                 factory);
         }
 

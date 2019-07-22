@@ -8,6 +8,7 @@
 
 using System;
 using System.Numerics;
+
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 

@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.bytecodemodel.name;
@@ -16,6 +17,7 @@ using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.expression.subquery
@@ -33,7 +35,12 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
             SimpleNumberCoercer coercer,
             ExprForge havingEval)
             : base(
-                subselect, valueEval, selectEval, resultWhenNoMatchingEvents, isNotIn, coercer)
+                subselect,
+                valueEval,
+                selectEval,
+                resultWhenNoMatchingEvents,
+                isNotIn,
+                coercer)
         {
             this.havingEval = havingEval;
         }
@@ -44,30 +51,38 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
             CodegenClassScope classScope)
         {
             CodegenExpression aggService = classScope.NamespaceScope.AddOrGetFieldWellKnown(
-                new CodegenFieldNameSubqueryAgg(subselect.SubselectNumber), typeof(AggregationResultFuture));
+                new CodegenFieldNameSubqueryAgg(subselect.SubselectNumber),
+                typeof(AggregationResultFuture));
 
             var method = parent.MakeChild(subselect.EvaluationType, GetType(), classScope);
             var evalCtx = symbols.GetAddExprEvalCtx(method);
             var left = symbols.GetAddLeftResult(method);
 
             method.Block
-                .IfCondition(EqualsNull(left)).BlockReturn(ConstantNull())
-                .DeclareVar(typeof(int), "cpid", ExprDotMethod(evalCtx, "getAgentInstanceId"))
-                .DeclareVar(
-                    typeof(AggregationService), "aggregationService",
+                .IfCondition(EqualsNull(left))
+                .BlockReturn(ConstantNull())
+                .DeclareVar<int>("cpid", ExprDotMethod(evalCtx, "getAgentInstanceId"))
+                .DeclareVar<AggregationService>(
+                    "aggregationService",
                     ExprDotMethod(aggService, "getContextPartitionAggregationService", Ref("cpid")))
-                .DeclareVar(
-                    typeof(ICollection<object>), "groupKeys",
+                .DeclareVar<ICollection<object>>(
+                    "groupKeys",
                     ExprDotMethod(Ref("aggregationService"), "getGroupKeys", evalCtx))
-                .DeclareVar(typeof(bool), "hasNullRow", ConstantFalse());
+                .DeclareVar<bool>("hasNullRow", ConstantFalse());
 
             var forEach = method.Block.ForEach(typeof(object), "groupKey", Ref("groupKeys"));
             {
-                forEach.ExprDotMethod(Ref("aggregationService"), "SetCurrentAccess", Ref("groupKey"), Ref("cpid"), ConstantNull());
+                forEach.ExprDotMethod(
+                    Ref("aggregationService"),
+                    "SetCurrentAccess",
+                    Ref("groupKey"),
+                    Ref("cpid"),
+                    ConstantNull());
 
                 if (havingEval != null) {
                     CodegenLegoBooleanExpression.CodegenContinueIfNullOrNotPass(
-                        forEach, havingEval.EvaluationType,
+                        forEach,
+                        havingEval.EvaluationType,
                         havingEval.EvaluateCodegen(havingEval.EvaluationType, method, symbols, classScope));
                 }
 
@@ -75,13 +90,15 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                 if (selectEval != null) {
                     valueRightType = selectEval.EvaluationType.GetBoxedType();
                     forEach.DeclareVar(
-                        valueRightType, "valueRight",
+                        valueRightType,
+                        "valueRight",
                         selectEval.EvaluateCodegen(valueRightType, method, symbols, classScope));
                 }
                 else {
                     valueRightType = typeof(object);
                     forEach.DeclareVar(
-                        valueRightType, "valueRight",
+                        valueRightType,
+                        "valueRight",
                         ExprDotUnderlying(ArrayAtIndex(symbols.GetAddEPS(method), Constant(0))));
                 }
 
@@ -90,14 +107,16 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                     .IfElse();
                 {
                     if (coercer == null) {
-                        ifRightNotNull.DeclareVar(typeof(bool), "eq", ExprDotMethod(left, "equals", Ref("valueRight")));
+                        ifRightNotNull.DeclareVar<bool>("eq", ExprDotMethod(left, "equals", Ref("valueRight")));
                     }
                     else {
-                        ifRightNotNull.DeclareVar(
-                                typeof(object), "left", coercer.CoerceCodegen(left, symbols.LeftResultType))
-                            .DeclareVar(
-                                typeof(object), "right", coercer.CoerceCodegen(Ref("valueRight"), valueRightType))
-                            .DeclareVar(typeof(bool), "eq", ExprDotMethod(Ref("left"), "equals", Ref("right")));
+                        ifRightNotNull.DeclareVar<object>(
+                                "left",
+                                coercer.CoerceCodegen(left, symbols.LeftResultType))
+                            .DeclareVar<object>(
+                                "right",
+                                coercer.CoerceCodegen(Ref("valueRight"), valueRightType))
+                            .DeclareVar<bool>("eq", ExprDotMethod(Ref("left"), "equals", Ref("right")));
                     }
 
                     ifRightNotNull.IfCondition(Ref("eq")).BlockReturn(Constant(!isNotIn));
@@ -105,7 +124,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
             }
 
             method.Block
-                .IfCondition(Ref("hasNullRow")).BlockReturn(ConstantNull())
+                .IfCondition(Ref("hasNullRow"))
+                .BlockReturn(ConstantNull())
                 .MethodReturn(Constant(isNotIn));
 
             return LocalMethod(method);

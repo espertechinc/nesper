@@ -9,6 +9,7 @@
 using System;
 using System.IO;
 using System.Reflection;
+
 using com.espertech.esper.collection;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
@@ -17,6 +18,7 @@ using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.settings;
 using com.espertech.esper.common.@internal.util;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.@event.bean.manufacturer
@@ -59,7 +61,10 @@ namespace com.espertech.esper.common.@internal.@event.bean.manufacturer
                     continue;
                 }
 
-                var message = "Invalid assignment of expression " + i + " returning type '" + columnType +
+                var message = "Invalid assignment of expression " +
+                              i +
+                              " returning type '" +
+                              columnType +
                               "', column and parameter types mismatch";
                 throw new ExprValidationException(message);
             }
@@ -70,7 +75,8 @@ namespace com.espertech.esper.common.@internal.@event.bean.manufacturer
             }
             catch (ImportException ex) {
                 throw new ExprValidationException(
-                    "Failed to find a suitable constructor for class '" + targetClass.Name + "': " + ex.Message, ex);
+                    "Failed to find a suitable constructor for class '" + targetClass.Name + "': " + ex.Message,
+                    ex);
             }
         }
 
@@ -95,7 +101,9 @@ namespace com.espertech.esper.common.@internal.@event.bean.manufacturer
                             isNewData,
                             exprEvaluatorContext) => {
                             var @event = (EventBean) inner.Evaluate(
-                                eventsPerStream, isNewData, exprEvaluatorContext);
+                                eventsPerStream,
+                                isNewData,
+                                exprEvaluatorContext);
                             if (@event != null) {
                                 return @event.Underlying;
                             }
@@ -115,11 +123,13 @@ namespace com.espertech.esper.common.@internal.@event.bean.manufacturer
                 CodegenClassScope codegenClassScope)
             {
                 var methodNode = codegenMethodScope.MakeChild(
-                    EvaluationType, typeof(InstanceManufacturerForgeNonArray), codegenClassScope);
+                    EvaluationType,
+                    typeof(InstanceManufacturerForgeNonArray),
+                    codegenClassScope);
 
                 methodNode.Block
-                    .DeclareVar(
-                        typeof(EventBean), "event",
+                    .DeclareVar<EventBean>(
+                        "event",
                         Cast(
                             typeof(EventBean),
                             innerForge.EvaluateCodegen(requiredType, methodNode, exprSymbol, codegenClassScope)))
@@ -182,19 +192,22 @@ namespace com.espertech.esper.common.@internal.@event.bean.manufacturer
             {
                 var arrayType = TypeHelper.GetArrayType(componentReturnType);
                 var methodNode = codegenMethodScope.MakeChild(
-                    arrayType, typeof(InstanceManufacturerForgeArray), codegenClassScope);
+                    arrayType,
+                    typeof(InstanceManufacturerForgeArray),
+                    codegenClassScope);
 
                 methodNode.Block
-                    .DeclareVar(
-                        typeof(object), "result",
+                    .DeclareVar<object>(
+                        "result",
                         innerForge.EvaluateCodegen(requiredType, methodNode, exprSymbol, codegenClassScope))
                     .IfCondition(Not(InstanceOf(Ref("result"), typeof(EventBean[]))))
                     .BlockReturn(ConstantNull())
-                    .DeclareVar(typeof(EventBean[]), "events", Cast(typeof(EventBean[]), Ref("result")))
+                    .DeclareVar<EventBean[]>("events", Cast(typeof(EventBean[]), Ref("result")))
                     .DeclareVar(arrayType, "values", NewArrayByLength(componentReturnType, ArrayLength(Ref("events"))))
                     .ForLoopIntSimple("i", ArrayLength(Ref("events")))
                     .AssignArrayElement(
-                        "values", Ref("i"),
+                        "values",
+                        Ref("i"),
                         Cast(
                             componentReturnType,
                             ExprDotMethod(ArrayAtIndex(Ref("events"), Ref("i")), "getUnderlying")))

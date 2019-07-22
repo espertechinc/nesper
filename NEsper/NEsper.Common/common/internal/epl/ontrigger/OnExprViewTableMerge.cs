@@ -64,7 +64,11 @@ namespace com.espertech.esper.common.@internal.epl.ontrigger
                         }
 
                         action.ApplyTable(
-                            null, eventsPerStream, tableInstance, changeHandlerAdded, changeHandlerRemoved,
+                            null,
+                            eventsPerStream,
+                            tableInstance,
+                            changeHandlerAdded,
+                            changeHandlerRemoved,
                             agentInstanceContext);
                         instrumentationCommon.AInfraMergeWhenThenItem(false, true);
                         break; // apply no other actions
@@ -94,7 +98,11 @@ namespace com.espertech.esper.common.@internal.epl.ontrigger
                             }
 
                             action.ApplyTable(
-                                matchingEvent, eventsPerStream, tableInstance, changeHandlerAdded, changeHandlerRemoved,
+                                matchingEvent,
+                                eventsPerStream,
+                                tableInstance,
+                                changeHandlerAdded,
+                                changeHandlerRemoved,
                                 agentInstanceContext);
                             instrumentationCommon.AInfraMergeWhenThenItem(true, true);
                             break; // apply no other actions

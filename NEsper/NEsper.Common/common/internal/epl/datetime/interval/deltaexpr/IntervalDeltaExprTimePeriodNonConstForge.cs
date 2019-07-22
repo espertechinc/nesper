@@ -13,6 +13,7 @@ using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.expression.time.abacus;
 using com.espertech.esper.common.@internal.epl.expression.time.node;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.datetime.interval.deltaexpr
@@ -52,10 +53,15 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval.deltaexpr
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            CodegenMethod methodNode = codegenMethodScope.MakeChild(typeof(long), typeof(IntervalDeltaExprTimePeriodNonConstForge), codegenClassScope)
+            CodegenMethod methodNode = codegenMethodScope.MakeChild(
+                    typeof(long),
+                    typeof(IntervalDeltaExprTimePeriodNonConstForge),
+                    codegenClassScope)
                 .AddParam(typeof(long), "reference");
 
-            methodNode.Block.DeclareVar(typeof(double), "sec", timePeriod.EvaluateAsSecondsCodegen(methodNode, exprSymbol, codegenClassScope))
+            methodNode.Block.DeclareVar<double>(
+                    "sec",
+                    timePeriod.EvaluateAsSecondsCodegen(methodNode, exprSymbol, codegenClassScope))
                 .MethodReturn(timeAbacus.DeltaForSecondsDoubleCodegen(@Ref("sec"), codegenClassScope));
             return LocalMethod(methodNode, reference);
         }

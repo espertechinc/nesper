@@ -32,7 +32,12 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.util
             CodegenClassScope classScope)
         {
             return new SAIFFInitializeBuilder(
-                    typeof(DefaultSupportSourceOpFactory), GetType(), "so", parent, symbols, classScope)
+                    typeof(DefaultSupportSourceOpFactory),
+                    GetType(),
+                    "so",
+                    parent,
+                    symbols,
+                    classScope)
                 .Constant("name", name)
                 .Build();
         }

@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.epl.fafquery.querymethod;
@@ -67,13 +68,18 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.processor
         public override EventBean[] ProcessDelete(FAFQueryMethodIUDDelete delete)
         {
             return ProcessorInstance.TailViewInstance.SnapshotDelete(
-                delete.QueryGraph, delete.OptionalWhereClause, delete.Annotations);
+                delete.QueryGraph,
+                delete.OptionalWhereClause,
+                delete.Annotations);
         }
 
         public override EventBean[] ProcessUpdate(FAFQueryMethodIUDUpdate update)
         {
             return ProcessorInstance.TailViewInstance.SnapshotUpdate(
-                update.QueryGraph, update.OptionalWhereClause, update.UpdateHelperNamedWindow, update.Annotations);
+                update.QueryGraph,
+                update.OptionalWhereClause,
+                update.UpdateHelperNamedWindow,
+                update.Annotations);
         }
     }
 } // end of namespace

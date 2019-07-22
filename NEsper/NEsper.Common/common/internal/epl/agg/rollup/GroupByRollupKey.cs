@@ -32,8 +32,10 @@ namespace com.espertech.esper.common.@internal.epl.agg.rollup
         public override string ToString()
         {
             return "GroupRollupKey{" +
-                   "level=" + Level +
-                   ", groupKey=" + GroupKey +
+                   "level=" +
+                   Level +
+                   ", groupKey=" +
+                   GroupKey +
                    '}';
         }
     }

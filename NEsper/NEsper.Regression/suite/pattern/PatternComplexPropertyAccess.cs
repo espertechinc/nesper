@@ -78,11 +78,11 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 testCase = new EventExpressionCase("s=SupportBeanComplexProps(arrayProperty[2] = 20)");
                 testCaseList.AddTest(testCase);
 
-                testCase = new EventExpressionCase("s=SupportBeanComplexProps(nested.nestedValue = 'nestedValue')");
+                testCase = new EventExpressionCase("s=SupportBeanComplexProps(nested.NestedValue = 'NestedValue')");
                 testCase.Add("e1", "s", events.GetEvent("e1"));
                 testCaseList.AddTest(testCase);
 
-                testCase = new EventExpressionCase("s=SupportBeanComplexProps(nested.nestedValue = 'dummy')");
+                testCase = new EventExpressionCase("s=SupportBeanComplexProps(nested.NestedValue = 'dummy')");
                 testCaseList.AddTest(testCase);
 
                 testCase = new EventExpressionCase(
@@ -148,7 +148,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
             public void Run(RegressionEnvironment env)
             {
                 var pattern =
-                    "@Name('s0') select * from pattern[every a=SupportBeanComplexProps => b=SupportBeanComplexProps(indexed[0] = a.indexed[0])]";
+                    "@Name('s0') select * from pattern[every a=SupportBeanComplexProps -> b=SupportBeanComplexProps(indexed[0] = a.indexed[0])]";
                 env.CompileDeploy(pattern).AddListener("s0");
                 RunIndexedValueProp(env);
                 env.UndeployAll();
@@ -171,7 +171,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
 
                 var patternText = "select * from pattern [every a=" +
                                   type +
-                                  " => b=" +
+                                  " -> b=" +
                                   type +
                                   "(indexed[0]=a.indexed[0])]";
                 Assert.AreEqual(patternText, model.ToEPL());
@@ -188,7 +188,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
             public void Run(RegressionEnvironment env)
             {
                 var patternText =
-                    "@Name('s0') select * from pattern [every a=SupportBeanComplexProps => b=SupportBeanComplexProps(indexed[0]=a.indexed[0])]";
+                    "@Name('s0') select * from pattern [every a=SupportBeanComplexProps -> b=SupportBeanComplexProps(indexed[0]=a.indexed[0])]";
                 env.EplToModelCompileDeploy(patternText).AddListener("s0");
                 RunIndexedValueProp(env);
                 env.UndeployAll();

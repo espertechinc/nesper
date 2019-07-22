@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.epl.join.exec.util;
 using com.espertech.esper.common.@internal.epl.join.querygraph;
@@ -82,7 +83,13 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.composite
             else if (lookup.Operator == QueryGraphRangeEnum.NOT_RANGE_OPEN) {
                 var range = (Range) rangeValue;
                 LookupRangeInverted(
-                    result, treeMap, range.LowEndpoint, false, range.HighEndpoint, false, postProcessor);
+                    result,
+                    treeMap,
+                    range.LowEndpoint,
+                    false,
+                    range.HighEndpoint,
+                    false,
+                    postProcessor);
             }
             else if (lookup.Operator == QueryGraphRangeEnum.GREATER) {
                 LookupGreater(result, treeMap, rangeValue, postProcessor);

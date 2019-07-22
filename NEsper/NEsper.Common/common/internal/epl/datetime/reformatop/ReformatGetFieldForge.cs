@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -21,6 +22,7 @@ using com.espertech.esper.common.@internal.epl.@join.analyze;
 using com.espertech.esper.common.@internal.settings;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.datetime;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.datetime.reformatop
@@ -52,7 +54,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.reformatop
             var timeZoneField =
                 codegenClassScope.AddOrGetFieldSharable(RuntimeSettingsTimeZoneField.INSTANCE);
             methodNode.Block
-                .DeclareVar(typeof(DateTimeEx), "dateTime", StaticMethod(typeof(DateTimeEx), "GetInstance", timeZoneField))
+                .DeclareVar<DateTimeEx>("dateTime", StaticMethod(typeof(DateTimeEx), "GetInstance", timeZoneField))
                 .Expression(timeAbacus.DateTimeSetCodegen(Ref("ts"), Ref("dateTime"), methodNode, codegenClassScope))
                 .MethodReturn(CodegenGet(Ref("dateTime")));
             return LocalMethod(methodNode, inner);
@@ -137,8 +139,10 @@ namespace com.espertech.esper.common.@internal.epl.datetime.reformatop
         private CodegenExpression CodegenGet(CodegenExpression dateTime)
         {
             return StaticMethod(
-                typeof(ReformatGetFieldForge), "GetValueUsingFieldEnum",
-                dateTime, Constant(fieldNum));
+                typeof(ReformatGetFieldForge),
+                "GetValueUsingFieldEnum",
+                dateTime,
+                Constant(fieldNum));
         }
 
         public static int GetValueUsingFieldEnum(
@@ -155,16 +159,22 @@ namespace com.espertech.esper.common.@internal.epl.datetime.reformatop
             switch (fieldEnum) {
                 case DateTimeFieldEnum.YEAR:
                     return dateTime.Year;
+
                 case DateTimeFieldEnum.MONTH:
                     return dateTime.Month;
+
                 case DateTimeFieldEnum.DAY:
                     return dateTime.Day;
+
                 case DateTimeFieldEnum.HOUR:
                     return dateTime.Hour;
+
                 case DateTimeFieldEnum.MINUTE:
                     return dateTime.Minute;
+
                 case DateTimeFieldEnum.SECOND:
                     return dateTime.Second;
+
                 case DateTimeFieldEnum.MILLISEC:
                     return dateTime.Millisecond;
             }
@@ -179,16 +189,22 @@ namespace com.espertech.esper.common.@internal.epl.datetime.reformatop
             switch (fieldEnum) {
                 case DateTimeFieldEnum.YEAR:
                     return dateTime.Year;
+
                 case DateTimeFieldEnum.MONTH:
                     return dateTime.Month;
+
                 case DateTimeFieldEnum.DAY:
                     return dateTime.Day;
+
                 case DateTimeFieldEnum.HOUR:
                     return dateTime.Hour;
+
                 case DateTimeFieldEnum.MINUTE:
                     return dateTime.Minute;
+
                 case DateTimeFieldEnum.SECOND:
                     return dateTime.Second;
+
                 case DateTimeFieldEnum.MILLISEC:
                     return dateTime.Millisecond;
             }

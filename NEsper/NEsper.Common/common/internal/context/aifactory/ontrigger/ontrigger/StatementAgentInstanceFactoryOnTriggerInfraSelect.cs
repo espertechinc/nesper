@@ -73,9 +73,15 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.ontri
             }
 
             return new InfraOnSelectViewFactory(
-                infraEventType, addToFront,
-                eventBeanReader, isDistinct, selectAndDelete, optionalStreamSelector, optionalInsertIntoTable,
-                insertInto, resultSetProcessorFactoryProvider);
+                infraEventType,
+                addToFront,
+                eventBeanReader,
+                isDistinct,
+                selectAndDelete,
+                optionalStreamSelector,
+                optionalInsertIntoTable,
+                insertInto,
+                resultSetProcessorFactoryProvider);
         }
 
         public override StatementAgentInstanceLock ObtainAgentInstanceLock(
@@ -83,7 +89,9 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.ontri
             int agentInstanceId)
         {
             return StatementAgentInstanceFactoryOnTriggerUtil.ObtainAgentInstanceLock(
-                this, statementContext, agentInstanceId);
+                this,
+                statementContext,
+                agentInstanceId);
         }
     }
 } // end of namespace

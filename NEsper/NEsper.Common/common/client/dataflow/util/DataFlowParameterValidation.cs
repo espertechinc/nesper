@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.epl.dataflow.interfaces;
 using com.espertech.esper.common.@internal.epl.expression.core;
@@ -66,7 +67,12 @@ namespace com.espertech.esper.common.client.dataflow.util
             }
 
             ExprNode validated = EPLValidationUtil.ValidateSimpleGetSubtree(
-                ExprNodeOrigin.DATAFLOWFILTER, expr, eventType, false, context.StatementRawInfo, context.Services);
+                ExprNodeOrigin.DATAFLOWFILTER,
+                expr,
+                eventType,
+                false,
+                context.StatementRawInfo,
+                context.Services);
             ValidateReturnType(name, validated, expectedReturnType);
             return validated;
         }
@@ -78,9 +84,13 @@ namespace com.espertech.esper.common.client.dataflow.util
         {
             Type returnType = validated.Forge.EvaluationType;
             if (!TypeHelper.IsAssignmentCompatible(Boxing.GetBoxedType(returnType), expectedReturnType)) {
-                string message = "Failed to validate return type of parameter '" + name +
-                                 "', expected '" + TypeHelper.GetCleanName(expectedReturnType) +
-                                 "' but received '" + TypeHelper.GetCleanName(returnType) + "'";
+                string message = "Failed to validate return type of parameter '" +
+                                 name +
+                                 "', expected '" +
+                                 TypeHelper.GetCleanName(expectedReturnType) +
+                                 "' but received '" +
+                                 TypeHelper.GetCleanName(returnType) +
+                                 "'";
                 throw new ExprValidationException(message);
             }
         }

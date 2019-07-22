@@ -11,6 +11,7 @@ using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.datetime.interval
@@ -52,12 +53,14 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
             CodegenClassScope codegenClassScope)
         {
             var methodNode = codegenMethodScope.MakeChild(typeof(bool?), typeof(IntervalForgeOp), codegenClassScope)
-                .AddParam(typeof(long), "startTs").AddParam(typeof(long), "endTs");
+                .AddParam(typeof(long), "startTs")
+                .AddParam(typeof(long), "endTs");
 
             var evaluationType = forge.ForgeTimestamp.EvaluationType;
             var block = methodNode.Block
                 .DeclareVar(
-                    evaluationType, "parameter",
+                    evaluationType,
+                    "parameter",
                     forge.ForgeTimestamp.EvaluateCodegen(evaluationType, methodNode, exprSymbol, codegenClassScope));
             if (!forge.ForgeTimestamp.EvaluationType.IsPrimitive) {
                 block.IfRefNullReturnNull("parameter");
@@ -65,8 +68,13 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
 
             block.MethodReturn(
                 forge.IntervalOpForge.Codegen(
-                    Ref("startTs"), Ref("endTs"), Ref("parameter"), forge.ForgeTimestamp.EvaluationType, methodNode,
-                    exprSymbol, codegenClassScope));
+                    Ref("startTs"),
+                    Ref("endTs"),
+                    Ref("parameter"),
+                    forge.ForgeTimestamp.EvaluationType,
+                    methodNode,
+                    exprSymbol,
+                    codegenClassScope));
             return LocalMethod(methodNode, start, end);
         }
     }

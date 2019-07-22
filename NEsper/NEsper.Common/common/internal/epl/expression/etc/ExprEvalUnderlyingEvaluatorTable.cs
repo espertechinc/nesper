@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -14,6 +15,7 @@ using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.table.compiletime;
 using com.espertech.esper.common.@internal.epl.table.core;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.expression.etc
@@ -71,13 +73,20 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
         {
             CodegenExpressionField eventToPublic =
                 TableDeployTimeResolver.MakeTableEventToPublicField(tableMetadata, codegenClassScope, this.GetType());
-            CodegenMethod method = parent.MakeChild(typeof(object[]), typeof(ExprEvalUnderlyingEvaluatorTable), codegenClassScope);
+            CodegenMethod method = parent.MakeChild(
+                typeof(object[]),
+                typeof(ExprEvalUnderlyingEvaluatorTable),
+                codegenClassScope);
             method.Block.IfRefNullReturnNull(exprSymbol.GetAddEPS(method))
-                .DeclareVar(typeof(EventBean), "event", ArrayAtIndex(exprSymbol.GetAddEPS(method), Constant(streamNum)))
+                .DeclareVar<EventBean>("event", ArrayAtIndex(exprSymbol.GetAddEPS(method), Constant(streamNum)))
                 .IfRefNullReturnNull("event")
                 .MethodReturn(
                     ExprDotMethod(
-                        eventToPublic, "convertToUnd", @Ref("event"), exprSymbol.GetAddEPS(method), exprSymbol.GetAddIsNewData(method),
+                        eventToPublic,
+                        "convertToUnd",
+                        @Ref("event"),
+                        exprSymbol.GetAddEPS(method),
+                        exprSymbol.GetAddIsNewData(method),
                         exprSymbol.GetAddExprEvalCtx(method)));
             return LocalMethod(method);
         }

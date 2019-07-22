@@ -27,7 +27,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
             bool isNot,
             SimpleNumberCoercer coercer)
             : base(
-                subselect, valueEval, selectEval, resultWhenNoMatchingEvents)
+                subselect,
+                valueEval,
+                selectEval,
+                resultWhenNoMatchingEvents)
         {
             this.isNot = isNot;
             this.coercer = coercer;

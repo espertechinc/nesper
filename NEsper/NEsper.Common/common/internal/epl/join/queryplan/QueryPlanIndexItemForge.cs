@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -18,6 +19,7 @@ using com.espertech.esper.common.@internal.epl.@join.lookup;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat.collections;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.join.queryplan
@@ -114,12 +116,18 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplan
         public override string ToString()
         {
             return "QueryPlanIndexItem{" +
-                   "unique=" + IsUnique +
-                   ", hashProps=" + Arrays.AsList(HashProps) +
-                   ", rangeProps=" + Arrays.AsList(RangeProps) +
-                   ", hashTypes=" + Arrays.AsList(HashTypes) +
-                   ", rangeTypes=" + Arrays.AsList(RangeTypes) +
-                   ", advanced=" + (AdvancedIndexProvisionDesc == null
+                   "unique=" +
+                   IsUnique +
+                   ", hashProps=" +
+                   Arrays.AsList(HashProps) +
+                   ", rangeProps=" +
+                   Arrays.AsList(RangeProps) +
+                   ", hashTypes=" +
+                   Arrays.AsList(HashTypes) +
+                   ", rangeTypes=" +
+                   Arrays.AsList(RangeTypes) +
+                   ", advanced=" +
+                   (AdvancedIndexProvisionDesc == null
                        ? null
                        : AdvancedIndexProvisionDesc.IndexDesc.IndexTypeName) +
                    "}";
@@ -170,7 +178,13 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplan
                 var propertyGetters = EventTypeUtility.GetGetters(eventType, HashProps);
                 var propertyTypes = EventTypeUtility.GetPropertyTypes(eventType, HashProps);
                 valueGetter = EventTypeUtility.CodegenGetterMayMultiKeyWCoerce(
-                    eventType, propertyGetters, propertyTypes, HashTypes, method, GetType(), classScope);
+                    eventType,
+                    propertyGetters,
+                    propertyTypes,
+                    HashTypes,
+                    method,
+                    GetType(),
+                    classScope);
             }
 
             CodegenExpression rangeGetters;
@@ -179,15 +193,20 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplan
             }
             else {
                 var makeMethod = parent.MakeChild(typeof(EventPropertyValueGetter[]), GetType(), classScope);
-                makeMethod.Block.DeclareVar(
-                    typeof(EventPropertyValueGetter[]), "getters",
+                makeMethod.Block.DeclareVar<EventPropertyValueGetter[]>(
+                    "getters",
                     NewArrayByLength(typeof(EventPropertyValueGetter), Constant(RangeProps.Length)));
                 for (var i = 0; i < RangeProps.Length; i++) {
                     var getter = ((EventTypeSPI) eventType).GetGetterSPI(RangeProps[i]);
                     var getterType = eventType.GetPropertyType(RangeProps[i]);
                     var coercionType = RangeTypes == null ? null : RangeTypes[i];
                     var eval = EventTypeUtility.CodegenGetterWCoerce(
-                        getter, getterType, coercionType, method, GetType(), classScope);
+                        getter,
+                        getterType,
+                        coercionType,
+                        method,
+                        GetType(),
+                        classScope);
                     makeMethod.Block.AssignArrayElement(Ref("getters"), Constant(i), eval);
                 }
 
@@ -197,8 +216,12 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplan
 
             method.Block.MethodReturn(
                 NewInstance<QueryPlanIndexItem>(
-                    Constant(HashProps), Constant(HashTypes), valueGetter,
-                    Constant(RangeProps), Constant(RangeTypes), rangeGetters,
+                    Constant(HashProps),
+                    Constant(HashTypes),
+                    valueGetter,
+                    Constant(RangeProps),
+                    Constant(RangeTypes),
+                    rangeGetters,
                     Constant(IsUnique),
                     AdvancedIndexProvisionDesc == null
                         ? ConstantNull()
@@ -253,8 +276,12 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplan
             }
 
             return new QueryPlanIndexItem(
-                HashProps, HashTypes, null,
-                RangeProps, RangeTypes, null,
+                HashProps,
+                HashTypes,
+                null,
+                RangeProps,
+                RangeTypes,
+                null,
                 IsUnique,
                 AdvancedIndexProvisionDesc.ToRuntime());
         }

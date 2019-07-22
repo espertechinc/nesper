@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.@internal.epl.variable.core;
 
 namespace com.espertech.esper.common.@internal.epl.variable.compiletime

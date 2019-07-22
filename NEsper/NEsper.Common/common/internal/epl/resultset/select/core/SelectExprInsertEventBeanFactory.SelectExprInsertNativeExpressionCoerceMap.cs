@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -36,16 +37,25 @@ namespace com.espertech.esper.common.@internal.epl.resultset.@select.core
                 CodegenClassScope codegenClassScope)
             {
                 var methodNode = codegenMethodScope.MakeChild(typeof(EventBean), GetType(), codegenClassScope);
-                var expr = exprForge.EvaluateCodegen(typeof(IDictionary<string, object>), methodNode, exprSymbol, codegenClassScope);
-                if (!TypeHelper.IsSubclassOrImplementsInterface(exprForge.EvaluationType, typeof(IDictionary<string, object>))) {
+                var expr = exprForge.EvaluateCodegen(
+                    typeof(IDictionary<string, object>),
+                    methodNode,
+                    exprSymbol,
+                    codegenClassScope);
+                if (!TypeHelper.IsSubclassOrImplementsInterface(
+                    exprForge.EvaluationType,
+                    typeof(IDictionary<string, object>))) {
                     expr = CodegenExpressionBuilder.Cast(typeof(IDictionary<string, object>), expr);
                 }
 
-                methodNode.Block.DeclareVar(typeof(IDictionary<string, object>), "result", expr)
+                methodNode.Block.DeclareVar<IDictionary<string, object>>("result", expr)
                     .IfRefNullReturnNull("result")
                     .MethodReturn(
                         CodegenExpressionBuilder.ExprDotMethod(
-                            eventBeanFactory, "adapterForTypedMap", CodegenExpressionBuilder.Ref("result"), resultEventType));
+                            eventBeanFactory,
+                            "adapterForTypedMap",
+                            CodegenExpressionBuilder.Ref("result"),
+                            resultEventType));
                 return methodNode;
             }
         }

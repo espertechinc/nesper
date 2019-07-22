@@ -8,10 +8,12 @@
 
 using System;
 using System.Reflection;
+
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat.logging;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.@event.bean.instantiator
@@ -52,7 +54,10 @@ namespace com.espertech.esper.common.@internal.@event.bean.instantiator
 
         private object Handle(Exception e)
         {
-            var message = "Unexpected exception encountered invoking newInstance on class '" + clazz.Name + "': " + e.Message;
+            var message = "Unexpected exception encountered invoking newInstance on class '" +
+                          clazz.Name +
+                          "': " +
+                          e.Message;
             Log.Error(message, e);
             return null;
         }

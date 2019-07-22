@@ -10,6 +10,7 @@ using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.epl.expression.core;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.lookup
@@ -39,14 +40,21 @@ namespace com.espertech.esper.common.@internal.epl.lookup
             CodegenClassScope classScope)
         {
             var method = parent.MakeChild(
-                typeof(SubordInKeywordMultiTableLookupStrategyFactory), GetType(), classScope);
+                typeof(SubordInKeywordMultiTableLookupStrategyFactory),
+                GetType(),
+                classScope);
             var expression = ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(exprNode);
             CodegenExpression eval = ExprNodeUtilityCodegen.CodegenEvaluatorNoCoerce(
-                exprNode.Forge, method, GetType(), classScope);
+                exprNode.Forge,
+                method,
+                GetType(),
+                classScope);
             method.Block.MethodReturn(
                 NewInstance<SubordInKeywordMultiTableLookupStrategyFactory>(
                     Constant(isNWOnTrigger),
-                    Constant(streamCountOuter), eval, Constant(expression)));
+                    Constant(streamCountOuter),
+                    eval,
+                    Constant(expression)));
             return LocalMethod(method);
         }
 

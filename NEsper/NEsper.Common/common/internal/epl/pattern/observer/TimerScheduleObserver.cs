@@ -84,9 +84,13 @@ namespace com.espertech.esper.common.@internal.epl.pattern.observer
             }
 
             scheduleHandle = new EPStatementHandleCallbackSchedule(
-                observerEventEvaluator.Context.AgentInstanceContext.EpStatementAgentInstanceHandle, this);
+                observerEventEvaluator.Context.AgentInstanceContext.EpStatementAgentInstanceHandle,
+                this);
             agentInstanceContext.AuditProvider.ScheduleAdd(
-                nextScheduledTime, agentInstanceContext, scheduleHandle, ScheduleObjectType.context,
+                nextScheduledTime,
+                agentInstanceContext,
+                scheduleHandle,
+                ScheduleObjectType.context,
                 NAME_AUDITPROVIDER_SCHEDULE);
             schedulingService.Add(nextScheduledTime, scheduleHandle, scheduleSlot);
             isTimerActive = true;
@@ -97,7 +101,10 @@ namespace com.espertech.esper.common.@internal.epl.pattern.observer
             if (isTimerActive) {
                 var agentInstanceContext = observerEventEvaluator.Context.AgentInstanceContext;
                 agentInstanceContext.AuditProvider.ScheduleRemove(
-                    agentInstanceContext, scheduleHandle, ScheduleObjectType.pattern, NAME_AUDITPROVIDER_SCHEDULE);
+                    agentInstanceContext,
+                    scheduleHandle,
+                    ScheduleObjectType.pattern,
+                    NAME_AUDITPROVIDER_SCHEDULE);
                 agentInstanceContext.SchedulingService.Remove(scheduleHandle, scheduleSlot);
             }
 
@@ -111,7 +118,14 @@ namespace com.espertech.esper.common.@internal.epl.pattern.observer
         public void Accept(EventObserverVisitor visitor)
         {
             visitor.VisitObserver(
-                beginState, 2, scheduleSlot, spec, anchorTime, cachedCountRepeated, cachedLastScheduled, isTimerActive);
+                beginState,
+                2,
+                scheduleSlot,
+                spec,
+                anchorTime,
+                cachedCountRepeated,
+                cachedLastScheduled,
+                isTimerActive);
         }
 
         public void ScheduledTrigger()
@@ -119,13 +133,16 @@ namespace com.espertech.esper.common.@internal.epl.pattern.observer
             var agentInstanceContext = observerEventEvaluator.Context.AgentInstanceContext;
             agentInstanceContext.InstrumentationProvider.QPatternObserverScheduledEval();
             agentInstanceContext.AuditProvider.ScheduleFire(
-                agentInstanceContext, ScheduleObjectType.pattern, NAME_AUDITPROVIDER_SCHEDULE);
+                agentInstanceContext,
+                ScheduleObjectType.pattern,
+                NAME_AUDITPROVIDER_SCHEDULE);
 
             // compute reschedule time
             isTimerActive = false;
             var schedulingService = agentInstanceContext.SchedulingService;
             var nextScheduledTime = ComputeNextSetLastScheduled(
-                schedulingService.Time, agentInstanceContext.ImportServiceRuntime.TimeAbacus);
+                schedulingService.Time,
+                agentInstanceContext.ImportServiceRuntime.TimeAbacus);
 
             var quit = !isFilterChildNonQuitting || nextScheduledTime == -1;
             observerEventEvaluator.ObserverEvaluateTrue(beginState, quit);
@@ -139,7 +156,10 @@ namespace com.espertech.esper.common.@internal.epl.pattern.observer
             }
 
             agentInstanceContext.AuditProvider.ScheduleAdd(
-                nextScheduledTime, agentInstanceContext, scheduleHandle, ScheduleObjectType.pattern,
+                nextScheduledTime,
+                agentInstanceContext,
+                scheduleHandle,
+                ScheduleObjectType.pattern,
                 NAME_AUDITPROVIDER_SCHEDULE);
             schedulingService.Add(nextScheduledTime, scheduleHandle, scheduleSlot);
             isTimerActive = true;
@@ -173,7 +193,9 @@ namespace com.espertech.esper.common.@internal.epl.pattern.observer
                 cachedCountRepeated = long.MaxValue;
                 cachedLastScheduled = anchorTime.Clone();
                 CalendarPlusMinusForgeOp.ActionCalendarPlusMinusTimePeriod(
-                    cachedLastScheduled, 1, spec.OptionalTimePeriod);
+                    cachedLastScheduled,
+                    1,
+                    spec.OptionalTimePeriod);
                 var computed = timeAbacus.DateTimeGet(cachedLastScheduled, anchorRemainder);
                 if (computed > currentTime) {
                     return computed - currentTime;
@@ -192,7 +214,11 @@ namespace com.espertech.esper.common.@internal.epl.pattern.observer
             }
 
             var nextDue = CalendarOpPlusFastAddHelper.ComputeNextDue(
-                currentTime, spec.OptionalTimePeriod, cachedLastScheduled, timeAbacus, anchorRemainder);
+                currentTime,
+                spec.OptionalTimePeriod,
+                cachedLastScheduled,
+                timeAbacus,
+                anchorRemainder);
 
             if (spec.OptionalRepeatCount == -1) {
                 cachedLastScheduled = nextDue.Scheduled;

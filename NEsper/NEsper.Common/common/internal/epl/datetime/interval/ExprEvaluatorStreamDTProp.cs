@@ -8,12 +8,14 @@
 
 using System;
 using System.IO;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.@event.core;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.datetime.interval
@@ -60,16 +62,19 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
             CodegenClassScope codegenClassScope)
         {
             var methodNode = codegenMethodScope.MakeChild(
-                EvaluationType, typeof(ExprEvaluatorStreamDTProp), codegenClassScope);
+                EvaluationType,
+                typeof(ExprEvaluatorStreamDTProp),
+                codegenClassScope);
 
             var refEPS = exprSymbol.GetAddEPS(methodNode);
 
             methodNode.Block
-                .DeclareVar(typeof(EventBean), "event", ArrayAtIndex(refEPS, Constant(streamId)))
+                .DeclareVar<EventBean>("event", ArrayAtIndex(refEPS, Constant(streamId)))
                 .IfRefNullReturnNull("event")
                 .MethodReturn(
                     CodegenLegoCast.CastSafeFromObjectType(
-                        EvaluationType, getter.EventBeanGetCodegen(Ref("event"), methodNode, codegenClassScope)));
+                        EvaluationType,
+                        getter.EventBeanGetCodegen(Ref("event"), methodNode, codegenClassScope)));
             return LocalMethod(methodNode);
         }
 

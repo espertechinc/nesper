@@ -29,11 +29,13 @@ using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
+
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using System.Text;
+
 using static com.espertech.esper.common.@internal.@event.propertyparser.PropertyParserNoDep;
 
 namespace com.espertech.esper.common.@internal.epl.expression.core
@@ -67,7 +69,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             Pair<string, ExprNode> strictAssignment = CheckGetAssignmentToVariableOrProp(assignment.Expression);
             if (strictAssignment != null) {
                 ExprNode validatedRightSide = GetValidatedSubtreeInternal(
-                    strictAssignment.Second, validationContext, true);
+                    strictAssignment.Second,
+                    validationContext,
+                    true);
                 assignment.Expression.SetChildNode(1, validatedRightSide);
                 return assignment.Expression;
             }
@@ -147,8 +151,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                         "Failed to validate " +
                         origin.GetClauseName() +
                         " expression " +
-                        text + ": " +
-                        ex.Message, ex);
+                        text +
+                        ": " +
+                        ex.Message,
+                        ex);
                 }
                 catch (EPException) {
                     throw;
@@ -212,8 +218,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                 expectedType = buf.ToString();
             }
 
-            string message = "Failed to validate named parameter '" + parameterName +
-                             "', expected a single expression returning " + expectedType;
+            string message = "Failed to validate named parameter '" +
+                             parameterName +
+                             "', expected a single expression returning " +
+                             expectedType;
             return new ExprValidationException(message);
         }
 
@@ -260,7 +268,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
 
                 if (!found) {
                     throw new ExprValidationException(
-                        "Unexpected named parameter '" + entry.Key + "', expecting any of the following: " +
+                        "Unexpected named parameter '" +
+                        entry.Key +
+                        "', expecting any of the following: " +
                         CollectionUtil.ToStringArray(namedParameters));
                 }
             }
@@ -316,7 +326,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                 }
             }
             else {
-                if (validationContext.IsExpressionNestedAudit && !(result is ExprIdentNode) &&
+                if (validationContext.IsExpressionNestedAudit &&
+                    !(result is ExprIdentNode) &&
                     !(ExprNodeUtilityQuery.IsConstant(result))) {
                     return (ExprNode) ExprNodeProxy.NewInstance(result);
                 }
@@ -378,11 +389,16 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             ExprNodeSummaryVisitor summaryVisitor)
         {
             expression.Accept(summaryVisitor);
-            if (summaryVisitor.HasAggregation || summaryVisitor.HasSubselect || summaryVisitor.HasStreamSelect ||
+            if (summaryVisitor.HasAggregation ||
+                summaryVisitor.HasSubselect ||
+                summaryVisitor.HasStreamSelect ||
                 summaryVisitor.HasPreviousPrior) {
                 string text = ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(expression);
                 throw new ExprValidationException(
-                    "Invalid " + origin.GetClauseName() + " expression '" + text +
+                    "Invalid " +
+                    origin.GetClauseName() +
+                    " expression '" +
+                    text +
                     "': Aggregation, sub-select, previous or prior functions are not supported in this context");
             }
         }
@@ -406,7 +422,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             MappedPropertyParseResult parse = ParseMappedProperty(mappedProperty.ToString());
             if (parse == null) {
                 ExprConstantNode constNode = ResolveIdentAsEnumConst(
-                    mappedProperty.ToString(), validationContext.ImportService);
+                    mappedProperty.ToString(),
+                    validationContext.ImportService);
                 if (constNode == null) {
                     throw propertyException;
                 }
@@ -432,8 +449,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                 }
                 catch (ExprValidationException e) {
                     throw new ExprValidationException(
-                        "Failed to resolve enumeration method, date-time method or mapped property '" + mappedProperty +
-                        "': " + e.Message);
+                        "Failed to resolve enumeration method, date-time method or mapped property '" +
+                        mappedProperty +
+                        "': " +
+                        e.Message);
                 }
 
                 return result;
@@ -449,7 +468,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                 IList<ExprChainedSpec> chain = Collections.SingletonList(
                     new ExprChainedSpec(classMethodPair.Second.MethodName, parameters, false));
                 ExprNode result = new ExprPlugInSingleRowNode(
-                    functionName, classMethodPair.First, chain, classMethodPair.Second);
+                    functionName,
+                    classMethodPair.First,
+                    chain,
+                    classMethodPair.Second);
 
                 // Validate
                 try {
@@ -510,7 +532,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             ExprValidationContext validationContext)
         {
             ExprStreamUnderlyingNode exprStream = new ExprStreamUnderlyingNodeImpl(
-                identNode.UnresolvedPropertyName, false);
+                identNode.UnresolvedPropertyName,
+                false);
 
             try {
                 exprStream.Validate(validationContext);

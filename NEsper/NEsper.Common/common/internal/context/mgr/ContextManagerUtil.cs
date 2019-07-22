@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.@internal.context.controller.core;
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.@event.core;
@@ -36,7 +37,8 @@ namespace com.espertech.esper.common.@internal.context.mgr
             StatementContext statementContext,
             int agentInstanceId)
         {
-            var holder = statementContext.StatementCPCacheService.MakeOrGetEntryCanNull(agentInstanceId, statementContext);
+            var holder =
+                statementContext.StatementCPCacheService.MakeOrGetEntryCanNull(agentInstanceId, statementContext);
             return new AgentInstance(holder.AgentInstanceStopCallback, holder.AgentInstanceContext, holder.FinalView);
         }
 
@@ -69,7 +71,11 @@ namespace com.espertech.esper.common.@internal.context.mgr
                 new IdentityDictionary<FilterSpecActivatable, FilterValueSetParam[][]>();
             foreach (var filter in filters) {
                 var addendum = ComputeAddendum(
-                    allPartitionKeys, filter.Value, true, statementDesc, controllerFactories,
+                    allPartitionKeys,
+                    filter.Value,
+                    true,
+                    statementDesc,
+                    controllerFactories,
                     agentInstanceContextCreate);
                 if (addendum != null && addendum.Length > 0) {
                     map.Put(filter.Value, addendum);
@@ -85,7 +91,10 @@ namespace com.espertech.esper.common.@internal.context.mgr
             ContextManagerRealization realization)
         {
             return ComputeAddendum(
-                partitionKeys, filterCallback, false, null,
+                partitionKeys,
+                filterCallback,
+                false,
+                null,
                 realization.ContextManager.ContextDefinition.ControllerFactories,
                 realization.AgentInstanceContextCreate);
         }
@@ -100,9 +109,14 @@ namespace com.espertech.esper.common.@internal.context.mgr
         {
             var result = new FilterValueSetParam[0][];
             for (var i = 0; i < parentPartitionKeys.Length; i++) {
-                var addendumForController = controllerFactories[i].PopulateFilterAddendum(
-                    filterCallback, forStatement, i + 1, parentPartitionKeys[i], optionalStatementDesc,
-                    agentInstanceContextCreate);
+                var addendumForController = controllerFactories[i]
+                    .PopulateFilterAddendum(
+                        filterCallback,
+                        forStatement,
+                        i + 1,
+                        parentPartitionKeys[i],
+                        optionalStatementDesc,
+                        agentInstanceContextCreate);
                 result = FilterAddendumUtil.MultiplyAddendum(result, addendumForController);
             }
 
@@ -117,7 +131,8 @@ namespace com.espertech.esper.common.@internal.context.mgr
         {
             var props = BuildContextPropertiesMap(agentInstanceId, allPartitionKeys, contextDefinition);
             return statementContextCreate.EventBeanTypedEventFactory.AdapterForTypedMap(
-                props, contextDefinition.EventTypeContextProperties);
+                props,
+                contextDefinition.EventTypeContextProperties);
         }
 
         private static IDictionary<string, object> BuildContextPropertiesMap(

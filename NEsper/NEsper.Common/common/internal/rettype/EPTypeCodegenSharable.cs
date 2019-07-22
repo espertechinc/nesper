@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.context.module;
@@ -33,7 +34,10 @@ namespace com.espertech.esper.common.@internal.rettype
 
         public CodegenExpression InitCtorScoped()
         {
-            return epType.Codegen(classScope.NamespaceScope.InitMethod, classScope, EPStatementInitServicesConstants.REF);
+            return epType.Codegen(
+                classScope.NamespaceScope.InitMethod,
+                classScope,
+                EPStatementInitServicesConstants.REF);
         }
 
         public override bool Equals(object o)

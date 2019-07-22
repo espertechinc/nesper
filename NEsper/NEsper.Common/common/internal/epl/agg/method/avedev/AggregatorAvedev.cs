@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.core;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -18,6 +19,7 @@ using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.io;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 using static com.espertech.esper.common.@internal.epl.agg.method.core.AggregatorCodegenUtil;
 
@@ -38,7 +40,13 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.avedev
             bool hasFilter,
             ExprNode optionalFilter)
             : base(
-                factory, col, rowCtor, membersColumnized, classScope, optionalDistinctValueType, hasFilter,
+                factory,
+                col,
+                rowCtor,
+                membersColumnized,
+                classScope,
+                optionalDistinctValueType,
+                hasFilter,
                 optionalFilter)
         {
             valueSet = membersColumnized.AddMember(col, typeof(RefCountedSet<double>), "valueSet");
@@ -201,8 +209,8 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.avedev
             CodegenMethod method)
         {
             method.Block
-                .DeclareVar(
-                    typeof(double), "d",
+                .DeclareVar<double>(
+                    "d",
                     SimpleNumberCoercerFactory.CoercerDouble.CodegenDouble(value, valueType))
                 .ExprDotMethod(valueSet, enter ? "add" : "remove", Ref("d"))
                 .AssignCompound(sum, enter ? "+" : "-", Ref("d"));
@@ -214,7 +222,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.avedev
             CodegenMethod method)
         {
             method.Block
-                .DeclareVar(typeof(double), "d", ExprDotMethod(Cast(typeof(double), value), "doubleValue"))
+                .DeclareVar<double>("d", ExprDotMethod(Cast(typeof(double), value), "doubleValue"))
                 .ExprDotMethod(valueSet, enter ? "add" : "remove", Ref("d"))
                 .AssignCompound(sum, enter ? "+" : "-", Ref("d"));
         }

@@ -16,7 +16,6 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
     {
         void Render(
             StringBuilder builder,
-            IDictionary<Type, String> imports,
             bool isInnerClass);
 
         void MergeClasses(ISet<Type> classes);

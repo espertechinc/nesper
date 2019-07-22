@@ -42,6 +42,7 @@ namespace com.espertech.esper.common.@internal.epl.pattern.followedby
             switch (factoryNode.opType) {
                 case EvalFollowedByNodeOpType.NOMAX_PLAIN:
                     return new EvalFollowedByStateNode(parentNode, this);
+
                 default:
                     return new EvalFollowedByWithMaxStateNodeManaged(parentNode, this);
             }

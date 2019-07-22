@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -14,6 +15,7 @@ using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.metrics.instrumentation;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.expression.funcs
@@ -80,7 +82,13 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
             CodegenClassScope codegenClassScope)
         {
             return new InstrumentationBuilderExpr(
-                GetType(), this, "ExprTypeof", requiredType, codegenMethodScope, exprSymbol, codegenClassScope).Build();
+                GetType(),
+                this,
+                "ExprTypeof",
+                requiredType,
+                codegenMethodScope,
+                exprSymbol,
+                codegenClassScope).Build();
         }
 
         public override CodegenExpression EvaluateCodegenUninstrumented(
@@ -90,14 +98,16 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
             CodegenClassScope codegenClassScope)
         {
             var methodNode = codegenMethodScope.MakeChild(
-                typeof(string), typeof(ExprTypeofNodeForgeFragmentType), codegenClassScope);
+                typeof(string),
+                typeof(ExprTypeofNodeForgeFragmentType),
+                codegenClassScope);
 
             var refEPS = exprSymbol.GetAddEPS(methodNode);
             methodNode.Block
-                .DeclareVar(typeof(EventBean), "event", ArrayAtIndex(refEPS, Constant(streamId)))
+                .DeclareVar<EventBean>("event", ArrayAtIndex(refEPS, Constant(streamId)))
                 .IfRefNullReturnNull("event")
-                .DeclareVar(
-                    typeof(object), "fragment",
+                .DeclareVar<object>(
+                    "fragment",
                     getter.EventBeanFragmentCodegen(Ref("event"), methodNode, codegenClassScope))
                 .IfRefNullReturnNull("fragment")
                 .IfInstanceOf("fragment", typeof(EventBean))

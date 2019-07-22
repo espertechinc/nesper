@@ -10,6 +10,7 @@ using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.@event.core;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.@event.arr
@@ -66,7 +67,9 @@ namespace com.espertech.esper.common.@internal.@event.arr
             CodegenClassScope codegenClassScope)
         {
             return UnderlyingGetCodegen(
-                CastUnderlying(typeof(object[]), beanExpression), codegenMethodScope, codegenClassScope);
+                CastUnderlying(typeof(object[]), beanExpression),
+                codegenMethodScope,
+                codegenClassScope);
         }
 
         public CodegenExpression EventBeanExistsCodegen(
@@ -75,7 +78,9 @@ namespace com.espertech.esper.common.@internal.@event.arr
             CodegenClassScope codegenClassScope)
         {
             return UnderlyingExistsCodegen(
-                CastUnderlying(typeof(object[]), beanExpression), codegenMethodScope, codegenClassScope);
+                CastUnderlying(typeof(object[]), beanExpression),
+                codegenMethodScope,
+                codegenClassScope);
         }
 
         public CodegenExpression EventBeanFragmentCodegen(
@@ -92,7 +97,11 @@ namespace com.espertech.esper.common.@internal.@event.arr
             CodegenClassScope codegenClassScope)
         {
             return StaticMethod(
-                GetType(), "getObjectArrayIndexValue", underlyingExpression, Constant(propertyIndex), Constant(index));
+                GetType(),
+                "getObjectArrayIndexValue",
+                underlyingExpression,
+                Constant(propertyIndex),
+                Constant(index));
         }
 
         public CodegenExpression UnderlyingExistsCodegen(
@@ -101,7 +110,10 @@ namespace com.espertech.esper.common.@internal.@event.arr
             CodegenClassScope codegenClassScope)
         {
             return StaticMethod(
-                GetType(), "isObjectArrayExistsProperty", underlyingExpression, Constant(propertyIndex),
+                GetType(),
+                "isObjectArrayExistsProperty",
+                underlyingExpression,
+                Constant(propertyIndex),
                 Constant(index));
         }
 

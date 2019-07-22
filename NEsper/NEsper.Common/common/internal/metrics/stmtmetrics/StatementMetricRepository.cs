@@ -47,18 +47,19 @@ namespace com.espertech.esper.common.@internal.metrics.stmtmetrics
 
             // initialize all other groups
             var countGroups = 1;
-            foreach (var entry in specification.StatementGroups)
-            {
+            foreach (var entry in specification.StatementGroups) {
                 var config = entry.Value;
 
                 var initialNumStmts = config.NumStatements;
-                if (initialNumStmts < 10)
-                {
+                if (initialNumStmts < 10) {
                     initialNumStmts = 10;
                 }
 
                 groupMetrics[countGroups] = new StatementMetricArray(
-                    runtimeURI, "group-" + countGroups, initialNumStmts, config.IsReportInactive);
+                    runtimeURI,
+                    "group-" + countGroups,
+                    initialNumStmts,
+                    config.IsReportInactive);
                 countGroups++;
             }
 
@@ -75,13 +76,11 @@ namespace com.espertech.esper.common.@internal.metrics.stmtmetrics
             // determine group
             var countGroups = 1;
             var groupNumber = -1;
-            foreach (var entry in specification.StatementGroups)
-            {
+            foreach (var entry in specification.StatementGroups) {
                 var patterns = entry.Value.Patterns;
                 var result = StringPatternSetUtil.Evaluate(entry.Value.IsDefaultInclude, patterns, statement.Name);
 
-                if (result)
-                {
+                if (result) {
                     groupNumber = countGroups;
                     break;
                 }
@@ -90,8 +89,7 @@ namespace com.espertech.esper.common.@internal.metrics.stmtmetrics
             }
 
             // assign to default group if none other apply
-            if (groupNumber == -1)
-            {
+            if (groupNumber == -1) {
                 groupNumber = 0;
             }
 
@@ -108,8 +106,7 @@ namespace com.espertech.esper.common.@internal.metrics.stmtmetrics
         /// <param name="statement">to remove</param>
         public void RemoveStatement(DeploymentIdNamePair statement)
         {
-            if (statementGroups.TryRemove(statement, out var group))
-            {
+            if (statementGroups.TryRemove(statement, out var group)) {
                 groupMetrics[group].RemoveStatement(statement);
             }
         }
@@ -126,8 +123,7 @@ namespace com.espertech.esper.common.@internal.metrics.stmtmetrics
             int numInput)
         {
             var array = groupMetrics[handle.GroupNum];
-            using (array.RWLock.AcquireDisposableReadLock())
-            {
+            using (array.RWLock.AcquireDisposableReadLock()) {
                 var metric = array.GetAddMetric(handle.Index);
                 metric.AddMetrics(performanceMetrics);
                 metric.AddNumInput(numInput);
@@ -146,8 +142,7 @@ namespace com.espertech.esper.common.@internal.metrics.stmtmetrics
             int numRStream)
         {
             var array = groupMetrics[handle.GroupNum];
-            using (array.RWLock.AcquireDisposableReadLock())
-            {
+            using (array.RWLock.AcquireDisposableReadLock()) {
                 var metric = array.GetAddMetric(handle.Index);
                 metric.AddNumOutputIStream(numIStream);
                 metric.AddNumOutputRStream(numRStream);

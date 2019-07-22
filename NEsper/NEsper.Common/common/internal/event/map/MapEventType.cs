@@ -9,6 +9,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+
 using com.espertech.esper.collection;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.meta;
@@ -38,9 +39,14 @@ namespace com.espertech.esper.common.@internal.@event.map
             string endTimestampPropertyName,
             BeanEventTypeFactory beanEventTypeFactory)
             : base(
-                metadata, propertyTypes, optionalSuperTypes, optionalDeepSupertypes, startTimestampPropertyName,
+                metadata,
+                propertyTypes,
+                optionalSuperTypes,
+                optionalDeepSupertypes,
+                startTimestampPropertyName,
                 endTimestampPropertyName,
-                GETTER_FACTORY, beanEventTypeFactory)
+                GETTER_FACTORY,
+                beanEventTypeFactory)
         {
         }
 
@@ -71,7 +77,10 @@ namespace com.espertech.esper.common.@internal.@event.map
             }
 
             return new MapEventBeanCopyMethodWithArrayMapForge(
-                this, beanEventTypeFactory.EventBeanTypedEventFactory, pair.MapProperties, pair.ArrayProperties);
+                this,
+                beanEventTypeFactory.EventBeanTypedEventFactory,
+                pair.MapProperties,
+                pair.ArrayProperties);
         }
 
         public object GetValue(
@@ -127,7 +136,14 @@ namespace com.espertech.esper.common.@internal.@event.map
 
                 var mapProp = (MappedProperty) property;
                 return new EventPropertyDescriptor(
-                    mapProp.PropertyNameAtomic, typeof(object), null, false, true, false, true, false);
+                    mapProp.PropertyNameAtomic,
+                    typeof(object),
+                    null,
+                    false,
+                    true,
+                    false,
+                    true,
+                    false);
             }
 
             if (property is IndexedProperty) {
@@ -138,7 +154,14 @@ namespace com.espertech.esper.common.@internal.@event.map
 
                 var indexedProp = (IndexedProperty) property;
                 return new EventPropertyDescriptor(
-                    indexedProp.PropertyNameAtomic, typeof(object), null, true, false, true, false, false);
+                    indexedProp.PropertyNameAtomic,
+                    typeof(object),
+                    null,
+                    true,
+                    false,
+                    true,
+                    false,
+                    false);
             }
 
             return null;

@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.compile.stage1.spec;
 using com.espertech.esper.common.@internal.context.util;
@@ -36,7 +37,9 @@ namespace com.espertech.esper.common.@internal.epl.ontrigger
             EventBean[] matchingEvents)
         {
             agentInstanceContext.InstrumentationProvider.QInfraOnAction(
-                OnTriggerType.ON_DELETE, triggerEvents, matchingEvents);
+                OnTriggerType.ON_DELETE,
+                triggerEvents,
+                matchingEvents);
 
             if (matchingEvents != null && matchingEvents.Length > 0) {
                 // Events to delete are indicated via old data

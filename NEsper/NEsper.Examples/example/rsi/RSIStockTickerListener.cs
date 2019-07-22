@@ -23,7 +23,7 @@ namespace NEsper.Examples.RSI
     /// <para>
     /// After a definite number of stock events, or accumulation period, the first RSI is
     /// computed.  Then for each subsequent stock event, the RSI calculations use the previous
-    /// period’s Average Gain andLoss to determine the “smoothed RSI”.
+    /// periodï¿½s Average Gain andLoss to determine the ï¿½smoothed RSIï¿½.
     /// </para>
     /// </summary>
 
@@ -68,7 +68,7 @@ namespace NEsper.Examples.RSI
             var newEvents = e.NewEvents;
             var eventBean = newEvents[0]["tick"];
             var newTick = (StockTick)eventBean;
-            Log.Info(".update for stock=" + newTick.StockSymbol + "  price=" + newTick.Price);
+            Log.Info(".update for stock=" + newTick.StockSymbol + "  Price=" + newTick.Price);
 
             if (_oldEvents != null)
             {

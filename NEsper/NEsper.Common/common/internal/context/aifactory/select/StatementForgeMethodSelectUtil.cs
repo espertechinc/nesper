@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+
 using com.espertech.esper.common.@internal.compile.stage1.spec;
 using com.espertech.esper.common.@internal.compile.stage2;
 using com.espertech.esper.common.@internal.epl.expression.core;
@@ -82,7 +83,8 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
                     var nwinfo = nwSpec.NamedWindow;
                     analysisResult.SetNamedWindowsPerStream(i, nwinfo);
                     analysisResult.UniqueKeys[i] = EventTableIndexMetadataUtil.GetUniqueness(
-                        nwinfo.IndexMetadata, nwinfo.Uniqueness);
+                        nwinfo.IndexMetadata,
+                        nwinfo.Uniqueness);
                 }
             }
 
@@ -211,7 +213,8 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
                     if (analysisResult.HasChildViews[i]) {
                         throw new ExprValidationException(
                             "The unidirectional keyword requires that no views are declared onto the stream (applies to stream " +
-                            i + ")");
+                            i +
+                            ")");
                     }
                 }
             }

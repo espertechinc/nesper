@@ -36,25 +36,33 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
         public void GetValueCodegen(AggregationAccessorForgeGetCodegenContext context)
         {
             AggregationAccessorFirstWEval.GetValueCodegen(
-                this, (AggregationStateLinearForge) context.AccessStateForge, context);
+                this,
+                (AggregationStateLinearForge) context.AccessStateForge,
+                context);
         }
 
         public void GetEnumerableEventsCodegen(AggregationAccessorForgeGetCodegenContext context)
         {
             AggregationAccessorFirstWEval.GetEnumerableEventsCodegen(
-                this, (AggregationStateLinearForge) context.AccessStateForge, context);
+                this,
+                (AggregationStateLinearForge) context.AccessStateForge,
+                context);
         }
 
         public void GetEnumerableEventCodegen(AggregationAccessorForgeGetCodegenContext context)
         {
             AggregationAccessorFirstWEval.GetEnumerableEventCodegen(
-                this, (AggregationStateLinearForge) context.AccessStateForge, context);
+                this,
+                (AggregationStateLinearForge) context.AccessStateForge,
+                context);
         }
 
         public void GetEnumerableScalarCodegen(AggregationAccessorForgeGetCodegenContext context)
         {
             AggregationAccessorFirstWEval.GetEnumerableScalarCodegen(
-                this, (AggregationStateLinearForge) context.AccessStateForge, context);
+                this,
+                (AggregationStateLinearForge) context.AccessStateForge,
+                context);
         }
     }
 } // end of namespace

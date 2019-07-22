@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.core;
@@ -42,8 +43,13 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.count
 
         public override ExprAggregateNodeBase AggregationExpression => parent;
 
-        public override AggregationPortableValidation AggregationPortableValidation => new AggregationPortableValidationCount(
-            parent.IsDistinct, false, parent.IsDistinct, countedValueType, ignoreNulls);
+        public override AggregationPortableValidation AggregationPortableValidation =>
+            new AggregationPortableValidationCount(
+                parent.IsDistinct,
+                false,
+                parent.IsDistinct,
+                countedValueType,
+                ignoreNulls);
 
         public override void InitMethodForge(
             int col,
@@ -53,8 +59,15 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.count
         {
             var distinctType = !parent.IsDistinct ? null : countedValueType;
             aggregator = new AggregatorCount(
-                this, col, rowCtor, membersColumnized, classScope, distinctType, parent.HasFilter,
-                parent.OptionalFilter, false);
+                this,
+                col,
+                rowCtor,
+                membersColumnized,
+                classScope,
+                distinctType,
+                parent.HasFilter,
+                parent.OptionalFilter,
+                false);
         }
 
         public override ExprForge[] GetMethodAggregationForge(

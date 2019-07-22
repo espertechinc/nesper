@@ -23,8 +23,14 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createvariable
             AgentInstanceContext agentInstanceContext)
             :
             base(
-                finalView, stopCallback, agentInstanceContext, null,
-                Collections.GetEmptyMap<int, SubSelectFactoryResult>(), null, null, null,
+                finalView,
+                stopCallback,
+                agentInstanceContext,
+                null,
+                Collections.GetEmptyMap<int, SubSelectFactoryResult>(),
+                null,
+                null,
+                null,
                 Collections.GetEmptyMap<int, ExprTableEvalStrategy>(),
                 Collections.GetEmptyList<StatementAgentInstancePreload>())
         {

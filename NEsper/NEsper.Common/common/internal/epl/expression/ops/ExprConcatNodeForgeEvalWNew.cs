@@ -7,11 +7,13 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Text;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.expression.ops
@@ -65,15 +67,18 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             CodegenClassScope codegenClassScope)
         {
             var methodNode = codegenMethodScope.MakeChild(
-                typeof(string), typeof(ExprConcatNodeForgeEvalWNew), codegenClassScope);
+                typeof(string),
+                typeof(ExprConcatNodeForgeEvalWNew),
+                codegenClassScope);
 
             var block = methodNode.Block
-                .DeclareVar(typeof(StringBuilder), "buf", NewInstance(typeof(StringBuilder)))
+                .DeclareVar<StringBuilder>("buf", NewInstance(typeof(StringBuilder)))
                 .DeclareVarNoInit(typeof(string), "value");
             var chain = ExprDotMethodChain(Ref("buf"));
             foreach (ExprNode expr in forge.ForgeRenderable.ChildNodes) {
                 block.AssignRef(
-                        "value", expr.Forge.EvaluateCodegen(typeof(string), methodNode, exprSymbol, codegenClassScope))
+                        "value",
+                        expr.Forge.EvaluateCodegen(typeof(string), methodNode, exprSymbol, codegenClassScope))
                     .IfRefNullReturnNull("value")
                     .ExprDotMethod(Ref("buf"), "append", Ref("value"));
             }

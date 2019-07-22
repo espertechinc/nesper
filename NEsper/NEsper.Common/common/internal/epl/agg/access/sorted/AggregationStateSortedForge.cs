@@ -34,7 +34,13 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
             CodegenClassScope classScope)
         {
             aggregatorAccess = new AggregatorAccessSortedImpl(
-                join, this, col, ctor, membersColumnized, classScope, factory.Parent.OptionalFilter);
+                join,
+                this,
+                col,
+                ctor,
+                membersColumnized,
+                classScope,
+                factory.Parent.OptionalFilter);
         }
 
         public AggregatorAccess Aggregator => aggregatorAccess;

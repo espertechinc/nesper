@@ -12,6 +12,7 @@ using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.epl.agg.core;
 using com.espertech.esper.common.@internal.@event.core;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.agg.access.linear
@@ -52,10 +53,12 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
         {
             var method = parent.MakeChild(typeof(AggregationPortableValidationLinear), GetType(), classScope);
             method.Block
-                .DeclareVar(
-                    typeof(AggregationPortableValidationLinear), "v",
+                .DeclareVar<AggregationPortableValidationLinear>(
+                    "v",
                     NewInstance(typeof(AggregationPortableValidationLinear)))
-                .SetProperty(Ref("v"), "ContainedEventType",
+                .SetProperty(
+                    Ref("v"),
+                    "ContainedEventType",
                     EventTypeUtility.ResolveTypeCodegen(ContainedEventType, symbols.GetAddInitSvc(method)))
                 .MethodReturn(Ref("v"));
             return LocalMethod(method);

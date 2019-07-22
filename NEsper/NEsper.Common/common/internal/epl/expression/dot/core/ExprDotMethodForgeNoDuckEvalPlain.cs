@@ -8,6 +8,7 @@
 
 using System;
 using System.Reflection;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -19,6 +20,7 @@ using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.expression.dot.core
@@ -64,7 +66,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
                     forge.OptionalStatementName,
                     forge.Method,
                     target.GetType().FullName,
-                    args, e);
+                    args,
+                    e);
             }
 
             return null;
@@ -96,7 +99,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
                 var name = "p" + i;
                 var evaluationType = forge.Parameters[i].EvaluationType;
                 block.DeclareVar(
-                    evaluationType, name,
+                    evaluationType,
+                    name,
                     forge.Parameters[i].EvaluateCodegen(evaluationType, methodNode, exprSymbol, codegenClassScope));
                 args[i] = Ref(name);
             }
@@ -112,17 +116,22 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
             }
 
             var catchBlock = tryCatch.AddCatch(typeof(Exception), "t");
-            catchBlock.DeclareVar(
-                typeof(object[]), "args", NewArrayByLength(typeof(object), Constant(forge.Parameters.Length)));
+            catchBlock.DeclareVar<object[]>(
+                "args",
+                NewArrayByLength(typeof(object), Constant(forge.Parameters.Length)));
             for (var i = 0; i < forge.Parameters.Length; i++) {
                 catchBlock.AssignArrayElement("args", Constant(i), args[i]);
             }
 
             catchBlock.StaticMethod(
-                typeof(ExprDotMethodForgeNoDuckEvalPlain), METHOD_HANDLETARGETEXCEPTION,
-                Constant(forge.OptionalStatementName), Constant(forge.Method.Name),
+                typeof(ExprDotMethodForgeNoDuckEvalPlain),
+                METHOD_HANDLETARGETEXCEPTION,
+                Constant(forge.OptionalStatementName),
+                Constant(forge.Method.Name),
                 Constant(forge.Method.GetParameterTypes()),
-                ExprDotMethodChain(Ref("target")).Add("getClass").Add("getName"), Ref("args"), Ref("t"));
+                ExprDotMethodChain(Ref("target")).Add("getClass").Add("getName"),
+                Ref("args"),
+                Ref("t"));
             if (returnType == typeof(void)) {
                 block.MethodEnd();
             }
@@ -153,7 +162,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
             }
 
             var message = TypeHelper.GetMessageInvocationTarget(
-                optionalStatementName, method, targetClassName, args, t);
+                optionalStatementName,
+                method,
+                targetClassName,
+                args,
+                t);
             Log.Error(message, t);
         }
     }

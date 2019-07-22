@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.datetime.interval;
@@ -21,7 +22,8 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
         {
         }
 
-        public override DTLocalEvaluator DTEvaluator => new DTLocalDtoIntervalEval(intervalForge.Op, TimeZoneInfo.Local);
+        public override DTLocalEvaluator DTEvaluator =>
+            new DTLocalDtoIntervalEval(intervalForge.Op, TimeZoneInfo.Local);
 
         public override DTLocalEvaluatorIntervalComp MakeEvaluatorComp()
         {

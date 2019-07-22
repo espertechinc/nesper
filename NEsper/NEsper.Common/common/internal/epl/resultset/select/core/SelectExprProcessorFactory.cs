@@ -9,6 +9,7 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.soda;
 using com.espertech.esper.common.@internal.compile.stage1.spec;
@@ -49,7 +50,8 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
                 foreach (var item in args.ForClauseSpec.Clauses) {
                     if (item.Keyword == null) {
                         throw new ExprValidationException(
-                            "Expected any of the " + EnumHelper.GetValues<ForClauseKeyword>().RenderAny().ToLowerInvariant() +
+                            "Expected any of the " +
+                            EnumHelper.GetValues<ForClauseKeyword>().RenderAny().ToLowerInvariant() +
                             " for-clause keywords after reserved keyword 'for'");
                     }
 
@@ -57,18 +59,21 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
                         var keyword = EnumHelper.Parse<ForClauseKeyword>(item.Keyword);
                         if (keyword == ForClauseKeyword.GROUPED_DELIVERY && item.Expressions.IsEmpty()) {
                             throw new ExprValidationException(
-                                "The for-clause with the " + ForClauseKeyword.GROUPED_DELIVERY.GetName() +
+                                "The for-clause with the " +
+                                ForClauseKeyword.GROUPED_DELIVERY.GetName() +
                                 " keyword requires one or more grouping expressions");
                         }
 
                         if (keyword == ForClauseKeyword.DISCRETE_DELIVERY && !item.Expressions.IsEmpty()) {
                             throw new ExprValidationException(
-                                "The for-clause with the " + ForClauseKeyword.DISCRETE_DELIVERY.GetName() +
+                                "The for-clause with the " +
+                                ForClauseKeyword.DISCRETE_DELIVERY.GetName() +
                                 " keyword does not allow grouping expressions");
                         }
 
                         if (forDelivery) {
-                            throw new ExprValidationException("The for-clause with delivery keywords may only occur once in a statement");
+                            throw new ExprValidationException(
+                                "The for-clause with delivery keywords may only occur once in a statement");
                         }
                     }
                     catch (EPException) {
@@ -76,17 +81,24 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
                     }
                     catch (Exception) {
                         throw new ExprValidationException(
-                            "Expected any of the " + EnumHelper.GetValues<ForClauseKeyword>().RenderAny().ToLowerInvariant() +
+                            "Expected any of the " +
+                            EnumHelper.GetValues<ForClauseKeyword>().RenderAny().ToLowerInvariant() +
                             " for-clause keywords after reserved keyword 'for'");
                     }
 
                     StreamTypeService type = new StreamTypeServiceImpl(synthetic.ResultEventType, null, false);
                     groupedDeliveryExpr = new ExprNode[item.Expressions.Count];
-                    var validationContext = new ExprValidationContextBuilder(type, args.StatementRawInfo, args.CompileTimeServices)
-                        .WithAllowBindingConsumption(true).Build();
+                    var validationContext = new ExprValidationContextBuilder(
+                            type,
+                            args.StatementRawInfo,
+                            args.CompileTimeServices)
+                        .WithAllowBindingConsumption(true)
+                        .Build();
                     for (var i = 0; i < item.Expressions.Count; i++) {
                         groupedDeliveryExpr[i] = ExprNodeUtilityValidate.GetValidatedSubtree(
-                            ExprNodeOrigin.FORCLAUSE, item.Expressions[i], validationContext);
+                            ExprNodeOrigin.FORCLAUSE,
+                            item.Expressions[i],
+                            validationContext);
                     }
 
                     forDelivery = true;
@@ -103,9 +115,16 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
 
             if (allowSubscriber) {
                 var bindProcessor = new BindProcessorForge(
-                    synthetic, args.SelectionList, args.TypeService.EventTypes, args.TypeService.StreamNames, args.TableCompileTimeResolver);
+                    synthetic,
+                    args.SelectionList,
+                    args.TypeService.EventTypes,
+                    args.TypeService.StreamNames,
+                    args.TableCompileTimeResolver);
                 descriptor = new SelectSubscriberDescriptor(
-                    bindProcessor.ExpressionTypes, bindProcessor.ColumnNamesAssigned, forDelivery, groupedDeliveryExpr);
+                    bindProcessor.ExpressionTypes,
+                    bindProcessor.ColumnNamesAssigned,
+                    forDelivery,
+                    groupedDeliveryExpr);
                 forge = new BindSelectExprProcessorForge(synthetic, bindProcessor);
             }
             else {
@@ -125,14 +144,19 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
                 throw new ExprValidationException("Wildcard not allowed when insert-into specifies column order");
             }
 
-            var insertIntoTarget = insertIntoDesc == null ? null : args.EventTypeCompileTimeResolver.GetTypeByName(insertIntoDesc.EventTypeName);
+            var insertIntoTarget = insertIntoDesc == null
+                ? null
+                : args.EventTypeCompileTimeResolver.GetTypeByName(insertIntoDesc.EventTypeName);
 
             // Determine wildcard processor (select *)
             if (IsWildcardsOnly(args.SelectionList)) {
                 // For joins
                 if (args.TypeService.StreamNames.Length > 1 && !(insertIntoTarget is VariantEventType)) {
                     Log.Debug(".getProcessor Using SelectExprJoinWildcardProcessor");
-                    return SelectExprJoinWildcardProcessorFactory.Create(args, insertIntoDesc, eventTypeName => eventTypeName);
+                    return SelectExprJoinWildcardProcessorFactory.Create(
+                        args,
+                        insertIntoDesc,
+                        eventTypeName => eventTypeName);
                 }
 
                 if (insertIntoDesc == null) {
@@ -140,7 +164,8 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
                     // don't need extra processing
                     Log.Debug(".getProcessor Using wildcard processor");
                     if (args.TypeService.HasTableTypes) {
-                        var table = args.TableCompileTimeResolver.ResolveTableFromEventType(args.TypeService.EventTypes[0]);
+                        var table = args.TableCompileTimeResolver.ResolveTableFromEventType(
+                            args.TypeService.EventTypes[0]);
                         if (table != null) {
                             return new SelectEvalWildcardTable(table);
                         }
@@ -157,7 +182,11 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
 
             // Construct processor
             var buckets = GetSelectExpressionBuckets(args.SelectionList);
-            var factory = new SelectExprProcessorHelper(buckets.Expressions, buckets.SelectedStreams, args, insertIntoDesc);
+            var factory = new SelectExprProcessorHelper(
+                buckets.Expressions,
+                buckets.SelectedStreams,
+                args,
+                insertIntoDesc);
             var forge = factory.Forge;
             return forge;
         }
@@ -169,7 +198,8 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
                 if (element is SelectClauseExprCompiledSpec) {
                     var expr = (SelectClauseExprCompiledSpec) element;
                     if (names.Contains(expr.AssignedName)) {
-                        throw new ExprValidationException("Column name '" + expr.AssignedName + "' appears more then once in select clause");
+                        throw new ExprValidationException(
+                            "Column name '" + expr.AssignedName + "' appears more then once in select clause");
                     }
 
                     names.Add(expr.AssignedName);
@@ -181,7 +211,8 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
                     }
 
                     if (names.Contains(stream.OptionalName)) {
-                        throw new ExprValidationException("Column name '" + stream.OptionalName + "' appears more then once in select clause");
+                        throw new ExprValidationException(
+                            "Column name '" + stream.OptionalName + "' appears more then once in select clause");
                     }
 
                     names.Add(stream.OptionalName);
@@ -230,7 +261,8 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
             }
 
             var dotNode = (ExprDotNode) selectExpression;
-            if (dotNode.ChainSpec[0].Name.ToLowerInvariant() == ImportServiceCompileTime.EXT_SINGLEROW_FUNCTION_TRANSPOSE) {
+            if (dotNode.ChainSpec[0].Name.ToLowerInvariant() ==
+                ImportServiceCompileTime.EXT_SINGLEROW_FUNCTION_TRANSPOSE) {
                 return true;
             }
 

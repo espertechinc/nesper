@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -43,7 +44,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
                 CodegenClassScope codegenClassScope)
             {
                 return CodegenExpressionBuilder.StaticMethod(
-                    typeof(StringToDateTimeExIsoFormatComputer), "stringToCalendarWStaticISOParse", input);
+                    typeof(StringToDateTimeExIsoFormatComputer),
+                    "stringToCalendarWStaticISOParse",
+                    input);
             }
 
             public CasterParserComputer EvaluatorComputer => this;

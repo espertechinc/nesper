@@ -113,7 +113,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                 throw new IllegalStateException("Unrecognized enum " + eventRepresentationEnum);
             }
 
-            Assert.AreEqual("G1", startEventOne.Get("id"));
+            Assert.AreEqual("G1", startEventOne.Get("Id"));
             Assert.AreEqual(2, endEventOne.Get("val"));
             Assert.AreEqual(3, endEventTwo.Get("val"));
 
@@ -174,17 +174,17 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
             }
             else if (eventRepresentationEnum.IsMapEvent()) {
                 IDictionary<string, object> theEvent = new LinkedHashMap<string, object>();
-                theEvent.Put("id", id);
+                theEvent.Put("Id", id);
                 theEvent.Put("val", val);
                 env.SendEventMap(theEvent, "EventTwo");
             }
             else if (eventRepresentationEnum.IsAvroEvent()) {
                 var schema = SchemaBuilder.Record(
                     "name",
-                    TypeBuilder.RequiredString("id"),
+                    TypeBuilder.RequiredString("Id"),
                     TypeBuilder.RequiredInt("val"));
                 var record = new GenericRecord(schema);
-                record.Put("id", id);
+                record.Put("Id", id);
                 record.Put("val", val);
                 env.SendEventAvro(record, "EventTwo");
             }
@@ -203,13 +203,13 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
             }
             else if (eventRepresentationEnum.IsMapEvent()) {
                 IDictionary<string, object> theEvent = new LinkedHashMap<string, object>();
-                theEvent.Put("id", id);
+                theEvent.Put("Id", id);
                 env.SendEventMap(theEvent, "EventOne");
             }
             else if (eventRepresentationEnum.IsAvroEvent()) {
-                var schema = SchemaBuilder.Record("name", TypeBuilder.RequiredString("id"));
+                var schema = SchemaBuilder.Record("name", TypeBuilder.RequiredString("Id"));
                 var record = new GenericRecord(schema);
-                record.Put("id", id);
+                record.Put("Id", id);
                 env.SendEventAvro(record, "EventOne");
             }
             else {
@@ -759,7 +759,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                 env.SendEventBean(SupportBeanComplexProps.MakeDefaultBean());
                 var eventFour = (SupportBeanArrayCollMap) env.Listener("s0").AssertOneGetNewAndReset().Underlying;
                 Assert.AreEqual(
-                    "nestedValue",
+                    "NestedValue",
                     ((SupportBeanComplexProps.SupportBeanSpecialGetterNested) eventFour.AnyObject).NestedValue);
                 env.UndeployModuleContaining("s0");
 

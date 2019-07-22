@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -40,7 +41,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            return forge.inner.EvaluateCodegen(forge.inner.EvaluationType, codegenMethodScope, exprSymbol, codegenClassScope);
+            return forge.inner.EvaluateCodegen(
+                forge.inner.EvaluationType,
+                codegenMethodScope,
+                exprSymbol,
+                codegenClassScope);
         }
     }
 } // end of namespace

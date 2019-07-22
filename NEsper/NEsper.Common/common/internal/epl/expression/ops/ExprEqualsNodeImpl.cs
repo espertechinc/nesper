@@ -9,6 +9,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
@@ -60,7 +61,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             // Must have 2 child nodes
             if (ChildNodes.Length != 2) {
                 throw new ExprValidationException(
-                    "Invalid use of equals, expecting left-hand side and right-hand side but received " + ChildNodes.Length + " expressions");
+                    "Invalid use of equals, expecting left-hand side and right-hand side but received " +
+                    ChildNodes.Length +
+                    " expressions");
             }
 
             // Must be the same boxed type returned by expressions under this
@@ -102,8 +105,13 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             else {
                 if (!coercionType.IsNumeric()) {
                     throw new ExprValidationException(
-                        "Cannot convert datatype '" + coercionType.Name + "' to a value that fits both type '" + typeOne.Name + "' and type '" +
-                        typeTwo.Name + "'");
+                        "Cannot convert datatype '" +
+                        coercionType.Name +
+                        "' to a value that fits both type '" +
+                        typeOne.Name +
+                        "' and type '" +
+                        typeTwo.Name +
+                        "'");
                 }
 
                 var numberCoercerLHS = SimpleNumberCoercerFactory.GetCoercer(typeOne, coercionType);

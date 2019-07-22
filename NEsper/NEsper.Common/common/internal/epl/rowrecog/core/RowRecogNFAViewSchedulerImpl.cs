@@ -28,20 +28,26 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
             ScheduleHandleCallback callback = new ProxyScheduleHandleCallback {
                 ProcScheduledTrigger = () => {
                     agentInstanceContext.AuditProvider.ScheduleFire(
-                        agentInstanceContext, ScheduleObjectType.matchrecognize, NAME_AUDITPROVIDER_SCHEDULE);
+                        agentInstanceContext,
+                        ScheduleObjectType.matchrecognize,
+                        NAME_AUDITPROVIDER_SCHEDULE);
                     agentInstanceContext.InstrumentationProvider.QRegExScheduledEval();
                     scheduleCallback.Triggered();
                     agentInstanceContext.InstrumentationProvider.ARegExScheduledEval();
                 }
             };
             handle = new EPStatementHandleCallbackSchedule(
-                agentInstanceContext.EpStatementAgentInstanceHandle, callback);
+                agentInstanceContext.EpStatementAgentInstanceHandle,
+                callback);
         }
 
         public void AddSchedule(long timeDelta)
         {
             agentInstanceContext.AuditProvider.ScheduleAdd(
-                timeDelta, agentInstanceContext, handle, ScheduleObjectType.matchrecognize,
+                timeDelta,
+                agentInstanceContext,
+                handle,
+                ScheduleObjectType.matchrecognize,
                 NAME_AUDITPROVIDER_SCHEDULE);
             agentInstanceContext.StatementContext.SchedulingService.Add(timeDelta, handle, scheduleSlot);
         }
@@ -49,10 +55,16 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
         public void ChangeSchedule(long timeDelta)
         {
             agentInstanceContext.AuditProvider.ScheduleRemove(
-                agentInstanceContext, handle, ScheduleObjectType.matchrecognize, NAME_AUDITPROVIDER_SCHEDULE);
+                agentInstanceContext,
+                handle,
+                ScheduleObjectType.matchrecognize,
+                NAME_AUDITPROVIDER_SCHEDULE);
             agentInstanceContext.StatementContext.SchedulingService.Remove(handle, scheduleSlot);
             agentInstanceContext.AuditProvider.ScheduleAdd(
-                timeDelta, agentInstanceContext, handle, ScheduleObjectType.matchrecognize,
+                timeDelta,
+                agentInstanceContext,
+                handle,
+                ScheduleObjectType.matchrecognize,
                 NAME_AUDITPROVIDER_SCHEDULE);
             agentInstanceContext.StatementContext.SchedulingService.Add(timeDelta, handle, scheduleSlot);
         }
@@ -60,7 +72,10 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
         public void RemoveSchedule()
         {
             agentInstanceContext.AuditProvider.ScheduleRemove(
-                agentInstanceContext, handle, ScheduleObjectType.matchrecognize, NAME_AUDITPROVIDER_SCHEDULE);
+                agentInstanceContext,
+                handle,
+                ScheduleObjectType.matchrecognize,
+                NAME_AUDITPROVIDER_SCHEDULE);
             agentInstanceContext.StatementContext.SchedulingService.Remove(handle, scheduleSlot);
         }
     }

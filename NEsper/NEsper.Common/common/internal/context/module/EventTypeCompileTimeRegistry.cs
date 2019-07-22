@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.meta;
 using com.espertech.esper.common.client.util;
@@ -42,7 +43,8 @@ namespace com.espertech.esper.common.@internal.context.module
                 throw new ArgumentException("Event type '" + type.Name + "' has already been added by the module");
             }
 
-            if (type.Metadata.AccessModifier == NameAccessModifier.PRIVATE || type.Metadata.AccessModifier == NameAccessModifier.PUBLIC) {
+            if (type.Metadata.AccessModifier == NameAccessModifier.PRIVATE ||
+                type.Metadata.AccessModifier == NameAccessModifier.PUBLIC) {
                 _moduleTypesAdded.Put(type.Name, type);
             }
 

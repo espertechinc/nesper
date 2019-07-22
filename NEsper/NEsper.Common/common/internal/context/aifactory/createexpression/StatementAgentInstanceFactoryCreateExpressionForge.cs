@@ -7,12 +7,14 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.context.aifactory.createexpression
@@ -35,12 +37,18 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createexpressio
             SAIFFInitializeSymbol symbols,
             CodegenClassScope classScope)
         {
-            CodegenMethod method = parent.MakeChild(typeof(StatementAgentInstanceFactoryCreateExpression), this.GetType(), classScope);
+            CodegenMethod method = parent.MakeChild(
+                typeof(StatementAgentInstanceFactoryCreateExpression),
+                this.GetType(),
+                classScope);
             method.Block
-                .DeclareVar(
-                    typeof(StatementAgentInstanceFactoryCreateExpression), "saiff",
+                .DeclareVar<StatementAgentInstanceFactoryCreateExpression>(
+                    "saiff",
                     NewInstance(typeof(StatementAgentInstanceFactoryCreateExpression)))
-                .SetProperty(Ref("saiff"), "StatementEventType", EventTypeUtility.ResolveTypeCodegen(statementEventType, symbols.GetAddInitSvc(method)))
+                .SetProperty(
+                    Ref("saiff"),
+                    "StatementEventType",
+                    EventTypeUtility.ResolveTypeCodegen(statementEventType, symbols.GetAddInitSvc(method)))
                 .SetProperty(Ref("saiff"), "ExpressionName", Constant(expressionName))
                 .MethodReturn(@Ref("saiff"));
             return method;

@@ -9,6 +9,7 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
+
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.@event.bean.core;
@@ -16,6 +17,7 @@ using com.espertech.esper.common.@internal.@event.bean.service;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.@event.util;
 using com.espertech.esper.compat.collections;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.@event.bean.getter
@@ -25,8 +27,8 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
     /// </summary>
     public class DynamicMappedPropertyGetter : DynamicPropertyGetterBase
     {
-        private readonly string getterMethodName;
-        private readonly object[] parameters;
+        private readonly string _getterMethodName;
+        private readonly object[] _parameters;
 
         public DynamicMappedPropertyGetter(
             string fieldName,
@@ -35,13 +37,13 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
             BeanEventTypeFactory beanEventTypeFactory)
             : base(eventBeanTypedEventFactory, beanEventTypeFactory)
         {
-            getterMethodName = PropertyHelper.GetGetterMethodName(fieldName);
-            parameters = new object[] {key};
+            _getterMethodName = PropertyHelper.GetGetterMethodName(fieldName);
+            _parameters = new object[] {key};
         }
 
         internal override MethodInfo DetermineMethod(Type clazz)
         {
-            return DynamicMapperPropertyDetermineMethod(clazz, getterMethodName);
+            return DynamicMapperPropertyDetermineMethod(clazz, _getterMethodName);
         }
 
         internal override CodegenExpression DetermineMethodCodegen(
@@ -50,15 +52,17 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
             CodegenClassScope codegenClassScope)
         {
             return StaticMethod(
-                typeof(DynamicMappedPropertyGetter), "DynamicMapperPropertyDetermineMethod", clazz,
-                Constant(getterMethodName));
+                typeof(DynamicMappedPropertyGetter),
+                "DynamicMapperPropertyDetermineMethod",
+                clazz,
+                Constant(_getterMethodName));
         }
 
         internal override object Call(
             DynamicPropertyDescriptor descriptor,
             object underlying)
         {
-            return DynamicMappedPropertyGet(descriptor, underlying, parameters);
+            return DynamicMappedPropertyGet(descriptor, underlying, _parameters);
         }
 
         internal override CodegenExpression CallCodegen(
@@ -67,9 +71,13 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
             CodegenMethodScope parent,
             CodegenClassScope codegenClassScope)
         {
-            var @params = codegenClassScope.AddFieldUnshared<object[]>(true, Constant(parameters));
+            var @params = codegenClassScope.AddFieldUnshared<object[]>(true, Constant(_parameters));
             return StaticMethod(
-                typeof(DynamicMappedPropertyGetter), "dynamicMappedPropertyGet", desc, @object, @params);
+                typeof(DynamicMappedPropertyGetter),
+                "dynamicMappedPropertyGet",
+                desc,
+                @object,
+                @params);
         }
 
         /// <summary>

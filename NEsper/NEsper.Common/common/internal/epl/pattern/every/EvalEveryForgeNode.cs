@@ -9,11 +9,13 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.compile.stage2;
 using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.epl.pattern.core;
 using com.espertech.esper.common.@internal.schedule;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.pattern.every
@@ -52,7 +54,10 @@ namespace com.espertech.esper.common.@internal.epl.pattern.every
             CodegenClassScope classScope)
         {
             method.Block
-                .SetProperty(Ref("node"), "ChildNode", LocalMethod(ChildNodes[0].MakeCodegen(method, symbols, classScope)));
+                .SetProperty(
+                    Ref("node"),
+                    "ChildNode",
+                    LocalMethod(ChildNodes[0].MakeCodegen(method, symbols, classScope)));
         }
 
         public override void CollectSelfFilterAndSchedule(

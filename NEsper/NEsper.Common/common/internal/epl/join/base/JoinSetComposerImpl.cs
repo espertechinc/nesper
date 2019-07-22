@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.epl.expression.core;
@@ -123,10 +124,15 @@ namespace com.espertech.esper.common.@internal.epl.join.@base
             // Unique indexes may remove then add.
             for (var stream = 0; stream < newDataPerStream.Length; stream++) {
                 instrumentationCommon.QJoinCompositionStepUpdIndex(
-                    stream, newDataPerStream[stream], oldDataPerStream[stream]);
+                    stream,
+                    newDataPerStream[stream],
+                    oldDataPerStream[stream]);
                 for (var j = 0; j < repositories[stream].Length; j++) {
-                    repositories[stream][j].AddRemove(
-                        newDataPerStream[stream], oldDataPerStream[stream], exprEvaluatorContext);
+                    repositories[stream][j]
+                        .AddRemove(
+                            newDataPerStream[stream],
+                            oldDataPerStream[stream],
+                            exprEvaluatorContext);
                 }
 
                 instrumentationCommon.AJoinCompositionStepUpdIndex();

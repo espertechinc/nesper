@@ -10,6 +10,7 @@ using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.@event.core;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.context.aifactory.createcontext
@@ -34,12 +35,15 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createcontext
         {
             var method = parent.MakeChild(typeof(StatementAgentInstanceFactoryCreateContext), GetType(), classScope);
             method.Block
-                .DeclareVar(
-                    typeof(StatementAgentInstanceFactoryCreateContext), "saiff", NewInstance(typeof(StatementAgentInstanceFactoryCreateContext)))
+                .DeclareVar<StatementAgentInstanceFactoryCreateContext>(
+                    "saiff",
+                    NewInstance(typeof(StatementAgentInstanceFactoryCreateContext)))
                 .SetProperty(Ref("saiff"), "ContextName", Constant(contextName))
                 .SetProperty(
-                    Ref("saiff"), "StatementEventType", EventTypeUtility.ResolveTypeCodegen(statementEventType, symbols.GetAddInitSvc(method)))
-                .ExprDotMethod(symbols.GetAddInitSvc(method), "addReadyCallback", Ref("saiff"))
+                    Ref("saiff"),
+                    "StatementEventType",
+                    EventTypeUtility.ResolveTypeCodegen(statementEventType, symbols.GetAddInitSvc(method)))
+                .ExprDotMethod(symbols.GetAddInitSvc(method), "AddReadyCallback", Ref("saiff"))
                 .MethodReturn(Ref("saiff"));
             return method;
         }

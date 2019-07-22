@@ -8,6 +8,7 @@
 
 using System.Collections.Generic;
 using System.Linq;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.context.activator;
 using com.espertech.esper.common.@internal.context.aifactory.core;
@@ -137,8 +138,11 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
             var discardPartialsOnMatch = false;
 
             for (var stream = 0; stream < numStreams; stream++) {
-                var activationResult = viewableActivators[stream].Activate(
-                    agentInstanceContext, false, isRecoveringResilient);
+                var activationResult = viewableActivators[stream]
+                    .Activate(
+                        agentInstanceContext,
+                        false,
+                        isRecoveringResilient);
                 stopCallbacks.Add(activationResult.StopCallback);
                 activationResults[stream] = activationResult;
                 eventStreamParentViewable[stream] = activationResult.Viewable;
@@ -158,7 +162,9 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
 
             for (var i = 0; i < numStreams; i++) {
                 viewFactoryChainContexts[i] = AgentInstanceViewFactoryChainContext.Create(
-                    viewFactories[i], agentInstanceContext, viewResourceDelegates[i]);
+                    viewFactories[i],
+                    agentInstanceContext,
+                    viewResourceDelegates[i]);
                 priorEvalStrategies[i] = PriorHelper.ToStrategy(viewFactoryChainContexts[i]);
                 previousGetterStrategies[i] = viewFactoryChainContexts[i].PreviousNodeGetter;
             }
@@ -168,7 +174,9 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
             var streamViews = new Viewable[numStreams];
             for (var stream = 0; stream < numStreams; stream++) {
                 var viewables = ViewFactoryUtil.Materialize(
-                    viewFactories[stream], eventStreamParentViewable[stream], viewFactoryChainContexts[stream],
+                    viewFactories[stream],
+                    eventStreamParentViewable[stream],
+                    viewFactoryChainContexts[stream],
                     stopCallbacks);
                 topViews[stream] = viewables.Top;
                 streamViews[stream] = viewables.Last;
@@ -183,14 +191,20 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
 
             // start subselects
             var subselectActivations = SubSelectHelperStart.StartSubselects(
-                subselects, agentInstanceContext, stopCallbacks, isRecoveringResilient);
+                subselects,
+                agentInstanceContext,
+                stopCallbacks,
+                isRecoveringResilient);
 
             // start table-access
             var tableAccessEvals = ExprTableEvalHelperStart.StartTableAccess(tableAccesses, agentInstanceContext);
 
             // result-set-processing
             var processorPair = StatementAgentInstanceFactoryUtil.StartResultSetAndAggregation(
-                resultSetProcessorFactoryProvider, agentInstanceContext, false, null);
+                resultSetProcessorFactoryProvider,
+                agentInstanceContext,
+                false,
+                null);
             stopCallbacks.Add(
                 new ProxyAgentInstanceStopCallback {
                     ProcStop = services => {
@@ -205,15 +219,22 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
             OutputProcessView outputProcessView;
             if (streamViews.Length == 1) {
                 outputProcessView = HandleSimpleSelect(
-                    streamViews, processorPair.First, evalRootMatchRemover, suppressSameEventMatches,
-                    discardPartialsOnMatch, agentInstanceContext);
+                    streamViews,
+                    processorPair.First,
+                    evalRootMatchRemover,
+                    suppressSameEventMatches,
+                    discardPartialsOnMatch,
+                    agentInstanceContext);
                 joinSetComposer = null;
                 joinPreloadMethod = null;
             }
             else {
                 var joinPlanResult = HandleJoin(
-                    streamViews, processorPair.First,
-                    agentInstanceContext, stopCallbacks, isRecoveringResilient);
+                    streamViews,
+                    processorPair.First,
+                    agentInstanceContext,
+                    stopCallbacks,
+                    isRecoveringResilient);
                 outputProcessView = joinPlanResult.Viewable;
                 joinSetComposer = joinPlanResult.JoinSetComposerDesc.JoinSetComposer;
                 joinPreloadMethod = joinPlanResult.PreloadMethod;
@@ -225,17 +246,32 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
             if (!isRecoveringResilient) {
                 bool aggregated = resultSetProcessorFactoryProvider.ResultSetProcessorType.IsAggregated();
                 HandlePreloads(
-                    preloadList, aggregated, joinPreloadMethod, activationResults, agentInstanceContext,
+                    preloadList,
+                    aggregated,
+                    joinPreloadMethod,
+                    activationResults,
+                    agentInstanceContext,
                     processorPair.First);
             }
 
             var stopCallback = AgentInstanceUtil.FinalizeSafeStopCallbacks(stopCallbacks);
 
             return new StatementAgentInstanceFactorySelectResult(
-                outputProcessView, stopCallback, agentInstanceContext, processorPair.Second,
-                subselectActivations, priorEvalStrategies, previousGetterStrategies, rowRecogPreviousStrategy,
-                tableAccessEvals, preloadList, null,
-                joinSetComposer, topViews, null, activationResults);
+                outputProcessView,
+                stopCallback,
+                agentInstanceContext,
+                processorPair.Second,
+                subselectActivations,
+                priorEvalStrategies,
+                previousGetterStrategies,
+                rowRecogPreviousStrategy,
+                tableAccessEvals,
+                preloadList,
+                null,
+                joinSetComposer,
+                topViews,
+                null,
+                activationResults);
         }
 
         public EventType StatementEventType => resultSetProcessorFactoryProvider.ResultEventType;
@@ -283,7 +319,10 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
                 }
 
                 return new AIRegistryRequirements(
-                    prior, previous, subqueries, tableAccesses == null ? 0 : tableAccesses.Count,
+                    prior,
+                    previous,
+                    subqueries,
+                    tableAccesses == null ? 0 : tableAccesses.Count,
                     hasRowRecogWithPrevious);
             }
         }
@@ -302,7 +341,9 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
             // where-clause
             if (whereClauseEvaluator != null) {
                 var filterView = new FilterExprView(
-                    whereClauseEvaluator, agentInstanceContext, whereClauseEvaluatorTextForAudit);
+                    whereClauseEvaluator,
+                    agentInstanceContext,
+                    whereClauseEvaluatorTextForAudit);
                 finalView.Child = filterView;
                 filterView.Parent = finalView;
                 finalView = filterView;
@@ -310,7 +351,9 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
 
             if (evalRootMatchRemover != null && (suppressSameEventMatches || discardPartialsOnMatch)) {
                 var v = new PatternRemoveDispatchView(
-                    evalRootMatchRemover, suppressSameEventMatches, discardPartialsOnMatch);
+                    evalRootMatchRemover,
+                    suppressSameEventMatches,
+                    discardPartialsOnMatch);
                 dispatches = new ArrayDeque<EPStatementDispatch>(2);
                 dispatches.Add(v);
                 finalView.Child = v;
@@ -350,7 +393,8 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
 
             var outputProcessView =
                 outputProcessViewFactoryProvider.OutputProcessViewFactory.MakeView(
-                    resultSetProcessor, agentInstanceContext);
+                    resultSetProcessor,
+                    agentInstanceContext);
             finalView.Child = outputProcessView;
             outputProcessView.Parent = finalView;
 
@@ -365,7 +409,10 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
             bool isRecoveringResilient)
         {
             var joinSetComposerDesc = joinSetComposerPrototype.Create(
-                streamViews, false, agentInstanceContext, isRecoveringResilient);
+                streamViews,
+                false,
+                agentInstanceContext,
+                isRecoveringResilient);
 
             stopCallbacks.Add(
                 new ProxyAgentInstanceStopCallback {
@@ -374,11 +421,14 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
 
             var outputProcessView =
                 outputProcessViewFactoryProvider.OutputProcessViewFactory.MakeView(
-                    resultSetProcessor, agentInstanceContext);
+                    resultSetProcessor,
+                    agentInstanceContext);
 
             // Create strategy for join execution
             JoinExecutionStrategy execution = new JoinExecutionStrategyImpl(
-                joinSetComposerDesc.JoinSetComposer, joinSetComposerDesc.PostJoinFilterEvaluator, outputProcessView,
+                joinSetComposerDesc.JoinSetComposer,
+                joinSetComposerDesc.PostJoinFilterEvaluator,
+                outputProcessView,
                 agentInstanceContext);
 
             // The view needs a reference to the join execution to pull iterator values
@@ -386,7 +436,9 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
 
             // Hook up dispatchable with buffer and execution strategy
             var joinStatementDispatch = new JoinExecStrategyDispatchable(
-                execution, streamViews.Length, agentInstanceContext);
+                execution,
+                streamViews.Length,
+                agentInstanceContext);
             agentInstanceContext.EpStatementAgentInstanceHandle.OptionalDispatchable = joinStatementDispatch;
 
             JoinPreloadMethod preloadMethod;

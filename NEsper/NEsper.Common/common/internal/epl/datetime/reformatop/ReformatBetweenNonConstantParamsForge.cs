@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -73,7 +74,11 @@ namespace com.espertech.esper.common.@internal.epl.datetime.reformatop
             CodegenClassScope codegenClassScope)
         {
             return ReformatBetweenNonConstantParamsForgeOp.CodegenLong(
-                this, inner, codegenMethodScope, exprSymbol, codegenClassScope);
+                this,
+                inner,
+                codegenMethodScope,
+                exprSymbol,
+                codegenClassScope);
         }
 
         public CodegenExpression CodegenDateTime(
@@ -83,7 +88,11 @@ namespace com.espertech.esper.common.@internal.epl.datetime.reformatop
             CodegenClassScope codegenClassScope)
         {
             return ReformatBetweenNonConstantParamsForgeOp.CodegenDateTime(
-                this, inner, codegenMethodScope, exprSymbol, codegenClassScope);
+                this,
+                inner,
+                codegenMethodScope,
+                exprSymbol,
+                codegenClassScope);
         }
 
         public CodegenExpression CodegenDateTimeOffset(
@@ -93,7 +102,11 @@ namespace com.espertech.esper.common.@internal.epl.datetime.reformatop
             CodegenClassScope codegenClassScope)
         {
             return ReformatBetweenNonConstantParamsForgeOp.CodegenDateTimeOffset(
-                this, inner, codegenMethodScope, exprSymbol, codegenClassScope);
+                this,
+                inner,
+                codegenMethodScope,
+                exprSymbol,
+                codegenClassScope);
         }
 
         public CodegenExpression CodegenDateTimeEx(
@@ -103,7 +116,11 @@ namespace com.espertech.esper.common.@internal.epl.datetime.reformatop
             CodegenClassScope codegenClassScope)
         {
             return ReformatBetweenNonConstantParamsForgeOp.CodegenDateTimeEx(
-                this, inner, codegenMethodScope, exprSymbol, codegenClassScope);
+                this,
+                inner,
+                codegenMethodScope,
+                exprSymbol,
+                codegenClassScope);
         }
 
         public Type ReturnType => typeof(bool?);
@@ -136,7 +153,13 @@ namespace com.espertech.esper.common.@internal.epl.datetime.reformatop
             }
 
             return new FilterExprAnalyzerDTBetweenAffector(
-                typesPerStream, targetStreamNum, targetProperty, start, end, includeLow.Value, includeHigh.Value);
+                typesPerStream,
+                targetStreamNum,
+                targetProperty,
+                start,
+                end,
+                includeLow.Value,
+                includeHigh.Value);
         }
 
         public ReformatOp Op => new ReformatBetweenNonConstantParamsForgeOp(

@@ -7,12 +7,14 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.client.hook.aggmultifunc;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.context.module;
 using com.espertech.esper.common.@internal.epl.agg.core;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.agg.access.core
@@ -42,8 +44,10 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.core
         {
             var symbols = new SAIFFInitializeSymbol();
             var init = classScope.NamespaceScope.InitMethod
-                .MakeChildWithScope(typeof(AggregationMultiFunctionTableReader), generator, symbols, classScope).AddParam(
-                    typeof(EPStatementInitServices), EPStatementInitServicesConstants.REF.Ref);
+                .MakeChildWithScope(typeof(AggregationMultiFunctionTableReader), generator, symbols, classScope)
+                .AddParam(
+                    typeof(EPStatementInitServices),
+                    EPStatementInitServicesConstants.REF.Ref);
             init.Block.MethodReturn(readerForge.CodegenCreateReader(init, symbols, classScope));
             return LocalMethod(init, EPStatementInitServicesConstants.REF);
         }

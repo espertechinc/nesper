@@ -9,6 +9,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 
 namespace com.espertech.esper.common.@internal.bytecodemodel.model.statement
@@ -20,11 +21,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.statement
 
         public CodegenStatementReturnExpression(CodegenExpression expression)
         {
-            if (expression == null) {
-                throw new ArgumentException("No expression provided");
-            }
-
-            this.expression = expression;
+            this.expression = expression ?? throw new ArgumentException("No expression provided");
         }
 
         public override void MergeClasses(ISet<Type> classes)
@@ -34,11 +31,10 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.statement
 
         public override void RenderStatement(
             StringBuilder builder,
-            IDictionary<Type, string> imports,
             bool isInnerClass)
         {
             builder.Append("return ");
-            expression.Render(builder, imports, isInnerClass);
+            expression.Render(builder, isInnerClass);
         }
     }
 } // end of namespace

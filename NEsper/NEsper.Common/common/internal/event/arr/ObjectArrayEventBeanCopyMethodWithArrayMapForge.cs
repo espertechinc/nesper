@@ -7,12 +7,14 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.context.module;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat.collections;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.@event.arr
@@ -48,8 +50,7 @@ namespace com.espertech.esper.common.@internal.@event.arr
 
             ISet<int> arrayIndexesToCopy = new HashSet<int>();
             foreach (var prop in arrayPropertiesToCopy) {
-                if (propertiesIndexes.TryGetValue(prop, out var index))
-                { 
+                if (propertiesIndexes.TryGetValue(prop, out var index)) {
                     arrayIndexesToCopy.Add(index);
                 }
             }
@@ -65,13 +66,17 @@ namespace com.espertech.esper.common.@internal.@event.arr
                     typeof(ObjectArrayEventType),
                     EventTypeUtility.ResolveTypeCodegen(eventType, EPStatementInitServicesConstants.REF)),
                 factory,
-                Constant(mapIndexes), Constant(arrayIndexes));
+                Constant(mapIndexes),
+                Constant(arrayIndexes));
         }
 
         public EventBeanCopyMethod GetCopyMethod(EventBeanTypedEventFactory eventBeanTypedEventFactory)
         {
             return new ObjectArrayEventBeanCopyMethodWithArrayMap(
-                eventType, eventBeanTypedEventFactory, mapIndexes, arrayIndexes);
+                eventType,
+                eventBeanTypedEventFactory,
+                mapIndexes,
+                arrayIndexes);
         }
     }
 } // end of namespace

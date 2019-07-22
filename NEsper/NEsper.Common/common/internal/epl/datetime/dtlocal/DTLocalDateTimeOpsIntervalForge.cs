@@ -8,11 +8,13 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.datetime.calop;
 using com.espertech.esper.common.@internal.epl.datetime.interval;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
+
 using static com.espertech.esper.common.@internal.epl.datetime.dtlocal.DTLocalUtil;
 
 namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
@@ -23,12 +25,14 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
             IList<CalendarForge> calendarForges,
             IntervalForge intervalForge)
             : base(
-                calendarForges, intervalForge)
+                calendarForges,
+                intervalForge)
         {
         }
 
         public override DTLocalEvaluator DTEvaluator => new DTLocalDateTimeOpsIntervalEval(
-            GetCalendarOps(calendarForges), intervalForge.Op);
+            GetCalendarOps(calendarForges),
+            intervalForge.Op);
 
         public override CodegenExpression Codegen(
             CodegenExpression inner,
@@ -38,7 +42,11 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
             CodegenClassScope codegenClassScope)
         {
             return DTLocalDateTimeOpsIntervalEval.Codegen(
-                this, inner, codegenMethodScope, exprSymbol, codegenClassScope);
+                this,
+                inner,
+                codegenMethodScope,
+                exprSymbol,
+                codegenClassScope);
         }
 
         public override DTLocalEvaluatorIntervalComp MakeEvaluatorComp()
@@ -54,7 +62,12 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
             CodegenClassScope codegenClassScope)
         {
             return DTLocalDateTimeOpsIntervalEval.Codegen(
-                this, start, end, codegenMethodScope, exprSymbol, codegenClassScope);
+                this,
+                start,
+                end,
+                codegenMethodScope,
+                exprSymbol,
+                codegenClassScope);
         }
     }
 } // end of namespace

@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.epl.expression.core;
@@ -16,6 +17,7 @@ using com.espertech.esper.common.@internal.epl.pattern.core;
 using com.espertech.esper.common.@internal.filterspec;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
+
 using static com.espertech.esper.common.@internal.epl.pattern.observer.TimerScheduleObserverForge;
 
 namespace com.espertech.esper.common.@internal.epl.pattern.observer
@@ -62,7 +64,10 @@ namespace com.espertech.esper.common.@internal.epl.pattern.observer
             long? optionalRemainder = null;
             if (date != null) {
                 object param = PatternExpressionUtil.EvaluateChecked(
-                    TimerScheduleObserverForge.NAME_OBSERVER, date, eventsPerStream, exprEvaluatorContext);
+                    TimerScheduleObserverForge.NAME_OBSERVER,
+                    date,
+                    eventsPerStream,
+                    exprEvaluatorContext);
                 if (param is string) {
                     optionalDate = TimerScheduleISO8601Parser.ParseDate((string) param);
                 }
@@ -103,7 +108,11 @@ namespace com.espertech.esper.common.@internal.epl.pattern.observer
 
             long? optionalRepeatCount = null;
             if (repetitions != null) {
-                object param = PatternExpressionUtil.EvaluateChecked(NAME_OBSERVER, repetitions, eventsPerStream, exprEvaluatorContext);
+                object param = PatternExpressionUtil.EvaluateChecked(
+                    NAME_OBSERVER,
+                    repetitions,
+                    eventsPerStream,
+                    exprEvaluatorContext);
                 if (param != null) {
                     optionalRepeatCount = (param).AsLong();
                 }

@@ -11,6 +11,7 @@ using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.context.module;
 using com.espertech.esper.common.@internal.@event.core;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.@event.map
@@ -32,7 +33,9 @@ namespace com.espertech.esper.common.@internal.@event.map
         internal override object HandleCreateFragment(object value)
         {
             return BaseNestableEventUtil.HandleBNCreateFragmentMap(
-                value, fragmentEventType, eventBeanTypedEventFactory);
+                value,
+                fragmentEventType,
+                eventBeanTypedEventFactory);
         }
 
         internal override CodegenExpression HandleCreateFragmentCodegen(
@@ -42,7 +45,8 @@ namespace com.espertech.esper.common.@internal.@event.map
             CodegenExpression factory =
                 codegenClassScope.AddOrGetFieldSharable(EventBeanTypedEventFactoryCodegenField.INSTANCE);
             CodegenExpression eventType = codegenClassScope.AddFieldUnshared<EventType>(
-                true, EventTypeUtility.ResolveTypeCodegen(fragmentEventType, EPStatementInitServicesConstants.REF));
+                true,
+                EventTypeUtility.ResolveTypeCodegen(fragmentEventType, EPStatementInitServicesConstants.REF));
             return StaticMethod(typeof(BaseNestableEventUtil), "handleBNCreateFragmentMap", value, eventType, factory);
         }
     }

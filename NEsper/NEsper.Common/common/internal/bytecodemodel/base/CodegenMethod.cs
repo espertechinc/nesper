@@ -9,6 +9,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+
 using com.espertech.esper.common.@internal.bytecodemodel.core;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.util;
@@ -46,7 +47,8 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
 
         public IList<CodegenMethod> Children { get; private set; } = Collections.GetEmptyList<CodegenMethod>();
 
-        public IList<CodegenExpressionRef> Environment { get; private set; } = Collections.GetEmptyList<CodegenExpressionRef>();
+        public IList<CodegenExpressionRef> Environment { get; private set; } =
+            Collections.GetEmptyList<CodegenExpressionRef>();
 
         public Type ReturnType { get; }
 
@@ -56,7 +58,8 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
 
         public CodegenBlock Block { get; }
 
-        public IList<CodegenNamedParam> LocalParams { get; private set; } = Collections.GetEmptyList<CodegenNamedParam>();
+        public IList<CodegenNamedParam> LocalParams { get; private set; } =
+            Collections.GetEmptyList<CodegenNamedParam>();
 
         public IList<Type> Thrown { get; private set; } = Collections.GetEmptyList<Type>();
 

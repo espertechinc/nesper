@@ -11,6 +11,7 @@ using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.epl.@join.lookup;
 using com.espertech.esper.common.@internal.epl.@join.queryplan;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.lookupplansubord
@@ -48,15 +49,18 @@ namespace com.espertech.esper.common.@internal.epl.lookupplansubord
         {
             var method = parent.MakeChild(typeof(SubordinateQueryIndexDesc), GetType(), classScope);
             method.Block
-                .DeclareVar(typeof(IndexMultiKey), "indexMultiKey", IndexMultiKey.Make(method, classScope))
-                .DeclareVar(
-                    typeof(QueryPlanIndexItem), "queryPlanIndexItem",
+                .DeclareVar<IndexMultiKey>("indexMultiKey", IndexMultiKey.Make(method, classScope))
+                .DeclareVar<QueryPlanIndexItem>(
+                    "queryPlanIndexItem",
                     OptionalQueryPlanIndexItem == null
                         ? ConstantNull()
                         : OptionalQueryPlanIndexItem.Make(method, classScope));
             method.Block.MethodReturn(
                 NewInstance<SubordinateQueryIndexDesc>(
-                    ConstantNull(), Constant(IndexName), Ref("indexMultiKey"), Ref("queryPlanIndexItem")));
+                    ConstantNull(),
+                    Constant(IndexName),
+                    Ref("indexMultiKey"),
+                    Ref("queryPlanIndexItem")));
             return LocalMethod(method);
         }
     }

@@ -7,9 +7,11 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.compat.collections;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.agg.core
@@ -47,7 +49,8 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
         public CodegenExpression ToExpression()
         {
             return NewInstance<AggregationGroupByRollupLevel>(
-                Constant(LevelNumber), Constant(levelOffset),
+                Constant(LevelNumber),
+                Constant(levelOffset),
                 Constant(RollupKeys));
         }
 
@@ -83,8 +86,10 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
         public override string ToString()
         {
             return "GroupByRollupLevel{" +
-                   "levelOffset=" + levelOffset +
-                   ", rollupKeys=" + RollupKeys.RenderAny() +
+                   "levelOffset=" +
+                   levelOffset +
+                   ", rollupKeys=" +
+                   RollupKeys.RenderAny() +
                    '}';
         }
 

@@ -8,11 +8,13 @@
 
 using System;
 using System.Xml;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.util;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.@event.xml
@@ -67,7 +69,10 @@ namespace com.espertech.esper.common.@internal.@event.xml
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            return UnderlyingGetCodegen(CastUnderlying(typeof(XmlNode), beanExpression), codegenMethodScope, codegenClassScope);
+            return UnderlyingGetCodegen(
+                CastUnderlying(typeof(XmlNode), beanExpression),
+                codegenMethodScope,
+                codegenClassScope);
         }
 
         public CodegenExpression EventBeanExistsCodegen(
@@ -75,7 +80,10 @@ namespace com.espertech.esper.common.@internal.@event.xml
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            return UnderlyingExistsCodegen(CastUnderlying(typeof(XmlNode), beanExpression), codegenMethodScope, codegenClassScope);
+            return UnderlyingExistsCodegen(
+                CastUnderlying(typeof(XmlNode), beanExpression),
+                codegenMethodScope,
+                codegenClassScope);
         }
 
         public CodegenExpression EventBeanFragmentCodegen(
@@ -92,8 +100,13 @@ namespace com.espertech.esper.common.@internal.@event.xml
             CodegenClassScope codegenClassScope)
         {
             var parserMember = codegenClassScope.AddFieldUnshared(
-                true, typeof(SimpleTypeParser),
-                SimpleTypeParserFactory.CodegenSimpleParser(parser, codegenClassScope.NamespaceScope.InitMethod, GetType(), codegenClassScope));
+                true,
+                typeof(SimpleTypeParser),
+                SimpleTypeParserFactory.CodegenSimpleParser(
+                    parser,
+                    codegenClassScope.NamespaceScope.InitMethod,
+                    GetType(),
+                    codegenClassScope));
             var inner = getter.UnderlyingGetCodegen(underlyingExpression, codegenMethodScope, codegenClassScope);
             return StaticMethod(GetType(), "getParseTextValue", inner, parserMember);
         }

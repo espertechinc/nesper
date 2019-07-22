@@ -7,14 +7,17 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.rettype;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
-using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionRelational.CodegenRelational;
+using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionRelational.
+    CodegenRelational;
 
 namespace com.espertech.esper.common.@internal.epl.expression.dot.core
 {
@@ -76,14 +79,19 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
             CodegenClassScope codegenClassScope)
         {
             CodegenMethod methodNode = codegenMethodScope.MakeChild(
-                EPTypeHelper.GetNormalizedClass(forge.TypeInfo), typeof(ExprDotForgeArrayGetEval), codegenClassScope).AddParam(innerType, "target");
+                    EPTypeHelper.GetNormalizedClass(forge.TypeInfo),
+                    typeof(ExprDotForgeArrayGetEval),
+                    codegenClassScope)
+                .AddParam(innerType, "target");
 
             CodegenBlock block = methodNode.Block;
             if (!innerType.IsPrimitive) {
                 block.IfRefNullReturnNull("target");
             }
 
-            block.DeclareVar(typeof(int), "index", forge.IndexExpression.EvaluateCodegen(typeof(int), methodNode, exprSymbol, codegenClassScope));
+            block.DeclareVar<int>(
+                "index",
+                forge.IndexExpression.EvaluateCodegen(typeof(int), methodNode, exprSymbol, codegenClassScope));
             block.IfCondition(Relational(ArrayLength(@Ref("target")), LE, @Ref("index")))
                 .BlockReturn(ConstantNull())
                 .MethodReturn(ArrayAtIndex(@Ref("target"), @Ref("index")));

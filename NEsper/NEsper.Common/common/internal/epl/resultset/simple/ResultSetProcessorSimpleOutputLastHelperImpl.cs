@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.@event.core;
@@ -48,7 +49,9 @@ namespace com.espertech.esper.common.@internal.epl.resultset.simple
                         eventsPerStream[0] = theEvent;
 
                         var passesHaving = processor.EvaluateHavingClause(
-                            eventsPerStream, true, processor.AgentInstanceContext);
+                            eventsPerStream,
+                            true,
+                            processor.AgentInstanceContext);
                         if (!passesHaving) {
                             continue;
                         }
@@ -62,7 +65,9 @@ namespace com.espertech.esper.common.@internal.epl.resultset.simple
                         eventsPerStream[0] = theEvent;
 
                         var passesHaving = processor.EvaluateHavingClause(
-                            eventsPerStream, false, processor.AgentInstanceContext);
+                            eventsPerStream,
+                            false,
+                            processor.AgentInstanceContext);
                         if (!passesHaving) {
                             continue;
                         }
@@ -90,7 +95,9 @@ namespace com.espertech.esper.common.@internal.epl.resultset.simple
                 if (newEvents != null && newEvents.Count > 0) {
                     foreach (var theEvent in newEvents) {
                         var passesHaving = processor.EvaluateHavingClause(
-                            theEvent.Array, true, processor.AgentInstanceContext);
+                            theEvent.Array,
+                            true,
+                            processor.AgentInstanceContext);
                         if (!passesHaving) {
                             continue;
                         }
@@ -102,7 +109,9 @@ namespace com.espertech.esper.common.@internal.epl.resultset.simple
                 if (oldEvents != null && oldEvents.Count > 0) {
                     foreach (var theEvent in oldEvents) {
                         var passesHaving = processor.EvaluateHavingClause(
-                            theEvent.Array, false, processor.AgentInstanceContext);
+                            theEvent.Array,
+                            false,
+                            processor.AgentInstanceContext);
                         if (!passesHaving) {
                             continue;
                         }
@@ -121,7 +130,8 @@ namespace com.espertech.esper.common.@internal.epl.resultset.simple
 
             var pair = processor.ProcessViewResult(
                 EventBeanUtility.ToArrayIfNotNull(outputLastIStreamBufView),
-                EventBeanUtility.ToArrayIfNotNull(outputLastRStreamBufView), isSynthesize);
+                EventBeanUtility.ToArrayIfNotNull(outputLastRStreamBufView),
+                isSynthesize);
             outputLastIStreamBufView = null;
             outputLastRStreamBufView = null;
             return pair;
@@ -135,7 +145,8 @@ namespace com.espertech.esper.common.@internal.epl.resultset.simple
 
             var pair = processor.ProcessJoinResult(
                 EventBeanUtility.ToSingletonSetIfNotNull(outputLastIStreamBufJoin),
-                EventBeanUtility.ToSingletonSetIfNotNull(outputLastRStreamBufJoin), isSynthesize);
+                EventBeanUtility.ToSingletonSetIfNotNull(outputLastRStreamBufJoin),
+                isSynthesize);
             outputLastIStreamBufJoin = null;
             outputLastRStreamBufJoin = null;
             return pair;

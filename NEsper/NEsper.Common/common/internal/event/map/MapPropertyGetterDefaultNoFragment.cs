@@ -9,6 +9,7 @@
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.@event.core;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.@event.map
@@ -22,7 +23,9 @@ namespace com.espertech.esper.common.@internal.@event.map
             string propertyName,
             EventBeanTypedEventFactory eventBeanTypedEventFactory)
             : base(
-                propertyName, null, eventBeanTypedEventFactory)
+                propertyName,
+                null,
+                eventBeanTypedEventFactory)
         {
         }
 

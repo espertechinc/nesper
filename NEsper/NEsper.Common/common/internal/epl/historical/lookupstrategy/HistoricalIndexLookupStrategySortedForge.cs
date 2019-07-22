@@ -7,10 +7,12 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.epl.@join.querygraph;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.historical.lookupstrategy
@@ -45,8 +47,8 @@ namespace com.espertech.esper.common.@internal.epl.historical.lookupstrategy
             var method = parent.MakeChild(typeof(HistoricalIndexLookupStrategySorted), GetType(), classScope);
 
             method.Block
-                .DeclareVar(
-                    typeof(HistoricalIndexLookupStrategySorted), "strat",
+                .DeclareVar<HistoricalIndexLookupStrategySorted>(
+                    "strat",
                     NewInstance(typeof(HistoricalIndexLookupStrategySorted)))
                 .SetProperty(Ref("strat"), "LookupStream", Constant(lookupStream))
                 .SetProperty(Ref("strat"), "EvalRange", range.Make(coercionType, method, symbols, classScope))

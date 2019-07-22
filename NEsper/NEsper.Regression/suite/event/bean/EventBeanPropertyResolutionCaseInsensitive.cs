@@ -42,7 +42,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.bean
 
             env.SendEventBean(SupportBeanComplexProps.MakeDefaultBean());
             var theEvent = env.Listener("s0").AssertOneGetNewAndReset();
-            Assert.AreEqual("nestedValue", theEvent.Get("val1"));
+            Assert.AreEqual("NestedValue", theEvent.Get("val1"));
             Assert.AreEqual(10, theEvent.Get("val2"));
             Assert.AreEqual("valueOne", theEvent.Get("val3"));
             Assert.AreEqual(1, theEvent.Get("val4"));

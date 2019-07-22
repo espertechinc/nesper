@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -24,6 +25,7 @@ using com.espertech.esper.common.@internal.epl.streamtype;
 using com.espertech.esper.common.@internal.metrics.instrumentation;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 using static com.espertech.esper.common.@internal.epl.expression.subquery.ExprSubselectEvalMatchSymbol;
 using static com.espertech.esper.common.@internal.epl.expression.subquery.ExprSubselectNode.SubselectEvaluationType;
@@ -142,7 +144,12 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
             CodegenClassScope codegenClassScope)
         {
             return MakeEvaluate(
-                GETSCALARCOLL, this, typeof(ICollection<object>), parent, exprSymbol, codegenClassScope);
+                GETSCALARCOLL,
+                this,
+                typeof(ICollection<object>),
+                parent,
+                exprSymbol,
+                codegenClassScope);
         }
 
         public CodegenExpression EvaluateGetEventBeanCodegen(
@@ -185,7 +192,13 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
             CodegenClassScope codegenClassScope)
         {
             return new InstrumentationBuilderExpr(
-                GetType(), this, "ExprSubselect", requiredType, parent, exprSymbol, codegenClassScope).Build();
+                GetType(),
+                this,
+                "ExprSubselect",
+                requiredType,
+                parent,
+                exprSymbol,
+                codegenClassScope).Build();
         }
 
         public ExprForgeConstantType ForgeConstantType => ExprForgeConstantType.NONCONST;
@@ -196,7 +209,12 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
             CodegenClassScope codegenClassScope)
         {
             return MakeEvaluate(
-                TYPABLESINGLE, this, typeof(object[]), codegenMethodScope, exprSymbol, codegenClassScope);
+                TYPABLESINGLE,
+                this,
+                typeof(object[]),
+                codegenMethodScope,
+                exprSymbol,
+                codegenClassScope);
         }
 
         public CodegenExpression EvaluateTypableMultiCodegen(
@@ -205,7 +223,12 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
             CodegenClassScope codegenClassScope)
         {
             return MakeEvaluate(
-                TYPABLEMULTI, this, typeof(object[][]), parent, exprSymbol, codegenClassScope);
+                TYPABLEMULTI,
+                this,
+                typeof(object[][]),
+                parent,
+                exprSymbol,
+                codegenClassScope);
         }
 
         public bool? IsMultirow => true; // subselect can always return multiple rows
@@ -315,15 +338,17 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
 
             // get matching events
             CodegenExpression future = classScope.NamespaceScope.AddOrGetFieldWellKnown(
-                new CodegenFieldNameSubqueryResult(subselectNode.SubselectNumber), typeof(SubordTableLookupStrategy));
+                new CodegenFieldNameSubqueryResult(subselectNode.SubselectNumber),
+                typeof(SubordTableLookupStrategy));
             var evalMatching = ExprDotMethod(future, "lookup", eps, evalCtx);
-            method.Block.DeclareVar(typeof(ICollection<object>), typeof(EventBean), NAME_MATCHINGEVENTS, evalMatching);
+            method.Block.DeclareVar<ICollection<EventBean>>(NAME_MATCHINGEVENTS, evalMatching);
 
             // process matching events
             var evalMatchSymbol = new ExprSubselectEvalMatchSymbol();
             var processMethod = method
                 .MakeChildWithScope(resultType, typeof(ExprSubselectNode), evalMatchSymbol, classScope)
-                .AddParam(typeof(ICollection<object>), NAME_MATCHINGEVENTS).AddParam(ExprForgeCodegenNames.PARAMS);
+                .AddParam(typeof(ICollection<object>), NAME_MATCHINGEVENTS)
+                .AddParam(ExprForgeCodegenNames.PARAMS);
             CodegenExpression process;
             if (evaluationType == PLAIN) {
                 process = subselectNode.EvalMatchesPlainCodegen(processMethod, evalMatchSymbol, classScope);

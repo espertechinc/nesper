@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.collection;
 
 namespace com.espertech.esper.common.@internal.type

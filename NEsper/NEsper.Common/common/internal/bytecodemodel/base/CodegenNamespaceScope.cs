@@ -8,12 +8,14 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.bytecodemodel.name;
 using com.espertech.esper.common.@internal.context.module;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.bytecodemodel.@base
@@ -113,8 +115,12 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
             if (existing != null) {
                 if (existing.Type != type) {
                     throw new IllegalStateException(
-                        "Field '" + fieldName + "' already registered with a different type, registered with " +
-                        existing.Type.GetSimpleName() + " but provided " + type.GetSimpleName());
+                        "Field '" +
+                        fieldName +
+                        "' already registered with a different type, registered with " +
+                        existing.Type.GetSimpleName() +
+                        " but provided " +
+                        type.GetSimpleName());
                 }
 
                 return Field(existing);
@@ -159,8 +165,13 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
                 var entry = _substitutionParamsByName.Get(name);
                 if (entry != null && !TypeHelper.IsSubclassOrImplementsInterface(type, entry.Type)) {
                     throw new ArgumentException(
-                        "Substitution parameter '" + name + "' of type '" + entry.Type + "' cannot be assigned type '" +
-                        type + "'");
+                        "Substitution parameter '" +
+                        name +
+                        "' of type '" +
+                        entry.Type +
+                        "' cannot be assigned type '" +
+                        type +
+                        "'");
                 }
             }
 

@@ -7,10 +7,12 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Text;
+
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.bytecodemodel.util;
 using com.espertech.esper.common.@internal.context.aifactory.core;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.join.queryplan
@@ -75,7 +77,13 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplan
             CodegenClassScope classScope)
         {
             return CodegenMakeableUtil.MakeArray(
-                "spec", typeof(QueryPlanNode), ExecNodeSpecs, GetType(), parent, symbols, classScope);
+                "spec",
+                typeof(QueryPlanNode),
+                ExecNodeSpecs,
+                GetType(),
+                parent,
+                symbols,
+                classScope);
         }
 
         private CodegenExpression MakeIndexes(
@@ -84,7 +92,13 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplan
             CodegenClassScope classScope)
         {
             return CodegenMakeableUtil.MakeArray(
-                "indexes", typeof(QueryPlanIndex), IndexSpecs, GetType(), parent, symbols, classScope);
+                "indexes",
+                typeof(QueryPlanIndex),
+                IndexSpecs,
+                GetType(),
+                parent,
+                symbols,
+                classScope);
         }
     }
 } // end of namespace

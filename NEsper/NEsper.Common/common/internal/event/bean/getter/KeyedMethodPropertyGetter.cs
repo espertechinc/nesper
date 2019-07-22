@@ -8,6 +8,7 @@
 
 using System;
 using System.Reflection;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -16,6 +17,7 @@ using com.espertech.esper.common.@internal.@event.bean.service;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.@event.util;
 using com.espertech.esper.compat.collections;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.@event.bean.getter
@@ -28,8 +30,8 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
         EventPropertyGetterAndMapped,
         EventPropertyGetterAndIndexed
     {
-        private readonly object key;
-        private readonly MethodInfo method;
+        private readonly object _key;
+        private readonly MethodInfo _method;
 
         public KeyedMethodPropertyGetter(
             MethodInfo method,
@@ -37,15 +39,18 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
             EventBeanTypedEventFactory eventBeanTypedEventFactory,
             BeanEventTypeFactory beanEventTypeFactory)
             : base(
-                eventBeanTypedEventFactory, beanEventTypeFactory, method.ReturnType, null)
+                eventBeanTypedEventFactory,
+                beanEventTypeFactory,
+                method.ReturnType,
+                null)
         {
-            this.key = key;
-            this.method = method;
+            _key = key;
+            _method = method;
         }
 
         public object GetBeanProp(object @object)
         {
-            return GetBeanPropInternal(@object, key);
+            return GetBeanPropInternal(@object, _key);
         }
 
         public bool IsBeanExistsProperty(object @object)
@@ -64,9 +69,9 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
             return true; // Property exists as the property is not dynamic (unchecked)
         }
 
-        public override Type BeanPropType => method.ReturnType;
+        public override Type BeanPropType => _method.ReturnType;
 
-        public override Type TargetType => method.DeclaringType;
+        public override Type TargetType => _method.DeclaringType;
 
         public override CodegenExpression EventBeanGetCodegen(
             CodegenExpression beanExpression,
@@ -74,7 +79,9 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
             CodegenClassScope codegenClassScope)
         {
             return UnderlyingGetCodegen(
-                CastUnderlying(TargetType, beanExpression), codegenMethodScope, codegenClassScope);
+                CastUnderlying(TargetType, beanExpression),
+                codegenMethodScope,
+                codegenClassScope);
         }
 
         public override CodegenExpression EventBeanExistsCodegen(
@@ -91,8 +98,9 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
             CodegenClassScope codegenClassScope)
         {
             return LocalMethod(
-                GetBeanPropInternalCodegen(codegenMethodScope, TargetType, method, codegenClassScope),
-                underlyingExpression, Constant(key));
+                GetBeanPropInternalCodegen(codegenMethodScope, TargetType, _method, codegenClassScope),
+                underlyingExpression,
+                Constant(_key));
         }
 
         public override CodegenExpression UnderlyingExistsCodegen(
@@ -124,8 +132,9 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
             CodegenExpression key)
         {
             return LocalMethod(
-                GetBeanPropInternalCodegen(codegenMethodScope, TargetType, method, codegenClassScope),
-                CastUnderlying(TargetType, beanExpression), key);
+                GetBeanPropInternalCodegen(codegenMethodScope, TargetType, _method, codegenClassScope),
+                CastUnderlying(TargetType, beanExpression),
+                key);
         }
 
         private object GetBeanPropInternal(
@@ -133,19 +142,19 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
             object key)
         {
             try {
-                return method.Invoke(@object, new[] {key});
+                return _method.Invoke(@object, new[] {key});
             }
             catch (InvalidCastException e) {
-                throw PropertyUtility.GetMismatchException(method, @object, e);
+                throw PropertyUtility.GetMismatchException(_method, @object, e);
             }
             catch (TargetException e) {
-                throw PropertyUtility.GetTargetException(method, e);
+                throw PropertyUtility.GetTargetException(_method, e);
             }
             catch (MemberAccessException e) {
-                throw PropertyUtility.GetMemberAccessException(method, e);
+                throw PropertyUtility.GetMemberAccessException(_method, e);
             }
             catch (ArgumentException e) {
-                throw PropertyUtility.GetArgumentException(method, e);
+                throw PropertyUtility.GetArgumentException(_method, e);
             }
         }
 
@@ -157,15 +166,19 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
         {
             var parameterTypes = method.GetParameterTypes();
             return codegenMethodScope.MakeChild(method.ReturnType, typeof(KeyedMethodPropertyGetter), codegenClassScope)
-                .AddParam(targetType, "object").AddParam(parameterTypes[0], "key").Block
+                .AddParam(targetType, "object")
+                .AddParam(parameterTypes[0], "key")
+                .Block
                 .MethodReturn(ExprDotMethod(Ref("object"), method.Name, Ref("key")));
         }
 
         public override string ToString()
         {
             return "KeyedMethodPropertyGetter " +
-                   " method=" + method +
-                   " key=" + key;
+                   " method=" +
+                   _method +
+                   " key=" +
+                   _key;
         }
 
         public CodegenExpression EventBeanGetIndexedCodegen(
@@ -175,8 +188,9 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
             CodegenExpression key)
         {
             return LocalMethod(
-                GetBeanPropInternalCodegen(codegenMethodScope, TargetType, method, codegenClassScope),
-                CastUnderlying(TargetType, beanExpression), key);
+                GetBeanPropInternalCodegen(codegenMethodScope, TargetType, _method, codegenClassScope),
+                CastUnderlying(TargetType, beanExpression),
+                key);
         }
     }
 } // end of namespace

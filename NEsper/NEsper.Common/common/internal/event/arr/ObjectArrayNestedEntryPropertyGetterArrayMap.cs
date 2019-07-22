@@ -43,7 +43,11 @@ namespace com.espertech.esper.common.@internal.@event.arr
         public override object HandleNestedValueFragment(object value)
         {
             return BaseNestableEventUtil.HandleBNNestedValueArrayWithMapFragment(
-                value, index, getter, eventBeanTypedEventFactory, fragmentType);
+                value,
+                index,
+                getter,
+                eventBeanTypedEventFactory,
+                fragmentType);
         }
 
         public override bool HandleNestedValueExists(object value)
@@ -57,7 +61,12 @@ namespace com.espertech.esper.common.@internal.@event.arr
             CodegenClassScope codegenClassScope)
         {
             return BaseNestableEventUtil.HandleNestedValueArrayWithMapCode(
-                index, getter, refName, codegenMethodScope, codegenClassScope, GetType());
+                index,
+                getter,
+                refName,
+                codegenMethodScope,
+                codegenClassScope,
+                GetType());
         }
 
         public override CodegenExpression HandleNestedValueExistsCodegen(
@@ -66,7 +75,13 @@ namespace com.espertech.esper.common.@internal.@event.arr
             CodegenClassScope codegenClassScope)
         {
             return BaseNestableEventUtil.HandleNestedValueArrayWithMapExistsCode(
-                index, getter, refName, codegenMethodScope, codegenClassScope, eventBeanTypedEventFactory, fragmentType,
+                index,
+                getter,
+                refName,
+                codegenMethodScope,
+                codegenClassScope,
+                eventBeanTypedEventFactory,
+                fragmentType,
                 GetType());
         }
 
@@ -76,7 +91,13 @@ namespace com.espertech.esper.common.@internal.@event.arr
             CodegenClassScope codegenClassScope)
         {
             return BaseNestableEventUtil.HandleBNNestedValueArrayWithMapFragmentCode(
-                index, getter, refName, codegenMethodScope, codegenClassScope, eventBeanTypedEventFactory, fragmentType,
+                index,
+                getter,
+                refName,
+                codegenMethodScope,
+                codegenClassScope,
+                eventBeanTypedEventFactory,
+                fragmentType,
                 GetType());
         }
     }

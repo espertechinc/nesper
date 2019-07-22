@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+
 using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.dataflow.util
@@ -36,8 +37,10 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.util
         public override string ToString()
         {
             return "OperatorDependencyEntry{" +
-                   "incoming=" + Incoming.RenderAny() +
-                   ", outgoing=" + Outgoing.RenderAny() +
+                   "incoming=" +
+                   Incoming.RenderAny() +
+                   ", outgoing=" +
+                   Outgoing.RenderAny() +
                    '}';
         }
     }

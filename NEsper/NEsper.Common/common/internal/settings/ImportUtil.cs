@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.client.annotation;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.util;
@@ -58,14 +59,23 @@ namespace com.espertech.esper.common.@internal.settings
             }
             catch (Exception e) {
                 throw new ExprValidationException(
-                    "Failed to resolve hook provider of hook type '" + hookType +
-                    "' import '" + hookClass + "' :" + e.Message);
+                    "Failed to resolve hook provider of hook type '" +
+                    hookType +
+                    "' import '" +
+                    hookClass +
+                    "' :" +
+                    e.Message);
             }
 
             if (!clazz.IsImplementsInterface(interfaceExpected)) {
                 throw new ExprValidationException(
-                    "Hook provider for hook type '" + hookType + "' " +
-                    "class '" + clazz.Name + "' does not implement the required '" + interfaceExpected.Name +
+                    "Hook provider for hook type '" +
+                    hookType +
+                    "' " +
+                    "class '" +
+                    clazz.Name +
+                    "' does not implement the required '" +
+                    interfaceExpected.Name +
                     "' interface");
             }
 
@@ -74,8 +84,13 @@ namespace com.espertech.esper.common.@internal.settings
             }
             catch (Exception e) {
                 throw new ExprValidationException(
-                    "Failed to instantiate hook provider of hook type '" + hookType + "' " +
-                    "class '" + clazz.Name + "' :" + e.Message);
+                    "Failed to instantiate hook provider of hook type '" +
+                    hookType +
+                    "' " +
+                    "class '" +
+                    clazz.Name +
+                    "' :" +
+                    e.Message);
             }
         }
     }

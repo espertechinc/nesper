@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -18,6 +19,7 @@ using com.espertech.esper.common.@internal.epl.table.core;
 using com.espertech.esper.common.@internal.rettype;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.enummethod.dot
@@ -52,8 +54,12 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            CodegenExpression eventToPublic = TableDeployTimeResolver.MakeTableEventToPublicField(tableMetadata, codegenClassScope, this.GetType());
-            CodegenMethod methodNode = codegenMethodScope.MakeChild(typeof(object[]), typeof(ExprDotForgeUnpackBeanTable), codegenClassScope)
+            CodegenExpression eventToPublic = TableDeployTimeResolver.MakeTableEventToPublicField(
+                tableMetadata,
+                codegenClassScope,
+                this.GetType());
+            CodegenMethod methodNode = codegenMethodScope
+                .MakeChild(typeof(object[]), typeof(ExprDotForgeUnpackBeanTable), codegenClassScope)
                 .AddParam(typeof(EventBean), "target");
 
             CodegenExpressionRef refEPS = exprSymbol.GetAddEPS(methodNode);
@@ -62,7 +68,8 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
 
             methodNode.Block
                 .IfRefNullReturnNull("target")
-                .MethodReturn(ExprDotMethod(eventToPublic, "convertToUnd", @Ref("target"), refEPS, refIsNewData, refExprEvalCtx));
+                .MethodReturn(
+                    ExprDotMethod(eventToPublic, "convertToUnd", @Ref("target"), refEPS, refIsNewData, refExprEvalCtx));
             return LocalMethod(methodNode, inner);
         }
 

@@ -53,7 +53,12 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.realize
             CodegenClassScope classScope)
         {
             return new SAIFFInitializeBuilder(
-                    typeof(LogicalChannelProducingPortCompiled), GetType(), "c", parent, symbols, classScope)
+                    typeof(LogicalChannelProducingPortCompiled),
+                    GetType(),
+                    "c",
+                    parent,
+                    symbols,
+                    classScope)
                 .Constant("producingOpNum", ProducingOpNum)
                 .Constant("producingOpPrettyPrint", ProducingOpPrettyPrint)
                 .Constant("streamName", StreamName)
@@ -66,10 +71,16 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.realize
         public override string ToString()
         {
             return "LogicalChannelProducingPort{" +
-                   "op=" + ProducingOpPrettyPrint + '\'' +
-                   ", streamName='" + StreamName + '\'' +
-                   ", portNumber=" + StreamNumber +
-                   ", hasPunctuation=" + HasPunctuation +
+                   "op=" +
+                   ProducingOpPrettyPrint +
+                   '\'' +
+                   ", streamName='" +
+                   StreamName +
+                   '\'' +
+                   ", portNumber=" +
+                   StreamNumber +
+                   ", hasPunctuation=" +
+                   HasPunctuation +
                    '}';
         }
     }

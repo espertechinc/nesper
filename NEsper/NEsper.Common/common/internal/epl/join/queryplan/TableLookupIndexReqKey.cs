@@ -10,6 +10,7 @@ using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.bytecodemodel.util;
 using com.espertech.esper.common.@internal.context.aifactory.core;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.join.queryplan
@@ -45,7 +46,9 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplan
             CodegenClassScope classScope)
         {
             return NewInstance<TableLookupIndexReqKey>(
-                Constant(IndexName), Constant(IndexModuleName), Constant(TableName));
+                Constant(IndexName),
+                Constant(IndexModuleName),
+                Constant(TableName));
         }
 
         public override string ToString()
@@ -59,9 +62,9 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplan
 
         protected bool Equals(TableLookupIndexReqKey other)
         {
-            return string.Equals(IndexName, other.IndexName)
-                   && string.Equals(TableName, other.TableName)
-                   && string.Equals(IndexModuleName, other.IndexModuleName);
+            return string.Equals(IndexName, other.IndexName) &&
+                   string.Equals(TableName, other.TableName) &&
+                   string.Equals(IndexModuleName, other.IndexModuleName);
         }
 
         public override bool Equals(object obj)

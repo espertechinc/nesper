@@ -9,6 +9,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 
 namespace com.espertech.esper.common.@internal.bytecodemodel.model.statement
@@ -32,13 +33,12 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.statement
 
         public override void RenderStatement(
             StringBuilder builder,
-            IDictionary<Type, string> imports,
             bool isInnerClass)
         {
-            expressionRef.Render(builder, imports, isInnerClass);
+            expressionRef.Render(builder, isInnerClass);
             builder.Append(@operator);
             builder.Append("=");
-            assignment.Render(builder, imports, isInnerClass);
+            assignment.Render(builder, isInnerClass);
         }
 
         public override void MergeClasses(ISet<Type> classes)

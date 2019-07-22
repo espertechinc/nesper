@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.epl.index.@base;
@@ -88,7 +89,8 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanouter
             var strategies = new JoinExecTableLookupStrategy[LookupPlans.Length];
             for (var i = 0; i < LookupPlans.Length; i++) {
                 if (LookupPlans[i] != null) {
-                    strategies[i] = LookupPlans[i].MakeStrategy(agentInstanceContext, indexesPerStream, streamTypes, viewExternal);
+                    strategies[i] = LookupPlans[i]
+                        .MakeStrategy(agentInstanceContext, indexesPerStream, streamTypes, viewExternal);
                 }
                 else {
                     strategies[i] = historicalPlans[i].MakeOuterJoinStategy(streamViews);
@@ -106,9 +108,12 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanouter
         {
             writer.WriteLine(
                 "LookupInstructionPlan" +
-                " fromStream=" + FromStream +
-                " fromStreamName=" + FromStreamName +
-                " toStreams=" + ToStreams.RenderAny()
+                " fromStream=" +
+                FromStream +
+                " fromStreamName=" +
+                FromStreamName +
+                " toStreams=" +
+                ToStreams.RenderAny()
             );
 
             writer.IncrIndent();

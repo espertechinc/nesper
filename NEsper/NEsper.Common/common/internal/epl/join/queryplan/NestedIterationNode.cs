@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.epl.index.@base;
@@ -45,7 +46,11 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplan
             var execNode = new NestedIterationExecNode(nestingOrder);
             foreach (var child in childNodes) {
                 var childExec = child.MakeExec(
-                    agentInstanceContext, indexesPerStream, streamTypes, streamViews, viewExternal,
+                    agentInstanceContext,
+                    indexesPerStream,
+                    streamTypes,
+                    streamViews,
+                    viewExternal,
                     tableSecondaryIndexLocks);
                 execNode.AddChildNode(childExec);
             }

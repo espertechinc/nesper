@@ -9,12 +9,14 @@
 using System;
 using System.Collections.Generic;
 using System.Xml;
+
 using com.espertech.esper.common.client.soda;
 using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.function;
+
 using static com.espertech.esper.common.@internal.util.DOMExtensions;
 using static com.espertech.esper.common.@internal.util.DOMUtil;
 
@@ -42,45 +44,59 @@ namespace com.espertech.esper.common.client.configuration.compiler
                     case "plugin-view":
                         HandlePlugInView(compiler, element);
                         break;
+
                     case "plugin-virtualdw":
                         HandlePlugInVirtualDW(compiler, element);
                         break;
+
                     case "plugin-aggregation-function":
                         HandlePlugInAggregation(compiler, element);
                         break;
+
                     case "plugin-aggregation-multifunction":
                         HandlePlugInMultiFunctionAggregation(compiler, element);
                         break;
+
                     case "plugin-singlerow-function":
                         HandlePlugInSingleRow(compiler, element);
                         break;
+
                     case "plugin-pattern-guard":
                         HandlePlugInPatternGuard(compiler, element);
                         break;
+
                     case "plugin-pattern-observer":
                         HandlePlugInPatternObserver(compiler, element);
                         break;
+
                     case "bytecode":
                         HandleByteCode(compiler, element);
                         break;
+
                     case "logging":
                         HandleLogging(compiler, element);
                         break;
+
                     case "stream-selection":
                         HandleStreamSelection(compiler, element);
                         break;
+
                     case "language":
                         HandleLanguage(compiler, element);
                         break;
+
                     case "scripts":
                         HandleScripts(compiler, element);
                         break;
+
                     case "expression":
                         HandleExpression(compiler, element);
                         break;
+
                     case "execution":
                         HandleExecution(compiler, element);
                         break;
+
                     case "view-resources":
                         HandleViewResources(compiler, element);
                         break;
@@ -111,13 +127,16 @@ namespace com.espertech.esper.common.client.configuration.compiler
             ConfigurationCompiler compiler,
             XmlElement element)
         {
-            var filterServiceMaxFilterWidthStr = DOMExtensions.GetOptionalAttribute(element, "filter-service-max-filter-width");
+            var filterServiceMaxFilterWidthStr =
+                DOMExtensions.GetOptionalAttribute(element, "filter-service-max-filter-width");
             if (filterServiceMaxFilterWidthStr != null) {
                 compiler.Execution.FilterServiceMaxFilterWidth = int.Parse(filterServiceMaxFilterWidthStr);
             }
 
             ParseOptionalBoolean(
-                element, "enable-declared-expr-value-cache", b => compiler.Execution.EnabledDeclaredExprValueCache = b);
+                element,
+                "enable-declared-expr-value-cache",
+                b => compiler.Execution.EnabledDeclaredExprValueCache = b);
         }
 
         private static void HandleExpression(
@@ -330,7 +349,8 @@ namespace com.espertech.esper.common.client.configuration.compiler
             }
 
             var config = new ConfigurationCompilerPlugInAggregationMultiFunction(
-                functionNames.SplitCsv(), forgeClassName);
+                functionNames.SplitCsv(),
+                forgeClassName);
             config.AdditionalConfiguredProperties = additionalProps;
             configuration.AddPlugInAggregationMultiFunction(config);
         }
@@ -346,13 +366,15 @@ namespace com.espertech.esper.common.client.configuration.compiler
             var filterOptimizable = ConfigurationCompilerPlugInSingleRowFunction.FilterOptimizableEnum.ENABLED;
             var valueCacheStr = DOMExtensions.GetOptionalAttribute(element, "value-cache");
             if (valueCacheStr != null) {
-                valueCache = EnumHelper.Parse<ConfigurationCompilerPlugInSingleRowFunction.ValueCacheEnum>(valueCacheStr);
+                valueCache =
+                    EnumHelper.Parse<ConfigurationCompilerPlugInSingleRowFunction.ValueCacheEnum>(valueCacheStr);
             }
 
             var filterOptimizableStr = DOMExtensions.GetOptionalAttribute(element, "filter-optimizable");
             if (filterOptimizableStr != null) {
-                filterOptimizable = EnumHelper.Parse<ConfigurationCompilerPlugInSingleRowFunction.FilterOptimizableEnum>(
-                    filterOptimizableStr);
+                filterOptimizable =
+                    EnumHelper.Parse<ConfigurationCompilerPlugInSingleRowFunction.FilterOptimizableEnum>(
+                        filterOptimizableStr);
             }
 
             var rethrowExceptionsStr = DOMExtensions.GetOptionalAttribute(element, "rethrow-exceptions");
@@ -364,7 +386,12 @@ namespace com.espertech.esper.common.client.configuration.compiler
             var eventTypeName = DOMExtensions.GetOptionalAttribute(element, "event-type-name");
             configuration.AddPlugInSingleRowFunction(
                 new ConfigurationCompilerPlugInSingleRowFunction(
-                    name, functionClassName, functionMethodName, valueCache, filterOptimizable, rethrowExceptions,
+                    name,
+                    functionClassName,
+                    functionMethodName,
+                    valueCache,
+                    filterOptimizable,
+                    rethrowExceptions,
                     eventTypeName));
         }
 

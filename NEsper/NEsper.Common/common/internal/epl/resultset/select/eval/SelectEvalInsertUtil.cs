@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.compat;
@@ -21,10 +22,15 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
             EventType targetType)
         {
             return new ExprValidationException(
-                "Expression-returned event type '" + sourceType.Name +
-                "' with underlying type '" + sourceType.UnderlyingType.Name +
-                "' cannot be converted to target event type '" + targetType.Name +
-                "' with underlying type '" + targetType.UnderlyingType.Name + "'");
+                "Expression-returned event type '" +
+                sourceType.Name +
+                "' with underlying type '" +
+                sourceType.UnderlyingType.Name +
+                "' cannot be converted to target event type '" +
+                targetType.Name +
+                "' with underlying type '" +
+                targetType.UnderlyingType.Name +
+                "'");
         }
 
         public static ExprValidationException MakeEventTypeCastException(
@@ -32,9 +38,13 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
             EventType targetType)
         {
             return new ExprValidationException(
-                "Expression-returned value of type '" + sourceType.Name +
-                "' cannot be converted to target event type '" + targetType.Name +
-                "' with underlying type '" + targetType.UnderlyingType.Name + "'");
+                "Expression-returned value of type '" +
+                sourceType.Name +
+                "' cannot be converted to target event type '" +
+                targetType.Name +
+                "' with underlying type '" +
+                targetType.UnderlyingType.Name +
+                "'");
         }
     }
 } // end of namespace

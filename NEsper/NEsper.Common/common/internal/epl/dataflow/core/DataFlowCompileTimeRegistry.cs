@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+
 using com.espertech.esper.common.@internal.epl.expression.core;
 
 namespace com.espertech.esper.common.@internal.epl.dataflow.core
@@ -22,7 +23,8 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.core
             }
 
             if (dataFlows.Contains(dataFlowName)) {
-                throw new ExprValidationException("A dataflow by name '" + dataFlowName + "' has already been declared");
+                throw new ExprValidationException(
+                    "A dataflow by name '" + dataFlowName + "' has already been declared");
             }
 
             dataFlows.Add(dataFlowName);

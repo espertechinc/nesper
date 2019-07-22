@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -14,6 +15,7 @@ using com.espertech.esper.common.@internal.context.module;
 using com.espertech.esper.common.@internal.@event.bean.core;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.compat.collections;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.@event.map
@@ -84,7 +86,10 @@ namespace com.espertech.esper.common.@internal.@event.map
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            return UnderlyingGetCodegen(CastUnderlying(typeof(IDictionary<object, object>), beanExpression), codegenMethodScope, codegenClassScope);
+            return UnderlyingGetCodegen(
+                CastUnderlying(typeof(IDictionary<object, object>), beanExpression),
+                codegenMethodScope,
+                codegenClassScope);
         }
 
         public CodegenExpression EventBeanExistsCodegen(
@@ -105,7 +110,9 @@ namespace com.espertech.esper.common.@internal.@event.map
             }
 
             return UnderlyingFragmentCodegen(
-                CastUnderlying(typeof(IDictionary<object, object>), beanExpression), codegenMethodScope, codegenClassScope);
+                CastUnderlying(typeof(IDictionary<object, object>), beanExpression),
+                codegenMethodScope,
+                codegenClassScope);
         }
 
         public CodegenExpression UnderlyingGetCodegen(
@@ -135,11 +142,17 @@ namespace com.espertech.esper.common.@internal.@event.map
 
             var mSvc = codegenClassScope.AddOrGetFieldSharable(EventBeanTypedEventFactoryCodegenField.INSTANCE);
             var mType = codegenClassScope.AddFieldUnshared(
-                true, typeof(BeanEventType),
-                Cast(typeof(BeanEventType), EventTypeUtility.ResolveTypeCodegen(eventType, EPStatementInitServicesConstants.REF)));
+                true,
+                typeof(BeanEventType),
+                Cast(
+                    typeof(BeanEventType),
+                    EventTypeUtility.ResolveTypeCodegen(eventType, EPStatementInitServicesConstants.REF)));
             return StaticMethod(
-                typeof(BaseNestableEventUtil), "getBNFragmentPojo", UnderlyingGetCodegen(underlyingExpression, codegenMethodScope, codegenClassScope),
-                mType, mSvc);
+                typeof(BaseNestableEventUtil),
+                "getBNFragmentPojo",
+                UnderlyingGetCodegen(underlyingExpression, codegenMethodScope, codegenClassScope),
+                mType,
+                mSvc);
         }
 
         private CodegenExpression GetMapCodegen(
@@ -148,8 +161,9 @@ namespace com.espertech.esper.common.@internal.@event.map
             CodegenClassScope codegenClassScope)
         {
             var method = codegenMethodScope.MakeChild(typeof(object), typeof(MapEntryPropertyGetter), codegenClassScope)
-                .AddParam(typeof(IDictionary<object, object>), "map").Block
-                .DeclareVar(typeof(object), "value", ExprDotMethod(Ref("map"), "get", Constant(propertyName)))
+                .AddParam(typeof(IDictionary<object, object>), "map")
+                .Block
+                .DeclareVar<object>("value", ExprDotMethod(Ref("map"), "get", Constant(propertyName)))
                 .IfInstanceOf("value", typeof(EventBean))
                 .BlockReturn(ExprDotUnderlying(Cast(typeof(EventBean), Ref("value"))))
                 .MethodReturn(Ref("value"));

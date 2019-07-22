@@ -8,6 +8,7 @@
 
 using System;
 using System.IO;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.annotation;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
@@ -88,7 +89,13 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
 
             var propertyType = eventType.GetPropertyType(propertyName);
             evaluator = new ExprIdentNodeEvaluatorImpl(
-                streamNumber, propertyGetter, propertyType.GetBoxedType(), this, eventType, true, false);
+                streamNumber,
+                propertyGetter,
+                propertyType.GetBoxedType(),
+                this,
+                eventType,
+                true,
+                false);
         }
 
         public bool IsConstantResult => false;
@@ -115,7 +122,13 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             CodegenClassScope codegenClassScope)
         {
             return new InstrumentationBuilderExpr(
-                GetType(), this, "ExprIdent", requiredType, codegenMethodScope, exprSymbol, codegenClassScope).Build();
+                GetType(),
+                this,
+                "ExprIdent",
+                requiredType,
+                codegenMethodScope,
+                exprSymbol,
+                codegenClassScope).Build();
         }
 
         public ExprEvaluator ExprEvaluator => evaluator;
@@ -148,14 +161,19 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
         public bool FilterLookupEligible => evaluator.StreamNum == 0 && !evaluator.IsContextEvaluated;
 
         public ExprFilterSpecLookupableForge FilterLookupable => new ExprFilterSpecLookupableForge(
-            resolvedPropertyName, evaluator.Getter, evaluator.EvaluationType, false);
+            resolvedPropertyName,
+            evaluator.Getter,
+            evaluator.EvaluationType,
+            false);
 
         public override ExprNode Validate(ExprValidationContext validationContext)
         {
             // rewrite expression into a table-access expression
             if (validationContext.StreamTypeService.HasTableTypes) {
                 var tableIdentNode = TableCompileTimeUtil.GetTableIdentNode(
-                    validationContext.StreamTypeService, UnresolvedPropertyName, streamOrPropertyName,
+                    validationContext.StreamTypeService,
+                    UnresolvedPropertyName,
+                    streamOrPropertyName,
                     validationContext.TableCompileTimeResolver);
                 if (tableIdentNode != null) {
                     return tableIdentNode;
@@ -164,7 +182,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
 
             var unescapedPropertyName = PropertyParser.UnescapeBacktickForProperty(UnresolvedPropertyName);
             var propertyInfoPair = ExprIdentNodeUtil.GetTypeFromStream(
-                validationContext.StreamTypeService, unescapedPropertyName, streamOrPropertyName, false,
+                validationContext.StreamTypeService,
+                unescapedPropertyName,
+                streamOrPropertyName,
+                false,
                 validationContext.TableCompileTimeResolver);
             resolvedStreamName = propertyInfoPair.Second;
             int streamNum = propertyInfoPair.First.StreamNum;
@@ -177,7 +198,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             }
             catch (PropertyAccessException ex) {
                 throw new ExprValidationException(
-                    "Property '" + UnresolvedPropertyName + "' is not valid: " + ex.Message, ex);
+                    "Property '" + UnresolvedPropertyName + "' is not valid: " + ex.Message,
+                    ex);
             }
 
             if (propertyGetter == null) {
@@ -187,21 +209,29 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
 
             var audit = AuditEnum.PROPERTY.GetAudit(validationContext.Annotations) != null;
             evaluator = new ExprIdentNodeEvaluatorImpl(
-                streamNum, propertyGetter, propertyType, this, eventType,
-                validationContext.StreamTypeService.IsOptionalStreams, audit);
+                streamNum,
+                propertyGetter,
+                propertyType,
+                this,
+                eventType,
+                validationContext.StreamTypeService.IsOptionalStreams,
+                audit);
 
             // if running in a context, take the property value from context
             if (validationContext.ContextDescriptor != null && !validationContext.IsFilterExpression) {
                 var fromType = validationContext.StreamTypeService.EventTypes[streamNum];
                 var contextPropertyName =
                     validationContext.ContextDescriptor.ContextPropertyRegistry.GetPartitionContextPropertyName(
-                        fromType, resolvedPropertyName);
+                        fromType,
+                        resolvedPropertyName);
                 if (contextPropertyName != null) {
                     var contextType = (EventTypeSPI) validationContext.ContextDescriptor.ContextPropertyRegistry
                         .ContextEventType;
                     var type = contextType.GetPropertyType(contextPropertyName).GetBoxedType();
                     evaluator = new ExprIdentNodeEvaluatorContext(
-                        streamNum, type, contextType.GetGetterSPI(contextPropertyName));
+                        streamNum,
+                        type,
+                        contextType.GetGetterSPI(contextPropertyName));
                 }
             }
 
@@ -224,7 +254,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
 
             var other = (ExprIdentNode) node;
 
-            if (ignoreStreamPrefix && resolvedPropertyName != null && other.ResolvedPropertyName != null &&
+            if (ignoreStreamPrefix &&
+                resolvedPropertyName != null &&
+                other.ResolvedPropertyName != null &&
                 resolvedPropertyName.Equals(other.ResolvedPropertyName)) {
                 return true;
             }
@@ -345,9 +377,12 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
 
         public override string ToString()
         {
-            return "unresolvedPropertyName=" + UnresolvedPropertyName +
-                   " streamOrPropertyName=" + streamOrPropertyName +
-                   " resolvedPropertyName=" + resolvedPropertyName;
+            return "unresolvedPropertyName=" +
+                   UnresolvedPropertyName +
+                   " streamOrPropertyName=" +
+                   streamOrPropertyName +
+                   " resolvedPropertyName=" +
+                   resolvedPropertyName;
         }
 
         public override void ToPrecedenceFreeEPL(TextWriter writer)

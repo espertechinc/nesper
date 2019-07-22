@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -21,6 +22,7 @@ using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.enummethod.dot
@@ -81,7 +83,9 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
             CodegenClassScope codegenClassScope)
         {
             var methodNode = codegenMethodScope.MakeChild(
-                typeof(ICollection<object>), typeof(PropertyDotScalarCollection), codegenClassScope);
+                typeof(ICollection<object>),
+                typeof(PropertyDotScalarCollection),
+                codegenClassScope);
             var refEPS = exprSymbol.GetAddEPS(methodNode);
             methodNode.Block.MethodReturn(
                 CodegenEvaluateInternal(ArrayAtIndex(refEPS, Constant(streamId)), codegenClassScope, methodNode));
@@ -149,12 +153,16 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
             CodegenClassScope codegenClassScope)
         {
             var methodNode = codegenMethodScope.MakeChild(
-                typeof(ICollection<object>), typeof(PropertyDotScalarCollection), codegenClassScope);
+                typeof(ICollection<object>),
+                typeof(PropertyDotScalarCollection),
+                codegenClassScope);
             methodNode.Block.MethodReturn(
                 CodegenLegoCast.CastSafeFromObjectType(
                     typeof(ICollection<object>),
                     getter.EventBeanGetCodegen(
-                        symbols.GetAddEvent(methodNode), codegenMethodScope, codegenClassScope)));
+                        symbols.GetAddEvent(methodNode),
+                        codegenMethodScope,
+                        codegenClassScope)));
             return LocalMethod(methodNode);
         }
 
@@ -190,7 +198,9 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
 
             if (!result.GetType().IsGenericCollection()) {
                 Log.Warn(
-                    "Expected collection-type input from property '" + propertyName + "' but received " +
+                    "Expected collection-type input from property '" +
+                    propertyName +
+                    "' but received " +
                     result.GetType());
                 return null;
             }
@@ -205,7 +215,8 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
         {
             var method = codegenMethodScope
                 .MakeChild(typeof(ICollection<object>), typeof(PropertyDotScalarCollection), codegenClassScope)
-                .AddParam(typeof(EventBean), "event").Block
+                .AddParam(typeof(EventBean), "event")
+                .Block
                 .MethodReturn(
                     CodegenLegoCast.CastSafeFromObjectType(
                         typeof(ICollection<object>),

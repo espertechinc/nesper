@@ -9,6 +9,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.compile.stage2;
 using com.espertech.esper.common.@internal.context.aifactory.core;
@@ -16,6 +17,7 @@ using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.pattern.core;
 using com.espertech.esper.common.@internal.schedule;
 using com.espertech.esper.compat.collections;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.pattern.followedby
@@ -81,12 +83,14 @@ namespace com.espertech.esper.common.@internal.epl.pattern.followedby
             SAIFFInitializeSymbol symbols,
             CodegenClassScope classScope)
         {
-            method.Block.DeclareVar(
-                typeof(EvalFactoryNode[]), "children",
+            method.Block.DeclareVar<EvalFactoryNode[]>(
+                "children",
                 NewArrayByLength(typeof(EvalFactoryNode), Constant(ChildNodes.Count)));
             for (var i = 0; i < ChildNodes.Count; i++) {
                 method.Block.AssignArrayElement(
-                    Ref("children"), Constant(i), LocalMethod(ChildNodes[i].MakeCodegen(method, symbols, classScope)));
+                    Ref("children"),
+                    Constant(i),
+                    LocalMethod(ChildNodes[i].MakeCodegen(method, symbols, classScope)));
             }
 
             method.Block
@@ -94,8 +98,8 @@ namespace com.espertech.esper.common.@internal.epl.pattern.followedby
                 .Expression(ExprDotMethodChain(symbols.GetAddInitSvc(method)).Add("addReadyCallback", Ref("node")));
 
             if (OptionalMaxExpressions != null && !OptionalMaxExpressions.IsEmpty()) {
-                method.Block.DeclareVar(
-                    typeof(ExprEvaluator[]), "evals",
+                method.Block.DeclareVar<ExprEvaluator[]>(
+                    "evals",
                     NewArrayByLength(typeof(ExprEvaluator), Constant(ChildNodes.Count - 1)));
 
                 for (var i = 0; i < ChildNodes.Count - 1; i++) {
@@ -109,9 +113,13 @@ namespace com.espertech.esper.common.@internal.epl.pattern.followedby
                     }
 
                     method.Block.AssignArrayElement(
-                        "evals", Constant(i),
+                        "evals",
+                        Constant(i),
                         ExprNodeUtilityCodegen.CodegenEvaluatorNoCoerce(
-                            optionalMaxExpression.Forge, method, GetType(), classScope));
+                            optionalMaxExpression.Forge,
+                            method,
+                            GetType(),
+                            classScope));
                 }
 
                 method.Block.SetProperty(Ref("node"), "MaxPerChildEvals", Ref("evals"));

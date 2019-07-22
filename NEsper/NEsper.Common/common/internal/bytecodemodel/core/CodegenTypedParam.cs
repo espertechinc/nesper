@@ -16,13 +16,13 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.core
 {
     public class CodegenTypedParam
     {
-        private readonly string typeName;
-        private readonly Type type;
-        private readonly string name;
-        private readonly bool memberWhenCtorParam;
-        private readonly bool isPublic;
-        private bool isFinal = true;
-        private bool isStatic = false;
+        private readonly string _typeName;
+        private readonly Type _type;
+        private readonly string _name;
+        private readonly bool _memberWhenCtorParam;
+        private readonly bool _isPublic;
+        private bool _isReadonly = true;
+        private bool _isStatic = false;
 
         public CodegenTypedParam(
             string typeName,
@@ -31,16 +31,15 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.core
             bool memberWhenCtorParam,
             bool isPublic)
         {
-            if (type == null && typeName == null)
-            {
+            if (type == null && typeName == null) {
                 throw new ArgumentException("Invalid null type");
             }
 
-            this.typeName = typeName;
-            this.type = type;
-            this.name = name;
-            this.memberWhenCtorParam = memberWhenCtorParam;
-            this.isPublic = isPublic;
+            this._typeName = typeName;
+            this._type = type;
+            this._name = name;
+            this._memberWhenCtorParam = memberWhenCtorParam;
+            this._isPublic = isPublic;
         }
 
         public CodegenTypedParam(
@@ -93,104 +92,94 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.core
 
         public CodegenTypedParam WithFinal(bool aFinal)
         {
-            isFinal = aFinal;
+            _isReadonly = aFinal;
             return this;
         }
 
         public CodegenTypedParam WithStatic(bool aStatic)
         {
-            isStatic = aStatic;
+            _isStatic = aStatic;
             return this;
         }
 
-        public string Name
-        {
-            get => name;
+        public string Name {
+            get => _name;
         }
 
-        public void RenderAsParameter(
-            StringBuilder builder,
-            IDictionary<Type, string> imports)
+        public void RenderAsParameter(StringBuilder builder)
         {
-            if (type != null)
-            {
-                AppendClassName(builder, type, null, imports);
+            if (_type != null) {
+                AppendClassName(builder, _type);
             }
-            else
-            {
-                builder.Append(typeName);
+            else {
+                builder.Append(_typeName);
             }
 
-            builder.Append(" ").Append(name);
+            builder.Append(" ").Append(_name);
         }
 
         public void MergeClasses(ISet<Type> classes)
         {
-            if (type != null)
-            {
-                classes.Add(type);
+            if (_type != null) {
+                classes.Add(_type);
             }
         }
 
         public void RenderAsMember(
-            StringBuilder builder,
-            IDictionary<Type, string> imports)
+            StringBuilder builder)
         {
-            if (type != null)
-            {
-                AppendClassName(builder, type, null, imports);
+            if (_type != null) {
+                AppendClassName(builder, _type);
             }
-            else
-            {
-                builder.Append(typeName);
+            else {
+                builder.Append(_typeName);
             }
 
-            builder.Append(" ").Append(name);
+            builder.Append(" ").Append(_name);
         }
 
         public void RenderType(
-            StringBuilder builder,
-            IDictionary<Type, string> imports)
+            StringBuilder builder)
         {
-            if (type != null)
-            {
-                AppendClassName(builder, type, null, imports);
+            if (_type != null) {
+                AppendClassName(builder, _type);
             }
-            else
-            {
-                builder.Append(typeName);
+            else {
+                builder.Append(_typeName);
             }
         }
 
-        public bool IsMemberWhenCtorParam
-        {
-            get => memberWhenCtorParam;
+        public bool IsMemberWhenCtorParam {
+            get => _memberWhenCtorParam;
         }
 
-        public bool IsPublic
-        {
-            get => isPublic;
+        public bool IsPublic {
+            get => _isPublic;
         }
 
-        public bool IsFinal
-        {
-            get => isFinal;
-            set => isFinal = value;
+        public bool IsReadonly {
+            get => _isReadonly;
+            set => _isReadonly = value;
         }
 
-        public bool IsStatic
-        {
-            get => isStatic;
-            set => isStatic = value;
+        public bool IsStatic {
+            get => _isStatic;
+            set => _isStatic = value;
         }
 
         public override string ToString()
         {
             return "CodegenTypedParam{" +
-                   "typeName='" + typeName + '\'' +
-                   ", type=" + type +
-                   ", name='" + name + '\'' +
-                   ", memberWhenCtorParam=" + memberWhenCtorParam +
+                   "typeName='" +
+                   _typeName +
+                   '\'' +
+                   ", type=" +
+                   _type +
+                   ", name='" +
+                   _name +
+                   '\'' +
+                   ", memberWhenCtorParam=" +
+                   _memberWhenCtorParam +
                    '}';
         }
     }

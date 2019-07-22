@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.@event.core;
@@ -34,7 +35,12 @@ namespace com.espertech.esper.common.@internal.epl.table.strategy
             }
 
             return ExprTableEvalStrategyUtil.EvalMap(
-                row, ExprTableEvalStrategyUtil.GetRow(row), factory.Table.MetaData.Columns, eventsPerStream, isNewData, exprEvaluatorContext);
+                row,
+                ExprTableEvalStrategyUtil.GetRow(row),
+                factory.Table.MetaData.Columns,
+                eventsPerStream,
+                isNewData,
+                exprEvaluatorContext);
         }
 
         public override object[] EvaluateTypableSingle(
@@ -49,7 +55,12 @@ namespace com.espertech.esper.common.@internal.epl.table.strategy
             }
 
             return ExprTableEvalStrategyUtil.EvalTypable(
-                row, ExprTableEvalStrategyUtil.GetRow(row), factory.Table.MetaData.Columns, eventsPerStream, isNewData, context);
+                row,
+                ExprTableEvalStrategyUtil.GetRow(row),
+                factory.Table.MetaData.Columns,
+                eventsPerStream,
+                isNewData,
+                context);
         }
 
         public override ICollection<EventBean> EvaluateGetROCollectionEvents(

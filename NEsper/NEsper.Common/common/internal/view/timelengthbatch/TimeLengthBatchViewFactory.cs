@@ -84,12 +84,18 @@ namespace com.espertech.esper.common.@internal.view.timelengthbatch
             TimePeriodProvide timePeriodProvide =
                 timePeriodCompute.GetNonVariableProvide(agentInstanceViewFactoryContext.AgentInstanceContext);
             var sizeValue = ViewFactoryUtil.EvaluateSizeParam(
-                ViewName, size, agentInstanceViewFactoryContext.AgentInstanceContext);
+                ViewName,
+                size,
+                agentInstanceViewFactoryContext.AgentInstanceContext);
             ViewUpdatedCollection viewUpdatedCollection =
                 agentInstanceViewFactoryContext.StatementContext.ViewServicePreviousFactory
                     .GetOptPreviousExprRelativeAccess(agentInstanceViewFactoryContext);
             return new TimeLengthBatchView(
-                this, sizeValue, agentInstanceViewFactoryContext, viewUpdatedCollection, timePeriodProvide);
+                this,
+                sizeValue,
+                agentInstanceViewFactoryContext,
+                viewUpdatedCollection,
+                timePeriodProvide);
         }
     }
 } // end of namespace

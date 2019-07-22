@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.render;
 using com.espertech.esper.common.@internal.@event.util;
@@ -47,7 +48,11 @@ namespace com.espertech.esper.common.@internal.@event.render
                 propertyRendererContext = new EventPropertyRendererContext(eventType, true);
             }
 
-            _rendererOptions = new RendererMetaOptions(options.PreventLooping, false, propertyRenderer, propertyRendererContext);
+            _rendererOptions = new RendererMetaOptions(
+                options.PreventLooping,
+                false,
+                propertyRenderer,
+                propertyRendererContext);
             _meta = new RendererMeta(eventType, new Stack<EventTypePropertyPair>(), _rendererOptions);
         }
 
@@ -119,7 +124,8 @@ namespace com.espertech.esper.common.@internal.@event.render
                     var name = simpleProp.Name;
                     var value = simpleProp.Getter.Get(theEvent);
                     renderActions.Add(
-                        name, () => {
+                        name,
+                        () => {
                             WriteDelimitedIndentedProp(buf, delimiter, level, name);
                             simpleProp.Output.Render(value, buf);
                             delimiter = COMMA_DELIMITER_NEWLINE;
@@ -133,7 +139,8 @@ namespace com.espertech.esper.common.@internal.@event.render
                     var name = simpleProp.Name;
                     var value = simpleProp.Getter.Get(theEvent);
                     renderActions.Add(
-                        name, () => {
+                        name,
+                        () => {
                             WriteDelimitedIndentedProp(buf, delimiter, level, simpleProp.Name);
                             context.DefaultRenderer = simpleProp.Output;
                             context.PropertyName = simpleProp.Name;
@@ -149,7 +156,8 @@ namespace com.espertech.esper.common.@internal.@event.render
                 var name = indexProp.Name;
 
                 renderActions.Add(
-                    name, () => {
+                    name,
+                    () => {
                         WriteDelimitedIndentedProp(buf, delimiter, level, name);
 
                         var value = indexProp.Getter.Get(theEvent);
@@ -216,12 +224,18 @@ namespace com.espertech.esper.common.@internal.@event.render
                 var value = mappedProp.Getter.Get(theEvent);
 
                 if (value != null && !value.GetType().IsGenericStringDictionary()) {
-                    Log.Warn("Property '" + mappedProp.Name + "' expected to return Map and returned " + value.GetType() + " instead");
+                    Log.Warn(
+                        "Property '" +
+                        mappedProp.Name +
+                        "' expected to return Map and returned " +
+                        value.GetType() +
+                        " instead");
                     continue;
                 }
 
                 renderActions.Add(
-                    name, () => {
+                    name,
+                    () => {
                         WriteDelimitedIndentedProp(buf, delimiter, level, mappedProp.Name);
 
                         if (value == null) {
@@ -256,7 +270,8 @@ namespace com.espertech.esper.common.@internal.@event.render
                                     else {
                                         var outRenderer =
                                             OutputValueRendererFactory.GetOutputValueRenderer(
-                                                entry.Value.GetType(), rendererOptions);
+                                                entry.Value.GetType(),
+                                                rendererOptions);
                                         if (rendererOptions.Renderer == null) {
                                             outRenderer.Render(entry.Value, buf);
                                         }
@@ -290,7 +305,8 @@ namespace com.espertech.esper.common.@internal.@event.render
                 var value = nestedProp.Getter.GetFragment(theEvent);
 
                 renderActions.Add(
-                    name, () => {
+                    name,
+                    () => {
                         WriteDelimitedIndentedProp(buf, delimiter, level, nestedProp.Name);
 
                         if (value == null) {
@@ -299,8 +315,11 @@ namespace com.espertech.esper.common.@internal.@event.render
                         else if (!nestedProp.IsArray) {
                             if (!(value is EventBean)) {
                                 Log.Warn(
-                                    "Property '" + nestedProp.Name + "' expected to return EventBean and returned " +
-                                    value.GetType() + " instead");
+                                    "Property '" +
+                                    nestedProp.Name +
+                                    "' expected to return EventBean and returned " +
+                                    value.GetType() +
+                                    " instead");
                                 buf.Append("null");
                                 return;
                             }
@@ -317,8 +336,11 @@ namespace com.espertech.esper.common.@internal.@event.render
                         else {
                             if (!(value is EventBean[])) {
                                 Log.Warn(
-                                    "Property '" + nestedProp.Name + "' expected to return EventBean[] and returned " +
-                                    value.GetType() + " instead");
+                                    "Property '" +
+                                    nestedProp.Name +
+                                    "' expected to return EventBean[] and returned " +
+                                    value.GetType() +
+                                    " instead");
                                 buf.Append("null");
                                 return;
                             }

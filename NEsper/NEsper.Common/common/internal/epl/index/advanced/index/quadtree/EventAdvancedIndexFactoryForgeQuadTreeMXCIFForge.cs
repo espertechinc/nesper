@@ -9,6 +9,7 @@
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.lookup;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.index.advanced.index.quadtree
@@ -22,7 +23,8 @@ namespace com.espertech.esper.common.@internal.epl.index.advanced.index.quadtree
         {
         }
 
-        public override EventAdvancedIndexFactory RuntimeFactory => EventAdvancedIndexFactoryForgeQuadTreeMXCIFFactory.INSTANCE;
+        public override EventAdvancedIndexFactory RuntimeFactory =>
+            EventAdvancedIndexFactoryForgeQuadTreeMXCIFFactory.INSTANCE;
 
         public override bool ProvidesIndexForOperation(string operationName)
         {

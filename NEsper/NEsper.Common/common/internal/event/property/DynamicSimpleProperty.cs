@@ -48,12 +48,14 @@ namespace com.espertech.esper.common.@internal.@event.property
             BeanEventTypeFactory beanEventTypeFactory)
         {
             return new DynamicSimplePropertyGetter(
-                PropertyNameAtomic, eventBeanTypedEventFactory, beanEventTypeFactory);
+                PropertyNameAtomic,
+                eventBeanTypedEventFactory,
+                beanEventTypeFactory);
         }
 
         public override string[] ToPropertyArray()
         {
-            return new[] { PropertyNameAtomic };
+            return new[] {PropertyNameAtomic};
         }
 
         public override Type GetPropertyType(
@@ -111,13 +113,11 @@ namespace com.espertech.esper.common.@internal.@event.property
             BeanEventTypeFactory beanEventTypeFactory)
         {
             // The simple, none-dynamic property needs a definition of the map contents else no property
-            if (nestableTypes == null)
-            {
+            if (nestableTypes == null) {
                 return new ObjectArrayDynamicPropertyGetter(PropertyNameAtomic);
             }
 
-            if (!indexPerProperty.TryGetValue(PropertyNameAtomic, out var propertyIndex))
-            {
+            if (!indexPerProperty.TryGetValue(PropertyNameAtomic, out var propertyIndex)) {
                 return new ObjectArrayDynamicPropertyGetter(PropertyNameAtomic);
             }
 

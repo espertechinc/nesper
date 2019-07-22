@@ -8,9 +8,11 @@
 
 using System;
 using System.Reflection;
+
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.compat.logging;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.@event.bean.instantiator
@@ -33,7 +35,8 @@ namespace com.espertech.esper.common.@internal.@event.bean.instantiator
             CodegenClassScope codegenClassScope)
         {
             var ctor = codegenClassScope.AddFieldUnshared(
-                true, typeof(ConstructorInfo),
+                true,
+                typeof(ConstructorInfo),
                 StaticMethod(typeof(BeanInstantiatorForgeByCtor), "getSunJVMCtor", Constant(underlyingType)));
             return StaticMethod(typeof(BeanInstantiatorForgeByCtor), "instantiateSunJVMCtor", ctor);
         }
@@ -59,8 +62,12 @@ namespace com.espertech.esper.common.@internal.@event.bean.instantiator
                 return ctor.Invoke(new object[0] { });
             }
             catch (TargetException e) {
-                var message = "Unexpected exception encountered invoking constructor '" + ctor.Name + "' on class '" +
-                              ctor.DeclaringType.Name + "': " + e.InnerException.Message;
+                var message = "Unexpected exception encountered invoking constructor '" +
+                              ctor.Name +
+                              "' on class '" +
+                              ctor.DeclaringType.Name +
+                              "': " +
+                              e.InnerException.Message;
                 Log.Error(message, e);
                 return null;
             }
@@ -74,7 +81,9 @@ namespace com.espertech.esper.common.@internal.@event.bean.instantiator
             ConstructorInfo ctor)
         {
             var message = "Unexpected exception encountered invoking newInstance on class '" +
-                          ctor.DeclaringType.Name + "': " + e.Message;
+                          ctor.DeclaringType.Name +
+                          "': " +
+                          e.Message;
             Log.Error(message, e);
             return null;
         }

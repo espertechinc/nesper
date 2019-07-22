@@ -37,8 +37,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
             this.returnType = returnType;
         }
 
-        public DTLocalEvaluator DTEvaluator
-        {
+        public DTLocalEvaluator DTEvaluator {
             get => new DTLocalBeanReformatEval(getter, inner.DTEvaluator);
         }
 
@@ -49,17 +48,21 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            CodegenMethod methodNode = codegenMethodScope.MakeChild(returnType, typeof(DTLocalBeanReformatForge), codegenClassScope)
+            CodegenMethod methodNode = codegenMethodScope
+                .MakeChild(returnType, typeof(DTLocalBeanReformatForge), codegenClassScope)
                 .AddParam(typeof(EventBean), "target");
 
             CodegenBlock block = methodNode.Block
-                .DeclareVar(getterResultType, "timestamp", getter.EventBeanGetCodegen(@Ref("target"), methodNode, codegenClassScope));
-            if (!getterResultType.IsPrimitive)
-            {
+                .DeclareVar(
+                    getterResultType,
+                    "timestamp",
+                    getter.EventBeanGetCodegen(@Ref("target"), methodNode, codegenClassScope));
+            if (!getterResultType.IsPrimitive) {
                 block.IfRefNullReturnNull("timestamp");
             }
 
-            block.MethodReturn(inner.Codegen(@Ref("timestamp"), getterResultType, methodNode, exprSymbol, codegenClassScope));
+            block.MethodReturn(
+                inner.Codegen(@Ref("timestamp"), getterResultType, methodNode, exprSymbol, codegenClassScope));
             return LocalMethod(methodNode, target);
         }
     }

@@ -9,6 +9,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.context.util;
@@ -85,7 +86,10 @@ namespace com.espertech.esper.common.@internal.view.timebatch
         {
             if (handle != null) {
                 agentInstanceContext.AuditProvider.ScheduleRemove(
-                    agentInstanceContext, handle, ScheduleObjectType.view, factory.ViewName);
+                    agentInstanceContext,
+                    handle,
+                    ScheduleObjectType.view,
+                    factory.ViewName);
                 agentInstanceContext.StatementContext.SchedulingService.Remove(handle, scheduleSlot);
             }
         }
@@ -177,9 +181,9 @@ namespace com.espertech.esper.common.@internal.view.timebatch
             // Only if forceOutput is enabled or
             // there have been any events in this or the last interval do we schedule a callback,
             // such as to not waste resources when no events arrive.
-            if (!currentBatch.IsEmpty() || lastBatch != null && !lastBatch.IsEmpty()
-                                        ||
-                                        factory.isForceUpdate) {
+            if (!currentBatch.IsEmpty() ||
+                lastBatch != null && !lastBatch.IsEmpty() ||
+                factory.isForceUpdate) {
                 ScheduleCallback();
                 isCallbackScheduled = true;
             }
@@ -206,30 +210,42 @@ namespace com.espertech.esper.common.@internal.view.timebatch
         public override string ToString()
         {
             return GetType().Name +
-                   " initialReferencePoint=" + factory.optionalReferencePoint;
+                   " initialReferencePoint=" +
+                   factory.optionalReferencePoint;
         }
 
         private void ScheduleCallback()
         {
             var current = agentInstanceContext.StatementContext.SchedulingService.Time;
             TimePeriodDeltaResult deltaWReference = timePeriodProvide.DeltaAddWReference(
-                current, currentReferencePoint.Value, null, true, agentInstanceContext);
+                current,
+                currentReferencePoint.Value,
+                null,
+                true,
+                agentInstanceContext);
             long afterTime = deltaWReference.Delta;
             currentReferencePoint = deltaWReference.LastReference;
 
             ScheduleHandleCallback callback = new ProxyScheduleHandleCallback {
                 ProcScheduledTrigger = () => {
                     agentInstanceContext.AuditProvider.ScheduleFire(
-                        agentInstanceContext, ScheduleObjectType.view, factory.ViewName);
+                        agentInstanceContext,
+                        ScheduleObjectType.view,
+                        factory.ViewName);
                     agentInstanceContext.InstrumentationProvider.QViewScheduledEval(factory);
                     SendBatch();
                     agentInstanceContext.InstrumentationProvider.AViewScheduledEval();
                 }
             };
             handle = new EPStatementHandleCallbackSchedule(
-                agentInstanceContext.EpStatementAgentInstanceHandle, callback);
+                agentInstanceContext.EpStatementAgentInstanceHandle,
+                callback);
             agentInstanceContext.AuditProvider.ScheduleAdd(
-                afterTime, agentInstanceContext, handle, ScheduleObjectType.view, factory.ViewName);
+                afterTime,
+                agentInstanceContext,
+                handle,
+                ScheduleObjectType.view,
+                factory.ViewName);
             agentInstanceContext.StatementContext.SchedulingService.Add(afterTime, handle, scheduleSlot);
         }
     }

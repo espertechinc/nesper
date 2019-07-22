@@ -9,6 +9,7 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
+
 using com.espertech.esper.common.client.annotation;
 using com.espertech.esper.common.client.configuration.common;
 using com.espertech.esper.common.client.util;
@@ -83,10 +84,16 @@ namespace com.espertech.esper.common.@internal.settings
                         var resolvedClass = ClassForNameProvider.ClassForName(generatedClassName);
                         if (clazz != null) {
                             throw new ImportException(
-                                "Failed to resolve name '" + fullyQualClassName +
+                                "Failed to resolve name '" +
+                                fullyQualClassName +
                                 "', the class was ambiguously found both in " +
-                                "package '" + clazz.Namespace + "' and in " +
-                                "package '" + resolvedClass.Namespace + "'", ex);
+                                "package '" +
+                                clazz.Namespace +
+                                "' and in " +
+                                "package '" +
+                                resolvedClass.Namespace +
+                                "'",
+                                ex);
                         }
 
                         clazz = resolvedClass;
@@ -117,12 +124,18 @@ namespace com.espertech.esper.common.@internal.settings
             }
             catch (TypeLoadException e) {
                 throw new ImportException(
-                    "Could not load class by name '" + className + "', please check imports", e);
+                    "Could not load class by name '" + className + "', please check imports",
+                    e);
             }
 
             try {
                 return MethodResolver.ResolveMethod(
-                    clazz, methodName, paramTypes, false, allowEventBeanType, allowEventBeanCollType);
+                    clazz,
+                    methodName,
+                    paramTypes,
+                    false,
+                    allowEventBeanType,
+                    allowEventBeanCollType);
             }
             catch (MethodResolverNoSuchMethodException e) {
                 throw Convert(clazz, methodName, paramTypes, e, false);
@@ -138,7 +151,12 @@ namespace com.espertech.esper.common.@internal.settings
         {
             try {
                 return MethodResolver.ResolveMethod(
-                    clazz, methodName, paramTypes, true, allowEventBeanType, allowEventBeanCollType);
+                    clazz,
+                    methodName,
+                    paramTypes,
+                    true,
+                    allowEventBeanType,
+                    allowEventBeanCollType);
             }
             catch (MethodResolverNoSuchMethodException e) {
                 throw Convert(clazz, methodName, paramTypes, e, true);
@@ -184,10 +202,13 @@ namespace com.espertech.esper.common.@internal.settings
                 switch (className.ToLowerInvariant()) {
                     case "private":
                         return typeof(PrivateAttribute);
+
                     case "protected":
                         return typeof(ProtectedAttribute);
+
                     case "public":
                         return typeof(PublicAttribute);
+
                     case "buseventtype":
                         return typeof(BusEventTypeAttribute);
                 }
@@ -300,7 +321,7 @@ namespace com.espertech.esper.common.@internal.settings
             }
 #endif
 
-                return null;
+            return null;
         }
 
         protected void ValidateImportAndAdd(
@@ -319,7 +340,8 @@ namespace com.espertech.esper.common.@internal.settings
             Exception e)
         {
             return new ImportException(
-                "Could not load class by name '" + className + "', please check imports", e);
+                "Could not load class by name '" + className + "', please check imports",
+                e);
         }
 
         protected ImportException Convert(
@@ -330,8 +352,11 @@ namespace com.espertech.esper.common.@internal.settings
             var expected = TypeHelper.GetParameterAsString(paramTypes);
             var message = "Could not find constructor ";
             if (paramTypes.Length > 0) {
-                message += "in class '" + clazz.GetCleanName() +
-                           "' with matching parameter number and expected parameter type(s) '" + expected + "'";
+                message += "in class '" +
+                           clazz.GetCleanName() +
+                           "' with matching parameter number and expected parameter type(s) '" +
+                           expected +
+                           "'";
             }
             else {
                 message += "in class '" + clazz.GetCleanName() + "' taking no parameters";
@@ -343,7 +368,8 @@ namespace com.espertech.esper.common.@internal.settings
                     message += "taking no parameters";
                 }
                 else {
-                    message += "taking type(s) '" + TypeHelper.GetParameterAsString(e.NearestMissCtor.GetParameterTypes()) +
+                    message += "taking type(s) '" +
+                               TypeHelper.GetParameterAsString(e.NearestMissCtor.GetParameterTypes()) +
                                "'";
                 }
 
@@ -370,13 +396,20 @@ namespace com.espertech.esper.common.@internal.settings
             }
 
             if (paramTypes.Length > 0) {
-                message += "method named '" + methodName + "' in class '" +
+                message += "method named '" +
+                           methodName +
+                           "' in class '" +
                            clazz.GetCleanName() +
-                           "' with matching parameter number and expected parameter type(s) '" + expected + "'";
+                           "' with matching parameter number and expected parameter type(s) '" +
+                           expected +
+                           "'";
             }
             else {
-                message += "method named '" + methodName + "' in class '" +
-                           clazz.GetCleanName() + "' taking no parameters";
+                message += "method named '" +
+                           methodName +
+                           "' in class '" +
+                           clazz.GetCleanName() +
+                           "' taking no parameters";
             }
 
             if (e.NearestMissMethod != null) {
@@ -386,7 +419,8 @@ namespace com.espertech.esper.common.@internal.settings
                 }
                 else {
                     message += "' taking type(s) '" +
-                               TypeHelper.GetParameterAsString(e.NearestMissMethod.GetParameterTypes()) + "'";
+                               TypeHelper.GetParameterAsString(e.NearestMissMethod.GetParameterTypes()) +
+                               "'";
                 }
 
                 message += ")";

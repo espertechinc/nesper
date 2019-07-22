@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Numerics;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -97,26 +98,40 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                 }
 
                 var methodNode = codegenMethodScope.MakeChild(
-                    typeof(BigInteger), typeof(ComputerBigIntCoerce), codegenClassScope);
+                    typeof(BigInteger),
+                    typeof(ComputerBigIntCoerce),
+                    codegenClassScope);
                 var block = methodNode.Block;
 
                 block.DeclareVar(
-                    r0Type, "r0", nodes[0].Forge.EvaluateCodegen(r0Type, methodNode, exprSymbol, codegenClassScope));
+                    r0Type,
+                    "r0",
+                    nodes[0].Forge.EvaluateCodegen(r0Type, methodNode, exprSymbol, codegenClassScope));
                 if (!r0Type.IsPrimitive) {
                     block.IfRefNullReturnNull("r0");
                 }
 
                 block.DeclareVar(
-                    r1Type, "r1", nodes[1].Forge.EvaluateCodegen(r1Type, methodNode, exprSymbol, codegenClassScope));
+                    r1Type,
+                    "r1",
+                    nodes[1].Forge.EvaluateCodegen(r1Type, methodNode, exprSymbol, codegenClassScope));
                 if (!r1Type.IsPrimitive) {
                     block.IfRefNullReturnNull("r1");
                 }
 
-                block.DeclareVar(typeof(BigInteger), "bi0", convertors[0].CoerceBoxedBigIntCodegen(CodegenExpressionBuilder.Ref("r0"), r0Type));
-                block.DeclareVar(typeof(BigInteger), "bi1", convertors[1].CoerceBoxedBigIntCodegen(CodegenExpressionBuilder.Ref("r1"), r1Type));
+                block.DeclareVar<BigInteger>(
+                    "bi0",
+                    convertors[0].CoerceBoxedBigIntCodegen(CodegenExpressionBuilder.Ref("r0"), r0Type));
+                block.DeclareVar<BigInteger>(
+                    "bi1",
+                    convertors[1].CoerceBoxedBigIntCodegen(CodegenExpressionBuilder.Ref("r1"), r1Type));
 
                 block.DeclareVarNoInit(typeof(BigInteger), "result");
-                block.IfCondition(CodegenCompareCompareTo(CodegenExpressionBuilder.Ref("bi0"), CodegenExpressionBuilder.Ref("bi1"), max))
+                block.IfCondition(
+                        CodegenCompareCompareTo(
+                            CodegenExpressionBuilder.Ref("bi0"),
+                            CodegenExpressionBuilder.Ref("bi1"),
+                            max))
                     .AssignRef("result", CodegenExpressionBuilder.Ref("bi0"))
                     .IfElse()
                     .AssignRef("result", CodegenExpressionBuilder.Ref("bi1"))
@@ -126,17 +141,23 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                     var nodeType = nodes[i].Forge.EvaluationType;
                     var refnameNumber = "r" + i;
                     block.DeclareVar(
-                        nodeType, refnameNumber,
+                        nodeType,
+                        refnameNumber,
                         nodes[i].Forge.EvaluateCodegen(nodeType, methodNode, exprSymbol, codegenClassScope));
                     if (!nodeType.IsPrimitive) {
                         block.IfRefNullReturnNull(refnameNumber);
                     }
 
                     var refnameBigint = "bi" + i;
-                    block.DeclareVar(
-                        typeof(BigInteger), refnameBigint,
+                    block.DeclareVar<BigInteger>(
+                        refnameBigint,
                         convertors[i].CoerceBoxedBigIntCodegen(CodegenExpressionBuilder.Ref(refnameNumber), nodeType));
-                    block.IfCondition(CodegenExpressionBuilder.Not(CodegenCompareCompareTo(CodegenExpressionBuilder.Ref("result"), CodegenExpressionBuilder.Ref(refnameBigint), max)))
+                    block.IfCondition(
+                            CodegenExpressionBuilder.Not(
+                                CodegenCompareCompareTo(
+                                    CodegenExpressionBuilder.Ref("result"),
+                                    CodegenExpressionBuilder.Ref(refnameBigint),
+                                    max)))
                         .AssignRef("result", CodegenExpressionBuilder.Ref(refnameBigint))
                         .BlockEnd();
                 }

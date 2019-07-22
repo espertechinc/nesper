@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.core;
@@ -52,7 +53,13 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.avedev
         {
             var distinctType = !parent.IsDistinct ? null : aggregatedValueType;
             aggregator = new AggregatorAvedev(
-                this, col, rowCtor, membersColumnized, classScope, distinctType, parent.HasFilter,
+                this,
+                col,
+                rowCtor,
+                membersColumnized,
+                classScope,
+                distinctType,
+                parent.HasFilter,
                 parent.OptionalFilter);
         }
 

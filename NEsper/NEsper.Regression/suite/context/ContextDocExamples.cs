@@ -29,7 +29,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 path,
                 "context SegmentedByCustomer\n" +
                 "select * from pattern [\n" +
-                "every a=BankTxn(amount > 400) => b=BankTxn(amount > 400) where timer:within(10 minutes)\n" +
+                "every a=BankTxn(amount > 400) -> b=BankTxn(amount > 400) where timer:within(10 minutes)\n" +
                 "]");
             UndeployClearPath(env, path);
             Create(

@@ -124,7 +124,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 captureOp.WaitForInvocation(100, 1);
                 EPAssertionUtil.AssertProps(
                     (EventBean) captureOp.GetCurrentAndReset()[0],
-                    "id".SplitCsv(),
+                    "Id".SplitCsv(),
                     new object[] {"E2"});
 
                 env.UndeployModuleContaining("MyStatement");
@@ -143,7 +143,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 captureOp.WaitForInvocation(100, 1);
                 EPAssertionUtil.AssertProps(
                     (EventBean) captureOp.GetCurrentAndReset()[0],
-                    "id".SplitCsv(),
+                    "Id".SplitCsv(),
                     new object[] {"E4"});
 
                 env.UndeployModuleContaining("MyStatement");
@@ -163,7 +163,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 captureOp.WaitForInvocation(100, 1);
                 EPAssertionUtil.AssertProps(
                     (EventBean) captureOp.GetCurrentAndReset()[0],
-                    "id".SplitCsv(),
+                    "Id".SplitCsv(),
                     new object[] {"XE6X"});
 
                 df.Cancel();
@@ -279,7 +279,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 captureOp.WaitForInvocation(200, 1);
                 EPAssertionUtil.AssertProps(
                     (EventBean) captureOp.GetCurrentAndReset()[0],
-                    "id".SplitCsv(),
+                    "Id".SplitCsv(),
                     new object[] {"B1"});
 
                 env.CompileDeploy("select TheString, IntPrimitive from SupportBean");
@@ -295,7 +295,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 captureOp.WaitForInvocation(200, 1);
                 EPAssertionUtil.AssertProps(
                     (EventBean) captureOp.GetCurrentAndReset()[0],
-                    "id".SplitCsv(),
+                    "Id".SplitCsv(),
                     new object[] {"A1"});
 
                 env.UndeployModuleContaining("s2");
@@ -310,14 +310,14 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 captureOp.WaitForInvocation(200, 1);
                 EPAssertionUtil.AssertProps(
                     (EventBean) captureOp.GetCurrentAndReset()[0],
-                    "id".SplitCsv(),
+                    "Id".SplitCsv(),
                     new object[] {"A3"});
 
                 env.SendEventBean(new SupportBean_B("B2"));
                 captureOp.WaitForInvocation(200, 1);
                 EPAssertionUtil.AssertProps(
                     (EventBean) captureOp.GetCurrentAndReset()[0],
-                    "id".SplitCsv(),
+                    "Id".SplitCsv(),
                     new object[] {"B2"});
 
                 df.Cancel();

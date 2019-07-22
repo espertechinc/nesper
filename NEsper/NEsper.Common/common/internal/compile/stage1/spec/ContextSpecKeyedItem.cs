@@ -9,6 +9,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.compile.stage2;
@@ -18,6 +19,7 @@ using com.espertech.esper.common.@internal.context.module;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.filterspec;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.compile.stage1.spec
@@ -61,37 +63,56 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
         {
             var method = parent.MakeChild(typeof(ContextControllerDetailKeyedItem), GetType(), classScope);
             var types = EventTypeUtility.GetPropertyTypes(
-                filterSpecCompiled.FilterForEventType, PropertyNames.ToArray());
+                filterSpecCompiled.FilterForEventType,
+                PropertyNames.ToArray());
 
             method.Block
-                .DeclareVar(
-                    typeof(FilterSpecActivatable), "activatable",
+                .DeclareVar<FilterSpecActivatable>(
+                    "activatable",
                     LocalMethod(filterSpecCompiled.MakeCodegen(method, symbols, classScope)))
-                .DeclareVar(
-                    typeof(ExprFilterSpecLookupable[]), "lookupables",
+                .DeclareVar<ExprFilterSpecLookupable[]>(
+                    "lookupables",
                     NewArrayByLength(typeof(ExprFilterSpecLookupable), Constant(getters.Length)));
             for (var i = 0; i < getters.Length; i++) {
                 var getter = EventTypeUtility.CodegenGetterWCoerce(
-                    getters[i], types[i], types[i], method, GetType(), classScope);
+                    getters[i],
+                    types[i],
+                    types[i],
+                    method,
+                    GetType(),
+                    classScope);
                 var lookupable = NewInstance<ExprFilterSpecLookupable>(
-                    Constant(PropertyNames[i]), getter,
-                    Constant(types[i]), ConstantFalse());
+                    Constant(PropertyNames[i]),
+                    getter,
+                    Constant(types[i]),
+                    ConstantFalse());
                 var eventType = ExprDotMethod(Ref("activatable"), "getFilterForEventType");
                 method.Block
                     .AssignArrayElement(Ref("lookupables"), Constant(i), lookupable)
                     .Expression(
                         ExprDotMethodChain(symbols.GetAddInitSvc(method))
-                            .Add(EPStatementInitServicesConstants.GETFILTERSHAREDLOOKUPABLEREGISTERY).Add(
-                                "registerLookupable", eventType, ArrayAtIndex(Ref("lookupables"), Constant(i))));
+                            .Add(EPStatementInitServicesConstants.GETFILTERSHAREDLOOKUPABLEREGISTERY)
+                            .Add(
+                                "registerLookupable",
+                                eventType,
+                                ArrayAtIndex(Ref("lookupables"), Constant(i))));
             }
 
             method.Block
-                .DeclareVar(
-                    typeof(ContextControllerDetailKeyedItem), "item",
+                .DeclareVar<ContextControllerDetailKeyedItem>(
+                    "item",
                     NewInstance(typeof(ContextControllerDetailKeyedItem)))
-                .SetProperty(Ref("item"), "Getter",
+                .SetProperty(
+                    Ref("item"),
+                    "Getter",
                     EventTypeUtility.CodegenGetterMayMultiKeyWCoerce(
-                        filterSpecCompiled.FilterForEventType, getters, types, null, method, GetType(), classScope))
+                        filterSpecCompiled.FilterForEventType,
+                        getters,
+                        types,
+                        null,
+                        method,
+                        GetType(),
+                        classScope))
                 .SetProperty(Ref("item"), "Lookupables", Ref("lookupables"))
                 .SetProperty(Ref("item"), "PropertyTypes", Constant(types))
                 .SetProperty(Ref("item"), "FilterSpecActivatable", Ref("activatable"))

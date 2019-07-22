@@ -10,6 +10,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+
 using com.espertech.esper.common.@internal.util;
 
 namespace com.espertech.esper.common.client.soda

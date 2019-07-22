@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.core;
@@ -76,18 +77,29 @@ namespace com.espertech.esper.common.@internal.context.aifactory.update
             }
 
             StreamTypeService typeService = new StreamTypeServiceImpl(
-                new[] {streamEventType}, new[] {streamName}, new[] {true}, false, false);
+                new[] {streamEventType},
+                new[] {streamName},
+                new[] {true},
+                false,
+                false);
 
             // create subselect information
             IList<FilterSpecCompiled> filterSpecCompileds = new List<FilterSpecCompiled>();
             IList<NamedWindowConsumerStreamSpec> namedWindowConsumers = new List<NamedWindowConsumerStreamSpec>();
             var subselectActivation = SubSelectHelperActivations.CreateSubSelectActivation(
-                filterSpecCompileds, namedWindowConsumers, @base, services);
+                filterSpecCompileds,
+                namedWindowConsumers,
+                @base,
+                services);
 
             // handle subselects
             var subselectForges = SubSelectHelperForgePlanner.PlanSubSelect(
-                @base, subselectActivation, typeService.StreamNames, typeService.EventTypes,
-                new[] {triggereventTypeName}, services);
+                @base,
+                subselectActivation,
+                typeService.StreamNames,
+                typeService.EventTypes,
+                new[] {triggereventTypeName},
+                services);
 
             var validationContext =
                 new ExprValidationContextBuilder(typeService, @base.StatementRawInfo, services).Build();
@@ -96,50 +108,72 @@ namespace com.espertech.esper.common.@internal.context.aifactory.update
                 var validated = ExprNodeUtilityValidate.GetValidatedAssignment(assignment, validationContext);
                 assignment.Expression = validated;
                 EPStatementStartMethodHelperValidate.ValidateNoAggregations(
-                    validated, "Aggregation functions may not be used within an update-clause");
+                    validated,
+                    "Aggregation functions may not be used within an update-clause");
             }
 
             if (updateSpec.OptionalWhereClause != null) {
                 var validated = ExprNodeUtilityValidate.GetValidatedSubtree(
-                    ExprNodeOrigin.WHERE, updateSpec.OptionalWhereClause, validationContext);
+                    ExprNodeOrigin.WHERE,
+                    updateSpec.OptionalWhereClause,
+                    validationContext);
                 updateSpec.OptionalWhereClause = validated;
                 EPStatementStartMethodHelperValidate.ValidateNoAggregations(
-                    validated, "Aggregation functions may not be used within an update-clause");
+                    validated,
+                    "Aggregation functions may not be used within an update-clause");
             }
 
             // build route information
             var routerDesc = InternalEventRouterDescFactory.GetValidatePreprocessing(
-                streamEventType, updateSpec, @base.StatementRawInfo.Annotations);
+                streamEventType,
+                updateSpec,
+                @base.StatementRawInfo.Annotations);
 
             var statementFieldsClassName =
                 CodeGenerationIDGenerator.GenerateClassNameSimple(typeof(StatementFields), classPostfix);
-            var packageScope = new CodegenNamespaceScope(packageName, statementFieldsClassName, services.IsInstrumented);
+            var packageScope = new CodegenNamespaceScope(
+                packageName,
+                statementFieldsClassName,
+                services.IsInstrumented);
 
             var aiFactoryProviderClassName = CodeGenerationIDGenerator.GenerateClassNameSimple(
-                typeof(StatementAIFactoryProvider), classPostfix);
+                typeof(StatementAIFactoryProvider),
+                classPostfix);
             var forge = new StatementAgentInstanceFactoryUpdateForge(routerDesc, subselectForges);
             var aiFactoryForgable = new StmtClassForgableAIFactoryProviderUpdate(
-                aiFactoryProviderClassName, packageScope, forge);
+                aiFactoryProviderClassName,
+                packageScope,
+                forge);
 
             var selectSubscriberDescriptor = new SelectSubscriberDescriptor(
                 new[] {streamEventType.UnderlyingType},
-                new[] {"*"}, false, null);
+                new[] {"*"},
+                false,
+                null);
             var informationals = StatementInformationalsUtil.GetInformationals(
-                @base, filterSpecCompileds,
+                @base,
+                filterSpecCompileds,
                 Collections.GetEmptyList<ScheduleHandleCallbackProvider>(),
-                Collections.GetEmptyList<NamedWindowConsumerStreamSpec>(), false,
-                selectSubscriberDescriptor, packageScope, services);
+                Collections.GetEmptyList<NamedWindowConsumerStreamSpec>(),
+                false,
+                selectSubscriberDescriptor,
+                packageScope,
+                services);
             var statementProviderClassName =
                 CodeGenerationIDGenerator.GenerateClassNameSimple(typeof(StatementProvider), classPostfix);
             var stmtProvider = new StmtClassForgableStmtProvider(
-                aiFactoryProviderClassName, statementProviderClassName, informationals, packageScope);
+                aiFactoryProviderClassName,
+                statementProviderClassName,
+                informationals,
+                packageScope);
 
             IList<StmtClassForgable> forgables = new List<StmtClassForgable>();
             forgables.Add(aiFactoryForgable);
             forgables.Add(stmtProvider);
             forgables.Add(new StmtClassForgableStmtFields(statementFieldsClassName, packageScope, 0));
             return new StmtForgeMethodResult(
-                forgables, filterSpecCompileds,
+                forgables,
+                filterSpecCompileds,
                 Collections.GetEmptyList<ScheduleHandleCallbackProvider>(),
                 namedWindowConsumers,
                 Collections.GetEmptyList<FilterSpecParamExprNodeForge>());

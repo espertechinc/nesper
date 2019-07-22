@@ -33,8 +33,7 @@ namespace com.espertech.esper.common.client.dataflow.core
         /// Returns the data flow name.
         /// </summary>
         /// <returns>name</returns>
-        public string DataFlowName
-        {
+        public string DataFlowName {
             get => dataFlowName;
         }
 
@@ -42,8 +41,7 @@ namespace com.espertech.esper.common.client.dataflow.core
         /// Returns the statement name.
         /// </summary>
         /// <returns>statement name.</returns>
-        public string StatementName
-        {
+        public string StatementName {
             get => statementName;
         }
     }

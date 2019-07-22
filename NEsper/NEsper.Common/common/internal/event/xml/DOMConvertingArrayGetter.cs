@@ -8,11 +8,13 @@
 
 using System;
 using System.Xml;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.util;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.@event.xml
@@ -73,7 +75,10 @@ namespace com.espertech.esper.common.@internal.@event.xml
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            return UnderlyingGetCodegen(CastUnderlying(typeof(XmlNode), beanExpression), codegenMethodScope, codegenClassScope);
+            return UnderlyingGetCodegen(
+                CastUnderlying(typeof(XmlNode), beanExpression),
+                codegenMethodScope,
+                codegenClassScope);
         }
 
         public CodegenExpression EventBeanExistsCodegen(
@@ -121,9 +126,14 @@ namespace com.espertech.esper.common.@internal.@event.xml
             CodegenClassScope codegenClassScope)
         {
             var mComponentType = codegenClassScope.AddFieldUnshared(true, typeof(Type), Constant(componentType));
-            var mParser = codegenClassScope.AddOrGetFieldSharable(new SimpleTypeParserCodegenFieldSharable(parser, codegenClassScope));
-            return codegenMethodScope.MakeChild(typeof(object), GetType(), codegenClassScope).AddParam(typeof(XmlNode), "node").Block
-                .DeclareVar(typeof(XmlNode[]), "result", getter.GetValueAsNodeArrayCodegen(Ref("node"), codegenMethodScope, codegenClassScope))
+            var mParser = codegenClassScope.AddOrGetFieldSharable(
+                new SimpleTypeParserCodegenFieldSharable(parser, codegenClassScope));
+            return codegenMethodScope.MakeChild(typeof(object), GetType(), codegenClassScope)
+                .AddParam(typeof(XmlNode), "node")
+                .Block
+                .DeclareVar<XmlNode[]>(
+                    "result",
+                    getter.GetValueAsNodeArrayCodegen(Ref("node"), codegenMethodScope, codegenClassScope))
                 .IfRefNullReturnNull("result")
                 .MethodReturn(StaticMethod(GetType(), "getDOMArrayFromNodes", Ref("result"), mComponentType, mParser));
         }

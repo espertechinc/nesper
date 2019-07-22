@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client.context;
 using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.context.aifactory.createwindow;
@@ -45,7 +46,8 @@ namespace com.espertech.esper.common.@internal.context.controller.hash
             // determine whether create-named-window
             var isCreateWindow = optionalStatementDesc != null &&
                                  optionalStatementDesc.Lightweight.StatementContext.StatementInformationals
-                                     .StatementType == StatementType.CREATE_WINDOW;
+                                     .StatementType ==
+                                 StatementType.CREATE_WINDOW;
             ContextControllerDetailHashItem foundPartition = null;
             var hashCode = partitionKey.AsInt();
 
@@ -69,13 +71,18 @@ namespace com.espertech.esper.common.@internal.context.controller.hash
             }
 
             FilterValueSetParam filter = new FilterValueSetParamImpl(
-                foundPartition.Lookupable, FilterOperator.EQUAL, hashCode);
+                foundPartition.Lookupable,
+                FilterOperator.EQUAL,
+                hashCode);
 
             var addendum = new FilterValueSetParam[1][];
             addendum[0] = new[] {filter};
 
             var partitionFilters = foundPartition.FilterSpecActivatable.GetValueSet(
-                null, null, agentInstanceContextStatement, agentInstanceContextStatement.StatementContextFilterEvalEnv);
+                null,
+                null,
+                agentInstanceContextStatement,
+                agentInstanceContextStatement.StatementContextFilterEvalEnv);
             if (partitionFilters != null) {
                 addendum = FilterAddendumUtil.AddAddendum(partitionFilters, filter);
             }
@@ -112,7 +119,8 @@ namespace com.espertech.esper.common.@internal.context.controller.hash
             ContextControllerDetailHashItem foundPartition = null;
             foreach (var partitionItem in hashSpec.Items) {
                 var typeOrSubtype = EventTypeUtility.IsTypeOrSubTypeOf(
-                    filterSpec.FilterForEventType, partitionItem.FilterSpecActivatable.FilterForEventType);
+                    filterSpec.FilterForEventType,
+                    partitionItem.FilterSpecActivatable.FilterForEventType);
                 if (typeOrSubtype) {
                     foundPartition = partitionItem;
                 }

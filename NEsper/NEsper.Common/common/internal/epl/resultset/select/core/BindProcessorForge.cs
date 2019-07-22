@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.compile.stage1.spec;
@@ -16,6 +17,7 @@ using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.table.compiletime;
 using com.espertech.esper.compat;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.resultset.select.core
@@ -113,14 +115,19 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
         {
             var methodNode = processMethod.MakeChild(typeof(object[]), GetType(), codegenClassScope);
             var block = methodNode.Block
-                .DeclareVar(
-                    typeof(object[]), "parameters",
+                .DeclareVar<object[]>(
+                    "parameters",
                     NewArrayByLength(typeof(object), Constant(ExpressionForges.Length)));
             for (var i = 0; i < ExpressionForges.Length; i++) {
                 block.AssignArrayElement(
-                    "parameters", Constant(i),
+                    "parameters",
+                    Constant(i),
                     CodegenLegoMayVoid.ExpressionMayVoid(
-                        typeof(object), ExpressionForges[i], methodNode, exprSymbol, codegenClassScope));
+                        typeof(object),
+                        ExpressionForges[i],
+                        methodNode,
+                        exprSymbol,
+                        codegenClassScope));
             }
 
             block.MethodReturn(Ref("parameters"));

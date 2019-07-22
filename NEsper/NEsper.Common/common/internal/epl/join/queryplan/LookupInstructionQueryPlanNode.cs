@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.epl.index.@base;
@@ -73,14 +74,22 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplan
             var count = 0;
             foreach (var instruction in LookupInstructions) {
                 var exec = instruction.MakeExec(
-                    agentInstanceContext, indexesPerStream, streamTypes, streamViews, viewExternal);
+                    agentInstanceContext,
+                    indexesPerStream,
+                    streamTypes,
+                    streamViews,
+                    viewExternal);
                 execs[count] = exec;
                 count++;
             }
 
             return new LookupInstructionExecNode(
-                rootStream, rootStreamName,
-                NumStreams, execs, requiredPerStream, assemblyInstructionFactories);
+                rootStream,
+                rootStreamName,
+                NumStreams,
+                execs,
+                requiredPerStream,
+                assemblyInstructionFactories);
         }
     }
 } // end of namespace

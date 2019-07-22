@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+
 using com.espertech.esper.common.@internal.compile.stage1.spec;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.@join.querygraph;
@@ -43,7 +44,8 @@ namespace com.espertech.esper.common.@internal.epl.join.analyze
                     if (outerJoinDesc.AdditionalLeftNodes != null) {
                         for (var i = 0; i < outerJoinDesc.AdditionalLeftNodes.Length; i++) {
                             Add(
-                                queryGraph, outerJoinDesc.AdditionalLeftNodes[i],
+                                queryGraph,
+                                outerJoinDesc.AdditionalLeftNodes[i],
                                 outerJoinDesc.AdditionalRightNodes[i]);
                         }
                     }
@@ -59,8 +61,12 @@ namespace com.espertech.esper.common.@internal.epl.join.analyze
             ExprIdentNode identNodeRight)
         {
             queryGraph.AddStrictEquals(
-                identNodeLeft.StreamId, identNodeLeft.ResolvedPropertyName, identNodeLeft,
-                identNodeRight.StreamId, identNodeRight.ResolvedPropertyName, identNodeRight);
+                identNodeLeft.StreamId,
+                identNodeLeft.ResolvedPropertyName,
+                identNodeLeft,
+                identNodeRight.StreamId,
+                identNodeRight.ResolvedPropertyName,
+                identNodeRight);
         }
 
         public static bool OptionalStreamsIfAny(IList<OuterJoinDesc> outerJoinDescList)

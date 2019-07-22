@@ -9,6 +9,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.configuration;
 using com.espertech.esper.common.client.configuration.common;
@@ -19,6 +20,7 @@ using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.settings;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat.collections;
+
 using static com.espertech.esper.common.@internal.@event.eventtyperepo.EventTypeRepositoryMapTypeUtil;
 
 namespace com.espertech.esper.common.@internal.@event.eventtyperepo
@@ -41,7 +43,8 @@ namespace com.espertech.esper.common.@internal.@event.eventtyperepo
             catch (GraphCircularDependencyException e) {
                 throw new ConfigurationException(
                     "Error configuring event types, dependency graph between object array type names is circular: " +
-                    e.Message, e);
+                    e.Message,
+                    e);
             }
 
             dependentObjectArrayOrder.AddAll(nestableObjectArrayNames.Keys);
@@ -54,7 +57,11 @@ namespace com.espertech.esper.common.@internal.@event.eventtyperepo
                     EventTypeUtility.CompileMapTypeProperties(propertyTypes, repo);
 
                 AddNestableObjectArrayType(
-                    objectArrayName, propertyTypesCompiled, objectArrayConfig, beanEventTypeFactory, repo);
+                    objectArrayName,
+                    propertyTypesCompiled,
+                    objectArrayConfig,
+                    beanEventTypeFactory,
+                    repo);
             }
         }
 
@@ -72,8 +79,13 @@ namespace com.espertech.esper.common.@internal.@event.eventtyperepo
             var propertyTypes =
                 EventTypeUtility.GetPropertyTypesNonPrimitive(propertyTypesMayHavePrimitive);
             var metadata = new EventTypeMetadata(
-                eventTypeName, null, EventTypeTypeClass.APPLICATION, EventTypeApplicationType.OBJECTARR,
-                NameAccessModifier.PRECONFIGURED, EventTypeBusModifier.NONBUS, false,
+                eventTypeName,
+                null,
+                EventTypeTypeClass.APPLICATION,
+                EventTypeApplicationType.OBJECTARR,
+                NameAccessModifier.PRECONFIGURED,
+                EventTypeBusModifier.NONBUS,
+                false,
                 new EventTypeIdPair(CRC32Util.ComputeCRC32(eventTypeName), -1));
             string[] superTypes = null;
             if (optionalConfig != null && optionalConfig.SuperTypes != null && !optionalConfig.SuperTypes.IsEmpty()) {
@@ -81,10 +93,13 @@ namespace com.espertech.esper.common.@internal.@event.eventtyperepo
             }
 
             var newEventType = beanEventTypeFactory.EventTypeFactory.CreateObjectArray(
-                metadata, propertyTypes, superTypes,
+                metadata,
+                propertyTypes,
+                superTypes,
                 optionalConfig != null ? optionalConfig.StartTimestampPropertyName : null,
                 optionalConfig != null ? optionalConfig.EndTimestampPropertyName : null,
-                beanEventTypeFactory, repo);
+                beanEventTypeFactory,
+                repo);
 
             var existingType = repo.GetTypeByName(eventTypeName);
             if (existingType != null) {
@@ -92,9 +107,11 @@ namespace com.espertech.esper.common.@internal.@event.eventtyperepo
                 if (newEventType.EqualsCompareType(existingType) != null) {
                     var message = newEventType.CompareEquals(existingType);
                     throw new EPException(
-                        "Event type named '" + eventTypeName +
+                        "Event type named '" +
+                        eventTypeName +
                         "' has already been declared with differing column name or type information: " +
-                        message.Message, message);
+                        message.Message,
+                        message);
                 }
 
                 // Since it's the same, return the existing type

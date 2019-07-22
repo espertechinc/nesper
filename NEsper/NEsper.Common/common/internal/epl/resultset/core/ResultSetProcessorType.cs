@@ -29,12 +29,14 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
                 case ResultSetProcessorType.HANDTHROUGH:
                 case ResultSetProcessorType.UNAGGREGATED_UNGROUPED:
                     return false;
+
                 case ResultSetProcessorType.FULLYAGGREGATED_UNGROUPED:
                 case ResultSetProcessorType.AGGREGATED_UNGROUPED:
                 case ResultSetProcessorType.FULLYAGGREGATED_GROUPED:
                 case ResultSetProcessorType.FULLYAGGREGATED_GROUPED_ROLLUP:
                 case ResultSetProcessorType.AGGREGATED_GROUPED:
                     return true;
+
                 default:
                     throw new ArgumentException("invalid argument", nameof(@value));
             }
@@ -48,10 +50,12 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
                 case ResultSetProcessorType.FULLYAGGREGATED_UNGROUPED:
                 case ResultSetProcessorType.AGGREGATED_UNGROUPED:
                     return false;
+
                 case ResultSetProcessorType.FULLYAGGREGATED_GROUPED:
                 case ResultSetProcessorType.FULLYAGGREGATED_GROUPED_ROLLUP:
                 case ResultSetProcessorType.AGGREGATED_GROUPED:
                     return true;
+
                 default:
                     throw new ArgumentException("invalid argument", nameof(@value));
             }

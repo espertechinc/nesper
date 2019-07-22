@@ -12,6 +12,7 @@ using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.lookup;
 using com.espertech.esper.common.@internal.epl.lookupplansubord;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.lookupsubord
@@ -33,10 +34,12 @@ namespace com.espertech.esper.common.@internal.epl.lookupsubord
             CodegenClassScope classScope)
         {
             var method = parent.MakeChild(
-                typeof(SubordWMatchExprLookupStrategyAllFilteredFactory), GetType(), classScope);
+                typeof(SubordWMatchExprLookupStrategyAllFilteredFactory),
+                GetType(),
+                classScope);
             method.Block
-                .DeclareVar(
-                    typeof(ExprEvaluator), "eval",
+                .DeclareVar<ExprEvaluator>(
+                    "eval",
                     ExprNodeUtilityCodegen.CodegenEvaluatorNoCoerce(exprEvaluator.Forge, method, GetType(), classScope))
                 .MethodReturn(NewInstance<SubordWMatchExprLookupStrategyAllFilteredFactory>(Ref("eval")));
             return LocalMethod(method);

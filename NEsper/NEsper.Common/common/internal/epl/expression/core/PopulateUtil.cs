@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.dataflow.annotations;
 using com.espertech.esper.common.client.dataflow.core;
@@ -22,6 +23,7 @@ using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
+
 using Castle.Core.Internal;
 
 namespace com.espertech.esper.common.@internal.epl.expression.core
@@ -50,8 +52,14 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             foreach (var desc in descriptors) {
                 object value = jsonRaw.Remove(desc.PropertyName.ToLowerInvariant());
                 var coerced = CoerceProperty(
-                    desc.PropertyName, desc.ContainerType, value, desc.FieldType, exprNodeOrigin, exprValidationContext,
-                    desc.IsForceNumeric, false);
+                    desc.PropertyName,
+                    desc.ContainerType,
+                    value,
+                    desc.FieldType,
+                    exprNodeOrigin,
+                    exprValidationContext,
+                    desc.IsForceNumeric,
+                    false);
                 desc.Setter.Invoke(coerced);
             }
 
@@ -107,7 +115,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
 
                     if (!exprNode.Forge.ForgeConstantType.IsCompileTimeConstant) {
                         throw new ExprValidationException(
-                            "Failed to determine parameter for property '" + propertyName +
+                            "Failed to determine parameter for property '" +
+                            propertyName +
                             "' as the parameter is not a compile-time constant expression");
                     }
 
@@ -124,7 +133,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             }
 
             if (value.GetType().IsAssignmentCompatible(type)) {
-                if (forceNumeric && value.GetType().GetBoxedType() != type.GetBoxedType() && type.IsNumeric() &&
+                if (forceNumeric &&
+                    value.GetType().GetBoxedType() != type.GetBoxedType() &&
+                    type.IsNumeric() &&
                     value.GetType().IsNumeric()) {
                     value = TypeHelper.CoerceBoxed(value, type.GetBoxedType());
                 }
@@ -147,8 +158,14 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                 var coercedArray = Array.CreateInstance(type.GetElementType(), items.Length);
                 for (var i = 0; i < items.Length; i++) {
                     var coercedValue = CoerceProperty(
-                        propertyName + " (array element)", type, items[i], type.GetElementType(), exprNodeOrigin,
-                        exprValidationContext, false, includeClassNameInEx);
+                        propertyName + " (array element)",
+                        type,
+                        items[i],
+                        type.GetElementType(),
+                        exprNodeOrigin,
+                        exprValidationContext,
+                        false,
+                        includeClassNameInEx);
                     coercedArray.SetValue(coercedValue, i);
                 }
 
@@ -156,8 +173,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             }
 
             if (!(value is IDictionary<string, object>)) {
-                var detail = "expects an " + type.GetCleanName() +
-                             " but receives a value of type " + value.GetType().Name;
+                var detail = "expects an " +
+                             type.GetCleanName() +
+                             " but receives a value of type " +
+                             value.GetType().Name;
                 throw new ExprValidationException(
                     GetExceptionText(propertyName, containingType, includeClassNameInEx, detail));
             }
@@ -175,7 +194,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             var applicableClass = topClass;
             if (topClass.IsInterface) {
                 applicableClass = FindInterfaceImplementation(
-                    objectProperties, topClass, exprValidationContext.ImportService);
+                    objectProperties,
+                    topClass,
+                    exprValidationContext.ImportService);
             }
 
             object top;
@@ -187,7 +208,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             }
             catch (Exception ex) {
                 throw new ExprValidationException(
-                    "Exception instantiating class " + applicableClass.Name + ": " + ex.Message, ex);
+                    "Exception instantiating class " + applicableClass.Name + ": " + ex.Message,
+                    ex);
             }
 
             PopulateObject(objectProperties, top, exprNodeOrigin, exprValidationContext);
@@ -205,7 +227,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             // Allow to populate the special "class" field
             if (!properties.ContainsKey(CLASS_PROPERTY_NAME)) {
                 throw new ExprValidationException(
-                    message + ", for interfaces please specified the '" + CLASS_PROPERTY_NAME +
+                    message +
+                    ", for interfaces please specified the '" +
+                    CLASS_PROPERTY_NAME +
                     "' field that provides the class name either as a simple class name or fully qualified");
             }
 
@@ -232,7 +256,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
 
             if (!TypeHelper.IsSubclassOrImplementsInterface(clazz, topClass)) {
                 throw new ExprValidationException(
-                    message + ", class " + clazz.GetCleanName() +
+                    message +
+                    ", class " +
+                    clazz.GetCleanName() +
                     " does not implement the interface");
             }
 
@@ -262,10 +288,12 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             if (annotatedMethods != null) {
                 foreach (var method in annotatedMethods) {
                     var anno = (DataFlowOpParameterAttribute) TypeHelper.GetAnnotations(
-                        typeof(DataFlowOpParameterAttribute), method.UnwrapAttributes())[0];
+                        typeof(DataFlowOpParameterAttribute),
+                        method.UnwrapAttributes())[0];
                     if (anno.IsAll) {
                         var parameterTypes = method.GetParameterTypes();
-                        if (parameterTypes.Length == 2 && parameterTypes[0] == typeof(string) &&
+                        if (parameterTypes.Length == 2 &&
+                            parameterTypes[0] == typeof(string) &&
                             parameterTypes[1] == typeof(ExprNode)) {
                             catchAllMethods.Add(method);
                             continue;
@@ -288,13 +316,25 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                     }
                     catch (MemberAccessException e) {
                         throw new ExprValidationException(
-                            "Illegal access invoking method for property '" + propertyName + "' for class " +
-                            applicableClass.Name + " method " + method.Name, e);
+                            "Illegal access invoking method for property '" +
+                            propertyName +
+                            "' for class " +
+                            applicableClass.Name +
+                            " method " +
+                            method.Name,
+                            e);
                     }
                     catch (TargetException e) {
                         throw new ExprValidationException(
-                            "Exception invoking method for property '" + propertyName + "' for class " +
-                            applicableClass.Name + " method " + method.Name + ": " + e.InnerException.Message, e);
+                            "Exception invoking method for property '" +
+                            propertyName +
+                            "' for class " +
+                            applicableClass.Name +
+                            " method " +
+                            method.Name +
+                            ": " +
+                            e.InnerException.Message,
+                            e);
                     }
 
                     found = true;
@@ -308,28 +348,51 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                 var descriptor = FindDescriptor(applicableClass, propertyName, writables);
                 if (descriptor != null) {
                     var coerceProperty = CoerceProperty(
-                        propertyName, applicableClass, property.Value, descriptor.PropertyType, exprNodeOrigin,
-                        exprValidationContext, false, true);
+                        propertyName,
+                        applicableClass,
+                        property.Value,
+                        descriptor.PropertyType,
+                        exprNodeOrigin,
+                        exprValidationContext,
+                        false,
+                        true);
 
                     try {
                         descriptor.WriteMethod.Invoke(top, new[] {coerceProperty});
                     }
                     catch (ArgumentException e) {
                         throw new ExprValidationException(
-                            "Illegal argument invoking setter method for property '" + propertyName + "' for class " +
-                            applicableClass.Name + " method " + descriptor.WriteMethod.Name + " provided value " +
-                            coerceProperty, e);
+                            "Illegal argument invoking setter method for property '" +
+                            propertyName +
+                            "' for class " +
+                            applicableClass.Name +
+                            " method " +
+                            descriptor.WriteMethod.Name +
+                            " provided value " +
+                            coerceProperty,
+                            e);
                     }
                     catch (MemberAccessException e) {
                         throw new ExprValidationException(
-                            "Illegal access invoking setter method for property '" + propertyName + "' for class " +
-                            applicableClass.Name + " method " + descriptor.WriteMethod.Name, e);
+                            "Illegal access invoking setter method for property '" +
+                            propertyName +
+                            "' for class " +
+                            applicableClass.Name +
+                            " method " +
+                            descriptor.WriteMethod.Name,
+                            e);
                     }
                     catch (TargetException e) {
                         throw new ExprValidationException(
-                            "Exception invoking setter method for property '" + propertyName + "' for class " +
-                            applicableClass.Name + " method " + descriptor.WriteMethod.Name + ": " +
-                            e.InnerException.Message, e);
+                            "Exception invoking setter method for property '" +
+                            propertyName +
+                            "' for class " +
+                            applicableClass.Name +
+                            " method " +
+                            descriptor.WriteMethod.Name +
+                            ": " +
+                            e.InnerException.Message,
+                            e);
                     }
 
                     continue;
@@ -341,14 +404,21 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                         annotatedField.UnwrapAttributes())[0];
                     if (anno.Name.Equals(propertyName) || annotatedField.Name.Equals(propertyName)) {
                         var coerceProperty = CoerceProperty(
-                            propertyName, applicableClass, property.Value, annotatedField.FieldType, exprNodeOrigin,
-                            exprValidationContext, true, true);
+                            propertyName,
+                            applicableClass,
+                            property.Value,
+                            annotatedField.FieldType,
+                            exprNodeOrigin,
+                            exprValidationContext,
+                            true,
+                            true);
                         try {
                             annotatedField.SetValue(top, coerceProperty);
                         }
                         catch (Exception e) {
                             throw new ExprValidationException(
-                                "Failed to set field '" + annotatedField.Name + "': " + e.Message, e);
+                                "Failed to set field '" + annotatedField.Name + "': " + e.Message,
+                                e);
                         }
 
                         found = true;
@@ -374,7 +444,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                             annotatedField.SetValue(top, value);
                             if (Log.IsDebugEnabled) {
                                 Log.Debug(
-                                    "Found parameter '" + uri + "' for data flow " + dataFlowName + " setting " +
+                                    "Found parameter '" +
+                                    uri +
+                                    "' for data flow " +
+                                    dataFlowName +
+                                    " setting " +
                                     value);
                             }
                         }
@@ -386,24 +460,29 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                     }
                     catch (Exception e) {
                         throw new ExprValidationException(
-                            "Failed to set field '" + annotatedField.Name + "': " + e.Message, e);
+                            "Failed to set field '" + annotatedField.Name + "': " + e.Message,
+                            e);
                     }
                 }
 
                 foreach (var method in annotatedMethods) {
                     var anno = (DataFlowOpParameterAttribute) TypeHelper.GetAnnotations(
-                        typeof(DataFlowOpParameterAttribute), method.UnwrapAttributes())[0];
+                        typeof(DataFlowOpParameterAttribute),
+                        method.UnwrapAttributes())[0];
                     if (anno.IsAll) {
                         var parameters = method.GetParameters();
 
                         var parameterTypes = method.GetParameterTypes();
-                        if (parameterTypes.Length == 2 && parameterTypes[0] == typeof(string) &&
+                        if (parameterTypes.Length == 2 &&
+                            parameterTypes[0] == typeof(string) &&
                             parameterTypes[1] == typeof(object)) {
                             foreach (var entry in optionalParameterURIs) {
                                 var elements = URIUtil.ParsePathElements(new Uri(entry.Key));
                                 if (elements.Length < 2) {
                                     throw new ExprValidationException(
-                                        "Failed to parse URI '" + entry.Key + "', expected " +
+                                        "Failed to parse URI '" +
+                                        entry.Key +
+                                        "', expected " +
                                         "'operator_name/property_name' format");
                                 }
 
@@ -413,14 +492,25 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                                     }
                                     catch (MemberAccessException e) {
                                         throw new ExprValidationException(
-                                            "Illegal access invoking method for property '" + entry.Key +
-                                            "' for class " + applicableClass.Name + " method " + method.Name, e);
+                                            "Illegal access invoking method for property '" +
+                                            entry.Key +
+                                            "' for class " +
+                                            applicableClass.Name +
+                                            " method " +
+                                            method.Name,
+                                            e);
                                     }
                                     catch (TargetException e) {
                                         throw new ExprValidationException(
-                                            "Exception invoking method for property '" + entry.Key + "' for class " +
-                                            applicableClass.Name + " method " + method.Name + ": " +
-                                            e.InnerException.Message, e);
+                                            "Exception invoking method for property '" +
+                                            entry.Key +
+                                            "' for class " +
+                                            applicableClass.Name +
+                                            " method " +
+                                            method.Name +
+                                            ": " +
+                                            e.InnerException.Message,
+                                            e);
                                     }
                                 }
                             }
@@ -449,9 +539,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                         .GetAnnotations<DataFlowOpParameterAttribute>(method.UnwrapAttributes())[0];
                     if (anno.IsAll) {
                         var parameters = method.GetParameters();
-                        if (parameters.Length == 2
-                            && (parameters[0].ParameterType == typeof(string))
-                            && (parameters[1].ParameterType == typeof(object))) {
+                        if (parameters.Length == 2 &&
+                            (parameters[0].ParameterType == typeof(string)) &&
+                            (parameters[1].ParameterType == typeof(object))) {
                             catchAllMethods.Add(method);
                             continue;
                         }
@@ -473,13 +563,25 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                     }
                     catch (MemberAccessException e) {
                         throw new ExprValidationException(
-                            "Illegal access invoking method for property '" + propertyName + "' for class " +
-                            applicableClass.Name + " method " + method.Name, e);
+                            "Illegal access invoking method for property '" +
+                            propertyName +
+                            "' for class " +
+                            applicableClass.Name +
+                            " method " +
+                            method.Name,
+                            e);
                     }
                     catch (TargetException e) {
                         throw new ExprValidationException(
-                            "Exception invoking method for property '" + propertyName + "' for class " +
-                            applicableClass.Name + " method " + method.Name + ": " + e.InnerException.Message, e);
+                            "Exception invoking method for property '" +
+                            propertyName +
+                            "' for class " +
+                            applicableClass.Name +
+                            " method " +
+                            method.Name +
+                            ": " +
+                            e.InnerException.Message,
+                            e);
                     }
 
                     found = true;
@@ -493,28 +595,51 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                 var descriptor = FindDescriptor(applicableClass, propertyName, writables);
                 if (descriptor != null) {
                     var coerceProperty = CoerceProperty(
-                        propertyName, applicableClass, property.Value, descriptor.PropertyType, exprNodeOrigin,
-                        exprValidationContext, false, true);
+                        propertyName,
+                        applicableClass,
+                        property.Value,
+                        descriptor.PropertyType,
+                        exprNodeOrigin,
+                        exprValidationContext,
+                        false,
+                        true);
 
                     try {
                         descriptor.WriteMethod.Invoke(top, new[] {coerceProperty});
                     }
                     catch (ArgumentException e) {
                         throw new ExprValidationException(
-                            "Illegal argument invoking setter method for property '" + propertyName + "' for class " +
-                            applicableClass.Name + " method " + descriptor.WriteMethod.Name + " provided value " +
-                            coerceProperty, e);
+                            "Illegal argument invoking setter method for property '" +
+                            propertyName +
+                            "' for class " +
+                            applicableClass.Name +
+                            " method " +
+                            descriptor.WriteMethod.Name +
+                            " provided value " +
+                            coerceProperty,
+                            e);
                     }
                     catch (MemberAccessException e) {
                         throw new ExprValidationException(
-                            "Illegal access invoking setter method for property '" + propertyName + "' for class " +
-                            applicableClass.Name + " method " + descriptor.WriteMethod.Name, e);
+                            "Illegal access invoking setter method for property '" +
+                            propertyName +
+                            "' for class " +
+                            applicableClass.Name +
+                            " method " +
+                            descriptor.WriteMethod.Name,
+                            e);
                     }
                     catch (TargetException e) {
                         throw new ExprValidationException(
-                            "Exception invoking setter method for property '" + propertyName + "' for class " +
-                            applicableClass.Name + " method " + descriptor.WriteMethod.Name + ": " +
-                            e.InnerException.Message, e);
+                            "Exception invoking setter method for property '" +
+                            propertyName +
+                            "' for class " +
+                            applicableClass.Name +
+                            " method " +
+                            descriptor.WriteMethod.Name +
+                            ": " +
+                            e.InnerException.Message,
+                            e);
                     }
 
                     continue;
@@ -523,17 +648,25 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                 // find the field annotated with {@link @GraphOpProperty}
                 foreach (var annotatedField in annotatedFields) {
                     var anno = (DataFlowOpParameterAttribute) TypeHelper.GetAnnotations(
-                        typeof(DataFlowOpParameterAttribute), annotatedField.UnwrapAttributes())[0];
+                        typeof(DataFlowOpParameterAttribute),
+                        annotatedField.UnwrapAttributes())[0];
                     if (anno.Name.Equals(propertyName) || annotatedField.Name.Equals(propertyName)) {
                         var coerceProperty = CoerceProperty(
-                            propertyName, applicableClass, property.Value, annotatedField.FieldType, exprNodeOrigin,
-                            exprValidationContext, true, true);
+                            propertyName,
+                            applicableClass,
+                            property.Value,
+                            annotatedField.FieldType,
+                            exprNodeOrigin,
+                            exprValidationContext,
+                            true,
+                            true);
                         try {
                             annotatedField.SetValue(top, coerceProperty);
                         }
                         catch (Exception e) {
                             throw new ExprValidationException(
-                                "Failed to set field '" + annotatedField.Name + "': " + e.Message, e);
+                                "Failed to set field '" + annotatedField.Name + "': " + e.Message,
+                                e);
                         }
 
                         found = true;
@@ -581,7 +714,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
 
         private static string GetMessageExceptionInstantiating(Type clazz)
         {
-            return "Exception instantiating class " + clazz.Name +
+            return "Exception instantiating class " +
+                   clazz.Name +
                    ", please make sure the class has a public no-arg constructor (and for inner classes is declared static)";
         }
     }

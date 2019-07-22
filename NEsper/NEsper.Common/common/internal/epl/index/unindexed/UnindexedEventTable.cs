@@ -9,6 +9,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.index.@base;
@@ -42,7 +43,12 @@ namespace com.espertech.esper.common.@internal.epl.index.unindexed
         public int NumKeys => 0;
 
         public EventTableOrganization Organization => new EventTableOrganization(
-            null, false, false, streamNum, null, EventTableOrganizationType.UNORGANIZED);
+            null,
+            false,
+            false,
+            streamNum,
+            null,
+            EventTableOrganizationType.UNORGANIZED);
 
         public override string ToString()
         {

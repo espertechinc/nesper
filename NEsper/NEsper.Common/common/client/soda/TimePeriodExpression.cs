@@ -8,6 +8,7 @@
 
 using System;
 using System.IO;
+
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
@@ -92,7 +93,16 @@ namespace com.espertech.esper.common.client.soda
             Expression millisecondsExpr,
             Expression microsecondsExpr)
         {
-            AddExpr(yearsExpr, monthsExpr, weeksExpr, daysExpr, hoursExpr, minutesExpr, secondsExpr, millisecondsExpr, microsecondsExpr);
+            AddExpr(
+                yearsExpr,
+                monthsExpr,
+                weeksExpr,
+                daysExpr,
+                hoursExpr,
+                minutesExpr,
+                secondsExpr,
+                millisecondsExpr,
+                microsecondsExpr);
         }
 
         /// <summary>
@@ -157,7 +167,16 @@ namespace com.espertech.esper.common.client.soda
             Expression minutesExpr,
             Expression secondsExpr,
             Expression millisecondsExpr)
-            : this(yearsExpr, monthsExpr, weeksExpr, daysExpr, hoursExpr, minutesExpr, secondsExpr, millisecondsExpr, null)
+            : this(
+                yearsExpr,
+                monthsExpr,
+                weeksExpr,
+                daysExpr,
+                hoursExpr,
+                minutesExpr,
+                secondsExpr,
+                millisecondsExpr,
+                null)
         {
         }
 

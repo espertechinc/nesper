@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -15,6 +16,7 @@ using com.espertech.esper.common.@internal.context.aifactory.@select;
 using com.espertech.esper.common.@internal.context.module;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.@join.queryplan;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.join.@base
@@ -60,11 +62,15 @@ namespace com.espertech.esper.common.@internal.epl.join.@base
         {
             method.Block
                 .SetProperty(Ref("impl"), "QueryPlan", queryPlan.Make(method, symbols, classScope))
-                .SetProperty(Ref("impl"), "StreamJoinAnalysisResult",
+                .SetProperty(
+                    Ref("impl"),
+                    "StreamJoinAnalysisResult",
                     streamJoinAnalysisResult.Make(method, symbols, classScope))
                 .SetProperty(Ref("impl"), "StreamNames", Constant(streamNames))
                 .SetProperty(Ref("impl"), "JoinRemoveStream", Constant(joinRemoveStream))
-                .SetProperty(Ref("impl"), "EventTableIndexService",
+                .SetProperty(
+                    Ref("impl"),
+                    "EventTableIndexService",
                     ExprDotMethodChain(symbols.GetAddInitSvc(method))
                         .Add(EPStatementInitServicesConstants.GETEVENTTABLEINDEXSERVICE))
                 .SetProperty(Ref("impl"), "HasHistorical", Constant(hasHistorical));

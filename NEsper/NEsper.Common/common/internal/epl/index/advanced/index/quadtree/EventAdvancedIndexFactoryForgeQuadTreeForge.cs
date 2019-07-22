@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -27,7 +28,10 @@ namespace com.espertech.esper.common.@internal.epl.index.advanced.index.quadtree
             EventTableOrganization organization,
             EventAdvancedIndexConfigStatementForge advancedIndexConfigStatement)
         {
-            return AdvancedIndexFactoryProviderQuadTree.ConfigureQuadTree(organization.IndexName, parameters, exprEvaluatorContext);
+            return AdvancedIndexFactoryProviderQuadTree.ConfigureQuadTree(
+                organization.IndexName,
+                parameters,
+                exprEvaluatorContext);
         }
 
         public SubordTableLookupStrategyFactoryQuadTreeForge GetSubordinateLookupStrategy(
@@ -47,7 +51,13 @@ namespace com.espertech.esper.common.@internal.epl.index.advanced.index.quadtree
 
             LookupStrategyDesc lookupStrategyDesc = new LookupStrategyDesc(LookupStrategyType.ADVANCED, expressions);
             return new SubordTableLookupStrategyFactoryQuadTreeForge(
-                x, y, width, height, isNWOnTrigger, numOuterstreams, lookupStrategyDesc);
+                x,
+                y,
+                width,
+                height,
+                isNWOnTrigger,
+                numOuterstreams,
+                lookupStrategyDesc);
         }
 
         public abstract EventAdvancedIndexFactory RuntimeFactory { get; }

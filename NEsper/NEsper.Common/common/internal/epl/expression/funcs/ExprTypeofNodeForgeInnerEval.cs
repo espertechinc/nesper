@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -14,6 +15,7 @@ using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.metrics.instrumentation;
 using com.espertech.esper.common.@internal.util;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.expression.funcs
@@ -40,7 +42,13 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
             CodegenClassScope codegenClassScope)
         {
             return new InstrumentationBuilderExpr(
-                GetType(), this, "ExprTypeof", requiredType, codegenMethodScope, exprSymbol, codegenClassScope).Build();
+                GetType(),
+                this,
+                "ExprTypeof",
+                requiredType,
+                codegenMethodScope,
+                exprSymbol,
+                codegenClassScope).Build();
         }
 
         public override CodegenExpression EvaluateCodegenUninstrumented(
@@ -50,10 +58,12 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
             CodegenClassScope codegenClassScope)
         {
             var methodNode = codegenMethodScope.MakeChild(
-                typeof(string), typeof(ExprTypeofNodeForgeInnerEval), codegenClassScope);
+                typeof(string),
+                typeof(ExprTypeofNodeForgeInnerEval),
+                codegenClassScope);
             methodNode.Block
-                .DeclareVar(
-                    typeof(object), "result",
+                .DeclareVar<object>(
+                    "result",
                     parent.ChildNodes[0].Forge.EvaluateCodegen(requiredType, methodNode, exprSymbol, codegenClassScope))
                 .IfRefNullReturnNull("result")
                 .MethodReturn(ExprDotMethodChain(Ref("result")).Add("getClass").Add("getSimpleName"));

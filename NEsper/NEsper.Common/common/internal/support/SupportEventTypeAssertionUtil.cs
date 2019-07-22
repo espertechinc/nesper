@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Xml;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.@internal.util;
@@ -301,7 +302,9 @@ namespace com.espertech.esper.common.@internal.support
                         else {
                             ScopeTestHelper.AssertTrue(
                                 failedMessage,
-                                TypeHelper.IsSubclassOrImplementsInterface(resultGet.GetType(), properties[i].PropertyType.GetBoxedType()));
+                                TypeHelper.IsSubclassOrImplementsInterface(
+                                    resultGet.GetType(),
+                                    properties[i].PropertyType.GetBoxedType()));
                         }
                     }
                 }
@@ -388,7 +391,10 @@ namespace com.espertech.esper.common.@internal.support
                 // test properties that can simply be in a property expression
                 if (!properties[i].IsRequiresIndex && !properties[i].IsRequiresMapKey) {
                     ScopeTestHelper.AssertTrue(failedMessage, eventType.IsProperty(propertyName));
-                    ScopeTestHelper.AssertSame(failedMessage, eventType.GetPropertyType(propertyName), properties[i].PropertyType);
+                    ScopeTestHelper.AssertSame(
+                        failedMessage,
+                        eventType.GetPropertyType(propertyName),
+                        properties[i].PropertyType);
                     ScopeTestHelper.AssertNotNull(failedMessage, eventType.GetGetter(propertyName));
                 }
 
@@ -486,7 +492,10 @@ namespace com.espertech.esper.common.@internal.support
             var fragmentType = @event.EventType.GetFragmentType(propertyExpression);
             ScopeTestHelper.AssertFalse("failed for " + propertyExpression, fragmentType.IsIndexed);
             ScopeTestHelper.AssertEquals("failed for " + propertyExpression, isNative, fragmentType.IsNative);
-            ScopeTestHelper.AssertSame("failed for " + propertyExpression, fragmentBean.EventType, fragmentType.FragmentType);
+            ScopeTestHelper.AssertSame(
+                "failed for " + propertyExpression,
+                fragmentBean.EventType,
+                fragmentType.FragmentType);
             AssertConsistency(fragmentBean);
         }
 
@@ -499,7 +508,10 @@ namespace com.espertech.esper.common.@internal.support
             var fragmentType = @event.EventType.GetFragmentType(propertyExpression);
             ScopeTestHelper.AssertTrue("failed for " + propertyExpression, fragmentType.IsIndexed);
             ScopeTestHelper.AssertEquals("failed for " + propertyExpression, isNative, fragmentType.IsNative);
-            ScopeTestHelper.AssertSame("failed for " + propertyExpression, fragmentBean[0].EventType, fragmentType.FragmentType);
+            ScopeTestHelper.AssertSame(
+                "failed for " + propertyExpression,
+                fragmentBean[0].EventType,
+                fragmentType.FragmentType);
             AssertConsistency(fragmentBean[0]);
         }
     }

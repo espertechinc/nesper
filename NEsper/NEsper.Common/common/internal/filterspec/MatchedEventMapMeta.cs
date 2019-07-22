@@ -108,9 +108,8 @@ namespace com.espertech.esper.common.@internal.filterspec
             SAIFFInitializeSymbol symbols)
         {
             var method = parent.MakeChild(typeof(MatchedEventMapMeta), GetType(), classScope);
-            method.Block.DeclareVar(typeof(string[]), "tagsPerIndex", Constant(TagsPerIndex))
-                .DeclareVar(
-                    typeof(EventType[]),
+            method.Block.DeclareVar<string[]>("tagsPerIndex", Constant(TagsPerIndex))
+                .DeclareVar<EventType[]>(
                     "eventTypes",
                     EventTypeUtility.ResolveTypeArrayCodegen(EventTypes, symbols.GetAddInitSvc(method)))
                 .MethodReturn(

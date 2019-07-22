@@ -7,12 +7,14 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.metrics.instrumentation;
 using com.espertech.esper.common.@internal.util;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.expression.ops
@@ -40,7 +42,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                 var lhs = ForgeRenderable.ChildNodes[0];
                 var rhs = ForgeRenderable.ChildNodes[1];
                 return new ExprEqualsNodeForgeCoercionEval(
-                    ForgeRenderable, lhs.Forge.ExprEvaluator, rhs.Forge.ExprEvaluator, NumberCoercerLHS, NumberCoercerRHS);
+                    ForgeRenderable,
+                    lhs.Forge.ExprEvaluator,
+                    rhs.Forge.ExprEvaluator,
+                    NumberCoercerLHS,
+                    NumberCoercerRHS);
             }
         }
 
@@ -53,7 +59,12 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             var lhs = ForgeRenderable.ChildNodes[0];
             var rhs = ForgeRenderable.ChildNodes[1];
             var method = ExprEqualsNodeForgeCoercionEval.Codegen(
-                this, codegenMethodScope, exprSymbol, codegenClassScope, lhs, rhs);
+                this,
+                codegenMethodScope,
+                exprSymbol,
+                codegenClassScope,
+                lhs,
+                rhs);
             return LocalMethod(method);
         }
 
@@ -64,8 +75,13 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             CodegenClassScope codegenClassScope)
         {
             return new InstrumentationBuilderExpr(
-                GetType(), this, ForgeRenderable.IsIs ? "ExprIs" : "ExprEquals", requiredType, codegenMethodScope,
-                exprSymbol, codegenClassScope).Build();
+                GetType(),
+                this,
+                ForgeRenderable.IsIs ? "ExprIs" : "ExprEquals",
+                requiredType,
+                codegenMethodScope,
+                exprSymbol,
+                codegenClassScope).Build();
         }
     }
 } // end of namespace

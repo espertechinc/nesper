@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.core;
@@ -15,6 +16,7 @@ using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.context.module;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.compat;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.expression.core
@@ -49,13 +51,15 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             CodegenClassScope classScope)
         {
             var method = parent.MakeChild(
-                typeof(ExprFilterSpecLookupable), typeof(ExprFilterSpecLookupableForge), classScope);
+                typeof(ExprFilterSpecLookupable),
+                typeof(ExprFilterSpecLookupableForge),
+                classScope);
             CodegenExpression getterExpr;
             if (optionalEventPropForge != null) {
                 var anonymous = NewAnonymousClass(method.Block, typeof(EventPropertyValueGetter));
                 var get = CodegenMethod.MakeParentNode(typeof(object), GetType(), classScope)
                     .AddParam(CodegenNamedParam.From(typeof(EventBean), "bean"));
-                anonymous.AddMethod("get", get);
+                anonymous.AddMethod("Get", get);
                 get.Block.MethodReturn(optionalEventPropForge.EventBeanGetCodegen(Ref("bean"), method, classScope));
                 getterExpr = anonymous;
             }
@@ -63,17 +67,23 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                 getterExpr = ConstantNull();
             }
 
-            method.Block.DeclareVar(typeof(EventPropertyValueGetter), "getter", getterExpr);
+            method.Block.DeclareVar<EventPropertyValueGetter>("getter", getterExpr);
 
             method.Block
-                .DeclareVar(
-                    typeof(ExprFilterSpecLookupable), "lookupable", NewInstance<ExprFilterSpecLookupable>(
-                        Constant(expression), Ref("getter"), EnumValue(returnType, "class"),
+                .DeclareVar<ExprFilterSpecLookupable>(
+                    "lookupable",
+                    NewInstance<ExprFilterSpecLookupable>(
+                        Constant(expression),
+                        Ref("getter"),
+                        EnumValue(returnType, "class"),
                         Constant(isNonPropertyGetter)))
                 .Expression(
                     ExprDotMethodChain(symbols.GetAddInitSvc(method))
-                        .Add(EPStatementInitServicesConstants.GETFILTERSHAREDLOOKUPABLEREGISTERY).Add(
-                            "registerLookupable", symbols.GetAddEventType(method), Ref("lookupable")))
+                        .Add(EPStatementInitServicesConstants.GETFILTERSHAREDLOOKUPABLEREGISTERY)
+                        .Add(
+                            "registerLookupable",
+                            symbols.GetAddEventType(method),
+                            Ref("lookupable")))
                 .MethodReturn(Ref("lookupable"));
             return method;
         }

@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.index.hash;
@@ -52,7 +53,11 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.inkeyword
             instrumentationCommon.QIndexJoinLookup(this, indexes[0]);
 
             eventsPerStream[factory.LookupStream] = theEvent;
-            ISet<EventBean> result = InKeywordTableLookupUtil.MultiIndexLookup(factory.KeyExpr, eventsPerStream, exprEvaluatorContext, indexes);
+            ISet<EventBean> result = InKeywordTableLookupUtil.MultiIndexLookup(
+                factory.KeyExpr,
+                eventsPerStream,
+                exprEvaluatorContext,
+                indexes);
 
             instrumentationCommon.AIndexJoinLookup(result, null);
 

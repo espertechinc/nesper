@@ -9,6 +9,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.epl.index.@base;
@@ -54,8 +55,13 @@ namespace com.espertech.esper.common.@internal.epl.historical.indexingstrategy
         public void Init()
         {
             Factory = new PropertyCompositeEventTableFactory(
-                StreamNum, OptionalKeyedProps, OptKeyCoercedTypes, HashGetter,
-                RangeProps, OptRangeCoercedTypes, RangeGetters);
+                StreamNum,
+                OptionalKeyedProps,
+                OptKeyCoercedTypes,
+                HashGetter,
+                RangeProps,
+                OptRangeCoercedTypes,
+                RangeGetters);
         }
     }
 } // end of namespace

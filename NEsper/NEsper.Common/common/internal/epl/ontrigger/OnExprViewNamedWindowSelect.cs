@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.compile.stage1.spec;
@@ -56,7 +57,9 @@ namespace com.espertech.esper.common.@internal.epl.ontrigger
             EventBean[] matchingEvents)
         {
             agentInstanceContext.InstrumentationProvider.QInfraOnAction(
-                OnTriggerType.ON_SELECT, triggerEvents, matchingEvents);
+                OnTriggerType.ON_SELECT,
+                triggerEvents,
+                matchingEvents);
 
             // clear state from prior results
             resultSetProcessor.Clear();
@@ -71,7 +74,11 @@ namespace com.espertech.esper.common.@internal.epl.ontrigger
 
             // handle distinct and insert
             newData = InfraOnSelectUtil.HandleDistintAndInsert(
-                newData, parent, agentInstanceContext, tableInstanceInsertInto, audit);
+                newData,
+                parent,
+                agentInstanceContext,
+                tableInstanceInsertInto,
+                audit);
 
             // The on-select listeners receive the events selected
             if (newData != null && newData.Length > 0) {

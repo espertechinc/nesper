@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.epl.expression.core;
@@ -189,17 +190,27 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
                 for (var i = 1; i < childMapTypes.Count; i++) {
                     var other = childMapTypes[i];
                     var messageEquals = BaseNestableEventType.IsDeepEqualsProperties(
-                        "Case-when number " + i, mapResultType, other);
+                        "Case-when number " + i,
+                        mapResultType,
+                        other);
                     if (messageEquals != null) {
                         throw new ExprValidationException(
-                            "Incompatible case-when return types by new-operator in case-when number " + i + ": " +
-                            messageEquals.Message, messageEquals);
+                            "Incompatible case-when return types by new-operator in case-when number " +
+                            i +
+                            ": " +
+                            messageEquals.Message,
+                            messageEquals);
                     }
                 }
             }
 
             forge = new ExprCaseNodeForge(
-                this, resultType, mapResultType, isNumericResult, mustCoerce, coercer,
+                this,
+                resultType,
+                mapResultType,
+                isNumericResult,
+                mustCoerce,
+                coercer,
                 analysis.WhenThenNodeList,
                 analysis.OptionalCompareExprNode,
                 analysis.OptionalElseExprNode);

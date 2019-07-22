@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.context.controller.core;
@@ -52,7 +53,9 @@ namespace com.espertech.esper.common.@internal.context.controller.hash
 
                 if (optionalTriggeringEvent != null) {
                     bool match = AgentInstanceUtil.EvaluateFilterForStatement(
-                        optionalTriggeringEvent, realization.AgentInstanceContextCreate, filterEntries[i].FilterHandle);
+                        optionalTriggeringEvent,
+                        realization.AgentInstanceContextCreate,
+                        filterEntries[i].FilterHandle);
 
                     if (match) {
                         MatchFound(item, optionalTriggeringEvent, path);
@@ -101,13 +104,20 @@ namespace com.espertech.esper.common.@internal.context.controller.hash
 
             object[] parentPartitionKeys = hashSvc.MgmtGetParentPartitionKeys(controllerPath);
             ContextPartitionInstantiationResult result = realization.ContextPartitionInstantiate(
-                controllerPath, value, this, theEvent, null, parentPartitionKeys, value);
+                controllerPath,
+                value,
+                this,
+                theEvent,
+                null,
+                parentPartitionKeys,
+                value);
             int subpathIdOrCPId = result.SubpathOrCPId;
             hashSvc.HashAddPartition(controllerPath, value, subpathIdOrCPId);
 
             // update the filter version for this handle
             long filterVersion = realization.AgentInstanceContextCreate.FilterService.FiltersVersion;
-            realization.AgentInstanceContextCreate.EpStatementAgentInstanceHandle.StatementFilterVersion.StmtFilterVersion = filterVersion;
+            realization.AgentInstanceContextCreate.EpStatementAgentInstanceHandle.StatementFilterVersion
+                .StmtFilterVersion = filterVersion;
         }
 
         protected override void VisitPartitions(

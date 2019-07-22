@@ -12,6 +12,7 @@ using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.epl.resultset.@select.core;
 using com.espertech.esper.common.@internal.@event.core;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.contained
@@ -40,12 +41,18 @@ namespace com.espertech.esper.common.@internal.epl.contained
         {
             var method = parent.MakeChild(typeof(PropertyEvaluatorSelect), GetType(), classScope);
             var processor = SelectExprProcessorUtil.MakeAnonymous(
-                selectExprProcessor.Forge, method, symbols.GetAddInitSvc(method), classScope);
+                selectExprProcessor.Forge,
+                method,
+                symbols.GetAddInitSvc(method),
+                classScope);
             method.Block
-                .DeclareVar(typeof(PropertyEvaluatorSelect), "pe", NewInstance(typeof(PropertyEvaluatorSelect)))
-                .SetProperty(Ref("pe"), "ResultEventType",
+                .DeclareVar<PropertyEvaluatorSelect>("pe", NewInstance(typeof(PropertyEvaluatorSelect)))
+                .SetProperty(
+                    Ref("pe"),
+                    "ResultEventType",
                     EventTypeUtility.ResolveTypeCodegen(
-                        selectExprProcessor.Forge.ResultEventType, symbols.GetAddInitSvc(method)))
+                        selectExprProcessor.Forge.ResultEventType,
+                        symbols.GetAddInitSvc(method)))
                 .SetProperty(Ref("pe"), "Accumulative", accumulative.Make(method, symbols, classScope))
                 .SetProperty(Ref("pe"), "SelectExprProcessor", processor)
                 .MethodReturn(Ref("pe"));

@@ -11,6 +11,7 @@ using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.expression.ops
@@ -67,35 +68,49 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             var isNot = forge.ForgeRenderable.IsNotBetween;
 
             var methodNode = codegenMethodScope.MakeChild(
-                typeof(bool?), typeof(ExprBetweenNodeForgeEval), codegenClassScope);
+                typeof(bool?),
+                typeof(ExprBetweenNodeForgeEval),
+                codegenClassScope);
             var block = methodNode.Block;
 
             var valueType = value.EvaluationType;
             block.DeclareVar(
-                valueType, "value", value.EvaluateCodegen(valueType, methodNode, exprSymbol, codegenClassScope));
+                valueType,
+                "value",
+                value.EvaluateCodegen(valueType, methodNode, exprSymbol, codegenClassScope));
             if (!valueType.IsPrimitive) {
                 block.IfRefNullReturnFalse("value");
             }
 
             var lowerType = lower.EvaluationType;
             block.DeclareVar(
-                lowerType, "lower", lower.EvaluateCodegen(lowerType, methodNode, exprSymbol, codegenClassScope));
+                lowerType,
+                "lower",
+                lower.EvaluateCodegen(lowerType, methodNode, exprSymbol, codegenClassScope));
             if (!lowerType.IsPrimitive) {
                 block.IfRefNull("lower").BlockReturn(Constant(isNot));
             }
 
             var higherType = higher.EvaluationType;
             block.DeclareVar(
-                higherType, "higher", higher.EvaluateCodegen(higherType, methodNode, exprSymbol, codegenClassScope));
+                higherType,
+                "higher",
+                higher.EvaluateCodegen(higherType, methodNode, exprSymbol, codegenClassScope));
             if (!higher.EvaluationType.IsPrimitive) {
                 block.IfRefNull("higher").BlockReturn(Constant(isNot));
             }
 
-            block.DeclareVar(
-                typeof(bool), "result",
+            block.DeclareVar<bool>(
+                "result",
                 forge.Computer.CodegenNoNullCheck(
-                    Ref("value"), value.EvaluationType, Ref("lower"), lower.EvaluationType, Ref("higher"),
-                    higher.EvaluationType, methodNode, codegenClassScope));
+                    Ref("value"),
+                    value.EvaluationType,
+                    Ref("lower"),
+                    lower.EvaluationType,
+                    Ref("higher"),
+                    higher.EvaluationType,
+                    methodNode,
+                    codegenClassScope));
             block.MethodReturn(NotOptional(forge.ForgeRenderable.IsNotBetween, Ref("result")));
             return LocalMethod(methodNode);
         }

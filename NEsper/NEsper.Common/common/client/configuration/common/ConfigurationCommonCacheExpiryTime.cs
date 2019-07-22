@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.client.util;
 
 namespace com.espertech.esper.common.client.configuration.common
@@ -57,7 +58,9 @@ namespace com.espertech.esper.common.client.configuration.common
 
         public override string ToString()
         {
-            return "ExpiryTimeCacheDesc maxAgeSeconds=" + MaxAgeSeconds + " purgeIntervalSeconds=" +
+            return "ExpiryTimeCacheDesc maxAgeSeconds=" +
+                   MaxAgeSeconds +
+                   " purgeIntervalSeconds=" +
                    PurgeIntervalSeconds;
         }
     }

@@ -8,6 +8,7 @@
 
 using System.Collections.Generic;
 using System.Linq;
+
 using com.espertech.esper.common.@internal.compile.stage1.spec;
 using com.espertech.esper.common.@internal.epl.expression.subquery;
 using com.espertech.esper.common.@internal.epl.resultset.@select.core;
@@ -24,9 +25,11 @@ namespace com.espertech.esper.common.@internal.compile.stage2
             StatementSpecRaw statementSpecRaw,
             TableCompileTimeResolver tableCompileTimeResolver)
         {
-            var hasTableAccess = statementSpecRaw.TableExpressions != null && !statementSpecRaw.TableExpressions.IsEmpty() ||
-                                 statementSpecRaw.IntoTableSpec != null;
-            hasTableAccess = hasTableAccess || IsJoinWithTable(statementSpecRaw, tableCompileTimeResolver) ||
+            var hasTableAccess =
+                statementSpecRaw.TableExpressions != null && !statementSpecRaw.TableExpressions.IsEmpty() ||
+                statementSpecRaw.IntoTableSpec != null;
+            hasTableAccess = hasTableAccess ||
+                             IsJoinWithTable(statementSpecRaw, tableCompileTimeResolver) ||
                              IsSubqueryWithTable(subselectNodes, tableCompileTimeResolver) ||
                              IsInsertIntoTable(statementSpecRaw, tableCompileTimeResolver);
             return hasTableAccess;
@@ -80,7 +83,11 @@ namespace com.espertech.esper.common.@internal.compile.stage2
                 if (raw is SelectClauseExprRawSpec) {
                     var rawExpr = (SelectClauseExprRawSpec) raw;
                     selectElements.Add(
-                        new SelectClauseExprCompiledSpec(rawExpr.SelectExpression, rawExpr.OptionalAsName, rawExpr.OptionalAsName, rawExpr.IsEvents));
+                        new SelectClauseExprCompiledSpec(
+                            rawExpr.SelectExpression,
+                            rawExpr.OptionalAsName,
+                            rawExpr.OptionalAsName,
+                            rawExpr.IsEvents));
                 }
                 else if (raw is SelectClauseStreamRawSpec) {
                     var rawExpr = (SelectClauseStreamRawSpec) raw;
@@ -124,7 +131,8 @@ namespace com.espertech.esper.common.@internal.compile.stage2
                 if (onTriggerDesc.OnTriggerType == OnTriggerType.ON_SPLITSTREAM) {
                     var split = (OnTriggerSplitStreamDesc) onTriggerDesc;
                     foreach (var stream in split.SplitStreams) {
-                        if (stream.InsertInto != null && IsTable(stream.InsertInto.EventTypeName, tableCompileTimeResolver)) {
+                        if (stream.InsertInto != null &&
+                            IsTable(stream.InsertInto.EventTypeName, tableCompileTimeResolver)) {
                             return true;
                         }
                     }
@@ -154,7 +162,8 @@ namespace com.espertech.esper.common.@internal.compile.stage2
                         }
                     }
 
-                    if (merge.OptionalInsertNoMatch != null && CheckOnTriggerMergeAction(merge.OptionalInsertNoMatch, tableCompileTimeResolver)) {
+                    if (merge.OptionalInsertNoMatch != null &&
+                        CheckOnTriggerMergeAction(merge.OptionalInsertNoMatch, tableCompileTimeResolver)) {
                         return true;
                     }
                 }
@@ -167,7 +176,9 @@ namespace com.espertech.esper.common.@internal.compile.stage2
                     faf is FireAndForgetSpecInsert ||
                     faf is FireAndForgetSpecUpdate) {
                     if (statementSpec.StreamSpecs.Count == 1) {
-                        return IsTable(((FilterStreamSpecRaw) statementSpec.StreamSpecs[0]).RawFilterSpec.EventTypeName, tableCompileTimeResolver);
+                        return IsTable(
+                            ((FilterStreamSpecRaw) statementSpec.StreamSpecs[0]).RawFilterSpec.EventTypeName,
+                            tableCompileTimeResolver);
                     }
                 }
             }

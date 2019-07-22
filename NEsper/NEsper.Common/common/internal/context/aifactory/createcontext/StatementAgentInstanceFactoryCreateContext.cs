@@ -52,13 +52,22 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createcontext
             bool isRecoveringResilient)
         {
             ContextManager manager = agentInstanceContext.ContextManagementService.GetContextManager(
-                agentInstanceContext.DeploymentId, contextName);
+                agentInstanceContext.DeploymentId,
+                contextName);
             agentInstanceContext.EpStatementAgentInstanceHandle.FilterFaultHandler = manager;
 
             ContextManagerRealization realization = manager.AllocateNewRealization(agentInstanceContext);
             return new StatementAgentInstanceFactoryCreateContextResult(
-                new ZeroDepthStreamNoIterate(StatementEventType), AgentInstanceStopCallbackConstants.INSTANCE_NO_ACTION,
-                agentInstanceContext, null, null, null, null, null, null, new EmptyList<StatementAgentInstancePreload>(),
+                new ZeroDepthStreamNoIterate(StatementEventType),
+                AgentInstanceStopCallbackConstants.INSTANCE_NO_ACTION,
+                agentInstanceContext,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                new EmptyList<StatementAgentInstancePreload>(),
                 realization);
         }
 
@@ -68,7 +77,9 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createcontext
             ContextStateEventUtil.DispatchContext(
                 listeners,
                 () => new ContextStateEventContextCreated(
-                    statementContext.RuntimeURI, statementContext.DeploymentId, contextName),
+                    statementContext.RuntimeURI,
+                    statementContext.DeploymentId,
+                    contextName),
                 (
                     listener,
                     @event) => listener.OnContextCreated(@event));
@@ -81,7 +92,8 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createcontext
             int count = manager.CountStatements(stmt => !stmt.DeploymentId.Equals(statementContext.DeploymentId));
             if (count != 0) {
                 throw new UndeployPreconditionException(
-                    "Context by name '" + contextName +
+                    "Context by name '" +
+                    contextName +
                     "' is still referenced by statements and may not be undeployed");
             }
         }
@@ -89,7 +101,9 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createcontext
         public void StatementDestroy(StatementContext statementContext)
         {
             statementContext.ContextManagementService.DestroyedContext(
-                statementContext.RuntimeURI, statementContext.DeploymentId, contextName);
+                statementContext.RuntimeURI,
+                statementContext.DeploymentId,
+                contextName);
         }
 
         public StatementAgentInstanceLock ObtainAgentInstanceLock(

@@ -8,6 +8,7 @@
 
 using System;
 using System.Numerics;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
@@ -20,6 +21,7 @@ using com.espertech.esper.common.@internal.epl.expression.time.eval;
 using com.espertech.esper.common.@internal.metrics.instrumentation;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.expression.time.node
@@ -154,7 +156,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.time.node
             CodegenClassScope codegenClassScope)
         {
             CodegenMethod methodNode = codegenMethodScope.MakeChild(
-                typeof(double), typeof(ExprTimePeriodForge), codegenClassScope);
+                typeof(double),
+                typeof(ExprTimePeriodForge),
+                codegenClassScope);
 
             string exprText = null;
             if (codegenClassScope.IsInstrumented) {
@@ -163,7 +167,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.time.node
 
             CodegenBlock block = methodNode.Block
                 .Apply(InstrumentationCode.Instblock(codegenClassScope, "qExprTimePeriod", Constant(exprText)))
-                .DeclareVar(typeof(double), "seconds", Constant(0))
+                .DeclareVar<double>("seconds", Constant(0))
                 .DeclareVarNoInit(typeof(double?), "result");
             for (int i = 0; i < ForgeRenderable.ChildNodes.Length; i++) {
                 ExprForge forge = ForgeRenderable.ChildNodes[i].Forge;
@@ -172,11 +176,15 @@ namespace com.espertech.esper.common.@internal.epl.expression.time.node
                     "result",
                     SimpleNumberCoercerFactory.CoercerDouble.CodegenDoubleMayNullBoxedIncludeBig(
                         forge.EvaluateCodegen(evaluationType, methodNode, exprSymbol, codegenClassScope),
-                        evaluationType, methodNode, codegenClassScope));
-                block.IfRefNull("result").BlockThrow(
-                    StaticMethod(
-                        typeof(ExprTimePeriodForge), "makeTimePeriodParamNullException",
-                        Constant(ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(ForgeRenderable))));
+                        evaluationType,
+                        methodNode,
+                        codegenClassScope));
+                block.IfRefNull("result")
+                    .BlockThrow(
+                        StaticMethod(
+                            typeof(ExprTimePeriodForge),
+                            "makeTimePeriodParamNullException",
+                            Constant(ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(ForgeRenderable))));
                 block.AssignRef("seconds", Op(@Ref("seconds"), "+", Adders[i].ComputeCodegen(@Ref("result"))));
             }
 
@@ -272,34 +280,95 @@ namespace com.espertech.esper.common.@internal.epl.expression.time.node
             CodegenClassScope codegenClassScope)
         {
             CodegenMethod methodNode = codegenMethodScope.MakeChild(
-                typeof(TimePeriod), typeof(ExprTimePeriodForge), codegenClassScope);
+                typeof(TimePeriod),
+                typeof(ExprTimePeriodForge),
+                codegenClassScope);
 
             CodegenBlock block = methodNode.Block;
             int counter = 0;
             counter += EvaluateGetTimePeriodCodegenField(
-                block, "year", ForgeRenderable.HasYear, counter, methodNode, exprSymbol, codegenClassScope);
+                block,
+                "year",
+                ForgeRenderable.HasYear,
+                counter,
+                methodNode,
+                exprSymbol,
+                codegenClassScope);
             counter += EvaluateGetTimePeriodCodegenField(
-                block, "month", ForgeRenderable.HasMonth, counter, methodNode, exprSymbol, codegenClassScope);
+                block,
+                "month",
+                ForgeRenderable.HasMonth,
+                counter,
+                methodNode,
+                exprSymbol,
+                codegenClassScope);
             counter += EvaluateGetTimePeriodCodegenField(
-                block, "week", ForgeRenderable.HasWeek, counter, methodNode, exprSymbol, codegenClassScope);
+                block,
+                "week",
+                ForgeRenderable.HasWeek,
+                counter,
+                methodNode,
+                exprSymbol,
+                codegenClassScope);
             counter += EvaluateGetTimePeriodCodegenField(
-                block, "day", ForgeRenderable.HasDay, counter, methodNode, exprSymbol, codegenClassScope);
+                block,
+                "day",
+                ForgeRenderable.HasDay,
+                counter,
+                methodNode,
+                exprSymbol,
+                codegenClassScope);
             counter += EvaluateGetTimePeriodCodegenField(
-                block, "hours", ForgeRenderable.HasHour, counter, methodNode, exprSymbol, codegenClassScope);
+                block,
+                "hours",
+                ForgeRenderable.HasHour,
+                counter,
+                methodNode,
+                exprSymbol,
+                codegenClassScope);
             counter += EvaluateGetTimePeriodCodegenField(
-                block, "minutes", ForgeRenderable.HasMinute, counter, methodNode, exprSymbol, codegenClassScope);
+                block,
+                "minutes",
+                ForgeRenderable.HasMinute,
+                counter,
+                methodNode,
+                exprSymbol,
+                codegenClassScope);
             counter += EvaluateGetTimePeriodCodegenField(
-                block, "seconds", ForgeRenderable.HasSecond, counter, methodNode, exprSymbol, codegenClassScope);
+                block,
+                "seconds",
+                ForgeRenderable.HasSecond,
+                counter,
+                methodNode,
+                exprSymbol,
+                codegenClassScope);
             counter += EvaluateGetTimePeriodCodegenField(
-                block, "milliseconds", ForgeRenderable.HasMillisecond, counter, methodNode, exprSymbol,
+                block,
+                "milliseconds",
+                ForgeRenderable.HasMillisecond,
+                counter,
+                methodNode,
+                exprSymbol,
                 codegenClassScope);
             EvaluateGetTimePeriodCodegenField(
-                block, "microseconds", ForgeRenderable.HasMicrosecond, counter, methodNode, exprSymbol,
+                block,
+                "microseconds",
+                ForgeRenderable.HasMicrosecond,
+                counter,
+                methodNode,
+                exprSymbol,
                 codegenClassScope);
             block.MethodReturn(
                 NewInstance<TimePeriod>(
-                    @Ref("year"), @Ref("month"), @Ref("week"), @Ref("day"), @Ref("hours"),
-                    @Ref("minutes"), @Ref("seconds"), @Ref("milliseconds"), @Ref("microseconds")));
+                    @Ref("year"),
+                    @Ref("month"),
+                    @Ref("week"),
+                    @Ref("day"),
+                    @Ref("hours"),
+                    @Ref("minutes"),
+                    @Ref("seconds"),
+                    @Ref("milliseconds"),
+                    @Ref("microseconds")));
             return LocalMethod(methodNode);
         }
 
@@ -324,17 +393,19 @@ namespace com.espertech.esper.common.@internal.epl.expression.time.node
             CodegenClassScope codegenClassScope)
         {
             if (!present) {
-                block.DeclareVar(typeof(int?), variable, ConstantNull());
+                block.DeclareVar<int?>(variable, ConstantNull());
                 return 0;
             }
 
             var forge = ForgeRenderable.ChildNodes[counter].Forge;
             var evaluationType = forge.EvaluationType;
-            block.DeclareVar(
-                typeof(int?), variable,
+            block.DeclareVar<int?>(
+                variable,
                 SimpleNumberCoercerFactory.CoercerInt.CoerceCodegenMayNull(
                     forge.EvaluateCodegen(evaluationType, codegenMethodScope, exprSymbol, codegenClassScope),
-                    forge.EvaluationType, codegenMethodScope, codegenClassScope));
+                    forge.EvaluationType,
+                    codegenMethodScope,
+                    codegenClassScope));
             return 1;
         }
 

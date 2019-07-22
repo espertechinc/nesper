@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -44,7 +45,12 @@ namespace com.espertech.esper.common.@internal.view.derived
             ViewForgeEnv viewForgeEnv)
         {
             var validated = ViewForgeSupport.Validate(
-                ViewName, parentEventType, viewParameters, true, viewForgeEnv, streamNumber);
+                ViewName,
+                parentEventType,
+                viewParameters,
+                true,
+                viewForgeEnv,
+                streamNumber);
             additionalProps = StatViewAdditionalPropsForge.Make(validated, 0, parentEventType, streamNumber);
             eventType = SizeView.CreateEventType(viewForgeEnv, additionalProps, streamNumber);
         }

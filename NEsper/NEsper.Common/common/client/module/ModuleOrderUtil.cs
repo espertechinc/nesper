@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
@@ -144,7 +145,8 @@ namespace com.espertech.esper.common.client.module
                         delimiter = " uses (depends on) ";
                     }
 
-                    throw new ModuleOrderException("Circular dependency detected in module uses-relationships: " + message);
+                    throw new ModuleOrderException(
+                        "Circular dependency detected in module uses-relationships: " + message);
                 }
             }
 

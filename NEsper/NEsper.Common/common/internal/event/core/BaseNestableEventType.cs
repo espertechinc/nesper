@@ -9,6 +9,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.meta;
 using com.espertech.esper.common.@internal.epl.expression.core;
@@ -35,11 +36,13 @@ namespace com.espertech.esper.common.@internal.@event.core
         internal EventTypeMetadata metadata;
 
         // Nestable definition of Map contents is here
-        internal IDictionary<string, object> nestableTypes; // Deep definition of the map-type, containing nested maps and objects
+        internal IDictionary<string, object>
+            nestableTypes; // Deep definition of the map-type, containing nested maps and objects
 
         internal EventPropertyDescriptor[] propertyDescriptors;
 
-        internal IDictionary<string, EventPropertyGetterSPI> propertyGetterCache; // Mapping of all property names and getters
+        internal IDictionary<string, EventPropertyGetterSPI>
+            propertyGetterCache; // Mapping of all property names and getters
 
         // Simple (not-nested) properties are stored here
         internal string[] propertyNames; // Cache an array of property names so not to construct one frequently
@@ -82,7 +85,10 @@ namespace com.espertech.esper.common.@internal.@event.core
 
             // determine property set and prepare getters
             var propertySet = EventTypeUtility.GetNestableProperties(
-                propertyTypes, beanEventTypeFactory.EventBeanTypedEventFactory, getterFactory, optionalSuperTypes,
+                propertyTypes,
+                beanEventTypeFactory.EventBeanTypedEventFactory,
+                getterFactory,
+                optionalSuperTypes,
                 beanEventTypeFactory);
 
             nestableTypes = propertySet.NestableTypes;
@@ -91,7 +97,10 @@ namespace com.espertech.esper.common.@internal.@event.core
             propertyDescriptors = propertySet.PropertyDescriptors.ToArray();
 
             var desc = EventTypeUtility.ValidatedDetermineTimestampProps(
-                this, startTimestampPropertyName, endTimestampPropertyName, optionalSuperTypes);
+                this,
+                startTimestampPropertyName,
+                endTimestampPropertyName,
+                optionalSuperTypes);
             this.startTimestampPropertyName = desc.Start;
             this.endTimestampPropertyName = desc.End;
         }
@@ -114,7 +123,10 @@ namespace com.espertech.esper.common.@internal.@event.core
         public Type GetPropertyType(string propertyName)
         {
             return EventTypeUtility.GetNestablePropertyType(
-                propertyName, propertyItems, nestableTypes, beanEventTypeFactory);
+                propertyName,
+                propertyItems,
+                nestableTypes,
+                beanEventTypeFactory);
         }
 
         public EventPropertyGetterSPI GetGetterSPI(string propertyName)
@@ -124,9 +136,14 @@ namespace com.espertech.esper.common.@internal.@event.core
             }
 
             return EventTypeUtility.GetNestableGetter(
-                propertyName, propertyItems, propertyGetterCache, nestableTypes,
-                beanEventTypeFactory.EventBeanTypedEventFactory, getterFactory,
-                metadata.ApplicationType == EventTypeApplicationType.OBJECTARR, beanEventTypeFactory);
+                propertyName,
+                propertyItems,
+                propertyGetterCache,
+                nestableTypes,
+                beanEventTypeFactory.EventBeanTypedEventFactory,
+                getterFactory,
+                metadata.ApplicationType == EventTypeApplicationType.OBJECTARR,
+                beanEventTypeFactory);
         }
 
         public EventPropertyGetter GetGetter(string propertyName)
@@ -221,7 +238,9 @@ namespace com.espertech.esper.common.@internal.@event.core
 
                     // its an array
                     return EventBeanUtility.CreateNativeFragmentType(
-                        ((Type) type).GetElementType(), null, beanEventTypeFactory);
+                        ((Type) type).GetElementType(),
+                        null,
+                        beanEventTypeFactory);
                 }
 
                 if (property is MappedProperty) {
@@ -282,7 +301,9 @@ namespace com.espertech.esper.common.@internal.@event.core
                     }
 
                     var fragmentParent = EventBeanUtility.CreateNativeFragmentType(
-                        (Type) type, null, beanEventTypeFactory);
+                        (Type) type,
+                        null,
+                        beanEventTypeFactory);
 
                     return fragmentParent?.FragmentType.GetFragmentType(propertyNested);
                 }
@@ -339,8 +360,10 @@ namespace com.espertech.esper.common.@internal.@event.core
                 return innerType.GetFragmentType(propertyNested);
             }
 
-            var message = "Nestable map type configuration encountered an unexpected value type of '"
-                          + nestedType.GetType() + " for property '" + propertyName +
+            var message = "Nestable map type configuration encountered an unexpected value type of '" +
+                          nestedType.GetType() +
+                          " for property '" +
+                          propertyName +
                           "', expected Class, Map.class or Map<String, Object> as value type";
             throw new PropertyAccessException(message);
         }
@@ -361,7 +384,10 @@ namespace com.espertech.esper.common.@internal.@event.core
 
             var mappedProperty = new MappedProperty(mappedPropertyName);
             return getterFactory.GetPropertyProvidedGetterMap(
-                nestableTypes, mappedPropertyName, mappedProperty, beanEventTypeFactory.EventBeanTypedEventFactory,
+                nestableTypes,
+                mappedPropertyName,
+                mappedProperty,
+                beanEventTypeFactory.EventBeanTypedEventFactory,
                 beanEventTypeFactory);
         }
 
@@ -374,7 +400,10 @@ namespace com.espertech.esper.common.@internal.@event.core
 
             var indexedProperty = new IndexedProperty(indexedPropertyName);
             return getterFactory.GetPropertyProvidedGetterIndexed(
-                nestableTypes, indexedPropertyName, indexedProperty, beanEventTypeFactory.EventBeanTypedEventFactory,
+                nestableTypes,
+                indexedPropertyName,
+                indexedProperty,
+                beanEventTypeFactory.EventBeanTypedEventFactory,
                 beanEventTypeFactory);
         }
 
@@ -413,8 +442,13 @@ namespace com.espertech.esper.common.@internal.@event.core
             // Should have the same number of properties
             if (setOne.Count != setTwo.Count) {
                 return new ExprValidationException(
-                    "Type by name '" + otherName + "' expects " + setOne.Count + " properties but receives " +
-                    setTwo.Count + " properties");
+                    "Type by name '" +
+                    otherName +
+                    "' expects " +
+                    setOne.Count +
+                    " properties but receives " +
+                    setTwo.Count +
+                    " properties");
             }
 
             // Compare property by property
@@ -425,7 +459,11 @@ namespace com.espertech.esper.common.@internal.@event.core
                 var setOneType = entry.Value;
 
                 var message = BaseNestableEventUtil.ComparePropType(
-                    propName, setOneType, setTwoType, setTwoTypeFound, otherName);
+                    propName,
+                    setOneType,
+                    setTwoType,
+                    setTwoTypeFound,
+                    otherName);
                 if (message != null) {
                     return message;
                 }
@@ -444,8 +482,11 @@ namespace com.espertech.esper.common.@internal.@event.core
         {
             if (!(otherType is BaseNestableEventType)) {
                 return new ExprValidationException(
-                    "Type by name '" + otherType.Name + "' is not a compatible type (target type underlying is '" +
-                    otherType.UnderlyingType.Name + "')");
+                    "Type by name '" +
+                    otherType.Name +
+                    "' is not a compatible type (target type underlying is '" +
+                    otherType.UnderlyingType.Name +
+                    "')");
             }
 
             var other = (BaseNestableEventType) otherType;

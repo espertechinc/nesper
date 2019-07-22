@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -20,6 +21,7 @@ using com.espertech.esper.common.@internal.epl.pattern.core;
 using com.espertech.esper.common.@internal.schedule;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.logging;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.pattern.observer
@@ -69,7 +71,8 @@ namespace com.espertech.esper.common.@internal.epl.pattern.observer
                 }
                 catch (ScheduleParameterException e) {
                     throw new ObserverParameterException(
-                        "Error computing crontab schedule specification: " + e.Message, e);
+                        "Error computing crontab schedule specification: " + e.Message,
+                        e);
                 }
             }
         }
@@ -84,7 +87,9 @@ namespace com.espertech.esper.common.@internal.epl.pattern.observer
             }
 
             var method = parent.MakeChild(
-                typeof(TimerAtObserverFactory), typeof(TimerIntervalObserverForge), classScope);
+                typeof(TimerAtObserverFactory),
+                typeof(TimerIntervalObserverForge),
+                classScope);
 
             CodegenExpression parametersExpr;
             CodegenExpression optionalConvertorExpr;
@@ -98,14 +103,18 @@ namespace com.espertech.esper.common.@internal.epl.pattern.observer
                 specExpr = ConstantNull();
                 optionalConvertorExpr = convertor.MakeAnonymous(method, classScope);
                 parametersExpr = ExprNodeUtilityCodegen.CodegenEvaluators(
-                    ExprNodeUtilityQuery.ToArray(parameters), method, GetType(), classScope);
+                    ExprNodeUtilityQuery.ToArray(parameters),
+                    method,
+                    GetType(),
+                    classScope);
             }
 
             method.Block
-                .DeclareVar(
-                    typeof(TimerAtObserverFactory), "factory",
+                .DeclareVar<TimerAtObserverFactory>(
+                    "factory",
                     ExprDotMethodChain(symbols.GetAddInitSvc(method))
-                        .Add(EPStatementInitServicesConstants.GETPATTERNFACTORYSERVICE).Add("observerTimerAt"))
+                        .Add(EPStatementInitServicesConstants.GETPATTERNFACTORYSERVICE)
+                        .Add("observerTimerAt"))
                 .SetProperty(Ref("factory"), "ScheduleCallbackId", Constant(scheduleCallbackId))
                 .SetProperty(Ref("factory"), "Parameters", parametersExpr)
                 .SetProperty(Ref("factory"), "OptionalConvertor", optionalConvertorExpr)

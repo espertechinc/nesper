@@ -112,11 +112,11 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             public void Run(RegressionEnvironment env)
             {
                 // Every event generates a new row, this time we sum the price by symbol and output volume
-                var epl = "@Name('s0') select irstream Symbol, Volume, sum(price) as mySum " +
+                var epl = "@Name('s0') select irstream Symbol, Volume, sum(Price) as mySum " +
                           "from SupportMarketDataBean#length(3) " +
                           "where Symbol='DELL' or Symbol='IBM' or Symbol='GE' " +
                           "group by Symbol " +
-                          "having sum(price) >= 50";
+                          "having sum(Price) >= 50";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 TryAssertionSum(env);
@@ -130,13 +130,13 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             public void Run(RegressionEnvironment env)
             {
                 // Every event generates a new row, this time we sum the price by symbol and output volume
-                var epl = "@Name('s0') select irstream Symbol, Volume, sum(price) as mySum " +
+                var epl = "@Name('s0') select irstream Symbol, Volume, sum(Price) as mySum " +
                           "from SupportBeanString#length(100) as one, " +
                           "SupportMarketDataBean#length(3) as two " +
                           "where (Symbol='DELL' or Symbol='IBM' or Symbol='GE') " +
                           "  and one.TheString = two.Symbol " +
                           "group by Symbol " +
-                          "having sum(price) >= 50";
+                          "having sum(Price) >= 50";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 env.SendEventBean(new SupportBeanString(SYMBOL_DELL));

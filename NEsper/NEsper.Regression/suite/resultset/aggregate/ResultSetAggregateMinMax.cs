@@ -151,9 +151,9 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
         {
             public void Run(RegressionEnvironment env)
             {
-                var statementText = "@Name('s0') select price, min(price) as minPrice " +
+                var statementText = "@Name('s0') select Price, min(Price) as minPrice " +
                                     "from SupportMarketDataBean#time(30)" +
-                                    "having price >= min(price) * (1.02)";
+                                    "having Price >= min(Price) * (1.02)";
 
                 env.CompileDeploy(statementText).AddListener("s0");
 

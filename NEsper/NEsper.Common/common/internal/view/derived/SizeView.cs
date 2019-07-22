@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.view.core;
@@ -75,8 +76,11 @@ namespace com.espertech.esper.common.@internal.view.derived
                     }
 
                     for (var val = 0; val < additionalEvals.Length; val++) {
-                        lastValuesEventNew[val] = additionalEvals[val].Evaluate(
-                            new[] {newData[newData.Length - 1]}, true, agentInstanceContext);
+                        lastValuesEventNew[val] = additionalEvals[val]
+                            .Evaluate(
+                                new[] {newData[newData.Length - 1]},
+                                true,
+                                agentInstanceContext);
                     }
                 }
             }
@@ -137,7 +141,9 @@ namespace com.espertech.esper.common.@internal.view.derived
             var schemaMap = new LinkedHashMap<string, object>();
             schemaMap.Put(ViewFieldEnum.SIZE_VIEW__SIZE.GetName(), typeof(long));
             StatViewAdditionalPropsForge.AddCheckDupProperties(
-                schemaMap, additionalProps, ViewFieldEnum.SIZE_VIEW__SIZE);
+                schemaMap,
+                additionalProps,
+                ViewFieldEnum.SIZE_VIEW__SIZE);
             return DerivedViewTypeUtil.NewType("sizeview", schemaMap, env, streamNum);
         }
 

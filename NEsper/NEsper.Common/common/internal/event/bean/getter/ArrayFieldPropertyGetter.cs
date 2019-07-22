@@ -8,6 +8,7 @@
 
 using System;
 using System.Reflection;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -15,8 +16,10 @@ using com.espertech.esper.common.@internal.@event.bean.core;
 using com.espertech.esper.common.@internal.@event.bean.service;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.@event.util;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
-using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionRelational.CodegenRelational;
+using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionRelational.
+    CodegenRelational;
 
 namespace com.espertech.esper.common.@internal.@event.bean.getter
 {
@@ -27,8 +30,8 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
         BeanEventPropertyGetter,
         EventPropertyGetterAndIndexed
     {
-        private readonly FieldInfo field;
-        private readonly int index;
+        private readonly FieldInfo _field;
+        private readonly int _index;
 
         public ArrayFieldPropertyGetter(
             FieldInfo field,
@@ -36,10 +39,13 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
             EventBeanTypedEventFactory eventBeanTypedEventFactory,
             BeanEventTypeFactory beanEventTypeFactory)
             : base(
-                eventBeanTypedEventFactory, beanEventTypeFactory, field.FieldType.GetElementType(), null)
+                eventBeanTypedEventFactory,
+                beanEventTypeFactory,
+                field.FieldType.GetElementType(),
+                null)
         {
-            this.index = index;
-            this.field = field;
+            _index = index;
+            _field = field;
 
             if (index < 0) {
                 throw new ArgumentException("Invalid negative index value");
@@ -48,7 +54,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
 
         public object GetBeanProp(object @object)
         {
-            return GetBeanPropInternal(@object, index);
+            return GetBeanPropInternal(@object, _index);
         }
 
         public bool IsBeanExistsProperty(object @object)
@@ -61,14 +67,14 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
             return GetBeanProp(obj.Underlying);
         }
 
-        public override Type BeanPropType => field.FieldType.GetElementType();
+        public override Type BeanPropType => _field.FieldType.GetElementType();
 
         public override bool IsExistsProperty(EventBean eventBean)
         {
             return true; // Property exists as the property is not dynamic (unchecked)
         }
 
-        public override Type TargetType => field.DeclaringType;
+        public override Type TargetType => _field.DeclaringType;
 
         public override CodegenExpression EventBeanGetCodegen(
             CodegenExpression beanExpression,
@@ -76,7 +82,9 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
             CodegenClassScope codegenClassScope)
         {
             return UnderlyingGetCodegen(
-                CastUnderlying(TargetType, beanExpression), codegenMethodScope, codegenClassScope);
+                CastUnderlying(TargetType, beanExpression),
+                codegenMethodScope,
+                codegenClassScope);
         }
 
         public override CodegenExpression EventBeanExistsCodegen(
@@ -93,8 +101,9 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
             CodegenClassScope codegenClassScope)
         {
             return LocalMethod(
-                GetBeanPropInternalCodegen(codegenMethodScope, codegenClassScope), underlyingExpression,
-                Constant(index));
+                GetBeanPropInternalCodegen(codegenMethodScope, codegenClassScope),
+                underlyingExpression,
+                Constant(_index));
         }
 
         public override CodegenExpression UnderlyingExistsCodegen(
@@ -117,7 +126,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
             int index)
         {
             try {
-                var value = (Array) field.GetValue(@object);
+                var value = (Array) _field.GetValue(@object);
                 if (value.Length <= index) {
                     return null;
                 }
@@ -125,7 +134,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
                 return value.GetValue(index);
             }
             catch (InvalidCastException e) {
-                throw PropertyUtility.GetMismatchException(field, @object, e);
+                throw PropertyUtility.GetMismatchException(_field, @object, e);
             }
         }
 
@@ -134,18 +143,23 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
             CodegenClassScope codegenClassScope)
         {
             return codegenMethodScope.MakeChild(BeanPropType, GetType(), codegenClassScope)
-                .AddParam(TargetType, "object").AddParam(typeof(int), "index").Block
-                .DeclareVar(typeof(object), "value", ExprDotName(Ref("object"), field.Name))
+                .AddParam(TargetType, "object")
+                .AddParam(typeof(int), "index")
+                .Block
+                .DeclareVar<object>("value", ExprDotName(Ref("object"), _field.Name))
                 .IfConditionReturnConst(
-                    Relational(StaticMethod(typeof(Array), "getLength", Ref("value")), LE, Ref("index")), null)
+                    Relational(StaticMethod(typeof(Array), "getLength", Ref("value")), LE, Ref("index")),
+                    null)
                 .MethodReturn(Cast(BeanPropType, StaticMethod(typeof(Array), "get", Ref("value"), Ref("index"))));
         }
 
         public override string ToString()
         {
             return "ArrayFieldPropertyGetter " +
-                   " field=" + field +
-                   " index=" + index;
+                   " field=" +
+                   _field +
+                   " index=" +
+                   _index;
         }
 
         public CodegenExpression EventBeanGetIndexedCodegen(
@@ -156,7 +170,8 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
         {
             return LocalMethod(
                 GetBeanPropInternalCodegen(codegenMethodScope, codegenClassScope),
-                CastUnderlying(TargetType, beanExpression), key);
+                CastUnderlying(TargetType, beanExpression),
+                key);
         }
     }
 } // end of namespace

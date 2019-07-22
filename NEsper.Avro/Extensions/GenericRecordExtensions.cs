@@ -19,7 +19,9 @@ namespace NEsper.Avro.Extensions
         /// <param name="record">The record.</param>
         /// <param name="fieldName">The field name.</param>
         /// <returns></returns>
-        public static object Get(this GenericRecord record, string fieldName)
+        public static object Get(
+            this GenericRecord record,
+            string fieldName)
         {
             object value;
             record.TryGetValue(fieldName, out value);
@@ -32,7 +34,9 @@ namespace NEsper.Avro.Extensions
         /// <param name="record">The record.</param>
         /// <param name="field">The field.</param>
         /// <returns></returns>
-        public static object Get(this GenericRecord record, Field field)
+        public static object Get(
+            this GenericRecord record,
+            Field field)
         {
             object value;
             record.TryGetValue(field.Name, out value);
@@ -45,7 +49,10 @@ namespace NEsper.Avro.Extensions
         /// <param name="record">The record.</param>
         /// <param name="field">The field.</param>
         /// <param name="value">The value.</param>
-        public static void Put(this GenericRecord record, Field field, object value)
+        public static void Put(
+            this GenericRecord record,
+            Field field,
+            object value)
         {
             record.Add(field.Name, value);
         }
@@ -56,7 +63,10 @@ namespace NEsper.Avro.Extensions
         /// <param name="record">The record.</param>
         /// <param name="name">The field name.</param>
         /// <param name="value">The value.</param>
-        public static void Put(this GenericRecord record, string name, object value)
+        public static void Put(
+            this GenericRecord record,
+            string name,
+            object value)
         {
             record.Add(name, value);
         }

@@ -12,6 +12,7 @@ using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.lookup;
 using com.espertech.esper.common.@internal.epl.lookupplansubord;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.lookupsubord
@@ -37,15 +38,16 @@ namespace com.espertech.esper.common.@internal.epl.lookupsubord
         {
             var method = parent.MakeChild(typeof(SubordWMatchExprLookupStrategyFactory), GetType(), classScope);
             method.Block
-                .DeclareVar(
-                    typeof(ExprEvaluator), "eval",
+                .DeclareVar<ExprEvaluator>(
+                    "eval",
                     ExprNodeUtilityCodegen.CodegenEvaluatorNoCoerce(exprForge, method, GetType(), classScope))
-                .DeclareVar(
-                    typeof(SubordTableLookupStrategyFactory), "lookup",
+                .DeclareVar<SubordTableLookupStrategyFactory>(
+                    "lookup",
                     OptionalInnerStrategy.Make(method, symbols, classScope))
                 .MethodReturn(
                     NewInstance<SubordWMatchExprLookupStrategyIndexedFilteredFactory>(
-                        Ref("eval"), Ref("lookup")));
+                        Ref("eval"),
+                        Ref("lookup")));
             return LocalMethod(method);
         }
 

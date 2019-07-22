@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.epl.expression.agg.@base;
@@ -149,7 +150,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                 if (pair is ExprNodePropOrStreamPropDesc) {
                     ExprNodePropOrStreamPropDesc propDesc = (ExprNodePropOrStreamPropDesc) pair;
                     EventType originType = types.Length > pair.StreamNum ? types[pair.StreamNum] : null;
-                    if (originType == null || contextPropertyRegistry == null ||
+                    if (originType == null ||
+                        contextPropertyRegistry == null ||
                         !contextPropertyRegistry.IsPartitionProperty(originType, propDesc.PropertyName)) {
                         nonAggProps.Add(pair);
                     }

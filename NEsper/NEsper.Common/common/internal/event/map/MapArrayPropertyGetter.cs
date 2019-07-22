@@ -7,12 +7,14 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.context.module;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.compat.collections;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.@event.map
@@ -79,7 +81,10 @@ namespace com.espertech.esper.common.@internal.@event.map
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            return UnderlyingGetCodegen(CastUnderlying(typeof(IDictionary<object, object>), beanExpression), codegenMethodScope, codegenClassScope);
+            return UnderlyingGetCodegen(
+                CastUnderlying(typeof(IDictionary<object, object>), beanExpression),
+                codegenMethodScope,
+                codegenClassScope);
         }
 
         public CodegenExpression EventBeanExistsCodegen(
@@ -96,7 +101,9 @@ namespace com.espertech.esper.common.@internal.@event.map
             CodegenClassScope codegenClassScope)
         {
             return UnderlyingFragmentCodegen(
-                CastUnderlying(typeof(IDictionary<object, object>), beanExpression), codegenMethodScope, codegenClassScope);
+                CastUnderlying(typeof(IDictionary<object, object>), beanExpression),
+                codegenMethodScope,
+                codegenClassScope);
         }
 
         public CodegenExpression UnderlyingGetCodegen(
@@ -104,7 +111,10 @@ namespace com.espertech.esper.common.@internal.@event.map
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            return LocalMethod(GetMapInternalCodegen(codegenMethodScope, codegenClassScope), underlyingExpression, Constant(index));
+            return LocalMethod(
+                GetMapInternalCodegen(codegenMethodScope, codegenClassScope),
+                underlyingExpression,
+                Constant(index));
         }
 
         public CodegenExpression UnderlyingExistsCodegen(
@@ -138,7 +148,8 @@ namespace com.espertech.esper.common.@internal.@event.map
             CodegenExpression key)
         {
             return LocalMethod(
-                GetMapInternalCodegen(codegenMethodScope, codegenClassScope), CastUnderlying(typeof(IDictionary<object, object>), beanExpression),
+                GetMapInternalCodegen(codegenMethodScope, codegenClassScope),
+                CastUnderlying(typeof(IDictionary<object, object>), beanExpression),
                 key);
         }
 
@@ -155,9 +166,16 @@ namespace com.espertech.esper.common.@internal.@event.map
             CodegenClassScope codegenClassScope)
         {
             return codegenMethodScope.MakeChild(typeof(object), GetType(), codegenClassScope)
-                .AddParam(typeof(IDictionary<object, object>), "map").AddParam(typeof(int), "index").Block
-                .DeclareVar(typeof(object), "value", ExprDotMethod(Ref("map"), "get", Constant(propertyName)))
-                .MethodReturn(StaticMethod(typeof(BaseNestableEventUtil), "getBNArrayValueAtIndexWithNullCheck", Ref("value"), Ref("index")));
+                .AddParam(typeof(IDictionary<object, object>), "map")
+                .AddParam(typeof(int), "index")
+                .Block
+                .DeclareVar<object>("value", ExprDotMethod(Ref("map"), "get", Constant(propertyName)))
+                .MethodReturn(
+                    StaticMethod(
+                        typeof(BaseNestableEventUtil),
+                        "getBNArrayValueAtIndexWithNullCheck",
+                        Ref("value"),
+                        Ref("index")));
         }
 
         private CodegenMethod GetFragmentCodegen(
@@ -166,11 +184,20 @@ namespace com.espertech.esper.common.@internal.@event.map
         {
             var factory = codegenClassScope.AddOrGetFieldSharable(EventBeanTypedEventFactoryCodegenField.INSTANCE);
             var eventType = codegenClassScope.AddFieldUnshared(
-                true, typeof(EventType), EventTypeUtility.ResolveTypeCodegen(fragmentType, EPStatementInitServicesConstants.REF));
+                true,
+                typeof(EventType),
+                EventTypeUtility.ResolveTypeCodegen(fragmentType, EPStatementInitServicesConstants.REF));
             return codegenMethodScope.MakeChild(typeof(object), GetType(), codegenClassScope)
-                .AddParam(typeof(IDictionary<object, object>), "map").Block
-                .DeclareVar(typeof(object), "value", UnderlyingGetCodegen(Ref("map"), codegenMethodScope, codegenClassScope))
-                .MethodReturn(StaticMethod(typeof(BaseNestableEventUtil), "getBNFragmentNonPojo", Ref("value"), eventType, factory));
+                .AddParam(typeof(IDictionary<object, object>), "map")
+                .Block
+                .DeclareVar<object>("value", UnderlyingGetCodegen(Ref("map"), codegenMethodScope, codegenClassScope))
+                .MethodReturn(
+                    StaticMethod(
+                        typeof(BaseNestableEventUtil),
+                        "getBNFragmentNonPojo",
+                        Ref("value"),
+                        eventType,
+                        factory));
         }
     }
 } // end of namespace

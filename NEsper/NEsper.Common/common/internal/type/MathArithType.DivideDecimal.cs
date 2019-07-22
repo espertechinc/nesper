@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.compat;
@@ -57,7 +58,9 @@ namespace com.espertech.esper.common.@internal.type
                 Type rtype)
             {
                 var block = codegenMethodScope.MakeChild(typeof(decimal?), typeof(DivideDecimal), codegenClassScope)
-                    .AddParam(typeof(decimal?), "b1").AddParam(typeof(decimal?), "b2").Block;
+                    .AddParam(typeof(decimal?), "b1")
+                    .AddParam(typeof(decimal?), "b2")
+                    .Block;
                 var ifBlock = block.IfCondition(
                     CodegenExpressionBuilder.EqualsIdentity(
                         CodegenExpressionBuilder.ExprDotMethod(CodegenExpressionBuilder.Ref("b1"), "doubleValue"),
@@ -70,12 +73,18 @@ namespace com.espertech.esper.common.@internal.type
                         CodegenExpressionBuilder.NewInstance(
                             typeof(decimal?),
                             CodegenExpressionBuilder.Op(
-                                CodegenExpressionBuilder.ExprDotMethod(CodegenExpressionBuilder.Ref("b1"), "doubleValue"), "/",
+                                CodegenExpressionBuilder.ExprDotMethod(
+                                    CodegenExpressionBuilder.Ref("b1"),
+                                    "doubleValue"),
+                                "/",
                                 CodegenExpressionBuilder.Constant(0d))));
                 }
 
                 var method = block.MethodReturn(
-                    CodegenExpressionBuilder.ExprDotMethod(CodegenExpressionBuilder.Ref("b1"), "divide", CodegenExpressionBuilder.Ref("b2")));
+                    CodegenExpressionBuilder.ExprDotMethod(
+                        CodegenExpressionBuilder.Ref("b1"),
+                        "divide",
+                        CodegenExpressionBuilder.Ref("b2")));
                 return CodegenExpressionBuilder.LocalMethod(method, left, right);
             }
         }

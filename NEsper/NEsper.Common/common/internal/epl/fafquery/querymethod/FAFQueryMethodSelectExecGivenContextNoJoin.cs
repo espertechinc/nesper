@@ -8,6 +8,7 @@
 
 using System.Collections.Generic;
 using System.Linq;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.context;
 using com.espertech.esper.common.@internal.context.mgr;
@@ -15,6 +16,7 @@ using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.epl.resultset.core;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.compat.collections;
+
 using static com.espertech.esper.common.@internal.epl.fafquery.querymethod.FAFQueryMethodSelectExecUtil;
 using static com.espertech.esper.common.@internal.epl.fafquery.querymethod.FAFQueryMethodUtil;
 
@@ -57,14 +59,18 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.querymethod
             foreach (var contextPartitionResult in contextPartitionResults) {
                 if (resultSetProcessor == null) {
                     resultSetProcessor = ProcessorWithAssign(
-                        select.ResultSetProcessorFactoryProvider, contextPartitionResult.Context, assignerSetter,
+                        select.ResultSetProcessorFactoryProvider,
+                        contextPartitionResult.Context,
+                        assignerSetter,
                         @select.TableAccesses);
                 }
 
                 var snapshot = contextPartitionResult.Events;
                 if (select.WhereClause != null) {
                     snapshot = Filtered(
-                        snapshot, select.WhereClause, contextPartitionResult.Context);
+                        snapshot,
+                        select.WhereClause,
+                        contextPartitionResult.Context);
                 }
 
                 var rows = snapshot.ToArray();
@@ -76,7 +82,8 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.querymethod
             }
 
             var distinct = EventBeanUtility.GetDistinctByProp(
-                EventBeanUtility.Flatten(events), select.EventBeanReaderDistinct);
+                EventBeanUtility.Flatten(events),
+                select.EventBeanReaderDistinct);
             return new EPPreparedQueryResult(select.EventType, distinct);
         }
 

@@ -8,6 +8,7 @@
 
 using System;
 using System.IO;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -16,6 +17,7 @@ using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.table.compiletime;
 using com.espertech.esper.common.@internal.epl.table.core;
 using com.espertech.esper.common.@internal.metrics.instrumentation;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.expression.etc
@@ -58,7 +60,13 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
             CodegenExpressionField eventToPublic =
                 TableDeployTimeResolver.MakeTableEventToPublicField(tableMetadata, codegenClassScope, this.GetType());
             return StaticMethod(
-                typeof(ExprEvalStreamInsertTable), "convertToTableEvent", Constant(streamNum), eventToPublic, refEPS, refIsNewData, refExprEvalCtx);
+                typeof(ExprEvalStreamInsertTable),
+                "convertToTableEvent",
+                Constant(streamNum),
+                eventToPublic,
+                refEPS,
+                refIsNewData,
+                refExprEvalCtx);
         }
 
         public CodegenExpression EvaluateCodegen(
@@ -68,7 +76,13 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
             CodegenClassScope codegenClassScope)
         {
             return new InstrumentationBuilderExpr(
-                this.GetType(), this, "ExprStreamUndSelectClause", requiredType, codegenMethodScope, exprSymbol, codegenClassScope).Build();
+                this.GetType(),
+                this,
+                "ExprStreamUndSelectClause",
+                requiredType,
+                codegenMethodScope,
+                exprSymbol,
+                codegenClassScope).Build();
         }
 
         public ExprForgeConstantType ForgeConstantType {

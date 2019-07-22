@@ -92,11 +92,11 @@ namespace com.espertech.esper.regressionlib.suite.resultset.orderby
             public void Run(RegressionEnvironment env)
             {
                 string[] fields = {"sumPrice"};
-                var epl = "@Name('s0')select sum(price) as sumPrice from " +
+                var epl = "@Name('s0')select sum(Price) as sumPrice from " +
                           "SupportMarketDataBean#length(10) as one, " +
                           "SupportBeanString#length(100) as two " +
                           "where one.Symbol = two.TheString " +
-                          "order by price";
+                          "order by Price";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 SendJoinEvents(env);

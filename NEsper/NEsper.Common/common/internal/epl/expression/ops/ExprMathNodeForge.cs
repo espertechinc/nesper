@@ -7,12 +7,14 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.metrics.instrumentation;
 using com.espertech.esper.common.@internal.type;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.expression.ops
@@ -34,7 +36,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
         public ExprMathNode ForgeRenderable { get; }
 
         public ExprEvaluator ExprEvaluator => new ExprMathNodeForgeEval(
-            this, ForgeRenderable.ChildNodes[0].Forge.ExprEvaluator, ForgeRenderable.ChildNodes[1].Forge.ExprEvaluator);
+            this,
+            ForgeRenderable.ChildNodes[0].Forge.ExprEvaluator,
+            ForgeRenderable.ChildNodes[1].Forge.ExprEvaluator);
 
         public Type EvaluationType { get; }
 
@@ -45,7 +49,12 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             CodegenClassScope codegenClassScope)
         {
             var methodNode = ExprMathNodeForgeEval.Codegen(
-                this, codegenMethodScope, exprSymbol, codegenClassScope, ForgeRenderable.ChildNodes[0], ForgeRenderable.ChildNodes[1]);
+                this,
+                codegenMethodScope,
+                exprSymbol,
+                codegenClassScope,
+                ForgeRenderable.ChildNodes[0],
+                ForgeRenderable.ChildNodes[1]);
             return LocalMethod(methodNode);
         }
 
@@ -55,8 +64,16 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            return new InstrumentationBuilderExpr(GetType(), this, "ExprMath", requiredType, codegenMethodScope, exprSymbol, codegenClassScope)
-                .Qparam(Constant(ForgeRenderable.MathArithTypeEnum.GetExpressionText())).Build();
+            return new InstrumentationBuilderExpr(
+                    GetType(),
+                    this,
+                    "ExprMath",
+                    requiredType,
+                    codegenMethodScope,
+                    exprSymbol,
+                    codegenClassScope)
+                .Qparam(Constant(ForgeRenderable.MathArithTypeEnum.GetExpressionText()))
+                .Build();
         }
 
         ExprNodeRenderable ExprForge.ExprForgeRenderable => ForgeRenderable;

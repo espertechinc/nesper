@@ -11,6 +11,7 @@ using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.compat;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.@event.variant
@@ -48,7 +49,8 @@ namespace com.espertech.esper.common.@internal.@event.variant
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            var cache = codegenClassScope.AddOrGetFieldSharable(new VariantPropertyGetterCacheCodegenField(variantEventType));
+            var cache = codegenClassScope.AddOrGetFieldSharable(
+                new VariantPropertyGetterCacheCodegenField(variantEventType));
             return StaticMethod(GetType(), "variantGet", beanExpression, cache, Constant(propertyName));
         }
 
@@ -57,7 +59,8 @@ namespace com.espertech.esper.common.@internal.@event.variant
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            var cache = codegenClassScope.AddOrGetFieldSharable(new VariantPropertyGetterCacheCodegenField(variantEventType));
+            var cache = codegenClassScope.AddOrGetFieldSharable(
+                new VariantPropertyGetterCacheCodegenField(variantEventType));
             return StaticMethod(GetType(), "variantExists", beanExpression, cache, Constant(propertyName));
         }
 
@@ -135,7 +138,8 @@ namespace com.espertech.esper.common.@internal.@event.variant
 
         protected internal static UnsupportedOperationException VariantImplementationNotProvided()
         {
-            return new UnsupportedOperationException("Variant event type does not provide an implementation for underlying get");
+            return new UnsupportedOperationException(
+                "Variant event type does not provide an implementation for underlying get");
         }
     }
 } // end of namespace

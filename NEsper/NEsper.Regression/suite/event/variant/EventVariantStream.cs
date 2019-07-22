@@ -180,7 +180,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.variant
 
             public void Run(RegressionEnvironment env)
             {
-                string[] fields = {"id"};
+                string[] fields = {"Id"};
 
                 env.Milestone(0);
 
@@ -463,7 +463,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.variant
                 env.CompileDeploy("insert into MyVariantStreamFour select * from SupportBean");
 
                 // test pattern
-                env.CompileDeploy("@Name('s0') select * from pattern [a=MyVariantStreamFour => b=MyVariantStreamFour]");
+                env.CompileDeploy("@Name('s0') select * from pattern [a=MyVariantStreamFour -> b=MyVariantStreamFour]");
                 env.AddListener("s0");
                 object[] events = {new SupportBean("E1", -1), new SupportBeanVariantStream("E2")};
                 env.SendEventBean(events[0]);
@@ -570,7 +570,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.variant
 
                 var eventType = env.Statement("s0").EventType;
                 Assert.AreEqual(typeof(object), eventType.GetPropertyType("TheString"));
-                Assert.AreEqual(typeof(object), eventType.GetPropertyType("id"));
+                Assert.AreEqual(typeof(object), eventType.GetPropertyType("Id"));
                 Assert.AreEqual(typeof(object), eventType.GetPropertyType("IntPrimitive"));
 
                 var fields = "theString,Id,IntPrimitive".SplitCsv();

@@ -7,12 +7,14 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Reflection;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.compat.logging;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.expression.dot.core
@@ -59,21 +61,26 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
             CodegenClassScope codegenClassScope)
         {
             var methodNode = codegenMethodScope.MakeChild(
-                forge.EvaluationType, typeof(ExprDotNodeForgePropertyExprEvalMapped), codegenClassScope);
+                forge.EvaluationType,
+                typeof(ExprDotNodeForgePropertyExprEvalMapped),
+                codegenClassScope);
             var refEPS = exprSymbol.GetAddEPS(methodNode);
 
             methodNode.Block
-                .DeclareVar(typeof(EventBean), "event", ArrayAtIndex(refEPS, Constant(forge.StreamNum)))
+                .DeclareVar<EventBean>("event", ArrayAtIndex(refEPS, Constant(forge.StreamNum)))
                 .IfRefNullReturnNull("event")
-                .DeclareVar(
-                    typeof(string), "result",
+                .DeclareVar<string>(
+                    "result",
                     forge.ExprForge.EvaluateCodegen(typeof(string), methodNode, exprSymbol, codegenClassScope))
                 .IfRefNullReturnNull("result")
                 .MethodReturn(
                     CodegenLegoCast.CastSafeFromObjectType(
                         forge.EvaluationType,
                         forge.MappedGetter.EventBeanGetMappedCodegen(
-                            methodNode, codegenClassScope, Ref("event"), Ref("result"))));
+                            methodNode,
+                            codegenClassScope,
+                            Ref("event"),
+                            Ref("result"))));
 
             return LocalMethod(methodNode);
         }

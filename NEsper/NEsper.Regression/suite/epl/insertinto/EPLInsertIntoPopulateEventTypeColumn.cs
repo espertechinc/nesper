@@ -254,11 +254,11 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
             string typeType)
         {
             var path = new RegressionPath();
-            env.CompileDeploy("create " + typeType + " schema Item(name string, price double)", path);
+            env.CompileDeploy("create " + typeType + " schema Item(name string, Price double)", path);
             env.CompileDeploy("create " + typeType + " schema PurchaseOrder(orderId string, items Item[])", path);
             env.CompileDeployWBusPublicType("create schema TriggerEvent()", path);
             env.CompileDeploy(
-                    "@Name('s0') insert into PurchaseOrder select '001' as orderId, new {name= 'i1', price=10} as items from TriggerEvent",
+                    "@Name('s0') insert into PurchaseOrder select '001' as orderId, new {name= 'i1', Price=10} as items from TriggerEvent",
                     path)
                 .AddListener("s0");
 
@@ -266,7 +266,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
             var @event = env.Listener("s0").AssertOneGetNewAndReset();
             EPAssertionUtil.AssertProps(
                 @event,
-                "orderId,items[0].name,items[0].price".SplitCsv(),
+                "orderId,items[0].name,items[0].Price".SplitCsv(),
                 new object[] {"001", "i1", 10d});
 
             var underlying = (EventBean[]) @event.Get("items");

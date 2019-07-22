@@ -8,6 +8,7 @@
 
 using System.Collections.Generic;
 using System.Data.Common;
+
 using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.db.drivers
@@ -43,7 +44,9 @@ namespace com.espertech.esper.common.@internal.db.drivers
         /// </summary>
         /// <param name="name">The name.</param>
         /// <param name="providerFactory">The provider factory.</param>
-        public void AddProvider(string name, DbProviderFactory providerFactory)
+        public void AddProvider(
+            string name,
+            DbProviderFactory providerFactory)
         {
             _nameToProviderFactory[name] = providerFactory;
         }

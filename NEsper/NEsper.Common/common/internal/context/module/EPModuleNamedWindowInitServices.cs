@@ -9,6 +9,7 @@
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.namedwindow.path;
 using com.espertech.esper.common.@internal.@event.path;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.context.module
@@ -24,7 +25,7 @@ namespace com.espertech.esper.common.@internal.context.module
     {
         public static readonly CodegenExpressionRef REF = Ref("epModuleNamedWindowInitServices");
 
-        public static readonly string GETNAMEDWINDOWCOLLECTOR = "getNamedWindowCollector";
-        public static readonly string GETEVENTTYPERESOLVER = EPStatementInitServicesConstants.GETEVENTTYPERESOLVER;
+        public static readonly string GETNAMEDWINDOWCOLLECTOR = "NamedWindowCollector";
+        public static readonly string GETEVENTTYPERESOLVER = EPStatementInitServicesConstants.EVENTTYPERESOLVER;
     }
 } // end of namespace

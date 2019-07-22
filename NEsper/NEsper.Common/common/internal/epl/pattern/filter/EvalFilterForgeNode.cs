@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using System.Text;
+
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.compile.stage1.spec;
 using com.espertech.esper.common.@internal.compile.stage2;
@@ -19,6 +20,7 @@ using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.pattern.core;
 using com.espertech.esper.common.@internal.schedule;
 using com.espertech.esper.compat.logging;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.pattern.filter
@@ -136,7 +138,10 @@ namespace com.espertech.esper.common.@internal.epl.pattern.filter
             CodegenClassScope classScope)
         {
             method.Block
-                .SetProperty(Ref("node"), "FilterSpec", LocalMethod(filterSpec.MakeCodegen(method, symbols, classScope)))
+                .SetProperty(
+                    Ref("node"),
+                    "FilterSpec",
+                    LocalMethod(filterSpec.MakeCodegen(method, symbols, classScope)))
                 .SetProperty(Ref("node"), "EventAsName", Constant(EventAsName))
                 .SetProperty(Ref("node"), "ConsumptionLevel", Constant(ConsumptionLevel))
                 .SetProperty(Ref("node"), "EventAsTagNumber", Constant(EventAsTagNumber));

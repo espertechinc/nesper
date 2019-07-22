@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.epl.index.hash;
 using com.espertech.esper.common.@internal.epl.spatial.quadtree.core;
@@ -146,12 +147,15 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.prqdrowindex
                 case QuadrantEnum.NW:
                     branch.Nw = AddToNode(x, y, point, branch.Nw, tree, unique, indexName);
                     break;
+
                 case QuadrantEnum.NE:
                     branch.Ne = AddToNode(x, y, point, branch.Ne, tree, unique, indexName);
                     break;
+
                 case QuadrantEnum.SW:
                     branch.Sw = AddToNode(x, y, point, branch.Sw, tree, unique, indexName);
                     break;
+
                 default:
                     branch.Se = AddToNode(x, y, point, branch.Se, tree, unique, indexName);
                     break;

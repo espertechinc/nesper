@@ -7,9 +7,11 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
+
 using static com.espertech.esper.common.@internal.util.TypeHelper;
 
 namespace com.espertech.esper.common.@internal.epl.index.advanced.index.service
@@ -23,8 +25,12 @@ namespace com.espertech.esper.common.@internal.epl.index.advanced.index.service
         {
             if (expected != colCount) {
                 throw new ExprValidationException(
-                    "Index of type '" + indexTypeName + "' requires " + expected +
-                    " expressions as index columns but received " + colCount);
+                    "Index of type '" +
+                    indexTypeName +
+                    "' requires " +
+                    expected +
+                    " expressions as index columns but received " +
+                    colCount);
             }
         }
 
@@ -36,8 +42,12 @@ namespace com.espertech.esper.common.@internal.epl.index.advanced.index.service
         {
             if (paramCount < minExpected || paramCount > maxExpected) {
                 throw new ExprValidationException(
-                    "Index of type '" + indexTypeName + "' requires at least " + minExpected +
-                    " parameters but received " + paramCount);
+                    "Index of type '" +
+                    indexTypeName +
+                    "' requires at least " +
+                    minExpected +
+                    " parameters but received " +
+                    paramCount);
             }
         }
 
@@ -49,8 +59,14 @@ namespace com.espertech.esper.common.@internal.epl.index.advanced.index.service
         {
             if (paramCount != expectedOne && paramCount != expectedTwo) {
                 throw new ExprValidationException(
-                    "Index of type '" + indexTypeName + "' requires at either " + expectedOne + " or " + expectedTwo +
-                    " parameters but received " + paramCount);
+                    "Index of type '" +
+                    indexTypeName +
+                    "' requires at either " +
+                    expectedOne +
+                    " or " +
+                    expectedTwo +
+                    " parameters but received " +
+                    paramCount);
             }
         }
 
@@ -100,11 +116,17 @@ namespace com.espertech.esper.common.@internal.epl.index.advanced.index.service
             Type receivedType)
         {
             return new ExprValidationException(
-                "Index of type '" + indexTypeName + "' for " +
+                "Index of type '" +
+                indexTypeName +
+                "' for " +
                 (isColumn ? "column " : "parameter ") +
-                +num + " that is providing " + name + "-values expecting type " +
+                +num +
+                " that is providing " +
+                name +
+                "-values expecting type " +
                 TypeHelper.GetCleanName(expectedType) +
-                " but received type " + TypeHelper.GetCleanName(receivedType));
+                " but received type " +
+                TypeHelper.GetCleanName(receivedType));
         }
     }
 } // end of namespace

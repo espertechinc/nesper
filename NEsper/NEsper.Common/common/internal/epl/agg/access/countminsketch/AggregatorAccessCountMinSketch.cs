@@ -12,6 +12,7 @@ using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.agg.core;
 using com.espertech.esper.common.@internal.epl.approx.countminsketch;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 using static com.espertech.esper.common.@internal.epl.agg.method.core.AggregatorCodegenUtil;
 
@@ -36,7 +37,8 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.countminsketch
             this.forge = forge;
             state = membersColumnized.AddMember(col, typeof(CountMinSketchAggState), "state");
             spec = classScope.NamespaceScope.AddFieldUnshared(
-                true, typeof(CountMinSketchSpec),
+                true,
+                typeof(CountMinSketchSpec),
                 forge.specification.CodegenMake(classScope.NamespaceScope.InitMethod, classScope));
             rowCtor.Block.AssignRef(state, ExprDotMethod(spec, "makeAggState"));
         }
@@ -77,7 +79,10 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.countminsketch
         {
             method.Block.Expression(
                 StaticMethod(
-                    typeof(AggregationStateSerdeCountMinSketch), "writeCountMinSketch", output, RowDotRef(row, state)));
+                    typeof(AggregationStateSerdeCountMinSketch),
+                    "writeCountMinSketch",
+                    output,
+                    RowDotRef(row, state)));
         }
 
         public void ReadCodegen(

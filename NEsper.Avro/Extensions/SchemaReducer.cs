@@ -23,10 +23,8 @@ namespace NEsper.Avro.Extensions
         {
             var typeType = schema.Value<string>("type");
             var typeName = schema.Value<string>("name");
-            if (typeName != null)
-            {
-                if (_schemas.Contains(typeName))
-                {
+            if (typeName != null) {
+                if (_schemas.Contains(typeName)) {
                     // this is a named schema type that has already been added to
                     // the encompasing schema.  more accurately, we've already parsed
                     // this schema once.  we want to reduce this schema "out"
@@ -40,8 +38,7 @@ namespace NEsper.Avro.Extensions
             }
 
             // now we need to descend into the atoms of the nested type
-            switch (typeType)
-            {
+            switch (typeType) {
                 case "array":
                     ReduceArray(schema);
                     break;
@@ -66,20 +63,16 @@ namespace NEsper.Avro.Extensions
         public void ReduceType(JProperty typeProperty)
         {
             var typeValue = typeProperty.Value;
-            if (typeValue.Type == JTokenType.String)
-            {
+            if (typeValue.Type == JTokenType.String) {
                 typeProperty.Value = ReduceSimpleType(typeValue);
             }
-            else if (typeValue.Type == JTokenType.Object)
-            {
+            else if (typeValue.Type == JTokenType.Object) {
                 typeProperty.Value = ReduceComplexType((JObject) typeValue);
             }
-            else if (typeValue.Type == JTokenType.Array)
-            {
+            else if (typeValue.Type == JTokenType.Array) {
                 typeProperty.Value = ReduceUnionType((JArray) typeValue);
             }
-            else
-            {
+            else {
                 throw new ArgumentException("unknown schema definition");
             }
         }
@@ -91,11 +84,9 @@ namespace NEsper.Avro.Extensions
 
         public void ReduceFields(JArray fields)
         {
-            foreach (var field in fields.Children())
-            {
+            foreach (var field in fields.Children()) {
                 var fieldAsObject = field as JObject;
-                if (fieldAsObject != null)
-                {
+                if (fieldAsObject != null) {
                     ReduceField(fieldAsObject);
                 }
             }
@@ -104,8 +95,7 @@ namespace NEsper.Avro.Extensions
         public void ReduceRecord(JObject record)
         {
             var fields = record.Value<JArray>("fields");
-            if (fields != null)
-            {
+            if (fields != null) {
                 ReduceFields(fields);
             }
         }

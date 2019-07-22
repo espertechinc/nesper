@@ -61,7 +61,10 @@ namespace NEsper.Avro.Getter
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            return UnderlyingGetCodegen(CodegenExpressionBuilder.CastUnderlying(typeof(GenericRecord), beanExpression), codegenMethodScope, codegenClassScope);
+            return UnderlyingGetCodegen(
+                CodegenExpressionBuilder.CastUnderlying(typeof(GenericRecord), beanExpression),
+                codegenMethodScope,
+                codegenClassScope);
         }
 
         public CodegenExpression EventBeanExistsCodegen(
@@ -69,7 +72,10 @@ namespace NEsper.Avro.Getter
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            return UnderlyingExistsCodegen(CodegenExpressionBuilder.CastUnderlying(typeof(GenericRecord), beanExpression), codegenMethodScope, codegenClassScope);
+            return UnderlyingExistsCodegen(
+                CodegenExpressionBuilder.CastUnderlying(typeof(GenericRecord), beanExpression),
+                codegenMethodScope,
+                codegenClassScope);
         }
 
         public CodegenExpression EventBeanFragmentCodegen(
@@ -85,7 +91,10 @@ namespace NEsper.Avro.Getter
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            return CodegenExpressionBuilder.ExprDotMethod(underlyingExpression, "get", CodegenExpressionBuilder.Constant(_propertyName));
+            return CodegenExpressionBuilder.ExprDotMethod(
+                underlyingExpression,
+                "get",
+                CodegenExpressionBuilder.Constant(_propertyName));
         }
 
         public CodegenExpression UnderlyingExistsCodegen(
@@ -93,7 +102,10 @@ namespace NEsper.Avro.Getter
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            return CodegenExpressionBuilder.NotEqualsNull(CodegenExpressionBuilder.ExprDotMethodChain(underlyingExpression).Add("getSchema").Add("getField", CodegenExpressionBuilder.Constant(_propertyName)));
+            return CodegenExpressionBuilder.NotEqualsNull(
+                CodegenExpressionBuilder.ExprDotMethodChain(underlyingExpression)
+                    .Add("getSchema")
+                    .Add("getField", CodegenExpressionBuilder.Constant(_propertyName)));
         }
 
         public CodegenExpression UnderlyingFragmentCodegen(

@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.epl.expression.time.eval;
 using com.espertech.esper.common.@internal.schedule;
@@ -65,11 +66,19 @@ namespace com.espertech.esper.common.@internal.epl.output.condition
             if (parent.IsVariable) {
                 long now = context.StatementContext.SchedulingService.Time;
                 TimePeriodDeltaResult delta = parent.TimePeriodCompute.DeltaAddWReference(
-                    now, currentReferencePoint.Value, null, true, context);
+                    now,
+                    currentReferencePoint.Value,
+                    null,
+                    true,
+                    context);
                 if (delta.Delta != currentScheduledTime) {
                     if (isCallbackScheduled) {
                         // reschedule
-                        context.AuditProvider.ScheduleRemove(context, handle, ScheduleObjectType.outputratelimiting, NAME_AUDITPROVIDER_SCHEDULE);
+                        context.AuditProvider.ScheduleRemove(
+                            context,
+                            handle,
+                            ScheduleObjectType.outputratelimiting,
+                            NAME_AUDITPROVIDER_SCHEDULE);
                         context.StatementContext.SchedulingService.Remove(handle, scheduleSlot);
                         ScheduleCallback();
                     }
@@ -92,7 +101,11 @@ namespace com.espertech.esper.common.@internal.epl.output.condition
             isCallbackScheduled = true;
             long current = context.StatementContext.SchedulingService.Time;
             TimePeriodDeltaResult delta = parent.TimePeriodCompute.DeltaAddWReference(
-                current, currentReferencePoint.Value, null, true, context);
+                current,
+                currentReferencePoint.Value,
+                null,
+                true,
+                context);
             long deltaTime = delta.Delta;
             currentReferencePoint = delta.LastReference;
             currentScheduledTime = deltaTime;
@@ -100,15 +113,21 @@ namespace com.espertech.esper.common.@internal.epl.output.condition
             if ((ExecutionPathDebugLog.IsDebugEnabled) && (log.IsDebugEnabled)) {
                 log.Debug(
                     ".scheduleCallback Scheduled new callback for " +
-                    " afterMsec=" + deltaTime +
-                    " now=" + current +
-                    " currentReferencePoint=" + currentReferencePoint);
+                    " afterMsec=" +
+                    deltaTime +
+                    " now=" +
+                    current +
+                    " currentReferencePoint=" +
+                    currentReferencePoint);
             }
 
             ScheduleHandleCallback callback = new ProxyScheduleHandleCallback() {
                 ProcScheduledTrigger = () => {
                     context.InstrumentationProvider.QOutputRateConditionScheduledEval();
-                    context.AuditProvider.ScheduleFire(context, ScheduleObjectType.outputratelimiting, NAME_AUDITPROVIDER_SCHEDULE);
+                    context.AuditProvider.ScheduleFire(
+                        context,
+                        ScheduleObjectType.outputratelimiting,
+                        NAME_AUDITPROVIDER_SCHEDULE);
                     this.isCallbackScheduled = false;
                     this.outputCallback.Invoke(DO_OUTPUT, FORCE_UPDATE);
                     ScheduleCallback();
@@ -116,14 +135,23 @@ namespace com.espertech.esper.common.@internal.epl.output.condition
                 },
             };
             handle = new EPStatementHandleCallbackSchedule(context.EpStatementAgentInstanceHandle, callback);
-            context.AuditProvider.ScheduleAdd(deltaTime, context, handle, ScheduleObjectType.outputratelimiting, NAME_AUDITPROVIDER_SCHEDULE);
+            context.AuditProvider.ScheduleAdd(
+                deltaTime,
+                context,
+                handle,
+                ScheduleObjectType.outputratelimiting,
+                NAME_AUDITPROVIDER_SCHEDULE);
             context.StatementContext.SchedulingService.Add(deltaTime, handle, scheduleSlot);
         }
 
         public override void StopOutputCondition()
         {
             if (handle != null) {
-                context.AuditProvider.ScheduleRemove(context, handle, ScheduleObjectType.outputratelimiting, NAME_AUDITPROVIDER_SCHEDULE);
+                context.AuditProvider.ScheduleRemove(
+                    context,
+                    handle,
+                    ScheduleObjectType.outputratelimiting,
+                    NAME_AUDITPROVIDER_SCHEDULE);
                 context.StatementContext.SchedulingService.Remove(handle, scheduleSlot);
             }
         }

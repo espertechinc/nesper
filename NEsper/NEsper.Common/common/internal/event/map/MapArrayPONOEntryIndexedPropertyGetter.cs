@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -15,6 +16,7 @@ using com.espertech.esper.common.@internal.@event.bean.getter;
 using com.espertech.esper.common.@internal.@event.bean.service;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.compat.collections;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.@event.map
@@ -71,7 +73,10 @@ namespace com.espertech.esper.common.@internal.@event.map
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            return UnderlyingGetCodegen(CastUnderlying(typeof(IDictionary<string, object>), beanExpression), codegenMethodScope, codegenClassScope);
+            return UnderlyingGetCodegen(
+                CastUnderlying(typeof(IDictionary<string, object>), beanExpression),
+                codegenMethodScope,
+                codegenClassScope);
         }
 
         public override CodegenExpression EventBeanExistsCodegen(
@@ -80,7 +85,9 @@ namespace com.espertech.esper.common.@internal.@event.map
             CodegenClassScope codegenClassScope)
         {
             return UnderlyingExistsCodegen(
-                CastUnderlying(typeof(IDictionary<string, object>), beanExpression), codegenMethodScope, codegenClassScope);
+                CastUnderlying(typeof(IDictionary<string, object>), beanExpression),
+                codegenMethodScope,
+                codegenClassScope);
         }
 
         public override CodegenExpression UnderlyingGetCodegen(
@@ -88,7 +95,10 @@ namespace com.espertech.esper.common.@internal.@event.map
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            return LocalMethod(GetMapInternalCodegen(codegenMethodScope, codegenClassScope), underlyingExpression, Constant(index));
+            return LocalMethod(
+                GetMapInternalCodegen(codegenMethodScope, codegenClassScope),
+                underlyingExpression,
+                Constant(index));
         }
 
         public override CodegenExpression UnderlyingExistsCodegen(
@@ -114,7 +124,8 @@ namespace com.espertech.esper.common.@internal.@event.map
             CodegenExpression key)
         {
             return LocalMethod(
-                GetMapInternalCodegen(codegenMethodScope, codegenClassScope), CastUnderlying(typeof(IDictionary<string, object>), beanExpression),
+                GetMapInternalCodegen(codegenMethodScope, codegenClassScope),
+                CastUnderlying(typeof(IDictionary<string, object>), beanExpression),
                 key);
         }
 
@@ -132,9 +143,16 @@ namespace com.espertech.esper.common.@internal.@event.map
             CodegenClassScope codegenClassScope)
         {
             return codegenMethodScope.MakeChild(typeof(object), GetType(), codegenClassScope)
-                .AddParam(typeof(IDictionary<string, object>), "map").AddParam(typeof(int), "index").Block
-                .DeclareVar(typeof(object), "value", ExprDotMethod(Ref("map"), "get", Constant(propertyMap)))
-                .MethodReturn(StaticMethod(typeof(BaseNestableEventUtil), "getBNArrayValueAtIndexWithNullCheck", Ref("value"), Ref("index")));
+                .AddParam(typeof(IDictionary<string, object>), "map")
+                .AddParam(typeof(int), "index")
+                .Block
+                .DeclareVar<object>("value", ExprDotMethod(Ref("map"), "get", Constant(propertyMap)))
+                .MethodReturn(
+                    StaticMethod(
+                        typeof(BaseNestableEventUtil),
+                        "getBNArrayValueAtIndexWithNullCheck",
+                        Ref("value"),
+                        Ref("index")));
         }
     }
 } // end of namespace

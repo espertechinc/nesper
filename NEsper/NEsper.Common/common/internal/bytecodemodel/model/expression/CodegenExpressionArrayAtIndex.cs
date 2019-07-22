@@ -27,12 +27,11 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
 
         public void Render(
             StringBuilder builder,
-            IDictionary<Type, string> imports,
             bool isInnerClass)
         {
-            _expression.Render(builder, imports, isInnerClass);
+            _expression.Render(builder, isInnerClass);
             builder.Append("[");
-            _index.Render(builder, imports, isInnerClass);
+            _index.Render(builder, isInnerClass);
             builder.Append("]");
         }
 

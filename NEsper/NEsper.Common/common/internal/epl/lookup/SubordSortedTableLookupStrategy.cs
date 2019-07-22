@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.index.sorted;
@@ -39,9 +40,13 @@ namespace com.espertech.esper.common.@internal.epl.lookup
                 context.InstrumentationProvider.QIndexSubordLookup(this, _index, null);
                 var keys = new List<object>(2);
                 ICollection<EventBean> result = _factory.strategy.LookupCollectKeys(
-                    eventsPerStream, _index, context, keys);
+                    eventsPerStream,
+                    _index,
+                    context,
+                    keys);
                 context.InstrumentationProvider.AIndexSubordLookup(
-                    result, keys.Count > 1 ? keys.ToArray() : keys[0]);
+                    result,
+                    keys.Count > 1 ? keys.ToArray() : keys[0]);
                 return result;
             }
 

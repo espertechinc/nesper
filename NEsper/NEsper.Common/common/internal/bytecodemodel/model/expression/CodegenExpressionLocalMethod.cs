@@ -9,6 +9,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.compat;
 
@@ -33,7 +34,6 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
 
         public void Render(
             StringBuilder builder,
-            IDictionary<Type, string> imports,
             bool isInnerClass)
         {
             if (_methodNode.AssignedMethod == null) {
@@ -46,7 +46,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
             // pass explicit parameters first
             foreach (var expression in _parameters) {
                 builder.Append(delimiter);
-                expression.Render(builder, imports, isInnerClass);
+                expression.Render(builder, isInnerClass);
                 delimiter = ",";
             }
 

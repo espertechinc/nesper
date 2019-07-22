@@ -12,6 +12,7 @@ using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.util;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.expression.ops
@@ -57,21 +58,25 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             CodegenClassScope codegenClassScope)
         {
             CodegenExpression mLikeUtil = codegenClassScope.AddFieldUnshared(
-                true, typeof(LikeUtil), forge.LikeUtilInit);
+                true,
+                typeof(LikeUtil),
+                forge.LikeUtilInit);
 
             var methodNode = codegenMethodScope.MakeChild(
-                typeof(bool?), typeof(ExprLikeNodeForgeConstEval), codegenClassScope);
+                typeof(bool?),
+                typeof(ExprLikeNodeForgeConstEval),
+                codegenClassScope);
             if (!forge.IsNumericValue) {
                 methodNode.Block
-                    .DeclareVar(
-                        typeof(string), "value",
+                    .DeclareVar<string>(
+                        "value",
                         lhs.Forge.EvaluateCodegen(typeof(string), methodNode, exprSymbol, codegenClassScope))
                     .IfRefNullReturnNull("value")
                     .MethodReturn(GetLikeCode(forge, mLikeUtil, Ref("value")));
             }
             else {
-                methodNode.Block.DeclareVar(
-                        typeof(object), "value",
+                methodNode.Block.DeclareVar<object>(
+                        "value",
                         lhs.Forge.EvaluateCodegen(typeof(object), methodNode, exprSymbol, codegenClassScope))
                     .IfRefNullReturnNull("value")
                     .MethodReturn(GetLikeCode(forge, mLikeUtil, ExprDotMethod(Ref("value"), "toString")));

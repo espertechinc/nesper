@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+
 using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.epl.agg.core;
 using com.espertech.esper.common.@internal.epl.expression.prior;
@@ -74,7 +75,11 @@ namespace com.espertech.esper.common.@internal.context.airegistry
             }
 
             return new StatementAIResourceRegistry(
-                factory.MakeAggregation(), priorEvalStrategies, subselects, tableAccesses, previousGetterStrategies,
+                factory.MakeAggregation(),
+                priorEvalStrategies,
+                subselects,
+                tableAccesses,
+                previousGetterStrategies,
                 rowRecogPreviousStrategy);
         }
 
@@ -91,15 +96,18 @@ namespace com.espertech.esper.common.@internal.context.airegistry
             // assign aggregation service
             if (optionalAggegationService != null) {
                 aiResourceRegistry.AgentInstanceAggregationService.AssignService(
-                    agentInstanceId, optionalAggegationService);
+                    agentInstanceId,
+                    optionalAggegationService);
             }
 
             // assign prior-strategies
             if (optionalPriorStrategies != null) {
                 for (var i = 0; i < optionalPriorStrategies.Length; i++) {
                     if (optionalPriorStrategies[i] != null) {
-                        aiResourceRegistry.AgentInstancePriorEvalStrategies[i].AssignService(
-                            agentInstanceId, optionalPriorStrategies[i]);
+                        aiResourceRegistry.AgentInstancePriorEvalStrategies[i]
+                            .AssignService(
+                                agentInstanceId,
+                                optionalPriorStrategies[i]);
                     }
                 }
             }
@@ -108,8 +116,10 @@ namespace com.espertech.esper.common.@internal.context.airegistry
             if (optionalPreviousGetters != null) {
                 for (var i = 0; i < optionalPreviousGetters.Length; i++) {
                     if (optionalPreviousGetters[i] != null) {
-                        aiResourceRegistry.AgentInstancePreviousGetterStrategies[i].AssignService(
-                            agentInstanceId, optionalPreviousGetters[i]);
+                        aiResourceRegistry.AgentInstancePreviousGetterStrategies[i]
+                            .AssignService(
+                                agentInstanceId,
+                                optionalPreviousGetters[i]);
                     }
                 }
             }
@@ -119,7 +129,10 @@ namespace com.espertech.esper.common.@internal.context.airegistry
                 var registryEntry = aiResourceRegistry.AgentInstanceSubselects.Get(subselectEntry.Key);
                 var subq = subselectEntry.Value;
                 registryEntry.Assign(
-                    agentInstanceId, subq.LookupStrategy, subq.AggregationService, subq.PriorStrategy,
+                    agentInstanceId,
+                    subq.LookupStrategy,
+                    subq.AggregationService,
+                    subq.PriorStrategy,
                     subq.PreviousStrategy);
             }
 
@@ -133,7 +146,8 @@ namespace com.espertech.esper.common.@internal.context.airegistry
             // assign match-recognize previous strategy
             if (rowRecogPreviousStrategy != null) {
                 aiResourceRegistry.AgentInstanceRowRecogPreviousStrategy.AssignService(
-                    agentInstanceId, rowRecogPreviousStrategy);
+                    agentInstanceId,
+                    rowRecogPreviousStrategy);
             }
         }
 

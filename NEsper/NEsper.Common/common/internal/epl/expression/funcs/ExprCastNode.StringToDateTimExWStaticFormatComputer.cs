@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.module;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
@@ -73,8 +74,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
                 CodegenExpression timeZoneField =
                     codegenClassScope.AddOrGetFieldSharable(RuntimeSettingsTimeZoneField.INSTANCE);
                 return CodegenExpressionBuilder.StaticMethod(
-                    typeof(StringToDateTimExWStaticFormatComputer), "StringToDtxWStaticFormatParse",
-                    FormatField(dateFormatString, codegenClassScope), input, timeZoneField);
+                    typeof(StringToDateTimExWStaticFormatComputer),
+                    "StringToDtxWStaticFormatParse",
+                    FormatField(dateFormatString, codegenClassScope),
+                    input,
+                    timeZoneField);
             }
         }
     }

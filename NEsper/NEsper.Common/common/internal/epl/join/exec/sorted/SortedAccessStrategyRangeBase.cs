@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.epl.expression.core;
 
@@ -89,11 +90,15 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.sorted
 
         public string ToQueryPlan()
         {
-            return GetType().Name
-                   + " start=" + start.GetType().Name
-                   + ", includeStart=" + includeStart
-                   + ", end=" + end.GetType().Name
-                   + ", includeEnd=" + includeEnd;
+            return GetType().Name +
+                   " start=" +
+                   start.GetType().Name +
+                   ", includeStart=" +
+                   includeStart +
+                   ", end=" +
+                   end.GetType().Name +
+                   ", includeEnd=" +
+                   includeEnd;
         }
     }
 } // end of namespace

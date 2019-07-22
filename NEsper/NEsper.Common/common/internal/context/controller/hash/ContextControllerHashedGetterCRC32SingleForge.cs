@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -15,6 +16,7 @@ using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.context.controller.hash
@@ -63,13 +65,20 @@ namespace com.espertech.esper.common.@internal.context.controller.hash
             CodegenMethodScope parent,
             CodegenClassScope classScope)
         {
-            CodegenMethod method = parent.MakeChild(typeof(object), this.GetType(), classScope).AddParam(typeof(EventBean), "eventBean");
+            CodegenMethod method = parent.MakeChild(typeof(object), this.GetType(), classScope)
+                .AddParam(typeof(EventBean), "eventBean");
             CodegenMethod methodExpr = CodegenLegoMethodExpression.CodegenExpression(eval.Forge, method, classScope);
             method.Block
-                .DeclareVar(typeof(EventBean[]), "events", NewArrayWithInit(typeof(EventBean), @Ref("eventBean")))
-                .DeclareVar(typeof(string), "code", Cast(typeof(string), LocalMethod(methodExpr, @Ref("events"), ConstantTrue(), ConstantNull())))
+                .DeclareVar<EventBean[]>("events", NewArrayWithInit(typeof(EventBean), @Ref("eventBean")))
+                .DeclareVar<string>(
+                    "code",
+                    Cast(typeof(string), LocalMethod(methodExpr, @Ref("events"), ConstantTrue(), ConstantNull())))
                 .MethodReturn(
-                    StaticMethod(typeof(ContextControllerHashedGetterCRC32SingleForge), "stringToCRC32Hash", @Ref("code"), Constant(granularity)));
+                    StaticMethod(
+                        typeof(ContextControllerHashedGetterCRC32SingleForge),
+                        "stringToCRC32Hash",
+                        @Ref("code"),
+                        Constant(granularity)));
 
             return LocalMethod(method, beanExpression);
         }

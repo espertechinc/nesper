@@ -38,7 +38,8 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createdataflow
         public void StatementDestroy(StatementContext statementContext)
         {
             statementContext.StatementContextRuntimeServices.DataflowService.RemoveDataflow(
-                statementContext.DeploymentId, dataflow);
+                statementContext.DeploymentId,
+                dataflow);
         }
 
         public void StatementDestroyPreconditions(StatementContext statementContext)
@@ -50,7 +51,10 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createdataflow
             bool isRecoveringResilient)
         {
             return new StatementAgentInstanceFactoryCreateDataflowResult(
-                viewable, AgentInstanceStopCallbackNoAction.INSTANCE, agentInstanceContext, dataflow);
+                viewable,
+                AgentInstanceStopCallbackNoAction.INSTANCE,
+                agentInstanceContext,
+                dataflow);
         }
 
         public AIRegistryRequirements RegistryRequirements => AIRegistryRequirements.NoRequirements();
@@ -76,7 +80,8 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createdataflow
 
             dataflow.StatementContext = statementContext;
             statementContext.StatementContextRuntimeServices.DataflowService.AddDataflow(
-                statementContext.DeploymentId, dataflow);
+                statementContext.DeploymentId,
+                dataflow);
         }
     }
 } // end of namespace

@@ -49,7 +49,8 @@ namespace com.espertech.esper.common.@internal.epl.lookup
         }
 
         public LookupStrategyDesc LookupStrategyDesc => new LookupStrategyDesc(
-            LookupStrategyType.INKEYWORDSINGLEIDX, expressions);
+            LookupStrategyType.INKEYWORDSINGLEIDX,
+            expressions);
 
         public string ToQueryPlan()
         {

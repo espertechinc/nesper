@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.epl.expression.core;
@@ -340,7 +341,11 @@ namespace com.espertech.esper.common.@internal.epl.index.sorted
             if (lookupValue.Operator == QueryGraphRangeEnum.RANGE_OPEN) {
                 var range = (Range) lookupValue.Value;
                 return LookupRange(
-                    range.LowEndpoint, false, range.HighEndpoint, false, lookupValue.IsAllowRangeReverse);
+                    range.LowEndpoint,
+                    false,
+                    range.HighEndpoint,
+                    false,
+                    lookupValue.IsAllowRangeReverse);
             }
 
             if (lookupValue.Operator == QueryGraphRangeEnum.NOT_RANGE_CLOSED) {

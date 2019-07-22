@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.@internal.epl.@join.querygraph;
 
 namespace com.espertech.esper.common.@internal.epl.join.queryplan
@@ -29,7 +30,8 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplan
                 if (indexes != null) {
                     var props = new string[indexes.Length];
                     var types = new Type[indexes.Length];
-                    IList<QueryGraphValueEntryHashKeyedForge> functions = new List<QueryGraphValueEntryHashKeyedForge>();
+                    IList<QueryGraphValueEntryHashKeyedForge>
+                        functions = new List<QueryGraphValueEntryHashKeyedForge>();
                     for (var i = 0; i < indexes.Length; i++) {
                         props[i] = hashPropsProvided[indexes[i]];
                         types[i] = hashCoercionTypes == null ? null : hashCoercionTypes[indexes[i]];
@@ -47,7 +49,9 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplan
             string[] hashPropsRequired,
             string[] hashPropsProvided)
         {
-            if (hashPropsProvided == null || hashPropsRequired == null || hashPropsProvided.Length < hashPropsRequired.Length) {
+            if (hashPropsProvided == null ||
+                hashPropsRequired == null ||
+                hashPropsProvided.Length < hashPropsRequired.Length) {
                 return null;
             }
 

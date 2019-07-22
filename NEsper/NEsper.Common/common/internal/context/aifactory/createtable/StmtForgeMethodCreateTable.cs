@@ -9,6 +9,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.meta;
 using com.espertech.esper.common.client.util;
@@ -60,8 +61,11 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createtable
             }
             catch (Exception t) {
                 throw new ExprValidationException(
-                    "Unexpected exception creating table '" + @base.StatementSpec.Raw.CreateTableDesc.TableName +
-                    "': " + t.Message, t);
+                    "Unexpected exception creating table '" +
+                    @base.StatementSpec.Raw.CreateTableDesc.TableName +
+                    "': " +
+                    t.Message,
+                    t);
             }
         }
 
@@ -75,7 +79,9 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createtable
 
             // determine whether already declared as table or variable
             EPLValidationUtil.ValidateAlreadyExistsTableOrVariable(
-                tableName, services.VariableCompileTimeResolver, services.TableCompileTimeResolver,
+                tableName,
+                services.VariableCompileTimeResolver,
+                services.TableCompileTimeResolver,
                 services.EventTypeCompileTimeResolver);
 
             // determine key types
@@ -104,28 +110,46 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createtable
 
             // add table
             var tableMetaData = new TableMetaData(
-                tableName, @base.ModuleName, visibility, contextName, contextVisibility, contextModuleName,
-                plan.InternalEventType, plan.PublicEventType, plan.PrimaryKeyColumns, plan.PrimaryKeyTypes,
-                plan.PrimaryKeyColNums, plan.TableColumns, plan.ColsAggMethod.Length);
+                tableName,
+                @base.ModuleName,
+                visibility,
+                contextName,
+                contextVisibility,
+                contextModuleName,
+                plan.InternalEventType,
+                plan.PublicEventType,
+                plan.PrimaryKeyColumns,
+                plan.PrimaryKeyTypes,
+                plan.PrimaryKeyColNums,
+                plan.TableColumns,
+                plan.ColsAggMethod.Length);
             services.TableCompileTimeRegistry.NewTable(tableMetaData);
 
             var aiFactoryProviderClassName = CodeGenerationIDGenerator.GenerateClassNameSimple(
-                typeof(StatementAIFactoryProvider), classPostfix);
+                typeof(StatementAIFactoryProvider),
+                classPostfix);
             var statementFieldsClassName =
                 CodeGenerationIDGenerator.GenerateClassNameSimple(typeof(StatementFields), classPostfix);
             var statementProviderClassName =
                 CodeGenerationIDGenerator.GenerateClassNameSimple(typeof(StatementProvider), classPostfix);
 
             var forge = new StatementAgentInstanceFactoryCreateTableForge(
-                aiFactoryProviderClassName, tableMetaData.TableName, plan);
+                aiFactoryProviderClassName,
+                tableMetaData.TableName,
+                plan);
 
             // build forge list
             IList<StmtClassForgable> forgables = new List<StmtClassForgable>(2);
             var packageScope = new CodegenNamespaceScope(
-                packageName, statementFieldsClassName, services.IsInstrumented);
+                packageName,
+                statementFieldsClassName,
+                services.IsInstrumented);
 
             var aiFactoryForgable = new StmtClassForgableAIFactoryProviderCreateTable(
-                aiFactoryProviderClassName, packageScope, forge, tableName);
+                aiFactoryProviderClassName,
+                packageScope,
+                forge,
+                tableName);
             forgables.Add(aiFactoryForgable);
 
             var selectSubscriberDescriptor = new SelectSubscriberDescriptor();
@@ -135,10 +159,15 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createtable
                 new EmptyList<ScheduleHandleCallbackProvider>(),
                 new EmptyList<NamedWindowConsumerStreamSpec>(),
                 true,
-                selectSubscriberDescriptor, packageScope, services);
+                selectSubscriberDescriptor,
+                packageScope,
+                services);
             forgables.Add(
                 new StmtClassForgableStmtProvider(
-                    aiFactoryProviderClassName, statementProviderClassName, informationals, packageScope));
+                    aiFactoryProviderClassName,
+                    statementProviderClassName,
+                    informationals,
+                    packageScope));
             forgables.Add(new StmtClassForgableStmtFields(statementFieldsClassName, packageScope, 1));
 
             return new StmtForgeMethodResult(
@@ -164,7 +193,8 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createtable
                 }
 
                 var type = EventTypeUtility.BuildType(
-                    new ColumnDesc(col.ColumnName, col.OptType.ToEPL()), importService);
+                    new ColumnDesc(col.ColumnName, col.OptType.ToEPL()),
+                    importService);
                 if (!(type is Type)) {
                     throw new ExprValidationException(msg + ", received unexpected event type '" + type + "'");
                 }
@@ -202,14 +232,19 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createtable
                 if (column.OptExpression != null) {
                     var validated = ValidateAggregationExpr(column.OptExpression, optionalEventType, services);
                     descriptor = new TableColumnDescAgg(
-                        positionInDeclaration, column.ColumnName, validated, optionalEventType);
+                        positionInDeclaration,
+                        column.ColumnName,
+                        validated,
+                        optionalEventType);
                 }
                 else {
                     var unresolvedType = EventTypeUtility.BuildType(
                         new ColumnDesc(column.ColumnName, column.OptType.ToEPL()),
                         services.ImportServiceCompileTime);
                     descriptor = new TableColumnDescTyped(
-                        positionInDeclaration, column.ColumnName, unresolvedType,
+                        positionInDeclaration,
+                        column.ColumnName,
+                        unresolvedType,
                         column.PrimaryKey.GetValueOrDefault(false));
                 }
 
@@ -280,7 +315,8 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createtable
                     var identNode = (ExprIdentNode) childNode;
                     var propname = identNode.FullUnresolvedName.Trim();
                     Type clazz = TypeHelper.GetTypeForSimpleName(
-                        propname, classpathImportService.ClassForNameProvider);
+                        propname,
+                        classpathImportService.ClassForNameProvider);
                     if (propname.ToLowerInvariant().Trim().Equals("object")) {
                         clazz = typeof(object);
                     }
@@ -303,7 +339,8 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createtable
                         if (optionalProvidedType == null) {
                             if (ex != null) {
                                 throw new ExprValidationException(
-                                    "Failed to resolve type '" + propname + "': " + ex.Message, ex);
+                                    "Failed to resolve type '" + propname + "': " + ex.Message,
+                                    ex);
                             }
 
                             throw new ExprValidationException("Failed to resolve type '" + propname + "'");
@@ -314,10 +351,13 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createtable
 
             // validate
             var validated = ExprNodeUtilityValidate.GetValidatedSubtree(
-                ExprNodeOrigin.CREATETABLECOLUMN, columnExpressionType, validationContext);
+                ExprNodeOrigin.CREATETABLECOLUMN,
+                columnExpressionType,
+                validationContext);
             if (!(validated is ExprAggregateNode)) {
                 throw new ExprValidationException(
-                    "Expression '" + ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(validated) +
+                    "Expression '" +
+                    ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(validated) +
                     "' is not an aggregation");
             }
 
@@ -386,7 +426,8 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createtable
                     typedColumn.ColumnName,
                     new TableMetadataColumnPlain(typedColumn.ColumnName, typedColumn.IsKey, indexPlain));
                 assignPairsPlain[indexPlain - 1] = new TableMetadataColumnPairPlainCol(
-                    typedColumn.PositionInDeclaration, indexPlain);
+                    typedColumn.PositionInDeclaration,
+                    indexPlain);
                 indexPlain++;
             }
 
@@ -394,20 +435,44 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createtable
             var visibility = services.ModuleVisibilityRules.GetAccessModifierTable(@base, tableName);
             var internalName = EventTypeNameUtil.GetTableInternalTypeName(tableName);
             var internalMetadata = new EventTypeMetadata(
-                internalName, @base.ModuleName, EventTypeTypeClass.TABLE_INTERNAL, EventTypeApplicationType.OBJECTARR,
-                visibility, EventTypeBusModifier.NONBUS, false, EventTypeIdPair.Unassigned());
+                internalName,
+                @base.ModuleName,
+                EventTypeTypeClass.TABLE_INTERNAL,
+                EventTypeApplicationType.OBJECTARR,
+                visibility,
+                EventTypeBusModifier.NONBUS,
+                false,
+                EventTypeIdPair.Unassigned());
             var internalEventType = BaseNestableEventUtil.MakeOATypeCompileTime(
-                internalMetadata, allColumnsInternalTypes, null, null, null, null, services.BeanEventTypeFactoryPrivate,
+                internalMetadata,
+                allColumnsInternalTypes,
+                null,
+                null,
+                null,
+                null,
+                services.BeanEventTypeFactoryPrivate,
                 services.EventTypeCompileTimeResolver);
             services.EventTypeCompileTimeRegistry.NewType(internalEventType);
 
             // for use by indexes and lookups
             var publicName = EventTypeNameUtil.GetTablePublicTypeName(tableName);
             var publicMetadata = new EventTypeMetadata(
-                publicName, @base.ModuleName, EventTypeTypeClass.TABLE_PUBLIC, EventTypeApplicationType.OBJECTARR,
-                visibility, EventTypeBusModifier.NONBUS, false, EventTypeIdPair.Unassigned());
+                publicName,
+                @base.ModuleName,
+                EventTypeTypeClass.TABLE_PUBLIC,
+                EventTypeApplicationType.OBJECTARR,
+                visibility,
+                EventTypeBusModifier.NONBUS,
+                false,
+                EventTypeIdPair.Unassigned());
             var publicEventType = BaseNestableEventUtil.MakeOATypeCompileTime(
-                publicMetadata, allColumnsPublicTypes, null, null, null, null, services.BeanEventTypeFactoryPrivate,
+                publicMetadata,
+                allColumnsPublicTypes,
+                null,
+                null,
+                null,
+                null,
+                services.BeanEventTypeFactoryPrivate,
                 services.EventTypeCompileTimeResolver);
             services.EventTypeCompileTimeRegistry.NewType(publicEventType);
 
@@ -418,7 +483,9 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createtable
             foreach (var column in methodAggColumns) {
                 var factory = aggregationFactories.Get(column);
                 var optionalEnumerationType = EPTypeHelper.OptionalFromEnumerationExpr(
-                    statementRawInfo, services, column.Aggregation);
+                    statementRawInfo,
+                    services,
+                    column.Aggregation);
                 methodFactories[index] = factory;
                 var bindingInfo = factory.AggregationPortableValidation;
                 var expression =
@@ -426,7 +493,13 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createtable
                 columnMetadata.Put(
                     column.ColumnName,
                     new TableMetadataColumnAggregation(
-                        column.ColumnName, false, index, bindingInfo, expression, true, optionalEnumerationType));
+                        column.ColumnName,
+                        false,
+                        index,
+                        bindingInfo,
+                        expression,
+                        true,
+                        optionalEnumerationType));
                 assignPairsMethod[index] = new TableMetadataColumnPairAggMethod(column.PositionInDeclaration);
                 index++;
             }
@@ -446,11 +519,19 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createtable
                 var expression =
                     ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(factory.AggregationExpression);
                 var optionalEnumerationType = EPTypeHelper.OptionalFromEnumerationExpr(
-                    statementRawInfo, services, column.Aggregation);
+                    statementRawInfo,
+                    services,
+                    column.Aggregation);
                 columnMetadata.Put(
                     column.ColumnName,
                     new TableMetadataColumnAggregation(
-                        column.ColumnName, false, index, bindingInfo, expression, false, optionalEnumerationType));
+                        column.ColumnName,
+                        false,
+                        index,
+                        bindingInfo,
+                        expression,
+                        false,
+                        optionalEnumerationType));
                 assignPairsAccess[accessNum] =
                     new TableMetadataColumnPairAggAccess(column.PositionInDeclaration, accessor);
                 index++;
@@ -486,11 +567,22 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createtable
             }
 
             var forgeDesc = new AggregationRowStateForgeDesc(
-                methodFactories, null, stateFactories, accessAccessorForges,
+                methodFactories,
+                null,
+                stateFactories,
+                accessAccessorForges,
                 new AggregationUseFlags(false, false, false));
             return new TableAccessAnalysisResult(
-                columnMetadata, internalEventType, publicEventType, assignPairsPlain, assignPairsMethod,
-                assignPairsAccess, forgeDesc, primaryKeyColumnArray, primaryKeyGetterArray, primaryKeyTypeArray,
+                columnMetadata,
+                internalEventType,
+                publicEventType,
+                assignPairsPlain,
+                assignPairsMethod,
+                assignPairsAccess,
+                forgeDesc,
+                primaryKeyColumnArray,
+                primaryKeyGetterArray,
+                primaryKeyTypeArray,
                 primaryKeyColNumsArray);
         }
     }

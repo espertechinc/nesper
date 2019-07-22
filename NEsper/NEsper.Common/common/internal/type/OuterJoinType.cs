@@ -34,12 +34,16 @@ namespace com.espertech.esper.common.@internal.type
             switch (joinType) {
                 case OuterJoinType.LEFT:
                     return "left";
+
                 case OuterJoinType.RIGHT:
                     return "right";
+
                 case OuterJoinType.FULL:
                     return "full";
+
                 case OuterJoinType.INNER:
                     return "inner";
+
                 default:
                     throw new ArgumentException("Unknown joinType " + joinType);
             }

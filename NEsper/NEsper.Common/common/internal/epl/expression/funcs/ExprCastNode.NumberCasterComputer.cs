@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -64,7 +65,12 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
 
                 methodNode.Block
                     .IfInstanceOf("input", typeof(object))
-                    .BlockReturn(numericTypeCaster.Codegen(CodegenExpressionBuilder.Ref("input"), inputType, methodNode, codegenClassScope))
+                    .BlockReturn(
+                        numericTypeCaster.Codegen(
+                            CodegenExpressionBuilder.Ref("input"),
+                            inputType,
+                            methodNode,
+                            codegenClassScope))
                     .MethodReturn(CodegenExpressionBuilder.ConstantNull());
                 return CodegenExpressionBuilder.LocalMethod(methodNode, input);
             }

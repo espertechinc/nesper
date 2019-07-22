@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.context.controller.core;
@@ -61,11 +62,17 @@ namespace com.espertech.esper.common.@internal.context.controller.keyed
 
             var agentInstanceContext = callback.AgentInstanceContextCreate;
             filterHandle = new EPStatementHandleCallbackFilter(
-                agentInstanceContext.EpStatementAgentInstanceHandle, this);
+                agentInstanceContext.EpStatementAgentInstanceHandle,
+                this);
             var addendum = ContextManagerUtil.ComputeAddendumNonStmt(
-                parentPartitionKeys, activatable, callback.Realization);
+                parentPartitionKeys,
+                activatable,
+                callback.Realization);
             filterValueSet = activatable.GetValueSet(
-                null, addendum, agentInstanceContext, agentInstanceContext.StatementContextFilterEvalEnv);
+                null,
+                addendum,
+                agentInstanceContext,
+                agentInstanceContext.StatementContextFilterEvalEnv);
             agentInstanceContext.FilterService.Add(activatable.FilterForEventType, filterValueSet, filterHandle);
             var filtersVersion = agentInstanceContext.FilterService.FiltersVersion;
             agentInstanceContext.EpStatementAgentInstanceHandle.StatementFilterVersion.StmtFilterVersion =

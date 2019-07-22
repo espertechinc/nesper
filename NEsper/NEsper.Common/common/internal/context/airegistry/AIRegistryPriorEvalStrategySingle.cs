@@ -39,7 +39,12 @@ namespace com.espertech.esper.common.@internal.context.airegistry
             int streamNum)
         {
             return service.GetSubstituteEvent(
-                originalEvent, isNewData, constantIndexNumber, relativeIndex, exprEvaluatorContext, streamNum);
+                originalEvent,
+                isNewData,
+                constantIndexNumber,
+                relativeIndex,
+                exprEvaluatorContext,
+                streamNum);
         }
     }
 } // end of namespace

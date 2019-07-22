@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.epl.index.@base;
@@ -34,7 +35,12 @@ namespace com.espertech.esper.common.@internal.epl.historical.indexingstrategy
             }
 
             var organization = new EventTableOrganization(
-                null, false, false, StreamNum, null, EventTableOrganizationType.MULTIINDEX);
+                null,
+                false,
+                false,
+                StreamNum,
+                null,
+                EventTableOrganizationType.MULTIINDEX);
             return new EventTable[] {new MultiIndexEventTable(tables, organization)};
         }
     }

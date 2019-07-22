@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.index.sorted;
@@ -37,7 +38,10 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.sorted
             ExprEvaluatorContext context)
         {
             return index.LookupRangeInverted(
-                base.EvaluateLookupStart(theEvent, context), includeStart, base.EvaluateLookupEnd(theEvent, context), includeEnd);
+                base.EvaluateLookupStart(theEvent, context),
+                includeStart,
+                base.EvaluateLookupEnd(theEvent, context),
+                includeEnd);
         }
 
         public ISet<EventBean> LookupCollectKeys(
@@ -59,7 +63,10 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.sorted
             ExprEvaluatorContext context)
         {
             return index.LookupRangeInvertedColl(
-                base.EvaluatePerStreamStart(eventsPerStream, context), includeStart, base.EvaluatePerStreamEnd(eventsPerStream, context), includeEnd);
+                base.EvaluatePerStreamStart(eventsPerStream, context),
+                includeStart,
+                base.EvaluatePerStreamEnd(eventsPerStream, context),
+                includeEnd);
         }
 
         public ICollection<EventBean> LookupCollectKeys(

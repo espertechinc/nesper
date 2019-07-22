@@ -7,9 +7,11 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.output.core
@@ -22,6 +24,7 @@ namespace com.espertech.esper.common.@internal.epl.output.core
         public const string NAME_JOINEXECSTRATEGY = "joinExecutionStrategy";
         public readonly static CodegenExpressionRef REF_CHILD = @Ref("child");
 
-        public readonly static CodegenExpressionRef REF_RESULTSETPROCESSOR = new CodegenExpressionRef(NAME_RESULTSETPROCESSOR);
+        public readonly static CodegenExpressionRef REF_RESULTSETPROCESSOR =
+            new CodegenExpressionRef(NAME_RESULTSETPROCESSOR);
     }
 } // end of namespace

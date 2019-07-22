@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.context.aifactory.core;
@@ -15,6 +16,7 @@ using com.espertech.esper.common.@internal.context.module;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.function;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.client.hook.forgeinject
@@ -80,14 +82,25 @@ namespace com.espertech.esper.common.client.hook.forgeinject
             SAIFFInitializeBuilder builder;
             CodegenMethod init;
             if (Clazz != null) {
-                init = classScope.NamespaceScope.InitMethod.MakeChildWithScope(Clazz, GetType(), symbols, classScope).AddParam(
-                    typeof(EPStatementInitServices), EPStatementInitServicesConstants.REF.Ref);
+                init = classScope.NamespaceScope.InitMethod.MakeChildWithScope(Clazz, GetType(), symbols, classScope)
+                    .AddParam(
+                        typeof(EPStatementInitServices),
+                        EPStatementInitServicesConstants.REF.Ref);
                 builder = new SAIFFInitializeBuilder(Clazz, GetType(), "instance", init, symbols, classScope);
             }
             else {
-                init = classScope.NamespaceScope.InitMethod.MakeChildWithScope(FullyQualifiedClassName, GetType(), symbols, classScope).AddParam(
-                    typeof(EPStatementInitServices), EPStatementInitServicesConstants.REF.Ref);
-                builder = new SAIFFInitializeBuilder(FullyQualifiedClassName, GetType(), "instance", init, symbols, classScope);
+                init = classScope.NamespaceScope.InitMethod
+                    .MakeChildWithScope(FullyQualifiedClassName, GetType(), symbols, classScope)
+                    .AddParam(
+                        typeof(EPStatementInitServices),
+                        EPStatementInitServicesConstants.REF.Ref);
+                builder = new SAIFFInitializeBuilder(
+                    FullyQualifiedClassName,
+                    GetType(),
+                    "instance",
+                    init,
+                    symbols,
+                    classScope);
             }
 
             if (BuilderConsumer != null) {

@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.@event.core;
@@ -73,7 +74,8 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
                     "The table declares '" +
                     tableExpression +
                     "' and provided is '" +
-                    intoExpression + "'");
+                    intoExpression +
+                    "'");
             }
         }
 
@@ -84,7 +86,10 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
             if (!requiredName.ToLowerInvariant().Equals(providedName)) {
                 throw new ExprValidationException(
                     "The required aggregation function name is '" +
-                    requiredName + "' and provided is '" + providedName + "'");
+                    requiredName +
+                    "' and provided is '" +
+                    providedName +
+                    "'");
             }
         }
 
@@ -110,7 +115,9 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
                 throw new ExprValidationException(
                     "The required event type is '" +
                     requiredType.Name +
-                    "' and provided is '" + providedType.Name + "'");
+                    "' and provided is '" +
+                    providedType.Name +
+                    "'");
             }
         }
     }

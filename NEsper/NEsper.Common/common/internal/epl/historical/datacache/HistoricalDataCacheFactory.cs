@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.client.configuration.common;
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.compat;
@@ -57,8 +58,11 @@ namespace com.espertech.esper.common.@internal.epl.historical.datacache
             int scheduleCallbackId)
         {
             return new HistoricalDataCacheExpiringImpl(
-                expCache.MaxAgeSeconds, expCache.PurgeIntervalSeconds, expCache.CacheReferenceType,
-                agentInstanceContext, agentInstanceContext.ScheduleBucket.AllocateSlot());
+                expCache.MaxAgeSeconds,
+                expCache.PurgeIntervalSeconds,
+                expCache.CacheReferenceType,
+                agentInstanceContext,
+                agentInstanceContext.ScheduleBucket.AllocateSlot());
         }
     }
 } // end of namespace

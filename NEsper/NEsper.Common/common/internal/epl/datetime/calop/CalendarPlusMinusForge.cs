@@ -36,7 +36,11 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
             CodegenClassScope codegenClassScope)
         {
             return CalendarPlusMinusForgeOp.CodegenCalendar(
-                this, dateTimeEx, codegenMethodScope, exprSymbol, codegenClassScope);
+                this,
+                dateTimeEx,
+                codegenMethodScope,
+                exprSymbol,
+                codegenClassScope);
         }
 
         public CodegenExpression CodegenDateTimeOffset(
@@ -45,7 +49,12 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            return CalendarPlusMinusForgeOp.CodegenDateTimeOffset(this, dateTimeOffset, codegenMethodScope, exprSymbol, codegenClassScope);
+            return CalendarPlusMinusForgeOp.CodegenDateTimeOffset(
+                this,
+                dateTimeOffset,
+                codegenMethodScope,
+                exprSymbol,
+                codegenClassScope);
         }
 
         public CodegenExpression CodegenDateTime(
@@ -54,7 +63,12 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            return CalendarPlusMinusForgeOp.CodegenDateTime(this, dateTime, codegenMethodScope, exprSymbol, codegenClassScope);
+            return CalendarPlusMinusForgeOp.CodegenDateTime(
+                this,
+                dateTime,
+                codegenMethodScope,
+                exprSymbol,
+                codegenClassScope);
         }
     }
 } // end of namespace

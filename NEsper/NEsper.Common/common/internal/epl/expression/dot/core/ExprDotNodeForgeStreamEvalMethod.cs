@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -15,6 +16,7 @@ using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.rettype;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 using static com.espertech.esper.common.@internal.metrics.instrumentation.InstrumentationCode;
 
@@ -46,7 +48,13 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
 
             object inner = @event.Underlying;
 
-            inner = ExprDotNodeUtility.EvaluateChain(forge.Evaluators, evaluators, inner, eventsPerStream, isNewData, exprEvaluatorContext);
+            inner = ExprDotNodeUtility.EvaluateChain(
+                forge.Evaluators,
+                evaluators,
+                inner,
+                eventsPerStream,
+                isNewData,
+                exprEvaluatorContext);
             return inner;
         }
 
@@ -58,12 +66,19 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
         {
             Type evaluationType = forge.EvaluationType;
             Type eventUndType = forge.EventType.UnderlyingType;
-            CodegenMethod methodNode = codegenMethodScope.MakeChild(evaluationType, typeof(ExprDotNodeForgeStreamEvalMethod), codegenClassScope);
+            CodegenMethod methodNode = codegenMethodScope.MakeChild(
+                evaluationType,
+                typeof(ExprDotNodeForgeStreamEvalMethod),
+                codegenClassScope);
             CodegenExpressionRef refEPS = exprSymbol.GetAddEPS(methodNode);
 
             CodegenBlock block = methodNode.Block
-                .Apply(Instblock(codegenClassScope, "qExprStreamUndMethod", Constant(ExprNodeUtilityPrint.ToExpressionStringMinPrecedence(forge))))
-                .DeclareVar(typeof(EventBean), "event", ArrayAtIndex(refEPS, Constant(forge.StreamNumber)));
+                .Apply(
+                    Instblock(
+                        codegenClassScope,
+                        "qExprStreamUndMethod",
+                        Constant(ExprNodeUtilityPrint.ToExpressionStringMinPrecedence(forge))))
+                .DeclareVar<EventBean>("event", ArrayAtIndex(refEPS, Constant(forge.StreamNumber)));
             if (evaluationType == typeof(void)) {
                 block.IfCondition(EqualsNull(@Ref("event")))
                     .Apply(Instblock(codegenClassScope, "aExprStreamUndMethod", ConstantNull()))
@@ -78,13 +93,27 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
             CodegenExpression typeInformation = ConstantNull();
             if (codegenClassScope.IsInstrumented) {
                 typeInformation = codegenClassScope.AddOrGetFieldSharable(
-                    new EPTypeCodegenSharable(EPTypeHelper.SingleValue(forge.EventType.UnderlyingType), codegenClassScope));
+                    new EPTypeCodegenSharable(
+                        EPTypeHelper.SingleValue(forge.EventType.UnderlyingType),
+                        codegenClassScope));
             }
 
             block.DeclareVar(eventUndType, "inner", Cast(eventUndType, ExprDotMethod(@Ref("event"), "getUnderlying")))
-                .Apply(Instblock(codegenClassScope, "qExprDotChain", typeInformation, @Ref("inner"), Constant(forge.Evaluators.Length)));
+                .Apply(
+                    Instblock(
+                        codegenClassScope,
+                        "qExprDotChain",
+                        typeInformation,
+                        @Ref("inner"),
+                        Constant(forge.Evaluators.Length)));
             CodegenExpression invoke = ExprDotNodeUtility.EvaluateChainCodegen(
-                methodNode, exprSymbol, codegenClassScope, @Ref("inner"), eventUndType, forge.Evaluators, null);
+                methodNode,
+                exprSymbol,
+                codegenClassScope,
+                @Ref("inner"),
+                eventUndType,
+                forge.Evaluators,
+                null);
             if (evaluationType == typeof(void)) {
                 block.Expression(invoke)
                     .Apply(Instblock(codegenClassScope, "aExprDotChain"))

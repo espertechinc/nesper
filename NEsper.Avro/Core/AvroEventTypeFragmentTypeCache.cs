@@ -19,19 +19,21 @@ namespace NEsper.Avro.Core
 
         public AvroSchemaEventType Get(string recordSchemaName)
         {
-            if (_cacheByRecordSchemaName == null)
-            {
+            if (_cacheByRecordSchemaName == null) {
                 _cacheByRecordSchemaName = new Dictionary<string, AvroSchemaEventType>();
             }
+
             return _cacheByRecordSchemaName.Get(recordSchemaName);
         }
 
-        public void Add(string recordSchemaName, AvroSchemaEventType fragmentType)
+        public void Add(
+            string recordSchemaName,
+            AvroSchemaEventType fragmentType)
         {
-            if (_cacheByRecordSchemaName == null)
-            {
+            if (_cacheByRecordSchemaName == null) {
                 _cacheByRecordSchemaName = new Dictionary<string, AvroSchemaEventType>();
             }
+
             _cacheByRecordSchemaName.Put(recordSchemaName, fragmentType);
         }
     }

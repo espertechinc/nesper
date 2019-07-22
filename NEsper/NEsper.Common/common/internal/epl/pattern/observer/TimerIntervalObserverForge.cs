@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.context.aifactory.core;
@@ -18,6 +19,7 @@ using com.espertech.esper.common.@internal.epl.pattern.core;
 using com.espertech.esper.common.@internal.schedule;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.pattern.observer
@@ -73,15 +75,22 @@ namespace com.espertech.esper.common.@internal.epl.pattern.observer
             }
 
             var method = parent.MakeChild(
-                typeof(TimerIntervalObserverFactory), typeof(TimerIntervalObserverForge), classScope);
+                typeof(TimerIntervalObserverFactory),
+                typeof(TimerIntervalObserverForge),
+                classScope);
             var patternDelta = PatternDeltaComputeUtil.MakePatternDeltaAnonymous(
-                parameter, convertor, timeAbacus, method, classScope);
+                parameter,
+                convertor,
+                timeAbacus,
+                method,
+                classScope);
 
             method.Block
-                .DeclareVar(
-                    typeof(TimerIntervalObserverFactory), "factory",
+                .DeclareVar<TimerIntervalObserverFactory>(
+                    "factory",
                     ExprDotMethodChain(symbols.GetAddInitSvc(method))
-                        .Add(EPStatementInitServicesConstants.GETPATTERNFACTORYSERVICE).Add("observerTimerInterval"))
+                        .Add(EPStatementInitServicesConstants.GETPATTERNFACTORYSERVICE)
+                        .Add("observerTimerInterval"))
                 .SetProperty(Ref("factory"), "ScheduleCallbackId", Constant(scheduleCallbackId))
                 .SetProperty(Ref("factory"), "DeltaCompute", patternDelta)
                 .MethodReturn(Ref("factory"));

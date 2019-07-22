@@ -7,11 +7,13 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.epl.agg.core;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.agg.access.linear
@@ -27,18 +29,33 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
             AggregationAccessorForgeGetCodegenContext context)
         {
             var size = accessStateFactory.AggregatorLinear.SizeCodegen();
-            var iterator = accessStateFactory.AggregatorLinear.IteratorCodegen(context.ClassScope, context.Method, context.NamedMethods);
-            var childExpr = CodegenLegoMethodExpression.CodegenExpression(forge.ChildNode, context.Method, context.ClassScope);
+            var iterator = accessStateFactory.AggregatorLinear.IteratorCodegen(
+                context.ClassScope,
+                context.Method,
+                context.NamedMethods);
+            var childExpr = CodegenLegoMethodExpression.CodegenExpression(
+                forge.ChildNode,
+                context.Method,
+                context.ClassScope);
 
-            context.Method.Block.IfCondition(EqualsIdentity(size, Constant(0))).BlockReturn(ConstantNull())
-                .DeclareVar(TypeHelper.GetArrayType(forge.ComponentType), "array", NewArrayByLength(forge.ComponentType, size))
-                .DeclareVar(typeof(int), "count", Constant(0))
-                .DeclareVar(typeof(IEnumerator<EventBean>), "it", iterator)
-                .DeclareVar(typeof(EventBean[]), "eventsPerStreamBuf", NewArrayByLength(typeof(EventBean), Constant(forge.StreamNum + 1)))
+            context.Method.Block.IfCondition(EqualsIdentity(size, Constant(0)))
+                .BlockReturn(ConstantNull())
+                .DeclareVar(
+                    TypeHelper.GetArrayType(forge.ComponentType),
+                    "array",
+                    NewArrayByLength(forge.ComponentType, size))
+                .DeclareVar<int>("count", Constant(0))
+                .DeclareVar<IEnumerator<EventBean>>("it", iterator)
+                .DeclareVar<EventBean[]>(
+                    "eventsPerStreamBuf",
+                    NewArrayByLength(typeof(EventBean), Constant(forge.StreamNum + 1)))
                 .WhileLoop(ExprDotMethod(Ref("it"), "hasNext"))
-                .DeclareVar(typeof(EventBean), "bean", Cast(typeof(EventBean), ExprDotMethod(Ref("it"), "next")))
+                .DeclareVar<EventBean>("bean", Cast(typeof(EventBean), ExprDotMethod(Ref("it"), "next")))
                 .AssignArrayElement("eventsPerStreamBuf", Constant(forge.StreamNum), Ref("bean"))
-                .AssignArrayElement(Ref("array"), Ref("count"), LocalMethod(childExpr, Ref("eventsPerStreamBuf"), Constant(true), ConstantNull()))
+                .AssignArrayElement(
+                    Ref("array"),
+                    Ref("count"),
+                    LocalMethod(childExpr, Ref("eventsPerStreamBuf"), Constant(true), ConstantNull()))
                 .Increment("count")
                 .BlockEnd()
                 .MethodReturn(Ref("array"));
@@ -51,7 +68,11 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
         {
             context.Method.Block.IfCondition(EqualsIdentity(stateForge.AggregatorLinear.SizeCodegen(), Constant(0)))
                 .BlockReturn(ConstantNull())
-                .MethodReturn(stateForge.AggregatorLinear.CollectionReadOnlyCodegen(context.Method, context.ClassScope, context.NamedMethods));
+                .MethodReturn(
+                    stateForge.AggregatorLinear.CollectionReadOnlyCodegen(
+                        context.Method,
+                        context.ClassScope,
+                        context.NamedMethods));
         }
 
         public static void GetEnumerableScalarCodegen(
@@ -59,21 +80,33 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
             AggregationStateLinearForge stateForge,
             AggregationAccessorForgeGetCodegenContext context)
         {
-            context.Method.Block.DeclareVar(typeof(int), "size", stateForge.AggregatorLinear.SizeCodegen())
-                .IfCondition(EqualsIdentity(Ref("size"), Constant(0))).BlockReturn(ConstantNull())
-                .DeclareVar(typeof(IList<EventBean>), "values", NewInstance<List<EventBean>>(Ref("size")))
-                .DeclareVar(
-                    typeof(IEnumerator<EventBean>), "it",
-                    stateForge.AggregatorLinear.IteratorCodegen(context.ClassScope, context.Method, context.NamedMethods))
-                .DeclareVar(typeof(EventBean[]), "eventsPerStreamBuf", NewArrayByLength(typeof(EventBean), Constant(forge.StreamNum + 1)))
+            context.Method.Block.DeclareVar<int>("size", stateForge.AggregatorLinear.SizeCodegen())
+                .IfCondition(EqualsIdentity(Ref("size"), Constant(0)))
+                .BlockReturn(ConstantNull())
+                .DeclareVar<IList<EventBean>>("values", NewInstance<List<EventBean>>(Ref("size")))
+                .DeclareVar<IEnumerator<EventBean>>(
+                    "it",
+                    stateForge.AggregatorLinear.IteratorCodegen(
+                        context.ClassScope,
+                        context.Method,
+                        context.NamedMethods))
+                .DeclareVar<EventBean[]>(
+                    "eventsPerStreamBuf",
+                    NewArrayByLength(typeof(EventBean), Constant(forge.StreamNum + 1)))
                 .WhileLoop(ExprDotMethod(Ref("it"), "hasNext"))
-                .DeclareVar(typeof(EventBean), "bean", Cast(typeof(EventBean), ExprDotMethod(Ref("it"), "next")))
+                .DeclareVar<EventBean>("bean", Cast(typeof(EventBean), ExprDotMethod(Ref("it"), "next")))
                 .AssignArrayElement("eventsPerStreamBuf", Constant(forge.StreamNum), Ref("bean"))
                 .DeclareVar(
-                    forge.ChildNode.EvaluationType.GetBoxedType(), "value",
+                    forge.ChildNode.EvaluationType.GetBoxedType(),
+                    "value",
                     LocalMethod(
-                        CodegenLegoMethodExpression.CodegenExpression(forge.ChildNode, context.Method, context.ClassScope), Ref("eventsPerStreamBuf"),
-                        ConstantTrue(), ConstantNull()))
+                        CodegenLegoMethodExpression.CodegenExpression(
+                            forge.ChildNode,
+                            context.Method,
+                            context.ClassScope),
+                        Ref("eventsPerStreamBuf"),
+                        ConstantTrue(),
+                        ConstantNull()))
                 .ExprDotMethod(Ref("values"), "add", Ref("value"))
                 .BlockEnd()
                 .MethodReturn(Ref("values"));

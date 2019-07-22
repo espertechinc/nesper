@@ -25,7 +25,9 @@ namespace com.espertech.esper.common.@internal.epl.historical.database.core
             try {
                 dataCache = agentInstanceContext.DatabaseConfigService.GetDataCache(
                     factory.DatabaseName,
-                    agentInstanceContext, factory.StreamNumber, factory.ScheduleCallbackId);
+                    agentInstanceContext,
+                    factory.StreamNumber,
+                    factory.ScheduleCallbackId);
             }
             catch (DatabaseConfigException e) {
                 throw new EPException("Failed to obtain cache: " + e.Message, e);

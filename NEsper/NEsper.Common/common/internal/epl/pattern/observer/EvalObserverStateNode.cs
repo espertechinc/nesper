@@ -8,6 +8,7 @@
 
 using System.Collections.Generic;
 using System.Reflection;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.epl.pattern.core;
 using com.espertech.esper.common.@internal.filterspec;
@@ -56,12 +57,19 @@ namespace com.espertech.esper.common.@internal.epl.pattern.observer
         {
             var agentInstanceContext = evalObserverNode.Context.AgentInstanceContext;
             agentInstanceContext.InstrumentationProvider.QPatternObserverEvaluateTrue(
-                evalObserverNode.factoryNode, matchEvent);
+                evalObserverNode.factoryNode,
+                matchEvent);
             agentInstanceContext.AuditProvider.PatternTrue(
-                evalObserverNode.FactoryNode, this, matchEvent, quitted, agentInstanceContext);
+                evalObserverNode.FactoryNode,
+                this,
+                matchEvent,
+                quitted,
+                agentInstanceContext);
             if (quitted) {
                 agentInstanceContext.AuditProvider.PatternInstance(
-                    false, evalObserverNode.factoryNode, agentInstanceContext);
+                    false,
+                    evalObserverNode.factoryNode,
+                    agentInstanceContext);
             }
 
             ParentEvaluator.EvaluateTrue(matchEvent, this, quitted, null);
@@ -73,7 +81,9 @@ namespace com.espertech.esper.common.@internal.epl.pattern.observer
             var agentInstanceContext = evalObserverNode.Context.AgentInstanceContext;
             agentInstanceContext.AuditProvider.PatternFalse(evalObserverNode.FactoryNode, this, agentInstanceContext);
             agentInstanceContext.AuditProvider.PatternInstance(
-                false, evalObserverNode.factoryNode, agentInstanceContext);
+                false,
+                evalObserverNode.factoryNode,
+                agentInstanceContext);
             ParentEvaluator.EvaluateFalse(this, restartable);
         }
 
@@ -83,7 +93,9 @@ namespace com.espertech.esper.common.@internal.epl.pattern.observer
                 Quit();
                 var agentInstanceContext = evalObserverNode.Context.AgentInstanceContext;
                 agentInstanceContext.AuditProvider.PatternFalse(
-                    evalObserverNode.FactoryNode, this, agentInstanceContext);
+                    evalObserverNode.FactoryNode,
+                    this,
+                    agentInstanceContext);
                 ParentEvaluator.EvaluateFalse(this, true);
             }
         }
@@ -92,12 +104,19 @@ namespace com.espertech.esper.common.@internal.epl.pattern.observer
         {
             var agentInstanceContext = evalObserverNode.Context.AgentInstanceContext;
             agentInstanceContext.InstrumentationProvider.QPatternObserverStart(
-                evalObserverNode.factoryNode, beginState);
+                evalObserverNode.factoryNode,
+                beginState);
             agentInstanceContext.AuditProvider.PatternInstance(
-                true, evalObserverNode.factoryNode, agentInstanceContext);
+                true,
+                evalObserverNode.factoryNode,
+                agentInstanceContext);
 
             eventObserver = evalObserverNode.FactoryNode.ObserverFactory.MakeObserver(
-                Context, beginState, this, null, ParentEvaluator.IsFilterChildNonQuitting);
+                Context,
+                beginState,
+                this,
+                null,
+                ParentEvaluator.IsFilterChildNonQuitting);
             eventObserver.StartObserve();
 
             agentInstanceContext.InstrumentationProvider.APatternObserverStart();
@@ -108,7 +127,9 @@ namespace com.espertech.esper.common.@internal.epl.pattern.observer
             var agentInstanceContext = evalObserverNode.Context.AgentInstanceContext;
             agentInstanceContext.InstrumentationProvider.QPatternObserverQuit(evalObserverNode.factoryNode);
             agentInstanceContext.AuditProvider.PatternInstance(
-                false, evalObserverNode.factoryNode, agentInstanceContext);
+                false,
+                evalObserverNode.factoryNode,
+                agentInstanceContext);
 
             eventObserver.StopObserve();
 

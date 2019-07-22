@@ -135,15 +135,15 @@ namespace com.espertech.esper.regressionlib.suite.@event.bean
 
                 // test escape in column name
                 env.CompileDeploy(
-                        "@Name('s0') select TheString as `order`, TheString as `price.for.goods` from SupportBean")
+                        "@Name('s0') select TheString as `order`, TheString as `Price.for.goods` from SupportBean")
                     .AddListener("s0");
                 Assert.AreEqual(typeof(string), env.Statement("s0").EventType.GetPropertyType("order"));
-                Assert.AreEqual("price.for.goods", env.Statement("s0").EventType.PropertyDescriptors[1].PropertyName);
+                Assert.AreEqual("Price.for.goods", env.Statement("s0").EventType.PropertyDescriptors[1].PropertyName);
 
                 env.SendEventBean(new SupportBean("E1", 1));
                 var @out = (IDictionary<string, object>) env.Listener("s0").AssertOneGetNew().Underlying;
                 Assert.AreEqual("E1", @out.Get("order"));
-                Assert.AreEqual("E1", @out.Get("price.for.goods"));
+                Assert.AreEqual("E1", @out.Get("Price.for.goods"));
 
                 // try control character
                 TryInvalidControlCharacter(env.Listener("s0").AssertOneGetNew());

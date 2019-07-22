@@ -544,7 +544,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                 TryInvalidFilter(env, "select * from SupportBean(IntPrimitive in (1, 'x'))");
 
                 var expr =
-                    "select * from pattern [a=SupportBean => b=SupportBean(IntPrimitive in (a.LongPrimitive, a.LongBoxed))]";
+                    "select * from pattern [a=SupportBean -> b=SupportBean(IntPrimitive in (a.LongPrimitive, a.LongBoxed))]";
                 TryInvalidFilter(env, expr);
             }
         }

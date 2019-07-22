@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.epl.table.core;
@@ -43,7 +44,10 @@ namespace com.espertech.esper.common.@internal.epl.ontrigger
                             agentInstanceContext.AuditProvider.Insert(aNewData, agentInstanceContext);
                         }
 
-                        agentInstanceContext.InternalEventRouter.Route(aNewData, agentInstanceContext, parent.IsAddToFront);
+                        agentInstanceContext.InternalEventRouter.Route(
+                            aNewData,
+                            agentInstanceContext,
+                            parent.IsAddToFront);
                     }
                 }
             }

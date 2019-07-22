@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.context.aifactory.core;
@@ -15,6 +16,7 @@ using com.espertech.esper.common.@internal.epl.historical.indexingstrategy;
 using com.espertech.esper.common.@internal.epl.historical.lookupstrategy;
 using com.espertech.esper.common.@internal.epl.@join.queryplanbuild;
 using com.espertech.esper.common.@internal.util;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.join.queryplan
@@ -80,13 +82,21 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplan
         {
             var method = parent.MakeChild(typeof(HistoricalDataPlanNode), GetType(), classScope);
             method.Block
-                .DeclareVar(typeof(HistoricalDataPlanNode), "node", NewInstance(typeof(HistoricalDataPlanNode)))
+                .DeclareVar<HistoricalDataPlanNode>("node", NewInstance(typeof(HistoricalDataPlanNode)))
                 .SetProperty(Ref("node"), "StreamNum", Constant(StreamNum))
                 .SetProperty(Ref("node"), "NumStreams", Constant(NumStreams))
-                .SetProperty(Ref("node"), "IndexingStrategy", pollResultIndexingStrategy.Make(method, symbols, classScope))
-                .SetProperty(Ref("node"), "LookupStrategy", historicalIndexLookupStrategy.Make(method, symbols, classScope))
+                .SetProperty(
+                    Ref("node"),
+                    "IndexingStrategy",
+                    pollResultIndexingStrategy.Make(method, symbols, classScope))
+                .SetProperty(
+                    Ref("node"),
+                    "LookupStrategy",
+                    historicalIndexLookupStrategy.Make(method, symbols, classScope))
                 .SetProperty(Ref("node"), "RootStreamNum", Constant(RootStreamNum))
-                .SetProperty(Ref("node"), "OuterJoinExprEval",
+                .SetProperty(
+                    Ref("node"),
+                    "OuterJoinExprEval",
                     outerJoinExprEval == null
                         ? ConstantNull()
                         : ExprNodeUtilityCodegen.CodegenEvaluator(outerJoinExprEval, method, GetType(), classScope))

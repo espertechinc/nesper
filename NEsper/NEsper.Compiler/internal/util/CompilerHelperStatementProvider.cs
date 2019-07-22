@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.annotation;
@@ -61,12 +62,12 @@ namespace com.espertech.esper.compiler.@internal.util
             Compilable compilable,
             string optionalModuleName,
             string moduleIdentPostfix,
-            IDictionary<string, byte[]> moduleBytes,
             int statementNumber,
             string packageName,
             ISet<string> statementNames,
             StatementCompileTimeServices compileTimeServices,
-            CompilerOptions compilerOptions)
+            CompilerOptions compilerOptions,
+            out Assembly assembly)
         {
             // Stage 1 - parse statement
             var raw = ParseWalk(compilable, compileTimeServices);
@@ -295,16 +296,19 @@ namespace com.espertech.esper.compiler.@internal.util
                     classes.Add(clazz);
                 }
 
+
                 // Stage 5 - compile "fields" class first and all the rest later
                 var sorted = SortClasses(classes);
-                foreach (var clazz in sorted)
-                {
-                    RoslynCompiler.Compile(clazz, moduleBytes, compileTimeServices.Configuration.Compiler.Logging.IsEnableCode);
-                }
+
+                var compiler = new RoslynCompiler()
+                    .WithCodeLogging(compileTimeServices.Configuration.Compiler.Logging.IsEnableCode)
+                    .WithCodegenClasses(sorted);
+
+                assembly = compiler.Compile();
 
                 return CodeGenerationIDGenerator.GenerateClassNameWithNamespace(packageName, typeof(StatementProvider), classPostfix);
             }
-            catch (StatementSpecCompileException ex)
+            catch (StatementSpecCompileException)
             {
                 throw;
             }
@@ -318,7 +322,7 @@ namespace com.espertech.esper.compiler.@internal.util
             }
             catch (Exception ex)
             {
-                var text = ex.Message == null ? ex.GetType().FullName : ex.Message;
+                var text = ex.Message ?? ex.GetType().FullName;
                 throw new StatementSpecCompileException(text, ex, compilable.ToEPL());
             }
         }

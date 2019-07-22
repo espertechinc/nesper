@@ -8,6 +8,7 @@
 
 using System;
 using System.Reflection;
+
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
@@ -84,16 +85,31 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
         {
             if (type == DuckType.WRAPARRAY) {
                 return ExprDotMethodForgeNoDuckEvalWrapArray.CodegenWrapArray(
-                    this, inner, innerType, codegenMethodScope, exprSymbol, codegenClassScope);
+                    this,
+                    inner,
+                    innerType,
+                    codegenMethodScope,
+                    exprSymbol,
+                    codegenClassScope);
             }
 
             if (type == DuckType.PLAIN) {
                 return ExprDotMethodForgeNoDuckEvalPlain.CodegenPlain(
-                    this, inner, innerType, codegenMethodScope, exprSymbol, codegenClassScope);
+                    this,
+                    inner,
+                    innerType,
+                    codegenMethodScope,
+                    exprSymbol,
+                    codegenClassScope);
             }
 
             return ExprDotMethodForgeNoDuckEvalUnderlying.CodegenUnderlying(
-                this, inner, innerType, codegenMethodScope, exprSymbol, codegenClassScope);
+                this,
+                inner,
+                innerType,
+                codegenMethodScope,
+                exprSymbol,
+                codegenClassScope);
         }
     }
 } // end of namespace

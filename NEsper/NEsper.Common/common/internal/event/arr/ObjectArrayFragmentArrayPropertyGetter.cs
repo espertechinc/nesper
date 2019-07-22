@@ -11,6 +11,7 @@ using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.context.module;
 using com.espertech.esper.common.@internal.@event.core;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.@event.arr
@@ -77,7 +78,9 @@ namespace com.espertech.esper.common.@internal.@event.arr
             CodegenClassScope codegenClassScope)
         {
             return UnderlyingGetCodegen(
-                CastUnderlying(typeof(object[]), beanExpression), codegenMethodScope, codegenClassScope);
+                CastUnderlying(typeof(object[]), beanExpression),
+                codegenMethodScope,
+                codegenClassScope);
         }
 
         public CodegenExpression EventBeanExistsCodegen(
@@ -94,7 +97,9 @@ namespace com.espertech.esper.common.@internal.@event.arr
             CodegenClassScope codegenClassScope)
         {
             return UnderlyingFragmentCodegen(
-                CastUnderlying(typeof(object[]), beanExpression), codegenMethodScope, codegenClassScope);
+                CastUnderlying(typeof(object[]), beanExpression),
+                codegenMethodScope,
+                codegenClassScope);
         }
 
         public CodegenExpression UnderlyingGetCodegen(
@@ -127,12 +132,15 @@ namespace com.espertech.esper.common.@internal.@event.arr
         {
             var mSvc = codegenClassScope.AddOrGetFieldSharable(EventBeanTypedEventFactoryCodegenField.INSTANCE);
             var mType = codegenClassScope.AddFieldUnshared(
-                true, typeof(EventType),
+                true,
+                typeof(EventType),
                 EventTypeUtility.ResolveTypeCodegen(fragmentEventType, EPStatementInitServicesConstants.REF));
             return codegenMethodScope.MakeChild(typeof(object), GetType(), codegenClassScope)
-                .AddParam(typeof(object[]), "oa").Block
-                .DeclareVar(
-                    typeof(object), "value", UnderlyingGetCodegen(Ref("oa"), codegenMethodScope, codegenClassScope))
+                .AddParam(typeof(object[]), "oa")
+                .Block
+                .DeclareVar<object>(
+                    "value",
+                    UnderlyingGetCodegen(Ref("oa"), codegenMethodScope, codegenClassScope))
                 .IfInstanceOf("value", typeof(EventBean[]))
                 .BlockReturn(Ref("value"))
                 .MethodReturn(

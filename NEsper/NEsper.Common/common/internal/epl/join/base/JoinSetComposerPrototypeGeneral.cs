@@ -8,6 +8,7 @@
 
 using System.Collections.Generic;
 using System.Reflection;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.context.aifactory.@select;
 using com.espertech.esper.common.@internal.context.util;
@@ -87,8 +88,10 @@ namespace com.espertech.esper.common.@internal.epl.join.@base
                     var state = table.GetTableInstance(agentInstanceContext.AgentInstanceId);
                     foreach (string indexName in state.IndexRepository.ExplicitIndexNames) { // add secondary indexes
                         var indexInner = state.GetIndex(indexName);
-                        indexesPerStream[streamNo].Put(
-                            new TableLookupIndexReqKey(indexName, null, table.Name), indexInner);
+                        indexesPerStream[streamNo]
+                            .Put(
+                                new TableLookupIndexReqKey(indexName, null, table.Name),
+                                indexInner);
                     }
 
                     var index = state.GetIndex(table.Name); // add primary index
@@ -105,14 +108,23 @@ namespace com.espertech.esper.common.@internal.epl.join.@base
                         EventTable index;
 
                         var virtualDWView = GetNamedWindowVirtualDataWindow(
-                            streamNo, streamJoinAnalysisResult, agentInstanceContext);
+                            streamNo,
+                            streamJoinAnalysisResult,
+                            agentInstanceContext);
                         if (virtualDWView != null) {
                             index = VirtualDWQueryPlanUtil.GetJoinIndexTable(items.Get(entry.Key));
                         }
                         else {
                             index = EventTableUtil.BuildIndex(
-                                agentInstanceContext, streamNo, items.Get(entry.Key), streamTypes[streamNo], false,
-                                entry.Value.IsUnique, null, null, isFireAndForget);
+                                agentInstanceContext,
+                                streamNo,
+                                items.Get(entry.Key),
+                                streamTypes[streamNo],
+                                false,
+                                entry.Value.IsUnique,
+                                null,
+                                null,
+                                isFireAndForget);
                         }
 
                         indexesPerStream[streamNo].Put(entry.Key, index);
@@ -137,13 +149,21 @@ namespace com.espertech.esper.common.@internal.epl.join.@base
                 }
 
                 var executionNode = planNode.MakeExec(
-                    agentInstanceContext, indexesPerStream, streamTypes, streamViews, externalViews,
+                    agentInstanceContext,
+                    indexesPerStream,
+                    streamTypes,
+                    streamViews,
+                    externalViews,
                     tableSecondaryIndexLocks);
 
                 if (Log.IsDebugEnabled) {
                     Log.Debug(
-                        ".makeComposer Execution nodes for stream " + i + " '" + streamNames[i] +
-                        "' : \n" + ExecNode.Print(executionNode));
+                        ".makeComposer Execution nodes for stream " +
+                        i +
+                        " '" +
+                        streamNames[i] +
+                        "' : \n" +
+                        ExecNode.Print(executionNode));
                 }
 
                 queryStrategies[i] = new ExecNodeQueryStrategy(i, streamTypes.Length, executionNode);
@@ -157,23 +177,35 @@ namespace com.espertech.esper.common.@internal.epl.join.@base
             // If this is not unidirectional and not a self-join (excluding self-outer-join)
             JoinSetComposerDesc joinSetComposerDesc;
             if (JoinSetComposerUtil.IsNonUnidirectionalNonSelf(
-                isOuterJoins, streamJoinAnalysisResult.IsUnidirectional, streamJoinAnalysisResult.IsPureSelfJoin)) {
+                isOuterJoins,
+                streamJoinAnalysisResult.IsUnidirectional,
+                streamJoinAnalysisResult.IsPureSelfJoin)) {
                 JoinSetComposer composer;
                 if (hasHistorical) {
                     composer = new JoinSetComposerHistoricalImpl(
-                        eventTableIndexService.AllowInitIndex(isRecoveringResilient), indexesPerStream, queryStrategies,
-                        streamViews, agentInstanceContext);
+                        eventTableIndexService.AllowInitIndex(isRecoveringResilient),
+                        indexesPerStream,
+                        queryStrategies,
+                        streamViews,
+                        agentInstanceContext);
                 }
                 else {
                     if (isFireAndForget) {
                         composer = new JoinSetComposerFAFImpl(
-                            indexesPerStream, queryStrategies, streamJoinAnalysisResult.IsPureSelfJoin,
-                            agentInstanceContext, joinRemoveStream, isOuterJoins);
+                            indexesPerStream,
+                            queryStrategies,
+                            streamJoinAnalysisResult.IsPureSelfJoin,
+                            agentInstanceContext,
+                            joinRemoveStream,
+                            isOuterJoins);
                     }
                     else {
                         composer = new JoinSetComposerImpl(
-                            eventTableIndexService.AllowInitIndex(isRecoveringResilient), indexesPerStream,
-                            queryStrategies, streamJoinAnalysisResult.IsPureSelfJoin, agentInstanceContext,
+                            eventTableIndexService.AllowInitIndex(isRecoveringResilient),
+                            indexesPerStream,
+                            queryStrategies,
+                            streamJoinAnalysisResult.IsPureSelfJoin,
+                            agentInstanceContext,
                             joinRemoveStream);
                     }
                 }
@@ -199,8 +231,12 @@ namespace com.espertech.esper.common.@internal.epl.join.@base
                     }
 
                     JoinSetComposer composer = new JoinSetComposerStreamToWinImpl(
-                        !isRecoveringResilient, indexesPerStream, streamJoinAnalysisResult.IsPureSelfJoin,
-                        unidirectionalStream, driver, streamJoinAnalysisResult.UnidirectionalNonDriving);
+                        !isRecoveringResilient,
+                        indexesPerStream,
+                        streamJoinAnalysisResult.IsPureSelfJoin,
+                        unidirectionalStream,
+                        driver,
+                        streamJoinAnalysisResult.UnidirectionalNonDriving);
                     joinSetComposerDesc = new JoinSetComposerDesc(composer, postJoinFilterEvaluator);
                 }
             }

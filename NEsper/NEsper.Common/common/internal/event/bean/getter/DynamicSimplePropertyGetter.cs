@@ -8,12 +8,14 @@
 
 using System;
 using System.Reflection;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.@event.bean.core;
 using com.espertech.esper.common.@internal.@event.bean.service;
 using com.espertech.esper.common.@internal.@event.core;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.@event.bean.getter
@@ -23,8 +25,8 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
     /// </summary>
     public class DynamicSimplePropertyGetter : DynamicPropertyGetterBase
     {
-        private readonly string getterMethodName;
-        private readonly string isMethodName;
+        private readonly string _getterMethodName;
+        private readonly string _isMethodName;
 
         public DynamicSimplePropertyGetter(
             string fieldName,
@@ -32,8 +34,8 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
             BeanEventTypeFactory beanEventTypeFactory)
             : base(eventBeanTypedEventFactory, beanEventTypeFactory)
         {
-            getterMethodName = PropertyHelper.GetGetterMethodName(fieldName);
-            isMethodName = PropertyHelper.GetIsMethodName(fieldName);
+            _getterMethodName = PropertyHelper.GetGetterMethodName(fieldName);
+            _isMethodName = PropertyHelper.GetIsMethodName(fieldName);
         }
 
         internal override object Call(
@@ -54,7 +56,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
 
         internal override MethodInfo DetermineMethod(Type clazz)
         {
-            return DynamicSimplePropertyDetermineMethod(getterMethodName, isMethodName, clazz);
+            return DynamicSimplePropertyDetermineMethod(_getterMethodName, _isMethodName, clazz);
         }
 
         internal override CodegenExpression DetermineMethodCodegen(
@@ -63,7 +65,10 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
             CodegenClassScope codegenClassScope)
         {
             return StaticMethod(
-                GetType(), "dynamicSimplePropertyDetermineMethod", Constant(getterMethodName), Constant(isMethodName),
+                GetType(),
+                "dynamicSimplePropertyDetermineMethod",
+                Constant(_getterMethodName),
+                Constant(_isMethodName),
                 clazz);
         }
 

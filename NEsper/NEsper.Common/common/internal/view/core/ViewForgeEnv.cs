@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.client.configuration;
 using com.espertech.esper.common.@internal.compile.stage2;
 using com.espertech.esper.common.@internal.compile.stage3;
@@ -33,7 +34,8 @@ namespace com.espertech.esper.common.@internal.view.core
 
         public BeanEventTypeFactory BeanEventTypeFactoryProtected => args.BeanEventTypeFactoryPrivate;
 
-        public EventTypeCompileTimeRegistry EventTypeModuleCompileTimeRegistry => args.EventTypeModuleCompileTimeRegistry;
+        public EventTypeCompileTimeRegistry EventTypeModuleCompileTimeRegistry =>
+            args.EventTypeModuleCompileTimeRegistry;
 
         public Attribute[] Annotations => args.Annotations;
 
@@ -45,11 +47,13 @@ namespace com.espertech.esper.common.@internal.view.core
 
         public StatementRawInfo StatementRawInfo => args.StatementRawInfo;
 
-        public VariableCompileTimeResolver VariableCompileTimeResolver => args.CompileTimeServices.VariableCompileTimeResolver;
+        public VariableCompileTimeResolver VariableCompileTimeResolver =>
+            args.CompileTimeServices.VariableCompileTimeResolver;
 
         public string ContextName => args.StatementRawInfo.ContextName;
 
-        public EventTypeCompileTimeResolver EventTypeCompileTimeResolver => args.CompileTimeServices.EventTypeCompileTimeResolver;
+        public EventTypeCompileTimeResolver EventTypeCompileTimeResolver =>
+            args.CompileTimeServices.EventTypeCompileTimeResolver;
 
         public string ModuleName => args.StatementRawInfo.ModuleName;
     }

@@ -52,7 +52,12 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
 
             CodegenBlock block = methodNode.Block;
             EvaluateCalOpsZDTCodegen(
-                block, "dateTime", forge.calendarForges, methodNode, exprSymbol, codegenClassScope);
+                block,
+                "dateTime",
+                forge.calendarForges,
+                methodNode,
+                exprSymbol,
+                codegenClassScope);
             block.MethodReturn(@Ref("dateTime"));
             return LocalMethod(methodNode, inner);
         }

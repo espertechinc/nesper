@@ -77,7 +77,10 @@ namespace com.espertech.esper.common.@internal.context.activator
             bool isRecoveringResilient)
         {
             var patternAgentInstanceContext = new PatternAgentInstanceContext(
-                patternContext, agentInstanceContext, hasConsumingFilter, null);
+                patternContext,
+                agentInstanceContext,
+                hasConsumingFilter,
+                null);
             var rootNode = EvalNodeUtil.MakeRootNodeFromFactory(rootFactoryNode, patternAgentInstanceContext);
 
             EventStream sourceEventStream = isCanIterate
@@ -102,8 +105,11 @@ namespace com.espertech.esper.common.@internal.context.activator
             return new ViewableActivationResult(
                 sourceEventStream,
                 new ProxyAgentInstanceStopCallback(services => rootState.Stop()),
-                rootState, suppressSameEventMatches,
-                discardPartialsOnMatch, rootState, null);
+                rootState,
+                suppressSameEventMatches,
+                discardPartialsOnMatch,
+                rootState,
+                null);
         }
     }
 } // end of namespace

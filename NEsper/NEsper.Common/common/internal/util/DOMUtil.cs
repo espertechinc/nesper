@@ -8,6 +8,7 @@
 
 using System;
 using System.Xml;
+
 using com.espertech.esper.common.client.configuration;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
@@ -50,7 +51,8 @@ namespace com.espertech.esper.common.@internal.util
                     name = node.Name;
                 }
 
-                throw new ConfigurationException("Required attribute by name '" + key + "' not found for element '" + name + "'");
+                throw new ConfigurationException(
+                    "Required attribute by name '" + key + "' not found for element '" + name + "'");
             }
 
             return valueNode.InnerText;
@@ -92,7 +94,9 @@ namespace com.espertech.esper.common.@internal.util
                 return bool.Parse(str);
             }
             catch (Exception t) {
-                throw new ConfigurationException("Failed to parse value for '" + name + "' value '" + str + "' as boolean: " + t.Message, t);
+                throw new ConfigurationException(
+                    "Failed to parse value for '" + name + "' value '" + str + "' as boolean: " + t.Message,
+                    t);
             }
         }
     }

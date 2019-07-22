@@ -8,9 +8,11 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.epl.agg.core;
 using com.espertech.esper.common.@internal.util;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
@@ -37,12 +39,13 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
             var size = sorted.SizeCodegen();
             var iterator = max ? sorted.ReverseIteratorCodegen : sorted.IteratorCodegen();
 
-            context.Method.Block.IfCondition(EqualsIdentity(size, Constant(0))).BlockReturn(ConstantNull())
+            context.Method.Block.IfCondition(EqualsIdentity(size, Constant(0)))
+                .BlockReturn(ConstantNull())
                 .DeclareVar(TypeHelper.GetArrayType(componentType), "array", NewArrayByLength(componentType, size))
-                .DeclareVar(typeof(int), "count", Constant(0))
-                .DeclareVar(typeof(IEnumerator<EventBean>), "it", iterator)
+                .DeclareVar<int>("count", Constant(0))
+                .DeclareVar<IEnumerator<EventBean>>("it", iterator)
                 .WhileLoop(ExprDotMethod(Ref("it"), "hasNext"))
-                .DeclareVar(typeof(EventBean), "bean", Cast(typeof(EventBean), ExprDotMethod(Ref("it"), "next")))
+                .DeclareVar<EventBean>("bean", Cast(typeof(EventBean), ExprDotMethod(Ref("it"), "next")))
                 .AssignArrayElement(Ref("array"), Ref("count"), Cast(componentType, ExprDotUnderlying(Ref("bean"))))
                 .Increment("count")
                 .BlockEnd()

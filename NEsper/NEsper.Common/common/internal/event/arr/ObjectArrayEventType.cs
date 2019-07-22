@@ -9,6 +9,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+
 using com.espertech.esper.collection;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.meta;
@@ -34,14 +35,19 @@ namespace com.espertech.esper.common.@internal.@event.arr
             string endTimestampName,
             BeanEventTypeFactory beanEventTypeFactory)
             : base(
-                metadata, properyTypes, optionalSuperTypes,
-                optionalDeepSupertypes, startTimestampName, endTimestampName,
+                metadata,
+                properyTypes,
+                optionalSuperTypes,
+                optionalDeepSupertypes,
+                startTimestampName,
+                endTimestampName,
                 GetGetterFactory(metadata.Name, properyTypes, optionalSuperTypes),
                 beanEventTypeFactory)
         {
         }
 
-        public IDictionary<string, int> PropertiesIndexes => ((EventTypeNestableGetterFactoryObjectArray) getterFactory).PropertiesIndex;
+        public IDictionary<string, int> PropertiesIndexes =>
+            ((EventTypeNestableGetterFactoryObjectArray) getterFactory).PropertiesIndex;
 
         public override Type UnderlyingType => typeof(object[]);
 
@@ -81,7 +87,10 @@ namespace com.espertech.esper.common.@internal.@event.arr
             }
 
             return new ObjectArrayEventBeanCopyMethodWithArrayMapForge(
-                this, beanEventTypeFactory.EventBeanTypedEventFactory, pair.MapProperties, pair.ArrayProperties,
+                this,
+                beanEventTypeFactory.EventBeanTypedEventFactory,
+                pair.MapProperties,
+                pair.ArrayProperties,
                 PropertiesIndexes);
         }
 
@@ -138,7 +147,14 @@ namespace com.espertech.esper.common.@internal.@event.arr
 
                 var mapProp = (MappedProperty) property;
                 return new EventPropertyDescriptor(
-                    mapProp.PropertyNameAtomic, typeof(object), null, false, true, false, true, false);
+                    mapProp.PropertyNameAtomic,
+                    typeof(object),
+                    null,
+                    false,
+                    true,
+                    false,
+                    true,
+                    false);
             }
 
             if (property is IndexedProperty) {
@@ -149,7 +165,14 @@ namespace com.espertech.esper.common.@internal.@event.arr
 
                 var indexedProp = (IndexedProperty) property;
                 return new EventPropertyDescriptor(
-                    indexedProp.PropertyNameAtomic, typeof(object), null, true, false, true, false, false);
+                    indexedProp.PropertyNameAtomic,
+                    typeof(object),
+                    null,
+                    true,
+                    false,
+                    true,
+                    false,
+                    false);
             }
 
             return null;
@@ -297,7 +320,11 @@ namespace com.espertech.esper.common.@internal.@event.arr
                 var setTwoTypeFound = other.nestableTypes.ContainsKey(propName);
 
                 var comparedMessage = BaseNestableEventUtil.ComparePropType(
-                    propName, setOneType, setTwoType, setTwoTypeFound, other.Name);
+                    propName,
+                    setOneType,
+                    setTwoType,
+                    setTwoTypeFound,
+                    other.Name);
                 if (comparedMessage != null) {
                     return false;
                 }

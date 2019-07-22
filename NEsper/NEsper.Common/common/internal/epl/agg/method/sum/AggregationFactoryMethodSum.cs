@@ -8,6 +8,7 @@
 
 using System;
 using System.Numerics;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.core;
@@ -55,11 +56,27 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.sum
             Type distinctValueType = !parent.IsDistinct ? null : inputValueType;
             if (resultType == typeof(BigInteger) || resultType == typeof(decimal)) {
                 aggregator = new AggregatorSumBig(
-                    this, col, rowCtor, membersColumnized, classScope, distinctValueType, parent.IsFilter, parent.OptionalFilter, resultType);
+                    this,
+                    col,
+                    rowCtor,
+                    membersColumnized,
+                    classScope,
+                    distinctValueType,
+                    parent.IsFilter,
+                    parent.OptionalFilter,
+                    resultType);
             }
             else {
                 aggregator = new AggregatorSumNonBig(
-                    this, col, rowCtor, membersColumnized, classScope, distinctValueType, parent.IsFilter, parent.OptionalFilter, resultType);
+                    this,
+                    col,
+                    rowCtor,
+                    membersColumnized,
+                    classScope,
+                    distinctValueType,
+                    parent.IsFilter,
+                    parent.OptionalFilter,
+                    resultType);
             }
         }
 

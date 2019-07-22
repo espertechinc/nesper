@@ -7,10 +7,12 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.@event.core;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.@event.map
@@ -80,7 +82,8 @@ namespace com.espertech.esper.common.@internal.@event.map
             CodegenClassScope codegenClassScope)
         {
             return UnderlyingGetCodegen(
-                CastUnderlying(typeof(IDictionary<object, object>), beanExpression), codegenMethodScope,
+                CastUnderlying(typeof(IDictionary<object, object>), beanExpression),
+                codegenMethodScope,
                 codegenClassScope);
         }
 
@@ -90,7 +93,8 @@ namespace com.espertech.esper.common.@internal.@event.map
             CodegenClassScope codegenClassScope)
         {
             return UnderlyingExistsCodegen(
-                CastUnderlying(typeof(IDictionary<object, object>), beanExpression), codegenMethodScope,
+                CastUnderlying(typeof(IDictionary<object, object>), beanExpression),
+                codegenMethodScope,
                 codegenClassScope);
         }
 
@@ -107,10 +111,14 @@ namespace com.espertech.esper.common.@internal.@event.map
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            var resultExpression = mapGetterChain[0].UnderlyingGetCodegen(
-                underlyingExpression, codegenMethodScope, codegenClassScope);
+            var resultExpression = mapGetterChain[0]
+                .UnderlyingGetCodegen(
+                    underlyingExpression,
+                    codegenMethodScope,
+                    codegenClassScope);
             return LocalMethod(
-                HandleGetterTrailingChainCodegen(codegenMethodScope, codegenClassScope), resultExpression);
+                HandleGetterTrailingChainCodegen(codegenMethodScope, codegenClassScope),
+                resultExpression);
         }
 
         public CodegenExpression UnderlyingExistsCodegen(
@@ -134,16 +142,18 @@ namespace com.espertech.esper.common.@internal.@event.map
             CodegenClassScope codegenClassScope)
         {
             return codegenMethodScope.MakeChild(typeof(bool), GetType(), codegenClassScope)
-                .AddParam(typeof(IDictionary<object, object>), "map").Block
+                .AddParam(typeof(IDictionary<object, object>), "map")
+                .Block
                 .IfConditionReturnConst(
                     Not(mapGetterChain[0].UnderlyingExistsCodegen(Ref("map"), codegenMethodScope, codegenClassScope)),
                     false)
-                .DeclareVar(
-                    typeof(object), "result",
+                .DeclareVar<object>(
+                    "result",
                     mapGetterChain[0].UnderlyingGetCodegen(Ref("map"), codegenMethodScope, codegenClassScope))
                 .MethodReturn(
                     LocalMethod(
-                        HandleIsExistsTrailingChainCodegen(codegenMethodScope, codegenClassScope), Ref("result")));
+                        HandleIsExistsTrailingChainCodegen(codegenMethodScope, codegenClassScope),
+                        Ref("result")));
         }
 
         private bool HandleIsExistsTrailingChain(object result)
@@ -188,7 +198,8 @@ namespace com.espertech.esper.common.@internal.@event.map
             CodegenClassScope codegenClassScope)
         {
             var block = codegenMethodScope.MakeChild(typeof(bool), GetType(), codegenClassScope)
-                .AddParam(typeof(object), "result").Block;
+                .AddParam(typeof(object), "result")
+                .Block;
             for (var i = 1; i < mapGetterChain.Length; i++) {
                 block.IfRefNullReturnFalse("result");
                 var getter = mapGetterChain[i];
@@ -199,13 +210,16 @@ namespace com.espertech.esper.common.@internal.@event.map
                         .AssignRef(
                             "result",
                             getter.EventBeanExistsCodegen(
-                                CastRef(typeof(EventBean), "result"), codegenMethodScope, codegenClassScope))
+                                CastRef(typeof(EventBean), "result"),
+                                codegenMethodScope,
+                                codegenClassScope))
                         .IfElse()
                         .BlockReturn(ConstantFalse())
                         .IfElse()
                         .BlockReturn(
                             getter.UnderlyingExistsCodegen(
-                                CastRef(typeof(IDictionary<object, object>), "result"), codegenMethodScope,
+                                CastRef(typeof(IDictionary<object, object>), "result"),
+                                codegenMethodScope,
                                 codegenClassScope));
                 }
 
@@ -214,14 +228,17 @@ namespace com.espertech.esper.common.@internal.@event.map
                     .AssignRef(
                         "result",
                         getter.EventBeanGetCodegen(
-                            CastRef(typeof(EventBean), "result"), codegenMethodScope, codegenClassScope))
+                            CastRef(typeof(EventBean), "result"),
+                            codegenMethodScope,
+                            codegenClassScope))
                     .IfElse()
                     .BlockReturn(ConstantFalse())
                     .IfElse()
                     .AssignRef(
                         "result",
                         getter.UnderlyingGetCodegen(
-                            CastRef(typeof(IDictionary<object, object>), "result"), codegenMethodScope,
+                            CastRef(typeof(IDictionary<object, object>), "result"),
+                            codegenMethodScope,
                             codegenClassScope))
                     .BlockEnd();
             }
@@ -258,7 +275,8 @@ namespace com.espertech.esper.common.@internal.@event.map
             CodegenClassScope codegenClassScope)
         {
             var block = codegenMethodScope.MakeChild(typeof(object), GetType(), codegenClassScope)
-                .AddParam(typeof(object), "result").Block;
+                .AddParam(typeof(object), "result")
+                .Block;
             for (var i = 1; i < mapGetterChain.Length; i++) {
                 block.IfRefNullReturnNull("result");
                 var getter = mapGetterChain[i];
@@ -267,14 +285,17 @@ namespace com.espertech.esper.common.@internal.@event.map
                     .AssignRef(
                         "result",
                         getter.EventBeanGetCodegen(
-                            CastRef(typeof(EventBean), "result"), codegenMethodScope, codegenClassScope))
+                            CastRef(typeof(EventBean), "result"),
+                            codegenMethodScope,
+                            codegenClassScope))
                     .IfElse()
                     .BlockReturn(ConstantNull())
                     .IfElse()
                     .AssignRef(
                         "result",
                         getter.UnderlyingGetCodegen(
-                            CastRef(typeof(IDictionary<object, object>), "result"), codegenMethodScope,
+                            CastRef(typeof(IDictionary<object, object>), "result"),
+                            codegenMethodScope,
                             codegenClassScope))
                     .BlockEnd();
             }

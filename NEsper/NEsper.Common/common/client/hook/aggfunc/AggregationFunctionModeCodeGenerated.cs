@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.@internal.epl.agg.method.core;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
@@ -34,7 +35,8 @@ namespace com.espertech.esper.common.client.hook.aggfunc
         /// </summary>
         /// <param name="aggregatorMethodFactory">factory</param>
         /// <returns>itself</returns>
-        public AggregationFunctionModeCodeGenerated SetAggregatorMethodFactory(AggregatorMethodFactory aggregatorMethodFactory)
+        public AggregationFunctionModeCodeGenerated SetAggregatorMethodFactory(
+            AggregatorMethodFactory aggregatorMethodFactory)
         {
             this.aggregatorMethodFactory = aggregatorMethodFactory;
             return this;

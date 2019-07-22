@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -19,6 +20,7 @@ using com.espertech.esper.common.@internal.view.groupwin;
 using com.espertech.esper.common.@internal.view.intersect;
 using com.espertech.esper.common.@internal.view.union;
 using com.espertech.esper.compat.collections;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.view.core
@@ -67,7 +69,10 @@ namespace com.espertech.esper.common.@internal.view.core
                 // Build data window views that occur next to each other ("d d", "d d d") into a single intersection or union
                 // Calls attach on the contained-views.
                 var forgesChainWIntersections = BuildIntersectionsUnions(
-                    forgesChain, args, viewForgeEnv, parentEventType);
+                    forgesChain,
+                    args,
+                    viewForgeEnv,
+                    parentEventType);
 
                 // Verify group window use
                 VerifyGroups(forgesChainWIntersections);
@@ -278,18 +283,25 @@ namespace com.espertech.esper.common.@internal.view.core
             foreach (var spec in viewSpecList) {
                 // Create the new view factory
                 ViewFactoryForge viewFactoryForge = args.ViewResolutionService.Create(
-                    spec.ObjectNamespace, spec.ObjectName, args.OptionalCreateNamedWindowName);
+                    spec.ObjectNamespace,
+                    spec.ObjectName,
+                    args.OptionalCreateNamedWindowName);
                 forges.Add(viewFactoryForge);
 
                 // Set view factory parameters
                 try {
                     viewFactoryForge.SetViewParameters(
-                        spec.ObjectParameters, viewForgeEnv, args.StreamNum);
+                        spec.ObjectParameters,
+                        viewForgeEnv,
+                        args.StreamNum);
                 }
                 catch (ViewParameterException e) {
                     throw new ViewProcessingException(
-                        "Error in view '" + spec.ObjectName +
-                        "', " + e.Message, e);
+                        "Error in view '" +
+                        spec.ObjectName +
+                        "', " +
+                        e.Message,
+                        e);
                 }
             }
 
@@ -357,11 +369,14 @@ namespace com.espertech.esper.common.@internal.view.core
             SAIFFInitializeSymbol symbols)
         {
             var method = parent.MakeChild(typeof(ViewFactory[]), generator, classScope);
-            method.Block.DeclareVar(
-                typeof(ViewFactory[]), "groupeds", NewArrayByLength(typeof(ViewFactory), Constant(forges.Count)));
+            method.Block.DeclareVar<ViewFactory[]>(
+                "groupeds",
+                NewArrayByLength(typeof(ViewFactory), Constant(forges.Count)));
             for (var i = 0; i < forges.Count; i++) {
                 method.Block.AssignArrayElement(
-                    "groupeds", Constant(i), forges[i].Make(method, symbols, classScope));
+                    "groupeds",
+                    Constant(i),
+                    forges[i].Make(method, symbols, classScope));
             }
 
             method.Block.MethodReturn(Ref("groupeds"));
@@ -378,17 +393,18 @@ namespace com.espertech.esper.common.@internal.view.core
         {
             var method = parent.MakeChild(typeof(ViewFactory[]), typeof(ViewFactoryForgeUtil), classScope);
             method.Block
-                .DeclareVar(
-                    typeof(ViewFactory[]), "factories", NewArrayByLength(typeof(ViewFactory), Constant(forges.Count)));
+                .DeclareVar<ViewFactory[]>(
+                    "factories",
+                    NewArrayByLength(typeof(ViewFactory), Constant(forges.Count)));
 
             var grouped = !forges.IsEmpty() && forges[0] is GroupByViewFactoryForge;
-            method.Block.DeclareVar(typeof(ViewFactoryContext), "ctx", NewInstance(typeof(ViewFactoryContext)))
+            method.Block.DeclareVar<ViewFactoryContext>("ctx", NewInstance(typeof(ViewFactoryContext)))
                 .SetProperty(Ref("ctx"), "StreamNum", Constant(streamNum))
                 .SetProperty(Ref("ctx"), "SubqueryNumber", Constant(subqueryNum))
                 .SetProperty(Ref("ctx"), "Grouped", Constant(grouped));
             for (var i = 0; i < forges.Count; i++) {
                 var @ref = "factory_" + i;
-                method.Block.DeclareVar(typeof(ViewFactory), @ref, forges[i].Make(method, symbols, classScope))
+                method.Block.DeclareVar<ViewFactory>(@ref, forges[i].Make(method, symbols, classScope))
                     .ExprDotMethod(Ref(@ref), "init", Ref("ctx"), symbols.GetAddInitSvc(method))
                     .AssignArrayElement(Ref("factories"), Constant(i), Ref(@ref));
             }

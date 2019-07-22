@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.@internal.epl.agg.groupby;
 using com.espertech.esper.common.@internal.epl.agg.groupbylocal;
 using com.espertech.esper.common.@internal.epl.expression.time.abacus;
@@ -18,7 +19,8 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
 {
     public class AggregationServiceFactoryServiceImpl : AggregationServiceFactoryService
     {
-        public readonly static AggregationServiceFactoryServiceImpl INSTANCE = new AggregationServiceFactoryServiceImpl();
+        public readonly static AggregationServiceFactoryServiceImpl INSTANCE =
+            new AggregationServiceFactoryServiceImpl();
 
         private AggregationServiceFactoryServiceImpl()
         {

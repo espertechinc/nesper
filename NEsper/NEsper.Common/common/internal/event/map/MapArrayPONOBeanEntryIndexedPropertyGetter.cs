@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -16,6 +17,7 @@ using com.espertech.esper.common.@internal.@event.bean.getter;
 using com.espertech.esper.common.@internal.@event.bean.service;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.compat.collections;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.@event.map
@@ -78,7 +80,8 @@ namespace com.espertech.esper.common.@internal.@event.map
             CodegenClassScope codegenClassScope)
         {
             return UnderlyingGetCodegen(
-                CastUnderlying(typeof(IDictionary<string, object>), beanExpression), codegenMethodScope,
+                CastUnderlying(typeof(IDictionary<string, object>), beanExpression),
+                codegenMethodScope,
                 codegenClassScope);
         }
 
@@ -111,12 +114,17 @@ namespace com.espertech.esper.common.@internal.@event.map
             CodegenClassScope codegenClassScope)
         {
             return codegenMethodScope.MakeChild(typeof(object), GetType(), codegenClassScope)
-                .AddParam(typeof(IDictionary<string, object>), "map").Block
-                .DeclareVar(typeof(object), "value", ExprDotMethod(Ref("map"), "get", Constant(propertyMap)))
+                .AddParam(typeof(IDictionary<string, object>), "map")
+                .Block
+                .DeclareVar<object>("value", ExprDotMethod(Ref("map"), "get", Constant(propertyMap)))
                 .MethodReturn(
                     LocalMethod(
                         BaseNestableEventUtil.GetBeanArrayValueCodegen(
-                            codegenMethodScope, codegenClassScope, nestedGetter, index), Ref("value")));
+                            codegenMethodScope,
+                            codegenClassScope,
+                            nestedGetter,
+                            index),
+                        Ref("value")));
         }
     }
 } // end of namespace

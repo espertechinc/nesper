@@ -7,11 +7,13 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.compat.collections;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.@event.map
@@ -71,7 +73,8 @@ namespace com.espertech.esper.common.@internal.@event.map
             CodegenClassScope codegenClassScope)
         {
             return UnderlyingGetCodegen(
-                CastUnderlying(typeof(IDictionary<object, object>), beanExpression), codegenMethodScope,
+                CastUnderlying(typeof(IDictionary<object, object>), beanExpression),
+                codegenMethodScope,
                 codegenClassScope);
         }
 
@@ -81,7 +84,8 @@ namespace com.espertech.esper.common.@internal.@event.map
             CodegenClassScope codegenClassScope)
         {
             return UnderlyingExistsCodegen(
-                CastUnderlying(typeof(IDictionary<object, object>), beanExpression), codegenMethodScope,
+                CastUnderlying(typeof(IDictionary<object, object>), beanExpression),
+                codegenMethodScope,
                 codegenClassScope);
         }
 
@@ -99,7 +103,11 @@ namespace com.espertech.esper.common.@internal.@event.map
             CodegenClassScope codegenClassScope)
         {
             return StaticMethod(
-                GetType(), "getMapMappedValue", underlyingExpression, Constant(fieldName), Constant(key));
+                GetType(),
+                "getMapMappedValue",
+                underlyingExpression,
+                Constant(fieldName),
+                Constant(key));
         }
 
         public CodegenExpression UnderlyingExistsCodegen(
@@ -108,7 +116,11 @@ namespace com.espertech.esper.common.@internal.@event.map
             CodegenClassScope codegenClassScope)
         {
             return StaticMethod(
-                GetType(), "isMapExistsProperty", underlyingExpression, Constant(fieldName), Constant(key));
+                GetType(),
+                "isMapExistsProperty",
+                underlyingExpression,
+                Constant(fieldName),
+                Constant(key));
         }
 
         public CodegenExpression UnderlyingFragmentCodegen(
@@ -134,8 +146,11 @@ namespace com.espertech.esper.common.@internal.@event.map
             CodegenExpression key)
         {
             return StaticMethod(
-                GetType(), "getMapMappedValue", CastUnderlying(typeof(IDictionary<object, object>), beanExpression),
-                Constant(fieldName), key);
+                GetType(),
+                "getMapMappedValue",
+                CastUnderlying(typeof(IDictionary<object, object>), beanExpression),
+                Constant(fieldName),
+                key);
         }
 
         /// <summary>

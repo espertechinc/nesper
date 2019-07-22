@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.IO;
+
 using com.espertech.esper.common.@internal.@event.propertyparser;
 
 namespace com.espertech.esper.common.@internal.@event.property

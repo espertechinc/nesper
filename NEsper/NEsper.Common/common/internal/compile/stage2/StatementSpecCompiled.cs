@@ -9,6 +9,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+
 using com.espertech.esper.common.@internal.compile.stage1.spec;
 using com.espertech.esper.common.@internal.epl.expression.declared.compiletime;
 using com.espertech.esper.common.@internal.epl.expression.subquery;
@@ -60,8 +61,14 @@ namespace com.espertech.esper.common.@internal.compile.stage2
             StatementSpecCompiled spec,
             StreamSpecCompiled[] streamSpecCompileds)
             : this(
-                spec.Raw, streamSpecCompileds, spec.SelectClauseCompiled, spec.Annotations, spec.GroupByExpressions,
-                spec.SubselectNodes, spec.exprDeclaredNodes, spec.TableAccessNodes)
+                spec.Raw,
+                streamSpecCompileds,
+                spec.SelectClauseCompiled,
+                spec.Annotations,
+                spec.GroupByExpressions,
+                spec.SubselectNodes,
+                spec.exprDeclaredNodes,
+                spec.TableAccessNodes)
         {
         }
 

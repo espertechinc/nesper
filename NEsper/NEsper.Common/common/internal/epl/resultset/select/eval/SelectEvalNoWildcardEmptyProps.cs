@@ -38,14 +38,20 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            CodegenMethod methodNode = codegenMethodScope.MakeChild(typeof(EventBean), this.GetType(), codegenClassScope);
+            CodegenMethod methodNode = codegenMethodScope.MakeChild(
+                typeof(EventBean),
+                this.GetType(),
+                codegenClassScope);
             methodNode.Block.MethodReturn(
-                ExprDotMethod(eventBeanFactory, "adapterForTypedMap", StaticMethod(typeof(Collections), "emptyMap"), resultEventType));
+                ExprDotMethod(
+                    eventBeanFactory,
+                    "adapterForTypedMap",
+                    StaticMethod(typeof(Collections), "emptyMap"),
+                    resultEventType));
             return methodNode;
         }
 
-        public EventType ResultEventType
-        {
+        public EventType ResultEventType {
             get => resultEventType;
         }
     }

@@ -44,17 +44,26 @@ namespace NEsper.Avro.SelectExprRep
         {
             // NOTE: Maintaining result-event-type as out own field as we may be an "inner" select-expr-processor
             var mType = codegenClassScope.AddFieldUnshared(
-                true, typeof(EventType), EventTypeUtility.ResolveTypeCodegen(_resultEventTypeAvro, EPStatementInitServicesConstants.REF));
+                true,
+                typeof(EventType),
+                EventTypeUtility.ResolveTypeCodegen(_resultEventTypeAvro, EPStatementInitServicesConstants.REF));
             var schema = codegenClassScope.NamespaceScope.AddFieldUnshared(
-                true, typeof(Schema),
+                true,
+                typeof(Schema),
                 CodegenExpressionBuilder.StaticMethod(
-                    typeof(AvroSchemaUtil), "resolveAvroSchema",
+                    typeof(AvroSchemaUtil),
+                    "resolveAvroSchema",
                     EventTypeUtility.ResolveTypeCodegen(_resultEventTypeAvro, EPStatementInitServicesConstants.REF)));
             var methodNode = codegenMethodScope.MakeChild(typeof(EventBean), GetType(), codegenClassScope);
             var refEPS = exprSymbol.GetAddEPS(methodNode);
             methodNode.Block.MethodReturn(
                 CodegenExpressionBuilder.StaticMethod(
-                    typeof(SelectExprJoinWildcardProcessorAvro), "processSelectExprJoinWildcardAvro", refEPS, schema, eventBeanFactory, mType));
+                    typeof(SelectExprJoinWildcardProcessorAvro),
+                    "processSelectExprJoinWildcardAvro",
+                    refEPS,
+                    schema,
+                    eventBeanFactory,
+                    mType));
             return methodNode;
         }
 
@@ -74,11 +83,9 @@ namespace NEsper.Avro.SelectExprRep
         {
             var fields = schema.AsRecordSchema().Fields;
             var @event = new GenericRecord(schema.AsRecordSchema());
-            for (var i = 0; i < eventsPerStream.Length; i++)
-            {
+            for (var i = 0; i < eventsPerStream.Length; i++) {
                 var streamEvent = eventsPerStream[i];
-                if (streamEvent != null)
-                {
+                if (streamEvent != null) {
                     var record = (GenericRecord) streamEvent.Underlying;
                     @event.Put(fields[i], record);
                 }
@@ -87,8 +94,7 @@ namespace NEsper.Avro.SelectExprRep
             return eventAdapterService.AdapterForTypedAvro(@event, resultEventType);
         }
 
-        public EventType ResultEventType
-        {
+        public EventType ResultEventType {
             get => _resultEventTypeAvro;
         }
     }

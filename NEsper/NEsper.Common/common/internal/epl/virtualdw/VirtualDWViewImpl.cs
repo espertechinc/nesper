@@ -9,6 +9,7 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
+
 using com.espertech.esper.collection;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.hook.vdw;
@@ -83,7 +84,9 @@ namespace com.espertech.esper.common.@internal.epl.virtualdw
             AgentInstanceContext agentInstanceContext)
         {
             Pair<IndexMultiKey, VirtualDWEventTable> tableVW = VirtualDWQueryPlanUtil.GetSubordinateQueryDesc(
-                false, subordTableFactory.IndexHashedProps, subordTableFactory.IndexBtreeProps);
+                false,
+                subordTableFactory.IndexHashedProps,
+                subordTableFactory.IndexBtreeProps);
             VirtualDWEventTable noopTable = tableVW.Second;
             for (int i = 0; i < noopTable.BtreeAccess.Count; i++) {
                 string opRange = subordTableFactory.RangeEvals[i].Type.StringOp;
@@ -101,9 +104,15 @@ namespace com.espertech.esper.common.@internal.epl.virtualdw
             _lastAccessedByNum++;
 
             VirtualDataWindowLookupContextSPI context = new VirtualDataWindowLookupContextSPI(
-                agentInstanceContext.DeploymentId, agentInstanceContext.StatementName,
-                agentInstanceContext.StatementId, agentInstanceContext.Annotations, false, _factory.NamedWindowName,
-                noopTable.HashAccess, noopTable.BtreeAccess, _lastAccessedByNum);
+                agentInstanceContext.DeploymentId,
+                agentInstanceContext.StatementName,
+                agentInstanceContext.StatementId,
+                agentInstanceContext.Annotations,
+                false,
+                _factory.NamedWindowName,
+                noopTable.HashAccess,
+                noopTable.BtreeAccess,
+                _lastAccessedByNum);
             VirtualDataWindowLookup index;
             try {
                 index = _dataExternal.GetLookup(context);
@@ -139,9 +148,14 @@ namespace com.espertech.esper.common.@internal.epl.virtualdw
 
             VirtualDataWindowLookup index = _dataExternal.GetLookup(
                 new VirtualDataWindowLookupContext(
-                    agentInstanceContext.DeploymentId, agentInstanceContext.StatementName,
-                    agentInstanceContext.StatementId, agentInstanceContext.Annotations,
-                    false, _factory.NamedWindowName, noopTable.HashAccess, noopTable.BtreeAccess));
+                    agentInstanceContext.DeploymentId,
+                    agentInstanceContext.StatementName,
+                    agentInstanceContext.StatementId,
+                    agentInstanceContext.Annotations,
+                    false,
+                    _factory.NamedWindowName,
+                    noopTable.HashAccess,
+                    noopTable.BtreeAccess));
             CheckIndex(index);
             return new JoinExecTableLookupStrategyVirtualDW(_factory.NamedWindowName, index, tableLookupPlan);
         }
@@ -191,8 +205,14 @@ namespace com.espertech.esper.common.@internal.epl.virtualdw
             string namedWindowName = _factory.NamedWindowName;
             VirtualDataWindowLookup index = _dataExternal.GetLookup(
                 new VirtualDataWindowLookupContext(
-                    null, null, -1, annotations,
-                    true, namedWindowName, noopTable.HashAccess, noopTable.BtreeAccess));
+                    null,
+                    null,
+                    -1,
+                    annotations,
+                    true,
+                    namedWindowName,
+                    noopTable.HashAccess,
+                    noopTable.BtreeAccess));
             CheckIndex(index);
             if (index == null) {
                 throw new EPException("Exception obtaining index from virtual data window '" + namedWindowName + "'");
@@ -207,8 +227,11 @@ namespace com.espertech.esper.common.@internal.epl.virtualdw
             }
             catch (Exception ex) {
                 Log.Warn(
-                    "Exception encountered invoking virtual data window external index for window '" + namedWindowName +
-                    "': " + ex.Message, ex);
+                    "Exception encountered invoking virtual data window external index for window '" +
+                    namedWindowName +
+                    "': " +
+                    ex.Message,
+                    ex);
             }
 
             return events;
@@ -230,13 +253,18 @@ namespace com.espertech.esper.common.@internal.epl.virtualdw
                 }
 
                 VirtualDataWindowEventStartIndex create = new VirtualDataWindowEventStartIndex(
-                    _factory.NamedWindowName, indexName, fields, explicitIndexDesc.IsUnique);
+                    _factory.NamedWindowName,
+                    indexName,
+                    fields,
+                    explicitIndexDesc.IsUnique);
                 _dataExternal.HandleEvent(create);
             }
             catch (Exception ex) {
                 string message =
                     "Exception encountered invoking virtual data window handle start-index event for window '" +
-                    _factory.NamedWindowName + "': " + ex.Message;
+                    _factory.NamedWindowName +
+                    "': " +
+                    ex.Message;
                 Log.Warn(message, ex);
                 throw new EPException(message, ex);
             }
@@ -254,7 +282,9 @@ namespace com.espertech.esper.common.@internal.epl.virtualdw
             catch (Exception ex) {
                 string message =
                     "Exception encountered invoking virtual data window handle stop-index event for window '" +
-                    _factory.NamedWindowName + "': " + ex.Message;
+                    _factory.NamedWindowName +
+                    "': " +
+                    ex.Message;
                 Log.Warn(message, ex);
             }
         }
@@ -269,7 +299,9 @@ namespace com.espertech.esper.common.@internal.epl.virtualdw
             catch (Exception ex) {
                 string message =
                     "Exception encountered invoking virtual data window handle stop-window event for window '" +
-                    _factory.NamedWindowName + "': " + ex.Message;
+                    _factory.NamedWindowName +
+                    "': " +
+                    ex.Message;
                 Log.Warn(message, ex);
             }
         }

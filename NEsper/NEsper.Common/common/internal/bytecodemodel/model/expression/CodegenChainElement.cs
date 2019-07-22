@@ -27,7 +27,6 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
 
         public void Render(
             StringBuilder builder,
-            IDictionary<Type, string> imports,
             bool isInnerClass)
         {
             builder.Append(_method).Append("(");
@@ -35,7 +34,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
                 var delimiter = "";
                 foreach (var param in _optionalParams) {
                     builder.Append(delimiter);
-                    param.Render(builder, imports, isInnerClass);
+                    param.Render(builder, isInnerClass);
                     delimiter = ",";
                 }
             }

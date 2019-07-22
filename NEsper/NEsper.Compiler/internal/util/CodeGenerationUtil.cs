@@ -25,23 +25,25 @@ namespace com.espertech.esper.compiler.@internal.util
         {
             builder.Append("namespace ");
             builder.Append(packageName);
-            builder.Append("{\n");
+            builder.Append(" {\n");
         }
 
         public static void Importsdecl(
             StringBuilder builder,
-            ICollection<Type> imports)
+            ICollection<ImportDecl> imports)
         {
-            foreach (var importClass in imports)
+            foreach (var importDecl in imports)
             {
-                if (importClass.Namespace != null &&
-                    importClass.Namespace.Equals("System"))
+                if (importDecl.Namespace != null &&
+                    importDecl.Namespace.Equals("System"))
                 {
                     continue;
                 }
 
-                Importdecl(builder, importClass);
+                Importdecl(builder, importDecl);
             }
+
+            builder.Append("\n");
         }
 
         public static void Classimplements(
@@ -50,9 +52,10 @@ namespace com.espertech.esper.compiler.@internal.util
             Type implementedInterface,
             string implementedInterfaceGeneric,
             bool isPublic,
-            bool isStatic,
-            IDictionary<Type, string> imports)
+            bool isStatic)
         {
+            builder.Append("  ");
+
             if (isPublic)
             {
                 builder.Append("public ");
@@ -67,8 +70,8 @@ namespace com.espertech.esper.compiler.@internal.util
             builder.Append(classname);
             if (implementedInterface != null)
             {
-                builder.Append(":");
-                AppendClassName(builder, implementedInterface, null, imports);
+                builder.Append(" : ");
+                AppendClassName(builder, implementedInterface);
                 if (implementedInterfaceGeneric != null)
                 {
                     builder.Append("<").Append(implementedInterfaceGeneric).Append(">");
@@ -113,23 +116,15 @@ namespace com.espertech.esper.compiler.@internal.util
 
         public static void Importdecl(
             StringBuilder builder,
-            Type clazz)
+            ImportDecl importDecl)
         {
-            builder.Append("import ");
-            if (clazz.IsArray)
-            {
-                clazz = clazz.GetElementType();
+            builder.Append("using ");
+
+            if (importDecl.IsStatic) {
+                builder.Append("static ");
             }
 
-            if (clazz.DeclaringType == null)
-            {
-                builder.Append(clazz.Name);
-            }
-            else
-            {
-                builder.Append(clazz.Name.Replace("$", "."));
-            }
-
+            builder.Append(importDecl.Namespace);
             builder.Append(";\n");
         }
     }

@@ -31,17 +31,16 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.util
             CodegenClassScope classScope)
         {
             var arrayType = TypeHelper.GetArrayType(clazz);
-            if (forges == null || forges.Length == 0)
-            {
+            if (forges == null || forges.Length == 0) {
                 return NewArrayByLength(clazz, Constant(0));
             }
 
             var method = parent.MakeChild(arrayType, generator, classScope);
             method.Block.DeclareVar(arrayType, name, NewArrayByLength(clazz, Constant(forges.Length)));
-            for (var i = 0; i < forges.Length; i++)
-            {
+            for (var i = 0; i < forges.Length; i++) {
                 method.Block.AssignArrayElement(
-                    Ref(name), Constant(i),
+                    Ref(name),
+                    Constant(i),
                     forges[i] == null ? ConstantNull() : forges[i].Make(method, symbols, classScope));
             }
 
@@ -59,15 +58,13 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.util
             SAIFFInitializeSymbol symbols,
             CodegenClassScope classScope)
         {
-            if (map.IsEmpty())
-            {
+            if (map.IsEmpty()) {
                 return StaticMethod(typeof(Collections), "GetEmptyDataMap");
             }
 
             var method = parent.MakeChild(typeof(IDictionary<string, object>), generator, classScope);
             var count = 0;
-            foreach (var entry in map)
-            {
+            foreach (var entry in map) {
                 var nameKey = "key" + count;
                 var nameValue = "value" + count;
                 method.Block
@@ -76,18 +73,15 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.util
                 count++;
             }
 
-            if (map.Count == 1)
-            {
+            if (map.Count == 1) {
                 method.Block.MethodReturn(
                     StaticMethod(typeof(Collections), "SingletonDataMap", Ref("key0"), Ref("value0")));
             }
-            else
-            {
-                method.Block.DeclareVar(
-                    typeof(IDictionary<object, object>), name,
+            else {
+                method.Block.DeclareVar<IDictionary<object, object>>(
+                    name,
                     NewInstance(typeof(LinkedHashMap<object, object>), Constant(map.Count)));
-                for (var i = 0; i < map.Count; i++)
-                {
+                for (var i = 0; i < map.Count; i++) {
                     method.Block.ExprDotMethod(Ref(name), "put", Ref("key" + i), Ref("value" + i));
                 }
 

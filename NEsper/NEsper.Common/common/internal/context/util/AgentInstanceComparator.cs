@@ -16,7 +16,8 @@ namespace com.espertech.esper.common.@internal.context.util
     {
         public static AgentInstanceComparator INSTANCE = new AgentInstanceComparator();
 
-        private readonly EPStatementAgentInstanceHandleComparator _innerComparator = new EPStatementAgentInstanceHandleComparator();
+        private readonly EPStatementAgentInstanceHandleComparator _innerComparator =
+            new EPStatementAgentInstanceHandleComparator();
 
         public int Compare(
             AgentInstance ai1,

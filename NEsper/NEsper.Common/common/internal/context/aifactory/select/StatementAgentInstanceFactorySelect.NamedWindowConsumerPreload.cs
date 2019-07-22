@@ -8,6 +8,7 @@
 
 using System.Collections.Generic;
 using System.Linq;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.context.activator;
 using com.espertech.esper.common.@internal.context.util;
@@ -47,7 +48,8 @@ namespace com.espertech.esper.common.@internal.context.aifactory.@select
                 }
 
                 var snapshot = consumer.ConsumerCallback.Snapshot(
-                    nwActivator.FilterQueryGraph, agentInstanceContext.Annotations);
+                    nwActivator.FilterQueryGraph,
+                    agentInstanceContext.Annotations);
 
                 EventBean[] events;
                 if (consumer.Filter == null) {
@@ -56,7 +58,10 @@ namespace com.espertech.esper.common.@internal.context.aifactory.@select
                 else {
                     IList<EventBean> eventsInWindow = new List<EventBean>(snapshot.Count);
                     ExprNodeUtilityEvaluate.ApplyFilterExpressionIterable(
-                        snapshot.GetEnumerator(), consumer.Filter, agentInstanceContext, eventsInWindow);
+                        snapshot.GetEnumerator(),
+                        consumer.Filter,
+                        agentInstanceContext,
+                        eventsInWindow);
                     events = eventsInWindow.ToArray();
                 }
 
@@ -66,7 +71,8 @@ namespace com.espertech.esper.common.@internal.context.aifactory.@select
 
                 consumer.Update(events, null);
 
-                if (joinPreloadMethod != null && !joinPreloadMethod.IsPreloading &&
+                if (joinPreloadMethod != null &&
+                    !joinPreloadMethod.IsPreloading &&
                     agentInstanceContext.EpStatementAgentInstanceHandle.OptionalDispatchable != null) {
                     agentInstanceContext.EpStatementAgentInstanceHandle.OptionalDispatchable.Execute();
                 }

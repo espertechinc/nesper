@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Xml;
+
 using com.espertech.esper.common.@internal.@event.core;
 
 namespace com.espertech.esper.common.@internal.@event.xml

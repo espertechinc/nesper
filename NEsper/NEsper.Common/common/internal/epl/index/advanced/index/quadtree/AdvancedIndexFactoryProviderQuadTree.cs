@@ -11,6 +11,7 @@ using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.index.advanced.index.service;
 using com.espertech.esper.common.@internal.epl.lookup;
 using com.espertech.esper.common.@internal.epl.spatial.quadtree.pointregion;
+
 using static com.espertech.esper.common.@internal.epl.index.advanced.index.quadtree.AdvancedIndexQuadTreeConstants;
 using static com.espertech.esper.common.@internal.epl.index.advanced.index.service.AdvancedIndexEvaluationHelper;
 using static com.espertech.esper.common.@internal.epl.index.advanced.index.service.AdvancedIndexValidationHelper;
@@ -46,9 +47,17 @@ namespace com.espertech.esper.common.@internal.epl.index.advanced.index.quadtree
         {
             ValidateParameterCount(4, 6, indexTypeName, parameters == null ? 0 : parameters.Length);
             ValidateParameterReturnTypeNumber(indexTypeName, 0, parameters[0], PARAM_XMIN);
-            ValidateParameterReturnTypeNumber(indexTypeName, 1, parameters[1], AdvancedIndexQuadTreeConstants.PARAM_YMIN);
+            ValidateParameterReturnTypeNumber(
+                indexTypeName,
+                1,
+                parameters[1],
+                AdvancedIndexQuadTreeConstants.PARAM_YMIN);
             ValidateParameterReturnTypeNumber(indexTypeName, 2, parameters[2], PARAM_WIDTH);
-            ValidateParameterReturnTypeNumber(indexTypeName, 3, parameters[3], AdvancedIndexQuadTreeConstants.PARAM_HEIGHT);
+            ValidateParameterReturnTypeNumber(
+                indexTypeName,
+                3,
+                parameters[3],
+                AdvancedIndexQuadTreeConstants.PARAM_HEIGHT);
             if (parameters.Length > 4) {
                 ValidateParameterReturnType(typeof(int?), indexTypeName, 4, parameters[4], PARAM_LEAFCAPACITY);
             }

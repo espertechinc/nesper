@@ -30,13 +30,14 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
             CodegenClassScope classScope)
         {
             var resultType = classScope.AddFieldUnshared(
-                true, typeof(EventType), EventTypeUtility.ResolveTypeCodegen(insertHelper.ResultEventType, initSvc));
+                true,
+                typeof(EventType),
+                EventTypeUtility.ResolveTypeCodegen(insertHelper.ResultEventType, initSvc));
             var eventBeanFactory = classScope.AddOrGetFieldSharable(EventBeanTypedEventFactoryCodegenField.INSTANCE);
 
             var exprSymbol = new ExprForgeCodegenSymbol(true, true);
             var selectEnv = new SelectExprProcessorCodegenSymbol();
-            CodegenSymbolProvider symbolProvider = new ProxyCodegenSymbolProvider
-            {
+            CodegenSymbolProvider symbolProvider = new ProxyCodegenSymbolProvider {
                 ProcProvide = symbols => {
                     exprSymbol.Provide(symbols);
                     selectEnv.Provide(symbols);
@@ -45,21 +46,41 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
 
             var anonymousSelect = NewAnonymousClass(method.Block, typeof(SelectExprProcessor));
             var processMethod = CodegenMethod.MakeParentNode(
-                    typeof(EventBean), typeof(SelectExprProcessorUtil), symbolProvider, classScope)
+                    typeof(EventBean),
+                    typeof(SelectExprProcessorUtil),
+                    symbolProvider,
+                    classScope)
                 .AddParam(typeof(EventBean[]), NAME_EPS)
                 .AddParam(typeof(bool), ExprForgeCodegenNames.NAME_ISNEWDATA)
                 .AddParam(typeof(bool), SelectExprProcessorCodegenSymbol.NAME_ISSYNTHESIZE)
                 .AddParam(typeof(ExprEvaluatorContext), NAME_EXPREVALCONTEXT);
-            anonymousSelect.AddMethod("process", processMethod);
+            anonymousSelect.AddMethod("Process", processMethod);
             processMethod.Block.Apply(
-                Instblock(classScope, "qSelectClause", REF_EPS, ResultSetProcessorCodegenNames.REF_ISNEWDATA, REF_ISSYNTHESIZE, REF_EXPREVALCONTEXT));
+                Instblock(
+                    classScope,
+                    "qSelectClause",
+                    REF_EPS,
+                    ResultSetProcessorCodegenNames.REF_ISNEWDATA,
+                    REF_ISSYNTHESIZE,
+                    REF_EXPREVALCONTEXT));
 
             var performMethod = insertHelper.ProcessCodegen(
-                resultType, eventBeanFactory, processMethod, selectEnv, exprSymbol, classScope);
+                resultType,
+                eventBeanFactory,
+                processMethod,
+                selectEnv,
+                exprSymbol,
+                classScope);
             exprSymbol.DerivedSymbolsCodegen(processMethod, processMethod.Block, classScope);
             processMethod.Block
-                .DeclareVar(typeof(EventBean), "result", LocalMethod(performMethod))
-                .Apply(Instblock(classScope, "aSelectClause", ResultSetProcessorCodegenNames.REF_ISNEWDATA, Ref("result"), ConstantNull()))
+                .DeclareVar<EventBean>("result", LocalMethod(performMethod))
+                .Apply(
+                    Instblock(
+                        classScope,
+                        "aSelectClause",
+                        ResultSetProcessorCodegenNames.REF_ISNEWDATA,
+                        Ref("result"),
+                        ConstantNull()))
                 .MethodReturn(Ref("result"));
 
             return anonymousSelect;

@@ -8,6 +8,7 @@
 
 using System;
 using System.Numerics;
+
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.compat;
@@ -71,7 +72,8 @@ namespace com.espertech.esper.common.@internal.util
 
                 var method = codegenMethodScope
                     .MakeChild(typeof(BigInteger), typeof(CoercerBigInt), codegenClassScope)
-                    .AddParam(valueTypeMustNumeric, "value").Block
+                    .AddParam(valueTypeMustNumeric, "value")
+                    .Block
                     .IfRefNullReturnNull("value")
                     .MethodReturn(CodegenBigInt(CodegenExpressionBuilder.Ref("value"), valueTypeMustNumeric));
                 return CodegenExpressionBuilder.LocalMethod(method, value);
@@ -90,11 +92,16 @@ namespace com.espertech.esper.common.@internal.util
                 }
 
                 if (valueType.IsPrimitive) {
-                    return CodegenExpressionBuilder.StaticMethod(typeof(BigInteger), "valueOf", CodegenExpressionBuilder.Cast(typeof(long), value));
+                    return CodegenExpressionBuilder.StaticMethod(
+                        typeof(BigInteger),
+                        "valueOf",
+                        CodegenExpressionBuilder.Cast(typeof(long), value));
                 }
 
                 return CodegenExpressionBuilder.StaticMethod(
-                    typeof(BigInteger), "valueOf", CodegenExpressionBuilder.ExprDotMethod(value, "longValue"));
+                    typeof(BigInteger),
+                    "valueOf",
+                    CodegenExpressionBuilder.ExprDotMethod(value, "longValue"));
             }
         }
     }

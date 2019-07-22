@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -14,6 +15,7 @@ using com.espertech.esper.common.@internal.context.module;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.resultset.@select.core;
 using com.espertech.esper.common.@internal.@event.core;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
@@ -45,12 +47,21 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
         {
             // NOTE: Maintaining result-event-type as out own field as we may be an "inner" select-expr-processor
             var mType = codegenClassScope.AddFieldUnshared(
-                true, typeof(EventType), EventTypeUtility.ResolveTypeCodegen(ResultEventType, EPStatementInitServicesConstants.REF));
+                true,
+                typeof(EventType),
+                EventTypeUtility.ResolveTypeCodegen(ResultEventType, EPStatementInitServicesConstants.REF));
             var methodNode = codegenMethodScope.MakeChild(typeof(EventBean), GetType(), codegenClassScope);
             var refEPS = exprSymbol.GetAddEPS(methodNode);
             methodNode.Block
-                .DeclareVar(typeof(object[]), "tuple", NewArrayByLength(typeof(object), Constant(streamNames.Length)))
-                .StaticMethod(typeof(Array), "Copy", refEPS, Constant(0), Ref("tuple"), Constant(0), Constant(streamNames.Length))
+                .DeclareVar<object[]>("tuple", NewArrayByLength(typeof(object), Constant(streamNames.Length)))
+                .StaticMethod(
+                    typeof(Array),
+                    "Copy",
+                    refEPS,
+                    Constant(0),
+                    Ref("tuple"),
+                    Constant(0),
+                    Constant(streamNames.Length))
                 .MethodReturn(ExprDotMethod(eventBeanFactory, "AdapterForTypedObjectArray", Ref("tuple"), mType));
             return methodNode;
         }

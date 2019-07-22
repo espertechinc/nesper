@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Text;
 using System.Threading;
+
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.logging;
@@ -113,8 +114,13 @@ namespace com.espertech.esper.common.@internal.epl.variable.core
         {
             if (ExecutionPathDebugLog.IsDebugEnabled && Log.IsDebugEnabled) {
                 Log.Debug(
-                    ".GetVersion Thread " + Thread.CurrentThread.ManagedThreadId + " for '" + Name +
-                    "' retrieving version " + versionAndOlder + " or older");
+                    ".GetVersion Thread " +
+                    Thread.CurrentThread.ManagedThreadId +
+                    " for '" +
+                    Name +
+                    "' retrieving version " +
+                    versionAndOlder +
+                    " or older");
             }
 
             T resultValue = null;
@@ -159,12 +165,20 @@ namespace com.espertech.esper.common.@internal.epl.variable.core
 
                             var oldestValue = _olderVersions.Count > 0 ? _olderVersions[0].Value : null;
 
-                            var text = "Variables value for version '" + versionAndOlder +
+                            var text = "Variables value for version '" +
+                                       versionAndOlder +
                                        "' and older could not be found" +
-                                       " (currentVersion=" + currentVersion + " priorVersion=" + priorVersion +
-                                       " oldestVersion=" + oldestVersion + " numOldVersions=" +
+                                       " (currentVersion=" +
+                                       currentVersion +
+                                       " priorVersion=" +
+                                       priorVersion +
+                                       " oldestVersion=" +
+                                       oldestVersion +
+                                       " numOldVersions=" +
                                        _olderVersions.Count +
-                                       " oldestValue=" + oldestValue + ")";
+                                       " oldestValue=" +
+                                       oldestValue +
+                                       ")";
                             if (_errorWhenNotFound) {
                                 throw new IllegalStateException(text);
                             }
@@ -178,8 +192,14 @@ namespace com.espertech.esper.common.@internal.epl.variable.core
 
             if (ExecutionPathDebugLog.IsDebugEnabled && Log.IsDebugEnabled) {
                 Log.Debug(
-                    ".getVersion Thread " + Thread.CurrentThread.ManagedThreadId + " for '" + Name + " version " +
-                    versionAndOlder + " or older result is " + resultValue);
+                    ".getVersion Thread " +
+                    Thread.CurrentThread.ManagedThreadId +
+                    " for '" +
+                    Name +
+                    " version " +
+                    versionAndOlder +
+                    " or older result is " +
+                    resultValue);
             }
 
             return resultValue;
@@ -199,8 +219,14 @@ namespace com.espertech.esper.common.@internal.epl.variable.core
         {
             if (ExecutionPathDebugLog.IsDebugEnabled && Log.IsDebugEnabled) {
                 Log.Debug(
-                    ".addValue Thread " + Thread.CurrentThread.ManagedThreadId + " for '" + Name +
-                    "' adding version " + version + " at value " + value);
+                    ".addValue Thread " +
+                    Thread.CurrentThread.ManagedThreadId +
+                    " for '" +
+                    Name +
+                    "' adding version " +
+                    version +
+                    " at value " +
+                    value);
             }
 
             // push to prior if not already used

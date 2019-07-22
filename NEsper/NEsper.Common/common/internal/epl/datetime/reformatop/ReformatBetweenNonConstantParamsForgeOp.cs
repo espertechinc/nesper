@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -14,8 +15,10 @@ using com.espertech.esper.common.@internal.epl.datetime.eval;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.compat;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
-using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionRelational.CodegenRelational;
+using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionRelational.
+    CodegenRelational;
 
 namespace com.espertech.esper.common.@internal.epl.datetime.reformatop
 {
@@ -62,7 +65,9 @@ namespace com.espertech.esper.common.@internal.epl.datetime.reformatop
 
             return EvaluateInternal(
                 dateTimeEx.TimeInMillis,
-                eventsPerStream, newData, exprEvaluatorContext);
+                eventsPerStream,
+                newData,
+                exprEvaluatorContext);
         }
 
         public object Evaluate(
@@ -73,7 +78,9 @@ namespace com.espertech.esper.common.@internal.epl.datetime.reformatop
         {
             return EvaluateInternal(
                 DatetimeLongCoercerDateTimeOffset.CoerceToMillis(dateTimeOffset),
-                eventsPerStream, newData, exprEvaluatorContext);
+                eventsPerStream,
+                newData,
+                exprEvaluatorContext);
         }
 
         public object Evaluate(
@@ -84,7 +91,9 @@ namespace com.espertech.esper.common.@internal.epl.datetime.reformatop
         {
             return EvaluateInternal(
                 DatetimeLongCoercerDateTime.CoerceToMillis(dateTime),
-                eventsPerStream, newData, exprEvaluatorContext);
+                eventsPerStream,
+                newData,
+                exprEvaluatorContext);
         }
 
         public static CodegenExpression CodegenLong(
@@ -105,14 +114,20 @@ namespace com.espertech.esper.common.@internal.epl.datetime.reformatop
             CodegenClassScope codegenClassScope)
         {
             var methodNode = codegenMethodScope.MakeChild(
-                    typeof(bool?), typeof(ReformatBetweenNonConstantParamsForgeOp), codegenClassScope)
+                    typeof(bool?),
+                    typeof(ReformatBetweenNonConstantParamsForgeOp),
+                    codegenClassScope)
                 .AddParam(typeof(DateTime), "d");
 
             methodNode.Block
                 .IfRefNullReturnNull("d")
                 .MethodReturn(
                     CodegenLongInternal(
-                        forge, ExprDotMethod(Ref("d"), "getTime"), methodNode, exprSymbol, codegenClassScope));
+                        forge,
+                        ExprDotMethod(Ref("d"), "getTime"),
+                        methodNode,
+                        exprSymbol,
+                        codegenClassScope));
             return LocalMethod(methodNode, inner);
         }
 
@@ -133,7 +148,11 @@ namespace com.espertech.esper.common.@internal.epl.datetime.reformatop
                 .IfRefNullReturnNull("d")
                 .MethodReturn(
                     CodegenLongInternal(
-                        forge, ExprDotMethod(Ref("d"), "getTime"), methodNode, exprSymbol, codegenClassScope));
+                        forge,
+                        ExprDotMethod(Ref("d"), "getTime"),
+                        methodNode,
+                        exprSymbol,
+                        codegenClassScope));
             return LocalMethod(methodNode, inner);
         }
 
@@ -145,14 +164,19 @@ namespace com.espertech.esper.common.@internal.epl.datetime.reformatop
             CodegenClassScope codegenClassScope)
         {
             var methodNode = codegenMethodScope.MakeChild(
-                    typeof(bool?), typeof(ReformatBetweenNonConstantParamsForgeOp), codegenClassScope)
+                    typeof(bool?),
+                    typeof(ReformatBetweenNonConstantParamsForgeOp),
+                    codegenClassScope)
                 .AddParam(typeof(DateTimeEx), "dateTime");
 
             methodNode.Block
                 .IfRefNullReturnNull("dateTime")
                 .MethodReturn(
                     CodegenLongInternal(
-                        forge, ExprDotMethod(Ref("dateTime"), "getTimeInMillis"), methodNode, exprSymbol,
+                        forge,
+                        ExprDotMethod(Ref("dateTime"), "getTimeInMillis"),
+                        methodNode,
+                        exprSymbol,
                         codegenClassScope));
             return LocalMethod(methodNode, inner);
         }
@@ -261,14 +285,28 @@ namespace com.espertech.esper.common.@internal.epl.datetime.reformatop
             CodegenClassScope codegenClassScope)
         {
             var methodNode = codegenMethodScope.MakeChild(
-                    typeof(bool?), typeof(ReformatBetweenNonConstantParamsForgeOp), codegenClassScope)
+                    typeof(bool?),
+                    typeof(ReformatBetweenNonConstantParamsForgeOp),
+                    codegenClassScope)
                 .AddParam(typeof(long), "ts");
 
             var block = methodNode.Block;
             CodegenLongCoercion(
-                block, "first", forge.start, forge.startCoercer, methodNode, exprSymbol, codegenClassScope);
+                block,
+                "first",
+                forge.start,
+                forge.startCoercer,
+                methodNode,
+                exprSymbol,
+                codegenClassScope);
             CodegenLongCoercion(
-                block, "second", forge.end, forge.secondCoercer, methodNode, exprSymbol, codegenClassScope);
+                block,
+                "second",
+                forge.end,
+                forge.secondCoercer,
+                methodNode,
+                exprSymbol,
+                codegenClassScope);
             CodegenExpression first = Ref("first");
             CodegenExpression second = Ref("second");
             CodegenExpression ts = Ref("ts");
@@ -278,22 +316,38 @@ namespace com.espertech.esper.common.@internal.epl.datetime.reformatop
                     .MethodReturn(And(Relational(second, LE, ts), Relational(ts, LE, first)));
             }
             else if (forge.includeLow != null && forge.includeHigh != null) {
-                block.IfCondition(Relational(ts, forge.includeLow.Value ? LT : LE, first)).BlockReturn(ConstantFalse())
-                    .IfCondition(Relational(ts, forge.includeHigh.Value ? GT : GE, second)).BlockReturn(ConstantFalse())
+                block.IfCondition(Relational(ts, forge.includeLow.Value ? LT : LE, first))
+                    .BlockReturn(ConstantFalse())
+                    .IfCondition(Relational(ts, forge.includeHigh.Value ? GT : GE, second))
+                    .BlockReturn(ConstantFalse())
                     .MethodReturn(ConstantTrue());
             }
             else {
                 CodegenBooleanEval(
-                    block, "includeLowEndpoint", forge.includeLow.Value, forge.forgeIncludeLow, methodNode, exprSymbol,
+                    block,
+                    "includeLowEndpoint",
+                    forge.includeLow.Value,
+                    forge.forgeIncludeLow,
+                    methodNode,
+                    exprSymbol,
                     codegenClassScope);
                 CodegenBooleanEval(
-                    block, "includeLowHighpoint", forge.includeHigh.Value, forge.forgeIncludeHigh, methodNode,
+                    block,
+                    "includeLowHighpoint",
+                    forge.includeHigh.Value,
+                    forge.forgeIncludeHigh,
+                    methodNode,
                     exprSymbol,
                     codegenClassScope);
                 block.MethodReturn(
                     StaticMethod(
-                        typeof(ReformatBetweenNonConstantParamsForgeOp), "compareTimestamps", first, ts, second,
-                        Ref("includeLowEndpoint"), Ref("includeLowHighpoint")));
+                        typeof(ReformatBetweenNonConstantParamsForgeOp),
+                        "compareTimestamps",
+                        first,
+                        ts,
+                        second,
+                        Ref("includeLowEndpoint"),
+                        Ref("includeLowHighpoint")));
             }
 
             return LocalMethod(methodNode, inner);
@@ -309,23 +363,23 @@ namespace com.espertech.esper.common.@internal.epl.datetime.reformatop
             CodegenClassScope codegenClassScope)
         {
             if (preset != null) {
-                block.DeclareVar(typeof(bool), variable, Constant(preset));
+                block.DeclareVar<bool>(variable, Constant(preset));
                 return;
             }
 
             if (forge.EvaluationType == typeof(bool)) {
-                block.DeclareVar(
-                    typeof(bool), variable,
+                block.DeclareVar<bool>(
+                    variable,
                     forge.EvaluateCodegen(typeof(bool), codegenMethodScope, exprSymbol, codegenClassScope));
                 return;
             }
 
             var refname = variable + "Obj";
-            block.DeclareVar(
-                    typeof(bool?), refname,
+            block.DeclareVar<bool?>(
+                    refname,
                     forge.EvaluateCodegen(typeof(bool?), codegenMethodScope, exprSymbol, codegenClassScope))
                 .IfRefNullReturnNull(refname)
-                .DeclareVar(typeof(bool), variable, Ref(refname));
+                .DeclareVar<bool>(variable, Ref(refname));
         }
 
         private static void CodegenLongCoercion(
@@ -339,21 +393,22 @@ namespace com.espertech.esper.common.@internal.epl.datetime.reformatop
         {
             var evaluationType = assignment.Forge.EvaluationType;
             if (evaluationType == typeof(long)) {
-                block.DeclareVar(
-                    typeof(long), variable,
+                block.DeclareVar<long>(
+                    variable,
                     assignment.Forge.EvaluateCodegen(typeof(long), codegenMethodScope, exprSymbol, codegenClassScope));
                 return;
             }
 
             var refname = variable + "Obj";
             block.DeclareVar(
-                evaluationType, refname,
+                evaluationType,
+                refname,
                 assignment.Forge.EvaluateCodegen(evaluationType, codegenMethodScope, exprSymbol, codegenClassScope));
             if (!evaluationType.IsPrimitive) {
                 block.IfRefNullReturnNull(refname);
             }
 
-            block.DeclareVar(typeof(long), variable, coercer.Codegen(Ref(refname), evaluationType, codegenClassScope));
+            block.DeclareVar<long>(variable, coercer.Codegen(Ref(refname), evaluationType, codegenClassScope));
         }
     }
 } // end of namespace

@@ -14,6 +14,7 @@ using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.agg.access.core;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 using static com.espertech.esper.common.@internal.epl.agg.method.core.AggregatorCodegenUtil;
 
@@ -41,7 +42,8 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.plugin
 
             var injectionStrategy = (InjectionStrategyClassNewInstance) mode.InjectionStrategyAggregationStateFactory;
             var factoryField = classScope.AddFieldUnshared(
-                true, typeof(AggregationMultiFunctionStateFactory),
+                true,
+                typeof(AggregationMultiFunctionStateFactory),
                 injectionStrategy.GetInitializationExpression(classScope));
             ctor.Block.AssignRef(state, ExprDotMethod(factoryField, "newState", ConstantNull()));
         }
@@ -53,7 +55,10 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.plugin
             CodegenNamedMethods namedMethods)
         {
             method.Block.ExprDotMethod(
-                state, "applyEnter", symbols.GetAddEPS(method), symbols.GetAddExprEvalCtx(method));
+                state,
+                "applyEnter",
+                symbols.GetAddEPS(method),
+                symbols.GetAddExprEvalCtx(method));
         }
 
         internal override void ApplyLeaveFiltered(
@@ -63,7 +68,10 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.plugin
             CodegenNamedMethods namedMethods)
         {
             method.Block.ExprDotMethod(
-                state, "applyLeave", symbols.GetAddEPS(method), symbols.GetAddExprEvalCtx(method));
+                state,
+                "applyLeave",
+                symbols.GetAddEPS(method),
+                symbols.GetAddExprEvalCtx(method));
         }
 
         public override void ClearCodegen(
@@ -83,7 +91,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.plugin
             CodegenClassScope classScope)
         {
             if (mode.HasHA) {
-                method.Block.Expression(StaticMethod(mode.Serde, "write", output, RowDotRef(row, state)));
+                method.Block.Expression(StaticMethod(mode.Serde, "Write", output, RowDotRef(row, state)));
             }
         }
 
@@ -96,7 +104,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.plugin
             CodegenClassScope classScope)
         {
             if (mode.HasHA) {
-                method.Block.AssignRef(RowDotRef(row, state), StaticMethod(mode.Serde, "read", input));
+                method.Block.AssignRef(RowDotRef(row, state), StaticMethod(mode.Serde, "Read", input));
             }
         }
 

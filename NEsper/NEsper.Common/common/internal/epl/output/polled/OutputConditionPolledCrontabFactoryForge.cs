@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.compile.stage2;
@@ -16,6 +17,7 @@ using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.streamtype;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.output.polled
@@ -37,7 +39,10 @@ namespace com.espertech.esper.common.@internal.epl.output.polled
             expressions = new ExprNode[list.Count];
             int count = 0;
             foreach (ExprNode parameters in list) {
-                ExprNode node = ExprNodeUtilityValidate.GetValidatedSubtree(ExprNodeOrigin.OUTPUTLIMIT, parameters, validationContext);
+                ExprNode node = ExprNodeUtilityValidate.GetValidatedSubtree(
+                    ExprNodeOrigin.OUTPUTLIMIT,
+                    parameters,
+                    validationContext);
                 expressions[count++] = node;
             }
         }

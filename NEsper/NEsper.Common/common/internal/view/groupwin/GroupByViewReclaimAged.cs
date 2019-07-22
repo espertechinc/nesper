@@ -8,6 +8,7 @@
 
 using System.Collections.Generic;
 using System.Reflection;
+
 using com.espertech.esper.collection;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.collection;
@@ -64,8 +65,11 @@ namespace com.espertech.esper.common.@internal.view.groupwin
             if (nextSweepTime == null || nextSweepTime <= currentTime) {
                 if (ExecutionPathDebugLog.IsDebugEnabled && Log.IsDebugEnabled) {
                     Log.Debug(
-                        "Reclaiming groups older then " + ViewFactory.ReclaimMaxAge + " msec and every " +
-                        ViewFactory.ReclaimFrequency + "msec in frequency");
+                        "Reclaiming groups older then " +
+                        ViewFactory.ReclaimMaxAge +
+                        " msec and every " +
+                        ViewFactory.ReclaimFrequency +
+                        "msec in frequency");
                 }
 
                 nextSweepTime = currentTime + ViewFactory.ReclaimFrequency;
@@ -196,7 +200,8 @@ namespace com.espertech.esper.common.@internal.view.groupwin
             foreach (var key in removed) {
                 var entry = subViewPerKey.Delete(key);
                 GroupByViewUtil.RemoveSubview(
-                    entry.Subview, new AgentInstanceStopServices(AgentInstanceContext.AgentInstanceContext));
+                    entry.Subview,
+                    new AgentInstanceStopServices(AgentInstanceContext.AgentInstanceContext));
             }
         }
 

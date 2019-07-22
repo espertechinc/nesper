@@ -9,6 +9,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.configuration;
 using com.espertech.esper.common.client.configuration.common;
@@ -51,7 +52,8 @@ namespace com.espertech.esper.common.@internal.@event.eventtyperepo
                 var propertiesUnnested = mapTypes.Get(mapName);
                 if (propertiesUnnested != null) {
                     var propertyTypes = CreatePropertyTypes(
-                        propertiesUnnested, importService);
+                        propertiesUnnested,
+                        importService);
                     var propertyTypesCompiled =
                         EventTypeUtility.CompileMapTypeProperties(propertyTypes, repo);
                     AddNestableMapType(mapName, propertyTypesCompiled, mapConfig, repo, beanEventTypeFactory, repo);
@@ -62,7 +64,12 @@ namespace com.espertech.esper.common.@internal.@event.eventtyperepo
                     var propertiesNestableCompiled = EventTypeUtility
                         .CompileMapTypeProperties(propertiesNestable, repo);
                     AddNestableMapType(
-                        mapName, propertiesNestableCompiled, mapConfig, repo, beanEventTypeFactory, repo);
+                        mapName,
+                        propertiesNestableCompiled,
+                        mapConfig,
+                        repo,
+                        beanEventTypeFactory,
+                        repo);
                 }
             }
         }
@@ -88,8 +95,13 @@ namespace com.espertech.esper.common.@internal.@event.eventtyperepo
             EventTypeNameResolver eventTypeNameResolver)
         {
             var metadata = new EventTypeMetadata(
-                eventTypeName, null, EventTypeTypeClass.APPLICATION, EventTypeApplicationType.MAP,
-                NameAccessModifier.PRECONFIGURED, EventTypeBusModifier.NONBUS, false,
+                eventTypeName,
+                null,
+                EventTypeTypeClass.APPLICATION,
+                EventTypeApplicationType.MAP,
+                NameAccessModifier.PRECONFIGURED,
+                EventTypeBusModifier.NONBUS,
+                false,
                 new EventTypeIdPair(CRC32Util.ComputeCRC32(eventTypeName), -1));
 
             var propertyTypes =
@@ -105,7 +117,8 @@ namespace com.espertech.esper.common.@internal.@event.eventtyperepo
                 superTypes,
                 optionalConfig != null ? optionalConfig.StartTimestampPropertyName : null,
                 optionalConfig != null ? optionalConfig.EndTimestampPropertyName : null,
-                beanEventTypeFactory, eventTypeNameResolver);
+                beanEventTypeFactory,
+                eventTypeNameResolver);
 
             var existingType = repo.GetTypeByName(eventTypeName);
             if (existingType != null) {
@@ -113,9 +126,11 @@ namespace com.espertech.esper.common.@internal.@event.eventtyperepo
                 if (newEventType.EqualsCompareType(existingType) != null) {
                     var message = newEventType.CompareEquals(existingType);
                     throw new EPException(
-                        "Event type named '" + eventTypeName +
+                        "Event type named '" +
+                        eventTypeName +
                         "' has already been declared with differing column name or type information: " +
-                        message.Message, message);
+                        message.Message,
+                        message);
                 }
 
                 return;

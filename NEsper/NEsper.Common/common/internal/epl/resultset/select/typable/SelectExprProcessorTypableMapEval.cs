@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -17,6 +18,7 @@ using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.resultset.select.typable
@@ -45,15 +47,25 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.typable
             CodegenClassScope codegenClassScope)
         {
             CodegenExpression mapType = codegenClassScope.AddFieldUnshared(
-                true, typeof(EventType), EventTypeUtility.ResolveTypeCodegen(forge.MapType, EPStatementInitServicesConstants.REF));
-            CodegenExpression beanFactory = codegenClassScope.AddOrGetFieldSharable(EventBeanTypedEventFactoryCodegenField.INSTANCE);
+                true,
+                typeof(EventType),
+                EventTypeUtility.ResolveTypeCodegen(forge.MapType, EPStatementInitServicesConstants.REF));
+            CodegenExpression beanFactory =
+                codegenClassScope.AddOrGetFieldSharable(EventBeanTypedEventFactoryCodegenField.INSTANCE);
 
-            CodegenMethod methodNode = codegenMethodScope.MakeChild(typeof(EventBean), typeof(SelectExprProcessorTypableMapEval), codegenClassScope);
+            CodegenMethod methodNode = codegenMethodScope.MakeChild(
+                typeof(EventBean),
+                typeof(SelectExprProcessorTypableMapEval),
+                codegenClassScope);
 
             methodNode.Block
-                .DeclareVar(
-                    typeof(IDictionary<object, object>), "values",
-                    forge.innerForge.EvaluateCodegen(typeof(IDictionary<object, object>), methodNode, exprSymbol, codegenClassScope))
+                .DeclareVar<IDictionary<object, object>>(
+                    "values",
+                    forge.innerForge.EvaluateCodegen(
+                        typeof(IDictionary<object, object>),
+                        methodNode,
+                        exprSymbol,
+                        codegenClassScope))
                 .DeclareVarNoInit(typeof(IDictionary<object, object>), "map")
                 .IfRefNull("values")
                 .AssignRef("values", StaticMethod(typeof(Collections), "emptyMap"))

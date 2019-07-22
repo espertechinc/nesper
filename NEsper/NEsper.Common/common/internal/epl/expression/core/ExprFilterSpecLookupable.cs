@@ -8,6 +8,7 @@
 
 using System;
 using System.IO;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.compat;
 
@@ -69,7 +70,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
         public override string ToString()
         {
             return "ExprFilterSpecLookupable{" +
-                   "expression='" + Expression + '\'' +
+                   "expression='" +
+                   Expression +
+                   '\'' +
                    '}';
         }
     }

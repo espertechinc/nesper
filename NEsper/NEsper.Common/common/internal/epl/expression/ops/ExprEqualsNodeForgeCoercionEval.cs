@@ -11,6 +11,7 @@ using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.util;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.expression.ops
@@ -87,11 +88,15 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             var rhsType = rhs.Forge.EvaluationType;
 
             var methodNode = codegenMethodScope.MakeChild(
-                typeof(bool?), typeof(ExprEqualsNodeForgeNCEvalEquals), codegenClassScope);
+                typeof(bool?),
+                typeof(ExprEqualsNodeForgeNCEvalEquals),
+                codegenClassScope);
             var block = methodNode.Block
                 .DeclareVar(lhsType, "l", lhs.Forge.EvaluateCodegen(lhsType, methodNode, exprSymbol, codegenClassScope))
                 .DeclareVar(
-                    rhsType, "r", rhs.Forge.EvaluateCodegen(rhsType, methodNode, exprSymbol, codegenClassScope));
+                    rhsType,
+                    "r",
+                    rhs.Forge.EvaluateCodegen(rhsType, methodNode, exprSymbol, codegenClassScope));
 
             if (!forge.ForgeRenderable.IsIs) {
                 if (!lhsType.IsPrimitive) {
@@ -112,10 +117,12 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                 }
             }
 
-            block.DeclareVar(
-                typeof(object), "left", forge.NumberCoercerLHS.CoerceCodegen(Ref("l"), lhs.Forge.EvaluationType));
-            block.DeclareVar(
-                typeof(object), "right", forge.NumberCoercerRHS.CoerceCodegen(Ref("r"), rhs.Forge.EvaluationType));
+            block.DeclareVar<object>(
+                "left",
+                forge.NumberCoercerLHS.CoerceCodegen(Ref("l"), lhs.Forge.EvaluationType));
+            block.DeclareVar<object>(
+                "right",
+                forge.NumberCoercerRHS.CoerceCodegen(Ref("r"), rhs.Forge.EvaluationType));
             var compare = ExprDotMethod(Ref("left"), "equals", Ref("right"));
             if (!forge.ForgeRenderable.IsNotEquals) {
                 block.MethodReturn(compare);

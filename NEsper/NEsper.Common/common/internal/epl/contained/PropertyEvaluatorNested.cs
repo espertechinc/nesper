@@ -9,6 +9,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.filterspec;
@@ -91,7 +92,10 @@ namespace com.espertech.esper.common.@internal.epl.contained
                         if (whereClauses[level] != null) {
                             foreach (var theEvent in fragments) {
                                 eventsPerStream[level + 1] = theEvent;
-                                if (ExprNodeUtilityEvaluate.ApplyFilterExpression(whereClauses[level], eventsPerStream, exprEvaluatorContext)) {
+                                if (ExprNodeUtilityEvaluate.ApplyFilterExpression(
+                                    whereClauses[level],
+                                    eventsPerStream,
+                                    exprEvaluatorContext)) {
                                     events.Add(theEvent);
                                 }
                             }
@@ -104,7 +108,10 @@ namespace com.espertech.esper.common.@internal.epl.contained
                         if (whereClauses[level] != null) {
                             foreach (var next in fragments) {
                                 eventsPerStream[level + 1] = next;
-                                if (ExprNodeUtilityEvaluate.ApplyFilterExpression(whereClauses[level], eventsPerStream, exprEvaluatorContext)) {
+                                if (ExprNodeUtilityEvaluate.ApplyFilterExpression(
+                                    whereClauses[level],
+                                    eventsPerStream,
+                                    exprEvaluatorContext)) {
                                     PopulateEvents(next, level + 1, events, exprEvaluatorContext);
                                 }
                             }
@@ -122,7 +129,10 @@ namespace com.espertech.esper.common.@internal.epl.contained
                     if (level == lastLevel) {
                         if (whereClauses[level] != null) {
                             eventsPerStream[level + 1] = fragment;
-                            if (ExprNodeUtilityEvaluate.ApplyFilterExpression(whereClauses[level], eventsPerStream, exprEvaluatorContext)) {
+                            if (ExprNodeUtilityEvaluate.ApplyFilterExpression(
+                                whereClauses[level],
+                                eventsPerStream,
+                                exprEvaluatorContext)) {
                                 events.Add(fragment);
                             }
                         }
@@ -133,7 +143,10 @@ namespace com.espertech.esper.common.@internal.epl.contained
                     else {
                         if (whereClauses[level] != null) {
                             eventsPerStream[level + 1] = fragment;
-                            if (ExprNodeUtilityEvaluate.ApplyFilterExpression(whereClauses[level], eventsPerStream, exprEvaluatorContext)) {
+                            if (ExprNodeUtilityEvaluate.ApplyFilterExpression(
+                                whereClauses[level],
+                                eventsPerStream,
+                                exprEvaluatorContext)) {
                                 PopulateEvents(fragment, level + 1, events, exprEvaluatorContext);
                             }
                         }
@@ -151,7 +164,9 @@ namespace com.espertech.esper.common.@internal.epl.contained
                 var message = "Unexpected error evaluating property expression for event of type '" +
                               branch.EventType.Name +
                               "' and property '" +
-                              expressionTexts[level + 1] + "': " + ex.Message;
+                              expressionTexts[level + 1] +
+                              "': " +
+                              ex.Message;
                 throw new EPException(message, ex);
             }
         }

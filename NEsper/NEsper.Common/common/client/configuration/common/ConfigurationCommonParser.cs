@@ -12,10 +12,12 @@ using System.Data;
 using System.Linq;
 using System.Xml;
 using System.Xml.XPath;
+
 using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+
 using static com.espertech.esper.common.@internal.util.DOMExtensions;
 
 namespace com.espertech.esper.common.client.configuration.common
@@ -42,36 +44,47 @@ namespace com.espertech.esper.common.client.configuration.common
                     case "event-type":
                         HandleEventTypes(common, element);
                         break;
+
                     case "auto-import":
                         HandleAutoImports(common, element);
                         break;
+
                     case "auto-import-annotations":
                         HandleAutoImportAnnotations(common, element);
                         break;
+
                     case "method-reference":
                         HandleMethodReference(common, element);
                         break;
+
                     case "database-reference":
                         HandleDatabaseRefs(common, element);
                         break;
+
                     case "variable":
                         HandleVariable(common, element);
                         break;
+
                     case "variant-stream":
                         HandleVariantStream(common, element);
                         break;
+
                     case "event-meta":
                         HandleEventMeta(common, element);
                         break;
+
                     case "logging":
                         HandleLogging(common, element);
                         break;
+
                     case "time-source":
                         HandleTimeSource(common, element);
                         break;
+
                     case "execution":
                         HandleExecution(common, element);
                         break;
+
                     case "event-type-auto-name":
                         HandleEventTypeAutoNames(common, element);
                         break;
@@ -120,7 +133,9 @@ namespace com.espertech.esper.common.client.configuration.common
                             throw;
                         }
                         catch (Exception e) {
-                            throw new ConfigurationException("Value attribute for time-unit element invalid: " + e.Message, e);
+                            throw new ConfigurationException(
+                                "Value attribute for time-unit element invalid: " + e.Message,
+                                e);
                         }
 
                         break;
@@ -142,6 +157,7 @@ namespace com.espertech.esper.common.client.configuration.common
                         common.Logging.IsEnableQueryPlan = value;
                         break;
                     }
+
                     case "jdbc": {
                         var valueText = GetRequiredAttribute(subElement, "enabled");
                         var value = Boolean.Parse(valueText);
@@ -170,7 +186,8 @@ namespace com.espertech.esper.common.client.configuration.common
                     throw;
                 }
                 catch (Exception) {
-                    throw new ConfigurationException("Invalid enumeration value for type-variance attribute '" + typeVar + "'");
+                    throw new ConfigurationException(
+                        "Invalid enumeration value for type-variance attribute '" + typeVar + "'");
                 }
             }
 
@@ -204,12 +221,14 @@ namespace com.espertech.esper.common.client.configuration.common
                         configDBRef.SetDataSourceConnection(lookup, properties);
                         break;
                     }
+
                     case "datasourcefactory-connection": {
                         var className = GetRequiredAttribute(subElement, "class-name");
                         var properties = DOMUtil.GetProperties(subElement, "env-property");
                         configDBRef.SetDataSourceFactory(properties, className);
                         break;
                     }
+
                     case "drivermanager-connection": {
                         var className = GetRequiredAttribute(subElement, "class-name");
                         var url = GetRequiredAttribute(subElement, "url");
@@ -219,11 +238,13 @@ namespace com.espertech.esper.common.client.configuration.common
                         configDBRef.SetDriverManagerConnection(className, url, userName, password, properties);
                         break;
                     }
+
                     case "connection-lifecycle": {
                         var value = GetRequiredAttribute(subElement, "value");
                         configDBRef.ConnectionLifecycleEnum = EnumHelper.Parse<ConnectionLifecycleEnum>(value);
                         break;
                     }
+
                     case "connection-settings":
                         if (subElement.Attributes.GetNamedItem("auto-commit") != null) {
                             var autoCommit = subElement.Attributes.GetNamedItem("auto-commit").InnerText;
@@ -231,8 +252,10 @@ namespace com.espertech.esper.common.client.configuration.common
                         }
 
                         if (subElement.Attributes.GetNamedItem("transaction-isolation") != null) {
-                            var transactionIsolation = subElement.Attributes.GetNamedItem("transaction-isolation").InnerText;
-                            configDBRef.ConnectionTransactionIsolation = EnumHelper.Parse<IsolationLevel>(transactionIsolation);
+                            var transactionIsolation =
+                                subElement.Attributes.GetNamedItem("transaction-isolation").InnerText;
+                            configDBRef.ConnectionTransactionIsolation =
+                                EnumHelper.Parse<IsolationLevel>(transactionIsolation);
                         }
 
                         if (subElement.Attributes.GetNamedItem("catalog") != null) {
@@ -246,12 +269,14 @@ namespace com.espertech.esper.common.client.configuration.common
                         }
 
                         break;
+
                     case "column-change-case": {
                         var value = GetRequiredAttribute(subElement, "value");
                         var parsed = EnumHelper.Parse<ColumnChangeCaseEnum>(value);
                         configDBRef.ColumnChangeCase = parsed;
                         break;
                     }
+
                     case "metadata-origin": {
                         var value = GetRequiredAttribute(subElement, "value");
                         var parsed = EnumHelper.Parse<MetadataOriginEnum>(value);
@@ -286,6 +311,7 @@ namespace com.espertech.esper.common.client.configuration.common
 
                         configDBRef.SetExpiryTimeCache(Double.Parse(maxAge), Double.Parse(purgeInterval), refTypeEnum);
                         break;
+
                     case "lru-cache":
                         var size = GetRequiredAttribute(subElement, "size");
                         configDBRef.SetLRUCache(Int32.Parse(size));
@@ -303,7 +329,8 @@ namespace com.espertech.esper.common.client.configuration.common
 
             var variableType = TypeHelper.GetTypeForSimpleName(type, ClassForNameProviderDefault.INSTANCE);
             if (variableType == null) {
-                throw new ConfigurationException("Invalid variable type for variable '" + variableName + "', the type is not recognized");
+                throw new ConfigurationException(
+                    "Invalid variable type for variable '" + variableName + "', the type is not recognized");
             }
 
             var initValueNode = element.Attributes.GetNamedItem("initialization-value");
@@ -348,15 +375,19 @@ namespace com.espertech.esper.common.client.configuration.common
                     case "xml-dom":
                         HandleXMLDOM(name, configuration, eventTypeElement);
                         break;
+
                     case "util-map":
                         HandleMap(name, configuration, eventTypeElement);
                         break;
+
                     case "objectarray":
                         HandleObjectArray(name, configuration, eventTypeElement);
                         break;
+
                     case "legacy-type":
                         HandleLegacy(name, optionalClassName, configuration, eventTypeElement);
                         break;
+
                     case "avro":
                         HandleAvro(name, configuration, eventTypeElement);
                         break;
@@ -420,6 +451,7 @@ namespace com.espertech.esper.common.client.configuration.common
                         var @namespace = GetRequiredAttribute(propertyElement, "namespace");
                         xmlDOMEventTypeDesc.AddNamespacePrefix(prefix, @namespace);
                         break;
+
                     case "xpath-property":
                         var propertyName = GetRequiredAttribute(propertyElement, "property-name");
                         var xPath = GetRequiredAttribute(propertyElement, "xpath");
@@ -430,22 +462,30 @@ namespace com.espertech.esper.common.client.configuration.common
                             case "NUMBER":
                                 xpathConstantType = XPathResultType.Number;
                                 break;
+
                             case "STRING":
                                 xpathConstantType = XPathResultType.String;
                                 break;
+
                             case "BOOLEAN":
                                 xpathConstantType = XPathResultType.Boolean;
                                 break;
+
                             case "NODE":
                                 xpathConstantType = XPathResultType.Any;
                                 break;
+
                             case "NODESET":
                                 xpathConstantType = XPathResultType.NodeSet;
                                 break;
+
                             default:
                                 throw new ArgumentException(
                                     "Invalid xpath property type for property '" +
-                                    propertyName + "' and type '" + propertyType + '\'');
+                                    propertyName +
+                                    "' and type '" +
+                                    propertyType +
+                                    '\'');
                         }
 
                         string castToClass = null;
@@ -455,11 +495,16 @@ namespace com.espertech.esper.common.client.configuration.common
 
                         string optionaleventTypeName = null;
                         if (propertyElement.Attributes.GetNamedItem("event-type-name") != null) {
-                            optionaleventTypeName = propertyElement.Attributes.GetNamedItem("event-type-name").InnerText;
+                            optionaleventTypeName =
+                                propertyElement.Attributes.GetNamedItem("event-type-name").InnerText;
                         }
 
                         if (optionaleventTypeName != null) {
-                            xmlDOMEventTypeDesc.AddXPathPropertyFragment(propertyName, xPath, xpathConstantType, optionaleventTypeName);
+                            xmlDOMEventTypeDesc.AddXPathPropertyFragment(
+                                propertyName,
+                                xPath,
+                                xpathConstantType,
+                                optionaleventTypeName);
                         }
                         else {
                             xmlDOMEventTypeDesc.AddXPathProperty(propertyName, xPath, xpathConstantType, castToClass);
@@ -481,7 +526,8 @@ namespace com.espertech.esper.common.client.configuration.common
             avroEventTypeDesc.AvroSchemaText = schemaText;
             configuration.AddEventTypeAvro(name, avroEventTypeDesc);
 
-            avroEventTypeDesc.StartTimestampPropertyName = GetOptionalAttribute(element, "start-timestamp-property-name");
+            avroEventTypeDesc.StartTimestampPropertyName =
+                GetOptionalAttribute(element, "start-timestamp-property-name");
             avroEventTypeDesc.EndTimestampPropertyName = GetOptionalAttribute(element, "end-timestamp-property-name");
 
             var names = GetOptionalAttribute(element, "supertype-names");
@@ -536,16 +582,19 @@ namespace com.espertech.esper.common.client.configuration.common
                         legacyDesc.AddMethodProperty(nameProperty, method);
                         break;
                     }
+
                     case "field-property": {
                         var nameProperty = GetRequiredAttribute(propertyElement, "name");
                         var field = GetRequiredAttribute(propertyElement, "accessor-field");
                         legacyDesc.AddFieldProperty(nameProperty, field);
                         break;
                     }
+
                     default:
                         throw new ConfigurationException(
-                            "Invalid node " + propertyElement.Name
-                                            + " encountered while parsing legacy type definition");
+                            "Invalid node " +
+                            propertyElement.Name +
+                            " encountered while parsing legacy type definition");
                 }
             }
         }
@@ -659,8 +708,12 @@ namespace com.espertech.esper.common.client.configuration.common
                             refTypeEnum = EnumHelper.Parse<CacheReferenceType>(refType);
                         }
 
-                        configMethodRef.SetExpiryTimeCache(Double.Parse(maxAge), Double.Parse(purgeInterval), refTypeEnum);
+                        configMethodRef.SetExpiryTimeCache(
+                            Double.Parse(maxAge),
+                            Double.Parse(purgeInterval),
+                            refTypeEnum);
                         break;
+
                     case "lru-cache":
                         var size = GetRequiredAttribute(subElement, "size");
                         configMethodRef.SetLRUCache(Int32.Parse(size));
@@ -693,6 +746,7 @@ namespace com.espertech.esper.common.client.configuration.common
                         }
 
                         break;
+
                     case "event-representation":
                         var typeNode = subElement.Attributes.GetNamedItem("type");
                         if (typeNode != null) {
@@ -702,6 +756,7 @@ namespace com.espertech.esper.common.client.configuration.common
                         }
 
                         break;
+
                     case "avro-settings":
                         var enableAvroStr = GetOptionalAttribute(subElement, "enable-avro");
                         if (enableAvroStr != null) {
@@ -713,17 +768,26 @@ namespace com.espertech.esper.common.client.configuration.common
                             common.EventMeta.AvroSettings.IsEnableNativeString = Boolean.Parse(enableNativeStringStr);
                         }
 
-                        var enableSchemaDefaultNonNullStr = GetOptionalAttribute(subElement, "enable-schema-default-nonnull");
+                        var enableSchemaDefaultNonNullStr = GetOptionalAttribute(
+                            subElement,
+                            "enable-schema-default-nonnull");
                         if (enableSchemaDefaultNonNullStr != null) {
-                            common.EventMeta.AvroSettings.IsEnableSchemaDefaultNonNull = Boolean.Parse(enableSchemaDefaultNonNullStr);
+                            common.EventMeta.AvroSettings.IsEnableSchemaDefaultNonNull =
+                                Boolean.Parse(enableSchemaDefaultNonNullStr);
                         }
 
-                        var objectvalueTypewidenerFactoryClass = GetOptionalAttribute(subElement, "objectvalue-typewidener-factory-class");
-                        if (objectvalueTypewidenerFactoryClass != null && objectvalueTypewidenerFactoryClass.Trim().Length > 0) {
-                            common.EventMeta.AvroSettings.ObjectValueTypeWidenerFactoryClass = objectvalueTypewidenerFactoryClass.Trim();
+                        var objectvalueTypewidenerFactoryClass = GetOptionalAttribute(
+                            subElement,
+                            "objectvalue-typewidener-factory-class");
+                        if (objectvalueTypewidenerFactoryClass != null &&
+                            objectvalueTypewidenerFactoryClass.Trim().Length > 0) {
+                            common.EventMeta.AvroSettings.ObjectValueTypeWidenerFactoryClass =
+                                objectvalueTypewidenerFactoryClass.Trim();
                         }
 
-                        var typeRepresentationMapperClass = GetOptionalAttribute(subElement, "type-representation-mapper-class");
+                        var typeRepresentationMapperClass = GetOptionalAttribute(
+                            subElement,
+                            "type-representation-mapper-class");
                         common.EventMeta.AvroSettings.TypeRepresentationMapperClass = typeRepresentationMapperClass;
                         break;
                 }

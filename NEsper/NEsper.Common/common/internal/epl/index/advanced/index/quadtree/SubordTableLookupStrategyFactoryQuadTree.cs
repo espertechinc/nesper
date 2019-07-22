@@ -41,7 +41,9 @@ namespace com.espertech.esper.common.@internal.epl.index.advanced.index.quadtree
             }
 
             return new SubordTableLookupStrategyQuadTreeSubq(
-                (EventTableQuadTree) eventTable[0], this, StreamCountOuter);
+                (EventTableQuadTree) eventTable[0],
+                this,
+                StreamCountOuter);
         }
 
         public LookupStrategyDesc LookupStrategyDesc =>

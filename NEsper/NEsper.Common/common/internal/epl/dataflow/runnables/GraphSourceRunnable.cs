@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Threading;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.dataflow.core;
 using com.espertech.esper.common.client.dataflow.util;
@@ -117,14 +118,23 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.runnables
             }
 
             _optionalExceptionHandler.Handle(
-                new EPDataFlowExceptionContext(_dataFlowName, _operatorName, _operatorNumber, _operatorPrettyPrint, ex));
+                new EPDataFlowExceptionContext(
+                    _dataFlowName,
+                    _operatorName,
+                    _operatorNumber,
+                    _operatorPrettyPrint,
+                    ex));
         }
 
         private void RunLoop()
         {
             while (true) {
                 _agentInstanceContext.AuditProvider.DataflowSource(
-                    _dataFlowName, _instanceId, _operatorName, _operatorNumber, _agentInstanceContext);
+                    _dataFlowName,
+                    _instanceId,
+                    _operatorName,
+                    _operatorNumber,
+                    _agentInstanceContext);
                 _graphSource.Next();
 
                 if (IsShutdown) {
@@ -158,7 +168,11 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.runnables
         public void Next()
         {
             _agentInstanceContext.AuditProvider.DataflowSource(
-                _dataFlowName, _instanceId, _operatorName, _operatorNumber, _agentInstanceContext);
+                _dataFlowName,
+                _instanceId,
+                _operatorName,
+                _operatorNumber,
+                _agentInstanceContext);
             _graphSource.Next();
         }
     }

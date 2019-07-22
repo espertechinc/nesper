@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
@@ -33,7 +34,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
             get {
                 var evaluators = ExprNodeUtilityQuery.GetEvaluatorsNoCompile(ForgeRenderable.ChildNodes);
                 return new ExprMinMaxRowNodeForgeEval(
-                    this, evaluators, ExprNodeUtilityQuery.GetForges(ForgeRenderable.ChildNodes));
+                    this,
+                    evaluators,
+                    ExprNodeUtilityQuery.GetForges(ForgeRenderable.ChildNodes));
             }
         }
 
@@ -53,7 +56,13 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
             CodegenClassScope codegenClassScope)
         {
             return new InstrumentationBuilderExpr(
-                    GetType(), this, "ExprMinMaxRow", requiredType, codegenMethodScope, exprSymbol, codegenClassScope)
+                    GetType(),
+                    this,
+                    "ExprMinMaxRow",
+                    requiredType,
+                    codegenMethodScope,
+                    exprSymbol,
+                    codegenClassScope)
                 .Build();
         }
 

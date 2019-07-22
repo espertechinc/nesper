@@ -12,6 +12,7 @@ using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.@join.queryplan;
 using com.espertech.esper.common.@internal.epl.lookupplan;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.lookup
@@ -50,7 +51,8 @@ namespace com.espertech.esper.common.@internal.epl.lookup
         {
             var expressions = ExprNodeUtilityPrint.ToExpressionStringsMinPrecedence(_rangeKey.RangeInfo.Expressions);
             return NewInstance<SubordSortedTableLookupStrategyFactory>(
-                Constant(_isNwOnTrigger), Constant(_numStreamsOuter),
+                Constant(_isNwOnTrigger),
+                Constant(_numStreamsOuter),
                 Constant(expressions[0]),
                 _rangeKey.RangeInfo.Make(_coercionDesc.CoercionTypes[0], parent, symbols, classScope));
         }

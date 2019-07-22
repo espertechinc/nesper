@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.@join.querygraph;
@@ -121,7 +122,10 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplan
             var desc = rangeKey.RangeInfo;
             if (desc.Type.IsRange) {
                 var rangeIn = (QueryGraphValueEntryRangeInForge) desc;
-                return GetCoercionTypeRangeIn(indexedType.GetPropertyType(indexedProp), rangeIn.ExprStart, rangeIn.ExprEnd);
+                return GetCoercionTypeRangeIn(
+                    indexedType.GetPropertyType(indexedProp),
+                    rangeIn.ExprStart,
+                    rangeIn.ExprEnd);
             }
 
             var relOp = (QueryGraphValueEntryRangeRelOpForge) desc;

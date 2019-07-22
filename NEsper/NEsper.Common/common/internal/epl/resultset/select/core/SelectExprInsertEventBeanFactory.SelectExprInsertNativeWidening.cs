@@ -42,14 +42,22 @@ namespace com.espertech.esper.common.@internal.epl.resultset.@select.core
             {
                 var methodNode = codegenMethodScope.MakeChild(typeof(EventBean), GetType(), codegenClassScope);
                 var manufacturer = codegenClassScope.AddFieldUnshared(
-                    true, typeof(EventBeanManufacturer), eventManufacturer.Make(codegenMethodScope, codegenClassScope));
+                    true,
+                    typeof(EventBeanManufacturer),
+                    eventManufacturer.Make(codegenMethodScope, codegenClassScope));
                 var block = methodNode.Block
-                    .DeclareVar(
-                        typeof(object[]), "values",
-                        CodegenExpressionBuilder.NewArrayByLength(typeof(object), CodegenExpressionBuilder.Constant(exprForges.Length)));
+                    .DeclareVar<object[]>(
+                        "values",
+                        CodegenExpressionBuilder.NewArrayByLength(
+                            typeof(object),
+                            CodegenExpressionBuilder.Constant(exprForges.Length)));
                 for (var i = 0; i < exprForges.Length; i++) {
                     var expression = CodegenLegoMayVoid.ExpressionMayVoid(
-                        exprForges[i].EvaluationType, exprForges[i], methodNode, exprSymbol, codegenClassScope);
+                        exprForges[i].EvaluationType,
+                        exprForges[i],
+                        methodNode,
+                        exprSymbol,
+                        codegenClassScope);
                     if (wideners[i] == null) {
                         block.AssignArrayElement("values", CodegenExpressionBuilder.Constant(i), expression);
                     }
@@ -59,19 +67,33 @@ namespace com.espertech.esper.common.@internal.epl.resultset.@select.core
                         if (!exprForges[i].EvaluationType.IsPrimitive) {
                             block.IfRefNotNull(refname)
                                 .AssignArrayElement(
-                                    "values", CodegenExpressionBuilder.Constant(i),
-                                    wideners[i].WidenCodegen(CodegenExpressionBuilder.Ref(refname), methodNode, codegenClassScope))
+                                    "values",
+                                    CodegenExpressionBuilder.Constant(i),
+                                    wideners[i]
+                                        .WidenCodegen(
+                                            CodegenExpressionBuilder.Ref(refname),
+                                            methodNode,
+                                            codegenClassScope))
                                 .BlockEnd();
                         }
                         else {
                             block.AssignArrayElement(
-                                "values", CodegenExpressionBuilder.Constant(i),
-                                wideners[i].WidenCodegen(CodegenExpressionBuilder.Ref(refname), methodNode, codegenClassScope));
+                                "values",
+                                CodegenExpressionBuilder.Constant(i),
+                                wideners[i]
+                                    .WidenCodegen(
+                                        CodegenExpressionBuilder.Ref(refname),
+                                        methodNode,
+                                        codegenClassScope));
                         }
                     }
                 }
 
-                block.MethodReturn(CodegenExpressionBuilder.ExprDotMethod(manufacturer, "make", CodegenExpressionBuilder.Ref("values")));
+                block.MethodReturn(
+                    CodegenExpressionBuilder.ExprDotMethod(
+                        manufacturer,
+                        "make",
+                        CodegenExpressionBuilder.Ref("values")));
                 return methodNode;
             }
         }

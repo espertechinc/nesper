@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+
 using com.espertech.esper.common.@internal.@event.bean.getter;
 using com.espertech.esper.common.@internal.@event.bean.service;
 using com.espertech.esper.common.@internal.@event.core;
@@ -90,7 +91,8 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
             }
         }
 
-        private static ISet<WriteablePropertyDescriptor> GetWritablePropertiesForClasses(IEnumerable<Type> propertyClasses)
+        private static ISet<WriteablePropertyDescriptor> GetWritablePropertiesForClasses(
+            IEnumerable<Type> propertyClasses)
         {
             ISet<WriteablePropertyDescriptor> result = new HashSet<WriteablePropertyDescriptor>();
 
@@ -211,7 +213,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
                     continue;
                 }
 
-                var inferredName = methodName.Substring(3, methodName.Length);
+                var inferredName = methodName.Substring(3);
                 if (inferredName.Length == 0) {
                     continue;
                 }

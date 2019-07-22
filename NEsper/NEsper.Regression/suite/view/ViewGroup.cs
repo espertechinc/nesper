@@ -173,7 +173,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                     epl,
                     "Failed to valIdate data window declaration: Multiple groupwin-declarations are not supported");
 
-                epl = "select avg(price), Symbol from SupportMarketDataBean#length(100)#groupwin(Symbol)";
+                epl = "select avg(Price), Symbol from SupportMarketDataBean#length(100)#groupwin(Symbol)";
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
                     epl,
@@ -204,7 +204,7 @@ namespace com.espertech.esper.regressionlib.suite.view
 
                 // Listen to all ticks
                 var epl = "@Name('s0') select irstream datapoints as size, Symbol, Feed, Volume " +
-                          "from SupportMarketDataBean#groupwin(Symbol, Feed, Volume)#uni(price) order by Symbol, Feed, Volume";
+                          "from SupportMarketDataBean#groupwin(Symbol, Feed, Volume)#uni(Price) order by Symbol, Feed, Volume";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 var mapList = new List<IDictionary<string, object>>();
@@ -388,21 +388,21 @@ namespace com.espertech.esper.regressionlib.suite.view
                 string epl;
                 var filter = "select * from SupportMarketDataBean";
 
-                epl = "@Name('priceLast3Stats')" +
+                epl = "@Name('PriceLast3Stats')" +
                       filter +
-                      "#groupwin(Symbol)#length(3)#uni(price) order by Symbol asc";
-                env.CompileDeploy(epl).AddListener("priceLast3Stats");
+                      "#groupwin(Symbol)#length(3)#uni(Price) order by Symbol asc";
+                env.CompileDeploy(epl).AddListener("PriceLast3Stats");
 
                 epl = "@Name('VolumeLast3Stats')" +
                       filter +
                       "#groupwin(Symbol)#length(3)#uni(Volume) order by Symbol asc";
-                env.CompileDeploy(epl).AddListener("volumeLast3Stats");
+                env.CompileDeploy(epl).AddListener("VolumeLast3Stats");
 
-                epl = "@Name('priceAllStats')" + filter + "#groupwin(Symbol)#uni(price) order by Symbol asc";
-                env.CompileDeploy(epl).AddListener("priceAllStats");
+                epl = "@Name('PriceAllStats')" + filter + "#groupwin(Symbol)#uni(Price) order by Symbol asc";
+                env.CompileDeploy(epl).AddListener("PriceAllStats");
 
                 epl = "@Name('VolumeAllStats')" + filter + "#groupwin(Symbol)#uni(Volume) order by Symbol asc";
-                env.CompileDeploy(epl).AddListener("volumeAllStats");
+                env.CompileDeploy(epl).AddListener("VolumeAllStats");
 
                 IList<IDictionary<string, object>> expectedList = new List<IDictionary<string, object>>();
                 for (var i = 0; i < 3; i++) {
@@ -415,43 +415,43 @@ namespace com.espertech.esper.regressionlib.suite.view
                 SendEvent(env, SYMBOL_IBM, 10.5, 8200);
                 SendEvent(env, SYMBOL_GE, 88, 1000);
 
-                EPAssertionUtil.AssertPropsPerRow(env.Listener("priceLast3Stats").LastNewData, MakeMap(SYMBOL_GE, 88));
-                EPAssertionUtil.AssertPropsPerRow(env.Listener("priceAllStats").LastNewData, MakeMap(SYMBOL_GE, 88));
+                EPAssertionUtil.AssertPropsPerRow(env.Listener("PriceLast3Stats").LastNewData, MakeMap(SYMBOL_GE, 88));
+                EPAssertionUtil.AssertPropsPerRow(env.Listener("PriceAllStats").LastNewData, MakeMap(SYMBOL_GE, 88));
                 EPAssertionUtil.AssertPropsPerRow(
-                    env.Listener("volumeLast3Stats").LastNewData,
+                    env.Listener("VolumeLast3Stats").LastNewData,
                     MakeMap(SYMBOL_GE, 1000));
-                EPAssertionUtil.AssertPropsPerRow(env.Listener("volumeAllStats").LastNewData, MakeMap(SYMBOL_GE, 1000));
+                EPAssertionUtil.AssertPropsPerRow(env.Listener("VolumeAllStats").LastNewData, MakeMap(SYMBOL_GE, 1000));
 
                 SendEvent(env, SYMBOL_CISCO, 27, 70000);
                 SendEvent(env, SYMBOL_CISCO, 28, 80000);
 
                 EPAssertionUtil.AssertPropsPerRow(
-                    env.Listener("priceAllStats").LastNewData,
+                    env.Listener("PriceAllStats").LastNewData,
                     MakeMap(SYMBOL_CISCO, 26.5d));
                 EPAssertionUtil.AssertPropsPerRow(
-                    env.Listener("volumeAllStats").LastNewData,
+                    env.Listener("VolumeAllStats").LastNewData,
                     MakeMap(SYMBOL_CISCO, 65000d));
                 EPAssertionUtil.AssertPropsPerRow(
-                    env.Listener("priceLast3Stats").LastNewData,
+                    env.Listener("PriceLast3Stats").LastNewData,
                     MakeMap(SYMBOL_CISCO, 27d));
                 EPAssertionUtil.AssertPropsPerRow(
-                    env.Listener("volumeLast3Stats").LastNewData,
+                    env.Listener("VolumeLast3Stats").LastNewData,
                     MakeMap(SYMBOL_CISCO, 70000d));
 
                 SendEvent(env, SYMBOL_IBM, 11, 8700);
                 SendEvent(env, SYMBOL_IBM, 12, 8900);
 
                 EPAssertionUtil.AssertPropsPerRow(
-                    env.Listener("priceAllStats").LastNewData,
+                    env.Listener("PriceAllStats").LastNewData,
                     MakeMap(SYMBOL_IBM, 10.875d));
                 EPAssertionUtil.AssertPropsPerRow(
-                    env.Listener("volumeAllStats").LastNewData,
+                    env.Listener("VolumeAllStats").LastNewData,
                     MakeMap(SYMBOL_IBM, 8450d));
                 EPAssertionUtil.AssertPropsPerRow(
-                    env.Listener("priceLast3Stats").LastNewData,
+                    env.Listener("PriceLast3Stats").LastNewData,
                     MakeMap(SYMBOL_IBM, 11d + 1 / 6d));
                 EPAssertionUtil.AssertPropsPerRow(
-                    env.Listener("volumeLast3Stats").LastNewData,
+                    env.Listener("VolumeLast3Stats").LastNewData,
                     MakeMap(SYMBOL_IBM, 8600d));
 
                 SendEvent(env, SYMBOL_GE, 85.5, 950);
@@ -462,16 +462,16 @@ namespace com.espertech.esper.regressionlib.suite.view
 
                 var averageGE = (88d + 85.5d + 85.75d + 89d + 86d + 85d) / 6d;
                 EPAssertionUtil.AssertPropsPerRow(
-                    env.Listener("priceAllStats").LastNewData,
+                    env.Listener("PriceAllStats").LastNewData,
                     MakeMap(SYMBOL_GE, averageGE));
                 EPAssertionUtil.AssertPropsPerRow(
-                    env.Listener("volumeAllStats").LastNewData,
+                    env.Listener("VolumeAllStats").LastNewData,
                     MakeMap(SYMBOL_GE, 1075d));
                 EPAssertionUtil.AssertPropsPerRow(
-                    env.Listener("priceLast3Stats").LastNewData,
+                    env.Listener("PriceLast3Stats").LastNewData,
                     MakeMap(SYMBOL_GE, 86d + 2d / 3d));
                 EPAssertionUtil.AssertPropsPerRow(
-                    env.Listener("volumeLast3Stats").LastNewData,
+                    env.Listener("VolumeLast3Stats").LastNewData,
                     MakeMap(SYMBOL_GE, 1200d));
 
                 // Check iterator results
@@ -481,7 +481,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 expectedList[1].Put("average", averageGE);
                 expectedList[2].Put("Symbol", SYMBOL_IBM);
                 expectedList[2].Put("average", 10.875d);
-                EPAssertionUtil.AssertPropsPerRow(env.GetEnumerator("priceAllStats"), expectedList);
+                EPAssertionUtil.AssertPropsPerRow(env.GetEnumerator("PriceAllStats"), expectedList);
 
                 expectedList[0].Put("Symbol", SYMBOL_CISCO);
                 expectedList[0].Put("average", 27d);
@@ -489,7 +489,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 expectedList[1].Put("average", 86d + 2d / 3d);
                 expectedList[2].Put("Symbol", SYMBOL_IBM);
                 expectedList[2].Put("average", 11d + 1 / 6d);
-                EPAssertionUtil.AssertPropsPerRow(env.GetEnumerator("priceLast3Stats"), expectedList);
+                EPAssertionUtil.AssertPropsPerRow(env.GetEnumerator("PriceLast3Stats"), expectedList);
 
                 env.UndeployAll();
             }
@@ -527,7 +527,7 @@ namespace com.espertech.esper.regressionlib.suite.view
             {
                 // further math tests can be found in the view unit test
                 var epl =
-                    "@Name('s0') select * from SupportMarketDataBean#groupwin(Symbol)#length(1000000)#correl(price, Volume, Feed)";
+                    "@Name('s0') select * from SupportMarketDataBean#groupwin(Symbol)#length(1000000)#correl(Price, Volume, Feed)";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 Assert.AreEqual(typeof(double?), env.Statement("s0").EventType.GetPropertyType("correlation"));
@@ -570,7 +570,7 @@ namespace com.espertech.esper.regressionlib.suite.view
             {
                 // further math tests can be found in the view unit test
                 var epl =
-                    "@Name('s0') select * from SupportMarketDataBean#groupwin(Symbol)#length(1000000)#linest(price, Volume, Feed)";
+                    "@Name('s0') select * from SupportMarketDataBean#groupwin(Symbol)#length(1000000)#linest(Price, Volume, Feed)";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 var statement = env.Statement("s0");
@@ -863,28 +863,28 @@ namespace com.espertech.esper.regressionlib.suite.view
                 // 1st event
                 env.AdvanceTime(1000);
                 SendEventTS(env, "E1", "G1", 3000);
-                Assert.AreEqual("E1", env.Listener("s0").AssertOneGetNewAndReset().Get("id"));
+                Assert.AreEqual("E1", env.Listener("s0").AssertOneGetNewAndReset().Get("Id"));
 
                 env.Milestone(1);
 
                 // 2nd event
                 env.AdvanceTime(2000);
                 SendEventTS(env, "E2", "G2", 2000);
-                Assert.AreEqual("E2", env.Listener("s0").AssertOneGetNewAndReset().Get("id"));
+                Assert.AreEqual("E2", env.Listener("s0").AssertOneGetNewAndReset().Get("Id"));
 
                 env.Milestone(2);
 
                 // 3rd event
                 env.AdvanceTime(3000);
                 SendEventTS(env, "E3", "G2", 3000);
-                Assert.AreEqual("E3", env.Listener("s0").AssertOneGetNewAndReset().Get("id"));
+                Assert.AreEqual("E3", env.Listener("s0").AssertOneGetNewAndReset().Get("Id"));
 
                 env.Milestone(3);
 
                 // 4th event
                 env.AdvanceTime(4000);
                 SendEventTS(env, "E4", "G1", 2500);
-                Assert.AreEqual("E4", env.Listener("s0").AssertOneGetNewAndReset().Get("id"));
+                Assert.AreEqual("E4", env.Listener("s0").AssertOneGetNewAndReset().Get("Id"));
 
                 env.Milestone(4);
 
@@ -896,7 +896,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 var oldData = env.Listener("s0").LastOldData;
                 EPAssertionUtil.AssertPropsPerRow(
                     oldData,
-                    new[] {"id"},
+                    new[] {"Id"},
                     new[] {new object[] {"E2"}});
                 env.Listener("s0").Reset();
 
@@ -910,7 +910,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 oldData = env.Listener("s0").LastOldData;
                 EPAssertionUtil.AssertPropsPerRow(
                     oldData,
-                    new[] {"id"},
+                    new[] {"Id"},
                     new[] {new object[] {"E4"}});
                 env.Listener("s0").Reset();
 

@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.annotation;
 using com.espertech.esper.common.client.dataflow.core;
@@ -36,13 +37,21 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.realize
 
             // allocate agent instance context
             var @lock = statementContext.StatementAgentInstanceLockFactory.GetStatementLock(
-                statementContext.StatementName, statementContext.Annotations, statementContext.IsStatelessSelect,
+                statementContext.StatementName,
+                statementContext.Annotations,
+                statementContext.IsStatelessSelect,
                 statementContext.StatementType);
             var handle = new EPStatementAgentInstanceHandle(statementContext.EpStatementHandle, agentInstanceId, @lock);
             var auditProvider = statementContext.StatementInformationals.AuditProvider;
             var instrumentationProvider = statementContext.StatementInformationals.InstrumentationProvider;
             var agentInstanceContext = new AgentInstanceContext(
-                statementContext, agentInstanceId, handle, null, null, auditProvider, instrumentationProvider);
+                statementContext,
+                agentInstanceId,
+                handle,
+                null,
+                null,
+                auditProvider,
+                instrumentationProvider);
 
             // assure variables
             statementContext.VariableManagementService.SetLocalVersion();
@@ -66,7 +75,12 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.realize
             // obtain realization
             var dataFlowSignalManager = new DataFlowSignalManager();
             var statistics = DataflowInstantiatorHelper.Realize(
-                dataflow, operators, operatorChannelBindings, dataFlowSignalManager, options, agentInstanceContext);
+                dataflow,
+                operators,
+                operatorChannelBindings,
+                dataFlowSignalManager,
+                options,
+                agentInstanceContext);
 
             // For each GraphSource add runnable
             IList<GraphSourceRunnable> sourceRunnables = new List<GraphSourceRunnable>();
@@ -80,8 +94,15 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.realize
 
                 var graphSource = (DataFlowSourceOperator) operatorEntry.Value;
                 var runnable = new GraphSourceRunnable(
-                    agentInstanceContext, graphSource, dataflow.DataflowName, options.DataFlowInstanceId,
-                    meta.OperatorName, operatorEntry.Key, meta.OperatorPrettyPrint, options.ExceptionHandler, audit);
+                    agentInstanceContext,
+                    graphSource,
+                    dataflow.DataflowName,
+                    options.DataFlowInstanceId,
+                    meta.OperatorName,
+                    operatorEntry.Key,
+                    meta.OperatorPrettyPrint,
+                    options.ExceptionHandler,
+                    audit);
                 sourceRunnables.Add(runnable);
 
                 dataFlowSignalManager.AddSignalListener(operatorEntry.Key, runnable);
@@ -90,7 +111,8 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.realize
             return new EPDataFlowInstanceImpl(
                 options.DataFlowInstanceUserObject,
                 options.DataFlowInstanceId,
-                statistics, operators,
+                statistics,
+                operators,
                 sourceRunnables,
                 dataflow,
                 agentInstanceContext,
@@ -126,7 +148,9 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.realize
             if (options.OperatorProvider != null) {
                 var operatorX = options.OperatorProvider.Provide(
                     new EPDataFlowOperatorProviderContext(
-                        dataflow.DataflowName, metadata.OperatorName, operatorFactory));
+                        dataflow.DataflowName,
+                        metadata.OperatorName,
+                        operatorFactory));
                 if (operatorX != null) {
                     return operatorX;
                 }
@@ -153,7 +177,10 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.realize
                 @operator = operatorFactory.Operator(
                     new DataFlowOpInitializeContext(
                         dataflow.DataflowName,
-                        metadata.OperatorName, operatorNum, agentInstanceContext, additionalParameters,
+                        metadata.OperatorName,
+                        operatorNum,
+                        agentInstanceContext,
+                        additionalParameters,
                         options.DataFlowInstanceId,
                         options.ParameterProvider,
                         operatorFactory,
@@ -162,7 +189,8 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.realize
             catch (Exception t) {
                 var meta = dataflow.OperatorMetadata.Get(operatorNum);
                 throw new EPException(
-                    "Failed to obtain operator instance for '" + meta.OperatorName + "': " + t.Message, t);
+                    "Failed to obtain operator instance for '" + meta.OperatorName + "': " + t.Message,
+                    t);
             }
 
             return @operator;
@@ -233,16 +261,19 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.realize
                         return new LogicalChannelBindingMethodDesc(method, LogicalChannelBindingTypePassAlong.INSTANCE);
                     }
 
-                    if (numParams == 2 && paramTypes[0].GetBoxedType() == typeof(int) &&
+                    if (numParams == 2 &&
+                        paramTypes[0].GetBoxedType() == typeof(int) &&
                         TypeHelper.IsSubclassOrImplementsInterface(paramTypes[1], expectedUnderlying)) {
                         return new LogicalChannelBindingMethodDesc(
-                            method, new LogicalChannelBindingTypePassAlongWStream(channelDesc.ConsumingOpStreamNum));
+                            method,
+                            new LogicalChannelBindingTypePassAlongWStream(channelDesc.ConsumingOpStreamNum));
                     }
                 }
 
-                if (numParams == 1 && (paramTypes[0] == typeof(object) ||
-                                       paramTypes[0] == typeof(object[]) &&
-                                       method.IsVarArgs())) {
+                if (numParams == 1 &&
+                    (paramTypes[0] == typeof(object) ||
+                     paramTypes[0] == typeof(object[]) &&
+                     method.IsVarArgs())) {
                     return new LogicalChannelBindingMethodDesc(method, LogicalChannelBindingTypePassAlong.INSTANCE);
                 }
 
@@ -252,7 +283,8 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.realize
                      paramTypes[1] == typeof(object[]) &&
                      method.IsVarArgs())) {
                     return new LogicalChannelBindingMethodDesc(
-                        method, new LogicalChannelBindingTypePassAlongWStream(channelDesc.ConsumingOpStreamNum));
+                        method,
+                        new LogicalChannelBindingTypePassAlongWStream(channelDesc.ConsumingOpStreamNum));
                 }
 
                 // if exposing a method that exactly matches each property type in order, use that, i.e. "onInut(String p0, int p1)"
@@ -270,8 +302,12 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.realize
             }
 
             throw new ExprValidationException(
-                "Failed to find onInput method on for operator '" + operatorName + "' class " +
-                target.Name + ", expected an onInput method that takes any of {" + CollectionUtil.ToString(choices) +
+                "Failed to find onInput method on for operator '" +
+                operatorName +
+                "' class " +
+                target.Name +
+                ", expected an onInput method that takes any of {" +
+                CollectionUtil.ToString(choices) +
                 "}");
         }
     }

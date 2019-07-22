@@ -16,6 +16,7 @@ using com.espertech.esper.common.@internal.context.module;
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.compat.collections;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.context.controller.category
@@ -54,12 +55,15 @@ namespace com.espertech.esper.common.@internal.context.controller.category
             SAIFFInitializeSymbol symbols)
         {
             var method = parent.MakeChild(
-                typeof(ContextControllerCategoryFactory), typeof(ContextControllerCategoryFactoryForge), classScope);
+                typeof(ContextControllerCategoryFactory),
+                typeof(ContextControllerCategoryFactoryForge),
+                classScope);
             method.Block
-                .DeclareVar(
-                    typeof(ContextControllerCategoryFactory), "factory",
+                .DeclareVar<ContextControllerCategoryFactory>(
+                    "factory",
                     ExprDotMethodChain(symbols.GetAddInitSvc(method))
-                        .Add(EPStatementInitServicesConstants.GETCONTEXTSERVICEFACTORY).Add("categoryFactory"))
+                        .Add(EPStatementInitServicesConstants.GETCONTEXTSERVICEFACTORY)
+                        .Add("categoryFactory"))
                 .SetProperty(Ref("factory"), "CategorySpec", detail.MakeCodegen(method, symbols, classScope))
                 .MethodReturn(Ref("factory"));
             return method;

@@ -64,7 +64,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.method
                 }
                 else {
                     hasDataWindows = ExprNodeUtilityAggregation.HasRemoveStreamForAggregations(
-                        child, validationContext.StreamTypeService, validationContext.IsResettingAggregations);
+                        child,
+                        validationContext.StreamTypeService,
+                        validationContext.IsResettingAggregations);
                 }
             }
 

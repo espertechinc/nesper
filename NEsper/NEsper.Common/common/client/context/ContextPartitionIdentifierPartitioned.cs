@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.client.context
@@ -50,7 +51,8 @@ namespace com.espertech.esper.common.client.context
         public override String ToString()
         {
             return "ContextPartitionIdentifierPartitioned{" +
-                   "keys=" + (_keys) +
+                   "keys=" +
+                   (_keys) +
                    '}';
         }
     }

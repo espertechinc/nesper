@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
@@ -102,7 +103,13 @@ namespace com.espertech.esper.common.@internal.support
             int[] arrayProp = {10, 20, 30};
 
             return new SupportBeanComplexProps(
-                "simple", properties, new[] {1, 2}, mapProp, arrayProp, "nestedValue", "nestedNestedValue");
+                "simple",
+                properties,
+                new[] {1, 2},
+                mapProp,
+                arrayProp,
+                "NestedValue",
+                "nestedNestedValue");
         }
 
         public string GetMapped(string key)

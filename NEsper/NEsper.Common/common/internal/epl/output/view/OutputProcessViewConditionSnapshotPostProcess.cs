@@ -19,7 +19,7 @@ namespace com.espertech.esper.common.@internal.epl.output.view
     /// </summary>
     public class OutputProcessViewConditionSnapshotPostProcess : OutputProcessViewConditionSnapshot
     {
-        private readonly OutputStrategyPostProcess postProcessor;
+        private readonly OutputStrategyPostProcess _postProcessor;
 
         public OutputProcessViewConditionSnapshotPostProcess(
             ResultSetProcessor resultSetProcessor,
@@ -30,10 +30,14 @@ namespace com.espertech.esper.common.@internal.epl.output.view
             AgentInstanceContext agentInstanceContext,
             OutputStrategyPostProcess postProcessor)
             : base(
-                resultSetProcessor, afterConditionTime, afterConditionNumberOfEvents, afterConditionSatisfied, parent,
+                resultSetProcessor,
+                afterConditionTime,
+                afterConditionNumberOfEvents,
+                afterConditionSatisfied,
+                parent,
                 agentInstanceContext)
         {
-            this.postProcessor = postProcessor;
+            _postProcessor = postProcessor;
         }
 
         public override void Output(
@@ -41,7 +45,7 @@ namespace com.espertech.esper.common.@internal.epl.output.view
             UniformPair<EventBean[]> results)
         {
             if (child != null) {
-                postProcessor.Output(forceUpdate, results, child);
+                _postProcessor.Output(forceUpdate, results, child);
             }
         }
     }

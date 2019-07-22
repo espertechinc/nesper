@@ -35,8 +35,7 @@ namespace com.espertech.esper.common.@internal.type
 
         public CodegenExpression InitCtorScoped()
         {
-            if (mathContext == null)
-            {
+            if (mathContext == null) {
                 return ConstantNull();
             }
 
@@ -47,13 +46,11 @@ namespace com.espertech.esper.common.@internal.type
 
         public override bool Equals(object o)
         {
-            if (this == o)
-            {
+            if (this == o) {
                 return true;
             }
 
-            if (o == null || GetType() != o.GetType())
-            {
+            if (o == null || GetType() != o.GetType()) {
                 return false;
             }
 

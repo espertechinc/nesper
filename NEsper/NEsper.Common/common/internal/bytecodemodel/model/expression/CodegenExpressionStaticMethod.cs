@@ -9,8 +9,10 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.core.CodeGenerationHelper;
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
@@ -47,11 +49,10 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
 
         public void Render(
             StringBuilder builder,
-            IDictionary<Type, string> imports,
             bool isInnerClass)
         {
             if (_target != null) {
-                AppendClassName(builder, _target, null, imports);
+                AppendClassName(builder, _target);
             }
             else {
                 builder.Append(_targetClassName);
@@ -60,7 +61,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
             builder.Append(".");
             builder.Append(_methodName);
             builder.Append("(");
-            RenderExpressions(builder, _params, imports, isInnerClass);
+            RenderExpressions(builder, _params, isInnerClass);
             builder.Append(")");
         }
 

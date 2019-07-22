@@ -41,8 +41,7 @@ namespace NEsper.Avro.Writer
             var arrayEvent = (AvroGenericDataBackedEventBean) theEvent;
             var arr = arrayEvent.Properties;
 
-            for (var i = 0; i < _writers.Length; i++)
-            {
+            for (var i = 0; i < _writers.Length; i++) {
                 _writers[i].Write(values[i], arr);
             }
         }

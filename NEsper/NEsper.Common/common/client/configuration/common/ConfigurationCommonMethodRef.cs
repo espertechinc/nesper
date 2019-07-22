@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.client.util;
 
 namespace com.espertech.esper.common.client.configuration.common
@@ -48,7 +49,9 @@ namespace com.espertech.esper.common.client.configuration.common
             double purgeIntervalSeconds)
         {
             DataCacheDesc = new ConfigurationCommonCacheExpiryTime(
-                maxAgeSeconds, purgeIntervalSeconds, CacheReferenceType.DEFAULT);
+                maxAgeSeconds,
+                purgeIntervalSeconds,
+                CacheReferenceType.DEFAULT);
         }
 
         /// <summary>
@@ -67,7 +70,9 @@ namespace com.espertech.esper.common.client.configuration.common
             CacheReferenceType cacheReferenceType)
         {
             DataCacheDesc = new ConfigurationCommonCacheExpiryTime(
-                maxAgeSeconds, purgeIntervalSeconds, cacheReferenceType);
+                maxAgeSeconds,
+                purgeIntervalSeconds,
+                cacheReferenceType);
         }
     }
 } // end of namespace

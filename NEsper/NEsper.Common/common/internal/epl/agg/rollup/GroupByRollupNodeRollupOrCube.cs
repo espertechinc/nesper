@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
@@ -66,7 +67,8 @@ namespace com.espertech.esper.common.@internal.epl.agg.rollup
             }
 
             Collections.SortInPlace(
-                enumerationSorted, new ProxyComparer<int[]> {
+                enumerationSorted,
+                new ProxyComparer<int[]> {
                     ProcCompare = (
                         o1,
                         o2) => {

@@ -7,10 +7,12 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.@event.core;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.@event.map
@@ -50,7 +52,8 @@ namespace com.espertech.esper.common.@internal.@event.map
             CodegenClassScope codegenClassScope)
         {
             return codegenMethodScope.MakeChild(typeof(object), GetType(), codegenClassScope)
-                .AddParam(typeof(object), "value").Block
+                .AddParam(typeof(object), "value")
+                .Block
                 .IfNotInstanceOf("value", typeof(IDictionary<object, object>))
                 .IfInstanceOf("value", typeof(EventBean))
                 .DeclareVarWCast(typeof(EventBean), "bean", "value")
@@ -72,7 +75,8 @@ namespace com.espertech.esper.common.@internal.@event.map
 
             // If the map does not contain the key, this is allowed and represented as null
             EventBean eventBean = eventBeanTypedEventFactory.AdapterForTypedMap(
-                (IDictionary<string, object>) value, fragmentType);
+                (IDictionary<string, object>) value,
+                fragmentType);
             return mapGetter.GetFragment(eventBean);
         }
 
@@ -81,7 +85,8 @@ namespace com.espertech.esper.common.@internal.@event.map
             CodegenClassScope codegenClassScope)
         {
             return codegenMethodScope.MakeChild(typeof(object), GetType(), codegenClassScope)
-                .AddParam(typeof(object), "value").Block
+                .AddParam(typeof(object), "value")
+                .Block
                 .IfNotInstanceOf("value", typeof(IDictionary<object, object>))
                 .IfInstanceOf("value", typeof(EventBean))
                 .DeclareVarWCast(typeof(EventBean), "bean", "value")
@@ -89,7 +94,8 @@ namespace com.espertech.esper.common.@internal.@event.map
                 .BlockReturn(ConstantNull())
                 .MethodReturn(
                     mapGetter.UnderlyingFragmentCodegen(
-                        Cast(typeof(IDictionary<object, object>), Ref("value")), codegenMethodScope,
+                        Cast(typeof(IDictionary<object, object>), Ref("value")),
+                        codegenMethodScope,
                         codegenClassScope));
         }
 

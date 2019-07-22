@@ -10,6 +10,7 @@ using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.epl.agg.core;
 using com.espertech.esper.common.@internal.epl.table.compiletime;
 using com.espertech.esper.common.@internal.epl.table.core;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 using static com.espertech.esper.common.@internal.epl.expression.codegen.ExprForgeCodegenNames;
 
@@ -36,15 +37,20 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
             var eventToPublic =
                 TableDeployTimeResolver.MakeTableEventToPublicField(table, context.ClassScope, GetType());
             var forge = (AggregatorAccessSorted) context.AccessStateForge.Aggregator;
-            context.Method.Block.DeclareVar(
-                    typeof(EventBean), "event",
+            context.Method.Block.DeclareVar<EventBean>(
+                    "event",
                     max
                         ? forge.GetLastValueCodegen(context.ClassScope, context.Method)
                         : forge.GetFirstValueCodegen(context.ClassScope, context.Method))
                 .IfRefNullReturnNull("event")
                 .MethodReturn(
                     ExprDotMethod(
-                        eventToPublic, "convertToUnd", Ref("event"), REF_EPS, REF_ISNEWDATA, REF_EXPREVALCONTEXT));
+                        eventToPublic,
+                        "convertToUnd",
+                        Ref("event"),
+                        REF_EPS,
+                        REF_ISNEWDATA,
+                        REF_EXPREVALCONTEXT));
         }
     }
 } // end of namespace

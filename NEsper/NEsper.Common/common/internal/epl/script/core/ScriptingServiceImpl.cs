@@ -38,8 +38,7 @@ namespace com.espertech.esper.common.@internal.epl.script.core
         /// </summary>
         public void DiscoverEngines(Predicate<Type> isEngine)
         {
-            foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
-            {
+            foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies()) {
                 DiscoverEngines(assembly, isEngine);
             }
         }
@@ -49,38 +48,36 @@ namespace com.espertech.esper.common.@internal.epl.script.core
         /// </summary>
         /// <param name="assembly">The assembly.</param>
         /// <param name="isEngine">The is engine.</param>
-        public void DiscoverEngines(Assembly assembly, Predicate<Type> isEngine)
+        public void DiscoverEngines(
+            Assembly assembly,
+            Predicate<Type> isEngine)
         {
             Type[] types;
-            try
-            {
+            try {
                 types = assembly.GetTypes();
             }
-            catch
-            {
+            catch {
                 // ignore assemblies that cannot be loaded
                 return;
             }
-            foreach (var type in types)
-            {
-                if (type.IsInterface || type.IsAbstract)
-                {
+
+            foreach (var type in types) {
+                if (type.IsInterface || type.IsAbstract) {
                     continue;
                 }
 
-                if (IsEngineType(type) && isEngine(type))
-                {
+                if (IsEngineType(type) && isEngine(type)) {
                     var scriptingEngine = (ScriptingEngine) Activator.CreateInstance(type);
                     var scriptingEngineCurr = _scriptingEngines.Get(scriptingEngine.LanguagePrefix);
-                    if (scriptingEngineCurr != null)
-                    {
-                        if (scriptingEngineCurr.GetType() == type)
-                        {
+                    if (scriptingEngineCurr != null) {
+                        if (scriptingEngineCurr.GetType() == type) {
                             continue;
                         }
 
                         throw new ScriptingEngineException(
-                            string.Format("duplicate language prefix \"{0}\" detected", scriptingEngine.LanguagePrefix));
+                            string.Format(
+                                "duplicate language prefix \"{0}\" detected",
+                                scriptingEngine.LanguagePrefix));
                     }
 
                     _scriptingEngines.Add(scriptingEngine.LanguagePrefix, scriptingEngine);
@@ -106,23 +103,27 @@ namespace com.espertech.esper.common.@internal.epl.script.core
         /// <param name="dialect">The language prefix.</param>
         /// <param name="script">The script.</param>
         /// <returns></returns>
-        public Func<ScriptArgs, object> Compile(string dialect, ExpressionScriptProvided script)
+        public Func<ScriptArgs, object> Compile(
+            string dialect,
+            ExpressionScriptProvided script)
         {
             var scriptingEngine = _scriptingEngines.Get(dialect);
-            if (scriptingEngine == null)
-            {
-                throw new ExprValidationException("Failed to obtain script engine for dialect '" + dialect + "' for script '" + script.Name + "'");
+            if (scriptingEngine == null) {
+                throw new ExprValidationException(
+                    "Failed to obtain script engine for dialect '" + dialect + "' for script '" + script.Name + "'");
             }
 
             return scriptingEngine.Compile(script);
         }
 
-        public void VerifyScript(string dialect, ExpressionScriptProvided script)
+        public void VerifyScript(
+            string dialect,
+            ExpressionScriptProvided script)
         {
             var scriptingEngine = _scriptingEngines.Get(dialect);
-            if (scriptingEngine == null)
-            {
-                throw new ExprValidationException("Failed to obtain script engine for dialect '" + dialect + "' for script '" + script.Name + "'");
+            if (scriptingEngine == null) {
+                throw new ExprValidationException(
+                    "Failed to obtain script engine for dialect '" + dialect + "' for script '" + script.Name + "'");
             }
 
             scriptingEngine.Verify(script);

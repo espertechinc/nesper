@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client.annotation;
 using com.espertech.esper.common.@internal.compile.stage1.spec;
 using com.espertech.esper.common.@internal.compile.stage2;
@@ -28,7 +29,8 @@ namespace com.espertech.esper.common.@internal.epl.subselect
             StatementBaseInfo statement,
             StatementCompileTimeServices services)
         {
-            IDictionary<ExprSubselectNode, SubSelectActivationPlan> result = new LinkedHashMap<ExprSubselectNode, SubSelectActivationPlan>();
+            IDictionary<ExprSubselectNode, SubSelectActivationPlan> result =
+                new LinkedHashMap<ExprSubselectNode, SubSelectActivationPlan>();
 
             // Process all subselect expression nodes
             foreach (var subselect in statement.StatementSpec.SubselectNodes) {
@@ -39,23 +41,43 @@ namespace com.espertech.esper.common.@internal.epl.subselect
                     throw new IllegalStateException("Unexpected subquery");
                 }
 
-                var args = new ViewFactoryForgeArgs(-1, true, subqueryNumber, streamSpec.Options, null, statement.StatementRawInfo, services);
+                var args = new ViewFactoryForgeArgs(
+                    -1,
+                    true,
+                    subqueryNumber,
+                    streamSpec.Options,
+                    null,
+                    statement.StatementRawInfo,
+                    services);
 
                 if (streamSpec is FilterStreamSpecCompiled) {
                     var filterStreamSpec = (FilterStreamSpecCompiled) statementSpec.StreamSpecs[0];
 
                     // Register filter, create view factories
                     ViewableActivatorForge activatorDeactivator = new ViewableActivatorFilterForge(
-                        filterStreamSpec.FilterSpecCompiled, false, null, true, subqueryNumber);
-                    var forges = ViewFactoryForgeUtil.CreateForges(streamSpec.ViewSpecs, args, filterStreamSpec.FilterSpecCompiled.ResultEventType);
-                    var eventType = forges.IsEmpty() ? filterStreamSpec.FilterSpecCompiled.ResultEventType : forges[forges.Count - 1].EventType;
+                        filterStreamSpec.FilterSpecCompiled,
+                        false,
+                        null,
+                        true,
+                        subqueryNumber);
+                    var forges = ViewFactoryForgeUtil.CreateForges(
+                        streamSpec.ViewSpecs,
+                        args,
+                        filterStreamSpec.FilterSpecCompiled.ResultEventType);
+                    var eventType = forges.IsEmpty()
+                        ? filterStreamSpec.FilterSpecCompiled.ResultEventType
+                        : forges[forges.Count - 1].EventType;
                     subselect.RawEventType = eventType;
                     filterSpecCompileds.Add(filterStreamSpec.FilterSpecCompiled);
 
                     // Add lookup to list, for later starts
                     result.Put(
                         subselect,
-                        new SubSelectActivationPlan(filterStreamSpec.FilterSpecCompiled.ResultEventType, forges, activatorDeactivator, streamSpec));
+                        new SubSelectActivationPlan(
+                            filterStreamSpec.FilterSpecCompiled.ResultEventType,
+                            forges,
+                            activatorDeactivator,
+                            streamSpec));
                 }
                 else if (streamSpec is TableQueryStreamSpec) {
                     var table = (TableQueryStreamSpec) streamSpec;
@@ -64,7 +86,10 @@ namespace com.espertech.esper.common.@internal.epl.subselect
                     result.Put(
                         subselect,
                         new SubSelectActivationPlan(
-                            table.Table.InternalEventType, new EmptyList<ViewFactoryForge>(), viewableActivator, streamSpec));
+                            table.Table.InternalEventType,
+                            new EmptyList<ViewFactoryForge>(),
+                            viewableActivator,
+                            streamSpec));
                     subselect.RawEventType = table.Table.InternalEventType;
                 }
                 else {
@@ -78,7 +103,9 @@ namespace com.espertech.esper.common.@internal.epl.subselect
                     }
 
                     // if named-window index sharing is disabled (the default) or filter expressions are provided then consume the insert-remove stream
-                    var disableIndexShare = HintEnum.DISABLE_WINDOW_SUBQUERY_INDEXSHARE.GetHint(statement.StatementRawInfo.Annotations) != null;
+                    var disableIndexShare =
+                        HintEnum.DISABLE_WINDOW_SUBQUERY_INDEXSHARE.GetHint(statement.StatementRawInfo.Annotations) !=
+                        null;
                     var processorDisableIndexShare = !namedSpec.NamedWindow.IsEnableIndexShare;
                     if (disableIndexShare && namedSpec.NamedWindow.IsVirtualDataWindow) {
                         disableIndexShare = false;
@@ -86,17 +113,28 @@ namespace com.espertech.esper.common.@internal.epl.subselect
 
                     if (!namedSpec.FilterExpressions.IsEmpty() || processorDisableIndexShare || disableIndexShare) {
                         ViewableActivatorForge activatorNamedWindow = new ViewableActivatorNamedWindowForge(
-                            namedSpec, nwinfo, null, null, true, namedSpec.OptPropertyEvaluator);
+                            namedSpec,
+                            nwinfo,
+                            null,
+                            null,
+                            true,
+                            namedSpec.OptPropertyEvaluator);
                         var forges = ViewFactoryForgeUtil.CreateForges(streamSpec.ViewSpecs, args, namedWindowType);
-                        subselect.RawEventType = forges.IsEmpty() ? namedWindowType : forges[(forges.Count - 1)].EventType;
-                        result.Put(subselect, new SubSelectActivationPlan(namedWindowType, forges, activatorNamedWindow, streamSpec));
+                        subselect.RawEventType =
+                            forges.IsEmpty() ? namedWindowType : forges[(forges.Count - 1)].EventType;
+                        result.Put(
+                            subselect,
+                            new SubSelectActivationPlan(namedWindowType, forges, activatorNamedWindow, streamSpec));
                     }
                     else {
                         // else if there are no named window stream filter expressions and index sharing is enabled
                         var forges = ViewFactoryForgeUtil.CreateForges(streamSpec.ViewSpecs, args, namedWindowType);
                         subselect.RawEventType = namedWindowType;
-                        ViewableActivatorForge activatorNamedWindow = new ViewableActivatorSubselectNoneForge(namedWindowType);
-                        result.Put(subselect, new SubSelectActivationPlan(namedWindowType, forges, activatorNamedWindow, streamSpec));
+                        ViewableActivatorForge activatorNamedWindow =
+                            new ViewableActivatorSubselectNoneForge(namedWindowType);
+                        result.Put(
+                            subselect,
+                            new SubSelectActivationPlan(namedWindowType, forges, activatorNamedWindow, streamSpec));
                     }
                 }
             }

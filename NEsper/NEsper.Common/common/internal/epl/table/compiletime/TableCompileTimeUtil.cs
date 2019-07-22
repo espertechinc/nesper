@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.collection;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.configuration.compiler;
@@ -57,7 +58,10 @@ namespace com.espertech.esper.common.@internal.epl.table.compiletime
                 }
 
                 throw new ValidationException(
-                    "Invalid use of table '" + classIdent + "', unrecognized use of function '" + funcName +
+                    "Invalid use of table '" +
+                    classIdent +
+                    "', unrecognized use of function '" +
+                    funcName +
                     "', expected 'keys()'");
             }
 
@@ -94,12 +98,18 @@ namespace com.espertech.esper.common.@internal.epl.table.compiletime
                 if (chainSpec.Count > 1) {
                     string candidateAccessor = chainSpec[1].Name;
                     var exprNode = (ExprAggregateNodeBase) ASTAggregationHelper.TryResolveAsAggregation(
-                        importService, false, candidateAccessor,
+                        importService,
+                        false,
+                        candidateAccessor,
                         new LazyAllocatedMap<ConfigurationCompilerPlugInAggregationMultiFunction,
                             AggregationMultiFunctionForge>());
                     if (exprNode != null) {
                         ExprNode nodeX = new ExprTableIdentNodeSubpropAccessor(
-                            pair.StreamNum, col.OptionalStreamName, pair.TableMetadata, agg, exprNode);
+                            pair.StreamNum,
+                            col.OptionalStreamName,
+                            pair.TableMetadata,
+                            agg,
+                            exprNode);
                         exprNode.AddChildNodes(chainSpec[1].Parameters);
                         chainSpec.RemoveAt(0);
                         chainSpec.RemoveAt(0);
@@ -109,7 +119,12 @@ namespace com.espertech.esper.common.@internal.epl.table.compiletime
 
                 Type returnType = pair.TableMetadata.PublicEventType.GetPropertyType(pair.Column.ColumnName);
                 var node = new ExprTableIdentNode(
-                    pair.TableMetadata, null, unresolvedPropertyName, returnType, pair.StreamNum, agg.Column);
+                    pair.TableMetadata,
+                    null,
+                    unresolvedPropertyName,
+                    returnType,
+                    pair.StreamNum,
+                    agg.Column);
                 chainSpec.RemoveAt(0);
                 return new Pair<ExprNode, IList<ExprChainedSpec>>(node, chainSpec);
             }
@@ -138,7 +153,11 @@ namespace com.espertech.esper.common.@internal.epl.table.compiletime
                 var agg = (TableMetadataColumnAggregation) pair.Column;
                 Type resultType = pair.TableMetadata.PublicEventType.GetPropertyType(agg.ColumnName);
                 return new ExprTableIdentNode(
-                    pair.TableMetadata, streamOrPropertyName, unresolvedPropertyName, resultType, pair.StreamNum,
+                    pair.TableMetadata,
+                    streamOrPropertyName,
+                    unresolvedPropertyName,
+                    resultType,
+                    pair.StreamNum,
                     agg.Column);
             }
 
@@ -208,7 +227,10 @@ namespace com.espertech.esper.common.@internal.epl.table.compiletime
 
             string candidateAccessor = subchain[0].Name;
             var exprNode = (ExprAggregateNodeBase) ASTAggregationHelper.TryResolveAsAggregation(
-                importService, false, candidateAccessor, plugInAggregations);
+                importService,
+                false,
+                candidateAccessor,
+                plugInAggregations);
             if (exprNode != null) {
                 node = new ExprTableAccessNodeSubpropAccessor(tableName, sub, exprNode);
                 exprNode.AddChildNodes(subchain[0].Parameters);
@@ -239,7 +261,10 @@ namespace com.espertech.esper.common.@internal.epl.table.compiletime
                 }
 
                 var pair = FindTableColumnForType(
-                    streamNum, streamTypeService.EventTypes[streamNum], colName, resolver);
+                    streamNum,
+                    streamTypeService.EventTypes[streamNum],
+                    colName,
+                    resolver);
                 if (pair != null) {
                     return new StreamTableColWStreamName(pair, streamName);
                 }

@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Reflection;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.@event.bean.core;
 using com.espertech.esper.common.@internal.@event.core;
@@ -38,7 +39,9 @@ namespace com.espertech.esper.common.@internal.@event.bean.manufacturer
         public object MakeUnderlying(object[] properties)
         {
             return InstanceManufacturerFastCtor.MakeUnderlyingFromFastCtor(
-                properties, constructor, beanEventType.UnderlyingType);
+                properties,
+                constructor,
+                beanEventType.UnderlyingType);
         }
     }
 } // end of namespace

@@ -109,58 +109,85 @@ namespace com.espertech.esper.common.@internal.view.derived
             switch (value) {
                 case ViewFieldEnum.UNIVARIATE_STATISTICS__DATAPOINTS:
                     return ("datapoints");
+
                 case ViewFieldEnum.UNIVARIATE_STATISTICS__TOTAL:
                     return ("total");
+
                 case ViewFieldEnum.UNIVARIATE_STATISTICS__AVERAGE:
                     return ("average");
+
                 case ViewFieldEnum.UNIVARIATE_STATISTICS__STDDEVPA:
                     return ("stddevpa");
+
                 case ViewFieldEnum.UNIVARIATE_STATISTICS__STDDEV:
                     return ("stddev");
+
                 case ViewFieldEnum.UNIVARIATE_STATISTICS__VARIANCE:
                     return ("variance");
+
                 case ViewFieldEnum.WEIGHTED_AVERAGE__AVERAGE:
                     return ("average");
+
                 case ViewFieldEnum.CORRELATION__CORRELATION:
                     return ("correlation");
+
                 case ViewFieldEnum.REGRESSION__SLOPE:
                     return ("slope");
+
                 case ViewFieldEnum.REGRESSION__YINTERCEPT:
                     return ("YIntercept");
+
                 case ViewFieldEnum.SIZE_VIEW__SIZE:
                     return ("size");
+
                 case ViewFieldEnum.REGRESSION__XAVERAGE:
                     return ("XAverage");
+
                 case ViewFieldEnum.REGRESSION__XSTANDARDDEVIATIONPOP:
                     return ("XStandardDeviationPop");
+
                 case ViewFieldEnum.REGRESSION__XSTANDARDDEVIATIONSAMPLE:
                     return ("XStandardDeviationSample");
+
                 case ViewFieldEnum.REGRESSION__XSUM:
                     return ("XSum");
+
                 case ViewFieldEnum.REGRESSION__XVARIANCE:
                     return ("XVariance");
+
                 case ViewFieldEnum.REGRESSION__YAVERAGE:
                     return ("YAverage");
+
                 case ViewFieldEnum.REGRESSION__YSTANDARDDEVIATIONPOP:
                     return ("YStandardDeviationPop");
+
                 case ViewFieldEnum.REGRESSION__YSTANDARDDEVIATIONSAMPLE:
                     return ("YStandardDeviationSample");
+
                 case ViewFieldEnum.REGRESSION__YSUM:
                     return ("YSum");
+
                 case ViewFieldEnum.REGRESSION__YVARIANCE:
                     return ("YVariance");
+
                 case ViewFieldEnum.REGRESSION__DATAPOINTS:
                     return ("dataPoints");
+
                 case ViewFieldEnum.REGRESSION__N:
                     return ("n");
+
                 case ViewFieldEnum.REGRESSION__SUMX:
                     return ("sumX");
+
                 case ViewFieldEnum.REGRESSION__SUMXSQ:
                     return ("sumXSq");
+
                 case ViewFieldEnum.REGRESSION__SUMXY:
                     return ("sumXY");
+
                 case ViewFieldEnum.REGRESSION__SUMY:
                     return ("sumY");
+
                 case ViewFieldEnum.REGRESSION__SUMYSQ:
                     return ("sumYSq");
             }

@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -49,7 +50,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
                 var format = dateFormatEval.Evaluate(eventsPerStream, newData, exprEvaluatorContext);
                 var dateFormat = StringToSimpleDateFormatSafe(format);
                 return StringToDateTimExWStaticFormatComputer.StringToDtxWStaticFormatParse(
-                    dateFormat, input, timeZone);
+                    dateFormat,
+                    input,
+                    timeZone);
             }
 
             public static CodegenExpression Codegen(
@@ -63,7 +66,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
                 CodegenExpression timeZoneField =
                     codegenClassScope.AddOrGetFieldSharable(RuntimeSettingsTimeZoneField.INSTANCE);
                 var method = codegenMethodScope.MakeChild(
-                        typeof(DateTimeEx), typeof(StringToDateTimeExWExprFormatComputerEval), codegenClassScope)
+                        typeof(DateTimeEx),
+                        typeof(StringToDateTimeExWExprFormatComputerEval),
+                        codegenClassScope)
                     .AddParam(typeof(object), "input");
                 CodegenExpression format;
                 if (dateFormatForge.ForgeConstantType.IsConstant) {
@@ -71,20 +76,25 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
                 }
                 else {
                     method.Block
-                        .DeclareVar(
-                            typeof(object), "format",
+                        .DeclareVar<object>(
+                            "format",
                             dateFormatForge.EvaluateCodegen(typeof(object), method, exprSymbol, codegenClassScope))
-                        .DeclareVar(
-                            typeof(SimpleDateFormat), "dateFormat",
+                        .DeclareVar<SimpleDateFormat>(
+                            "dateFormat",
                             CodegenExpressionBuilder.StaticMethod(
-                                typeof(ExprCastNode), "stringToSimpleDateFormatSafe", CodegenExpressionBuilder.Ref("format")));
+                                typeof(ExprCastNode),
+                                "stringToSimpleDateFormatSafe",
+                                CodegenExpressionBuilder.Ref("format")));
                     format = CodegenExpressionBuilder.Ref("dateFormat");
                 }
 
                 method.Block.MethodReturn(
                     CodegenExpressionBuilder.StaticMethod(
-                        typeof(StringToDateTimExWStaticFormatComputer), "stringToCalendarWStaticFormatParse", format,
-                        CodegenExpressionBuilder.Ref("input"), timeZoneField));
+                        typeof(StringToDateTimExWStaticFormatComputer),
+                        "stringToCalendarWStaticFormatParse",
+                        format,
+                        CodegenExpressionBuilder.Ref("input"),
+                        timeZoneField));
                 return CodegenExpressionBuilder.LocalMethod(method, input);
             }
         }

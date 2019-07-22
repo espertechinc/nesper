@@ -11,6 +11,7 @@ using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.util;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.expression.subquery
@@ -20,16 +21,20 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
         public const string EVENTS_SHIFTED = "shift";
         public static readonly CodegenExpressionRef REF_EVENTS_SHIFTED = @Ref(EVENTS_SHIFTED);
 
-        public static readonly TriConsumer<CodegenMethod, CodegenBlock, ExprSubselectEvalMatchSymbol> DECLARE_EVENTS_SHIFTED =
-            new ProxyTriConsumer<CodegenMethod, CodegenBlock, ExprSubselectEvalMatchSymbol>(
-                (
-                    method,
-                    block,
-                    symbols) => {
-                    block.DeclareVar(
-                        typeof(EventBean[]), EVENTS_SHIFTED,
-                        StaticMethod(typeof(EventBeanUtility), "allocatePerStreamShift", symbols.GetAddEPS(method)));
-                });
+        public static readonly TriConsumer<CodegenMethod, CodegenBlock, ExprSubselectEvalMatchSymbol>
+            DECLARE_EVENTS_SHIFTED =
+                new ProxyTriConsumer<CodegenMethod, CodegenBlock, ExprSubselectEvalMatchSymbol>(
+                    (
+                        method,
+                        block,
+                        symbols) => {
+                        block.DeclareVar<EventBean[]>(
+                            EVENTS_SHIFTED,
+                            StaticMethod(
+                                typeof(EventBeanUtility),
+                                "allocatePerStreamShift",
+                                symbols.GetAddEPS(method)));
+                    });
 
         public class ReturnIfNoMatch : TriConsumer<CodegenMethod, CodegenBlock, ExprSubselectEvalMatchSymbol>
         {

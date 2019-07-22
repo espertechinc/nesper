@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -17,6 +18,7 @@ using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.expression.funcs
@@ -78,19 +80,27 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            Type evaluationType = forge.EvaluationType == null ? typeof(IDictionary<object, object>) : forge.EvaluationType;
-            CodegenMethod methodNode = codegenMethodScope.MakeChild(evaluationType, typeof(ExprCaseNodeForgeEvalSyntax1), codegenClassScope);
+            Type evaluationType = forge.EvaluationType == null
+                ? typeof(IDictionary<object, object>)
+                : forge.EvaluationType;
+            CodegenMethod methodNode = codegenMethodScope.MakeChild(
+                evaluationType,
+                typeof(ExprCaseNodeForgeEvalSyntax1),
+                codegenClassScope);
 
-            CodegenBlock block = methodNode.Block.DeclareVar(typeof(bool?), "when", ConstantFalse());
+            CodegenBlock block = methodNode.Block.DeclareVar<bool?>("when", ConstantFalse());
 
             foreach (UniformPair<ExprNode> pair in forge.WhenThenNodeList) {
-                block.AssignRef("when", pair.First.Forge.EvaluateCodegen(typeof(bool?), methodNode, exprSymbol, codegenClassScope));
+                block.AssignRef(
+                    "when",
+                    pair.First.Forge.EvaluateCodegen(typeof(bool?), methodNode, exprSymbol, codegenClassScope));
                 block.IfCondition(And(NotEqualsNull(@Ref("when")), @Ref("when")))
                     .BlockReturn(CodegenToType(forge, pair.Second, methodNode, exprSymbol, codegenClassScope));
             }
 
             if (forge.OptionalElseExprNode != null) {
-                block.MethodReturn(CodegenToType(forge, forge.OptionalElseExprNode, methodNode, exprSymbol, codegenClassScope));
+                block.MethodReturn(
+                    CodegenToType(forge, forge.OptionalElseExprNode, methodNode, exprSymbol, codegenClassScope));
             }
             else {
                 block.MethodReturn(ConstantNull());
@@ -116,7 +126,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
             }
 
             return TypeHelper.CoerceNumberToBoxedCodegen(
-                node.Forge.EvaluateCodegen(nodeEvaluationType, methodNode, exprSymbol, codegenClassScope), nodeEvaluationType, forge.EvaluationType);
+                node.Forge.EvaluateCodegen(nodeEvaluationType, methodNode, exprSymbol, codegenClassScope),
+                nodeEvaluationType,
+                forge.EvaluationType);
         }
     }
 } // end of namespace

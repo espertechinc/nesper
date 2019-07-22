@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
+
 using com.espertech.esper.common.client.soda;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.compile.stage1.spec;
@@ -19,6 +20,7 @@ using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.pattern.core;
 using com.espertech.esper.common.@internal.schedule;
 using com.espertech.esper.compat.logging;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.pattern.guard
@@ -59,8 +61,10 @@ namespace com.espertech.esper.common.@internal.epl.pattern.guard
 
         public override string ToString()
         {
-            return "EvalGuardNode guardForge=" + GuardForge +
-                   "  children=" + ChildNodes.Count;
+            return "EvalGuardNode guardForge=" +
+                   GuardForge +
+                   "  children=" +
+                   ChildNodes.Count;
         }
 
         protected override Type TypeOfFactory()
@@ -79,7 +83,9 @@ namespace com.espertech.esper.common.@internal.epl.pattern.guard
             CodegenClassScope classScope)
         {
             method.Block
-                .SetProperty(Ref("node"), "ChildNode",
+                .SetProperty(
+                    Ref("node"),
+                    "ChildNode",
                     LocalMethod(ChildNodes[0].MakeCodegen(method, symbols, classScope)))
                 .SetProperty(Ref("node"), "GuardFactory", GuardForge.MakeCodegen(method, symbols, classScope));
         }

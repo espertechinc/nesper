@@ -9,6 +9,7 @@
 using System;
 using System.Globalization;
 using System.Numerics;
+
 using com.espertech.esper.compat.datetime;
 
 namespace com.espertech.esper.common.@internal.util

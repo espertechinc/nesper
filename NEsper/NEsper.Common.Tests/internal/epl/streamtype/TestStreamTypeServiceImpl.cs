@@ -68,7 +68,7 @@ namespace com.espertech.esper.common.@internal.epl.streamtype
 
             try
             {
-                serviceRequireStreamName.ResolveByPropertyName("volume", false);
+                serviceRequireStreamName.ResolveByPropertyName("Volume", false);
                 Assert.Fail();
             }
             catch (PropertyNotFoundException ex)
@@ -88,16 +88,16 @@ namespace com.espertech.esper.common.@internal.epl.streamtype
         private static void TryResolveByStreamAndPropNameBoth(StreamTypeService service)
         {
             // Test lookup by stream name and prop name
-            var desc = service.ResolveByStreamAndPropName("s4", "volume", false);
-            Assert.AreEqual(3, (int) desc.StreamNum);
+            var desc = service.ResolveByStreamAndPropName("s4", "Volume", false);
+            Assert.AreEqual(3, desc.StreamNum);
             Assert.AreEqual(typeof(long?), desc.PropertyType);
-            Assert.AreEqual("volume", desc.PropertyName);
+            Assert.AreEqual("Volume", desc.PropertyName);
             Assert.AreEqual("s4", desc.StreamName);
             Assert.AreEqual(typeof(SupportMarketDataBean), desc.StreamEventType.UnderlyingType);
 
             try
             {
-                service.ResolveByStreamAndPropName("xxx", "volume", false);
+                service.ResolveByStreamAndPropName("xxx", "Volume", false);
                 Assert.Fail();
             }
             catch (StreamNotFoundException ex)
@@ -119,10 +119,10 @@ namespace com.espertech.esper.common.@internal.epl.streamtype
         private static void TryResolveByPropertyName(StreamTypeService service)
         {
             // Test lookup by property name only
-            var desc = service.ResolveByPropertyName("volume", false);
-            Assert.AreEqual(3, (int) (desc.StreamNum));
+            var desc = service.ResolveByPropertyName("Volume", false);
+            Assert.AreEqual(3, desc.StreamNum);
             Assert.AreEqual(typeof(long?), desc.PropertyType);
-            Assert.AreEqual("volume", desc.PropertyName);
+            Assert.AreEqual("Volume", desc.PropertyName);
             Assert.AreEqual("s4", desc.StreamName);
             Assert.AreEqual(typeof(SupportMarketDataBean), desc.StreamEventType.UnderlyingType);
 
@@ -131,7 +131,7 @@ namespace com.espertech.esper.common.@internal.epl.streamtype
                 service.ResolveByPropertyName("BoolPrimitive", false);
                 Assert.Fail();
             }
-            catch (DuplicatePropertyException ex)
+            catch (DuplicatePropertyException)
             {
                 // Expected
             }
@@ -141,7 +141,7 @@ namespace com.espertech.esper.common.@internal.epl.streamtype
                 service.ResolveByPropertyName("xxxx", false);
                 Assert.Fail();
             }
-            catch (PropertyNotFoundException ex)
+            catch (PropertyNotFoundException)
             {
                 // Expected
             }
@@ -150,16 +150,16 @@ namespace com.espertech.esper.common.@internal.epl.streamtype
         private static void TryResolveByStreamAndPropNameInOne(StreamTypeService service)
         {
             // Test lookup by stream name and prop name
-            var desc = service.ResolveByStreamAndPropName("s4.volume", false);
-            Assert.AreEqual(3, (int) desc.StreamNum);
+            var desc = service.ResolveByStreamAndPropName("s4.Volume", false);
+            Assert.AreEqual(3, desc.StreamNum);
             Assert.AreEqual(typeof(long?), desc.PropertyType);
-            Assert.AreEqual("volume", desc.PropertyName);
+            Assert.AreEqual("Volume", desc.PropertyName);
             Assert.AreEqual("s4", desc.StreamName);
             Assert.AreEqual(typeof(SupportMarketDataBean), desc.StreamEventType.UnderlyingType);
 
             try
             {
-                service.ResolveByStreamAndPropName("xxx.volume", false);
+                service.ResolveByStreamAndPropName("xxx.Volume", false);
                 Assert.Fail();
             }
             catch (PropertyNotFoundException ex)
@@ -178,12 +178,12 @@ namespace com.espertech.esper.common.@internal.epl.streamtype
             }
 
             // resolve by event type alias (table name)
-            desc = service.ResolveByStreamAndPropName("SupportMarketDataBean.volume", false);
-            Assert.AreEqual(3, (int) desc.StreamNum);
+            desc = service.ResolveByStreamAndPropName("SupportMarketDataBean.Volume", false);
+            Assert.AreEqual(3, desc.StreamNum);
 
             // resolve by engine URI plus event type alias
-            desc = service.ResolveByStreamAndPropName("default.SupportMarketDataBean.volume", false);
-            Assert.AreEqual(3, (int) desc.StreamNum);
+            desc = service.ResolveByStreamAndPropName("default.SupportMarketDataBean.Volume", false);
+            Assert.AreEqual(3, desc.StreamNum);
         }
     }
 } // end of namespace

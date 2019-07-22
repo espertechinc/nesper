@@ -9,6 +9,7 @@
 using System;
 using System.Collections.Generic;
 using System.Numerics;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -22,6 +23,7 @@ using com.espertech.esper.common.@internal.rettype;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.enummethod.eval
@@ -38,7 +40,12 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             StatementCompileTimeServices services)
         {
             return ExprDotNodeUtility.GetSingleLambdaParamEventType(
-                enumMethodUsedName, goesToNames, inputEventType, collectionComponentType, statementRawInfo, services);
+                enumMethodUsedName,
+                goesToNames,
+                inputEventType,
+                collectionComponentType,
+                statementRawInfo,
+                services);
         }
 
         public override EnumForge GetEnumForge(
@@ -64,7 +71,9 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             TypeInfo = EPTypeHelper.SingleValue(returnType);
             if (inputEventType == null) {
                 return new EnumSumScalarLambdaForge(
-                    first.BodyForge, first.StreamCountIncoming, aggMethodFactory,
+                    first.BodyForge,
+                    first.StreamCountIncoming,
+                    aggMethodFactory,
                     (ObjectArrayEventType) first.GoesToTypes[0]);
             }
 
@@ -114,8 +123,8 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
 
             public void CodegenDeclare(CodegenBlock block)
             {
-                block.DeclareVar(typeof(double), "sum", Constant(0));
-                block.DeclareVar(typeof(long), "cnt", Constant(0));
+                block.DeclareVar<double>("sum", Constant(0));
+                block.DeclareVar<long>("cnt", Constant(0));
             }
 
             public void CodegenEnterNumberTypedNonNull(
@@ -181,8 +190,8 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
 
             public void CodegenDeclare(CodegenBlock block)
             {
-                block.DeclareVar(typeof(decimal), "sum", NewInstance<decimal>(Constant(0d)));
-                block.DeclareVar(typeof(long), "cnt", Constant(0));
+                block.DeclareVar<decimal>("sum", NewInstance<decimal>(Constant(0d)));
+                block.DeclareVar<long>("cnt", Constant(0));
             }
 
             public void CodegenEnterNumberTypedNonNull(
@@ -253,8 +262,8 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
 
             public void CodegenDeclare(CodegenBlock block)
             {
-                block.DeclareVar(typeof(BigInteger), "sum", StaticMethod(typeof(BigInteger), "valueOf", Constant(0)));
-                block.DeclareVar(typeof(long), "cnt", Constant(0));
+                block.DeclareVar<BigInteger>("sum", StaticMethod(typeof(BigInteger), "valueOf", Constant(0)));
+                block.DeclareVar<long>("cnt", Constant(0));
             }
 
             public void CodegenEnterNumberTypedNonNull(
@@ -324,8 +333,8 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
 
             public void CodegenDeclare(CodegenBlock block)
             {
-                block.DeclareVar(typeof(long), "sum", Constant(0));
-                block.DeclareVar(typeof(long), "cnt", Constant(0));
+                block.DeclareVar<long>("sum", Constant(0));
+                block.DeclareVar<long>("cnt", Constant(0));
             }
 
             public void CodegenEnterNumberTypedNonNull(
@@ -391,8 +400,8 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
 
             public void CodegenDeclare(CodegenBlock block)
             {
-                block.DeclareVar(typeof(int), "sum", Constant(0));
-                block.DeclareVar(typeof(long), "cnt", Constant(0));
+                block.DeclareVar<int>("sum", Constant(0));
+                block.DeclareVar<long>("cnt", Constant(0));
             }
 
             public void CodegenEnterNumberTypedNonNull(

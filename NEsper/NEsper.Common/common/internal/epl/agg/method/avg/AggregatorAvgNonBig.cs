@@ -34,8 +34,15 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.avg
             ExprNode optionalFilter,
             Type sumType)
             : base(
-                factory, col, rowCtor, membersColumnized, classScope, optionalDistinctValueType, hasFilter,
-                optionalFilter, sumType)
+                factory,
+                col,
+                rowCtor,
+                membersColumnized,
+                classScope,
+                optionalDistinctValueType,
+                hasFilter,
+                optionalFilter,
+                sumType)
         {
         }
 
@@ -46,12 +53,10 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.avg
             method.Block
                 .IfCondition(EqualsIdentity(cnt, Constant(0)))
                 .BlockReturn(ConstantNull());
-            if (sumType == typeof(double))
-            {
+            if (sumType == typeof(double)) {
                 method.Block.MethodReturn(Op(sum, "/", cnt));
             }
-            else
-            {
+            else {
                 method.Block.MethodReturn(Op(sum, "/", Cast(typeof(double), cnt)));
             }
         }

@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.hook.forgeinject;
 using com.espertech.esper.common.client.hook.vdw;
@@ -18,6 +19,7 @@ using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.common.@internal.view.core;
 using com.espertech.esper.common.@internal.view.util;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.virtualdw
@@ -42,7 +44,9 @@ namespace com.espertech.esper.common.@internal.epl.virtualdw
         {
             if (!clazz.IsImplementsInterface(typeof(VirtualDataWindowForge))) {
                 throw new ViewProcessingException(
-                    "Virtual data window forge class " + clazz.Name + " does not implement the interface " +
+                    "Virtual data window forge class " +
+                    clazz.Name +
+                    " does not implement the interface " +
                     typeof(VirtualDataWindowForge).Name);
             }
 
@@ -61,12 +65,19 @@ namespace com.espertech.esper.common.@internal.epl.virtualdw
             EventType = parentEventType;
 
             _validatedParameterExpressions = ViewForgeSupport.Validate(
-                ViewName, parentEventType, _parameters, true, viewForgeEnv, streamNumber);
+                ViewName,
+                parentEventType,
+                _parameters,
+                true,
+                viewForgeEnv,
+                streamNumber);
             _parameterValues = new object[_validatedParameterExpressions.Length];
             for (var i = 0; i < _validatedParameterExpressions.Length; i++) {
                 try {
                     _parameterValues[i] = ViewForgeSupport.EvaluateAssertNoProperties(
-                        ViewName, _validatedParameterExpressions[i], i);
+                        ViewName,
+                        _validatedParameterExpressions[i],
+                        i);
                 }
                 catch (Exception) {
                     // expected
@@ -77,7 +88,11 @@ namespace com.espertech.esper.common.@internal.epl.virtualdw
             try {
                 _forge.Initialize(
                     new VirtualDataWindowForgeContext(
-                        parentEventType, _parameterValues, _validatedParameterExpressions, _namedWindowName, viewForgeEnv,
+                        parentEventType,
+                        _parameterValues,
+                        _validatedParameterExpressions,
+                        _namedWindowName,
+                        viewForgeEnv,
                         _customConfigs));
             }
             catch (EPException) {
@@ -115,23 +130,33 @@ namespace com.espertech.esper.common.@internal.epl.virtualdw
             var managed = (VirtualDataWindowFactoryModeManaged) mode;
             var injectionStrategy = (InjectionStrategyClassNewInstance) managed.InjectionStrategyFactoryFactory;
             var factoryField = classScope.AddFieldUnshared(
-                true, typeof(VirtualDataWindowFactoryFactory),
+                true,
+                typeof(VirtualDataWindowFactoryFactory),
                 injectionStrategy.GetInitializationExpression(classScope));
 
             var builder = new SAIFFInitializeBuilder(
-                typeof(VirtualDWViewFactory), GetType(), "factory", parent, symbols, classScope);
+                typeof(VirtualDWViewFactory),
+                GetType(),
+                "factory",
+                parent,
+                symbols,
+                classScope);
             builder
                 .Eventtype("eventType", EventType)
                 .Expression(
                     "factory",
                     ExprDotMethod(
-                        factoryField, "createFactory",
+                        factoryField,
+                        "createFactory",
                         NewInstance(typeof(VirtualDataWindowFactoryFactoryContext))))
                 .Constant("parameters", _parameterValues)
                 .Expression(
                     "parameterExpressions",
                     ExprNodeUtilityCodegen.CodegenEvaluators(
-                        _validatedParameterExpressions, builder.Method(), GetType(), classScope))
+                        _validatedParameterExpressions,
+                        builder.Method(),
+                        GetType(),
+                        classScope))
                 .Constant("namedWindowName", _namedWindowName)
                 .Expression(
                     "compileTimeConfiguration",

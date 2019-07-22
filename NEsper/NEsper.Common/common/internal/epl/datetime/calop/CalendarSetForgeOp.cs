@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -15,6 +16,7 @@ using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.datetime;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.datetime.calop
@@ -96,14 +98,19 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
                     .EvaluateCodegen(evaluationType, methodNode, exprSymbol, codegenClassScope);
 
                 methodNode.Block
-                    .DeclareVar(
-                        typeof(int), "value",
+                    .DeclareVar<int>(
+                        "value",
                         SimpleNumberCoercerFactory.CoercerInt.CoerceCodegenMayNull(
-                            valueExpr, forge.valueExpr.EvaluationType, methodNode, codegenClassScope))
+                            valueExpr,
+                            forge.valueExpr.EvaluationType,
+                            methodNode,
+                            codegenClassScope))
                     .IfRefNullReturnNull("value")
                     .Expression(
                         ExprDotMethod(
-                            dateTimeEx, "SetFieldValue", field,
+                            dateTimeEx,
+                            "SetFieldValue",
+                            field,
                             Ref("value")))
                     .MethodEnd();
                 return LocalMethod(methodNode, dateTimeEx);
@@ -124,16 +131,19 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
             var evaluationType = forge.valueExpr.EvaluationType;
 
             methodNode.Block
-                .DeclareVar(
-                    typeof(int), "value",
+                .DeclareVar<int>(
+                    "value",
                     SimpleNumberCoercerFactory.CoercerInt.CoerceCodegenMayNull(
-                        forge.valueExpr.EvaluateCodegen(evaluationType, methodNode, exprSymbol, codegenClassScope), evaluationType, methodNode,
+                        forge.valueExpr.EvaluateCodegen(evaluationType, methodNode, exprSymbol, codegenClassScope),
+                        evaluationType,
+                        methodNode,
                         codegenClassScope))
                 .IfRefNull("value")
                 .BlockReturn(Ref("dto"))
                 .MethodReturn(
                     ExprDotMethod(
-                        Ref("dto"), "SetFieldValue",
+                        Ref("dto"),
+                        "SetFieldValue",
                         EnumValue(typeof(ChronoField), field.GetName()),
                         Ref("value")));
             return LocalMethod(methodNode, dto);
@@ -153,8 +163,8 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
             var evaluationType = forge.valueExpr.EvaluationType;
 
             methodNode.Block
-                .DeclareVar(
-                    typeof(int), "value",
+                .DeclareVar<int>(
+                    "value",
                     SimpleNumberCoercerFactory.CoercerInt.CoerceCodegenMayNull(
                         forge.valueExpr.EvaluateCodegen(evaluationType, methodNode, exprSymbol, codegenClassScope),
                         evaluationType,
@@ -164,7 +174,8 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
                 .BlockReturn(Ref("dateTime"))
                 .MethodReturn(
                     ExprDotMethod(
-                        Ref("dateTime"), "SetFieldValue",
+                        Ref("dateTime"),
+                        "SetFieldValue",
                         EnumValue(typeof(ChronoField), field.GetName()),
                         Ref("value")));
             return LocalMethod(methodNode, dateTime);

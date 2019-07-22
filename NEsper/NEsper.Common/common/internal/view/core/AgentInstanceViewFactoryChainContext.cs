@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.hook.expr;
 using com.espertech.esper.common.@internal.collection;
@@ -118,7 +119,8 @@ namespace com.espertech.esper.common.@internal.view.core
             if (viewResourceDelegate.PriorRequests != null && !viewResourceDelegate.PriorRequests.IsEmpty()) {
                 var priorEventViewFactory = PriorHelper.FindPriorViewFactory(viewFactoryChain);
                 priorViewUpdatedCollection = priorEventViewFactory.MakeViewUpdatedCollection(
-                    viewResourceDelegate.PriorRequests, agentInstanceContext);
+                    viewResourceDelegate.PriorRequests,
+                    agentInstanceContext);
             }
 
             var removedStream = false;
@@ -134,7 +136,10 @@ namespace com.espertech.esper.common.@internal.view.core
             }
 
             return new AgentInstanceViewFactoryChainContext(
-                agentInstanceContext, removedStream, previousNodeGetter, priorViewUpdatedCollection);
+                agentInstanceContext,
+                removedStream,
+                previousNodeGetter,
+                priorViewUpdatedCollection);
         }
     }
 } // end of namespace

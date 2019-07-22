@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -19,6 +20,7 @@ using com.espertech.esper.common.@internal.epl.historical.common;
 using com.espertech.esper.common.@internal.epl.streamtype;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat.collections;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.historical.database.core
@@ -51,24 +53,33 @@ namespace com.espertech.esper.common.@internal.epl.historical.database.core
             StatementCompileTimeServices services)
         {
             int count = 0;
-            ExprValidationContext validationContext = new ExprValidationContextBuilder(typeService, @base.StatementRawInfo, services)
-                .WithAllowBindingConsumption(true).Build();
+            ExprValidationContext validationContext =
+                new ExprValidationContextBuilder(typeService, @base.StatementRawInfo, services)
+                    .WithAllowBindingConsumption(true)
+                    .Build();
             ExprNode[] inputParamNodes = new ExprNode[inputParameters.Length];
             foreach (string inputParam in inputParameters) {
                 ExprNode raw = FindSQLExpressionNode(streamNum, count, @base.StatementSpec.Raw.SqlParameters);
                 if (raw == null) {
                     throw new ExprValidationException(
-                        "Internal error find expression for historical stream parameter " + count + " stream " + streamNum);
+                        "Internal error find expression for historical stream parameter " +
+                        count +
+                        " stream " +
+                        streamNum);
                 }
 
-                ExprNode evaluator = ExprNodeUtilityValidate.GetValidatedSubtree(ExprNodeOrigin.DATABASEPOLL, raw, validationContext);
+                ExprNode evaluator = ExprNodeUtilityValidate.GetValidatedSubtree(
+                    ExprNodeOrigin.DATABASEPOLL,
+                    raw,
+                    validationContext);
                 inputParamNodes[count++] = evaluator;
 
                 ExprNodeIdentifierCollectVisitor visitor = new ExprNodeIdentifierCollectVisitor();
                 visitor.Visit(evaluator);
                 foreach (ExprIdentNode identNode in visitor.ExprProperties) {
                     if (identNode.StreamId == streamNum) {
-                        throw new ExprValidationException("Invalid expression '" + inputParam + "' resolves to the historical data itself");
+                        throw new ExprValidationException(
+                            "Invalid expression '" + inputParam + "' resolves to the historical data itself");
                     }
 
                     subordinateStreams.Add(identNode.StreamId);
@@ -102,9 +113,11 @@ namespace com.espertech.esper.common.@internal.epl.historical.database.core
             CodegenClassScope classScope)
         {
             CodegenMethod method = parent.MakeChild(typeof(IDictionary<object, object>), this.GetType(), classScope);
-            method.Block.DeclareVar(
-                typeof(IDictionary<object, object>), "types",
-                NewInstance(typeof(Dictionary<object, object>), Constant(CollectionUtil.CapacityHashMap(outputTypes.Count))));
+            method.Block.DeclareVar<IDictionary<object, object>>(
+                "types",
+                NewInstance(
+                    typeof(Dictionary<object, object>),
+                    Constant(CollectionUtil.CapacityHashMap(outputTypes.Count))));
             foreach (KeyValuePair<string, DBOutputTypeDesc> entry in outputTypes) {
                 method.Block.ExprDotMethod(@Ref("types"), "put", Constant(entry.Key), entry.Value.Make());
             }

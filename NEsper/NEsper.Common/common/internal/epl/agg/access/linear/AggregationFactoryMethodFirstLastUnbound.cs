@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.core;
@@ -63,12 +64,26 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
         {
             if (parent.StateType == AggregationAccessorLinearType.FIRST) {
                 _aggregator = new AggregatorFirstEver(
-                    this, col, rowCtor, membersColumnized, classScope, null, hasFilter, parent.OptionalFilter,
+                    this,
+                    col,
+                    rowCtor,
+                    membersColumnized,
+                    classScope,
+                    null,
+                    hasFilter,
+                    parent.OptionalFilter,
                     ResultType);
             }
             else if (parent.StateType == AggregationAccessorLinearType.LAST) {
                 _aggregator = new AggregatorLastEver(
-                    this, col, rowCtor, membersColumnized, classScope, null, hasFilter, parent.OptionalFilter,
+                    this,
+                    col,
+                    rowCtor,
+                    membersColumnized,
+                    classScope,
+                    null,
+                    hasFilter,
+                    parent.OptionalFilter,
                     ResultType);
             }
             else {

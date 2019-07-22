@@ -9,9 +9,11 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.core;
 using com.espertech.esper.compat;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.core.CodeGenerationHelper;
 
 namespace com.espertech.esper.common.@internal.bytecodemodel.model.statement
@@ -61,13 +63,12 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.statement
 
         public override void Render(
             StringBuilder builder,
-            IDictionary<Type, string> imports,
             bool isInnerClass,
             int level,
             CodegenIndent indent)
         {
             builder.Append("try {\n");
-            tryBlock.Render(builder, imports, isInnerClass, level + 1, indent);
+            tryBlock.Render(builder, isInnerClass, level + 1, indent);
             indent.Indent(builder, level);
             builder.Append("}");
 
@@ -75,11 +76,11 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.statement
             foreach (var pair in catchBlocks) {
                 builder.Append(delimiter);
                 builder.Append(" catch (");
-                AppendClassName(builder, pair.Ex, null, imports);
+                AppendClassName(builder, pair.Ex);
                 builder.Append(' ');
                 builder.Append(pair.Name);
                 builder.Append(") {\n");
-                pair.Block.Render(builder, imports, isInnerClass, level + 1, indent);
+                pair.Block.Render(builder, isInnerClass, level + 1, indent);
                 indent.Indent(builder, level);
                 builder.Append("}");
                 delimiter = "\n";
@@ -89,7 +90,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.statement
                 builder.Append("\n");
                 indent.Indent(builder, level);
                 builder.Append("finally {\n");
-                finallyBlock.Render(builder, imports, isInnerClass, level + 1, indent);
+                finallyBlock.Render(builder, isInnerClass, level + 1, indent);
                 indent.Indent(builder, level);
                 builder.Append("}");
             }
@@ -104,9 +105,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.statement
                 pair.MergeClasses(classes);
             }
 
-            if (finallyBlock != null) {
-                finallyBlock.MergeClasses(classes);
-            }
+            finallyBlock?.MergeClasses(classes);
         }
     }
 } // end of namespace

@@ -8,6 +8,7 @@
 
 using System;
 using System.IO;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -16,6 +17,7 @@ using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.metrics.instrumentation;
 using com.espertech.esper.compat;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.expression.prior
@@ -70,19 +72,30 @@ namespace com.espertech.esper.common.@internal.epl.expression.prior
 
             // see ExprPriorEvalStrategyBase
             CodegenExpression future = codegenClassScope.NamespaceScope.AddOrGetFieldWellKnown(
-                priorStrategyFieldName, typeof(PriorEvalStrategy));
+                priorStrategyFieldName,
+                typeof(PriorEvalStrategy));
             method.Block
-                .DeclareVar(typeof(EventBean), "originalEvent", ArrayAtIndex(eps, Constant(StreamNumber)))
-                .DeclareVar(
-                    typeof(EventBean), "substituteEvent", ExprDotMethod(
-                        future, "getSubstituteEvent", Ref("originalEvent"), exprSymbol.GetAddIsNewData(method),
-                        Constant(ConstantIndexNumber), Constant(RelativeIndex), exprSymbol.GetAddExprEvalCtx(method),
+                .DeclareVar<EventBean>("originalEvent", ArrayAtIndex(eps, Constant(StreamNumber)))
+                .DeclareVar<EventBean>(
+                    "substituteEvent",
+                    ExprDotMethod(
+                        future,
+                        "getSubstituteEvent",
+                        Ref("originalEvent"),
+                        exprSymbol.GetAddIsNewData(method),
+                        Constant(ConstantIndexNumber),
+                        Constant(RelativeIndex),
+                        exprSymbol.GetAddExprEvalCtx(method),
                         Constant(StreamNumber)))
                 .AssignArrayElement(eps, Constant(StreamNumber), Ref("substituteEvent"))
                 .DeclareVar(
-                    EvaluationType, "evalResult",
+                    EvaluationType,
+                    "evalResult",
                     LocalMethod(
-                        innerEval, eps, exprSymbol.GetAddIsNewData(method), exprSymbol.GetAddExprEvalCtx(method)))
+                        innerEval,
+                        eps,
+                        exprSymbol.GetAddIsNewData(method),
+                        exprSymbol.GetAddExprEvalCtx(method)))
                 .AssignArrayElement(eps, Constant(StreamNumber), Ref("originalEvent"))
                 .MethodReturn(Ref("evalResult"));
 
@@ -96,7 +109,13 @@ namespace com.espertech.esper.common.@internal.epl.expression.prior
             CodegenClassScope codegenClassScope)
         {
             return new InstrumentationBuilderExpr(
-                GetType(), this, "ExprPrior", requiredType, parent, exprSymbol, codegenClassScope).Build();
+                GetType(),
+                this,
+                "ExprPrior",
+                requiredType,
+                parent,
+                exprSymbol,
+                codegenClassScope).Build();
         }
 
         public ExprNodeRenderable ExprForgeRenderable => this;

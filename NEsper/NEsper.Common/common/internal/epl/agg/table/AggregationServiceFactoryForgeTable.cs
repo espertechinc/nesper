@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.context.aifactory.core;
@@ -16,6 +17,7 @@ using com.espertech.esper.common.@internal.epl.table.compiletime;
 using com.espertech.esper.common.@internal.epl.table.core;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.agg.table
@@ -49,12 +51,26 @@ namespace com.espertech.esper.common.@internal.epl.agg.table
         {
             CodegenMethod method = parent.MakeChild(typeof(AggregationServiceFactoryTable), this.GetType(), classScope);
             method.Block
-                .DeclareVar(typeof(AggregationServiceFactoryTable), "factory", NewInstance(typeof(AggregationServiceFactoryTable)))
-                .SetProperty(Ref("factory"), "Table", TableDeployTimeResolver.MakeResolveTable(metadata, symbols.GetAddInitSvc(method)))
-                .SetProperty(Ref("factory"), "MethodPairs", TableColumnMethodPairForge.MakeArray(methodPairs, method, symbols, classScope))
+                .DeclareVar<AggregationServiceFactoryTable>(
+                    "factory",
+                    NewInstance(typeof(AggregationServiceFactoryTable)))
+                .SetProperty(
+                    Ref("factory"),
+                    "Table",
+                    TableDeployTimeResolver.MakeResolveTable(metadata, symbols.GetAddInitSvc(method)))
+                .SetProperty(
+                    Ref("factory"),
+                    "MethodPairs",
+                    TableColumnMethodPairForge.MakeArray(methodPairs, method, symbols, classScope))
                 .SetProperty(Ref("factory"), "AccessColumnsZeroOffset", Constant(accessColumnsZeroOffset))
-                .SetProperty(Ref("factory"), "AccessAgents", AggregationAgentUtil.MakeArray(accessAgents, method, symbols, classScope))
-                .SetProperty(Ref("factory"), "GroupByRollupDesc", groupByRollupDesc == null ? ConstantNull() : groupByRollupDesc.Codegen())
+                .SetProperty(
+                    Ref("factory"),
+                    "AccessAgents",
+                    AggregationAgentUtil.MakeArray(accessAgents, method, symbols, classScope))
+                .SetProperty(
+                    Ref("factory"),
+                    "GroupByRollupDesc",
+                    groupByRollupDesc == null ? ConstantNull() : groupByRollupDesc.Codegen())
                 .MethodReturn(@Ref("factory"));
             return LocalMethod(method);
         }

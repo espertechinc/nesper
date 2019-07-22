@@ -8,6 +8,7 @@
 
 using System;
 using System.IO;
+
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
@@ -65,12 +66,15 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
             for (var i = 0; i < ChildNodes.Length; i++) {
                 var node = ChildNodes[i];
                 if (node.Forge.EvaluationType.GetBoxedType() != resultType &&
-                    node.Forge.EvaluationType != null && resultType != null) {
+                    node.Forge.EvaluationType != null &&
+                    resultType != null) {
                     if (!resultType.IsNumeric()) {
                         throw new ExprValidationException(
                             "Implicit conversion from datatype '" +
                             resultType.GetSimpleName() +
-                            "' to " + node.Forge.EvaluationType + " is not allowed");
+                            "' to " +
+                            node.Forge.EvaluationType +
+                            " is not allowed");
                     }
 
                     isNumericCoercion[i] = true;

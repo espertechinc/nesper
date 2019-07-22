@@ -42,7 +42,8 @@ namespace com.espertech.esper.common.@internal.epl.pattern.every
         {
             log.Warn(
                 "Event/request processing: Uncontrolled pattern matching of \"every\" operator - infinite loop when using EVERY operator on expression(s) containing a not operator, for statement '" +
-                statementName + "'");
+                statementName +
+                "'");
             IsEvaluatedTrue = true;
         }
 
@@ -52,7 +53,8 @@ namespace com.espertech.esper.common.@internal.epl.pattern.every
         {
             log.Warn(
                 "Event/request processing: Uncontrolled pattern matching of \"every\" operator - infinite loop when using EVERY operator on expression(s) containing a not operator, for statement '" +
-                statementName + "'");
+                statementName +
+                "'");
             IsEvaluatedTrue = true;
         }
 

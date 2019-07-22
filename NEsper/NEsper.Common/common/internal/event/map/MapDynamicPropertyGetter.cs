@@ -7,10 +7,12 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.compat.collections;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.@event.map
@@ -56,7 +58,10 @@ namespace com.espertech.esper.common.@internal.@event.map
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            return ExprDotMethod(CastUnderlying(typeof(IDictionary<object, object>), beanExpression), "get", Constant(propertyName));
+            return ExprDotMethod(
+                CastUnderlying(typeof(IDictionary<object, object>), beanExpression),
+                "get",
+                Constant(propertyName));
         }
 
         public CodegenExpression EventBeanExistsCodegen(
@@ -64,7 +69,10 @@ namespace com.espertech.esper.common.@internal.@event.map
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            return ExprDotMethod(CastUnderlying(typeof(IDictionary<object, object>), beanExpression), "containsKey", Constant(propertyName));
+            return ExprDotMethod(
+                CastUnderlying(typeof(IDictionary<object, object>), beanExpression),
+                "containsKey",
+                Constant(propertyName));
         }
 
         public CodegenExpression EventBeanFragmentCodegen(

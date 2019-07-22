@@ -8,10 +8,12 @@
 
 using System.Collections.Generic;
 using System.Linq;
+
 using com.espertech.esper.common.@internal.compile.stage2;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.expression.ops;
 using com.espertech.esper.common.@internal.epl.@join.querygraph;
+using com.espertech.esper.common.@internal.type;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
@@ -255,8 +257,11 @@ namespace com.espertech.esper.common.@internal.epl.join.analyze
 
                 if (identNodeLeft.StreamId != identNodeRight.StreamId) {
                     queryGraph.AddRelationalOpStrict(
-                        identNodeLeft.StreamId, identNodeLeft,
-                        identNodeRight.StreamId, identNodeRight, relNode.RelationalOpEnum);
+                        identNodeLeft.StreamId,
+                        identNodeLeft,
+                        identNodeRight.StreamId,
+                        identNodeRight,
+                        relNode.RelationalOpEnum);
                 }
 
                 return;
@@ -296,8 +301,12 @@ namespace com.espertech.esper.common.@internal.epl.join.analyze
             QueryGraphForge queryGraph)
         {
             RangeFilterAnalyzer.Apply(
-                betweenNode.ChildNodes[0], betweenNode.ChildNodes[1], betweenNode.ChildNodes[2],
-                betweenNode.IsLowEndpointIncluded, betweenNode.IsHighEndpointIncluded, betweenNode.IsNotBetween,
+                betweenNode.ChildNodes[0],
+                betweenNode.ChildNodes[1],
+                betweenNode.ChildNodes[2],
+                betweenNode.IsLowEndpointIncluded,
+                betweenNode.IsHighEndpointIncluded,
+                betweenNode.IsNotBetween,
                 queryGraph);
         }
 
@@ -319,8 +328,12 @@ namespace com.espertech.esper.common.@internal.epl.join.analyze
 
                 if (identNodeLeft.StreamId != identNodeRight.StreamId) {
                     queryGraph.AddStrictEquals(
-                        identNodeLeft.StreamId, identNodeLeft.ResolvedPropertyName, identNodeLeft,
-                        identNodeRight.StreamId, identNodeRight.ResolvedPropertyName, identNodeRight);
+                        identNodeLeft.StreamId,
+                        identNodeLeft.ResolvedPropertyName,
+                        identNodeLeft,
+                        identNodeRight.StreamId,
+                        identNodeRight.ResolvedPropertyName,
+                        identNodeRight);
                 }
 
                 return;
@@ -361,7 +374,8 @@ namespace com.espertech.esper.common.@internal.epl.join.analyze
             }
             else {
                 queryGraph.AddKeyedExpression(
-                    indexedStream, indexedPropExpr,
+                    indexedStream,
+                    indexedPropExpr,
                     eligibility.StreamNum.Value,
                     exprNodeNoIdent);
             }

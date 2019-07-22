@@ -75,8 +75,10 @@ namespace com.espertech.esper.common.client.hook.vdw
         public override string ToString()
         {
             return "VirtualDataWindowKeyRange{" +
-                   "start=" + Start +
-                   ", end=" + End +
+                   "start=" +
+                   Start +
+                   ", end=" +
+                   End +
                    '}';
         }
     }

@@ -72,7 +72,10 @@ namespace NEsper.Avro.Getter
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            return UnderlyingGetCodegen(CodegenExpressionBuilder.CastUnderlying(typeof(GenericRecord), beanExpression), codegenMethodScope, codegenClassScope);
+            return UnderlyingGetCodegen(
+                CodegenExpressionBuilder.CastUnderlying(typeof(GenericRecord), beanExpression),
+                codegenMethodScope,
+                codegenClassScope);
         }
 
         public CodegenExpression EventBeanExistsCodegen(
@@ -96,7 +99,9 @@ namespace NEsper.Avro.Getter
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            return CodegenExpressionBuilder.LocalMethod(GetAvroFieldValueCodegen(codegenMethodScope, codegenClassScope), underlyingExpression);
+            return CodegenExpressionBuilder.LocalMethod(
+                GetAvroFieldValueCodegen(codegenMethodScope, codegenClassScope),
+                underlyingExpression);
         }
 
         public CodegenExpression UnderlyingExistsCodegen(
@@ -119,12 +124,23 @@ namespace NEsper.Avro.Getter
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            return codegenMethodScope.MakeChild(typeof(object), GetType(), codegenClassScope).AddParam(typeof(GenericRecord), "record").Block
-                .DeclareVar(
-                    typeof(IDictionary<string, object>), "values",
-                    CodegenExpressionBuilder.Cast(typeof(IDictionary<string, object>), CodegenExpressionBuilder.ExprDotMethod(CodegenExpressionBuilder.Ref("record"), "get", CodegenExpressionBuilder.Constant(_pos))))
+            return codegenMethodScope.MakeChild(typeof(object), GetType(), codegenClassScope)
+                .AddParam(typeof(GenericRecord), "record")
+                .Block
+                .DeclareVar<IDictionary<string, object>>(
+                    "values",
+                    CodegenExpressionBuilder.Cast(
+                        typeof(IDictionary<string, object>),
+                        CodegenExpressionBuilder.ExprDotMethod(
+                            CodegenExpressionBuilder.Ref("record"),
+                            "get",
+                            CodegenExpressionBuilder.Constant(_pos))))
                 .IfRefNullReturnNull("values")
-                .MethodReturn(CodegenExpressionBuilder.ExprDotMethod(CodegenExpressionBuilder.Ref("values"), "get", CodegenExpressionBuilder.Constant(_key)));
+                .MethodReturn(
+                    CodegenExpressionBuilder.ExprDotMethod(
+                        CodegenExpressionBuilder.Ref("values"),
+                        "get",
+                        CodegenExpressionBuilder.Constant(_key)));
         }
 
         /// <summary>

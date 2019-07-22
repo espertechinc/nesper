@@ -8,6 +8,7 @@
 
 using System;
 using System.IO;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -55,23 +56,28 @@ namespace com.espertech.esper.common.@internal.epl.resultset.@select.core
                 var methodNode = codegenMethodScope.MakeChild(arrayType, GetType(), codegenClassScope);
 
                 methodNode.Block
-                    .DeclareVar(
-                        typeof(EventBean[]), "events",
+                    .DeclareVar<EventBean[]>(
+                        "events",
                         CodegenExpressionBuilder.Cast(
                             typeof(EventBean[]),
                             inner.EvaluateCodegen(requiredType, methodNode, exprSymbol, codegenClassScope)))
                     .IfRefNullReturnNull("events")
                     .DeclareVar(
-                        arrayType, "values",
+                        arrayType,
+                        "values",
                         CodegenExpressionBuilder.NewArrayByLength(
-                            componentReturnType, CodegenExpressionBuilder.ArrayLength(CodegenExpressionBuilder.Ref("events"))))
+                            componentReturnType,
+                            CodegenExpressionBuilder.ArrayLength(CodegenExpressionBuilder.Ref("events"))))
                     .ForLoopIntSimple("i", CodegenExpressionBuilder.ArrayLength(CodegenExpressionBuilder.Ref("events")))
                     .AssignArrayElement(
-                        "values", CodegenExpressionBuilder.Ref("i"),
+                        "values",
+                        CodegenExpressionBuilder.Ref("i"),
                         CodegenExpressionBuilder.Cast(
                             componentReturnType,
                             CodegenExpressionBuilder.ExprDotUnderlying(
-                                CodegenExpressionBuilder.ArrayAtIndex(CodegenExpressionBuilder.Ref("events"), CodegenExpressionBuilder.Ref("i")))))
+                                CodegenExpressionBuilder.ArrayAtIndex(
+                                    CodegenExpressionBuilder.Ref("events"),
+                                    CodegenExpressionBuilder.Ref("i")))))
                     .BlockEnd()
                     .MethodReturn(CodegenExpressionBuilder.Ref("values"));
                 return CodegenExpressionBuilder.LocalMethod(methodNode);

@@ -7,12 +7,14 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.core;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.agg.core;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.agg.method.core
@@ -28,7 +30,15 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.core
             Type optionalDistinctValueType,
             bool hasFilter,
             ExprNode optionalFilter)
-            : base(factory, col, rowCtor, membersColumnized, classScope, optionalDistinctValueType, hasFilter, optionalFilter)
+            : base(
+                factory,
+                col,
+                rowCtor,
+                membersColumnized,
+                classScope,
+                optionalDistinctValueType,
+                hasFilter,
+                optionalFilter)
         {
         }
 

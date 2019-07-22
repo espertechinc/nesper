@@ -9,6 +9,7 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
+
 using com.espertech.esper.collection;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.meta;
@@ -22,6 +23,7 @@ using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.container;
+
 using PropertyInfo = com.espertech.esper.common.@internal.@event.bean.introspect.PropertyInfo;
 
 namespace com.espertech.esper.common.@internal.@event.bean.core
@@ -36,6 +38,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
         private readonly BeanEventTypeFactory beanEventTypeFactory;
 
         private readonly IContainer container;
+
         private readonly IDictionary<string, EventPropertyGetterSPI> propertyGetterCache =
             new Dictionary<string, EventPropertyGetterSPI>(4);
 
@@ -60,7 +63,10 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
             DeepSuperTypesCollection = deepSuperTypes;
 
             var desc = EventTypeUtility.ValidatedDetermineTimestampProps(
-                this, startTimestampPropertyName, endTimestampPropertyName, superTypes);
+                this,
+                startTimestampPropertyName,
+                endTimestampPropertyName,
+                superTypes);
             StartTimestampPropertyName = desc.Start;
             EndTimestampPropertyName = desc.End;
         }
@@ -134,7 +140,8 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
             var simpleProp = GetSimplePropertyInfo(propertyName);
             if (simpleProp != null && simpleProp.GetterFactory != null) {
                 var getterX = simpleProp.GetterFactory.Make(
-                    beanEventTypeFactory.EventBeanTypedEventFactory, beanEventTypeFactory);
+                    beanEventTypeFactory.EventBeanTypedEventFactory,
+                    beanEventTypeFactory);
                 propertyGetterCache.Put(propertyName, getterX);
                 return getterX;
             }
@@ -170,7 +177,9 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
 
             var mappedProperty = new MappedProperty(propertyName);
             return (EventPropertyGetterMappedSPI) mappedProperty.GetGetter(
-                this, beanEventTypeFactory.EventBeanTypedEventFactory, beanEventTypeFactory);
+                this,
+                beanEventTypeFactory.EventBeanTypedEventFactory,
+                beanEventTypeFactory);
         }
 
         public EventPropertyGetterIndexed GetGetterIndexed(string indexedPropertyName)
@@ -187,7 +196,9 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
 
             var indexedProperty = new IndexedProperty(indexedPropertyName);
             return (EventPropertyGetterIndexedSPI) indexedProperty.GetGetter(
-                this, beanEventTypeFactory.EventBeanTypedEventFactory, beanEventTypeFactory);
+                this,
+                beanEventTypeFactory.EventBeanTypedEventFactory,
+                beanEventTypeFactory);
         }
 
         public string[] PropertyNames => Stem.PropertyNames;
@@ -206,7 +217,9 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
             if (simpleProp != null && simpleProp.Clazz != null) {
                 var genericPropX = simpleProp.Descriptor.ReturnTypeGeneric;
                 return EventBeanUtility.CreateNativeFragmentType(
-                    genericPropX.GenericType, genericPropX.Generic, beanEventTypeFactory);
+                    genericPropX.GenericType,
+                    genericPropX.Generic,
+                    beanEventTypeFactory);
             }
 
             var prop = PropertyParser.ParseAndWalkLaxToSimple(propertyExpression);
@@ -221,7 +234,9 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
             }
 
             return EventBeanUtility.CreateNativeFragmentType(
-                genericProp.GenericType, genericProp.Generic, beanEventTypeFactory);
+                genericProp.GenericType,
+                genericProp.Generic,
+                beanEventTypeFactory);
         }
 
         public EventPropertyDescriptor GetWritableProperty(string propertyName)
@@ -244,7 +259,14 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
 
                 var mapProp = (MappedProperty) property;
                 return new EventPropertyDescriptor(
-                    mapProp.PropertyNameAtomic, typeof(object), null, false, true, false, true, false);
+                    mapProp.PropertyNameAtomic,
+                    typeof(object),
+                    null,
+                    false,
+                    true,
+                    false,
+                    true,
+                    false);
             }
 
             if (property is IndexedProperty) {
@@ -255,7 +277,14 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
 
                 var indexedProp = (IndexedProperty) property;
                 return new EventPropertyDescriptor(
-                    indexedProp.PropertyNameAtomic, typeof(object), null, true, false, true, false, false);
+                    indexedProp.PropertyNameAtomic,
+                    typeof(object),
+                    null,
+                    true,
+                    false,
+                    true,
+                    false,
+                    false);
             }
 
             return null;
@@ -270,7 +299,9 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
             var copyMethodName = Stem.OptionalLegacyDef == null ? null : Stem.OptionalLegacyDef.CopyMethod;
             if (copyMethodName == null) {
                 if (Stem.Clazz.IsSerializable) {
-                    return new BeanEventBeanSerializableCopyMethodForge(this, container.Resolve<SerializableObjectCopier>());
+                    return new BeanEventBeanSerializableCopyMethodForge(
+                        this,
+                        container.Resolve<SerializableObjectCopier>());
                 }
 
                 return null;
@@ -283,17 +314,26 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
             catch (Exception e)
                 when (e is AmbiguousMatchException || e is ArgumentNullException) {
                 Log.Error(
-                    "Configured copy-method for class '" + Stem.Clazz.Name + " not found by name '" + copyMethodName +
-                    "': " + e.Message);
+                    "Configured copy-method for class '" +
+                    Stem.Clazz.Name +
+                    " not found by name '" +
+                    copyMethodName +
+                    "': " +
+                    e.Message);
             }
 
             if (method == null) {
                 if (Stem.Clazz.IsSerializable) {
-                    return new BeanEventBeanSerializableCopyMethodForge(this, container.Resolve<SerializableObjectCopier>());
+                    return new BeanEventBeanSerializableCopyMethodForge(
+                        this,
+                        container.Resolve<SerializableObjectCopier>());
                 }
 
                 throw new EPException(
-                    "Configured copy-method for class '" + Stem.Clazz.Name + " not found by name '" + copyMethodName +
+                    "Configured copy-method for class '" +
+                    Stem.Clazz.Name +
+                    " not found by name '" +
+                    copyMethodName +
                     "' and class does not implement Serializable");
             }
 
@@ -347,12 +387,20 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
                 MethodInfo setterMethod;
                 try {
                     setterMethod = MethodResolver.ResolveMethod(
-                        Stem.Clazz, methodName, new[] {typeof(string), typeof(object)}, true, new bool[2], new bool[2]);
+                        Stem.Clazz,
+                        methodName,
+                        new[] {typeof(string), typeof(object)},
+                        true,
+                        new bool[2],
+                        new bool[2]);
                 }
                 catch (MethodResolverNoSuchMethodException) {
                     Log.Info(
-                        "Failed to find mapped property setter method '" + methodName + "' for writing to property '" +
-                        propertyName + "' taking {String, Object} as parameters");
+                        "Failed to find mapped property setter method '" +
+                        methodName +
+                        "' for writing to property '" +
+                        propertyName +
+                        "' taking {String, Object} as parameters");
                     return null;
                 }
 
@@ -369,12 +417,20 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
                 MethodInfo setterMethod;
                 try {
                     setterMethod = MethodResolver.ResolveMethod(
-                        Stem.Clazz, methodName, new[] {typeof(int), typeof(object)}, true, new bool[2], new bool[2]);
+                        Stem.Clazz,
+                        methodName,
+                        new[] {typeof(int), typeof(object)},
+                        true,
+                        new bool[2],
+                        new bool[2]);
                 }
                 catch (MethodResolverNoSuchMethodException) {
                     Log.Info(
-                        "Failed to find indexed property setter method '" + methodName + "' for writing to property '" +
-                        propertyName + "' taking {int, Object} as parameters");
+                        "Failed to find indexed property setter method '" +
+                        methodName +
+                        "' for writing to property '" +
+                        propertyName +
+                        "' taking {int, Object} as parameters");
                     return null;
                 }
 
@@ -436,7 +492,8 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
                 if (propertyInfos != null) {
                     if (propertyInfos.Count != 1) {
                         throw new EPException(
-                            "Unable to determine which property to use for \"" + propertyName +
+                            "Unable to determine which property to use for \"" +
+                            propertyName +
                             "\" because more than one property matched");
                     }
 
@@ -470,7 +527,8 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
                 if (propertyInfos != null) {
                     if (propertyInfos.Count != 1) {
                         throw new EPException(
-                            "Unable to determine which property to use for \"" + propertyName +
+                            "Unable to determine which property to use for \"" +
+                            propertyName +
                             "\" because more than one property matched");
                     }
 
@@ -484,8 +542,10 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
         public override string ToString()
         {
             return "BeanEventType" +
-                   " name=" + Name +
-                   " clazz=" + Stem.Clazz.Name;
+                   " name=" +
+                   Name +
+                   " clazz=" +
+                   Stem.Clazz.Name;
         }
 
         private PropertyInfo GetSimplePropertyInfo(string propertyName)
@@ -520,7 +580,8 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
                 if (simplePropertyInfoList != null) {
                     if (simplePropertyInfoList.Count != 1) {
                         throw new EPException(
-                            "Unable to determine which property to use for \"" + propertyName +
+                            "Unable to determine which property to use for \"" +
+                            propertyName +
                             "\" because more than one property matched");
                     }
 
@@ -541,13 +602,22 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
             var count = 0;
             foreach (var writable in writables) {
                 var propertyDesc = new EventPropertyDescriptor(
-                    writable.PropertyName, writable.PropertyType, null, false, false, false, false, false);
+                    writable.PropertyName,
+                    writable.PropertyType,
+                    null,
+                    false,
+                    false,
+                    false,
+                    false,
+                    false);
                 desc[count++] = propertyDesc;
                 writers.Put(
                     writable.PropertyName,
                     new Pair<EventPropertyDescriptor, BeanEventPropertyWriter>(
-                        propertyDesc, new BeanEventPropertyWriter(
-                            Stem.Clazz, writable.WriteMethod)));
+                        propertyDesc,
+                        new BeanEventPropertyWriter(
+                            Stem.Clazz,
+                            writable.WriteMethod)));
             }
 
             writerMap = writers;

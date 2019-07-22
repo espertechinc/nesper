@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.settings;
 
@@ -26,7 +27,10 @@ namespace com.espertech.esper.common.@internal.@event.bean.manufacturer
             }
 
             var ctor = InstanceManufacturerUtil.GetManufacturer(
-                targetClass, importService, forgesUnmodified, returnTypes);
+                targetClass,
+                importService,
+                forgesUnmodified,
+                returnTypes);
             return new InstanceManufacturerFactoryFastCtor(targetClass, ctor.First, ctor.Second);
         }
     }

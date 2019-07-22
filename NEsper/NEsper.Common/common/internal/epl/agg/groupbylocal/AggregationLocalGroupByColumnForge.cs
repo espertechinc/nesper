@@ -9,6 +9,7 @@
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.agg.core;
 using com.espertech.esper.common.@internal.epl.expression.core;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.agg.groupbylocal
@@ -46,7 +47,8 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupbylocal
         public CodegenExpression ToExpression(int fieldNum)
         {
             return NewInstance<AggregationLocalGroupByColumn>(
-                Constant(IsDefaultGroupLevel), Constant(fieldNum),
+                Constant(IsDefaultGroupLevel),
+                Constant(fieldNum),
                 Constant(LevelNum));
         }
     }

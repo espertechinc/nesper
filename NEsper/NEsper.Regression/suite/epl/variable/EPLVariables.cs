@@ -1230,7 +1230,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
             public void Run(RegressionEnvironment env)
             {
                 var model = new EPStatementObjectModel();
-                model.SelectClause = SelectClause.Create("var1OM", "var2OM", "id");
+                model.SelectClause = SelectClause.Create("var1OM", "var2OM", "Id");
                 model.FromClause = FromClause.Create(FilterStream.Create("SupportBean_A"));
 
                 var path = new RegressionPath();
@@ -1240,7 +1240,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
                 Assert.AreEqual(stmtText, model.ToEPL());
                 env.AddListener("s0");
 
-                string[] fieldsSelect = {"var1OM", "var2OM", "id"};
+                string[] fieldsSelect = {"var1OM", "var2OM", "Id"};
                 SendSupportBean_A(env, "E1");
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
@@ -1393,7 +1393,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
                 var stmtText = "@Name('s0') select var1C, var2C, Id from SupportBean_A";
                 env.EplToModelCompileDeploy(stmtText).AddListener("s0");
 
-                string[] fieldsSelect = {"var1C", "var2C", "id"};
+                string[] fieldsSelect = {"var1C", "var2C", "Id"};
                 SendSupportBean_A(env, "E1");
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
@@ -1669,7 +1669,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
 
                 var stmtText = "@Name('s0') select irstream var1COE, var2COE, var3COE, Id from SupportBean_A#length(2)";
                 env.CompileDeploy(stmtText).AddListener("s0");
-                string[] fieldsSelect = {"var1COE", "var2COE", "var3COE", "id"};
+                string[] fieldsSelect = {"var1COE", "var2COE", "var3COE", "Id"};
                 EPAssertionUtil.AssertPropsPerRow(env.GetEnumerator("s0"), fieldsSelect, null);
 
                 SendSupportBean_A(env, "A1");

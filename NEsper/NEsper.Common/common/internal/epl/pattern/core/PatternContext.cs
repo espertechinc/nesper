@@ -10,6 +10,7 @@ using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.filterspec;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.pattern.core
@@ -54,8 +55,10 @@ namespace com.espertech.esper.common.@internal.epl.pattern.core
         {
             var method = parent.MakeChild(typeof(PatternContext), GetType(), classScope);
             method.Block
-                .DeclareVar(typeof(PatternContext), "ctx", NewInstance(typeof(PatternContext)))
-                .SetProperty(Ref("ctx"), "MatchedEventMapMeta",
+                .DeclareVar<PatternContext>("ctx", NewInstance(typeof(PatternContext)))
+                .SetProperty(
+                    Ref("ctx"),
+                    "MatchedEventMapMeta",
                     LocalMethod(MatchedEventMapMeta.MakeCodegen(classScope, method, symbols)));
             if (StreamNumber != 0) {
                 method.Block.SetProperty(Ref("ctx"), "StreamNumber", Constant(StreamNumber));

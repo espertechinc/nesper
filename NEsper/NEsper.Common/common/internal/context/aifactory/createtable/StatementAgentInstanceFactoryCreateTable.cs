@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Reflection;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.context.airegistry;
@@ -93,7 +94,10 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createtable
             };
 
             return new StatementAgentInstanceFactoryCreateTableResult(
-                finalView, stop, agentInstanceContext, tableState);
+                finalView,
+                stop,
+                agentInstanceContext,
+                tableState);
         }
 
         public AIRegistryRequirements RegistryRequirements => AIRegistryRequirements.NoRequirements();

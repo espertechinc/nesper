@@ -9,6 +9,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.configuration.compiler;
 using com.espertech.esper.common.@internal.epl.enummethod.dot;
@@ -118,7 +119,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
             get {
                 CheckValidated(forge);
                 return new ExprFilterSpecLookupableForge(
-                    ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(this), forge, forge.EvaluationType, true);
+                    ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(this),
+                    forge,
+                    forge.EvaluationType,
+                    true);
             }
         }
 
@@ -167,9 +171,16 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
             }
 
             var staticMethodDesc = ExprNodeUtilityResolve.ResolveMethodAllowWildcardAndStream(
-                clazz.Name, null, firstItem.Name, firstItem.Parameters, allowWildcard, streamZeroType,
-                new ExprNodeUtilResolveExceptionHandlerDefault(firstItem.Name, true), FunctionName,
-                validationContext.StatementRawInfo, validationContext.StatementCompileTimeService);
+                clazz.Name,
+                null,
+                firstItem.Name,
+                firstItem.Parameters,
+                allowWildcard,
+                streamZeroType,
+                new ExprNodeUtilResolveExceptionHandlerDefault(firstItem.Name, true),
+                FunctionName,
+                validationContext.StatementRawInfo,
+                validationContext.StatementCompileTimeService);
 
             var allowValueCache = true;
             bool isReturnsConstantResult;
@@ -178,6 +189,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
                     isReturnsConstantResult = false;
                     allowValueCache = false;
                     break;
+
                 case ConfigurationCompilerPlugInSingleRowFunction.ValueCacheEnum.CONFIGURED: {
                     var isUDFCache = validationContext.StatementCompileTimeService.Configuration.Compiler.Expression
                         .IsUdfCache;
@@ -185,27 +197,45 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
                     allowValueCache = isUDFCache;
                     break;
                 }
+
                 case ConfigurationCompilerPlugInSingleRowFunction.ValueCacheEnum.ENABLED:
                     isReturnsConstantResult = staticMethodDesc.IsAllConstants && chainList.IsEmpty();
                     break;
+
                 default:
                     throw new IllegalStateException("Invalid value cache code " + config.ValueCache);
             }
 
             // this may return a pair of null if there is no lambda or the result cannot be wrapped for lambda-function use
             ExprDotStaticMethodWrap optionalLambdaWrap = ExprDotStaticMethodWrapFactory.Make(
-                staticMethodDesc.ReflectionMethod, chainList, config.OptionalEventTypeName, validationContext);
+                staticMethodDesc.ReflectionMethod,
+                chainList,
+                config.OptionalEventTypeName,
+                validationContext);
             var typeInfo = optionalLambdaWrap != null
                 ? optionalLambdaWrap.TypeInfo
                 : EPTypeHelper.SingleValue(staticMethodDesc.ReflectionMethod.ReturnType);
 
             var eval = ExprDotNodeUtility.GetChainEvaluators(
-                    -1, typeInfo, chainList, validationContext, false, new ExprDotNodeFilterAnalyzerInputStatic())
+                    -1,
+                    typeInfo,
+                    chainList,
+                    validationContext,
+                    false,
+                    new ExprDotNodeFilterAnalyzerInputStatic())
                 .ChainWithUnpack;
             var staticMethodForge = new ExprDotNodeForgeStaticMethod(
-                this, isReturnsConstantResult, clazz.Name, staticMethodDesc.ReflectionMethod,
-                staticMethodDesc.ChildForges, allowValueCache && staticMethodDesc.IsAllConstants, eval,
-                optionalLambdaWrap, config.IsRethrowExceptions, null, validationContext.StatementName);
+                this,
+                isReturnsConstantResult,
+                clazz.Name,
+                staticMethodDesc.ReflectionMethod,
+                staticMethodDesc.ChildForges,
+                allowValueCache && staticMethodDesc.IsAllConstants,
+                eval,
+                optionalLambdaWrap,
+                config.IsRethrowExceptions,
+                null,
+                validationContext.StatementName);
 
             // If caching the result, evaluate now and return the result.
             if (isReturnsConstantResult) {

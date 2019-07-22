@@ -16,7 +16,7 @@ namespace com.espertech.esper.common.@internal.epl.output.view
 {
     public class OutputProcessViewDirectPostProcess : OutputProcessViewDirect
     {
-        private readonly OutputStrategyPostProcess postProcessor;
+        private readonly OutputStrategyPostProcess _postProcessor;
 
         public OutputProcessViewDirectPostProcess(
             AgentInstanceContext agentInstanceContext,
@@ -24,7 +24,7 @@ namespace com.espertech.esper.common.@internal.epl.output.view
             OutputStrategyPostProcess postProcessor)
             : base(agentInstanceContext, resultSetProcessor)
         {
-            this.postProcessor = postProcessor;
+            _postProcessor = postProcessor;
         }
 
         protected override void PostProcess(
@@ -32,7 +32,7 @@ namespace com.espertech.esper.common.@internal.epl.output.view
             UniformPair<EventBean[]> newOldEvents,
             UpdateDispatchView childView)
         {
-            postProcessor.Output(force, newOldEvents, childView);
+            _postProcessor.Output(force, newOldEvents, childView);
         }
     }
 } // end of namespace

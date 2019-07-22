@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -16,6 +17,7 @@ using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.common.@internal.view.core;
 using com.espertech.esper.common.@internal.view.util;
+
 using static com.espertech.esper.common.@internal.epl.expression.core.ExprNodeUtilityCodegen;
 
 namespace com.espertech.esper.common.@internal.view.derived
@@ -49,7 +51,12 @@ namespace com.espertech.esper.common.@internal.view.derived
             ViewForgeEnv viewForgeEnv)
         {
             var validated = ViewForgeSupport.Validate(
-                ViewName, parentEventType, viewParameters, true, viewForgeEnv, streamNumber);
+                ViewName,
+                parentEventType,
+                viewParameters,
+                true,
+                viewForgeEnv,
+                streamNumber);
             if (validated.Length < 2) {
                 throw new ViewParameterException(ViewParamMessage);
             }
@@ -86,8 +93,14 @@ namespace com.espertech.esper.common.@internal.view.derived
             }
 
             method.Block
-                .SetProperty(factory, "ExpressionXEval", CodegenEvaluator(expressionX.Forge, method, GetType(), classScope))
-                .SetProperty(factory, "ExpressionYEval", CodegenEvaluator(expressionY.Forge, method, GetType(), classScope));
+                .SetProperty(
+                    factory,
+                    "ExpressionXEval",
+                    CodegenEvaluator(expressionX.Forge, method, GetType(), classScope))
+                .SetProperty(
+                    factory,
+                    "ExpressionYEval",
+                    CodegenEvaluator(expressionY.Forge, method, GetType(), classScope));
         }
     }
 } // end of namespace

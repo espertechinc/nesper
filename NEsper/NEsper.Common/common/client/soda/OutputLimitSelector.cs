@@ -50,12 +50,16 @@ namespace com.espertech.esper.common.client.soda
             switch (@enum) {
                 case OutputLimitSelector.FIRST:
                     return "first";
+
                 case OutputLimitSelector.LAST:
                     return "last";
+
                 case OutputLimitSelector.ALL:
                     return "all";
+
                 case OutputLimitSelector.SNAPSHOT:
                     return "snapshot";
+
                 case OutputLimitSelector.DEFAULT:
                     return "default";
             }

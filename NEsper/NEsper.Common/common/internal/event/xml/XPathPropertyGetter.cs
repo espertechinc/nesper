@@ -20,6 +20,7 @@ using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.compat.xml;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.@event.xml
@@ -58,37 +59,30 @@ namespace com.espertech.esper.common.@internal.@event.xml
             _fragmentFactory = fragmentFactory;
             _baseXMLEventType = baseXMLEventType;
 
-            if (optionalCastToType != null && optionalCastToType.IsArray)
-            {
+            if (optionalCastToType != null && optionalCastToType.IsArray) {
                 _isCastToArray = true;
-                if (resultType != XPathResultType.NodeSet)
-                {
+                if (resultType != XPathResultType.NodeSet) {
                     throw new ArgumentException(
                         "Array cast-to types require XPathResultType.NodeSet as the XPath result type");
                 }
 
                 optionalCastToType = optionalCastToType.GetElementType();
             }
-            else
-            {
+            else {
                 _isCastToArray = false;
             }
 
-            if (optionalCastToType != null)
-            {
+            if (optionalCastToType != null) {
                 _simpleTypeParser = SimpleTypeParserFactory.GetParser(optionalCastToType);
             }
-            else
-            {
+            else {
                 _simpleTypeParser = null;
             }
 
-            if (optionalCastToType == typeof(XmlNode))
-            {
+            if (optionalCastToType == typeof(XmlNode)) {
                 this._optionalCastToType = null;
             }
-            else
-            {
+            else {
                 this._optionalCastToType = optionalCastToType;
             }
         }
@@ -98,24 +92,22 @@ namespace com.espertech.esper.common.@internal.@event.xml
         public object Get(EventBean eventBean)
         {
             var und = eventBean.Underlying;
-            if (und == null)
-            {
+            if (und == null) {
                 throw new PropertyAccessException(
                     "Unexpected null underlying event encountered, expecting org.w3c.dom.XmlNode instance as underlying");
             }
 
             var xnode = und as XElement;
-            if (xnode == null)
-            {
+            if (xnode == null) {
                 var node = und as XmlNode;
-                if (node == null)
-                {
-                    throw new PropertyAccessException("Unexpected underlying event of type '" + und.GetType().FullName +
-                                                      "' encountered, expecting System.Xml.XmlNode as underlying");
+                if (node == null) {
+                    throw new PropertyAccessException(
+                        "Unexpected underlying event of type '" +
+                        und.GetType().FullName +
+                        "' encountered, expecting System.Xml.XmlNode as underlying");
                 }
 
-                if (Log.IsDebugEnabled)
-                {
+                if (Log.IsDebugEnabled) {
                     Log.Debug(
                         "Running XPath '{0}' for property '{1}' against Node XML : {2}",
                         _expressionText,
@@ -136,29 +128,28 @@ namespace com.espertech.esper.common.@internal.@event.xml
 
         public object GetFragment(EventBean eventBean)
         {
-            if (_fragmentFactory == null)
-            {
+            if (_fragmentFactory == null) {
                 return null;
             }
 
             var und = eventBean.Underlying;
-            if (und == null)
-            {
+            if (und == null) {
                 throw new PropertyAccessException(
                     "Unexpected null underlying event encountered, expecting org.w3c.dom.XmlNode instance as underlying");
             }
 
-            if (und is XmlNode node)
-            {
+            if (und is XmlNode node) {
                 return GetFragmentFromUnderlying(node.CreateNavigator());
             }
 
-            if (und is XContainer container)
-            {
+            if (und is XContainer container) {
                 return GetFragmentFromUnderlying(container.CreateNavigator());
             }
 
-            throw new PropertyAccessException("Unexpected underlying event of type '" + und.GetType() + "' encountered, expecting org.w3c.dom.Node as underlying");
+            throw new PropertyAccessException(
+                "Unexpected underlying event of type '" +
+                und.GetType() +
+                "' encountered, expecting org.w3c.dom.Node as underlying");
         }
 
         public CodegenExpression EventBeanGetCodegen(
@@ -167,7 +158,9 @@ namespace com.espertech.esper.common.@internal.@event.xml
             CodegenClassScope codegenClassScope)
         {
             return UnderlyingGetCodegen(
-                CastUnderlying(typeof(XmlNode), beanExpression), codegenMethodScope, codegenClassScope);
+                CastUnderlying(typeof(XmlNode), beanExpression),
+                codegenMethodScope,
+                codegenClassScope);
         }
 
         public CodegenExpression EventBeanExistsCodegen(
@@ -184,7 +177,9 @@ namespace com.espertech.esper.common.@internal.@event.xml
             CodegenClassScope codegenClassScope)
         {
             return UnderlyingFragmentCodegen(
-                CastUnderlying(typeof(XmlNode), beanExpression), codegenMethodScope, codegenClassScope);
+                CastUnderlying(typeof(XmlNode), beanExpression),
+                codegenMethodScope,
+                codegenClassScope);
         }
 
         public CodegenExpression UnderlyingGetCodegen(
@@ -210,8 +205,7 @@ namespace com.espertech.esper.common.@internal.@event.xml
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            if (_fragmentFactory == null)
-            {
+            if (_fragmentFactory == null) {
                 return ConstantNull();
             }
 
@@ -223,7 +217,13 @@ namespace com.espertech.esper.common.@internal.@event.xml
         public object GetFromUnderlying(XPathNavigator navigator)
         {
             return EvaluateXPathGet(
-                navigator, _expression, _expressionText, Property, _optionalCastToType, _resultType, _isCastToArray,
+                navigator,
+                _expression,
+                _expressionText,
+                Property,
+                _optionalCastToType,
+                _resultType,
+                _isCastToArray,
                 _simpleTypeParser);
         }
 
@@ -249,43 +249,40 @@ namespace com.espertech.esper.common.@internal.@event.xml
             bool isCastToArray,
             SimpleTypeParser simpleTypeParser)
         {
-            try
-            {
+            try {
                 var result = navigator.Evaluate(expression);
-                if (result == null)
-                {
+                if (result == null) {
                     return null;
                 }
 
                 // if there is no parser, return xpath expression type
-                if (optionalCastToType == null)
-                {
+                if (optionalCastToType == null) {
                     var nodeIterator = result as XPathNodeIterator;
-                    if (nodeIterator != null)
-                    {
-                        if (nodeIterator.Count == 0)
-                        {
+                    if (nodeIterator != null) {
+                        if (nodeIterator.Count == 0) {
                             return null;
                         }
-                        if (nodeIterator.Count == 1)
-                        {
+
+                        if (nodeIterator.Count == 1) {
                             nodeIterator.MoveNext();
-                            switch (resultType)
-                            {
+                            switch (resultType) {
                                 case XPathResultType.Any:
                                     return ((System.Xml.IHasXmlNode) nodeIterator.Current).GetNode();
+
                                 case XPathResultType.String:
                                     return nodeIterator.Current.TypedValue;
+
                                 case XPathResultType.Boolean:
                                     return nodeIterator.Current.ValueAsBoolean;
+
                                 case XPathResultType.Number:
                                     return nodeIterator.Current.ValueAsDouble;
+
                                 default:
                                     return nodeIterator.Current.TypedValue;
                             }
                         }
-                        else
-                        {
+                        else {
                             return new XPathIteratorNodeList(nodeIterator);
                         }
                     }
@@ -293,85 +290,93 @@ namespace com.espertech.esper.common.@internal.@event.xml
                     return result;
                 }
 
-                if (isCastToArray)
-                {
+                if (isCastToArray) {
                     return CastToArray(result, optionalCastToType, simpleTypeParser, expression);
                 }
 
-                if (result is XPathNodeIterator)
-                {
+                if (result is XPathNodeIterator) {
                     var nodeIterator = result as XPathNodeIterator;
                     if (nodeIterator.Count == 0)
                         return null;
-                    if (nodeIterator.Count == 1)
-                    {
+                    if (nodeIterator.Count == 1) {
                         nodeIterator.MoveNext();
                         result = nodeIterator.Current.TypedValue;
                     }
-                    else
-                    {
-                        if (simpleTypeParser == null)
-                        {
+                    else {
+                        if (simpleTypeParser == null) {
                             var resultList = new List<object>();
-                            while (nodeIterator.MoveNext())
-                            {
+                            while (nodeIterator.MoveNext()) {
                                 result = nodeIterator.Current.TypedValue;
                                 resultList.Add(result);
                             }
 
                             return resultList.ToArray();
                         }
-                        else
-                        {
+                        else {
                             throw new NotImplementedException();
                         }
                     }
                 }
 
                 // string results get parsed
-                if (result is string)
-                {
-                    try
-                    {
+                if (result is string) {
+                    try {
                         return simpleTypeParser.Parse((string) result);
                     }
-                    catch
-                    {
-                        Log.Warn("Error parsing XPath property named '" + property + "' expression result '" + result + " as type " + optionalCastToType.Name);
+                    catch {
+                        Log.Warn(
+                            "Error parsing XPath property named '" +
+                            property +
+                            "' expression result '" +
+                            result +
+                            " as type " +
+                            optionalCastToType.Name);
                         return null;
                     }
                 }
 
                 // coercion
-                if (result is double)
-                {
-                    try
-                    {
+                if (result is double) {
+                    try {
                         return TypeHelper.CoerceBoxed(result, optionalCastToType);
                     }
-                    catch
-                    {
-                        Log.Warn("Error coercing XPath property named '" + property + "' expression result '" + result + " as type " + optionalCastToType.Name);
+                    catch {
+                        Log.Warn(
+                            "Error coercing XPath property named '" +
+                            property +
+                            "' expression result '" +
+                            result +
+                            " as type " +
+                            optionalCastToType.Name);
                         return null;
                     }
                 }
 
                 // check bool type
-                if (result is bool)
-                {
-                    if (optionalCastToType != typeof(bool?))
-                    {
-                        Log.Warn("Error coercing XPath property named '" + property + "' expression result '" + result + " as type " + optionalCastToType.Name);
+                if (result is bool) {
+                    if (optionalCastToType != typeof(bool?)) {
+                        Log.Warn(
+                            "Error coercing XPath property named '" +
+                            property +
+                            "' expression result '" +
+                            result +
+                            " as type " +
+                            optionalCastToType.Name);
                         return null;
                     }
+
                     return result;
                 }
 
-                Log.Warn("Error processing XPath property named '" + property + "' expression result '" + result + ", not a known type");
+                Log.Warn(
+                    "Error processing XPath property named '" +
+                    property +
+                    "' expression result '" +
+                    result +
+                    ", not a known type");
                 return null;
             }
-            catch (XPathException e)
-            {
+            catch (XPathException e) {
                 throw new PropertyAccessException("Error getting property " + property, e);
             }
         }
@@ -384,10 +389,8 @@ namespace com.espertech.esper.common.@internal.@event.xml
             FragmentFactory fragmentFactory,
             XPathResultType resultType)
         {
-            try
-            {
-                if (Log.IsDebugEnabled)
-                {
+            try {
+                if (Log.IsDebugEnabled) {
                     Log.Debug(
                         "Running XPath '{0}' for property '{1}' against Node XML : {2}",
                         expressionText,
@@ -396,43 +399,47 @@ namespace com.espertech.esper.common.@internal.@event.xml
                 }
 
                 var result = navigator.Evaluate(expression);
-                if (result == null)
-                {
+                if (result == null) {
                     return null;
                 }
 
-                if (result is XPathNodeIterator)
-                {
+                if (result is XPathNodeIterator) {
                     var nodeIterator = result as XPathNodeIterator;
                     if (nodeIterator.Count == 0)
                         return null;
-                    if (nodeIterator.Count == 1)
-                    {
+                    if (nodeIterator.Count == 1) {
                         nodeIterator.MoveNext();
                         return fragmentFactory.GetEvent(((IHasXmlNode) nodeIterator.Current).GetNode());
                     }
 
                     var events = new List<EventBean>();
-                    while (nodeIterator.MoveNext())
-                    {
+                    while (nodeIterator.MoveNext()) {
                         events.Add(fragmentFactory.GetEvent(((IHasXmlNode) nodeIterator.Current).GetNode()));
                     }
 
                     return events.ToArray();
                 }
 
-                Log.Warn("Error processing XPath property named '" + property + "' expression result is not of type Node or Nodeset");
+                Log.Warn(
+                    "Error processing XPath property named '" +
+                    property +
+                    "' expression result is not of type Node or Nodeset");
                 return null;
             }
-            catch (XPathException e)
-            {
+            catch (XPathException e) {
                 throw new PropertyAccessException("Error getting property " + property, e);
             }
         }
 
         public object GetFragmentFromUnderlying(XPathNavigator navigator)
         {
-            return EvaluateXPathFragment(navigator, _expression, _expressionText, Property, _fragmentFactory, _resultType);
+            return EvaluateXPathFragment(
+                navigator,
+                _expression,
+                _expressionText,
+                Property,
+                _fragmentFactory,
+                _resultType);
         }
 
         private static object CastToArray(
@@ -441,38 +448,33 @@ namespace com.espertech.esper.common.@internal.@event.xml
             SimpleTypeParser simpleTypeParser,
             XPathExpression expression)
         {
-            if (!(result is XmlNodeList))
-            {
+            if (!(result is XmlNodeList)) {
                 return null;
             }
 
             var nodeList = (XmlNodeList) result;
             var array = Array.CreateInstance(optionalCastToType, nodeList.Count);
 
-            for (var i = 0; i < nodeList.Count; i++)
-            {
+            for (var i = 0; i < nodeList.Count; i++) {
                 object arrayItem = null;
-                try
-                {
+                try {
                     var item = nodeList.Item(i);
                     string textContent;
-                    if (item.NodeType == XmlNodeType.Attribute || item.NodeType == XmlNodeType.Element)
-                    {
+                    if (item.NodeType == XmlNodeType.Attribute || item.NodeType == XmlNodeType.Element) {
                         textContent = item.InnerText;
                     }
-                    else
-                    {
+                    else {
                         continue;
                     }
 
                     arrayItem = simpleTypeParser.Parse(textContent);
                 }
-                catch (Exception)
-                {
-                    if (Log.IsInfoEnabled)
-                    {
+                catch (Exception) {
+                    if (Log.IsInfoEnabled) {
                         Log.Info(
-                            "Parse error for text content " + nodeList.Item(i).InnerText + " for expression " +
+                            "Parse error for text content " +
+                            nodeList.Item(i).InnerText +
+                            " for expression " +
                             expression);
                     }
                 }

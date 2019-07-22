@@ -12,7 +12,8 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.name
 {
     public class CodegenFieldNameMatchRecognizePrevious : CodegenFieldName
     {
-        public readonly static CodegenFieldNameMatchRecognizePrevious INSTANCE = new CodegenFieldNameMatchRecognizePrevious();
+        public readonly static CodegenFieldNameMatchRecognizePrevious INSTANCE =
+            new CodegenFieldNameMatchRecognizePrevious();
 
         private CodegenFieldNameMatchRecognizePrevious()
         {

@@ -8,6 +8,7 @@
 
 using System.Collections.Generic;
 using System.Reflection;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.@event.util;
 using com.espertech.esper.compat.logging;
@@ -45,14 +46,18 @@ namespace com.espertech.esper.common.@internal.@event.render
                     var getter = eventType.GetGetter(propertyName);
                     if (getter == null) {
                         Log.Warn(
-                            "No getter returned for event type '" + eventType.Name + "' and property '" + propertyName +
+                            "No getter returned for event type '" +
+                            eventType.Name +
+                            "' and property '" +
+                            propertyName +
                             "'");
                         continue;
                     }
 
                     gettersSimple.Add(
                         new GetterPair(
-                            getter, propertyName,
+                            getter,
+                            propertyName,
                             OutputValueRendererFactory.GetOutputValueRenderer(desc.PropertyType, options)));
                 }
 
@@ -60,14 +65,18 @@ namespace com.espertech.esper.common.@internal.@event.render
                     var getter = eventType.GetGetter(propertyName);
                     if (getter == null) {
                         Log.Warn(
-                            "No getter returned for event type '" + eventType.Name + "' and property '" + propertyName +
+                            "No getter returned for event type '" +
+                            eventType.Name +
+                            "' and property '" +
+                            propertyName +
                             "'");
                         continue;
                     }
 
                     gettersIndexed.Add(
                         new GetterPair(
-                            getter, propertyName,
+                            getter,
+                            propertyName,
                             OutputValueRendererFactory.GetOutputValueRenderer(desc.PropertyType, options)));
                 }
 
@@ -75,14 +84,18 @@ namespace com.espertech.esper.common.@internal.@event.render
                     var getter = eventType.GetGetter(propertyName);
                     if (getter == null) {
                         Log.Warn(
-                            "No getter returned for event type '" + eventType.Name + "' and property '" + propertyName +
+                            "No getter returned for event type '" +
+                            eventType.Name +
+                            "' and property '" +
+                            propertyName +
                             "'");
                         continue;
                     }
 
                     gettersMapped.Add(
                         new GetterPair(
-                            getter, propertyName,
+                            getter,
+                            propertyName,
                             OutputValueRendererFactory.GetOutputValueRenderer(desc.PropertyType, options)));
                 }
 
@@ -91,15 +104,21 @@ namespace com.espertech.esper.common.@internal.@event.render
                     var fragmentType = eventType.GetFragmentType(propertyName);
                     if (getter == null) {
                         Log.Warn(
-                            "No getter returned for event type '" + eventType.Name + "' and property '" + propertyName +
+                            "No getter returned for event type '" +
+                            eventType.Name +
+                            "' and property '" +
+                            propertyName +
                             "'");
                         continue;
                     }
 
                     if (fragmentType == null) {
                         Log.Warn(
-                            "No fragment type returned for event type '" + eventType.Name + "' and property '" +
-                            propertyName + "'");
+                            "No fragment type returned for event type '" +
+                            eventType.Name +
+                            "' and property '" +
+                            propertyName +
+                            "'");
                         continue;
                     }
 

@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.epl.index.@base;
@@ -42,8 +43,16 @@ namespace com.espertech.esper.common.@internal.epl.index.hash
             StatementContext statementContext)
         {
             return statementContext.EventTableIndexService.CreateHashedOnly(
-                indexedStreamNum, eventType, indexProps,
-                indexTypes, unique, null, valueGetter, optionalSerde, isFireAndForget, statementContext);
+                indexedStreamNum,
+                eventType,
+                indexProps,
+                indexTypes,
+                unique,
+                null,
+                valueGetter,
+                optionalSerde,
+                isFireAndForget,
+                statementContext);
         }
     }
 } // end of namespace

@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.compile.stage2;
 using com.espertech.esper.common.@internal.compile.stage3;
@@ -15,6 +16,7 @@ using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.streamtype;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+
 using static com.espertech.esper.common.@internal.epl.expression.core.ExprNodeUtilityEvaluate;
 
 namespace com.espertech.esper.common.@internal.schedule
@@ -31,8 +33,10 @@ namespace com.espertech.esper.common.@internal.schedule
             // Validate the expressions
             ExprForge[] expressions = new ExprForge[scheduleSpecExpressionList.Count];
             int count = 0;
-            ExprValidationContext validationContext = new ExprValidationContextBuilder(new StreamTypeServiceImpl(false), statementRawInfo, services)
-                .WithAllowBindingConsumption(allowBindingConsumption).Build();
+            ExprValidationContext validationContext =
+                new ExprValidationContextBuilder(new StreamTypeServiceImpl(false), statementRawInfo, services)
+                    .WithAllowBindingConsumption(allowBindingConsumption)
+                    .Build();
             foreach (ExprNode parameters in scheduleSpecExpressionList) {
                 ExprNode node = ExprNodeUtilityValidate.GetValidatedSubtree(origin, parameters, validationContext);
                 expressions[count++] = node.Forge;
@@ -40,7 +44,8 @@ namespace com.espertech.esper.common.@internal.schedule
 
             if (expressions.Length <= 4 || expressions.Length >= 8) {
                 throw new ExprValidationException(
-                    "Invalid schedule specification: " + ScheduleSpecUtil.GetExpressionCountException(expressions.Length));
+                    "Invalid schedule specification: " +
+                    ScheduleSpecUtil.GetExpressionCountException(expressions.Length));
             }
 
             return expressions;

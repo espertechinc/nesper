@@ -37,19 +37,25 @@ namespace com.espertech.esper.common.@internal.epl.pattern.matchuntil
             var eventsPerStream = convertor == null ? null : convertor.Convert(beginState);
             if (factoryNode.SingleBound != null) {
                 var bounds = (int?) factoryNode.SingleBound.Evaluate(
-                    eventsPerStream, true, context.AgentInstanceContext);
+                    eventsPerStream,
+                    true,
+                    context.AgentInstanceContext);
                 lowerbounds = bounds;
                 upperbounds = bounds;
             }
             else {
                 if (factoryNode.LowerBounds != null) {
                     lowerbounds = (int?) factoryNode.LowerBounds.Evaluate(
-                        eventsPerStream, true, context.AgentInstanceContext);
+                        eventsPerStream,
+                        true,
+                        context.AgentInstanceContext);
                 }
 
                 if (factoryNode.UpperBounds != null) {
                     upperbounds = (int?) factoryNode.UpperBounds.Evaluate(
-                        eventsPerStream, true, context.AgentInstanceContext);
+                        eventsPerStream,
+                        true,
+                        context.AgentInstanceContext);
                 }
 
                 if (upperbounds != null && lowerbounds != null) {

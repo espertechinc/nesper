@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.meta;
 using com.espertech.esper.common.client.util;
@@ -20,6 +21,7 @@ using com.espertech.esper.common.@internal.epl.pattern.core;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.@event.map;
 using com.espertech.esper.compat.collections;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.context.activator
@@ -52,17 +54,20 @@ namespace com.espertech.esper.common.@internal.context.activator
 
             var childCode = _spec.Root.MakeCodegen(method, symbols, classScope);
             method.Block
-                .DeclareVar(typeof(EvalRootFactoryNode), "root", LocalMethod(childCode))
-                .DeclareVar(
-                    typeof(ViewableActivatorPattern), "activator",
+                .DeclareVar<EvalRootFactoryNode>("root", LocalMethod(childCode))
+                .DeclareVar<ViewableActivatorPattern>(
+                    "activator",
                     ExprDotMethodChain(symbols.GetAddInitSvc(method))
-                        .Add(EPStatementInitServicesConstants.GETVIEWABLEACTIVATORFACTORY).Add("createPattern"))
+                        .Add(EPStatementInitServicesConstants.GETVIEWABLEACTIVATORFACTORY)
+                        .Add("createPattern"))
                 .SetProperty(Ref("activator"), "RootFactoryNode", Ref("root"))
-                .SetProperty(Ref("activator"), "EventBeanTypedEventFactory",
+                .SetProperty(
+                    Ref("activator"),
+                    "EventBeanTypedEventFactory",
                     ExprDotMethodChain(symbols.GetAddInitSvc(method))
                         .Add(EPStatementInitServicesConstants.GETEVENTBEANTYPEDEVENTFACTORY))
-                .DeclareVar(
-                    typeof(EventType), "eventType",
+                .DeclareVar<EventType>(
+                    "eventType",
                     EventTypeUtility.ResolveTypeCodegen(_eventType, symbols.GetAddInitSvc(method)))
                 .SetProperty(Ref("activator"), "EventType", Ref("eventType"))
                 .SetProperty(Ref("activator"), "PatternContext", _patternContext.Make(method, symbols, classScope))
@@ -83,8 +88,14 @@ namespace com.espertech.esper.common.@internal.context.activator
         {
             var patternEventTypeName = services.EventTypeNameGeneratorStatement.GetPatternTypeName(stream);
             var metadata = new EventTypeMetadata(
-                patternEventTypeName, @base.ModuleName, EventTypeTypeClass.STREAM, EventTypeApplicationType.MAP,
-                NameAccessModifier.PRIVATE, EventTypeBusModifier.NONBUS, false, EventTypeIdPair.Unassigned());
+                patternEventTypeName,
+                @base.ModuleName,
+                EventTypeTypeClass.STREAM,
+                EventTypeApplicationType.MAP,
+                NameAccessModifier.PRIVATE,
+                EventTypeBusModifier.NONBUS,
+                false,
+                EventTypeIdPair.Unassigned());
             IDictionary<string, object> propertyTypes = new LinkedHashMap<string, object>();
             foreach (var entry in patternStreamSpec.TaggedEventTypes) {
                 propertyTypes.Put(entry.Key, entry.Value.First);
@@ -95,7 +106,13 @@ namespace com.espertech.esper.common.@internal.context.activator
             }
 
             var patternType = BaseNestableEventUtil.MakeMapTypeCompileTime(
-                metadata, propertyTypes, null, null, null, null, services.BeanEventTypeFactoryPrivate,
+                metadata,
+                propertyTypes,
+                null,
+                null,
+                null,
+                null,
+                services.BeanEventTypeFactoryPrivate,
                 services.EventTypeCompileTimeResolver);
             services.EventTypeCompileTimeRegistry.NewType(patternType);
             return patternType;

@@ -8,12 +8,14 @@
 
 using System;
 using System.Reflection;
+
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.@event.bean.core;
 using com.espertech.esper.common.@internal.@event.bean.service;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.@event.util;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.@event.bean.getter
@@ -23,9 +25,9 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
     /// </summary>
     public class DynamicIndexedPropertyGetter : DynamicPropertyGetterBase
     {
-        private readonly string getterMethodName;
-        private readonly int index;
-        private readonly object[] parameters;
+        private readonly string _getterMethodName;
+        private readonly int _index;
+        private readonly object[] _parameters;
 
         public DynamicIndexedPropertyGetter(
             string fieldName,
@@ -34,14 +36,14 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
             BeanEventTypeFactory beanEventTypeFactory)
             : base(eventBeanTypedEventFactory, beanEventTypeFactory)
         {
-            getterMethodName = PropertyHelper.GetGetterMethodName(fieldName);
-            parameters = new object[] {index};
-            this.index = index;
+            _getterMethodName = PropertyHelper.GetGetterMethodName(fieldName);
+            _parameters = new object[] {index};
+            _index = index;
         }
 
         internal override MethodInfo DetermineMethod(Type clazz)
         {
-            return DynamicIndexPropertyDetermineMethod(clazz, getterMethodName);
+            return DynamicIndexPropertyDetermineMethod(clazz, _getterMethodName);
         }
 
         internal override CodegenExpression DetermineMethodCodegen(
@@ -50,15 +52,17 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
             CodegenClassScope codegenClassScope)
         {
             return StaticMethod(
-                typeof(DynamicIndexedPropertyGetter), "dynamicIndexPropertyDetermineMethod", clazz,
-                Constant(getterMethodName));
+                typeof(DynamicIndexedPropertyGetter),
+                "dynamicIndexPropertyDetermineMethod",
+                clazz,
+                Constant(_getterMethodName));
         }
 
         internal override object Call(
             DynamicPropertyDescriptor descriptor,
             object underlying)
         {
-            return DynamicIndexedPropertyGet(descriptor, underlying, parameters, index);
+            return DynamicIndexedPropertyGet(descriptor, underlying, _parameters, _index);
         }
 
         internal override CodegenExpression CallCodegen(
@@ -67,10 +71,14 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
             CodegenMethodScope parent,
             CodegenClassScope codegenClassScope)
         {
-            var @params = codegenClassScope.AddFieldUnshared<object[]>(true, Constant(parameters));
+            var @params = codegenClassScope.AddFieldUnshared<object[]>(true, Constant(_parameters));
             return StaticMethod(
-                typeof(DynamicIndexedPropertyGetter), "dynamicIndexedPropertyGet", desc, @object, @params,
-                Constant(index));
+                typeof(DynamicIndexedPropertyGetter),
+                "dynamicIndexedPropertyGet",
+                desc,
+                @object,
+                @params,
+                Constant(_index));
         }
 
         /// <summary>
@@ -86,7 +94,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
             MethodInfo method;
 
             try {
-                return clazz.GetMethod(getterMethodName, new Type[] { typeof(int) });
+                return clazz.GetMethod(getterMethodName, new Type[] {typeof(int)});
             }
             catch (Exception ex1) when (ex1 is AmbiguousMatchException || ex1 is ArgumentNullException) {
                 try {

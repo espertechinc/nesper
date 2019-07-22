@@ -19,7 +19,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
         public void Run(RegressionEnvironment env)
         {
             var text =
-                "@Name('s0') select irstream s0.price, s1.price from SupportMarketDataBean(Symbol='S0')#length(3) as s0," +
+                "@Name('s0') select irstream s0.Price, s1.Price from SupportMarketDataBean(Symbol='S0')#length(3) as s0," +
                 "SupportMarketDataBean(Symbol='S1')#length(3) as s1 " +
                 " where s0.Volume = s1.Volume";
             env.CompileDeployAddListenerMileZero(text, "s0");
@@ -32,7 +32,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
             env.SendEventBean(MakeMarketDataEvent("S1", 20, 1));
             EPAssertionUtil.AssertPropsPerRow(
                 env.Listener("s0").NewDataListFlattened,
-                new[] {"s0.price", "s1.price"},
+                new[] {"s0.Price", "s1.Price"},
                 new[] {new object[] {100.0, 20.0}});
             Assert.AreEqual(0, env.Listener("s0").OldDataListFlattened.Length);
             env.Listener("s0").Reset();
@@ -42,7 +42,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
             env.SendEventBean(MakeMarketDataEvent("S1", 21, 1));
             EPAssertionUtil.AssertPropsPerRow(
                 env.Listener("s0").NewDataListFlattened,
-                new[] {"s0.price", "s1.price"},
+                new[] {"s0.Price", "s1.Price"},
                 new[] {new object[] {100.0, 21.0}});
             Assert.AreEqual(0, env.Listener("s0").OldDataListFlattened.Length);
             env.Listener("s0").Reset();
@@ -58,7 +58,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
             Assert.AreEqual(0, env.Listener("s0").NewDataListFlattened.Length);
             EPAssertionUtil.AssertPropsPerRow(
                 env.Listener("s0").OldDataListFlattened,
-                new[] {"s0.price", "s1.price"},
+                new[] {"s0.Price", "s1.Price"},
                 new[] {new object[] {100.0, 20.0}});
             env.Listener("s0").Reset();
 

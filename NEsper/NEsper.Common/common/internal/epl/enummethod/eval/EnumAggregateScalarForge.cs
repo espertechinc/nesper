@@ -31,7 +31,9 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
         }
 
         public override EnumEval EnumEvaluator => new EnumAggregateScalarForgeEval(
-            this, initialization.ExprEvaluator, innerExpression.ExprEvaluator);
+            this,
+            initialization.ExprEvaluator,
+            innerExpression.ExprEvaluator);
 
         public ObjectArrayEventType EvalEventType => evalEventType;
 

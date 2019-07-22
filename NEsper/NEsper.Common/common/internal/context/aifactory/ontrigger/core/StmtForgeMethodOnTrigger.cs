@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client.soda;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.core;
@@ -55,7 +56,10 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.core
 
             // create subselect information
             var subselectActivation = SubSelectHelperActivations.CreateSubSelectActivation(
-                filterSpecCompileds, namedWindowConsumers, @base, services);
+                filterSpecCompileds,
+                namedWindowConsumers,
+                @base,
+                services);
 
             // obtain activator
             var streamSpec = @base.StatementSpec.StreamSpecs[0];
@@ -88,10 +92,15 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.core
                 throw new ExprValidationException("Unknown stream specification type: " + streamSpec);
             }
 
-            var statementFieldsClassName = CodeGenerationIDGenerator.GenerateClassNameSimple(typeof(StatementFields), classPostfix);
-            var packageScope = new CodegenNamespaceScope(packageName, statementFieldsClassName, services.IsInstrumented);
+            var statementFieldsClassName =
+                CodeGenerationIDGenerator.GenerateClassNameSimple(typeof(StatementFields), classPostfix);
+            var packageScope = new CodegenNamespaceScope(
+                packageName,
+                statementFieldsClassName,
+                services.IsInstrumented);
             var aiFactoryProviderClassName = CodeGenerationIDGenerator.GenerateClassNameSimple(
-                typeof(StatementAIFactoryProvider), classPostfix);
+                typeof(StatementAIFactoryProvider),
+                classPostfix);
 
             // context-factory creation
             //
@@ -113,25 +122,50 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.core
                 }
 
                 var planDesc = new OnTriggerWindowPlan(
-                    desc, contextName, activatorResult, optionalStreamSelector.Value, subselectActivation, streamSpec);
+                    desc,
+                    contextName,
+                    activatorResult,
+                    optionalStreamSelector.Value,
+                    subselectActivation,
+                    streamSpec);
                 onTriggerPlan = OnTriggerWindowUtil.HandleContextFactoryOnTrigger(
-                    aiFactoryProviderClassName, packageScope,
-                    classPostfix, namedWindow, table, planDesc, @base, services);
+                    aiFactoryProviderClassName,
+                    packageScope,
+                    classPostfix,
+                    namedWindow,
+                    table,
+                    planDesc,
+                    @base,
+                    services);
             }
             else if (onTriggerDesc is OnTriggerSetDesc) {
                 // variable assignments
                 var desc = (OnTriggerSetDesc) onTriggerDesc;
                 var plan = OnTriggerSetUtil.HandleSetVariable(
-                    aiFactoryProviderClassName, packageScope, classPostfix, activatorResult,
-                    streamSpec.OptionalStreamName, subselectActivation, desc, @base, services);
+                    aiFactoryProviderClassName,
+                    packageScope,
+                    classPostfix,
+                    activatorResult,
+                    streamSpec.OptionalStreamName,
+                    subselectActivation,
+                    desc,
+                    @base,
+                    services);
                 onTriggerPlan = new OnTriggerPlan(plan.Forgable, plan.Forgables, plan.SelectSubscriberDescriptor);
             }
             else {
                 // split-stream use case
                 var desc = (OnTriggerSplitStreamDesc) onTriggerDesc;
                 onTriggerPlan = OnSplitStreamUtil.HandleSplitStream(
-                    aiFactoryProviderClassName, packageScope,
-                    classPostfix, desc, streamSpec, activatorResult, subselectActivation, @base, services);
+                    aiFactoryProviderClassName,
+                    packageScope,
+                    classPostfix,
+                    desc,
+                    streamSpec,
+                    activatorResult,
+                    subselectActivation,
+                    @base,
+                    services);
             }
 
             // build forge list
@@ -142,17 +176,30 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.core
             var statementProviderClassName =
                 CodeGenerationIDGenerator.GenerateClassNameSimple(typeof(StatementProvider), classPostfix);
             var informationals = StatementInformationalsUtil.GetInformationals(
-                @base, filterSpecCompileds, schedules, namedWindowConsumers, true, onTriggerPlan.SubscriberDescriptor,
-                packageScope, services);
+                @base,
+                filterSpecCompileds,
+                schedules,
+                namedWindowConsumers,
+                true,
+                onTriggerPlan.SubscriberDescriptor,
+                packageScope,
+                services);
             forgables.Add(
                 new StmtClassForgableStmtProvider(
-                    aiFactoryProviderClassName, statementProviderClassName, informationals, packageScope));
+                    aiFactoryProviderClassName,
+                    statementProviderClassName,
+                    informationals,
+                    packageScope));
             forgables.Add(new StmtClassForgableStmtFields(statementFieldsClassName, packageScope, 2));
 
             return new StmtForgeMethodResult(
-                forgables, filterSpecCompileds, schedules, namedWindowConsumers,
+                forgables,
+                filterSpecCompileds,
+                schedules,
+                namedWindowConsumers,
                 FilterSpecCompiled.MakeExprNodeList(
-                    filterSpecCompileds, Collections.GetEmptyList<FilterSpecParamExprNodeForge>()));
+                    filterSpecCompileds,
+                    Collections.GetEmptyList<FilterSpecParamExprNodeForge>()));
         }
 
         private OnTriggerActivatorDesc ActivatorNamedWindow(
@@ -163,13 +210,23 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.core
             string triggerEventTypeName = namedSpec.NamedWindow.EventType.Name;
 
             var typesFilterValidation = new StreamTypeServiceImpl(
-                namedWindow.EventType, namedSpec.OptionalStreamName, false);
+                namedWindow.EventType,
+                namedSpec.OptionalStreamName,
+                false);
             var filterSingle =
                 ExprNodeUtilityMake.ConnectExpressionsByLogicalAndWhenNeeded(namedSpec.FilterExpressions);
             QueryGraphForge filterQueryGraph = EPLValidationUtil.ValidateFilterGetQueryGraphSafe(
-                filterSingle, typesFilterValidation, @base.StatementRawInfo, services);
+                filterSingle,
+                typesFilterValidation,
+                @base.StatementRawInfo,
+                services);
             var activator = new ViewableActivatorNamedWindowForge(
-                namedSpec, namedWindow, filterSingle, filterQueryGraph, false, namedSpec.OptPropertyEvaluator);
+                namedSpec,
+                namedWindow,
+                filterSingle,
+                filterQueryGraph,
+                false,
+                namedSpec.OptPropertyEvaluator);
 
             var activatorResultEventType = namedWindow.EventType;
             if (namedSpec.OptPropertyEvaluator != null) {

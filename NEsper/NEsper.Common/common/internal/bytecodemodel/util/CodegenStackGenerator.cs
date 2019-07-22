@@ -8,10 +8,12 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.core;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.bytecodemodel.util
@@ -32,10 +34,16 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.util
 
             if (!(methodNode is CodegenCtor)) {
                 var footprint = new CodegenMethodFootprint(
-                    methodNode.ReturnType, methodNode.ReturnTypeName, methodNode.LocalParams,
+                    methodNode.ReturnType,
+                    methodNode.ReturnTypeName,
+                    methodNode.LocalParams,
                     methodNode.AdditionalDebugInfo);
                 CodegenMethodWGraph method = new CodegenMethodWGraph(
-                    name, footprint, methodNode.Block, true, methodNode.Thrown) {
+                    name,
+                    footprint,
+                    methodNode.Block,
+                    true,
+                    methodNode.Thrown) {
                     IsStatic = methodNode.IsStatic
                 };
 
@@ -71,7 +79,9 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.util
                     var symbolType = currentSymbols.Get(nameX);
                     if (symbolType == null) {
                         throw new IllegalStateException(
-                            "Failed to find named parameter '" + nameX + "' for method from " +
+                            "Failed to find named parameter '" +
+                            nameX +
+                            "' for method from " +
                             methodNode.AdditionalDebugInfo);
                     }
 
@@ -85,9 +95,16 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.util
 
             var name = "m" + privateMethods.Count;
             var footprint = new CodegenMethodFootprint(
-                methodNode.ReturnType, methodNode.ReturnTypeName, paramset, methodNode.AdditionalDebugInfo);
+                methodNode.ReturnType,
+                methodNode.ReturnTypeName,
+                paramset,
+                methodNode.AdditionalDebugInfo);
             CodegenMethodWGraph method = new CodegenMethodWGraph(
-                name, footprint, methodNode.Block, false, methodNode.Thrown) {
+                name,
+                footprint,
+                methodNode.Block,
+                false,
+                methodNode.Thrown) {
                 IsStatic = isStatic
             };
 
@@ -133,7 +150,10 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.util
             members.Add(new CodegenTypedParam(className, memberName));
 
             var method = CodegenMethod.MakeParentNode(
-                    typeof(void), typeof(CodegenStackGenerator), CodegenSymbolProviderEmpty.INSTANCE, classScope)
+                    typeof(void),
+                    typeof(CodegenStackGenerator),
+                    CodegenSymbolProviderEmpty.INSTANCE,
+                    classScope)
                 .AddParam(className, "p");
             method.Block.AssignRef(memberName, Ref("p"));
             var setterMethodName = "set" + memberName.Substring(0, 1).ToUpperInvariant() + memberName.Substring(1);

@@ -12,6 +12,7 @@ using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.table.compiletime;
 using com.espertech.esper.common.@internal.epl.table.core;
 using com.espertech.esper.common.@internal.@event.core;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.expression.subquery
@@ -40,16 +41,23 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                 .IfCondition(
                     Relational(
                         ExprDotMethod(symbols.GetAddMatchingEvents(method), "size"),
-                        CodegenExpressionRelational.CodegenRelational.GT, Constant(1)))
+                        CodegenExpressionRelational.CodegenRelational.GT,
+                        Constant(1)))
                 .BlockReturn(ConstantNull())
-                .DeclareVar(
-                    typeof(EventBean), "event",
+                .DeclareVar<EventBean>(
+                    "event",
                     StaticMethod(
-                        typeof(EventBeanUtility), "getNonemptyFirstEvent", symbols.GetAddMatchingEvents(method)))
+                        typeof(EventBeanUtility),
+                        "getNonemptyFirstEvent",
+                        symbols.GetAddMatchingEvents(method)))
                 .MethodReturn(
                     ExprDotMethod(
-                        eventToPublic, "convertToUnd", Ref("event"), symbols.GetAddEPS(method),
-                        symbols.GetAddIsNewData(method), symbols.GetAddExprEvalCtx(method)));
+                        eventToPublic,
+                        "convertToUnd",
+                        Ref("event"),
+                        symbols.GetAddEPS(method),
+                        symbols.GetAddIsNewData(method),
+                        symbols.GetAddExprEvalCtx(method)));
             return LocalMethod(method);
         }
     }

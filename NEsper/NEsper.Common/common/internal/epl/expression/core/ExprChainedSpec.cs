@@ -60,8 +60,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
         public override string ToString()
         {
             return "ExprChainedSpec{" +
-                   "name='" + Name + '\'' +
-                   ", parameters=" + Parameters +
+                   "name='" +
+                   Name +
+                   '\'' +
+                   ", parameters=" +
+                   Parameters +
                    '}';
         }
     }

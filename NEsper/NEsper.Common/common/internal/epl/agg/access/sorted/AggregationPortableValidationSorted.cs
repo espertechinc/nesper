@@ -12,6 +12,7 @@ using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.epl.agg.core;
 using com.espertech.esper.common.@internal.@event.core;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
@@ -53,11 +54,13 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
         {
             var method = parent.MakeChild(typeof(AggregationPortableValidationSorted), GetType(), classScope);
             method.Block
-                .DeclareVar(
-                    typeof(AggregationPortableValidationSorted), "v",
+                .DeclareVar<AggregationPortableValidationSorted>(
+                    "v",
                     NewInstance(typeof(AggregationPortableValidationSorted)))
                 .SetProperty(Ref("v"), "AggFuncName", Constant(AggFuncName))
-                .SetProperty(Ref("v"), "ContainedEventType",
+                .SetProperty(
+                    Ref("v"),
+                    "ContainedEventType",
                     EventTypeUtility.ResolveTypeCodegen(ContainedEventType, symbols.GetAddInitSvc(method)))
                 .MethodReturn(Ref("v"));
             return LocalMethod(method);

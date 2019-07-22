@@ -36,12 +36,9 @@ namespace NEsper.Avro.Util.Support
 
         public static string AvroToJson(GenericRecord datum)
         {
-            try
-            {
-                using (var textWriter = new StringWriter())
-                {
-                    using (var writer = new JsonTextWriter(textWriter))
-                    {
+            try {
+                using (var textWriter = new StringWriter()) {
+                    using (var writer = new JsonTextWriter(textWriter)) {
                         var converter = new GenericRecordToJsonConverter();
                         var serializer = new JsonSerializer();
                         serializer.Serialize(writer, converter.Encode(datum));
@@ -49,18 +46,21 @@ namespace NEsper.Avro.Util.Support
                     }
                 }
             }
-            catch (IOException ex)
-            {
+            catch (IOException ex) {
                 throw new EPException(ex);
             }
         }
 
-        public static GenericRecord ParseQuoted(Schema schema, string json)
+        public static GenericRecord ParseQuoted(
+            Schema schema,
+            string json)
         {
             return Parse(schema, json.Replace("'", "\""));
         }
 
-        public static GenericRecord Parse(Schema schema, string json)
+        public static GenericRecord Parse(
+            Schema schema,
+            string json)
         {
             throw new NotImplementedException();
 
@@ -83,43 +83,56 @@ namespace NEsper.Avro.Util.Support
 #endif
         }
 
-        public static string CompareSchemas(Schema schemaOne, Schema schemaTwo)
+        public static string CompareSchemas(
+            Schema schemaOne,
+            Schema schemaTwo)
         {
             var names = new HashSet<string>();
             AddSchemaFieldNames(names, schemaOne);
             AddSchemaFieldNames(names, schemaTwo);
 
-            foreach (var name in names)
-            {
+            foreach (var name in names) {
                 Field fieldOne = schemaOne.GetField(name);
                 Field fieldTwo = schemaTwo.GetField(name);
-                if (fieldOne == null)
-                {
+                if (fieldOne == null) {
                     return "Failed to find field '" + name + " in schema-one";
                 }
-                if (fieldTwo == null)
-                {
+
+                if (fieldTwo == null) {
                     return "Failed to find field '" + name + " in schema-one";
                 }
-                if (!fieldOne.Schema.Equals(fieldTwo.Schema))
-                {
-                    return "\nSchema-One: " + fieldOne.Schema + "\n" +
-                           "Schema-Two: " + fieldTwo.Schema;
+
+                if (!fieldOne.Schema.Equals(fieldTwo.Schema)) {
+                    return "\nSchema-One: " +
+                           fieldOne.Schema +
+                           "\n" +
+                           "Schema-Two: " +
+                           fieldTwo.Schema;
                 }
             }
+
             return null;
         }
 
         public static AvroEventType MakeAvroSupportEventType(Schema schema)
         {
-            EventTypeMetadata metadata = new EventTypeMetadata("typename", null, EventTypeTypeClass.STREAM, EventTypeApplicationType.AVRO, NameAccessModifier.TRANSIENT, EventTypeBusModifier.NONBUS, false, EventTypeIdPair.Unassigned());
+            EventTypeMetadata metadata = new EventTypeMetadata(
+                "typename",
+                null,
+                EventTypeTypeClass.STREAM,
+                EventTypeApplicationType.AVRO,
+                NameAccessModifier.TRANSIENT,
+                EventTypeBusModifier.NONBUS,
+                false,
+                EventTypeIdPair.Unassigned());
             return new AvroEventType(metadata, schema, null, null, null, null, null, new EventTypeAvroHandlerImpl());
         }
 
-        private static void AddSchemaFieldNames(ISet<string> names, Schema schema)
+        private static void AddSchemaFieldNames(
+            ISet<string> names,
+            Schema schema)
         {
-            foreach (Field field in schema.GetFields())
-            {
+            foreach (Field field in schema.GetFields()) {
                 names.Add(field.Name);
             }
         }

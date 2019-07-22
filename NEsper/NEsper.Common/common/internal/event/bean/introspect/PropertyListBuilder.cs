@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.@internal.@event.bean.core;
 
 namespace com.espertech.esper.common.@internal.@event.bean.introspect

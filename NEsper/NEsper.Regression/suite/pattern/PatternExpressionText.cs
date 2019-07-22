@@ -20,10 +20,10 @@ namespace com.espertech.esper.regressionlib.suite.pattern
     {
         public void Run(RegressionEnvironment env)
         {
-            TryAssertion(env, "every a=SupportBean => b=SupportBean@consume", null);
-            TryAssertion(env, "every a=SupportBean => b=SupportBean@consume", null);
-            TryAssertion(env, "every a=SupportBean => b=SupportBean@consume(2)", null);
-            TryAssertion(env, "a=SupportBean_A => b=SupportBean_B", null);
+            TryAssertion(env, "every a=SupportBean -> b=SupportBean@consume", null);
+            TryAssertion(env, "every a=SupportBean -> b=SupportBean@consume", null);
+            TryAssertion(env, "every a=SupportBean -> b=SupportBean@consume(2)", null);
+            TryAssertion(env, "a=SupportBean_A -> b=SupportBean_B", null);
             TryAssertion(env, "b=SupportBean_B and every d=SupportBean_D", null);
             TryAssertion(env, "every b=SupportBean_B and d=SupportBean_B", null);
             TryAssertion(env, "b=SupportBean_B and d=SupportBean_D", null);
@@ -57,9 +57,9 @@ namespace com.espertech.esper.regressionlib.suite.pattern
             TryAssertion(env, "every b=SupportBean_B => d=SupportBean_D", null);
             TryAssertion(env, "every b=SupportBean_B -[10]> d=SupportBean_D", null);
             TryAssertion(env, "every (b=SupportBean_B => every d=SupportBean_D)", null);
-            TryAssertion(env, "every (a_1=SupportBean_A => b=SupportBean_B => a_2=SupportBean_A)", null);
+            TryAssertion(env, "every (a_1=SupportBean_A -> b=SupportBean_B => a_2=SupportBean_A)", null);
             TryAssertion(env, "c=SupportBean_C => d=SupportBean_D => a=SupportBean_A", null);
-            TryAssertion(env, "every (a_1=SupportBean_A => b=SupportBean_B => a_2=SupportBean_A)", null);
+            TryAssertion(env, "every (a_1=SupportBean_A -> b=SupportBean_B => a_2=SupportBean_A)", null);
             TryAssertion(env, "every (a_1=SupportBean_A -[10]> b=SupportBean_B -[10]> a_2=SupportBean_A)", null);
             TryAssertion(env, "every (every a=SupportBean_A => every b=SupportBean_B)", null);
             TryAssertion(env, "every (a=SupportBean_A => every b=SupportBean_B)", null);
@@ -144,17 +144,17 @@ namespace com.espertech.esper.regressionlib.suite.pattern
             TryAssertion(env, "timer:at(10,9,*,*,*,10) or timer:at(30,9,*,*,*,*)", null);
             TryAssertion(env, "b=SupportBean_B(Id=\"B3\") => timer:at(20,9,*,*,*,*)", null);
             TryAssertion(env, "timer:at(59,8,*,*,*,59) => d=SupportBean_D", null);
-            TryAssertion(env, "timer:at(22,8,*,*,*) => b=SupportBean_B => timer:at(55,*,*,*,*)", null);
+            TryAssertion(env, "timer:at(22,8,*,*,*) -> b=SupportBean_B => timer:at(55,*,*,*,*)", null);
             TryAssertion(env, "timer:at(40,*,*,*,*,1) and b=SupportBean_B", null);
             TryAssertion(env, "timer:at(40,9,*,*,*,1) or d=SupportBean_D", null);
-            TryAssertion(env, "timer:at(22,8,*,*,*) => b=SupportBean_B => timer:at(55,8,*,*,*)", null);
+            TryAssertion(env, "timer:at(22,8,*,*,*) -> b=SupportBean_B => timer:at(55,8,*,*,*)", null);
             TryAssertion(env, "timer:at(22,8,*,*,*,1) where timer:within(30 minutes)", null);
             TryAssertion(env, "timer:at(*,9,*,*,*) and timer:at(55,*,*,*,*)", null);
             TryAssertion(env, "timer:at(40,8,*,*,*,1) and b=SupportBean_B", null);
             TryAssertion(env, "timer:interval(2 seconds)", null);
             TryAssertion(env, "timer:interval(2.001)", null);
             TryAssertion(env, "timer:interval(2999 milliseconds)", null);
-            TryAssertion(env, "timer:interval(4 seconds) => b=SupportBean_B", null);
+            TryAssertion(env, "timer:interval(4 seconds) -> b=SupportBean_B", null);
             TryAssertion(env, "b=SupportBean_B => timer:interval(0)", null);
             TryAssertion(env, "b=SupportBean_B => timer:interval(6.0) => d=SupportBean_D", null);
             TryAssertion(env, "every (b=SupportBean_B => timer:interval(2.0) => d=SupportBean_D)", null);
@@ -241,11 +241,11 @@ namespace com.espertech.esper.regressionlib.suite.pattern
             TryAssertion(env, "every-distinct(a.IntPrimitive,1 hours) (a=SupportBean and not SupportBean)", null);
             TryAssertion(
                 env,
-                "every-distinct(a.IntPrimitive+b.IntPrimitive,1 hours) (a=SupportBean => b=SupportBean)",
+                "every-distinct(a.IntPrimitive+b.IntPrimitive,1 hours) (a=SupportBean -> b=SupportBean)",
                 null);
             TryAssertion(
                 env,
-                "every-distinct(a.IntPrimitive) a=SupportBean => b=SupportBean(IntPrimitive=a.IntPrimitive)",
+                "every-distinct(a.IntPrimitive) a=SupportBean -> b=SupportBean(IntPrimitive=a.IntPrimitive)",
                 null);
             TryAssertion(
                 env,

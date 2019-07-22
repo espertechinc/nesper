@@ -32,7 +32,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
             }
 
             var epl = "@Name('flow')create dataflow VWAPSample\r\n" +
-                      "create objectarray schema TradeQuoteType as (type string, ticker string, price double, Volume long, askprice double, asksize long),\n" +
+                      "create objectarray schema TradeQuoteType as (type string, ticker string, Price double, Volume long, askPrice double, asksize long),\n" +
                       "MyObjectArrayGraphSource => TradeQuoteStream<TradeQuoteType> {}\r\n" +
                       "Filter(TradeQuoteStream) => TradeStream {\r\n" +
                       "filter: type=\"trade\"\r\n" +
@@ -41,11 +41,11 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                       "filter: type=\"quote\"\r\n" +
                       "}\r\n" +
                       "Select(TradeStream) => VwapTrades {\r\n" +
-                      "select: (select ticker, sum(price*Volume)/sum(Volume) as vwap, min(price) as minprice from TradeStream#groupwin(ticker)#length(4) group by ticker)\r\n" +
+                      "select: (select ticker, sum(Price*Volume)/sum(Volume) as vwap, min(Price) as minPrice from TradeStream#groupwin(ticker)#length(4) group by ticker)\r\n" +
                       "}\r\n" +
                       "Select(VwapTrades as T, QuoteStream as Q) => BargainIndex {\r\n" +
                       "select: " +
-                      "(select case when vwap>askprice then asksize*(Math.exp(vwap-askprice)) else 0.0d end as index " +
+                      "(select case when vwap>askPrice then asksize*(Math.exp(vwap-askPrice)) else 0.0d end as index " +
                       "from T#unique(ticker) as t, Q#lastevent as q " +
                       "where t.ticker=q.ticker)\r\n" +
                       "}\r\n" +

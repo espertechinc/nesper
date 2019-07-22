@@ -8,6 +8,7 @@
 
 using System.Collections.Generic;
 using System.Linq;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.context.util;
@@ -182,8 +183,10 @@ namespace com.espertech.esper.common.@internal.view.sort
         public override string ToString()
         {
             return GetType().Name +
-                   " isDescending=" + factory.isDescendingValues.RenderAny() +
-                   " sortWindowSize=" + sortWindowSize;
+                   " isDescending=" +
+                   factory.isDescendingValues.RenderAny() +
+                   " sortWindowSize=" +
+                   sortWindowSize;
         }
 
         protected object GetSortValues(EventBean theEvent)

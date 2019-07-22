@@ -7,10 +7,12 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.context.controller.hash;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.compile.stage1.spec
@@ -40,17 +42,20 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
         {
             var method = parent.MakeChild(typeof(ContextControllerDetailHash), GetType(), classScope);
 
-            method.Block.DeclareVar(
-                typeof(ContextControllerDetailHashItem[]), "items",
+            method.Block.DeclareVar<ContextControllerDetailHashItem[]>(
+                "items",
                 NewArrayByLength(typeof(ContextControllerDetailHashItem), Constant(Items.Count)));
             for (var i = 0; i < Items.Count; i++) {
                 method.Block.AssignArrayElement(
-                    "items", Constant(i), Items[i].MakeCodegen(method, symbols, classScope));
+                    "items",
+                    Constant(i),
+                    Items[i].MakeCodegen(method, symbols, classScope));
             }
 
             method.Block
-                .DeclareVar(
-                    typeof(ContextControllerDetailHash), "detail", NewInstance(typeof(ContextControllerDetailHash)))
+                .DeclareVar<ContextControllerDetailHash>(
+                    "detail",
+                    NewInstance(typeof(ContextControllerDetailHash)))
                 .SetProperty(Ref("detail"), "Items", Ref("items"))
                 .SetProperty(Ref("detail"), "Granularity", Constant(Granularity))
                 .SetProperty(Ref("detail"), "Preallocate", Constant(IsPreallocate))

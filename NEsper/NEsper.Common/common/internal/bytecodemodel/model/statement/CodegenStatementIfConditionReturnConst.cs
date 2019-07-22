@@ -9,7 +9,9 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionUtil;
 
 namespace com.espertech.esper.common.@internal.bytecodemodel.model.statement
@@ -29,13 +31,12 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.statement
 
         public override void RenderStatement(
             StringBuilder builder,
-            IDictionary<Type, string> imports,
             bool isInnerClass)
         {
             builder.Append("if (");
-            condition.Render(builder, imports, isInnerClass);
+            condition.Render(builder, isInnerClass);
             builder.Append(") return ");
-            RenderConstant(builder, constant, imports);
+            RenderConstant(builder, constant);
         }
 
         public override void MergeClasses(ISet<Type> classes)

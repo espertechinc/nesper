@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.configuration.common;
 using com.espertech.esper.common.client.hook.type;
@@ -61,14 +62,17 @@ namespace com.espertech.esper.common.@internal.epl.historical.database.core
             var parameterDesc = GetParameters(sqlFragments);
             if (Log.IsDebugEnabled) {
                 Log.Debug(
-                    ".CreateDBStatementView preparedStatementText=" + preparedStatementText +
-                    " parameterDesc=" + parameterDesc);
+                    ".CreateDBStatementView preparedStatementText=" +
+                    preparedStatementText +
+                    " parameterDesc=" +
+                    parameterDesc);
             }
 
             // Get a database connection
             var databaseName = databaseStreamSpec.DatabaseName;
             var dbDriver = services.DatabaseConfigServiceCompileTime
-                .GetConnectionFactory(databaseName).Driver;
+                .GetConnectionFactory(databaseName)
+                .Driver;
             var dbCommand = dbDriver.CreateCommand(
                 sqlFragments,
                 GetMetaDataSettings(services, databaseName),
@@ -107,9 +111,12 @@ namespace com.espertech.esper.common.@internal.epl.historical.database.core
             services.EventTypeCompileTimeRegistry.NewType(eventType);
 
             return new HistoricalEventViewableDatabaseForge(
-                streamNum, eventType, databaseName,
+                streamNum,
+                eventType,
+                databaseName,
                 queryMetaData.InputParameters.ToArray(),
-                preparedStatementText, queryMetaData.OutputParameters);
+                preparedStatementText,
+                queryMetaData.OutputParameters);
         }
 
         /// <summary>
@@ -140,17 +147,31 @@ namespace com.espertech.esper.common.@internal.epl.historical.database.core
 
             EventType eventType;
             Func<EventTypeApplicationType, EventTypeMetadata> metadata = appType => new EventTypeMetadata(
-                eventTypeName, @base.ModuleName, EventTypeTypeClass.DBDERIVED, appType, NameAccessModifier.TRANSIENT,
-                EventTypeBusModifier.NONBUS, false, EventTypeIdPair.Unassigned());
+                eventTypeName,
+                @base.ModuleName,
+                EventTypeTypeClass.DBDERIVED,
+                appType,
+                NameAccessModifier.TRANSIENT,
+                EventTypeBusModifier.NONBUS,
+                false,
+                EventTypeIdPair.Unassigned());
             if (outputRowConversionHook == null) {
                 eventType = BaseNestableEventUtil.MakeMapTypeCompileTime(
-                    metadata.Invoke(EventTypeApplicationType.MAP), eventTypeFields, null, null, null, null,
-                    services.BeanEventTypeFactoryPrivate, services.EventTypeCompileTimeResolver);
+                    metadata.Invoke(EventTypeApplicationType.MAP),
+                    eventTypeFields,
+                    null,
+                    null,
+                    null,
+                    null,
+                    services.BeanEventTypeFactoryPrivate,
+                    services.EventTypeCompileTimeResolver);
             }
             else {
                 var carrierClass = outputRowConversionHook.GetOutputRowType(
                     new SQLOutputRowTypeContext(
-                        databaseStreamSpec.DatabaseName, databaseStreamSpec.SqlWithSubsParams, eventTypeFields));
+                        databaseStreamSpec.DatabaseName,
+                        databaseStreamSpec.SqlWithSubsParams,
+                        eventTypeFields));
                 if (carrierClass == null) {
                     throw new ExprValidationException("Output row conversion hook returned no type");
                 }
@@ -158,10 +179,13 @@ namespace com.espertech.esper.common.@internal.epl.historical.database.core
                 var stem = services.BeanEventTypeStemService.GetCreateStem(carrierClass, null);
                 eventType = new BeanEventType(
                     services.Container,
-                    stem, 
-                    metadata.Invoke(EventTypeApplicationType.CLASS), 
-                    services.BeanEventTypeFactoryPrivate, null,
-                    null, null, null);
+                    stem,
+                    metadata.Invoke(EventTypeApplicationType.CLASS),
+                    services.BeanEventTypeFactoryPrivate,
+                    null,
+                    null,
+                    null,
+                    null);
             }
 
             return eventType;
@@ -198,7 +222,8 @@ namespace com.espertech.esper.common.@internal.epl.historical.database.core
                         new SQLColumnTypeContext(
                             databaseStreamSpec.DatabaseName,
                             databaseStreamSpec.SqlWithSubsParams,
-                            name, clazz,
+                            name,
+                            clazz,
                             dbOutputDesc.SqlType,
                             columnNum));
 
@@ -301,7 +326,10 @@ namespace com.espertech.esper.common.@internal.epl.historical.database.core
 
                     // finally get the metadata by firing the sample SQL
                     queryMetaData = GetExampleQueryMetaData(
-                        dbCommand.Driver, sampleSQL, metadataSetting, contextAttributes);
+                        dbCommand.Driver,
+                        sampleSQL,
+                        metadataSetting,
+                        contextAttributes);
                     break;
                 }
 

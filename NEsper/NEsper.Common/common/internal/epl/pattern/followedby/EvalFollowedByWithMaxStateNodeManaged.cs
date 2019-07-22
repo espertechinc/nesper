@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.hook.condition;
 using com.espertech.esper.common.@internal.context.util;
@@ -69,7 +70,9 @@ namespace com.espertech.esper.common.@internal.epl.pattern.followedby
 
             AgentInstanceContext agentInstanceContext = evalFollowedByNode.Context.AgentInstanceContext;
             agentInstanceContext.InstrumentationProvider.QPatternFollowedByEvaluateTrue(
-                evalFollowedByNode.factoryNode, matchEvent, index);
+                evalFollowedByNode.factoryNode,
+                matchEvent,
+                index);
 
             if (isQuitted) {
                 nodes.Remove(fromNode);
@@ -82,7 +85,8 @@ namespace com.espertech.esper.common.@internal.epl.pattern.followedby
                         PatternSubexpressionPoolStmtSvc poolSvc =
                             evalFollowedByNode.Context.StatementContext.PatternSubexpressionPoolSvc;
                         poolSvc.RuntimeSvc.DecreaseCount(
-                            evalFollowedByNode, evalFollowedByNode.Context.AgentInstanceContext);
+                            evalFollowedByNode,
+                            evalFollowedByNode.Context.AgentInstanceContext);
                         poolSvc.StmtHandler.DecreaseCount();
                     }
                 }
@@ -102,11 +106,17 @@ namespace com.espertech.esper.common.@internal.epl.pattern.followedby
                 if (nodes.IsEmpty()) {
                     isFollowedByQuitted = true;
                     agentInstanceContext.AuditProvider.PatternInstance(
-                        false, evalFollowedByNode.factoryNode, agentInstanceContext);
+                        false,
+                        evalFollowedByNode.factoryNode,
+                        agentInstanceContext);
                 }
 
                 agentInstanceContext.AuditProvider.PatternTrue(
-                    evalFollowedByNode.FactoryNode, this, matchEvent, isFollowedByQuitted, agentInstanceContext);
+                    evalFollowedByNode.FactoryNode,
+                    this,
+                    matchEvent,
+                    isFollowedByQuitted,
+                    agentInstanceContext);
                 this.ParentEvaluator.EvaluateTrue(matchEvent, this, isFollowedByQuitted, optionalTriggeringEvent);
             }
             else {
@@ -117,7 +127,7 @@ namespace com.espertech.esper.common.@internal.epl.pattern.followedby
                         if (countActivePerChild[index] >= max) {
                             evalFollowedByNode.Context.AgentInstanceContext.StatementContext.ExceptionHandlingService
                                 .HandleCondition(
-                                    new ConditionPatternSubexpressionMax(max), 
+                                    new ConditionPatternSubexpressionMax(max),
                                     evalFollowedByNode.Context.AgentInstanceContext.StatementContext);
                             return;
                         }
@@ -128,7 +138,8 @@ namespace com.espertech.esper.common.@internal.epl.pattern.followedby
                     PatternSubexpressionPoolStmtSvc poolSvc =
                         evalFollowedByNode.Context.StatementContext.PatternSubexpressionPoolSvc;
                     bool allow = poolSvc.RuntimeSvc.TryIncreaseCount(
-                        evalFollowedByNode, evalFollowedByNode.Context.AgentInstanceContext);
+                        evalFollowedByNode,
+                        evalFollowedByNode.Context.AgentInstanceContext);
                     if (!allow) {
                         return;
                     }
@@ -171,14 +182,17 @@ namespace com.espertech.esper.common.@internal.epl.pattern.followedby
                     PatternSubexpressionPoolStmtSvc poolSvc =
                         evalFollowedByNode.Context.StatementContext.PatternSubexpressionPoolSvc;
                     poolSvc.RuntimeSvc.DecreaseCount(
-                        evalFollowedByNode, evalFollowedByNode.Context.AgentInstanceContext);
+                        evalFollowedByNode,
+                        evalFollowedByNode.Context.AgentInstanceContext);
                     poolSvc.StmtHandler.DecreaseCount();
                 }
             }
 
             if (nodes.IsEmpty()) {
                 agentInstanceContext.AuditProvider.PatternFalse(
-                    evalFollowedByNode.FactoryNode, this, agentInstanceContext);
+                    evalFollowedByNode.FactoryNode,
+                    this,
+                    agentInstanceContext);
                 this.ParentEvaluator.EvaluateFalse(this, true);
                 Quit();
             }
@@ -195,9 +209,12 @@ namespace com.espertech.esper.common.@internal.epl.pattern.followedby
         {
             AgentInstanceContext agentInstanceContext = evalFollowedByNode.Context.AgentInstanceContext;
             agentInstanceContext.InstrumentationProvider.QPatternFollowedByStart(
-                evalFollowedByNode.factoryNode, beginState);
+                evalFollowedByNode.factoryNode,
+                beginState);
             agentInstanceContext.AuditProvider.PatternInstance(
-                true, evalFollowedByNode.factoryNode, agentInstanceContext);
+                true,
+                evalFollowedByNode.factoryNode,
+                agentInstanceContext);
 
             var child = evalFollowedByNode.ChildNodes[0];
             var childState = child.NewState(this);
@@ -212,7 +229,9 @@ namespace com.espertech.esper.common.@internal.epl.pattern.followedby
             AgentInstanceContext agentInstanceContext = evalFollowedByNode.Context.AgentInstanceContext;
             agentInstanceContext.InstrumentationProvider.QPatternFollowedByQuit(evalFollowedByNode.factoryNode);
             agentInstanceContext.AuditProvider.PatternInstance(
-                false, evalFollowedByNode.factoryNode, agentInstanceContext);
+                false,
+                evalFollowedByNode.factoryNode,
+                agentInstanceContext);
 
             foreach (var entry in nodes) {
                 entry.Key.Quit();
@@ -221,7 +240,8 @@ namespace com.espertech.esper.common.@internal.epl.pattern.followedby
                         PatternSubexpressionPoolStmtSvc poolSvc =
                             evalFollowedByNode.Context.StatementContext.PatternSubexpressionPoolSvc;
                         poolSvc.RuntimeSvc.DecreaseCount(
-                            evalFollowedByNode, evalFollowedByNode.Context.AgentInstanceContext);
+                            evalFollowedByNode,
+                            evalFollowedByNode.Context.AgentInstanceContext);
                         poolSvc.StmtHandler.DecreaseCount();
                     }
                 }

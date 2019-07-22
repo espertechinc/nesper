@@ -45,8 +45,13 @@ namespace NEsper.Avro.Writer
             CodegenMethodScope parent,
             CodegenClassScope classScope)
         {
-            return CodegenExpressionBuilder.StaticMethod(typeof(AvroEventBeanPropertyWriterMapProp),
-                "AvroWriteMapProp", assigned, und, CodegenExpressionBuilder.Constant(_key), CodegenExpressionBuilder.Constant(index));
+            return CodegenExpressionBuilder.StaticMethod(
+                typeof(AvroEventBeanPropertyWriterMapProp),
+                "AvroWriteMapProp",
+                assigned,
+                und,
+                CodegenExpressionBuilder.Constant(_key),
+                CodegenExpressionBuilder.Constant(index));
         }
 
         /// <summary>
@@ -63,8 +68,7 @@ namespace NEsper.Avro.Writer
             Field index)
         {
             object val = record.Get(index);
-            if (val != null && val is IDictionary<string, object>)
-            {
+            if (val != null && val is IDictionary<string, object>) {
                 var map = (IDictionary<string, object>) val;
                 map.Put(key, value);
             }

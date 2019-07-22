@@ -10,6 +10,7 @@ using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 using static com.espertech.esper.common.@internal.epl.expression.codegen.CodegenLegoCompareEquals;
 
@@ -59,7 +60,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             var rhsType = rhs.EvaluationType;
 
             var methodNode = codegenMethodScope.MakeChild(
-                typeof(bool?), typeof(ExprEqualsNodeForgeNCEvalEquals), codegenClassScope);
+                typeof(bool?),
+                typeof(ExprEqualsNodeForgeNCEvalEquals),
+                codegenClassScope);
             var block = methodNode.Block
                 .DeclareVar(lhsType, "left", lhs.EvaluateCodegen(lhsType, methodNode, exprSymbol, codegenClassScope))
                 .DeclareVar(rhsType, "right", rhs.EvaluateCodegen(rhsType, methodNode, exprSymbol, codegenClassScope));

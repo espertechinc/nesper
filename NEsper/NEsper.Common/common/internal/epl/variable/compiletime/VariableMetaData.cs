@@ -7,10 +7,12 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.@event.core;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.variable.compiletime
@@ -76,15 +78,19 @@ namespace com.espertech.esper.common.@internal.epl.variable.compiletime
         public CodegenExpression Make(CodegenExpressionRef addInitSvc)
         {
             return NewInstance<VariableMetaData>(
-                Constant(VariableName), Constant(VariableModuleName),
+                Constant(VariableName),
+                Constant(VariableModuleName),
                 Constant(VariableVisibility),
                 Constant(OptionalContextName),
                 Constant(OptionalContextVisibility),
                 Constant(OptionalContextModule),
                 Constant(Type),
                 EventType == null ? ConstantNull() : EventTypeUtility.ResolveTypeCodegen(EventType, addInitSvc),
-                Constant(IsPreconfigured), Constant(IsConstant), Constant(IsCompileTimeConstant),
-                Constant(ValueWhenAvailable), Constant(false));
+                Constant(IsPreconfigured),
+                Constant(IsConstant),
+                Constant(IsCompileTimeConstant),
+                Constant(ValueWhenAvailable),
+                Constant(false));
         }
     }
 } // end of namespace

@@ -8,6 +8,7 @@
 
 using System;
 using System.IO;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
@@ -19,6 +20,7 @@ using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.metrics.instrumentation;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.expression.agg.@base
@@ -136,7 +138,13 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.@base
             CodegenClassScope codegenClassScope)
         {
             return new InstrumentationBuilderExpr(
-                GetType(), this, "ExprAggValue", requiredType, parent, exprSymbol, codegenClassScope).Build();
+                GetType(),
+                this,
+                "ExprAggValue",
+                requiredType,
+                parent,
+                exprSymbol,
+                codegenClassScope).Build();
         }
 
         public override ExprForge Forge => this;
@@ -192,9 +200,13 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.@base
         {
             var future = GetAggFuture(codegenClassScope);
             var eval = ExprDotMethod(
-                future, "getValue", Constant(column),
-                ExprDotMethod(exprSymbol.GetAddExprEvalCtx(parent), "getAgentInstanceId"), exprSymbol.GetAddEPS(parent),
-                exprSymbol.GetAddIsNewData(parent), exprSymbol.GetAddExprEvalCtx(parent));
+                future,
+                "getValue",
+                Constant(column),
+                ExprDotMethod(exprSymbol.GetAddExprEvalCtx(parent), "getAgentInstanceId"),
+                exprSymbol.GetAddEPS(parent),
+                exprSymbol.GetAddIsNewData(parent),
+                exprSymbol.GetAddExprEvalCtx(parent));
             if (requiredType == typeof(object)) {
                 return eval;
             }
@@ -262,7 +274,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.@base
                 throw new ExprValidationException(
                     "Implicit conversion from datatype '" +
                     (childType == null ? "null" : childType.GetSimpleName()) +
-                    "' to numeric is not allowed for aggregation function '" + AggregationFunctionName + "'");
+                    "' to numeric is not allowed for aggregation function '" +
+                    AggregationFunctionName +
+                    "'");
             }
 
             return childType;
@@ -330,7 +344,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.@base
         protected internal CodegenExpression GetAggFuture(CodegenClassScope codegenClassScope)
         {
             return codegenClassScope.NamespaceScope.AddOrGetFieldWellKnown(
-                aggregationResultFutureMemberName, typeof(AggregationResultFuture));
+                aggregationResultFutureMemberName,
+                typeof(AggregationResultFuture));
         }
     }
 } // end of namespace

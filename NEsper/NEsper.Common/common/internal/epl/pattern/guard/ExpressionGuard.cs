@@ -60,7 +60,8 @@ namespace com.espertech.esper.common.@internal.epl.pattern.guard
             }
             catch (EPRuntimeException ex) {
                 var message = "Failed to evaluate expression for pattern-guard for statement '" +
-                              quitable.Context.AgentInstanceContext.StatementName + "'";
+                              quitable.Context.AgentInstanceContext.StatementName +
+                              "'";
                 if (ex.Message != null) {
                     message += ": " + ex.Message;
                 }

@@ -41,10 +41,14 @@ namespace com.espertech.esper.common.@internal.epl.resultset.@select.core
             {
                 var methodNode = codegenMethodScope.MakeChild(typeof(EventBean), GetType(), codegenClassScope);
                 var manufacturer = codegenClassScope.AddFieldUnshared(
-                    true, typeof(EventBeanManufacturer), eventManufacturer.Make(codegenMethodScope, codegenClassScope));
+                    true,
+                    typeof(EventBeanManufacturer),
+                    eventManufacturer.Make(codegenMethodScope, codegenClassScope));
                 methodNode.Block.MethodReturn(
                     CodegenExpressionBuilder.ExprDotMethod(
-                        manufacturer, "make", CodegenExpressionBuilder.PublicConstValue(typeof(CollectionUtil), "OBJECTARRAY_EMPTY")));
+                        manufacturer,
+                        "make",
+                        CodegenExpressionBuilder.PublicConstValue(typeof(CollectionUtil), "OBJECTARRAY_EMPTY")));
                 return methodNode;
             }
         }

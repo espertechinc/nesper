@@ -304,15 +304,15 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             public void Run(RegressionEnvironment env)
             {
                 var epl = "@Name('s0') select irstream " +
-                          "avg(price) as avgPrice," +
-                          "sum(price) as sumPrice," +
-                          "min(price) as minPrice," +
-                          "max(price) as maxPrice," +
-                          "median(price) as medianPrice," +
-                          "stddev(price) as stddevPrice," +
-                          "avedev(price) as avedevPrice," +
+                          "avg(Price) as avgPrice," +
+                          "sum(Price) as sumPrice," +
+                          "min(Price) as minPrice," +
+                          "max(Price) as maxPrice," +
+                          "median(Price) as medianPrice," +
+                          "stddev(Price) as stddevPrice," +
+                          "avedev(Price) as avedevPrice," +
                           "count(*) as datacount, " +
-                          "count(distinct price) as countDistinctPrice " +
+                          "count(distinct Price) as countDistinctPrice " +
                           "from SupportMarketDataBean";
                 env.CompileDeploy(epl).AddListener("s0");
 
@@ -413,8 +413,8 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             public void Run(RegressionEnvironment env)
             {
                 var epl = "@Name('s0') select irstream " +
-                          "min(price) as minPrice," +
-                          "max(price) as maxPrice " +
+                          "min(Price) as minPrice," +
+                          "max(Price) as maxPrice " +
                           "from  SupportMarketDataBean#length(2)";
                 env.CompileDeploy(epl).AddListener("s0");
 
@@ -507,7 +507,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@Name('s0') select irstream avg(price) as avgp, sym " +
+                var epl = "@Name('s0') select irstream avg(Price) as avgp, sym " +
                           "from SupportPriceEvent#groupwin(sym)#length(2)";
                 env.CompileDeploy(epl).AddListener("s0");
 
@@ -565,7 +565,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
         {
             public void Run(RegressionEnvironment env)
             {
-                var stmtText = "@Name('s0') select istream price from SupportMarketDataBean#groupwin(Symbol)#length(2)";
+                var stmtText = "@Name('s0') select istream Price from SupportMarketDataBean#groupwin(Symbol)#length(2)";
                 env.CompileDeploy(stmtText).AddListener("s0");
 
                 SendEvent(env, "A", 1);
@@ -580,19 +580,19 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
         {
             public void Run(RegressionEnvironment env)
             {
-                var stmtText = "@Name('s0') select istream avg(price) as aprice from SupportMarketDataBean" +
+                var stmtText = "@Name('s0') select istream avg(Price) as aPrice from SupportMarketDataBean" +
                                "#groupwin(Symbol)#length(2)";
                 env.CompileDeploy(stmtText).AddListener("s0");
 
                 SendEvent(env, "A", 1);
                 Assert.IsTrue(env.Listener("s0").GetAndClearIsInvoked());
-                Assert.AreEqual(1.0, env.Listener("s0").LastNewData[0].Get("aprice"));
+                Assert.AreEqual(1.0, env.Listener("s0").LastNewData[0].Get("aPrice"));
 
                 env.Milestone(0);
 
                 SendEvent(env, "B", 3);
                 Assert.IsTrue(env.Listener("s0").GetAndClearIsInvoked());
-                Assert.AreEqual(2.0, env.Listener("s0").LastNewData[0].Get("aprice"));
+                Assert.AreEqual(2.0, env.Listener("s0").LastNewData[0].Get("aPrice"));
 
                 env.UndeployAll();
             }
@@ -602,25 +602,25 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
         {
             public void Run(RegressionEnvironment env)
             {
-                var stmtText = "@Name('s0') select istream average as aprice from SupportMarketDataBean" +
-                               "#groupwin(Symbol)#length(2)#uni(price)";
+                var stmtText = "@Name('s0') select istream average as aPrice from SupportMarketDataBean" +
+                               "#groupwin(Symbol)#length(2)#uni(Price)";
                 env.CompileDeploy(stmtText).AddListener("s0");
 
                 SendEvent(env, "A", 1);
                 Assert.IsTrue(env.Listener("s0").GetAndClearIsInvoked());
                 Assert.AreEqual(1, env.Listener("s0").LastNewData.Length);
-                Assert.AreEqual(1.0, env.Listener("s0").LastNewData[0].Get("aprice"));
+                Assert.AreEqual(1.0, env.Listener("s0").LastNewData[0].Get("aPrice"));
 
                 env.Milestone(0);
 
                 SendEvent(env, "B", 3);
                 Assert.IsTrue(env.Listener("s0").GetAndClearIsInvoked());
                 Assert.AreEqual(1, env.Listener("s0").LastNewData.Length);
-                Assert.AreEqual(3.0, env.Listener("s0").LastNewData[0].Get("aprice"));
+                Assert.AreEqual(3.0, env.Listener("s0").LastNewData[0].Get("aPrice"));
                 SendEvent(env, "A", 3);
                 Assert.IsTrue(env.Listener("s0").GetAndClearIsInvoked());
                 Assert.AreEqual(1, env.Listener("s0").LastNewData.Length);
-                Assert.AreEqual(2.0, env.Listener("s0").LastNewData[0].Get("aprice"));
+                Assert.AreEqual(2.0, env.Listener("s0").LastNewData[0].Get("aPrice"));
 
                 env.Milestone(1);
 
@@ -628,7 +628,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
                 SendEvent(env, "A", 20);
                 Assert.IsTrue(env.Listener("s0").GetAndClearIsInvoked());
                 Assert.AreEqual(1, env.Listener("s0").LastNewData.Length);
-                Assert.AreEqual(15.0, env.Listener("s0").LastNewData[0].Get("aprice"));
+                Assert.AreEqual(15.0, env.Listener("s0").LastNewData[0].Get("aPrice"));
 
                 env.UndeployAll();
             }

@@ -8,11 +8,13 @@
 
 using System;
 using System.Reflection;
+
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.historical.method.poll
@@ -35,9 +37,14 @@ namespace com.espertech.esper.common.@internal.epl.historical.method.poll
             SAIFFInitializeSymbol symbols,
             CodegenClassScope classScope)
         {
-            CodegenMethod method = parent.MakeChild(typeof(MethodTargetStrategyStaticMethod), this.GetType(), classScope);
+            CodegenMethod method = parent.MakeChild(
+                typeof(MethodTargetStrategyStaticMethod),
+                this.GetType(),
+                classScope);
             method.Block
-                .DeclareVar(typeof(MethodTargetStrategyStaticMethod), "target", NewInstance(typeof(MethodTargetStrategyStaticMethod)))
+                .DeclareVar<MethodTargetStrategyStaticMethod>(
+                    "target",
+                    NewInstance(typeof(MethodTargetStrategyStaticMethod)))
                 .SetProperty(Ref("target"), "Clazz", Constant(clazz))
                 .SetProperty(Ref("target"), "MethodName", Constant(reflectionMethod.Name))
                 .SetProperty(Ref("target"), "MethodParameters", Constant(reflectionMethod.GetParameterTypes()))

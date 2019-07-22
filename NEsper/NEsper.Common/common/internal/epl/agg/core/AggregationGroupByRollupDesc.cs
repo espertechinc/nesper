@@ -8,6 +8,7 @@
 
 using System.Collections.Generic;
 using System.Linq;
+
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 
 namespace com.espertech.esper.common.@internal.epl.agg.core
@@ -56,7 +57,8 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
 
             return CodegenExpressionBuilder.NewInstance<AggregationGroupByRollupDesc>(
                 CodegenExpressionBuilder.NewArrayWithInit(
-                    typeof(AggregationGroupByRollupLevel), level));
+                    typeof(AggregationGroupByRollupLevel),
+                    level));
         }
     }
 }

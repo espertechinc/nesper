@@ -14,6 +14,7 @@ using com.espertech.esper.common.@internal.epl.expression.time.eval;
 using com.espertech.esper.common.@internal.epl.expression.time.node;
 using com.espertech.esper.common.@internal.schedule;
 using com.espertech.esper.compat;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.compile.stage1.spec
@@ -44,11 +45,11 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
 
             var method = parent.MakeChild(typeof(ContextConditionDescriptorTimePeriod), GetType(), classScope);
             method.Block
-                .DeclareVar(
-                    typeof(ContextConditionDescriptorTimePeriod), "condition",
+                .DeclareVar<ContextConditionDescriptorTimePeriod>(
+                    "condition",
                     NewInstance(typeof(ContextConditionDescriptorTimePeriod)))
-                .DeclareVar(
-                    typeof(TimePeriodCompute), "eval",
+                .DeclareVar<TimePeriodCompute>(
+                    "eval",
                     TimePeriod.TimePeriodComputeForge.MakeEvaluator(method, classScope))
                 .SetProperty(Ref("condition"), "TimePeriodCompute", Ref("eval"))
                 .SetProperty(Ref("condition"), "ScheduleCallbackId", Constant(ScheduleCallbackId))

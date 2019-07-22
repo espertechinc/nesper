@@ -7,9 +7,11 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.resultset.codegen
@@ -34,13 +36,26 @@ namespace com.espertech.esper.common.@internal.epl.resultset.codegen
         public const string NAME_HAVINGEVALUATOR_ARRAYNONMEMBER = "havingEvaluatorArray";
         public const string NAME_HAVINGEVALUATOR_ARRAY_MEMBER = "o." + NAME_HAVINGEVALUATOR_ARRAYNONMEMBER;
 
-        public readonly static CodegenExpressionRef REF_AGENTINSTANCECONTEXT = new CodegenExpressionRef(NAME_AGENTINSTANCECONTEXT);
-        public readonly static CodegenExpressionRef REF_SELECTEXPRPROCESSOR = new CodegenExpressionRef(NAME_SELECTEXPRPROCESSOR_MEMBER);
-        public readonly static CodegenExpressionRef REF_SELECTEXPRPROCESSOR_ARRAY = new CodegenExpressionRef(NAME_SELECTEXPRPROCESSOR_ARRAY);
-        public readonly static CodegenExpressionRef REF_HAVINGEVALUATOR_ARRAY = new CodegenExpressionRef(NAME_HAVINGEVALUATOR_ARRAY_MEMBER);
-        public readonly static CodegenExpressionRef REF_SELECTEXPRNONMEMBER = new CodegenExpressionRef(NAME_SELECTEXPRPROCESSOR);
+        public readonly static CodegenExpressionRef REF_AGENTINSTANCECONTEXT =
+            new CodegenExpressionRef(NAME_AGENTINSTANCECONTEXT);
+
+        public readonly static CodegenExpressionRef REF_SELECTEXPRPROCESSOR =
+            new CodegenExpressionRef(NAME_SELECTEXPRPROCESSOR_MEMBER);
+
+        public readonly static CodegenExpressionRef REF_SELECTEXPRPROCESSOR_ARRAY =
+            new CodegenExpressionRef(NAME_SELECTEXPRPROCESSOR_ARRAY);
+
+        public readonly static CodegenExpressionRef REF_HAVINGEVALUATOR_ARRAY =
+            new CodegenExpressionRef(NAME_HAVINGEVALUATOR_ARRAY_MEMBER);
+
+        public readonly static CodegenExpressionRef REF_SELECTEXPRNONMEMBER =
+            new CodegenExpressionRef(NAME_SELECTEXPRPROCESSOR);
+
         public readonly static CodegenExpressionRef REF_AGGREGATIONSVC = new CodegenExpressionRef(NAME_AGGREGATIONSVC);
-        public readonly static CodegenExpressionRef REF_ORDERBYPROCESSOR = new CodegenExpressionRef(NAME_ORDERBYPROCESSOR);
+
+        public readonly static CodegenExpressionRef REF_ORDERBYPROCESSOR =
+            new CodegenExpressionRef(NAME_ORDERBYPROCESSOR);
+
         public readonly static CodegenExpressionRef REF_NEWDATA = @Ref(NAME_NEWDATA);
         public readonly static CodegenExpressionRef REF_OLDDATA = @Ref(NAME_OLDDATA);
         public readonly static CodegenExpressionRef REF_ISSYNTHESIZE = @Ref(NAME_ISSYNTHESIZE);

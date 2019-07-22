@@ -40,7 +40,12 @@ namespace com.espertech.esper.common.@internal.@event.map
 
         public override object HandleNestedValueFragment(object value)
         {
-            return BaseNestableEventUtil.HandleBNNestedValueArrayWithMapFragment(value, index, getter, eventBeanTypedEventFactory, fragmentType);
+            return BaseNestableEventUtil.HandleBNNestedValueArrayWithMapFragment(
+                value,
+                index,
+                getter,
+                eventBeanTypedEventFactory,
+                fragmentType);
         }
 
         public override CodegenExpression HandleNestedValueCodegen(
@@ -49,7 +54,12 @@ namespace com.espertech.esper.common.@internal.@event.map
             CodegenClassScope codegenClassScope)
         {
             return BaseNestableEventUtil.HandleNestedValueArrayWithMapCode(
-                index, getter, name, codegenMethodScope, codegenClassScope, GetType());
+                index,
+                getter,
+                name,
+                codegenMethodScope,
+                codegenClassScope,
+                GetType());
         }
 
         public override CodegenExpression HandleNestedValueFragmentCodegen(
@@ -58,7 +68,14 @@ namespace com.espertech.esper.common.@internal.@event.map
             CodegenClassScope codegenClassScope)
         {
             return BaseNestableEventUtil.HandleBNNestedValueArrayWithMapFragmentCode(
-                index, getter, name, codegenMethodScope, codegenClassScope, eventBeanTypedEventFactory, fragmentType, GetType());
+                index,
+                getter,
+                name,
+                codegenMethodScope,
+                codegenClassScope,
+                eventBeanTypedEventFactory,
+                fragmentType,
+                GetType());
         }
     }
 } // end of namespace

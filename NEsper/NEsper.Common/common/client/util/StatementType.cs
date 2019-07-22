@@ -81,17 +81,16 @@ namespace com.espertech.esper.common.client.util
         /// Returns true for on-action statements that operate against named windows or tables.
         /// </summary>
         /// <param name="statementType">Type of the statement.</param>
-
         public static bool IsOnTriggerInfra(this StatementType statementType)
         {
-            switch (statementType)
-            {
+            switch (statementType) {
                 case StatementType.ON_SELECT:
                 case StatementType.ON_INSERT:
                 case StatementType.ON_DELETE:
                 case StatementType.ON_MERGE:
                 case StatementType.ON_UPDATE:
                     return true;
+
                 default:
                     return false;
             }

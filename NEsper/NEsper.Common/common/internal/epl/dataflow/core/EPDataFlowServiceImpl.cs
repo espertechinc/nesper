@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+
 using com.espertech.esper.common.client.dataflow.core;
 using com.espertech.esper.common.@internal.context.aifactory.createdataflow;
 using com.espertech.esper.common.@internal.epl.dataflow.realize;
@@ -25,9 +26,14 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.core
 
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-        private readonly IDictionary<string, DataflowDeployment> deployments = new Dictionary<string, DataflowDeployment>();
-        private readonly IDictionary<string, EPDataFlowInstance> instances = new Dictionary<string, EPDataFlowInstance>();
-        private readonly DataFlowConfigurationStateService configurationState = new DataFlowConfigurationStateServiceImpl();
+        private readonly IDictionary<string, DataflowDeployment> deployments =
+            new Dictionary<string, DataflowDeployment>();
+
+        private readonly IDictionary<string, EPDataFlowInstance> instances =
+            new Dictionary<string, EPDataFlowInstance>();
+
+        private readonly DataFlowConfigurationStateService configurationState =
+            new DataFlowConfigurationStateServiceImpl();
 
         private int agentInstanceNumCurrent;
 
@@ -76,7 +82,10 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.core
                 DataflowDesc entry = GetEntryMayNull(deploymentId, dataFlowName);
                 if (entry == null) {
                     throw new EPDataFlowInstantiationException(
-                        "Data flow by name '" + dataFlowName + "' for deployment id '" + deploymentId +
+                        "Data flow by name '" +
+                        dataFlowName +
+                        "' for deployment id '" +
+                        deploymentId +
                         "' has not been defined");
                 }
 
@@ -172,7 +181,9 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.core
                 }
 
                 if (configurationState.Exists(dataflowConfigName)) {
-                    string message = "Data flow saved configuration by name '" + dataflowConfigName + "' already exists";
+                    string message = "Data flow saved configuration by name '" +
+                                     dataflowConfigName +
+                                     "' already exists";
                     throw new EPDataFlowAlreadyExistsException(message);
                 }
 

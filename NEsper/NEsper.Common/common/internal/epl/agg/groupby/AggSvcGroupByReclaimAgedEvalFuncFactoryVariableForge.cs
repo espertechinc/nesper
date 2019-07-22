@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.context.module;
@@ -14,6 +15,7 @@ using com.espertech.esper.common.@internal.epl.variable.compiletime;
 using com.espertech.esper.common.@internal.epl.variable.core;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.agg.groupby
@@ -29,9 +31,12 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupby
 
         public CodegenExpressionField Make(CodegenClassScope classScope)
         {
-            CodegenExpression resolve = VariableDeployTimeResolver.MakeResolveVariable(variableMetaData, EPStatementInitServicesConstants.REF);
+            CodegenExpression resolve = VariableDeployTimeResolver.MakeResolveVariable(
+                variableMetaData,
+                EPStatementInitServicesConstants.REF);
             return classScope.AddFieldUnshared(
-                true, typeof(AggSvcGroupByReclaimAgedEvalFuncFactoryVariable),
+                true,
+                typeof(AggSvcGroupByReclaimAgedEvalFuncFactoryVariable),
                 NewInstance<AggSvcGroupByReclaimAgedEvalFuncFactoryVariable>(resolve));
         }
     }

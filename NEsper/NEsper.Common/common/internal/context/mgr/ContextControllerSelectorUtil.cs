@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.client.context;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat.collections;
@@ -41,7 +42,9 @@ namespace com.espertech.esper.common.@internal.context.mgr
             var expectedList = CollectionUtil.ToString(expected);
             var receivedClass = selector.GetType().FullName;
             var message = "Invalid context partition selector, expected an implementation class of any of [" +
-                          expectedList + "] interfaces but received " + receivedClass;
+                          expectedList +
+                          "] interfaces but received " +
+                          receivedClass;
             return new InvalidContextPartitionSelector(message);
         }
     }

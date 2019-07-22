@@ -7,14 +7,17 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.core;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.agg.core;
 using com.espertech.esper.common.@internal.epl.expression.time.abacus;
 using com.espertech.esper.compat.collections;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
-using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionRelational.CodegenRelational;
+using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionRelational.
+    CodegenRelational;
 using static com.espertech.esper.common.@internal.epl.agg.groupby.AggregationServiceGroupByForge;
 using static com.espertech.esper.common.@internal.epl.expression.codegen.ExprForgeCodegenNames;
 using static com.espertech.esper.common.@internal.epl.resultset.codegen.ResultSetProcessorCodegenNames;
@@ -43,13 +46,19 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupby
         {
             rowMembers.Add(new CodegenTypedParam(typeof(long), "lastUpdateTime"));
             namedMethods.AddMethod(
-                typeof(void), "setLastUpdateTime",
-                CodegenNamedParam.From(typeof(long), "time"), typeof(AggSvcGroupByReclaimAgedImpl),
-                classScope, method => method.Block.AssignRef("lastUpdateTime", Ref("time")));
+                typeof(void),
+                "setLastUpdateTime",
+                CodegenNamedParam.From(typeof(long), "time"),
+                typeof(AggSvcGroupByReclaimAgedImpl),
+                classScope,
+                method => method.Block.AssignRef("lastUpdateTime", Ref("time")));
             namedMethods.AddMethod(
-                typeof(long), "getLastUpdateTime",
-                Collections.GetEmptyList<CodegenNamedParam>(), typeof(AggSvcGroupByReclaimAgedImpl),
-                classScope, method => method.Block.MethodReturn(Ref("lastUpdateTime")));
+                typeof(long),
+                "getLastUpdateTime",
+                Collections.GetEmptyList<CodegenNamedParam>(),
+                typeof(AggSvcGroupByReclaimAgedImpl),
+                classScope,
+                method => method.Block.MethodReturn(Ref("lastUpdateTime")));
         }
 
         public static void CtorCodegenReclaim(
@@ -71,7 +80,8 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupby
                 .AssignRef(REF_CURRENTRECLAIMFREQUENCY, Constant(DEFAULT_MAX_AGE_MSEC))
                 .AssignRef(REF_EVALUATORFUNCTIONMAXAGE, ExprDotMethod(maxAgeFactory, "make", REF_AGENTINSTANCECONTEXT))
                 .AssignRef(
-                    REF_EVALUATIONFUNCTIONFREQUENCY, ExprDotMethod(frequencyFactory, "make", REF_AGENTINSTANCECONTEXT));
+                    REF_EVALUATIONFUNCTIONFREQUENCY,
+                    ExprDotMethod(frequencyFactory, "make", REF_AGENTINSTANCECONTEXT));
         }
 
         public static void ApplyEnterCodegenSweep(
@@ -80,22 +90,28 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupby
             AggregationClassNames classNames)
         {
             var timeAbacus = classScope.AddOrGetFieldSharable(TimeAbacusField.INSTANCE);
-            method.Block.DeclareVar(
-                    typeof(long), "currentTime",
+            method.Block.DeclareVar<long>(
+                    "currentTime",
                     ExprDotMethodChain(REF_EXPREVALCONTEXT).Add("getTimeProvider").Add("getTime"))
                 .IfCondition(Or(EqualsNull(REF_NEXTSWEEPTIME), Relational(REF_NEXTSWEEPTIME, LE, Ref("currentTime"))))
                 .AssignRef(
                     REF_CURRENTMAXAGE,
                     StaticMethod(
-                        typeof(AggSvcGroupByReclaimAgedImpl), "computeTimeReclaimAgeFreq", REF_CURRENTMAXAGE,
-                        REF_EVALUATORFUNCTIONMAXAGE, timeAbacus))
+                        typeof(AggSvcGroupByReclaimAgedImpl),
+                        "computeTimeReclaimAgeFreq",
+                        REF_CURRENTMAXAGE,
+                        REF_EVALUATORFUNCTIONMAXAGE,
+                        timeAbacus))
                 .AssignRef(
                     REF_CURRENTRECLAIMFREQUENCY,
                     StaticMethod(
-                        typeof(AggSvcGroupByReclaimAgedImpl), "computeTimeReclaimAgeFreq", REF_CURRENTRECLAIMFREQUENCY,
-                        REF_EVALUATIONFUNCTIONFREQUENCY, timeAbacus))
+                        typeof(AggSvcGroupByReclaimAgedImpl),
+                        "computeTimeReclaimAgeFreq",
+                        REF_CURRENTRECLAIMFREQUENCY,
+                        REF_EVALUATIONFUNCTIONFREQUENCY,
+                        timeAbacus))
                 .AssignRef(REF_NEXTSWEEPTIME, Op(Ref("currentTime"), "+", REF_CURRENTRECLAIMFREQUENCY))
-                .LocalMethod(SweepCodegen(method, classScope, classNames), Ref("currentTime"), REF_CURRENTMAXAGE);
+                .InstanceMethod(SweepCodegen(method, classScope, classNames), Ref("currentTime"), REF_CURRENTMAXAGE);
         }
 
         /// <summary>
@@ -128,14 +144,19 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupby
                 .AddParam(typeof(long), "currentTime")
                 .AddParam(typeof(long), REF_CURRENTMAXAGE.Ref);
 
-            method.Block.DeclareVar(typeof(ArrayDeque<object>), "removed", NewInstance(typeof(ArrayDeque<object>)))
-                .ForEach(typeof(KeyValuePair<object, object>), "entry", ExprDotMethod(REF_AGGREGATORSPERGROUP, "entrySet"))
-                .DeclareVar(
-                    typeof(long), "age",
+            method.Block.DeclareVar<ArrayDeque<object>>("removed", NewInstance(typeof(ArrayDeque<object>)))
+                .ForEach(
+                    typeof(KeyValuePair<object, object>),
+                    "entry",
+                    ExprDotMethod(REF_AGGREGATORSPERGROUP, "entrySet"))
+                .DeclareVar<long>(
+                    "age",
                     Op(
-                        Ref("currentTime"), "-",
+                        Ref("currentTime"),
+                        "-",
                         ExprDotMethod(
-                            Cast(classNames.RowTop, ExprDotMethod(Ref("entry"), "getValue")), "getLastUpdateTime")))
+                            Cast(classNames.RowTop, ExprDotMethod(Ref("entry"), "getValue")),
+                            "getLastUpdateTime")))
                 .IfCondition(Relational(Ref("age"), GT, REF_CURRENTMAXAGE))
                 .ExprDotMethod(Ref("removed"), "add", ExprDotMethod(Ref("entry"), "getKey"))
                 .BlockEnd()

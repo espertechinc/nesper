@@ -15,6 +15,7 @@ using com.espertech.esper.common.@internal.epl.agg.core;
 using com.espertech.esper.common.@internal.epl.table.compiletime;
 using com.espertech.esper.common.@internal.epl.table.core;
 using com.espertech.esper.common.@internal.@event.core;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 using static com.espertech.esper.common.@internal.epl.expression.codegen.ExprForgeCodegenNames;
 
@@ -44,7 +45,10 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createtable
             // add aggregation row+factory+serde as inner classes
             var aggregationClassNames = new AggregationClassNames();
             var inners = AggregationServiceFactoryCompiler.MakeTable(
-                AggregationCodegenRowLevelDesc.FromTopOnly(plan.AggDesc), GetType(), classScope, aggregationClassNames,
+                AggregationCodegenRowLevelDesc.FromTopOnly(plan.AggDesc),
+                GetType(),
+                classScope,
+                aggregationClassNames,
                 className);
             classScope.AddInnerClasses(inners);
 
@@ -53,23 +57,35 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createtable
             var primaryKeyGetter = ConstantNull();
             if (plan.PrimaryKeyGetters != null) {
                 primaryKeyGetter = EventTypeUtility.CodegenGetterMayMultiKeyWCoerce(
-                    plan.InternalEventType, plan.PrimaryKeyGetters, plan.PrimaryKeyTypes, null, method, GetType(),
+                    plan.InternalEventType,
+                    plan.PrimaryKeyGetters,
+                    plan.PrimaryKeyTypes,
+                    null,
+                    method,
+                    GetType(),
                     classScope);
             }
 
             method.Block
-                .DeclareVar(
-                    typeof(StatementAgentInstanceFactoryCreateTable), "saiff",
+                .DeclareVar<StatementAgentInstanceFactoryCreateTable>(
+                    "saiff",
                     NewInstance(typeof(StatementAgentInstanceFactoryCreateTable)))
                 .SetProperty(Ref("saiff"), "TableName", Constant(tableName))
-                .SetProperty(Ref("saiff"), "PublicEventType",
+                .SetProperty(
+                    Ref("saiff"),
+                    "PublicEventType",
                     EventTypeUtility.ResolveTypeCodegen(plan.PublicEventType, symbols.GetAddInitSvc(method)))
                 .SetProperty(Ref("saiff"), "EventToPublic", MakeEventToPublic(method, symbols, classScope))
-                .SetProperty(Ref("saiff"), "AggregationRowFactory",
+                .SetProperty(
+                    Ref("saiff"),
+                    "AggregationRowFactory",
                     NewInstance(aggregationClassNames.RowFactoryTop, Ref("this")))
-                .SetProperty(Ref("saiff"), "AggregationSerde", NewInstance(aggregationClassNames.RowSerdeTop, Ref("this")))
+                .SetProperty(
+                    Ref("saiff"),
+                    "AggregationSerde",
+                    NewInstance(aggregationClassNames.RowSerdeTop, Ref("this")))
                 .SetProperty(Ref("saiff"), "PrimaryKeyGetter", primaryKeyGetter)
-                .ExprDotMethod(symbols.GetAddInitSvc(method), "addReadyCallback", Ref("saiff"))
+                .ExprDotMethod(symbols.GetAddInitSvc(method), "AddReadyCallback", Ref("saiff"))
                 .MethodReturn(Ref("saiff"));
             return method;
         }
@@ -82,57 +98,79 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createtable
             var method = parent.MakeChild(typeof(TableMetadataInternalEventToPublic), GetType(), classScope);
             var factory = classScope.AddOrGetFieldSharable(EventBeanTypedEventFactoryCodegenField.INSTANCE);
             var eventType = classScope.AddFieldUnshared(
-                true, typeof(EventType),
+                true,
+                typeof(EventType),
                 EventTypeUtility.ResolveTypeCodegen(plan.PublicEventType, EPStatementInitServicesConstants.REF));
 
             var clazz = NewAnonymousClass(method.Block, typeof(TableMetadataInternalEventToPublic));
 
             var convert = CodegenMethod.MakeParentNode(typeof(EventBean), GetType(), classScope)
-                .AddParam(typeof(EventBean), "event").AddParam(PARAMS);
-            clazz.AddMethod("convert", convert);
+                .AddParam(typeof(EventBean), "event")
+                .AddParam(PARAMS);
+            clazz.AddMethod("Convert", convert);
             convert.Block
-                .DeclareVar(
-                    typeof(object[]), "data",
+                .DeclareVar<object[]>(
+                    "data",
                     ExprDotMethod(
-                        Ref("this"), "convertToUnd", Ref("event"), REF_EPS, REF_ISNEWDATA, REF_EXPREVALCONTEXT))
-                .MethodReturn(ExprDotMethod(factory, "adapterForTypedObjectArray", Ref("data"), eventType));
+                        Ref("this"),
+                        "ConvertToUnd",
+                        Ref("event"),
+                        REF_EPS,
+                        REF_ISNEWDATA,
+                        REF_EXPREVALCONTEXT))
+                .MethodReturn(ExprDotMethod(factory, "AdapterForTypedObjectArray", Ref("data"), eventType));
 
             var convertToUnd = CodegenMethod.MakeParentNode(typeof(object[]), GetType(), classScope)
-                .AddParam(typeof(EventBean), "event").AddParam(PARAMS);
-            clazz.AddMethod("convertToUnd", convertToUnd);
+                .AddParam(typeof(EventBean), "event")
+                .AddParam(PARAMS);
+            clazz.AddMethod("ConvertToUnd", convertToUnd);
             convertToUnd.Block
-                .DeclareVar(
-                    typeof(object[]), "props",
+                .DeclareVar<object[]>(
+                    "props",
                     ExprDotMethod(Cast(typeof(ObjectArrayBackedEventBean), Ref("event")), "getProperties"))
-                .DeclareVar(
-                    typeof(object[]), "data",
+                .DeclareVar<object[]>(
+                    "data",
                     NewArrayByLength(typeof(object), Constant(plan.PublicEventType.PropertyNames.Length)));
             foreach (TableMetadataColumnPairPlainCol plain in plan.ColsPlain) {
                 convertToUnd.Block.AssignArrayElement(
-                    Ref("data"), Constant(plain.Dest), ArrayAtIndex(Ref("props"), Constant(plain.Source)));
+                    Ref("data"),
+                    Constant(plain.Dest),
+                    ArrayAtIndex(Ref("props"), Constant(plain.Source)));
             }
 
             if (plan.ColsAggMethod.Length > 0 || plan.ColsAccess.Length > 0) {
-                convertToUnd.Block.DeclareVar(
-                    typeof(AggregationRow), "row",
+                convertToUnd.Block.DeclareVar<AggregationRow>(
+                    "row",
                     Cast(typeof(AggregationRow), ArrayAtIndex(Ref("props"), Constant(0))));
                 var count = 0;
 
                 foreach (TableMetadataColumnPairAggMethod aggMethod in plan.ColsAggMethod) {
                     // Code: data[method.getDest()] = row.getMethods()[count++].getValue();
                     convertToUnd.Block.AssignArrayElement(
-                        Ref("data"), Constant(aggMethod.Dest),
+                        Ref("data"),
+                        Constant(aggMethod.Dest),
                         ExprDotMethod(
-                            Ref("row"), "getValue", Constant(count), REF_EPS, REF_ISNEWDATA, REF_EXPREVALCONTEXT));
+                            Ref("row"),
+                            "getValue",
+                            Constant(count),
+                            REF_EPS,
+                            REF_ISNEWDATA,
+                            REF_EXPREVALCONTEXT));
                     count++;
                 }
 
                 foreach (TableMetadataColumnPairAggAccess aggAccess in plan.ColsAccess) {
                     // Code: data[method.getDest()] = row.getMethods()[count++].getValue();
                     convertToUnd.Block.AssignArrayElement(
-                        Ref("data"), Constant(aggAccess.Dest),
+                        Ref("data"),
+                        Constant(aggAccess.Dest),
                         ExprDotMethod(
-                            Ref("row"), "getValue", Constant(count), REF_EPS, REF_ISNEWDATA, REF_EXPREVALCONTEXT));
+                            Ref("row"),
+                            "getValue",
+                            Constant(count),
+                            REF_EPS,
+                            REF_ISNEWDATA,
+                            REF_EXPREVALCONTEXT));
                     count++;
                 }
             }

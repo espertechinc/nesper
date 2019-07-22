@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -15,6 +16,7 @@ using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.datetime;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.datetime.calop
@@ -89,7 +91,8 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
             CodegenDeclareInts(block, forge, methodNode, exprSymbol, codegenClassScope);
             block.MethodReturn(
                 StaticMethod(
-                    typeof(CalendarWithDateForgeOp), METHOD_ACTIONSETYMDCALENDAR,
+                    typeof(CalendarWithDateForgeOp),
+                    METHOD_ACTIONSETYMDCALENDAR,
                     Ref("value"),
                     Ref("year"),
                     Ref("month"),
@@ -113,7 +116,8 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
             CodegenDeclareInts(block, forge, methodNode, exprSymbol, codegenClassScope);
             block.MethodReturn(
                 StaticMethod(
-                    typeof(CalendarWithDateForgeOp), "ActionSetYMDDateTimeOffset",
+                    typeof(CalendarWithDateForgeOp),
+                    "ActionSetYMDDateTimeOffset",
                     Ref("value"),
                     Ref("year"),
                     Ref("month"),
@@ -136,7 +140,8 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
             CodegenDeclareInts(block, forge, methodNode, exprSymbol, codegenClassScope);
             block.MethodReturn(
                 StaticMethod(
-                    typeof(CalendarWithDateForgeOp), "ActionSetYMDDateTime",
+                    typeof(CalendarWithDateForgeOp),
+                    "ActionSetYMDDateTime",
                     Ref("value"),
                     Ref("year"),
                     Ref("month"),
@@ -254,21 +259,27 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
             var yearType = forge.year.EvaluationType;
             var monthType = forge.month.EvaluationType;
             var dayType = forge.day.EvaluationType;
-            block.DeclareVar(
-                    typeof(int?), "year",
+            block.DeclareVar<int?>(
+                    "year",
                     SimpleNumberCoercerFactory.CoercerInt.CoerceCodegenMayNull(
                         forge.year.EvaluateCodegen(yearType, methodNode, exprSymbol, codegenClassScope),
-                        yearType, methodNode, codegenClassScope))
-                .DeclareVar(
-                    typeof(int?), "month",
+                        yearType,
+                        methodNode,
+                        codegenClassScope))
+                .DeclareVar<int?>(
+                    "month",
                     SimpleNumberCoercerFactory.CoercerInt.CoerceCodegenMayNull(
                         forge.month.EvaluateCodegen(monthType, methodNode, exprSymbol, codegenClassScope),
-                        monthType, methodNode, codegenClassScope))
-                .DeclareVar(
-                    typeof(int?), "day",
+                        monthType,
+                        methodNode,
+                        codegenClassScope))
+                .DeclareVar<int?>(
+                    "day",
                     SimpleNumberCoercerFactory.CoercerInt.CoerceCodegenMayNull(
                         forge.day.EvaluateCodegen(dayType, methodNode, exprSymbol, codegenClassScope),
-                        dayType, methodNode, codegenClassScope));
+                        dayType,
+                        methodNode,
+                        codegenClassScope));
         }
     }
 } // end of namespace

@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.client.configuration.compiler;
 
 namespace com.espertech.esper.common.@internal.settings

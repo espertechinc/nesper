@@ -50,39 +50,35 @@ namespace com.espertech.esper.common.@internal.util
             HashableMultiKey secondValues)
         {
             if (firstValues.Count != _isDescendingValues.Length ||
-                secondValues.Count != _isDescendingValues.Length)
-            {
+                secondValues.Count != _isDescendingValues.Length) {
                 throw new ArgumentException("Incompatible size MultiKey sizes for comparison");
             }
 
-            for (var i = 0; i < firstValues.Count; i++)
-            {
+            for (var i = 0; i < firstValues.Count; i++) {
                 var valueOne = firstValues.Get(i);
                 var valueTwo = secondValues.Get(i);
                 var isDescending = _isDescendingValues[i];
 
-                if (!_stringTypedValue[i])
-                {
+                if (!_stringTypedValue[i]) {
                     var comparisonResult = CompareValues(valueOne, valueTwo, isDescending);
-                    if (comparisonResult != 0)
-                    {
+                    if (comparisonResult != 0) {
                         return comparisonResult;
                     }
                 }
-                else
-                {
+                else {
                     var comparisonResult = CompareValuesCollated(
-                        valueOne, valueTwo, isDescending, _collator);
-                    if (comparisonResult != 0)
-                    {
+                        valueOne,
+                        valueTwo,
+                        isDescending,
+                        _collator);
+                    if (comparisonResult != 0) {
                         return comparisonResult;
                     }
                 }
             }
 
             // Make the comparator compatible with equals
-            if (!firstValues.Equals(secondValues))
-            {
+            if (!firstValues.Equals(secondValues)) {
                 return -1;
             }
 

@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.@join.lookup;
@@ -14,6 +15,7 @@ using com.espertech.esper.common.@internal.epl.@join.queryplan;
 using com.espertech.esper.common.@internal.epl.lookupplansubord;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.compat.collections;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.namedwindow.path
@@ -95,8 +97,11 @@ namespace com.espertech.esper.common.@internal.epl.namedwindow.path
         {
             return NewInstance<NamedWindowMetaData>(
                 EventTypeUtility.ResolveTypeCodegen(EventType, addInitSvc),
-                Constant(NamedWindowModuleName), Constant(ContextName), Constant(Uniqueness),
-                Constant(IsChildBatching), Constant(IsEnableIndexShare),
+                Constant(NamedWindowModuleName),
+                Constant(ContextName),
+                Constant(Uniqueness),
+                Constant(IsChildBatching),
+                Constant(IsEnableIndexShare),
                 OptionalEventTypeAs == null
                     ? ConstantNull()
                     : EventTypeUtility.ResolveTypeCodegen(OptionalEventTypeAs, addInitSvc),

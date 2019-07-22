@@ -7,11 +7,13 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.compat;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 using static com.espertech.esper.common.@internal.epl.expression.codegen.ExprForgeCodegenNames;
 using static com.espertech.esper.common.@internal.epl.expression.subquery.ExprSubselectEvalMatchSymbol;
@@ -48,24 +50,33 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
             method.Block
                 .ApplyTri(
                     new ReturnIfNoMatch(Constant(resultWhenNoMatchingEvents), Constant(resultWhenNoMatchingEvents)),
-                    method, symbols)
+                    method,
+                    symbols)
                 .DeclareVar(
-                    valueEval.EvaluationType, "leftResult",
+                    valueEval.EvaluationType,
+                    "leftResult",
                     valueEval.EvaluateCodegen(valueEval.EvaluationType, parent, symbols, classScope))
                 .ApplyTri(DECLARE_EVENTS_SHIFTED, method, symbols);
 
             var leftResultType = valueEval.EvaluationType.GetBoxedType();
             var nrSymbols = new SubselectForgeNRSymbol(leftResultType);
             var child = parent.MakeChildWithScope(subselect.EvaluationType, GetType(), nrSymbols, classScope)
-                .AddParam(leftResultType, NAME_LEFTRESULT).AddParam(typeof(EventBean[]), NAME_EPS)
+                .AddParam(leftResultType, NAME_LEFTRESULT)
+                .AddParam(typeof(EventBean[]), NAME_EPS)
                 .AddParam(typeof(bool), NAME_ISNEWDATA)
-                .AddParam(typeof(ICollection<object>), NAME_MATCHINGEVENTS).AddParam(
-                    typeof(ExprEvaluatorContext), NAME_EXPREVALCONTEXT);
+                .AddParam(typeof(ICollection<object>), NAME_MATCHINGEVENTS)
+                .AddParam(
+                    typeof(ExprEvaluatorContext),
+                    NAME_EXPREVALCONTEXT);
             child.Block.MethodReturn(CodegenEvaluateInternal(child, nrSymbols, classScope));
             method.Block.MethodReturn(
                 LocalMethod(
-                    child, REF_LEFTRESULT, REF_EVENTS_SHIFTED, symbols.GetAddIsNewData(method),
-                    symbols.GetAddMatchingEvents(method), symbols.GetAddExprEvalCtx(method)));
+                    child,
+                    REF_LEFTRESULT,
+                    REF_EVENTS_SHIFTED,
+                    symbols.GetAddIsNewData(method),
+                    symbols.GetAddMatchingEvents(method),
+                    symbols.GetAddExprEvalCtx(method)));
 
             return LocalMethod(method);
         }

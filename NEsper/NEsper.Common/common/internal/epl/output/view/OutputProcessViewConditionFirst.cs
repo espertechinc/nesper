@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.compile.stage1.spec;
@@ -20,32 +21,32 @@ using com.espertech.esper.common.@internal.epl.resultset.simple;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.metrics.audit;
 using com.espertech.esper.common.@internal.util;
-using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
 
 namespace com.espertech.esper.common.@internal.epl.output.view
 {
     /// <summary>
-    /// Handles output rate limiting for FIRST, only applicable with a having-clause and no group-by clause.
-    /// <para />Without having-clause the order of processing won't matter therefore its handled by the
-    /// <seealso cref="OutputProcessViewConditionDefault" />. With group-by the <seealso cref="ResultSetProcessor" /> handles the per-group first criteria.
+    ///     Handles output rate limiting for FIRST, only applicable with a having-clause and no group-by clause.
+    ///     <para />
+    ///     Without having-clause the order of processing won't matter therefore its handled by the
+    ///     <seealso cref="OutputProcessViewConditionDefault" />. With group-by the <seealso cref="ResultSetProcessor" />
+    ///     handles the per-group first criteria.
     /// </summary>
     public class OutputProcessViewConditionFirst : OutputProcessViewBaseWAfter
     {
-        private readonly OutputProcessViewConditionFactory parent;
-        private readonly OutputCondition outputCondition;
+        private static readonly ILog Log = LogManager.GetLogger(typeof(OutputProcessViewConditionFirst));
+        private readonly OutputCondition _outputCondition;
+        private readonly OutputProcessViewConditionFactory _parent;
+
+        private readonly IList<UniformPair<ISet<MultiKey<EventBean>>>> _joinEventsSet =
+            new List<UniformPair<ISet<MultiKey<EventBean>>>>();
 
         // Posted events in ordered form (for applying to aggregates) and summarized per type
         // Using ArrayList as random access is a requirement.
-        private IList<UniformPair<EventBean[]>> viewEventsList = new List<UniformPair<EventBean[]>>();
+        private readonly IList<UniformPair<EventBean[]>> _viewEventsList = new List<UniformPair<EventBean[]>>();
 
-        private IList<UniformPair<ISet<MultiKey<EventBean>>>> joinEventsSet =
-            new List<UniformPair<ISet<MultiKey<EventBean>>>>();
-
-        private ResultSetProcessorSimpleOutputFirstHelper witnessedFirstHelper;
-
-        private static readonly ILog Log = LogManager.GetLogger(typeof(OutputProcessViewConditionFirst));
+        private readonly ResultSetProcessorSimpleOutputFirstHelper _witnessedFirstHelper;
 
         public OutputProcessViewConditionFirst(
             ResultSetProcessor resultSetProcessor,
@@ -54,27 +55,32 @@ namespace com.espertech.esper.common.@internal.epl.output.view
             bool afterConditionSatisfied,
             OutputProcessViewConditionFactory parent,
             AgentInstanceContext agentInstanceContext)
-            : base(agentInstanceContext, resultSetProcessor, afterConditionTime, afterConditionNumberOfEvents, afterConditionSatisfied)
+            : base(
+                agentInstanceContext,
+                resultSetProcessor,
+                afterConditionTime,
+                afterConditionNumberOfEvents,
+                afterConditionSatisfied)
         {
-            this.parent = parent;
+            _parent = parent;
 
-            OutputCallback outputCallback = GetCallbackToLocal(parent.StreamCount);
-            this.outputCondition =
+            var outputCallback = GetCallbackToLocal(parent.StreamCount);
+            _outputCondition =
                 parent.OutputConditionFactory.InstantiateOutputCondition(agentInstanceContext, outputCallback);
-            witnessedFirstHelper =
+            _witnessedFirstHelper =
                 agentInstanceContext.ResultSetProcessorHelperFactory.MakeRSSimpleOutputFirst(agentInstanceContext);
         }
 
-        public override int NumChangesetRows => Math.Max(viewEventsList.Count, joinEventsSet.Count);
+        public override int NumChangesetRows => Math.Max(_viewEventsList.Count, _joinEventsSet.Count);
 
-        public override OutputCondition OptionalOutputCondition => outputCondition;
+        public override OutputCondition OptionalOutputCondition => _outputCondition;
 
         public OutputProcessViewConditionDeltaSet OptionalDeltaSet => null;
 
         public override OutputProcessViewAfterState OptionalAfterConditionState => null;
 
         /// <summary>
-        /// The update method is called if the view does not participate in a join.
+        ///     The update method is called if the view does not participate in a join.
         /// </summary>
         /// <param name="newData">new events</param>
         /// <param name="oldData">old events</param>
@@ -82,41 +88,46 @@ namespace com.espertech.esper.common.@internal.epl.output.view
             EventBean[] newData,
             EventBean[] oldData)
         {
-            if ((ExecutionPathDebugLog.IsDebugEnabled) && (Log.IsDebugEnabled)) {
+            if (ExecutionPathDebugLog.IsDebugEnabled && Log.IsDebugEnabled) {
                 Log.Debug(
                     ".update Received update, " +
-                    "  newData.length==" + ((newData == null) ? 0 : newData.Length) +
-                    "  oldData.length==" + ((oldData == null) ? 0 : oldData.Length));
+                    "  newData.length==" +
+                    (newData == null ? 0 : newData.Length) +
+                    "  oldData.length==" +
+                    (oldData == null ? 0 : oldData.Length));
             }
 
-            if (!base.CheckAfterCondition(newData, agentInstanceContext.StatementContext)) {
+            if (!CheckAfterCondition(newData, agentInstanceContext.StatementContext)) {
                 return;
             }
 
-            if (!witnessedFirstHelper.WitnessedFirst) {
-                StatementResultService statementResultService = agentInstanceContext.StatementResultService;
-                bool isGenerateSynthetic = statementResultService.IsMakeSynthetic;
+            if (!_witnessedFirstHelper.WitnessedFirst) {
+                var statementResultService = agentInstanceContext.StatementResultService;
+                var isGenerateSynthetic = statementResultService.IsMakeSynthetic;
 
                 // Process the events and get the result
-                viewEventsList.Add(new UniformPair<EventBean[]>(newData, oldData));
-                UniformPair<EventBean[]> newOldEvents =
-                    resultSetProcessor.ProcessOutputLimitedView(viewEventsList, isGenerateSynthetic);
-                viewEventsList.Clear();
+                _viewEventsList.Add(new UniformPair<EventBean[]>(newData, oldData));
+                var newOldEvents =
+                    resultSetProcessor.ProcessOutputLimitedView(_viewEventsList, isGenerateSynthetic);
+                _viewEventsList.Clear();
 
                 if (!HasRelevantResults(newOldEvents)) {
                     return;
                 }
 
-                witnessedFirstHelper.WitnessedFirst = true;
+                _witnessedFirstHelper.WitnessedFirst = true;
 
-                if (parent.IsDistinct) {
-                    newOldEvents.First = EventBeanUtility.GetDistinctByProp(newOldEvents.First, parent.EventBeanReader);
+                if (_parent.IsDistinct) {
+                    newOldEvents.First = EventBeanUtility.GetDistinctByProp(
+                        newOldEvents.First,
+                        _parent.EventBeanReader);
                     newOldEvents.Second = EventBeanUtility.GetDistinctByProp(
-                        newOldEvents.Second, parent.EventBeanReader);
+                        newOldEvents.Second,
+                        _parent.EventBeanReader);
                 }
 
-                bool isGenerateNatural = statementResultService.IsMakeNatural;
-                if ((!isGenerateSynthetic) && (!isGenerateNatural)) {
+                var isGenerateNatural = statementResultService.IsMakeNatural;
+                if (!isGenerateSynthetic && !isGenerateNatural) {
                     if (AuditPath.isAuditEnabled) {
                         OutputStrategyUtil.IndicateEarlyReturn(agentInstanceContext.StatementContext, newOldEvents);
                     }
@@ -127,13 +138,13 @@ namespace com.espertech.esper.common.@internal.epl.output.view
                 Output(true, newOldEvents);
             }
             else {
-                viewEventsList.Add(new UniformPair<EventBean[]>(newData, oldData));
-                resultSetProcessor.ProcessOutputLimitedView(viewEventsList, false);
-                viewEventsList.Clear();
+                _viewEventsList.Add(new UniformPair<EventBean[]>(newData, oldData));
+                resultSetProcessor.ProcessOutputLimitedView(_viewEventsList, false);
+                _viewEventsList.Clear();
             }
 
-            int newDataLength = 0;
-            int oldDataLength = 0;
+            var newDataLength = 0;
+            var oldDataLength = 0;
             if (newData != null) {
                 newDataLength = newData.Length;
             }
@@ -142,11 +153,11 @@ namespace com.espertech.esper.common.@internal.epl.output.view
                 oldDataLength = oldData.Length;
             }
 
-            outputCondition.UpdateOutputCondition(newDataLength, oldDataLength);
+            _outputCondition.UpdateOutputCondition(newDataLength, oldDataLength);
         }
 
         /// <summary>
-        /// This process (update) method is for participation in a join.
+        ///     This process (update) method is for participation in a join.
         /// </summary>
         /// <param name="newEvents">new events</param>
         /// <param name="oldEvents">old events</param>
@@ -155,41 +166,46 @@ namespace com.espertech.esper.common.@internal.epl.output.view
             ISet<MultiKey<EventBean>> oldEvents,
             ExprEvaluatorContext exprEvaluatorContext)
         {
-            if ((ExecutionPathDebugLog.IsDebugEnabled) && (Log.IsDebugEnabled)) {
+            if (ExecutionPathDebugLog.IsDebugEnabled && Log.IsDebugEnabled) {
                 Log.Debug(
                     ".process Received update, " +
-                    "  newData.length==" + ((newEvents == null) ? 0 : newEvents.Count) +
-                    "  oldData.length==" + ((oldEvents == null) ? 0 : oldEvents.Count));
+                    "  newData.length==" +
+                    (newEvents == null ? 0 : newEvents.Count) +
+                    "  oldData.length==" +
+                    (oldEvents == null ? 0 : oldEvents.Count));
             }
 
-            if (!base.CheckAfterCondition(newEvents, agentInstanceContext.StatementContext)) {
+            if (!CheckAfterCondition(newEvents, agentInstanceContext.StatementContext)) {
                 return;
             }
 
             // add the incoming events to the event batches
-            if (!witnessedFirstHelper.WitnessedFirst) {
-                StatementResultService statementResultService = agentInstanceContext.StatementResultService;
+            if (!_witnessedFirstHelper.WitnessedFirst) {
+                var statementResultService = agentInstanceContext.StatementResultService;
 
-                AddToChangeSet(joinEventsSet, newEvents, oldEvents);
-                bool isGenerateSynthetic = statementResultService.IsMakeSynthetic;
-                UniformPair<EventBean[]> newOldEvents = resultSetProcessor
-                    .ProcessOutputLimitedJoin(joinEventsSet, isGenerateSynthetic);
-                joinEventsSet.Clear();
+                AddToChangeSet(_joinEventsSet, newEvents, oldEvents);
+                var isGenerateSynthetic = statementResultService.IsMakeSynthetic;
+                var newOldEvents = resultSetProcessor
+                    .ProcessOutputLimitedJoin(_joinEventsSet, isGenerateSynthetic);
+                _joinEventsSet.Clear();
 
                 if (!HasRelevantResults(newOldEvents)) {
                     return;
                 }
 
-                witnessedFirstHelper.WitnessedFirst = true;
+                _witnessedFirstHelper.WitnessedFirst = true;
 
-                if (parent.IsDistinct) {
-                    newOldEvents.First = EventBeanUtility.GetDistinctByProp(newOldEvents.First, parent.EventBeanReader);
+                if (_parent.IsDistinct) {
+                    newOldEvents.First = EventBeanUtility.GetDistinctByProp(
+                        newOldEvents.First,
+                        _parent.EventBeanReader);
                     newOldEvents.Second = EventBeanUtility.GetDistinctByProp(
-                        newOldEvents.Second, parent.EventBeanReader);
+                        newOldEvents.Second,
+                        _parent.EventBeanReader);
                 }
 
-                bool isGenerateNatural = statementResultService.IsMakeNatural;
-                if ((!isGenerateSynthetic) && (!isGenerateNatural)) {
+                var isGenerateNatural = statementResultService.IsMakeNatural;
+                if (!isGenerateSynthetic && !isGenerateNatural) {
                     if (AuditPath.isAuditEnabled) {
                         OutputStrategyUtil.IndicateEarlyReturn(agentInstanceContext.StatementContext, newOldEvents);
                     }
@@ -200,42 +216,45 @@ namespace com.espertech.esper.common.@internal.epl.output.view
                 Output(true, newOldEvents);
             }
             else {
-                AddToChangeSet(joinEventsSet, newEvents, oldEvents);
+                AddToChangeSet(_joinEventsSet, newEvents, oldEvents);
 
                 // Process the events and get the result
-                resultSetProcessor.ProcessOutputLimitedJoin(joinEventsSet, false);
-                joinEventsSet.Clear();
+                resultSetProcessor.ProcessOutputLimitedJoin(_joinEventsSet, false);
+                _joinEventsSet.Clear();
             }
 
-            int newEventsSize = 0;
+            var newEventsSize = 0;
             if (newEvents != null) {
                 newEventsSize = newEvents.Count;
             }
 
-            int oldEventsSize = 0;
+            var oldEventsSize = 0;
             if (oldEvents != null) {
                 oldEventsSize = oldEvents.Count;
             }
 
-            outputCondition.UpdateOutputCondition(newEventsSize, oldEventsSize);
+            _outputCondition.UpdateOutputCondition(newEventsSize, oldEventsSize);
         }
 
         /// <summary>
-        /// Called once the output condition has been met.
-        /// Invokes the result set processor.
-        /// Used for non-join event data.
+        ///     Called once the output condition has been met.
+        ///     Invokes the result set processor.
+        ///     Used for non-join event data.
         /// </summary>
-        /// <param name="doOutput">true if the batched events should actually be output as well as processed, false if they should just be processed</param>
+        /// <param name="doOutput">
+        ///     true if the batched events should actually be output as well as processed, false if they should
+        ///     just be processed
+        /// </param>
         /// <param name="forceUpdate">true if output should be made even when no updating events have arrived</param>
         protected void ContinueOutputProcessingView(
             bool doOutput,
             bool forceUpdate)
         {
-            if ((ExecutionPathDebugLog.IsDebugEnabled) && (Log.IsDebugEnabled)) {
+            if (ExecutionPathDebugLog.IsDebugEnabled && Log.IsDebugEnabled) {
                 Log.Debug(".continueOutputProcessingView");
             }
 
-            witnessedFirstHelper.WitnessedFirst = false;
+            _witnessedFirstHelper.WitnessedFirst = false;
         }
 
         protected virtual void Output(
@@ -249,21 +268,24 @@ namespace com.espertech.esper.common.@internal.epl.output.view
         }
 
         /// <summary>
-        /// Called once the output condition has been met.
-        /// Invokes the result set processor.
-        /// Used for join event data.
+        ///     Called once the output condition has been met.
+        ///     Invokes the result set processor.
+        ///     Used for join event data.
         /// </summary>
-        /// <param name="doOutput">true if the batched events should actually be output as well as processed, false if they should just be processed</param>
+        /// <param name="doOutput">
+        ///     true if the batched events should actually be output as well as processed, false if they should
+        ///     just be processed
+        /// </param>
         /// <param name="forceUpdate">true if output should be made even when no updating events have arrived</param>
         protected void ContinueOutputProcessingJoin(
             bool doOutput,
             bool forceUpdate)
         {
-            if ((ExecutionPathDebugLog.IsDebugEnabled) && (Log.IsDebugEnabled)) {
+            if (ExecutionPathDebugLog.IsDebugEnabled && Log.IsDebugEnabled) {
                 Log.Debug(".continueOutputProcessingJoin");
             }
 
-            witnessedFirstHelper.WitnessedFirst = false;
+            _witnessedFirstHelper.WitnessedFirst = false;
         }
 
         private OutputCallback GetCallbackToLocal(int streamCount)
@@ -273,29 +295,31 @@ namespace com.espertech.esper.common.@internal.epl.output.view
             if (streamCount == 1) {
                 return ContinueOutputProcessingView;
             }
-            else {
-                return ContinueOutputProcessingJoin;
-            }
+
+            return ContinueOutputProcessingJoin;
         }
 
         public override IEnumerator<EventBean> GetEnumerator()
         {
             return OutputStrategyUtil.GetIterator(
-                joinExecutionStrategy, resultSetProcessor, parentView, parent.IsDistinct);
+                joinExecutionStrategy,
+                resultSetProcessor,
+                parentView,
+                _parent.IsDistinct);
         }
 
         public override void Terminated()
         {
-            if (parent.IsTerminable) {
-                outputCondition.Terminated();
+            if (_parent.IsTerminable) {
+                _outputCondition.Terminated();
             }
         }
 
         public override void Stop(AgentInstanceStopServices services)
         {
             base.Stop(services);
-            outputCondition.StopOutputCondition();
-            witnessedFirstHelper.Destroy();
+            _outputCondition.StopOutputCondition();
+            _witnessedFirstHelper.Destroy();
         }
 
         private bool HasRelevantResults(UniformPair<EventBean[]> newOldEvents)
@@ -304,12 +328,12 @@ namespace com.espertech.esper.common.@internal.epl.output.view
                 return false;
             }
 
-            if (parent.SelectClauseStreamSelectorEnum == SelectClauseStreamSelectorEnum.ISTREAM_ONLY) {
+            if (_parent.SelectClauseStreamSelectorEnum == SelectClauseStreamSelectorEnum.ISTREAM_ONLY) {
                 if (newOldEvents.First == null) {
                     return false; // nothing to indicate
                 }
             }
-            else if (parent.SelectClauseStreamSelectorEnum == SelectClauseStreamSelectorEnum.RSTREAM_ISTREAM_BOTH) {
+            else if (_parent.SelectClauseStreamSelectorEnum == SelectClauseStreamSelectorEnum.RSTREAM_ISTREAM_BOTH) {
                 if (newOldEvents.First == null && newOldEvents.Second == null) {
                     return false; // nothing to indicate
                 }

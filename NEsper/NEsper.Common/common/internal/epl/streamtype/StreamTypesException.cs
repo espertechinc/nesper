@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.collection;
 
 namespace com.espertech.esper.common.@internal.epl.streamtype
@@ -28,6 +29,7 @@ namespace com.espertech.esper.common.@internal.epl.streamtype
         ///     Returns the optional suggestion for a matching name.
         /// </summary>
         /// <value>suggested match</value>
-        public Pair<int, string> OptionalSuggestion => _optionalSuggestionGenerator != null ? _optionalSuggestionGenerator.Suggestion : null;
+        public Pair<int, string> OptionalSuggestion =>
+            _optionalSuggestionGenerator != null ? _optionalSuggestionGenerator.Suggestion : null;
     }
 } // end of namespace

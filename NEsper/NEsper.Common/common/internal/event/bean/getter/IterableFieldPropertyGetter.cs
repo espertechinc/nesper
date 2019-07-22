@@ -8,6 +8,7 @@
 
 using System;
 using System.Reflection;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -16,6 +17,7 @@ using com.espertech.esper.common.@internal.@event.bean.service;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.@event.util;
 using com.espertech.esper.common.@internal.util;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 using static com.espertech.esper.common.@internal.@event.bean.getter.IterableMethodPropertyGetter;
 
@@ -37,7 +39,10 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
             EventBeanTypedEventFactory eventBeanTypedEventFactory,
             BeanEventTypeFactory beanEventTypeFactory)
             : base(
-                eventBeanTypedEventFactory, beanEventTypeFactory, TypeHelper.GetGenericFieldType(field, false), null)
+                eventBeanTypedEventFactory,
+                beanEventTypeFactory,
+                TypeHelper.GetGenericFieldType(field, false),
+                null)
         {
             _index = index;
             _field = field;
@@ -78,7 +83,9 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
             CodegenClassScope codegenClassScope)
         {
             return UnderlyingGetCodegen(
-                CastUnderlying(TargetType, beanExpression), codegenMethodScope, codegenClassScope);
+                CastUnderlying(TargetType, beanExpression),
+                codegenMethodScope,
+                codegenClassScope);
         }
 
         public override CodegenExpression EventBeanExistsCodegen(
@@ -95,7 +102,8 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
             CodegenClassScope codegenClassScope)
         {
             return LocalMethod(
-                GetBeanPropInternalCodegen(codegenMethodScope, codegenClassScope), underlyingExpression,
+                GetBeanPropInternalCodegen(codegenMethodScope, codegenClassScope),
+                underlyingExpression,
                 Constant(_index));
         }
 
@@ -132,21 +140,27 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
             CodegenClassScope codegenClassScope)
         {
             return codegenMethodScope.MakeChild(BeanPropType, GetType(), codegenClassScope)
-                .AddParam(TargetType, "object").AddParam(typeof(int), "index").Block
-                .DeclareVar(typeof(object), "value", ExprDotName(Ref("object"), _field.Name))
+                .AddParam(TargetType, "object")
+                .AddParam(typeof(int), "index")
+                .Block
+                .DeclareVar<object>("value", ExprDotName(Ref("object"), _field.Name))
                 .MethodReturn(
                     Cast(
                         BeanPropType,
                         StaticMethod(
-                            typeof(IterableMethodPropertyGetter), "getBeanEventIterableValue", Ref("value"),
+                            typeof(IterableMethodPropertyGetter),
+                            "getBeanEventIterableValue",
+                            Ref("value"),
                             Ref("index"))));
         }
 
         public override string ToString()
         {
             return "IterableFieldPropertyGetter " +
-                   " field=" + _field +
-                   " index=" + _index;
+                   " field=" +
+                   _field +
+                   " index=" +
+                   _index;
         }
 
         public CodegenExpression EventBeanGetIndexedCodegen(
@@ -157,7 +171,8 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
         {
             return LocalMethod(
                 GetBeanPropInternalCodegen(codegenMethodScope, codegenClassScope),
-                CastUnderlying(TargetType, beanExpression), key);
+                CastUnderlying(TargetType, beanExpression),
+                key);
         }
     }
 } // end of namespace

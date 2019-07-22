@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.@internal.compile.stage1.spec;
 using com.espertech.esper.common.@internal.compile.stage2;
 using com.espertech.esper.common.@internal.compile.stage3;
@@ -60,14 +61,20 @@ namespace com.espertech.esper.common.@internal.epl.output.condition
 
             if (outputLimitSpec.RateType == OutputLimitRateType.CRONTAB) {
                 return new OutputConditionCrontabForge(
-                    outputLimitSpec.CrontabAtSchedule, isStartConditionOnCreation, statementRawInfo, services);
+                    outputLimitSpec.CrontabAtSchedule,
+                    isStartConditionOnCreation,
+                    statementRawInfo,
+                    services);
             }
 
             if (outputLimitSpec.RateType == OutputLimitRateType.WHEN_EXPRESSION) {
                 return new OutputConditionExpressionForge(
-                    outputLimitSpec.WhenExpressionNode, outputLimitSpec.ThenExpressions,
-                    outputLimitSpec.AndAfterTerminateExpr, outputLimitSpec.AndAfterTerminateThenExpressions,
-                    isStartConditionOnCreation, services);
+                    outputLimitSpec.WhenExpressionNode,
+                    outputLimitSpec.ThenExpressions,
+                    outputLimitSpec.AndAfterTerminateExpr,
+                    outputLimitSpec.AndAfterTerminateThenExpressions,
+                    isStartConditionOnCreation,
+                    services);
             }
 
             if (outputLimitSpec.RateType == OutputLimitRateType.EVENTS) {
@@ -96,7 +103,8 @@ namespace com.espertech.esper.common.@internal.epl.output.condition
                     Collections.GetEmptyList<OnTriggerSetAssignment>(),
                     outputLimitSpec.AndAfterTerminateExpr,
                     outputLimitSpec.AndAfterTerminateThenExpressions,
-                    isStartConditionOnCreation, services);
+                    isStartConditionOnCreation,
+                    services);
             }
 
             if (Log.IsDebugEnabled) {

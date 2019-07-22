@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
@@ -72,7 +73,12 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             CodegenClassScope codegenClassScope)
         {
             return new InstrumentationBuilderExpr(
-                    GetType(), this, "ExprEqualsAnyOrAll", requiredType, codegenMethodScope, exprSymbol,
+                    GetType(),
+                    this,
+                    "ExprEqualsAnyOrAll",
+                    requiredType,
+                    codegenMethodScope,
+                    exprSymbol,
                     codegenClassScope)
                 .Build();
         }
@@ -85,11 +91,17 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
         {
             if (ForgeRenderable.IsAll) {
                 return ExprEqualsAllAnyNodeForgeEvalAllWColl.Codegen(
-                    this, codegenMethodScope, exprSymbol, codegenClassScope);
+                    this,
+                    codegenMethodScope,
+                    exprSymbol,
+                    codegenClassScope);
             }
 
             return ExprEqualsAllAnyNodeForgeEvalAnyWColl.Codegen(
-                this, codegenMethodScope, exprSymbol, codegenClassScope);
+                this,
+                codegenMethodScope,
+                exprSymbol,
+                codegenClassScope);
         }
 
         public Type EvaluationType => typeof(bool?);

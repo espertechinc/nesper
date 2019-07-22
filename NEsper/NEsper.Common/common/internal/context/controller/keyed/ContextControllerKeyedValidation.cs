@@ -7,12 +7,14 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Linq;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.compile.stage2;
 using com.espertech.esper.common.@internal.compile.stage3;
 using com.espertech.esper.common.@internal.context.controller.core;
 using com.espertech.esper.compat.function;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.context.controller.keyed
@@ -44,7 +46,9 @@ namespace com.espertech.esper.common.@internal.context.controller.keyed
         {
             ContextControllerForgeUtil.ValidateStatementKeyAndHash(
                 Items.Select(i => (Supplier<EventType>) i.Get).ToArray(),
-                contextName, spec, compileTimeServices);
+                contextName,
+                spec,
+                compileTimeServices);
         }
     }
 } // end of namespace

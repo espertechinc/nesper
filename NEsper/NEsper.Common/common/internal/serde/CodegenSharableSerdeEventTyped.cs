@@ -7,11 +7,13 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.context.module;
 using com.espertech.esper.common.@internal.@event.core;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.serde
@@ -40,7 +42,8 @@ namespace com.espertech.esper.common.@internal.serde
         public CodegenExpression InitCtorScoped()
         {
             var type = EventTypeUtility.ResolveTypeCodegen(eventType, EPStatementInitServicesConstants.REF);
-            return ExprDotMethodChain(EPStatementInitServicesConstants.REF).Add(EPStatementInitServicesConstants.GETDATAINPUTOUTPUTSERDEPROVIDER)
+            return ExprDotMethodChain(EPStatementInitServicesConstants.REF)
+                .Add(EPStatementInitServicesConstants.GETDATAINPUTOUTPUTSERDEPROVIDER)
                 .Add(name.MethodName, type);
         }
 

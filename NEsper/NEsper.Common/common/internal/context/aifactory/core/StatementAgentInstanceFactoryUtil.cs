@@ -25,7 +25,11 @@ namespace com.espertech.esper.common.@internal.context.aifactory.core
             AggregationService aggregationService = null;
             if (resultSetProcessorPrototype.AggregationServiceFactory != null) {
                 aggregationService = resultSetProcessorPrototype.AggregationServiceFactory.MakeService(
-                    agentInstanceContext, null, isSubquery, subqueryNumber, null);
+                    agentInstanceContext,
+                    null,
+                    isSubquery,
+                    subqueryNumber,
+                    null);
             }
 
             OrderByProcessor orderByProcessor = null;
@@ -35,7 +39,9 @@ namespace com.espertech.esper.common.@internal.context.aifactory.core
             }
 
             var resultSetProcessor = resultSetProcessorPrototype.ResultSetProcessorFactory.Instantiate(
-                orderByProcessor, aggregationService, agentInstanceContext);
+                orderByProcessor,
+                aggregationService,
+                agentInstanceContext);
 
             return new Pair<ResultSetProcessor, AggregationService>(resultSetProcessor, aggregationService);
         }

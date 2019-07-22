@@ -12,6 +12,7 @@ using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.@event.core;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.contained
@@ -53,14 +54,21 @@ namespace com.espertech.esper.common.@internal.epl.contained
         {
             var method = parent.MakeChild(typeof(PropertyEvaluatorNested), GetType(), classScope);
             method.Block
-                .DeclareVar(typeof(PropertyEvaluatorNested), "pe", NewInstance(typeof(PropertyEvaluatorNested)))
-                .SetProperty(Ref("pe"), "ResultEventType",
+                .DeclareVar<PropertyEvaluatorNested>("pe", NewInstance(typeof(PropertyEvaluatorNested)))
+                .SetProperty(
+                    Ref("pe"),
+                    "ResultEventType",
                     EventTypeUtility.ResolveTypeCodegen(
-                        fragmentEventTypes[fragmentEventTypes.Length - 1].FragmentType, symbols.GetAddInitSvc(method)))
+                        fragmentEventTypes[fragmentEventTypes.Length - 1].FragmentType,
+                        symbols.GetAddInitSvc(method)))
                 .SetProperty(Ref("pe"), "ExpressionTexts", Constant(expressionTexts))
-                .SetProperty(Ref("pe"), "WhereClauses",
+                .SetProperty(
+                    Ref("pe"),
+                    "WhereClauses",
                     PropertyEvaluatorAccumulativeForge.MakeWhere(whereClauses, method, symbols, classScope))
-                .SetProperty(Ref("pe"), "ContainedEventEvals",
+                .SetProperty(
+                    Ref("pe"),
+                    "ContainedEventEvals",
                     PropertyEvaluatorAccumulativeForge.MakeContained(containedEventEvals, method, symbols, classScope))
                 .SetProperty(Ref("pe"), "FragmentEventTypeIsIndexed", Constant(fragmentEventTypesIsIndexed))
                 .MethodReturn(Ref("pe"));

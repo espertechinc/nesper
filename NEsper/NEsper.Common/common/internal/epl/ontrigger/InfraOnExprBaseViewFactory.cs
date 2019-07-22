@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.context.aifactory.ontrigger.ontrigger;
 using com.espertech.esper.common.@internal.context.util;

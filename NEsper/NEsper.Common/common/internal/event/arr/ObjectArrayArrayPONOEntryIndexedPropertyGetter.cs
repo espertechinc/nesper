@@ -7,14 +7,17 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.@event.bean.getter;
 using com.espertech.esper.common.@internal.@event.bean.service;
 using com.espertech.esper.common.@internal.@event.core;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
-using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionRelational.CodegenRelational;
+using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionRelational.
+    CodegenRelational;
 
 namespace com.espertech.esper.common.@internal.@event.arr
 {
@@ -79,7 +82,9 @@ namespace com.espertech.esper.common.@internal.@event.arr
             CodegenClassScope codegenClassScope)
         {
             return UnderlyingGetCodegen(
-                CastUnderlying(typeof(object[]), beanExpression), codegenMethodScope, codegenClassScope);
+                CastUnderlying(typeof(object[]), beanExpression),
+                codegenMethodScope,
+                codegenClassScope);
         }
 
         public override CodegenExpression EventBeanExistsCodegen(
@@ -88,7 +93,9 @@ namespace com.espertech.esper.common.@internal.@event.arr
             CodegenClassScope codegenClassScope)
         {
             return UnderlyingExistsCodegen(
-                CastUnderlying(typeof(object[]), beanExpression), codegenMethodScope, codegenClassScope);
+                CastUnderlying(typeof(object[]), beanExpression),
+                codegenMethodScope,
+                codegenClassScope);
         }
 
         public override CodegenExpression UnderlyingGetCodegen(
@@ -97,7 +104,11 @@ namespace com.espertech.esper.common.@internal.@event.arr
             CodegenClassScope codegenClassScope)
         {
             return StaticMethod(
-                GetType(), "getArrayValue", underlyingExpression, Constant(propertyIndex), Constant(index));
+                GetType(),
+                "getArrayValue",
+                underlyingExpression,
+                Constant(propertyIndex),
+                Constant(index));
         }
 
         public override CodegenExpression UnderlyingExistsCodegen(
@@ -115,7 +126,10 @@ namespace com.espertech.esper.common.@internal.@event.arr
             CodegenExpression key)
         {
             return StaticMethod(
-                GetType(), "getArrayValue", CastUnderlying(typeof(object[]), beanExpression), Constant(propertyIndex),
+                GetType(),
+                "getArrayValue",
+                CastUnderlying(typeof(object[]), beanExpression),
+                Constant(propertyIndex),
                 key);
         }
 

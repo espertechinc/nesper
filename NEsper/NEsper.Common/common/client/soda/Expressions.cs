@@ -9,6 +9,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+
 using com.espertech.esper.common.@internal.type;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
@@ -209,7 +210,10 @@ namespace com.espertech.esper.common.client.soda
             string regExExpression,
             string escape)
         {
-            return new RegExpExpression(GetPropExpr(property), new ConstantExpression(regExExpression), new ConstantExpression(escape));
+            return new RegExpExpression(
+                GetPropExpr(property),
+                new ConstantExpression(regExExpression),
+                new ConstantExpression(escape));
         }
 
         /// <summary>
@@ -265,7 +269,11 @@ namespace com.espertech.esper.common.client.soda
             string regExExpression,
             string escape)
         {
-            return new RegExpExpression(GetPropExpr(property), new ConstantExpression(regExExpression), new ConstantExpression(escape), true);
+            return new RegExpExpression(
+                GetPropExpr(property),
+                new ConstantExpression(regExExpression),
+                new ConstantExpression(escape),
+                true);
         }
 
         /// <summary>
@@ -654,7 +662,10 @@ namespace com.espertech.esper.common.client.soda
             string lowBoundaryProperty,
             string highBoundaryProperty)
         {
-            return new BetweenExpression(GetPropExpr(property), GetPropExpr(lowBoundaryProperty), GetPropExpr(highBoundaryProperty));
+            return new BetweenExpression(
+                GetPropExpr(property),
+                GetPropExpr(lowBoundaryProperty),
+                GetPropExpr(highBoundaryProperty));
         }
 
         /// <summary>
@@ -669,7 +680,10 @@ namespace com.espertech.esper.common.client.soda
             object lowBoundary,
             object highBoundary)
         {
-            return new BetweenExpression(GetPropExpr(property), new ConstantExpression(lowBoundary), new ConstantExpression(highBoundary));
+            return new BetweenExpression(
+                GetPropExpr(property),
+                new ConstantExpression(lowBoundary),
+                new ConstantExpression(highBoundary));
         }
 
         /// <summary>
@@ -790,7 +804,10 @@ namespace com.espertech.esper.common.client.soda
             string propertyLeft,
             string propertyRight)
         {
-            return new RelationalOpExpression(GetPropExpr(propertyLeft), ">=", new PropertyValueExpression(propertyRight));
+            return new RelationalOpExpression(
+                GetPropExpr(propertyLeft),
+                ">=",
+                new PropertyValueExpression(propertyRight));
         }
 
         /// <summary>
@@ -829,7 +846,10 @@ namespace com.espertech.esper.common.client.soda
             string propertyLeft,
             string propertyRight)
         {
-            return new RelationalOpExpression(GetPropExpr(propertyLeft), ">", new PropertyValueExpression(propertyRight));
+            return new RelationalOpExpression(
+                GetPropExpr(propertyLeft),
+                ">",
+                new PropertyValueExpression(propertyRight));
         }
 
         /// <summary>
@@ -855,7 +875,10 @@ namespace com.espertech.esper.common.client.soda
             string propertyLeft,
             string propertyRight)
         {
-            return new RelationalOpExpression(GetPropExpr(propertyLeft), "<=", new PropertyValueExpression(propertyRight));
+            return new RelationalOpExpression(
+                GetPropExpr(propertyLeft),
+                "<=",
+                new PropertyValueExpression(propertyRight));
         }
 
         /// <summary>
@@ -894,7 +917,10 @@ namespace com.espertech.esper.common.client.soda
             string propertyLeft,
             string propertyRight)
         {
-            return new RelationalOpExpression(GetPropExpr(propertyLeft), "<", new PropertyValueExpression(propertyRight));
+            return new RelationalOpExpression(
+                GetPropExpr(propertyLeft),
+                "<",
+                new PropertyValueExpression(propertyRight));
         }
 
         /// <summary>
@@ -946,7 +972,10 @@ namespace com.espertech.esper.common.client.soda
             string propertyLeft,
             string propertyRight)
         {
-            return new RelationalOpExpression(GetPropExpr(propertyLeft), "=", new PropertyValueExpression(propertyRight));
+            return new RelationalOpExpression(
+                GetPropExpr(propertyLeft),
+                "=",
+                new PropertyValueExpression(propertyRight));
         }
 
         /// <summary>
@@ -959,7 +988,10 @@ namespace com.espertech.esper.common.client.soda
             string propertyLeft,
             string propertyRight)
         {
-            return new RelationalOpExpression(GetPropExpr(propertyLeft), "!=", new PropertyValueExpression(propertyRight));
+            return new RelationalOpExpression(
+                GetPropExpr(propertyLeft),
+                "!=",
+                new PropertyValueExpression(propertyRight));
         }
 
         /// <summary>
@@ -1078,7 +1110,10 @@ namespace com.espertech.esper.common.client.soda
             object value,
             string escape)
         {
-            return new LikeExpression(GetPropExpr(propertyName), new ConstantExpression(value), new ConstantExpression(escape));
+            return new LikeExpression(
+                GetPropExpr(propertyName),
+                new ConstantExpression(value),
+                new ConstantExpression(escape));
         }
 
         /// <summary>
@@ -1134,7 +1169,11 @@ namespace com.espertech.esper.common.client.soda
             object value,
             string escape)
         {
-            return new LikeExpression(GetPropExpr(propertyName), new ConstantExpression(value), new ConstantExpression(escape), true);
+            return new LikeExpression(
+                GetPropExpr(propertyName),
+                new ConstantExpression(value),
+                new ConstantExpression(escape),
+                true);
         }
 
         /// <summary>
@@ -1586,7 +1625,10 @@ namespace com.espertech.esper.common.client.soda
             string propertyLeft,
             string propertyRight)
         {
-            return new ArithmaticExpression(new PropertyValueExpression(propertyLeft), "%", new PropertyValueExpression(propertyRight));
+            return new ArithmaticExpression(
+                new PropertyValueExpression(propertyLeft),
+                "%",
+                new PropertyValueExpression(propertyRight));
         }
 
         /// <summary>
@@ -1612,7 +1654,10 @@ namespace com.espertech.esper.common.client.soda
             string propertyLeft,
             string propertyRight)
         {
-            return new ArithmaticExpression(new PropertyValueExpression(propertyLeft), "-", new PropertyValueExpression(propertyRight));
+            return new ArithmaticExpression(
+                new PropertyValueExpression(propertyLeft),
+                "-",
+                new PropertyValueExpression(propertyRight));
         }
 
         /// <summary>
@@ -1638,7 +1683,10 @@ namespace com.espertech.esper.common.client.soda
             string propertyLeft,
             string propertyRight)
         {
-            return new ArithmaticExpression(new PropertyValueExpression(propertyLeft), "+", new PropertyValueExpression(propertyRight));
+            return new ArithmaticExpression(
+                new PropertyValueExpression(propertyLeft),
+                "+",
+                new PropertyValueExpression(propertyRight));
         }
 
         /// <summary>
@@ -1664,7 +1712,10 @@ namespace com.espertech.esper.common.client.soda
             string propertyLeft,
             string propertyRight)
         {
-            return new ArithmaticExpression(new PropertyValueExpression(propertyLeft), "*", new PropertyValueExpression(propertyRight));
+            return new ArithmaticExpression(
+                new PropertyValueExpression(propertyLeft),
+                "*",
+                new PropertyValueExpression(propertyRight));
         }
 
         /// <summary>
@@ -1690,7 +1741,10 @@ namespace com.espertech.esper.common.client.soda
             string propertyLeft,
             string propertyRight)
         {
-            return new ArithmaticExpression(new PropertyValueExpression(propertyLeft), "/", new PropertyValueExpression(propertyRight));
+            return new ArithmaticExpression(
+                new PropertyValueExpression(propertyLeft),
+                "/",
+                new PropertyValueExpression(propertyRight));
         }
 
         /// <summary>

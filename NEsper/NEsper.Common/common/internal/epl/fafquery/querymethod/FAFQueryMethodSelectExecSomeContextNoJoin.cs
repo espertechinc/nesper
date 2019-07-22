@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.context;
 using com.espertech.esper.common.@internal.context.mgr;
@@ -16,6 +17,7 @@ using com.espertech.esper.common.@internal.epl.fafquery.processor;
 using com.espertech.esper.common.@internal.epl.resultset.core;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+
 using static com.espertech.esper.common.@internal.epl.fafquery.querymethod.FAFQueryMethodSelectExecUtil;
 using static com.espertech.esper.common.@internal.epl.fafquery.querymethod.FAFQueryMethodUtil;
 
@@ -38,7 +40,9 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.querymethod
             FireAndForgetProcessor processor = select.Processors[0];
 
             ContextPartitionSelector singleSelector =
-                contextPartitionSelectors != null && contextPartitionSelectors.Length > 0 ? contextPartitionSelectors[0] : null;
+                contextPartitionSelectors != null && contextPartitionSelectors.Length > 0
+                    ? contextPartitionSelectors[0]
+                    : null;
             ICollection<int> agentInstanceIds = AgentInstanceIds(processor, singleSelector, contextManagementService);
 
             ICollection<EventBean> events = new ArrayDeque<EventBean>();
@@ -47,14 +51,19 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.querymethod
                 FireAndForgetInstance processorInstance = processor.GetProcessorInstanceContextById(agentInstanceId);
                 if (processorInstance != null) {
                     agentInstanceContext = processorInstance.AgentInstanceContext;
-                    ICollection<EventBean> coll = processorInstance.SnapshotBestEffort(select.QueryGraph, select.Annotations);
+                    ICollection<EventBean> coll = processorInstance.SnapshotBestEffort(
+                        select.QueryGraph,
+                        select.Annotations);
                     events.AddAll(coll);
                 }
             }
 
             // get RSP
             ResultSetProcessor resultSetProcessor = ProcessorWithAssign(
-                select.ResultSetProcessorFactoryProvider, agentInstanceContext, assignerSetter, select.TableAccesses);
+                select.ResultSetProcessorFactoryProvider,
+                agentInstanceContext,
+                assignerSetter,
+                select.TableAccesses);
 
             if (select.WhereClause != null) {
                 events = Filtered(events, select.WhereClause, agentInstanceContext);

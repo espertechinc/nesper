@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
@@ -43,7 +44,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
             CodegenClassScope codegenClassScope)
         {
             CodegenExpression inner = validated.Forge.EvaluateCodegen(
-                validated.Forge.EvaluationType, codegenMethodScope, exprSymbol, codegenClassScope);
+                validated.Forge.EvaluationType,
+                codegenMethodScope,
+                exprSymbol,
+                codegenClassScope);
             return widener.WidenCodegen(inner, codegenMethodScope, codegenClassScope);
         }
 

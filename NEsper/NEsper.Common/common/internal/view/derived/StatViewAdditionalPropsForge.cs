@@ -9,11 +9,13 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.compat.collections;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 using static com.espertech.esper.common.@internal.epl.expression.core.ExprNodeUtilityCodegen;
 
@@ -111,7 +113,8 @@ namespace com.espertech.esper.common.@internal.view.derived
         {
             return NewInstance<StatViewAdditionalPropsEval>(
                 Constant(AdditionalProps),
-                CodegenEvaluators(AdditionalEvals, method, GetType(), classScope), Constant(AdditionalTypes));
+                CodegenEvaluators(AdditionalEvals, method, GetType(), classScope),
+                Constant(AdditionalTypes));
         }
     }
 } // end of namespace

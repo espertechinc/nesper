@@ -8,6 +8,7 @@
 
 using System.Collections.Generic;
 using System.Linq;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -19,6 +20,7 @@ using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.settings;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat.collections;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
@@ -58,7 +60,11 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
                     var setTwoType = oaResultType.Types.Get(propertyName);
                     var setTwoTypeFound = oaResultType.Types.ContainsKey(propertyName);
                     var message = BaseNestableEventUtil.ComparePropType(
-                        propertyName, setOneType, setTwoType, setTwoTypeFound, oaResultType.Name);
+                        propertyName,
+                        setOneType,
+                        setTwoType,
+                        setTwoTypeFound,
+                        oaResultType.Name);
                     if (message != null) {
                         throw new ExprValidationException(message.Message, message);
                     }
@@ -86,7 +92,11 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
                     widener = TypeWidenerFactory.GetCheckPropertyAssignType(
                         ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(exprNode),
                         exprNode.Forge.EvaluationType,
-                        writable.PropertyType, columnName, false, null, statementName);
+                        writable.PropertyType,
+                        columnName,
+                        false,
+                        null,
+                        statementName);
                 }
                 catch (TypeWidenerException ex) {
                     throw new ExprValidationException(ex.Message, ex);
@@ -103,7 +113,10 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
             try {
                 manufacturer = EventTypeUtility.GetManufacturer(
                     oaResultType,
-                    written.ToArray(), importService, true, selectExprForgeContext.EventTypeAvroHandler);
+                    written.ToArray(),
+                    importService,
+                    true,
+                    selectExprForgeContext.EventTypeAvroHandler);
             }
             catch (EventBeanManufactureException e) {
                 throw new ExprValidationException("Failed to write to type: " + e.Message, e);
@@ -190,32 +203,43 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
                 CodegenClassScope codegenClassScope)
             {
                 var manufacturerField = codegenClassScope.AddFieldUnshared(
-                    true, typeof(EventBeanManufacturer), manufacturer.Make(codegenMethodScope, codegenClassScope));
+                    true,
+                    typeof(EventBeanManufacturer),
+                    manufacturer.Make(codegenMethodScope, codegenClassScope));
                 var methodNode = codegenMethodScope.MakeChild(typeof(EventBean), GetType(), codegenClassScope);
                 var refEPS = exprSymbol.GetAddEPS(methodNode);
                 var block = methodNode.Block
-                    .DeclareVar(
-                        typeof(ObjectArrayBackedEventBean), "theEvent",
+                    .DeclareVar<ObjectArrayBackedEventBean>(
+                        "theEvent",
                         Cast(
-                            typeof(ObjectArrayBackedEventBean), ArrayAtIndex(refEPS, Constant(underlyingStreamNumber))))
-                    .DeclareVar(typeof(object[]), "props", NewArrayByLength(typeof(object), Constant(items.Length)));
+                            typeof(ObjectArrayBackedEventBean),
+                            ArrayAtIndex(refEPS, Constant(underlyingStreamNumber))))
+                    .DeclareVar<object[]>("props", NewArrayByLength(typeof(object), Constant(items.Length)));
                 foreach (var item in items) {
                     if (item.OptionalFromIndex != -1) {
                         block.AssignArrayElement(
-                            "props", Constant(item.ToIndex),
+                            "props",
+                            Constant(item.ToIndex),
                             ArrayAtIndex(
-                                ExprDotMethod(Ref("theEvent"), "getProperties"), Constant(item.OptionalFromIndex)));
+                                ExprDotMethod(Ref("theEvent"), "getProperties"),
+                                Constant(item.OptionalFromIndex)));
                     }
                     else {
                         CodegenExpression value;
                         if (item.OptionalWidener != null) {
                             value = item.Forge.EvaluateCodegen(
-                                item.Forge.EvaluationType, methodNode, exprSymbol, codegenClassScope);
+                                item.Forge.EvaluationType,
+                                methodNode,
+                                exprSymbol,
+                                codegenClassScope);
                             value = item.OptionalWidener.WidenCodegen(value, methodNode, codegenClassScope);
                         }
                         else {
                             value = item.Forge.EvaluateCodegen(
-                                typeof(object), methodNode, exprSymbol, codegenClassScope);
+                                typeof(object),
+                                methodNode,
+                                exprSymbol,
+                                codegenClassScope);
                         }
 
                         block.AssignArrayElement("props", Constant(item.ToIndex), value);

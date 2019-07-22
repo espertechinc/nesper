@@ -8,10 +8,12 @@
 
 using System;
 using System.Xml;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.@event.core;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.@event.xml
@@ -128,7 +130,9 @@ namespace com.espertech.esper.common.@internal.@event.xml
             CodegenClassScope codegenClassScope)
         {
             return UnderlyingGetCodegen(
-                CastUnderlying(typeof(XmlNode), beanExpression), codegenMethodScope, codegenClassScope);
+                CastUnderlying(typeof(XmlNode), beanExpression),
+                codegenMethodScope,
+                codegenClassScope);
         }
 
         public CodegenExpression EventBeanExistsCodegen(
@@ -145,7 +149,9 @@ namespace com.espertech.esper.common.@internal.@event.xml
             CodegenClassScope codegenClassScope)
         {
             return UnderlyingFragmentCodegen(
-                CastUnderlying(typeof(XmlNode), beanExpression), codegenMethodScope, codegenClassScope);
+                CastUnderlying(typeof(XmlNode), beanExpression),
+                codegenMethodScope,
+                codegenClassScope);
         }
 
         public CodegenExpression UnderlyingGetCodegen(
@@ -174,15 +180,24 @@ namespace com.espertech.esper.common.@internal.@event.xml
             CodegenClassScope codegenClassScope)
         {
             var ff = codegenClassScope.AddFieldUnshared(
-                true, typeof(FragmentFactory),
+                true,
+                typeof(FragmentFactory),
                 fragmentFactory.Make(codegenClassScope.NamespaceScope.InitMethod, codegenClassScope));
             if (!isArray) {
                 return StaticMethod(
-                    GetType(), "getValueAsNodeFragment", underlyingExpression, Constant(propertyName), ff);
+                    GetType(),
+                    "getValueAsNodeFragment",
+                    underlyingExpression,
+                    Constant(propertyName),
+                    ff);
             }
 
             return StaticMethod(
-                GetType(), "getValueAsNodeFragmentArray", underlyingExpression, Constant(propertyName), ff);
+                GetType(),
+                "getValueAsNodeFragmentArray",
+                underlyingExpression,
+                Constant(propertyName),
+                ff);
         }
 
         /// <summary>

@@ -30,7 +30,13 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.util
             SAIFFInitializeSymbol symbols,
             CodegenClassScope classScope)
         {
-            return new SAIFFInitializeBuilder(typeof(DefaultSupportCaptureOpFactory<object>), this.GetType(), "so", parent, symbols, classScope)
+            return new SAIFFInitializeBuilder(
+                    typeof(DefaultSupportCaptureOpFactory<object>),
+                    this.GetType(),
+                    "so",
+                    parent,
+                    symbols,
+                    classScope)
                 .Constant("name", name)
                 .Build();
         }

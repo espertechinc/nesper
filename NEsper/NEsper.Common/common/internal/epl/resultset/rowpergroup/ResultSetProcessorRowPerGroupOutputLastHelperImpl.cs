@@ -8,6 +8,7 @@
 
 using System.Collections.Generic;
 using System.Linq;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.compat.collections;
@@ -44,7 +45,11 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergroup
                     if (groupReps.Push(mk, eventsPerStream) == null) {
                         if (processor.IsSelectRStream) {
                             var @event = processor.GenerateOutputBatchedNoSortWMap(
-                                false, mk, eventsPerStream, true, isGenerateSynthetic);
+                                false,
+                                mk,
+                                eventsPerStream,
+                                true,
+                                isGenerateSynthetic);
                             if (@event != null) {
                                 groupRepsOutputLastUnordRStream.Put(mk, @event);
                             }
@@ -63,7 +68,11 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergroup
                     if (groupReps.Push(mk, eventsPerStream) == null) {
                         if (processor.IsSelectRStream) {
                             var @event = processor.GenerateOutputBatchedNoSortWMap(
-                                false, mk, eventsPerStream, false, isGenerateSynthetic);
+                                false,
+                                mk,
+                                eventsPerStream,
+                                false,
+                                isGenerateSynthetic);
                             if (@event != null) {
                                 groupRepsOutputLastUnordRStream.Put(mk, @event);
                             }
@@ -86,7 +95,11 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergroup
                     if (groupReps.Push(mk, aNewData.Array) == null) {
                         if (processor.IsSelectRStream) {
                             var @event = processor.GenerateOutputBatchedNoSortWMap(
-                                true, mk, aNewData.Array, false, isGenerateSynthetic);
+                                true,
+                                mk,
+                                aNewData.Array,
+                                false,
+                                isGenerateSynthetic);
                             if (@event != null) {
                                 groupRepsOutputLastUnordRStream.Put(mk, @event);
                             }
@@ -103,7 +116,11 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergroup
                     if (groupReps.Push(mk, anOldData.Array) == null) {
                         if (processor.IsSelectRStream) {
                             var @event = processor.GenerateOutputBatchedNoSortWMap(
-                                true, mk, anOldData.Array, false, isGenerateSynthetic);
+                                true,
+                                mk,
+                                anOldData.Array,
+                                false,
+                                isGenerateSynthetic);
                             if (@event != null) {
                                 groupRepsOutputLastUnordRStream.Put(mk, @event);
                             }
@@ -141,7 +158,12 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergroup
         {
             IList<EventBean> newEvents = new List<EventBean>(4);
             processor.GenerateOutputBatchedArrFromIterator(
-                join, groupReps.GetEnumerator(), true, isSynthesize, newEvents, null);
+                join,
+                groupReps.GetEnumerator(),
+                true,
+                isSynthesize,
+                newEvents,
+                null);
             groupReps.Clear();
             var newEventsArr = newEvents.IsEmpty() ? null : newEvents.ToArray();
 

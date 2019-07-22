@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.context.aifactory.core;
@@ -16,6 +17,7 @@ using com.espertech.esper.common.@internal.epl.table.compiletime;
 using com.espertech.esper.common.@internal.epl.table.core;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.ontrigger
@@ -53,13 +55,18 @@ namespace com.espertech.esper.common.@internal.epl.ontrigger
         {
             CodegenMethod method = parent.MakeChild(typeof(InfraOnMergeActionIns), this.GetType(), classScope);
             CodegenExpressionNewAnonymousClass anonymousSelect = SelectExprProcessorUtil.MakeAnonymous(
-                insertHelper, method, symbols.GetAddInitSvc(method), classScope);
+                insertHelper,
+                method,
+                symbols.GetAddInitSvc(method),
+                classScope);
             method.Block.MethodReturn(
                 NewInstance<InfraOnMergeActionIns>(
-                    MakeFilter(method, classScope), anonymousSelect,
+                    MakeFilter(method, classScope),
+                    anonymousSelect,
                     insertIntoTable == null
                         ? ConstantNull()
-                        : TableDeployTimeResolver.MakeResolveTable(insertIntoTable, symbols.GetAddInitSvc(method)), Constant(audit),
+                        : TableDeployTimeResolver.MakeResolveTable(insertIntoTable, symbols.GetAddInitSvc(method)),
+                    Constant(audit),
                     Constant(route)));
             return LocalMethod(method);
         }

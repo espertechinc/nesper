@@ -446,7 +446,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@Name('s0') select irstream Symbol, count(distinct price) as countDistinctPrice " +
+                var epl = "@Name('s0') select irstream Symbol, count(distinct Price) as countDistinctPrice " +
                           "from SupportMarketDataBean group by Symbol";
                 env.CompileDeploy(epl).AddListener("s0");
 

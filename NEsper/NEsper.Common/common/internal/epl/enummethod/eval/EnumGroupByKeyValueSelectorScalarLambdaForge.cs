@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.enummethod.codegen;
@@ -35,7 +36,10 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
         }
 
         public override EnumEval EnumEvaluator {
-            get => new EnumGroupByKeyValueSelectorScalarLambdaForgeEval(this, innerExpression.ExprEvaluator, secondExpression.ExprEvaluator);
+            get => new EnumGroupByKeyValueSelectorScalarLambdaForgeEval(
+                this,
+                innerExpression.ExprEvaluator,
+                secondExpression.ExprEvaluator);
         }
 
         public override CodegenExpression Codegen(
@@ -43,7 +47,11 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            return EnumGroupByKeyValueSelectorScalarLambdaForgeEval.Codegen(this, premade, codegenMethodScope, codegenClassScope);
+            return EnumGroupByKeyValueSelectorScalarLambdaForgeEval.Codegen(
+                this,
+                premade,
+                codegenMethodScope,
+                codegenClassScope);
         }
     }
 } // end of namespace

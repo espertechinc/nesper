@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.util;
@@ -56,11 +57,16 @@ namespace com.espertech.esper.common.@internal.type
             {
                 var method = codegenMethodScope
                     .MakeChild(typeof(decimal?), typeof(MultiplyDecimalConvComputer), codegenClassScope)
-                    .AddParam(ltype, "d1").AddParam(rtype, "d2").Block
-                    .DeclareVar(typeof(decimal?), "s1", convOne.CoerceCodegen(CodegenExpressionBuilder.Ref("d1"), ltype))
-                    .DeclareVar(typeof(decimal?), "s2", convTwo.CoerceCodegen(CodegenExpressionBuilder.Ref("d2"), rtype))
+                    .AddParam(ltype, "d1")
+                    .AddParam(rtype, "d2")
+                    .Block
+                    .DeclareVar<decimal?>("s1", convOne.CoerceCodegen(CodegenExpressionBuilder.Ref("d1"), ltype))
+                    .DeclareVar<decimal?>("s2", convTwo.CoerceCodegen(CodegenExpressionBuilder.Ref("d2"), rtype))
                     .MethodReturn(
-                        CodegenExpressionBuilder.ExprDotMethod(CodegenExpressionBuilder.Ref("s1"), "multiply", CodegenExpressionBuilder.Ref("s2")));
+                        CodegenExpressionBuilder.ExprDotMethod(
+                            CodegenExpressionBuilder.Ref("s1"),
+                            "multiply",
+                            CodegenExpressionBuilder.Ref("s2")));
                 return CodegenExpressionBuilder.LocalMethodBuild(method).Pass(left).Pass(right).Call();
             }
         }

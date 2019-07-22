@@ -98,8 +98,10 @@ namespace com.espertech.esper.common.@internal.context.util
         public override string ToString()
         {
             return "EPStatementAgentInstanceHandle{" +
-                   "name=" + StatementHandle.StatementName +
-                   " id=" + AgentInstanceId +
+                   "name=" +
+                   StatementHandle.StatementName +
+                   " id=" +
+                   AgentInstanceId +
                    '}';
         }
     }

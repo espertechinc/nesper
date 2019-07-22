@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.meta;
 using com.espertech.esper.common.client.util;
@@ -26,13 +27,27 @@ namespace com.espertech.esper.common.@internal.view.derived
             ViewForgeEnv env,
             int streamNum)
         {
-            string outputEventTypeName = env.StatementCompileTimeServices.EventTypeNameGeneratorStatement.GetViewDerived(name, streamNum);
+            string outputEventTypeName =
+                env.StatementCompileTimeServices.EventTypeNameGeneratorStatement.GetViewDerived(name, streamNum);
             EventTypeMetadata metadata = new EventTypeMetadata(
-                outputEventTypeName, env.ModuleName, EventTypeTypeClass.VIEWDERIVED, EventTypeApplicationType.MAP, NameAccessModifier.TRANSIENT,
-                EventTypeBusModifier.NONBUS, false, EventTypeIdPair.Unassigned());
+                outputEventTypeName,
+                env.ModuleName,
+                EventTypeTypeClass.VIEWDERIVED,
+                EventTypeApplicationType.MAP,
+                NameAccessModifier.TRANSIENT,
+                EventTypeBusModifier.NONBUS,
+                false,
+                EventTypeIdPair.Unassigned());
             IDictionary<string, object> propertyTypes = EventTypeUtility.GetPropertyTypesNonPrimitive(schemaMap);
             EventType resultEventType = BaseNestableEventUtil.MakeMapTypeCompileTime(
-                metadata, propertyTypes, null, null, null, null, env.BeanEventTypeFactoryProtected, env.EventTypeCompileTimeResolver);
+                metadata,
+                propertyTypes,
+                null,
+                null,
+                null,
+                null,
+                env.BeanEventTypeFactoryProtected,
+                env.EventTypeCompileTimeResolver);
             env.EventTypeModuleCompileTimeRegistry.NewType(resultEventType);
             return resultEventType;
         }

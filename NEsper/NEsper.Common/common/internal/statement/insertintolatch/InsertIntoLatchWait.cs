@@ -8,6 +8,7 @@
 
 using System.Reflection;
 using System.Threading;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.compat.logging;
 

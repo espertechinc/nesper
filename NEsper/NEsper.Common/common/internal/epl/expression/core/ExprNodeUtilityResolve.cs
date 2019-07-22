@@ -9,6 +9,7 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.hook.expr;
 using com.espertech.esper.common.@internal.compile.stage2;
@@ -45,7 +46,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             foreach (var childNode in parameters) {
                 if (!EnumMethodEnumExtensions.IsEnumerationMethod(methodName) && childNode is ExprLambdaGoesNode) {
                     throw new ExprValidationException(
-                        "Unexpected lambda-expression encountered as parameter to UDF or static method '" + methodName + "'");
+                        "Unexpected lambda-expression encountered as parameter to UDF or static method '" +
+                        methodName +
+                        "'");
                 }
 
                 if (childNode is ExprWildcard) {
@@ -70,8 +73,12 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                         childEvalsEventBeanReturnTypesForges[count] = new ExprEvalStreamNumEvent(und.StreamId);
                     }
                     else {
-                        childForges[count] = new ExprEvalStreamTable(und.StreamId, und.EventType.UnderlyingType, tableMetadata);
-                        childEvalsEventBeanReturnTypesForges[count] = new ExprEvalStreamNumEventTable(und.StreamId, tableMetadata);
+                        childForges[count] = new ExprEvalStreamTable(
+                            und.StreamId,
+                            und.EventType.UnderlyingType,
+                            tableMetadata);
+                        childEvalsEventBeanReturnTypesForges[count] =
+                            new ExprEvalStreamNumEventTable(und.StreamId, tableMetadata);
                     }
 
                     paramTypes[count] = childForges[count].EvaluationType;
@@ -115,11 +122,19 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             MethodInfo method;
             try {
                 if (optionalClass != null) {
-                    method = services.ImportServiceCompileTime.ResolveMethod(optionalClass, methodName, paramTypes, allowEventBeanType);
+                    method = services.ImportServiceCompileTime.ResolveMethod(
+                        optionalClass,
+                        methodName,
+                        paramTypes,
+                        allowEventBeanType);
                 }
                 else {
                     method = services.ImportServiceCompileTime.ResolveMethodOverloadChecked(
-                        className, methodName, paramTypes, allowEventBeanType, allowEventBeanCollType);
+                        className,
+                        methodName,
+                        paramTypes,
+                        allowEventBeanType,
+                        allowEventBeanCollType);
                 }
             }
             catch (Exception e) {
@@ -162,7 +177,12 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                     Array.Copy(childForges, 0, rewrittenForges, 0, numMethodParams - 2);
                     var node = new ExprEvalMethodContext(functionName);
                     rewrittenForges[numMethodParams - 2] = node;
-                    Array.Copy(childForges, numMethodParams - 2, rewrittenForges, numMethodParams - 1, childForges.Length - (numMethodParams - 2));
+                    Array.Copy(
+                        childForges,
+                        numMethodParams - 2,
+                        rewrittenForges,
+                        numMethodParams - 1,
+                        childForges.Length - (numMethodParams - 2));
                     childForges = rewrittenForges;
                 }
 

@@ -73,8 +73,7 @@ namespace com.espertech.esper.common.@internal.filterspec
                 .AddParam(
                     typeof(EPStatementInitServices),
                     SAIFFInitializeSymbol.REF_STMTINITSVC.Ref);
-            method.Block.DeclareVar(
-                typeof(FilterSpecParam[][]),
+            method.Block.DeclareVar<FilterSpecParam[][]>(
                 "params",
                 NewArrayByLength(typeof(FilterSpecParam[]), Constant(forges.Length)));
 
@@ -96,8 +95,7 @@ namespace com.espertech.esper.common.@internal.filterspec
             SAIFFInitializeSymbolWEventType symbolsWithType)
         {
             var method = parent.MakeChild(typeof(FilterSpecParam[]), typeof(FilterSpecParamForge), classScope);
-            method.Block.DeclareVar(
-                typeof(FilterSpecParam[]),
+            method.Block.DeclareVar<FilterSpecParam[]>(
                 "items",
                 NewArrayByLength(typeof(FilterSpecParam), Constant(forges.Length)));
             for (var i = 0; i < forges.Length; i++) {

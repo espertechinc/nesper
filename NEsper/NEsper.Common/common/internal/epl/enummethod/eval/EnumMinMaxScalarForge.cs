@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -15,6 +16,7 @@ using com.espertech.esper.common.@internal.epl.enummethod.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.rettype;
 using com.espertech.esper.compat;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionRelational.
     CodegenRelational;
@@ -49,11 +51,13 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
 
             var block = codegenMethodScope
                 .MakeChild(innerTypeBoxed, typeof(EnumMinMaxEventsForgeEval), codegenClassScope)
-                .AddParam(EnumForgeCodegenNames.PARAMS).Block
+                .AddParam(EnumForgeCodegenNames.PARAMS)
+                .Block
                 .DeclareVar(innerTypeBoxed, "minKey", ConstantNull());
 
             var forEach = block.ForEach(typeof(object), "value", EnumForgeCodegenNames.REF_ENUMCOLL)
-                .IfRefNull("value").BlockContinue();
+                .IfRefNull("value")
+                .BlockContinue();
 
             forEach.IfCondition(EqualsNull(Ref("minKey")))
                 .AssignRef("minKey", Cast(innerTypeBoxed, Ref("value")))

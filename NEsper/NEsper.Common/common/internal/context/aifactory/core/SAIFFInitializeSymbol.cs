@@ -24,16 +24,14 @@ namespace com.espertech.esper.common.@internal.context.aifactory.core
 
         public virtual void Provide(IDictionary<string, Type> symbols)
         {
-            if (optionalInitServicesRef != null)
-            {
+            if (optionalInitServicesRef != null) {
                 symbols.Put(optionalInitServicesRef.Ref, typeof(EPStatementInitServices));
             }
         }
 
         public CodegenExpressionRef GetAddInitSvc(CodegenMethodScope scope)
         {
-            if (optionalInitServicesRef == null)
-            {
+            if (optionalInitServicesRef == null) {
                 optionalInitServicesRef = REF_STMTINITSVC;
             }
 

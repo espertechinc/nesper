@@ -16,6 +16,7 @@ using com.espertech.esper.common.@internal.epl.expression.time.abacus;
 using com.espertech.esper.common.@internal.epl.expression.time.eval;
 using com.espertech.esper.common.@internal.epl.expression.time.node;
 using com.espertech.esper.common.@internal.filterspec;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.pattern.core
@@ -33,7 +34,10 @@ namespace com.espertech.esper.common.@internal.epl.pattern.core
             var computeDelta = CodegenMethod.MakeParentNode(typeof(long), typeof(PatternDeltaComputeUtil), classScope)
                 .AddParam(
                     CodegenNamedParam.From(
-                        typeof(MatchedEventMap), "beginState", typeof(PatternAgentInstanceContext), "context"));
+                        typeof(MatchedEventMap),
+                        "beginState",
+                        typeof(PatternAgentInstanceContext),
+                        "context"));
             compute.AddMethod("computeDelta", computeDelta);
 
             if (parameter is ExprTimePeriod) {
@@ -41,24 +45,36 @@ namespace com.espertech.esper.common.@internal.epl.pattern.core
                 var time = ExprDotMethod(Ref("context"), "getTime");
                 if (timePeriod.IsConstantResult) {
                     var delta = classScope.AddFieldUnshared<TimePeriodCompute>(
-                        true, timePeriod.TimePeriodComputeForge.MakeEvaluator(
-                            classScope.NamespaceScope.InitMethod, classScope));
+                        true,
+                        timePeriod.TimePeriodComputeForge.MakeEvaluator(
+                            classScope.NamespaceScope.InitMethod,
+                            classScope));
                     computeDelta.Block.MethodReturn(
                         ExprDotMethod(
-                            delta, "deltaAdd", time, ConstantNull(), ConstantTrue(),
+                            delta,
+                            "deltaAdd",
+                            time,
+                            ConstantNull(),
+                            ConstantTrue(),
                             ExprDotMethod(Ref("context"), "getAgentInstanceContext")));
                 }
                 else {
                     var delta = classScope.AddFieldUnshared<TimePeriodCompute>(
-                        true, timePeriod.TimePeriodComputeForge.MakeEvaluator(
-                            classScope.NamespaceScope.InitMethod, classScope));
+                        true,
+                        timePeriod.TimePeriodComputeForge.MakeEvaluator(
+                            classScope.NamespaceScope.InitMethod,
+                            classScope));
                     computeDelta.Block
-                        .DeclareVar(
-                            typeof(EventBean[]), "events",
+                        .DeclareVar<EventBean[]>(
+                            "events",
                             LocalMethod(convertor.Make(computeDelta, classScope), Ref("beginState")))
                         .MethodReturn(
                             ExprDotMethod(
-                                delta, "deltaAdd", time, Ref("events"), ConstantTrue(),
+                                delta,
+                                "deltaAdd",
+                                time,
+                                Ref("events"),
+                                ConstantTrue(),
                                 ExprDotMethod(Ref("context"), "getAgentInstanceContext")));
                 }
             }
@@ -73,15 +89,19 @@ namespace com.espertech.esper.common.@internal.epl.pattern.core
                 }
 
                 computeDelta.Block
-                    .DeclareVar(typeof(EventBean[]), "events", events)
+                    .DeclareVar<EventBean[]>("events", events)
                     .DeclareVar(
-                        parameter.Forge.EvaluationType, "result",
+                        parameter.Forge.EvaluationType,
+                        "result",
                         LocalMethod(
-                            eval, Ref("events"), ConstantTrue(),
+                            eval,
+                            Ref("events"),
+                            ConstantTrue(),
                             ExprDotMethod(Ref("context"), "getAgentInstanceContext")));
                 if (!parameter.Forge.EvaluationType.IsPrimitive) {
-                    computeDelta.Block.IfRefNull("result").BlockThrow(
-                        NewInstance<EPException>(Constant("Null value returned for guard expression")));
+                    computeDelta.Block.IfRefNull("result")
+                        .BlockThrow(
+                            NewInstance<EPException>(Constant("Null value returned for guard expression")));
                 }
 
                 computeDelta.Block.MethodReturn(timeAbacus.DeltaForSecondsDoubleCodegen(Ref("result"), classScope));

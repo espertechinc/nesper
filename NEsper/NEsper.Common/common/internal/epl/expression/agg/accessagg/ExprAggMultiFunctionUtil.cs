@@ -52,7 +52,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.accessagg
             string aggFuncName)
         {
             if (streamTypeService.StreamNames.Length == 0) { // could be the case for
-                throw new ExprValidationException(GetErrorPrefix(aggFuncName) + " requires that at least one stream is provided");
+                throw new ExprValidationException(
+                    GetErrorPrefix(aggFuncName) + " requires that at least one stream is provided");
             }
         }
 

@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client.dataflow.annotations;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -16,6 +17,7 @@ using com.espertech.esper.common.@internal.epl.dataflow.interfaces;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+
 using static com.espertech.esper.common.@internal.epl.dataflow.core.EPDataFlowServiceImpl;
 
 namespace com.espertech.esper.common.@internal.epl.dataflow.ops
@@ -27,7 +29,8 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.ops
 
         [DataFlowOpParameter] private ExprNode statementName;
 
-        [DataFlowOpParameter] private IDictionary<string, object> statementFilter; // interface EPDataFlowEPStatementFilter
+        [DataFlowOpParameter]
+        private IDictionary<string, object> statementFilter; // interface EPDataFlowEPStatementFilter
 
         [DataFlowOpParameter] private IDictionary<string, object> collector; // interface EPDataFlowIRStreamCollector
 #pragma warning restore 649
@@ -38,16 +41,20 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.ops
         {
             if (context.OutputPorts.Count != 1) {
                 throw new ArgumentException(
-                    "EPStatementSource operator requires one output stream but produces " + context.OutputPorts.Count + " streams");
+                    "EPStatementSource operator requires one output stream but produces " +
+                    context.OutputPorts.Count +
+                    " streams");
             }
 
             if (statementName != null && statementFilter != null) {
-                throw new ExprValidationException("Both 'statementName' or 'statementFilter' parameters were provided, only either one is expected");
+                throw new ExprValidationException(
+                    "Both 'statementName' or 'statementFilter' parameters were provided, only either one is expected");
             }
 
             if ((statementDeploymentId == null && statementName != null) |
                 (statementDeploymentId != null && statementName == null)) {
-                throw new ExprValidationException("Both 'statementDeploymentId' and 'statementName' are required when either of these are specified");
+                throw new ExprValidationException(
+                    "Both 'statementDeploymentId' and 'statementName' are required when either of these are specified");
             }
 
             DataFlowOpOutputPort portZero = context.OutputPorts[0];
@@ -64,7 +71,12 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.ops
             CodegenClassScope classScope)
         {
             return new SAIFFInitializeBuilder(
-                    OP_PACKAGE_NAME + ".epstatementsource.EPStatementSourceFactory", this.GetType(), "stmtSrc", parent, symbols, classScope)
+                    OP_PACKAGE_NAME + ".epstatementsource.EPStatementSourceFactory",
+                    this.GetType(),
+                    "stmtSrc",
+                    parent,
+                    symbols,
+                    classScope)
                 .Exprnode("statementDeploymentId", statementDeploymentId)
                 .Exprnode("statementName", statementName)
                 .Map("statementFilter", statementFilter)

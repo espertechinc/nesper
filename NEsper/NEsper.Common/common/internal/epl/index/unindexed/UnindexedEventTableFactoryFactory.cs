@@ -28,7 +28,11 @@ namespace com.espertech.esper.common.@internal.epl.index.unindexed
             StatementContext statementContext)
         {
             return statementContext.EventTableIndexService.CreateUnindexed(
-                indexedStreamNum, eventType, optionalSerde, isFireAndForget, statementContext);
+                indexedStreamNum,
+                eventType,
+                optionalSerde,
+                isFireAndForget,
+                statementContext);
         }
     }
 } // end of namespace

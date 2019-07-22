@@ -101,12 +101,10 @@ namespace com.espertech.esper.common.@internal.epl.historical.database.core
             AgentInstanceContext agentInstanceContext)
         {
             IList<EventBean> result;
-            try
-            {
+            try {
                 result = Execute(_resources.Second, lookupValues);
             }
-            catch (EPException)
-            {
+            catch (EPException) {
                 _connectionCache.DoneWith(_resources);
                 throw;
             }
@@ -120,12 +118,10 @@ namespace com.espertech.esper.common.@internal.epl.historical.database.core
         {
             var hasLogging = _factory.IsEnableLogging && ADO_PERF_LOG.IsInfoEnabled;
 
-            using (var myDriverCommand = driverCommand.Clone())
-            {
+            using (var myDriverCommand = driverCommand.Clone()) {
                 var dbCommand = myDriverCommand.Command;
 
-                if (ExecutionPathDebugLog.IsDebugEnabled && Log.IsInfoEnabled)
-                {
+                if (ExecutionPathDebugLog.IsDebugEnabled && Log.IsInfoEnabled) {
                     Log.Info(".execute Executing prepared statement '{0}'", dbCommand.CommandText);
                 }
 
@@ -133,34 +129,31 @@ namespace com.espertech.esper.common.@internal.epl.historical.database.core
 
                 // set parameters
                 SQLInputParameterContext inputParameterContext = null;
-                if (_columnTypeConversionHook != null)
-                {
+                if (_columnTypeConversionHook != null) {
                     inputParameterContext = new SQLInputParameterContext();
                 }
 
                 var mk = _factory.InputParameters.Length == 1 ? null : (HashableMultiKey) lookupValuePerStream;
-                for (var i = 0; i < _factory.InputParameters.Length; i++)
-                {
-                    try
-                    {
+                for (var i = 0; i < _factory.InputParameters.Length; i++) {
+                    try {
                         object parameter;
-                        if (mk == null)
-                        {
+                        if (mk == null) {
                             parameter = lookupValuePerStream;
                         }
-                        else
-                        {
+                        else {
                             parameter = mk.Keys[i];
                         }
 
-                        if (ExecutionPathDebugLog.IsDebugEnabled && Log.IsInfoEnabled)
-                        {
-                            Log.Info(".Execute Setting parameter " + " to " + parameter + " typed " +
-                                     ((parameter == null) ? "null" : parameter.GetType().Name));
+                        if (ExecutionPathDebugLog.IsDebugEnabled && Log.IsInfoEnabled) {
+                            Log.Info(
+                                ".Execute Setting parameter " +
+                                " to " +
+                                parameter +
+                                " typed " +
+                                ((parameter == null) ? "null" : parameter.GetType().Name));
                         }
 
-                        if (_columnTypeConversionHook != null)
-                        {
+                        if (_columnTypeConversionHook != null) {
                             inputParameterContext.ParameterNumber = i + 1;
                             inputParameterContext.ParameterValue = parameter;
                             parameter = _columnTypeConversionHook.GetParameterValue(inputParameterContext);
@@ -169,38 +162,31 @@ namespace com.espertech.esper.common.@internal.epl.historical.database.core
                         dbParam = dbCommand.Parameters[i];
                         dbParam.Value = parameter ?? DBNull.Value;
                     }
-                    catch (DbException ex)
-                    {
+                    catch (DbException ex) {
                         throw new EPException("Error setting parameter " + i, ex);
                     }
                 }
 
                 // execute
-                try
-                {
+                try {
                     // generate events for result set
                     IList<EventBean> rows = new List<EventBean>();
 
-                    using (var dataReader = dbCommand.ExecuteReader())
-                    {
-                        try
-                        {
+                    using (var dataReader = dbCommand.ExecuteReader()) {
+                        try {
                             SQLColumnValueContext valueContext = null;
-                            if (_columnTypeConversionHook != null)
-                            {
+                            if (_columnTypeConversionHook != null) {
                                 valueContext = new SQLColumnValueContext();
                             }
 
                             SQLOutputRowValueContext rowContext = null;
-                            if (_outputRowConversionHook != null)
-                            {
+                            if (_outputRowConversionHook != null) {
                                 rowContext = new SQLOutputRowValueContext();
                             }
 
                             var rowNum = 0;
 
-                            if (dataReader.HasRows)
-                            {
+                            if (dataReader.HasRows) {
                                 // Determine how many fields we will be receiving
                                 var fieldCount = dataReader.FieldCount;
                                 // Allocate a buffer to hold the results of the row
@@ -208,11 +194,9 @@ namespace com.espertech.esper.common.@internal.epl.historical.database.core
                                 // Convert the names of columns into ordinal indices and prepare
                                 // them so that we only have to incur this cost when we first notice
                                 // the reader has rows.
-                                if (_dbInfoList == null)
-                                {
+                                if (_dbInfoList == null) {
                                     _dbInfoList = new List<DbInfo>();
-                                    foreach (var entry in _outputTypes)
-                                    {
+                                    foreach (var entry in _outputTypes) {
                                         var dbInfo = new DbInfo();
                                         dbInfo.Name = entry.Key;
                                         dbInfo.Ordinal = dataReader.GetOrdinal(dbInfo.Name);
@@ -223,8 +207,7 @@ namespace com.espertech.esper.common.@internal.epl.historical.database.core
                                 }
 
                                 var fieldNames = new string[fieldCount];
-                                for (var ii = 0; ii < fieldCount; ii++)
-                                {
+                                for (var ii = 0; ii < fieldCount; ii++) {
                                     fieldNames[ii] = dataReader.GetName(ii);
                                 }
 
@@ -232,32 +215,26 @@ namespace com.espertech.esper.common.@internal.epl.historical.database.core
                                 // the query is executed; if so, we could certainly cache this
                                 // dbInfoList so that we only have to do that once for the lifetime
                                 // of the statement.
-                                while (dataReader.Read())
-                                {
+                                while (dataReader.Read()) {
                                     var colNum = 1;
 
                                     DataMap row = new Dictionary<string, object>();
                                     // Get all of the values for the row in one shot
                                     dataReader.GetValues(rawData);
                                     // Convert the items into raw row objects
-                                    foreach (var dbInfo in _dbInfoList)
-                                    {
+                                    foreach (var dbInfo in _dbInfoList) {
                                         var value = rawData[dbInfo.Ordinal];
-                                        if (value == DBNull.Value)
-                                        {
+                                        if (value == DBNull.Value) {
                                             value = null;
                                         }
-                                        else if (dbInfo.Binding != null)
-                                        {
+                                        else if (dbInfo.Binding != null) {
                                             value = dbInfo.Binding.GetValue(value, dbInfo.Name);
                                         }
-                                        else if (value.GetType() != dbInfo.OutputTypeDesc.DataType)
-                                        {
+                                        else if (value.GetType() != dbInfo.OutputTypeDesc.DataType) {
                                             value = Convert.ChangeType(value, dbInfo.OutputTypeDesc.DataType);
                                         }
 
-                                        if (_columnTypeConversionHook != null)
-                                        {
+                                        if (_columnTypeConversionHook != null) {
                                             valueContext.ColumnName = fieldNames[colNum - 1];
                                             valueContext.ColumnNumber = colNum;
                                             valueContext.ColumnValue = value;
@@ -271,42 +248,41 @@ namespace com.espertech.esper.common.@internal.epl.historical.database.core
                                     }
 
                                     EventBean eventBeanRow = null;
-                                    if (_outputRowConversionHook == null)
-                                    {
-                                        eventBeanRow = _agentInstanceContext.EventBeanTypedEventFactory.AdapterForTypedMap(
-                                                row, _factory.EventType);
+                                    if (_outputRowConversionHook == null) {
+                                        eventBeanRow = _agentInstanceContext.EventBeanTypedEventFactory
+                                            .AdapterForTypedMap(
+                                                row,
+                                                _factory.EventType);
                                     }
-                                    else
-                                    {
+                                    else {
                                         rowContext.Values = row;
                                         rowContext.RowNum = rowNum;
                                         var rowData = _outputRowConversionHook.GetOutputRow(rowContext);
-                                        if (rowData != null)
-                                        {
-                                            eventBeanRow = _agentInstanceContext.EventBeanTypedEventFactory.AdapterForTypedBean(
-                                                rowData, (BeanEventType) _factory.EventType);
+                                        if (rowData != null) {
+                                            eventBeanRow = _agentInstanceContext.EventBeanTypedEventFactory
+                                                .AdapterForTypedBean(
+                                                    rowData,
+                                                    (BeanEventType) _factory.EventType);
                                         }
                                     }
 
-                                    if (eventBeanRow != null)
-                                    {
+                                    if (eventBeanRow != null) {
                                         rows.Add(eventBeanRow);
                                         rowNum++;
                                     }
                                 }
                             }
                         }
-                        catch (DbException ex)
-                        {
+                        catch (DbException ex) {
                             throw new EPException(
-                                "Error reading results for statement '" + _factory.PreparedStatementText + "'", ex);
+                                "Error reading results for statement '" + _factory.PreparedStatementText + "'",
+                                ex);
                         }
                     }
 
                     return rows;
                 }
-                catch (DbException ex)
-                {
+                catch (DbException ex) {
                     throw new EPException("Error executing statement '" + _factory.PreparedStatementText + "'", ex);
                 }
             }

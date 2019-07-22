@@ -7,11 +7,13 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.@event.core;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.historical.indexingstrategy
@@ -50,11 +52,17 @@ namespace com.espertech.esper.common.@internal.epl.historical.indexingstrategy
             var propertyGetters = EventTypeUtility.GetGetters(eventType, propertyNames);
             var propertyTypes = EventTypeUtility.GetPropertyTypes(eventType, propertyNames);
             var valueGetter = EventTypeUtility.CodegenGetterMayMultiKeyWCoerce(
-                eventType, propertyGetters, propertyTypes, coercionTypes, method, GetType(), classScope);
+                eventType,
+                propertyGetters,
+                propertyTypes,
+                coercionTypes,
+                method,
+                GetType(),
+                classScope);
 
             method.Block
-                .DeclareVar(
-                    typeof(PollResultIndexingStrategyHash), "strat",
+                .DeclareVar<PollResultIndexingStrategyHash>(
+                    "strat",
                     NewInstance(typeof(PollResultIndexingStrategyHash)))
                 .SetProperty(Ref("strat"), "StreamNum", Constant(streamNum))
                 .SetProperty(Ref("strat"), "PropertyNames", Constant(propertyNames))

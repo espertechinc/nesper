@@ -85,7 +85,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.spatial
 
                 SendRectangle(env, "R1", 0, 0, 5, 10);
                 SendRectangle(env, "R2", 4, 3, 2, 20);
-                Assert.AreEqual("R2", env.Listener("s0").AssertOneGetNewAndReset().Get("id"));
+                Assert.AreEqual("R2", env.Listener("s0").AssertOneGetNewAndReset().Get("Id"));
 
                 env.UndeployAll();
             }

@@ -8,6 +8,7 @@
 
 using System;
 using System.IO;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -15,6 +16,7 @@ using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.compat;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.expression.etc
@@ -51,7 +53,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
 
             var refEPS = exprSymbol.GetAddEPS(methodNode);
             methodNode.Block
-                .DeclareVar(typeof(EventBean), "event", ArrayAtIndex(refEPS, Constant(StreamNum)))
+                .DeclareVar<EventBean>("event", ArrayAtIndex(refEPS, Constant(StreamNum)))
                 .IfRefNullReturnNull("event")
                 .MethodReturn(
                     Cast(result, Getter.EventBeanFragmentCodegen(Ref("event"), methodNode, codegenClassScope)));

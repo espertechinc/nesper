@@ -39,34 +39,31 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
                 (
                     o1,
                     o2) => {
-                        if (o1.Level > o2.Level)
-                        {
-                            return -1;
-                        }
+                    if (o1.Level > o2.Level) {
+                        return -1;
+                    }
 
-                        return o1.Level == o2.Level ? 0 : 1;
-                    });
+                    return o1.Level == o2.Level ? 0 : 1;
+                });
 
-            foreach (var permute in permutes)
-            {
+            foreach (var permute in permutes) {
                 var alteration = ExpandPermute(container, permute.Permute);
                 var optionalNewParent = Replace(
-                    permute.OptionalParent, permute.Permute, Collections.SingletonList<RowRecogExprNode>(alteration));
-                if (optionalNewParent != null)
-                {
+                    permute.OptionalParent,
+                    permute.Permute,
+                    Collections.SingletonList<RowRecogExprNode>(alteration));
+                if (optionalNewParent != null) {
                     newParentNode = optionalNewParent;
                 }
             }
 
             // expand atoms
             var atomPairs = visitor.Atoms;
-            foreach (var pair in atomPairs)
-            {
+            foreach (var pair in atomPairs) {
                 var atom = pair.First;
                 var expandedRepeat = ExpandRepeat(container, atom, atom.OptionalRepeat, atom.Type, ATOM_HANDLER);
                 var optionalNewParent = Replace(pair.Second, pair.First, expandedRepeat);
-                if (optionalNewParent != null)
-                {
+                if (optionalNewParent != null) {
                     newParentNode = optionalNewParent;
                 }
             }
@@ -77,21 +74,23 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
                 (
                     o1,
                     o2) => {
-                        if (o1.Level > o2.Level)
-                        {
-                            return -1;
-                        }
+                    if (o1.Level > o2.Level) {
+                        return -1;
+                    }
 
-                        return o1.Level == o2.Level ? 0 : 1;
-                    });
+                    return o1.Level == o2.Level ? 0 : 1;
+                });
 
-            foreach (var pair in nestedPairs)
-            {
+            foreach (var pair in nestedPairs) {
                 var nested = pair.Nested;
-                var expandedRepeat = ExpandRepeat(container, nested, nested.OptionalRepeat, nested.Type, NESTED_HANDLER);
+                var expandedRepeat = ExpandRepeat(
+                    container,
+                    nested,
+                    nested.OptionalRepeat,
+                    nested.Type,
+                    NESTED_HANDLER);
                 var optionalNewParent = Replace(pair.OptionalParent, pair.Nested, expandedRepeat);
-                if (optionalNewParent != null)
-                {
+                if (optionalNewParent != null) {
                     newParentNode = optionalNewParent;
                 }
             }
@@ -106,12 +105,10 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
             var copier = new SerializableObjectCopier(container);
             var e = PermutationEnumerator.Create(permute.ChildNodes.Count);
             var parent = new RowRecogExprNodeAlteration();
-            foreach (var indexes in e)
-            {
+            foreach (var indexes in e) {
                 var concat = new RowRecogExprNodeConcatenation();
                 parent.AddChildNode(concat);
-                for (var i = 0; i < indexes.Length; i++)
-                {
+                for (var i = 0; i < indexes.Length; i++) {
                     var toCopy = permute.ChildNodes[indexes[i]];
                     var copy = CheckedCopy(copier, toCopy);
                     concat.AddChildNode(copy);
@@ -126,8 +123,7 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
             RowRecogExprNode originalNode,
             IList<RowRecogExprNode> expandedRepeat)
         {
-            if (optionalParent == null)
-            {
+            if (optionalParent == null) {
                 var newParentNode = new RowRecogExprNodeConcatenation();
                 newParentNode.ChildNodes.AddAll(expandedRepeat);
                 return newParentNode;
@@ -135,15 +131,14 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
 
             // for nested nodes, use a concatenation instead
             if (optionalParent is RowRecogExprNodeNested ||
-                optionalParent is RowRecogExprNodeAlteration)
-            {
+                optionalParent is RowRecogExprNodeAlteration) {
                 var concatenation = new RowRecogExprNodeConcatenation();
                 concatenation.ChildNodes.AddAll(expandedRepeat);
                 optionalParent.ReplaceChildNode(
-                    originalNode, Collections.SingletonList<RowRecogExprNode>(concatenation));
+                    originalNode,
+                    Collections.SingletonList<RowRecogExprNode>(concatenation));
             }
-            else
-            {
+            else {
                 // concatenations are simply changed
                 optionalParent.ReplaceChildNode(originalNode, expandedRepeat);
             }
@@ -160,13 +155,11 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
         {
             // handle single-bounds (no ranges)
             IList<RowRecogExprNode> repeated = new List<RowRecogExprNode>();
-            if (repeat.Single != null)
-            {
+            if (repeat.Single != null) {
                 ValidateExpression(repeat.Single);
                 var numRepeated = (int) repeat.Single.Forge.ExprEvaluator.Evaluate(null, true, null);
                 ValidateRange(numRepeated, 1, int.MaxValue);
-                for (var i = 0; i < numRepeated; i++)
-                {
+                for (var i = 0; i < numRepeated; i++) {
                     var copy = copier.Copy(container, node, type);
                     repeated.Add(copy);
                 }
@@ -177,44 +170,36 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
             // evaluate bounds
             int? lower = null;
             int? upper = null;
-            if (repeat.Lower != null)
-            {
+            if (repeat.Lower != null) {
                 ValidateExpression(repeat.Lower);
                 lower = (int?) repeat.Lower.Forge.ExprEvaluator.Evaluate(null, true, null);
             }
 
-            if (repeat.Upper != null)
-            {
+            if (repeat.Upper != null) {
                 ValidateExpression(repeat.Upper);
                 upper = (int?) repeat.Upper.Forge.ExprEvaluator.Evaluate(null, true, null);
             }
 
             // handle range
-            if (lower != null && upper != null)
-            {
+            if (lower != null && upper != null) {
                 ValidateRange(lower.Value, 1, int.MaxValue);
                 ValidateRange(upper.Value, 1, int.MaxValue);
                 ValidateRange(lower.Value, 1, upper.Value);
-                for (var i = 0; i < lower; i++)
-                {
+                for (var i = 0; i < lower; i++) {
                     var copy = copier.Copy(container, node, type);
                     repeated.Add(copy);
                 }
 
-                for (var i = lower.Value; i < upper; i++)
-                {
+                for (var i = lower.Value; i < upper; i++) {
                     // makeInline type optional
                     var newType = type;
-                    if (type == RowRecogNFATypeEnum.SINGLE)
-                    {
+                    if (type == RowRecogNFATypeEnum.SINGLE) {
                         newType = RowRecogNFATypeEnum.ONE_OPTIONAL;
                     }
-                    else if (type == RowRecogNFATypeEnum.ONE_TO_MANY)
-                    {
+                    else if (type == RowRecogNFATypeEnum.ONE_TO_MANY) {
                         newType = RowRecogNFATypeEnum.ZERO_TO_MANY;
                     }
-                    else if (type == RowRecogNFATypeEnum.ONE_TO_MANY_RELUCTANT)
-                    {
+                    else if (type == RowRecogNFATypeEnum.ONE_TO_MANY_RELUCTANT) {
                         newType = RowRecogNFATypeEnum.ZERO_TO_MANY_RELUCTANT;
                     }
 
@@ -226,34 +211,27 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
             }
 
             // handle lower-bounds only
-            if (upper == null)
-            {
+            if (upper == null) {
                 ValidateRange(lower.Value, 1, int.MaxValue);
-                for (var i = 0; i < lower; i++)
-                {
+                for (var i = 0; i < lower; i++) {
                     repeated.Add(copier.Copy(container, node, type));
                 }
 
                 // makeInline type optional
                 var newType = type;
-                if (type == RowRecogNFATypeEnum.SINGLE)
-                {
+                if (type == RowRecogNFATypeEnum.SINGLE) {
                     newType = RowRecogNFATypeEnum.ZERO_TO_MANY;
                 }
-                else if (type == RowRecogNFATypeEnum.ONE_OPTIONAL)
-                {
+                else if (type == RowRecogNFATypeEnum.ONE_OPTIONAL) {
                     newType = RowRecogNFATypeEnum.ZERO_TO_MANY;
                 }
-                else if (type == RowRecogNFATypeEnum.ONE_OPTIONAL_RELUCTANT)
-                {
+                else if (type == RowRecogNFATypeEnum.ONE_OPTIONAL_RELUCTANT) {
                     newType = RowRecogNFATypeEnum.ZERO_TO_MANY_RELUCTANT;
                 }
-                else if (type == RowRecogNFATypeEnum.ONE_TO_MANY)
-                {
+                else if (type == RowRecogNFATypeEnum.ONE_TO_MANY) {
                     newType = RowRecogNFATypeEnum.ZERO_TO_MANY;
                 }
-                else if (type == RowRecogNFATypeEnum.ONE_TO_MANY_RELUCTANT)
-                {
+                else if (type == RowRecogNFATypeEnum.ONE_TO_MANY_RELUCTANT) {
                     newType = RowRecogNFATypeEnum.ZERO_TO_MANY_RELUCTANT;
                 }
 
@@ -264,20 +242,16 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
 
             // handle upper-bounds only
             ValidateRange(upper.Value, 1, int.MaxValue);
-            for (var i = 0; i < upper; i++)
-            {
+            for (var i = 0; i < upper; i++) {
                 // makeInline type optional
                 var newType = type;
-                if (type == RowRecogNFATypeEnum.SINGLE)
-                {
+                if (type == RowRecogNFATypeEnum.SINGLE) {
                     newType = RowRecogNFATypeEnum.ONE_OPTIONAL;
                 }
-                else if (type == RowRecogNFATypeEnum.ONE_TO_MANY)
-                {
+                else if (type == RowRecogNFATypeEnum.ONE_TO_MANY) {
                     newType = RowRecogNFATypeEnum.ZERO_TO_MANY;
                 }
-                else if (type == RowRecogNFATypeEnum.ONE_TO_MANY_RELUCTANT)
-                {
+                else if (type == RowRecogNFATypeEnum.ONE_TO_MANY_RELUCTANT) {
                     newType = RowRecogNFATypeEnum.ZERO_TO_MANY_RELUCTANT;
                 }
 
@@ -288,14 +262,14 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
             return repeated;
         }
 
-        private static RowRecogExprNode CheckedCopy(IObjectCopier copier, RowRecogExprNode inner)
+        private static RowRecogExprNode CheckedCopy(
+            IObjectCopier copier,
+            RowRecogExprNode inner)
         {
-            try
-            {
+            try {
                 return copier.Copy(inner);
             }
-            catch (Exception e)
-            {
+            catch (Exception e) {
                 throw new EPException("Failed to repeat nested match-recognize: " + e.Message, e);
             }
         }
@@ -305,11 +279,9 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
             int min,
             int maxValue)
         {
-            if (value < min || value > maxValue)
-            {
+            if (value < min || value > maxValue) {
                 var message = "Invalid pattern quantifier value " + value + ", expecting a minimum of " + min;
-                if (maxValue != int.MaxValue)
-                {
+                if (maxValue != int.MaxValue) {
                     message += " and maximum of " + maxValue;
                 }
 
@@ -321,14 +293,12 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
         {
             ExprNodeUtilityValidate.ValidatePlainExpression(ExprNodeOrigin.MATCHRECOGPATTERN, repeat);
 
-            if (!(repeat is ExprConstantNode))
-            {
+            if (!(repeat is ExprConstantNode)) {
                 throw new ExprValidationException(
                     GetPatternQuantifierExpressionText(repeat) + " must return a constant value");
             }
 
-            if (repeat.Forge.EvaluationType.GetBoxedType() != typeof(int))
-            {
+            if (repeat.Forge.EvaluationType.GetBoxedType() != typeof(int)) {
                 throw new ExprValidationException(
                     GetPatternQuantifierExpressionText(repeat) + " must return an integer-type value");
             }
@@ -369,8 +339,7 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
                 var copier = new SerializableObjectCopier(container);
                 var nested = (RowRecogExprNodeNested) nodeToCopy;
                 var nestedCopy = new RowRecogExprNodeNested(newType, null);
-                foreach (var inner in nested.ChildNodes)
-                {
+                foreach (var inner in nested.ChildNodes) {
                     var innerCopy = CheckedCopy(copier, inner);
                     nestedCopy.AddChildNode(innerCopy);
                 }

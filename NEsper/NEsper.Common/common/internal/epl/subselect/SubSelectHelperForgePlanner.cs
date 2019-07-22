@@ -9,6 +9,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+
 using com.espertech.esper.collection;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.annotation;
@@ -83,14 +84,22 @@ namespace com.espertech.esper.common.@internal.epl.subselect
 
                 try {
                     var forge = PlanSubSelectInternal(
-                        subselect, subSelectActivation, outerStreamNames, outerEventTypesSelect, outerEventTypeNamees,
-                        declaredExpressions, statement.ContextPropertyRegistry, declaredExpressionCallHierarchy,
-                        statement, compileTimeServices);
+                        subselect,
+                        subSelectActivation,
+                        outerStreamNames,
+                        outerEventTypesSelect,
+                        outerEventTypeNamees,
+                        declaredExpressions,
+                        statement.ContextPropertyRegistry,
+                        declaredExpressionCallHierarchy,
+                        statement,
+                        compileTimeServices);
                     subselectForges.Put(entry.Key, forge);
                 }
                 catch (Exception ex) {
                     throw new ExprValidationException(
-                        "Failed to plan " + ExprNodeUtilityMake.GetSubqueryInfoText(subselect) + ": " + ex.Message, ex);
+                        "Failed to plan " + ExprNodeUtilityMake.GetSubqueryInfoText(subselect) + ": " + ex.Message,
+                        ex);
                 }
             }
 
@@ -140,7 +149,8 @@ namespace com.espertech.esper.common.@internal.epl.subselect
 
             // determine a stream name unless one was supplied
             var subexpressionStreamName = SubselectUtil.GetStreamName(
-                filterStreamSpec.OptionalStreamName, subselect.SubselectNumber);
+                filterStreamSpec.OptionalStreamName,
+                subselect.SubselectNumber);
             var allStreamNames = new string[outerStreamNames.Length + 1];
             Array.Copy(outerStreamNames, 0, allStreamNames, 1, outerStreamNames.Length);
             allStreamNames[0] = subexpressionStreamName;
@@ -158,12 +168,20 @@ namespace com.espertech.esper.common.@internal.epl.subselect
             // determine subselect type information from the enclosing declared expression, if possibly enclosed
             if (declaredExpressions != null && declaredExpressions.Length > 0) {
                 subselectTypeService = GetDeclaredExprTypeService(
-                    declaredExpressions, declaredExpressionCallHierarchy, outerStreamNames, outerEventTypesSelect,
-                    subselect, subexpressionStreamName, eventType);
+                    declaredExpressions,
+                    declaredExpressionCallHierarchy,
+                    outerStreamNames,
+                    outerEventTypesSelect,
+                    subselect,
+                    subexpressionStreamName,
+                    eventType);
                 if (subselectTypeService != null) {
                     outerEventTypes = new EventType[subselectTypeService.EventTypes.Length - 1];
                     Array.Copy(
-                        subselectTypeService.EventTypes, 1, outerEventTypes, 0,
+                        subselectTypeService.EventTypes,
+                        1,
+                        outerEventTypes,
+                        0,
                         subselectTypeService.EventTypes.Length - 1);
                 }
             }
@@ -174,14 +192,18 @@ namespace com.espertech.esper.common.@internal.epl.subselect
                     subselectTypeService = subselect.FilterSubqueryStreamTypes;
                     outerEventTypes = new EventType[subselectTypeService.EventTypes.Length - 1];
                     Array.Copy(
-                        subselectTypeService.EventTypes, 1, outerEventTypes, 0,
+                        subselectTypeService.EventTypes,
+                        1,
+                        outerEventTypes,
+                        0,
                         subselectTypeService.EventTypes.Length - 1);
                 }
                 else {
                     // Streams event types are the original stream types with the stream zero the subselect stream
                     var namesAndTypes = new LinkedHashMap<string, Pair<EventType, string>>();
                     namesAndTypes.Put(
-                        subexpressionStreamName, new Pair<EventType, string>(eventType, subselecteventTypeName));
+                        subexpressionStreamName,
+                        new Pair<EventType, string>(eventType, subselecteventTypeName));
                     for (var i = 0; i < outerEventTypesSelect.Length; i++) {
                         var pair = new Pair<EventType, string>(outerEventTypesSelect[i], outerEventTypeNamees[i]);
                         namesAndTypes.Put(outerStreamNames[i], pair);
@@ -202,9 +224,13 @@ namespace com.espertech.esper.common.@internal.epl.subselect
             bool hasNonAggregatedProperties;
 
             var validationContext = new ExprValidationContextBuilder(
-                    subselectTypeService, statement.StatementRawInfo, services)
-                .WithViewResourceDelegate(viewResourceDelegateSubselect).WithAllowBindingConsumption(true)
-                .WithMemberName(new ExprValidationMemberNameQualifiedSubquery(subqueryNum)).Build();
+                    subselectTypeService,
+                    statement.StatementRawInfo,
+                    services)
+                .WithViewResourceDelegate(viewResourceDelegateSubselect)
+                .WithAllowBindingConsumption(true)
+                .WithMemberName(new ExprValidationMemberNameQualifiedSubquery(subqueryNum))
+                .Build();
             IList<ExprAggregateNode> aggExprNodesSelect = new List<ExprAggregateNode>(2);
 
             for (var i = 0; i < selectClauseSpec.SelectExprList.Length; i++) {
@@ -215,7 +241,9 @@ namespace com.espertech.esper.common.@internal.epl.subselect
                     var compiled = (SelectClauseExprCompiledSpec) element;
                     var selectExpression = compiled.SelectExpression;
                     selectExpression = ExprNodeUtilityValidate.GetValidatedSubtree(
-                        ExprNodeOrigin.SELECT, selectExpression, validationContext);
+                        ExprNodeOrigin.SELECT,
+                        selectExpression,
+                        validationContext);
 
                     selectExpressions.Add(selectExpression);
                     if (compiled.AssignedName == null) {
@@ -252,7 +280,9 @@ namespace com.espertech.esper.common.@internal.epl.subselect
             var aggExpressionNodesHaving = Collections.GetEmptyList<ExprAggregateNode>();
             if (subselectSpec.Raw.HavingClause != null) {
                 var validatedHavingClause = ExprNodeUtilityValidate.GetValidatedSubtree(
-                    ExprNodeOrigin.HAVING, subselectSpec.Raw.HavingClause, validationContext);
+                    ExprNodeOrigin.HAVING,
+                    subselectSpec.Raw.HavingClause,
+                    validationContext);
                 if (validatedHavingClause.Forge.EvaluationType.GetBoxedType() != typeof(bool?)) {
                     throw new ExprValidationException("Subselect having-clause expression must return a boolean value");
                 }
@@ -278,7 +308,8 @@ namespace com.espertech.esper.common.@internal.epl.subselect
                     subselect.HavingExpr = validatedHavingClause.Forge;
                     var nonAggregatedPropsHaving = ExprNodeUtilityAggregation.GetNonAggregatedProps(
                         validationContext.StreamTypeService.EventTypes,
-                        Collections.SingletonList(validatedHavingClause), contextPropertyRegistry);
+                        Collections.SingletonList(validatedHavingClause),
+                        contextPropertyRegistry);
                     foreach (var prop in nonAggregatedPropsHaving.Properties) {
                         if (prop.StreamNum == 0) {
                             throw new ExprValidationException(
@@ -290,7 +321,9 @@ namespace com.espertech.esper.common.@internal.epl.subselect
 
             // Figure out all non-aggregated event properties in the select clause (props not under a sum/avg/max aggregation node)
             var nonAggregatedPropsSelect = ExprNodeUtilityAggregation.GetNonAggregatedProps(
-                validationContext.StreamTypeService.EventTypes, selectExpressions, contextPropertyRegistry);
+                validationContext.StreamTypeService.EventTypes,
+                selectExpressions,
+                contextPropertyRegistry);
             hasNonAggregatedProperties = !nonAggregatedPropsSelect.IsEmpty();
 
             // Validate and set select-clause names and expressions
@@ -304,8 +337,10 @@ namespace com.espertech.esper.common.@internal.epl.subselect
                     throw new ExprValidationException("Subquery multi-column select is not allowed in this context.");
                 }
 
-                if (subselectSpec.GroupByExpressions == null && selectExpressions.Count > 1 &&
-                    aggExprNodesSelect.Count > 0 && hasNonAggregatedProperties) {
+                if (subselectSpec.GroupByExpressions == null &&
+                    selectExpressions.Count > 1 &&
+                    aggExprNodesSelect.Count > 0 &&
+                    hasNonAggregatedProperties) {
                     throw new ExprValidationException(
                         "Subquery with multi-column select requires that either all or none of the selected columns are under aggregation, unless a group-by clause is also specified");
                 }
@@ -330,7 +365,9 @@ namespace com.espertech.esper.common.@internal.epl.subselect
                     // validate group-by
                     for (var i = 0; i < groupByNodes.Length; i++) {
                         groupByNodes[i] = ExprNodeUtilityValidate.GetValidatedSubtree(
-                            ExprNodeOrigin.GROUPBY, groupByNodes[i], validationContext);
+                            ExprNodeOrigin.GROUPBY,
+                            groupByNodes[i],
+                            validationContext);
                         var minimal = ExprNodeUtilityValidate.IsMinimalExpression(groupByNodes[i]);
                         if (minimal != null) {
                             throw new ExprValidationException(
@@ -346,7 +383,8 @@ namespace com.espertech.esper.common.@internal.epl.subselect
                     if (firstNonZeroGroupBy != null) {
                         throw new ExprValidationException(
                             "Subselect with group-by requires that group-by properties are provided by the subselect stream only (" +
-                            firstNonZeroGroupBy.Textual + " is not)");
+                            firstNonZeroGroupBy.Textual +
+                            " is not)");
                     }
 
                     // Validate that this is a grouped full-aggregated case
@@ -371,11 +409,15 @@ namespace com.espertech.esper.common.@internal.epl.subselect
                         var revalidate = false;
                         for (var j = 0; j < groupByExpressions.Length; j++) {
                             var foundPairs = ExprNodeUtilityQuery.FindExpression(
-                                selectExpression, groupByExpressions[j]);
+                                selectExpression,
+                                groupByExpressions[j]);
                             foreach (var pair in foundPairs) {
                                 CodegenFieldName aggName = new CodegenFieldNameSubqueryAgg(subqueryNum);
                                 var replacement = new ExprAggregateNodeGroupKey(
-                                    groupByExpressions.Length, j, groupByExpressions[j].Forge.EvaluationType, aggName);
+                                    groupByExpressions.Length,
+                                    j,
+                                    groupByExpressions[j].Forge.EvaluationType,
+                                    aggName);
                                 if (pair.First == null) {
                                     selectExpressions[i] = replacement;
                                 }
@@ -395,7 +437,9 @@ namespace com.espertech.esper.common.@internal.epl.subselect
                         // if the select-clause expression changed, revalidate it
                         if (revalidate) {
                             selectExpression = ExprNodeUtilityValidate.GetValidatedSubtree(
-                                ExprNodeOrigin.SELECT, selectExpression, validationContext);
+                                ExprNodeOrigin.SELECT,
+                                selectExpression,
+                                validationContext);
                             selectExpressions[i] = selectExpression;
                         }
                     } // end of for loop
@@ -408,11 +452,23 @@ namespace com.espertech.esper.common.@internal.epl.subselect
                     groupByExpressions,
                     aggExpressionNodesHaving,
                     Collections.GetEmptyList<ExprAggregateNode>(),
-                    groupKeyExpressions, hasGroupBy, annotations, services.VariableCompileTimeResolver, true,
-                    subselectSpec.Raw.WhereClause, subselectSpec.Raw.HavingClause,
-                    subselectTypeService.EventTypes, null, subselectSpec.Raw.OptionalContextName, null, null, false,
-                    false, false,
-                    services.ImportServiceCompileTime, statement.StatementName);
+                    groupKeyExpressions,
+                    hasGroupBy,
+                    annotations,
+                    services.VariableCompileTimeResolver,
+                    true,
+                    subselectSpec.Raw.WhereClause,
+                    subselectSpec.Raw.HavingClause,
+                    subselectTypeService.EventTypes,
+                    null,
+                    subselectSpec.Raw.OptionalContextName,
+                    null,
+                    null,
+                    false,
+                    false,
+                    false,
+                    services.ImportServiceCompileTime,
+                    statement.StatementName);
 
                 // assign select-clause
                 if (!selectExpressions.IsEmpty()) {
@@ -444,7 +500,9 @@ namespace com.espertech.esper.common.@internal.epl.subselect
             var correlatedSubquery = false;
             if (filterExpr != null) {
                 filterExpr = ExprNodeUtilityValidate.GetValidatedSubtree(
-                    ExprNodeOrigin.FILTER, filterExpr, validationContext);
+                    ExprNodeOrigin.FILTER,
+                    filterExpr,
+                    validationContext);
                 if (filterExpr.Forge.EvaluationType.GetBoxedType() != typeof(bool?)) {
                     throw new ExprValidationException("Subselect filter expression must return a boolean value");
                 }
@@ -462,7 +520,8 @@ namespace com.espertech.esper.common.@internal.epl.subselect
             }
 
             var viewResourceDelegateDesc = ViewResourceVerifyHelper.VerifyPreviousAndPriorRequirements(
-                new[] {viewForges}, viewResourceDelegateSubselect)[0];
+                new[] {viewForges},
+                viewResourceDelegateSubselect)[0];
             if (ViewResourceDelegateDesc.HasPrior(new[] {viewResourceDelegateDesc})) {
                 if (!viewResourceDelegateDesc.PriorRequests.IsEmpty()) {
                     viewForges.Add(
@@ -501,7 +560,11 @@ namespace com.espertech.esper.common.@internal.epl.subselect
 
             // Validate presence of a data window
             ValidateSubqueryDataWindow(
-                subselect, correlatedSubquery, hasNonAggregatedProperties, propertiesGroupBy, nonAggregatedPropsSelect);
+                subselect,
+                correlatedSubquery,
+                hasNonAggregatedProperties,
+                propertiesGroupBy,
+                nonAggregatedPropsSelect);
 
             // Determine strategy factories
             //
@@ -518,7 +581,8 @@ namespace com.espertech.esper.common.@internal.epl.subselect
 
                     if (!disableIndexShare && namedWindowInner.IsEnableIndexShare) {
                         ValidateContextAssociation(
-                            statement.ContextName, namedWindowInner.ContextName,
+                            statement.ContextName,
+                            namedWindowInner.ContextName,
                             "named window '" + namedWindowInner.EventType.Name + "'");
                         if (queryPlanLogging && QUERY_PLAN_LOG.IsInfoEnabled) {
                             QUERY_PLAN_LOG.Info("prefering shared index");
@@ -526,13 +590,28 @@ namespace com.espertech.esper.common.@internal.epl.subselect
 
                         var fullTableScanX = HintEnum.SET_NOINDEX.GetHint(annotations) != null;
                         var excludePlanHint = ExcludePlanHint.GetHint(
-                            allStreamNames, statement.StatementRawInfo, services);
+                            allStreamNames,
+                            statement.StatementRawInfo,
+                            services);
                         var joinedPropPlan = QueryPlanIndexBuilder.GetJoinProps(
-                            filterExpr, outerEventTypes.Length, subselectTypeService.EventTypes, excludePlanHint);
+                            filterExpr,
+                            outerEventTypes.Length,
+                            subselectTypeService.EventTypes,
+                            excludePlanHint);
                         var strategyForgeX = new SubSelectStrategyFactoryIndexShareForge(
-                            subqueryNum, subselectActivation, outerEventTypesSelect, namedWindowInner, null,
-                            fullTableScanX, indexHint, joinedPropPlan, filterExprEval, groupByNodes,
-                            aggregationServiceForgeDesc, statement, services);
+                            subqueryNum,
+                            subselectActivation,
+                            outerEventTypesSelect,
+                            namedWindowInner,
+                            null,
+                            fullTableScanX,
+                            indexHint,
+                            joinedPropPlan,
+                            filterExprEval,
+                            groupByNodes,
+                            aggregationServiceForgeDesc,
+                            statement,
+                            services);
                         return new SubSelectFactoryForge(subqueryNum, subselectActivation.Activator, strategyForgeX);
                     }
                 }
@@ -542,16 +621,30 @@ namespace com.espertech.esper.common.@internal.epl.subselect
             if (filterStreamSpec is TableQueryStreamSpec) {
                 var tableSpec = (TableQueryStreamSpec) filterStreamSpec;
                 ValidateContextAssociation(
-                    statement.StatementRawInfo.ContextName, tableSpec.Table.OptionalContextName,
+                    statement.StatementRawInfo.ContextName,
+                    tableSpec.Table.OptionalContextName,
                     "table '" + tableSpec.Table.TableName + "'");
                 var fullTableScanX = HintEnum.SET_NOINDEX.GetHint(annotations) != null;
                 var excludePlanHint = ExcludePlanHint.GetHint(allStreamNames, statement.StatementRawInfo, services);
                 var joinedPropPlan = QueryPlanIndexBuilder.GetJoinProps(
-                    filterExpr, outerEventTypes.Length, subselectTypeService.EventTypes, excludePlanHint);
+                    filterExpr,
+                    outerEventTypes.Length,
+                    subselectTypeService.EventTypes,
+                    excludePlanHint);
                 var strategyForgeX = new SubSelectStrategyFactoryIndexShareForge(
-                    subqueryNum, subselectActivation, outerEventTypesSelect, null, tableSpec.Table,
-                    fullTableScanX, indexHint, joinedPropPlan, filterExprEval, groupByNodes, aggregationServiceForgeDesc,
-                    statement, services);
+                    subqueryNum,
+                    subselectActivation,
+                    outerEventTypesSelect,
+                    null,
+                    tableSpec.Table,
+                    fullTableScanX,
+                    indexHint,
+                    joinedPropPlan,
+                    filterExprEval,
+                    groupByNodes,
+                    aggregationServiceForgeDesc,
+                    statement,
+                    services);
                 return new SubSelectFactoryForge(subqueryNum, subselectActivation.Activator, strategyForgeX);
             }
 
@@ -570,22 +663,39 @@ namespace com.espertech.esper.common.@internal.epl.subselect
                     namedWindowFilterExpr =
                         ExprNodeUtilityMake.ConnectExpressionsByLogicalAndWhenNeeded(namedSpec.FilterExpressions);
                     namedWindowFilterQueryGraph = EPLValidationUtil.ValidateFilterGetQueryGraphSafe(
-                        namedWindowFilterExpr, types, statement.StatementRawInfo, services);
+                        namedWindowFilterExpr,
+                        types,
+                        statement.StatementRawInfo,
+                        services);
                 }
             }
 
             // handle local stream + named-window-stream
             var fullTableScan = HintEnum.SET_NOINDEX.GetHint(annotations) != null;
             var indexPair = DetermineSubqueryIndexFactory(
-                filterExpr, eventType,
-                outerEventTypes, subselectTypeService, fullTableScan, queryPlanLogging, optionalUniqueProps, statement,
-                subselect, services);
+                filterExpr,
+                eventType,
+                outerEventTypes,
+                subselectTypeService,
+                fullTableScan,
+                queryPlanLogging,
+                optionalUniqueProps,
+                statement,
+                subselect,
+                services);
 
             SubSelectStrategyFactoryForge strategyForge = new SubSelectStrategyFactoryLocalViewPreloadedForge(
-                viewForges, viewResourceDelegateDesc, indexPair,
-                filterExpr, correlatedSubquery, aggregationServiceForgeDesc, /* viewResourceDelegateVerified */
-                subqueryNum, groupByNodes, namedWindow,
-                namedWindowFilterExpr, namedWindowFilterQueryGraph);
+                viewForges,
+                viewResourceDelegateDesc,
+                indexPair,
+                filterExpr,
+                correlatedSubquery,
+                aggregationServiceForgeDesc, /* viewResourceDelegateVerified */
+                subqueryNum,
+                groupByNodes,
+                namedWindow,
+                namedWindowFilterExpr,
+                namedWindowFilterQueryGraph);
 
             return new SubSelectFactoryForge(subqueryNum, subselectActivation.Activator, strategyForge);
         }
@@ -651,11 +761,19 @@ namespace com.espertech.esper.common.@internal.epl.subselect
                 StatementCompileTimeServices services)
         {
             var result = DetermineSubqueryIndexInternalFactory(
-                filterExpr, viewableEventType, outerEventTypes, subselectTypeService, fullTableScan,
-                optionalUniqueProps, statement, subselect, services);
+                filterExpr,
+                viewableEventType,
+                outerEventTypes,
+                subselectTypeService,
+                fullTableScan,
+                optionalUniqueProps,
+                statement,
+                subselect,
+                services);
 
             var hook = QueryPlanIndexHookUtil.GetHook(
-                statement.StatementSpec.Annotations, services.ImportServiceCompileTime);
+                statement.StatementSpec.Annotations,
+                services.ImportServiceCompileTime);
             if (queryPlanLogging && (QUERY_PLAN_LOG.IsInfoEnabled || hook != null)) {
                 QUERY_PLAN_LOG.Info("local index");
                 QUERY_PLAN_LOG.Info("strategy " + result.Second.ToQueryPlan());
@@ -666,7 +784,9 @@ namespace com.espertech.esper.common.@internal.epl.subselect
                         new QueryPlanIndexDescSubquery(
                             new[] {
                                 new IndexNameAndDescPair(null, result.First.EventTableClass.Name)
-                            }, subselect.SubselectNumber, strategyName));
+                            },
+                            subselect.SubselectNumber,
+                            strategyName));
                 }
             }
 
@@ -682,8 +802,11 @@ namespace com.espertech.esper.common.@internal.epl.subselect
                 if (optionalProvidedContextName == null ||
                     !optionalProvidedContextName.Equals(entityDeclaredContextName)) {
                     throw new ExprValidationException(
-                        "Mismatch in context specification, the context for the " + entityDesc + " is '" +
-                        entityDeclaredContextName + "' and the query specifies " +
+                        "Mismatch in context specification, the context for the " +
+                        entityDesc +
+                        " is '" +
+                        entityDeclaredContextName +
+                        "' and the query specifies " +
                         (optionalProvidedContextName == null
                             ? "no context "
                             : "context '" + optionalProvidedContextName + "'"));
@@ -711,14 +834,21 @@ namespace com.espertech.esper.common.@internal.epl.subselect
             if (filterExpr == null || fullTableScan) {
                 var tableForge = new UnindexedEventTableFactoryFactoryForge(0, subqueryNumber, false);
                 var strategy = new SubordFullTableScanLookupStrategyFactoryForge();
-                return new Pair<EventTableFactoryFactoryForge, SubordTableLookupStrategyFactoryForge>(tableForge, strategy);
+                return new Pair<EventTableFactoryFactoryForge, SubordTableLookupStrategyFactoryForge>(
+                    tableForge,
+                    strategy);
             }
 
             // Build a list of streams and indexes
             var excludePlanHint = ExcludePlanHint.GetHint(
-                subselectTypeService.StreamNames, statement.StatementRawInfo, services);
+                subselectTypeService.StreamNames,
+                statement.StatementRawInfo,
+                services);
             var joinPropDesc = QueryPlanIndexBuilder.GetJoinProps(
-                filterExpr, outerEventTypes.Length, subselectTypeService.EventTypes, excludePlanHint);
+                filterExpr,
+                outerEventTypes.Length,
+                subselectTypeService.EventTypes,
+                excludePlanHint);
             var hashKeys = joinPropDesc.HashProps;
             var rangeKeys = joinPropDesc.RangeProps;
             IList<SubordPropHashKeyForge> hashKeyList = new List<SubordPropHashKeyForge>(hashKeys.Values);
@@ -761,7 +891,13 @@ namespace com.espertech.esper.common.@internal.epl.subselect
                 hashCoercionDesc = CoercionUtil.GetCoercionTypesHash(viewableEventType, indexedProps, hashKeyList);
                 rangeCoercionDesc = new CoercionDesc(false, null);
                 eventTableFactory = new PropertyHashedFactoryFactoryForge(
-                    0, subqueryNumber, false, indexedProps, viewableEventType, unique, hashCoercionDesc);
+                    0,
+                    subqueryNumber,
+                    false,
+                    indexedProps,
+                    viewableEventType,
+                    unique,
+                    hashCoercionDesc);
             }
             else if (hashKeys.IsEmpty() && rangeKeys.IsEmpty()) {
                 rangeCoercionDesc = new CoercionDesc(false, null);
@@ -769,15 +905,26 @@ namespace com.espertech.esper.common.@internal.epl.subselect
                     var prop = joinPropDesc.InKeywordSingleIndex.IndexedProp;
                     hashCoercionDesc = new CoercionDesc(false, new[] {viewableEventType.GetPropertyType(prop)});
                     eventTableFactory = new PropertyHashedFactoryFactoryForge(
-                        0, subqueryNumber, false, new[] {prop}, viewableEventType, unique, hashCoercionDesc);
+                        0,
+                        subqueryNumber,
+                        false,
+                        new[] {prop},
+                        viewableEventType,
+                        unique,
+                        hashCoercionDesc);
                     inKeywordSingleIdxKeys = joinPropDesc.InKeywordSingleIndex.Expressions;
                 }
                 else if (joinPropDesc.InKeywordMultiIndex != null) {
                     var props = joinPropDesc.InKeywordMultiIndex.IndexedProp;
                     hashCoercionDesc = new CoercionDesc(
-                        false, EventTypeUtility.GetPropertyTypes(viewableEventType, props));
+                        false,
+                        EventTypeUtility.GetPropertyTypes(viewableEventType, props));
                     eventTableFactory = new PropertyHashedArrayFactoryFactoryForge(
-                        0, viewableEventType, props, unique, false);
+                        0,
+                        viewableEventType,
+                        props,
+                        unique,
+                        false);
                     inKeywordMultiIdxKey = joinPropDesc.InKeywordMultiIndex.Expression;
                 }
                 else {
@@ -788,9 +935,16 @@ namespace com.espertech.esper.common.@internal.epl.subselect
             else if (hashKeys.IsEmpty() && rangeKeys.Count == 1) {
                 var indexedProp = rangeKeys.Keys.First();
                 var coercionRangeTypes = CoercionUtil.GetCoercionTypesRange(
-                    viewableEventType, rangeKeys, outerEventTypes);
+                    viewableEventType,
+                    rangeKeys,
+                    outerEventTypes);
                 eventTableFactory = new PropertySortedFactoryFactoryForge(
-                    0, subqueryNumber, false, indexedProp, viewableEventType, coercionRangeTypes);
+                    0,
+                    subqueryNumber,
+                    false,
+                    indexedProp,
+                    viewableEventType,
+                    coercionRangeTypes);
                 hashCoercionDesc = new CoercionDesc(false, null);
                 rangeCoercionDesc = coercionRangeTypes;
             }
@@ -799,22 +953,35 @@ namespace com.espertech.esper.common.@internal.epl.subselect
                 var coercionKeyTypes = SubordPropUtil.GetCoercionTypes(hashKeys.Values);
                 var indexedRangeProps = rangeKeys.Keys.ToArray();
                 var coercionRangeTypes = CoercionUtil.GetCoercionTypesRange(
-                    viewableEventType, rangeKeys, outerEventTypes);
+                    viewableEventType,
+                    rangeKeys,
+                    outerEventTypes);
                 eventTableFactory = new PropertyCompositeEventTableFactoryFactoryForge(
-                    0, subqueryNumber, false, indexedKeyProps, coercionKeyTypes, indexedRangeProps,
-                    coercionRangeTypes.CoercionTypes, viewableEventType);
+                    0,
+                    subqueryNumber,
+                    false,
+                    indexedKeyProps,
+                    coercionKeyTypes,
+                    indexedRangeProps,
+                    coercionRangeTypes.CoercionTypes,
+                    viewableEventType);
                 hashCoercionDesc = CoercionUtil.GetCoercionTypesHash(viewableEventType, indexedKeyProps, hashKeyList);
                 rangeCoercionDesc = coercionRangeTypes;
             }
 
             var subqTableLookupStrategyFactory = SubordinateTableLookupStrategyUtil.GetLookupStrategy(
                 outerEventTypes,
-                hashKeyList, hashCoercionDesc, rangeKeyList, rangeCoercionDesc,
+                hashKeyList,
+                hashCoercionDesc,
+                rangeKeyList,
+                rangeCoercionDesc,
                 inKeywordSingleIdxKeys,
-                inKeywordMultiIdxKey, false);
+                inKeywordMultiIdxKey,
+                false);
 
             return new Pair<EventTableFactoryFactoryForge, SubordTableLookupStrategyFactoryForge>(
-                eventTableFactory, subqTableLookupStrategyFactory);
+                eventTableFactory,
+                subqTableLookupStrategyFactory);
         }
 
         private static StreamTypeService GetDeclaredExprTypeService(
@@ -870,7 +1037,11 @@ namespace com.espertech.esper.common.@internal.epl.subselect
                 }
 
                 var availableTypes = new StreamTypeServiceImpl(
-                    eventTypes, streamNames, new bool[eventTypes.Length], false, false);
+                    eventTypes,
+                    streamNames,
+                    new bool[eventTypes.Length],
+                    false,
+                    false);
                 availableTypes.RequireStreamNames = true;
                 return availableTypes;
             }

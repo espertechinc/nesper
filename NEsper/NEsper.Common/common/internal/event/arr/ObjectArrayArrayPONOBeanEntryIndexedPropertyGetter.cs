@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -14,6 +15,7 @@ using com.espertech.esper.common.@internal.@event.bean.core;
 using com.espertech.esper.common.@internal.@event.bean.getter;
 using com.espertech.esper.common.@internal.@event.bean.service;
 using com.espertech.esper.common.@internal.@event.core;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.@event.arr
@@ -76,7 +78,9 @@ namespace com.espertech.esper.common.@internal.@event.arr
             CodegenClassScope codegenClassScope)
         {
             return UnderlyingGetCodegen(
-                CastUnderlying(typeof(object[]), beanExpression), codegenMethodScope, codegenClassScope);
+                CastUnderlying(typeof(object[]), beanExpression),
+                codegenMethodScope,
+                codegenClassScope);
         }
 
         public override CodegenExpression EventBeanExistsCodegen(
@@ -110,11 +114,15 @@ namespace com.espertech.esper.common.@internal.@event.arr
             var method = codegenMethodScope.MakeChild(typeof(object), GetType(), codegenClassScope)
                 .AddParam(typeof(object[]), "array");
             method.Block
-                .DeclareVar(typeof(object), "value", ArrayAtIndex(Ref("array"), Constant(propertyIndex)))
+                .DeclareVar<object>("value", ArrayAtIndex(Ref("array"), Constant(propertyIndex)))
                 .MethodReturn(
                     LocalMethod(
                         BaseNestableEventUtil.GetBeanArrayValueCodegen(
-                            codegenMethodScope, codegenClassScope, nestedGetter, index), Ref("value")));
+                            codegenMethodScope,
+                            codegenClassScope,
+                            nestedGetter,
+                            index),
+                        Ref("value")));
             return method;
         }
     }

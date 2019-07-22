@@ -46,17 +46,22 @@ namespace com.espertech.esper.common.client.soda
                 case CreateSchemaClauseTypeDef.VARIANT:
                     writer.Write(" variant");
                     break;
+
                 case CreateSchemaClauseTypeDef.MAP:
                     writer.Write(" map");
                     break;
+
                 case CreateSchemaClauseTypeDef.OBJECTARRAY:
                     writer.Write(" objectarray");
                     break;
+
                 case CreateSchemaClauseTypeDef.AVRO:
                     writer.Write(" avro");
                     break;
+
                 case CreateSchemaClauseTypeDef.NONE:
                     break;
+
                 default:
                     throw new ArgumentException("invalid value", nameof(typeDef));
             }

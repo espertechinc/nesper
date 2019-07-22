@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -19,6 +20,7 @@ using com.espertech.esper.common.@internal.@event.arr;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.enummethod.eval
@@ -74,39 +76,54 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             CodegenClassScope codegenClassScope)
         {
             CodegenExpressionField resultTypeMember = codegenClassScope.AddFieldUnshared(
-                true, typeof(ObjectArrayEventType),
-                Cast(typeof(ObjectArrayEventType), EventTypeUtility.ResolveTypeCodegen(forge.resultEventType, EPStatementInitServicesConstants.REF)));
+                true,
+                typeof(ObjectArrayEventType),
+                Cast(
+                    typeof(ObjectArrayEventType),
+                    EventTypeUtility.ResolveTypeCodegen(forge.resultEventType, EPStatementInitServicesConstants.REF)));
             CodegenExpressionField evalTypeMember = codegenClassScope.AddFieldUnshared(
-                true, typeof(ObjectArrayEventType),
-                Cast(typeof(ObjectArrayEventType), EventTypeUtility.ResolveTypeCodegen(forge.evalEventType, EPStatementInitServicesConstants.REF)));
+                true,
+                typeof(ObjectArrayEventType),
+                Cast(
+                    typeof(ObjectArrayEventType),
+                    EventTypeUtility.ResolveTypeCodegen(forge.evalEventType, EPStatementInitServicesConstants.REF)));
 
             ExprForgeCodegenSymbol scope = new ExprForgeCodegenSymbol(false, null);
             CodegenMethod methodNode = codegenMethodScope.MakeChildWithScope(
-                    forge.initialization.EvaluationType, typeof(EnumAggregateScalarForgeEval), scope, codegenClassScope)
+                    forge.initialization.EvaluationType,
+                    typeof(EnumAggregateScalarForgeEval),
+                    scope,
+                    codegenClassScope)
                 .AddParam(EnumForgeCodegenNames.PARAMS);
 
             Type initializationEvalType = forge.initialization.EvaluationType;
             Type innerEvalType = forge.innerExpression.EvaluationType;
             CodegenBlock block = methodNode.Block;
             block.DeclareVar(
-                    initializationEvalType, "value",
+                    initializationEvalType,
+                    "value",
                     forge.initialization.EvaluateCodegen(initializationEvalType, methodNode, scope, codegenClassScope))
                 .IfCondition(ExprDotMethod(EnumForgeCodegenNames.REF_ENUMCOLL, "isEmpty"))
                 .BlockReturn(@Ref("value"));
-            block.DeclareVar(
-                    typeof(ObjectArrayEventBean), "resultEvent",
+            block.DeclareVar<ObjectArrayEventBean>(
+                    "resultEvent",
                     NewInstance<ObjectArrayEventBean>(NewArrayByLength(typeof(object), Constant(1)), resultTypeMember))
-                .DeclareVar(
-                    typeof(ObjectArrayEventBean), "evalEvent",
+                .DeclareVar<ObjectArrayEventBean>(
+                    "evalEvent",
                     NewInstance<ObjectArrayEventBean>(NewArrayByLength(typeof(object), Constant(1)), evalTypeMember))
                 .AssignArrayElement(EnumForgeCodegenNames.REF_EPS, Constant(forge.streamNumLambda), @Ref("resultEvent"))
-                .AssignArrayElement(EnumForgeCodegenNames.REF_EPS, Constant(forge.streamNumLambda + 1), @Ref("evalEvent"))
-                .DeclareVar(typeof(object[]), "resultProps", ExprDotMethod(@Ref("resultEvent"), "getProperties"))
-                .DeclareVar(typeof(object[]), "evalProps", ExprDotMethod(@Ref("evalEvent"), "getProperties"));
+                .AssignArrayElement(
+                    EnumForgeCodegenNames.REF_EPS,
+                    Constant(forge.streamNumLambda + 1),
+                    @Ref("evalEvent"))
+                .DeclareVar<object[]>("resultProps", ExprDotMethod(@Ref("resultEvent"), "getProperties"))
+                .DeclareVar<object[]>("evalProps", ExprDotMethod(@Ref("evalEvent"), "getProperties"));
             block.ForEach(typeof(object), "next", EnumForgeCodegenNames.REF_ENUMCOLL)
                 .AssignArrayElement("resultProps", Constant(0), @Ref("value"))
                 .AssignArrayElement("evalProps", Constant(0), @Ref("next"))
-                .AssignRef("value", forge.innerExpression.EvaluateCodegen(innerEvalType, methodNode, scope, codegenClassScope))
+                .AssignRef(
+                    "value",
+                    forge.innerExpression.EvaluateCodegen(innerEvalType, methodNode, scope, codegenClassScope))
                 .BlockEnd();
             block.MethodReturn(@Ref("value"));
             return LocalMethod(methodNode, args.Eps, args.Enumcoll, args.IsNewData, args.ExprCtx);

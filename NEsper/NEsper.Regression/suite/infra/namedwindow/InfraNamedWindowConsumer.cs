@@ -112,7 +112,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                 env.CompileDeployWBusPublicType(epl, new RegressionPath());
 
                 IDictionary<string, object> @event = new Dictionary<string, object>();
-                @event.Put("id", 1);
+                @event.Put("Id", 1);
                 for (var i = 0; i < 10000; i++) {
                     env.SendEventMap(@event, "IncomingEvent");
                 }

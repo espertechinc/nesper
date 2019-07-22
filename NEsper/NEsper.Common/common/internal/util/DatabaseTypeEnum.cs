@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
@@ -91,39 +92,59 @@ namespace com.espertech.esper.common.@internal.util
         static DatabaseTypeEnum()
         {
             InstanceBindingString = new ProxyDatabaseTypeBinding<string>(
-                (rawData, columnName) => Convert.ToString(rawData),
+                (
+                    rawData,
+                    columnName) => Convert.ToString(rawData),
                 () => CodegenExpressionBuilder.PublicConstValue(typeof(DatabaseTypeEnum), "InstanceBindingString"));
 
             InstanceBindingDecimal = new ProxyDatabaseTypeBinding<decimal>(
-                (rawData, columnName) => Convert.ToDecimal(rawData),
+                (
+                    rawData,
+                    columnName) => Convert.ToDecimal(rawData),
                 () => CodegenExpressionBuilder.PublicConstValue(typeof(DatabaseTypeEnum), "InstanceBindingDecimal"));
             InstanceBindingDouble = new ProxyDatabaseTypeBinding<double>(
-                (rawData, columnName) => Convert.ToDouble(rawData),
+                (
+                    rawData,
+                    columnName) => Convert.ToDouble(rawData),
                 () => CodegenExpressionBuilder.PublicConstValue(typeof(DatabaseTypeEnum), "InstanceBindingDouble"));
             InstanceBindingFloat = new ProxyDatabaseTypeBinding<float>(
-                (rawData, columnName) => Convert.ToSingle(rawData),
+                (
+                    rawData,
+                    columnName) => Convert.ToSingle(rawData),
                 () => CodegenExpressionBuilder.PublicConstValue(typeof(DatabaseTypeEnum), "InstanceBindingFloat"));
 
             InstanceBindingInt64 = new ProxyDatabaseTypeBinding<long>(
-                (rawData, columnName) => Convert.ToInt64(rawData),
+                (
+                    rawData,
+                    columnName) => Convert.ToInt64(rawData),
                 () => CodegenExpressionBuilder.PublicConstValue(typeof(DatabaseTypeEnum), "InstanceBindingInt64"));
             InstanceBindingInt32 = new ProxyDatabaseTypeBinding<int>(
-                (rawData, columnName) => Convert.ToInt32(rawData),
+                (
+                    rawData,
+                    columnName) => Convert.ToInt32(rawData),
                 () => CodegenExpressionBuilder.PublicConstValue(typeof(DatabaseTypeEnum), "InstanceBindingInt32"));
             InstanceBindingInt16 = new ProxyDatabaseTypeBinding<short>(
-                (rawData, columnName) => Convert.ToInt16(rawData),
+                (
+                    rawData,
+                    columnName) => Convert.ToInt16(rawData),
                 () => CodegenExpressionBuilder.PublicConstValue(typeof(DatabaseTypeEnum), "InstanceBindingInt16"));
 
 
             InstanceBindingByte = new ProxyDatabaseTypeBinding<byte>(
-                (rawData, columnName) => Convert.ToByte(rawData),
+                (
+                    rawData,
+                    columnName) => Convert.ToByte(rawData),
                 () => CodegenExpressionBuilder.PublicConstValue(typeof(DatabaseTypeEnum), "InstanceBindingByte"));
             InstanceBindingByteArray = new ProxyDatabaseTypeBinding<byte[]>(
-                (rawData, columnName) => Convert.ChangeType(rawData, typeof(byte[])),
+                (
+                    rawData,
+                    columnName) => Convert.ChangeType(rawData, typeof(byte[])),
                 () => CodegenExpressionBuilder.PublicConstValue(typeof(DatabaseTypeEnum), "InstanceBindingByteArray"));
 
             InstanceBindingBoolean = new ProxyDatabaseTypeBinding<bool>(
-                (rawData, columnName) => Convert.ToBoolean(rawData),
+                (
+                    rawData,
+                    columnName) => Convert.ToBoolean(rawData),
                 () => CodegenExpressionBuilder.PublicConstValue(typeof(DatabaseTypeEnum), "InstanceBindingBoolean"));
 
             BINDINGS = new Dictionary<DatabaseTypeEnum, DatabaseTypeBinding>();

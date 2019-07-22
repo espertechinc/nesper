@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.view.core;
@@ -59,7 +60,8 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.onset
                 var newDataOut = new EventBean[1];
                 newDataOut[0] =
                     agentInstanceContext.EventBeanTypedEventFactory.AdapterForTypedMap(
-                        values, factory.StatementEventType);
+                        values,
+                        factory.StatementEventType);
                 Child.Update(newDataOut, null);
             }
         }
@@ -67,7 +69,8 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.onset
         public override IEnumerator<EventBean> GetEnumerator()
         {
             var values = factory.VariableReadWrite.Iterate(
-                agentInstanceContext.VariableManagementService, agentInstanceContext.AgentInstanceId);
+                agentInstanceContext.VariableManagementService,
+                agentInstanceContext.AgentInstanceId);
             EventBean theEvent =
                 agentInstanceContext.EventBeanTypedEventFactory.AdapterForTypedMap(values, factory.StatementEventType);
             yield return theEvent;

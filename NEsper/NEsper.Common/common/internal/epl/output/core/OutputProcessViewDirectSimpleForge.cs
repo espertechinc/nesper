@@ -52,7 +52,7 @@ namespace com.espertech.esper.common.@internal.epl.output.core
                     EqualsNull(ExprDotMethod(Ref("newOldEvents"), "getFirst")),
                     EqualsNull(ExprDotMethod(Ref("newOldEvents"), "getSecond")));
                 method.Block
-                    .DeclareVar(typeof(bool), "forceOutput", Constant(false))
+                    .DeclareVar<bool>("forceOutput", Constant(false))
                     .IfCondition(And(EqualsNull(REF_NEWDATA), EqualsNull(REF_OLDDATA)))
                     .IfCondition(Or(EqualsNull(Ref("newOldEvents")), newOldIsNull))
                     .AssignRef("forceOutput", ConstantTrue());
@@ -104,11 +104,13 @@ namespace com.espertech.esper.common.@internal.epl.output.core
                         Ref("newOldEvents")));
             }
             else {
-                var ifPairHasData = method.Block.IfCondition(
-                    Or(
-                        NotEqualsNull(ExprDotMethod(Ref("newOldEvents"), "getFirst")),
-                        NotEqualsNull(ExprDotMethod(Ref("newOldEvents"), "getSecond"))));
-                ifPairHasData.ExprDotMethod(REF_CHILD, "newResult", Ref("newOldEvents"))
+                var ifPairHasData = method.Block
+                    .IfCondition(
+                        Or(
+                            NotEqualsNull(ExprDotMethod(Ref("newOldEvents"), "getFirst")),
+                            NotEqualsNull(ExprDotMethod(Ref("newOldEvents"), "getSecond"))));
+                ifPairHasData
+                    .ExprDotMethod(REF_CHILD, "newResult", Ref("newOldEvents"))
                     .IfElseIf(And(EqualsNull(Ref("newData")), EqualsNull(Ref("oldData"))))
                     .ExprDotMethod(REF_CHILD, "newResult", Ref("newOldEvents"));
             }
@@ -122,7 +124,7 @@ namespace com.espertech.esper.common.@internal.epl.output.core
         {
             method.Block.MethodReturn(
                 StaticMethod(
-                    typeof(OutputStrategyUtil), "getIterator", Ref(NAME_JOINEXECSTRATEGY), Ref(NAME_RESULTSETPROCESSOR),
+                    typeof(OutputStrategyUtil), "GetEnumerator", Ref(NAME_JOINEXECSTRATEGY), Ref(NAME_RESULTSETPROCESSOR),
                     Ref(NAME_PARENTVIEW), Constant(false)));
         }
 
@@ -136,14 +138,13 @@ namespace com.espertech.esper.common.@internal.epl.output.core
             CodegenClassScope classScope)
         {
             method.Block
-                .DeclareVar(
-                    typeof(bool), "isGenerateSynthetic",
+                .DeclareVar<bool>(
+"isGenerateSynthetic",
                     ExprDotMethod(Ref("o." + NAME_STATEMENTRESULTSVC), "isMakeSynthetic"))
-                .DeclareVar(
-                    typeof(bool), "isGenerateNatural",
+                .DeclareVar<bool>(
+"isGenerateNatural",
                     ExprDotMethod(Ref("o." + NAME_STATEMENTRESULTSVC), "isMakeNatural"))
-                .DeclareVar(
-                    typeof(UniformPair<EventBean>), typeof(EventBean[]), "newOldEvents",
+                .DeclareVar<UniformPair<EventBean>>("newOldEvents",
                     ExprDotMethod(
                         Ref(NAME_RESULTSETPROCESSOR), rspMethod, REF_NEWDATA, REF_OLDDATA, Ref("isGenerateSynthetic")))
                 .IfCondition(And(Not(Ref("isGenerateSynthetic")), Not(Ref("isGenerateNatural")))).BlockReturnNoValue();

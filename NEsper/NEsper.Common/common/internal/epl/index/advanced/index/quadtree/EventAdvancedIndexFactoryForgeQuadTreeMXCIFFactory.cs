@@ -15,13 +15,15 @@ namespace com.espertech.esper.common.@internal.epl.index.advanced.index.quadtree
 {
     public class EventAdvancedIndexFactoryForgeQuadTreeMXCIFFactory : EventAdvancedIndexFactoryForgeQuadTreeFactory
     {
-        public static readonly EventAdvancedIndexFactoryForgeQuadTreeMXCIFFactory INSTANCE = new EventAdvancedIndexFactoryForgeQuadTreeMXCIFFactory();
+        public static readonly EventAdvancedIndexFactoryForgeQuadTreeMXCIFFactory INSTANCE =
+            new EventAdvancedIndexFactoryForgeQuadTreeMXCIFFactory();
 
         private EventAdvancedIndexFactoryForgeQuadTreeMXCIFFactory()
         {
         }
 
-        public override EventAdvancedIndexFactoryForge Forge => EventAdvancedIndexFactoryForgeQuadTreeMXCIFForge.INSTANCE;
+        public override EventAdvancedIndexFactoryForge Forge =>
+            EventAdvancedIndexFactoryForgeQuadTreeMXCIFForge.INSTANCE;
 
         public override EventTable Make(
             EventAdvancedIndexConfigStatement configStatement,
@@ -29,8 +31,17 @@ namespace com.espertech.esper.common.@internal.epl.index.advanced.index.quadtree
             EventTableOrganization organization)
         {
             var qt = (AdvancedIndexConfigContextPartitionQuadTree) configCP;
-            var quadTree = MXCIFQuadTreeFactory<object>.Make(qt.X, qt.Y, qt.Width, qt.Height, qt.LeafCapacity, qt.MaxTreeHeight);
-            return new EventTableQuadTreeMXCIFImpl(organization, (AdvancedIndexConfigStatementMXCIFQuadtree) configStatement, quadTree);
+            var quadTree = MXCIFQuadTreeFactory<object>.Make(
+                qt.X,
+                qt.Y,
+                qt.Width,
+                qt.Height,
+                qt.LeafCapacity,
+                qt.MaxTreeHeight);
+            return new EventTableQuadTreeMXCIFImpl(
+                organization,
+                (AdvancedIndexConfigStatementMXCIFQuadtree) configStatement,
+                quadTree);
         }
 
         public override EventAdvancedIndexConfigStatementForge ToConfigStatement(ExprNode[] indexedExpr)

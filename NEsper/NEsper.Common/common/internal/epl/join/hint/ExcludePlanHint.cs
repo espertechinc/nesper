@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.annotation;
 using com.espertech.esper.common.@internal.compile.stage2;
@@ -58,7 +59,8 @@ namespace com.espertech.esper.common.@internal.epl.join.hint
 
                 ExprForge forge = ExcludePlanHintExprUtil.ToExpression(hint, rawInfo, services);
                 if (Boxing.GetBoxedType(forge.EvaluationType) != typeof(bool?)) {
-                    throw new ExprValidationException("Expression provided for hint " + HintEnum.EXCLUDE_PLAN + " must return a boolean value");
+                    throw new ExprValidationException(
+                        "Expression provided for hint " + HintEnum.EXCLUDE_PLAN + " must return a boolean value");
                 }
 
                 filters.Add(forge.ExprEvaluator);
@@ -75,8 +77,11 @@ namespace com.espertech.esper.common.@internal.epl.join.hint
         {
             EventBean @event = ExcludePlanHintExprUtil.ToEvent(
                 streamLookup,
-                streamIndexed, streamNames[streamLookup], streamNames[streamIndexed],
-                opType.GetName().ToLowerInvariant(), exprNodes);
+                streamIndexed,
+                streamNames[streamLookup],
+                streamNames[streamIndexed],
+                opType.GetName().ToLowerInvariant(),
+                exprNodes);
             if (queryPlanLogging && QUERY_PLAN_LOG.IsInfoEnabled) {
                 QUERY_PLAN_LOG.Info("Exclude-plan-hint combination " + EventBeanUtility.PrintEvent(@event));
             }

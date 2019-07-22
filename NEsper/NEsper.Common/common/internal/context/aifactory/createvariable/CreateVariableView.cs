@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.epl.variable.core;
@@ -46,13 +47,15 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createvariable
                 valuesOld.Put(variableName, oldValue);
                 EventBean eventOld =
                     _agentInstanceContext.EventBeanTypedEventFactory.AdapterForTypedMap(
-                        valuesOld, _parent.StatementEventType);
+                        valuesOld,
+                        _parent.StatementEventType);
 
                 IDictionary<string, object> valuesNew = new Dictionary<string, object>();
                 valuesNew.Put(variableName, newValue);
                 EventBean eventNew =
                     _agentInstanceContext.EventBeanTypedEventFactory.AdapterForTypedMap(
-                        valuesNew, _parent.StatementEventType);
+                        valuesNew,
+                        _parent.StatementEventType);
 
                 EventBean[] newDataToPost = {eventNew};
                 EventBean[] oldDataToPost = {eventOld};

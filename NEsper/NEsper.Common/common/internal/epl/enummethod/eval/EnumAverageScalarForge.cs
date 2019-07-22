@@ -7,12 +7,14 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.enummethod.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.compat;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.enummethod.eval
@@ -60,15 +62,18 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
         {
             var method = codegenMethodScope
                 .MakeChild(typeof(double?), typeof(EnumAverageScalarForge), codegenClassScope)
-                .AddParam(EnumForgeCodegenNames.PARAMS).Block
-                .DeclareVar(typeof(double), "sum", Constant(0d))
-                .DeclareVar(typeof(int), "count", Constant(0))
+                .AddParam(EnumForgeCodegenNames.PARAMS)
+                .Block
+                .DeclareVar<double>("sum", Constant(0d))
+                .DeclareVar<int>("count", Constant(0))
                 .ForEach(typeof(object), "num", EnumForgeCodegenNames.REF_ENUMCOLL)
-                .IfRefNull("num").BlockContinue()
+                .IfRefNull("num")
+                .BlockContinue()
                 .Increment("count")
                 .AssignRef("sum", Op(Ref("sum"), "+", ExprDotMethod(Ref("num"), "doubleValue")))
                 .BlockEnd()
-                .IfCondition(EqualsIdentity(Ref("count"), Constant(0))).BlockReturn(ConstantNull())
+                .IfCondition(EqualsIdentity(Ref("count"), Constant(0)))
+                .BlockReturn(ConstantNull())
                 .MethodReturn(Op(Ref("sum"), "/", Ref("count")));
             return LocalMethod(method, args.Expressions);
         }

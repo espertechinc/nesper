@@ -7,12 +7,14 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.util;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.expression.etc
@@ -41,12 +43,16 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
             CodegenClassScope codegenClassScope)
         {
             CodegenMethod methodNode = codegenMethodScope.MakeChild(
-                typeof(EventBean[]), typeof(ExprEvalEnumerationSingleToCollForge), codegenClassScope);
+                typeof(EventBean[]),
+                typeof(ExprEvalEnumerationSingleToCollForge),
+                codegenClassScope);
 
             methodNode.Block
-                .DeclareVar(typeof(EventBean), "event", enumerationForge.EvaluateGetEventBeanCodegen(methodNode, exprSymbol, codegenClassScope))
+                .DeclareVar<EventBean>(
+                    "event",
+                    enumerationForge.EvaluateGetEventBeanCodegen(methodNode, exprSymbol, codegenClassScope))
                 .IfRefNullReturnNull("event")
-                .DeclareVar(typeof(EventBean[]), "events", NewArrayByLength(typeof(EventBean), Constant(1)))
+                .DeclareVar<EventBean[]>("events", NewArrayByLength(typeof(EventBean), Constant(1)))
                 .AssignArrayElement(@Ref("events"), Constant(0), @Ref("event"))
                 .MethodReturn(@Ref("events"));
             return LocalMethod(methodNode);

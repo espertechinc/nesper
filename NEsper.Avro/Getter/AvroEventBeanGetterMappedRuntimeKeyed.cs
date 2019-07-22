@@ -44,13 +44,32 @@ namespace NEsper.Avro.Getter
             CodegenExpression beanExpression,
             CodegenExpression key)
         {
-            var method = codegenMethodScope.MakeChild(typeof(object), typeof(AvroEventBeanGetterMappedRuntimeKeyed), codegenClassScope)
-                .AddParam(typeof(EventBean), "event").AddParam(typeof(string), "key").Block
-                .DeclareVar(typeof(GenericRecord), "record", CodegenExpressionBuilder.CastUnderlying(typeof(GenericRecord), CodegenExpressionBuilder.Ref("event")))
-                .DeclareVar(
-                    typeof(IDictionary<string, object>), "values",
-                    CodegenExpressionBuilder.Cast(typeof(IDictionary<string, object>), CodegenExpressionBuilder.ExprDotMethod(CodegenExpressionBuilder.Ref("record"), "get", CodegenExpressionBuilder.Constant(_pos))))
-                .MethodReturn(CodegenExpressionBuilder.StaticMethod(typeof(AvroEventBeanGetterMapped), "getAvroMappedValueWNullCheck", CodegenExpressionBuilder.Ref("values"), CodegenExpressionBuilder.Ref("key")));
+            var method = codegenMethodScope.MakeChild(
+                    typeof(object),
+                    typeof(AvroEventBeanGetterMappedRuntimeKeyed),
+                    codegenClassScope)
+                .AddParam(typeof(EventBean), "event")
+                .AddParam(typeof(string), "key")
+                .Block
+                .DeclareVar<GenericRecord>(
+                    "record",
+                    CodegenExpressionBuilder.CastUnderlying(
+                        typeof(GenericRecord),
+                        CodegenExpressionBuilder.Ref("event")))
+                .DeclareVar<IDictionary<string, object>>(
+                    "values",
+                    CodegenExpressionBuilder.Cast(
+                        typeof(IDictionary<string, object>),
+                        CodegenExpressionBuilder.ExprDotMethod(
+                            CodegenExpressionBuilder.Ref("record"),
+                            "get",
+                            CodegenExpressionBuilder.Constant(_pos))))
+                .MethodReturn(
+                    CodegenExpressionBuilder.StaticMethod(
+                        typeof(AvroEventBeanGetterMapped),
+                        "getAvroMappedValueWNullCheck",
+                        CodegenExpressionBuilder.Ref("values"),
+                        CodegenExpressionBuilder.Ref("key")));
             return CodegenExpressionBuilder.LocalMethodBuild(method).Pass(beanExpression).Pass(key).Call();
         }
     }

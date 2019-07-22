@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.context.controller.core
@@ -40,7 +41,10 @@ namespace com.espertech.esper.common.@internal.context.controller.core
         public CodegenExpression ToExpression()
         {
             return NewInstance(
-                GetType(), Constant(OutermostContextName), Constant(ContextName), Constant(NestingLevel),
+                GetType(),
+                Constant(OutermostContextName),
+                Constant(ContextName),
+                Constant(NestingLevel),
                 Constant(NumNestingLevels));
         }
     }

@@ -8,11 +8,13 @@
 
 using System;
 using System.Reflection;
+
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.expression.dot.core;
 using com.espertech.esper.compat.collections;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 using static com.espertech.esper.common.@internal.epl.expression.dot.core.ExprDotNodeForgeStaticMethodEval;
 
@@ -38,7 +40,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.codegen
                 }
                 else {
                     args[i] = new StaticMethodCodegenArgDesc(
-                        name, childType,
+                        name,
+                        childType,
                         child.EvaluateCodegen(childType, codegenMethodScope, exprSymbol, codegenClassScope));
                 }
             }
@@ -65,7 +68,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.codegen
         {
             var catchBlock = tryBlock.TryEnd()
                 .AddCatch(typeof(Exception), "ex")
-                .DeclareVar(typeof(object[]), "argArray", NewArrayByLength(typeof(object), Constant(args.Length)));
+                .DeclareVar<object[]>("argArray", NewArrayByLength(typeof(object), Constant(args.Length)));
             for (var i = 0; i < args.Length; i++) {
                 catchBlock.AssignArrayElement("argArray", Constant(i), Ref(args[i].BlockRefName));
             }
@@ -74,11 +77,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.codegen
             catchBlock.StaticMethod(
                 typeof(ExprDotNodeForgeStaticMethodEval),
                 METHOD_STATICMETHODEVALHANDLEINVOCATIONEXCEPTION,
-                Constant(statementName), 
-                Constant(reflectionMethod.Name), 
+                Constant(statementName),
+                Constant(reflectionMethod.Name),
                 Constant(paramTypes),
                 Constant(classOrPropertyName),
-                Ref("argArray"), 
+                Ref("argArray"),
                 Ref("ex"),
                 Constant(rethrow));
         }
@@ -100,7 +103,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.codegen
 
             if (optionalTargetObject.GetType().IsEnum) {
                 return ExprDotMethod(
-                    EnumValue(optionalTargetObject.GetType(), optionalTargetObject.ToString()), reflectionMethod.Name,
+                    EnumValue(optionalTargetObject.GetType(), optionalTargetObject.ToString()),
+                    reflectionMethod.Name,
                     expressions);
             }
 

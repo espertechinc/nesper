@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.enummethod.codegen;
@@ -34,7 +35,10 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
         }
 
         public override EnumEval EnumEvaluator {
-            get => new EnumToMapScalarLambdaForgeEval(this, innerExpression.ExprEvaluator, secondExpression.ExprEvaluator);
+            get => new EnumToMapScalarLambdaForgeEval(
+                this,
+                innerExpression.ExprEvaluator,
+                secondExpression.ExprEvaluator);
         }
 
         public override CodegenExpression Codegen(

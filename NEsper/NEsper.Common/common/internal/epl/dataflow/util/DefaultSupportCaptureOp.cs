@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+
 using com.espertech.esper.common.client.dataflow.util;
 using com.espertech.esper.common.@internal.epl.dataflow.interfaces;
 using com.espertech.esper.compat;
@@ -40,9 +41,9 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.util
         }
     }
 
-    public class DefaultSupportCaptureOp<T> : DataFlowOperator
-        , EPDataFlowSignalHandler
-        , IFuture<object[]>
+    public class DefaultSupportCaptureOp<T> : DataFlowOperator,
+        EPDataFlowSignalHandler,
+        IFuture<object[]>
     {
         private IList<IList<T>> _received = new List<IList<T>>();
         private IList<T> _current = new List<T>();
@@ -59,7 +60,9 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.util
         public DefaultSupportCaptureOp(
             int latchedNumRows,
             ILockManager lockManager)
-            : this(latchedNumRows, lockManager.CreateLock(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType))
+            : this(
+                latchedNumRows,
+                lockManager.CreateLock(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType))
         {
         }
 
@@ -177,7 +180,9 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.util
                 using (_iLock.Acquire()) {
                     if ((DateTimeHelper.CurrentTimeMillis - startTime) > msecWait) {
                         throw new ApplicationException(
-                            "No events or less then the number of expected events received, expected " + numberOfNewEvents + " received " +
+                            "No events or less then the number of expected events received, expected " +
+                            numberOfNewEvents +
+                            " received " +
                             _current.Count);
                     }
 

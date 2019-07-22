@@ -9,20 +9,23 @@
 using com.espertech.esper.common.client;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+
 using System.Collections.Generic;
 
 namespace com.espertech.esper.common.@internal.epl.enummethod.cache
 {
     public class ExpressionResultCacheForPropUnwrapImpl : ExpressionResultCacheForPropUnwrap
     {
-        private readonly Dictionary<string, SoftReference<ExpressionResultCacheEntryBeanAndCollBean>> collPropertyCache =
+        private readonly Dictionary<string, SoftReference<ExpressionResultCacheEntryBeanAndCollBean>> collPropertyCache
+            =
             new Dictionary<string, SoftReference<ExpressionResultCacheEntryBeanAndCollBean>>();
 
         public ExpressionResultCacheEntryBeanAndCollBean GetPropertyColl(
             string propertyNameFullyQualified,
             EventBean reference)
         {
-            SoftReference<ExpressionResultCacheEntryBeanAndCollBean> cacheRef = collPropertyCache.Get(propertyNameFullyQualified);
+            SoftReference<ExpressionResultCacheEntryBeanAndCollBean> cacheRef =
+                collPropertyCache.Get(propertyNameFullyQualified);
             if (cacheRef == null) {
                 return null;
             }
@@ -44,7 +47,8 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.cache
             EventBean reference,
             ICollection<EventBean> events)
         {
-            ExpressionResultCacheEntryBeanAndCollBean entry = new ExpressionResultCacheEntryBeanAndCollBean(reference, events);
+            ExpressionResultCacheEntryBeanAndCollBean entry =
+                new ExpressionResultCacheEntryBeanAndCollBean(reference, events);
             collPropertyCache.Put(
                 propertyNameFullyQualified,
                 new SoftReference<ExpressionResultCacheEntryBeanAndCollBean>(entry));

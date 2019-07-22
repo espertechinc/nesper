@@ -106,8 +106,7 @@ namespace NEsper.Avro.IO
         {
             JToken jtoken = null;
 
-            switch (schema.Tag)
-            {
+            switch (schema.Tag) {
                 case Schema.Type.Null:
                     jtoken = new JValue("null");
                     break;
@@ -145,22 +144,19 @@ namespace NEsper.Avro.IO
             }
 
             var propertyMap = schema.GetPropertyMap();
-            if ((propertyMap == null) || (propertyMap.Count == 0))
-            {
+            if ((propertyMap == null) || (propertyMap.Count == 0)) {
                 return jtoken;
             }
 
             var jobject = new JObject();
             jobject.Add(new JProperty("type", jtoken));
 
-            foreach (var property in propertyMap)
-            {
+            foreach (var property in propertyMap) {
                 var propertyKey = property.Key;
                 var propertyValue = property.Value;
                 if ((propertyValue.Length >= 2) &&
                     (propertyValue[0] == '"') &&
-                    (propertyValue[propertyValue.Length - 1] == '"'))
-                {
+                    (propertyValue[propertyValue.Length - 1] == '"')) {
                     propertyValue = propertyValue.Substring(1, propertyValue.Length - 2);
                 }
 
@@ -172,8 +168,7 @@ namespace NEsper.Avro.IO
 
         public static JToken Encode(Schema schema)
         {
-            switch (schema.Tag)
-            {
+            switch (schema.Tag) {
                 case Schema.Type.Null:
                 case Schema.Type.Boolean:
                 case Schema.Type.Int:
@@ -186,6 +181,7 @@ namespace NEsper.Avro.IO
 
                 case Schema.Type.Error:
                     throw new NotImplementedException();
+
                 case Schema.Type.Record:
                     return EncodeRecord((RecordSchema) schema);
 

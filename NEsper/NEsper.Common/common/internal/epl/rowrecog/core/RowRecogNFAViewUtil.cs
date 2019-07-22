@@ -9,6 +9,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+
 using com.espertech.esper.collection;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.epl.rowrecog.nfa;
@@ -139,7 +140,13 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
                 return "#" + state.NodeNumNested;
             }
 
-            return "#" + state.NodeNumNested + " " + state.VariableName + " s" + state.StreamNum + " defined as " +
+            return "#" +
+                   state.NodeNumNested +
+                   " " +
+                   state.VariableName +
+                   " s" +
+                   state.StreamNum +
+                   " defined as " +
                    state;
         }
 

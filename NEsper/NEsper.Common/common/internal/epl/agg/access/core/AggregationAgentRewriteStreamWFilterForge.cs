@@ -38,13 +38,11 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.core
                 ExprNodeUtilityCodegen.CodegenEvaluator(_filterEval, method, this.GetType(), classScope));
         }
 
-        public ExprForge FilterEval
-        {
+        public ExprForge FilterEval {
             get => _filterEval;
         }
 
-        public ExprForge OptionalFilter
-        {
+        public ExprForge OptionalFilter {
             get => _filterEval;
         }
     }

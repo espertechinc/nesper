@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+
 using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.dataflow.realize
@@ -20,7 +21,8 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.realize
             int producerOpNum,
             IList<LogicalChannelBinding> bindings)
         {
-            return bindings.Where(binding => binding.LogicalChannel.OutputPort.ProducingOpNum == producerOpNum).ToList();
+            return bindings.Where(binding => binding.LogicalChannel.OutputPort.ProducingOpNum == producerOpNum)
+                .ToList();
         }
 
         public static string PrintChannels(IList<LogicalChannel> channels)
@@ -44,7 +46,8 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.realize
                 var opPorts = compiledOutputPorts.Get(@operator);
                 if (opPorts != null) { // Can be null if referring to itself
                     foreach (LogicalChannelProducingPortCompiled opPort in opPorts) {
-                        ports.AddRange(inputStreamNames.Where(name => name == opPort.StreamName).Select(streamName => opPort));
+                        ports.AddRange(
+                            inputStreamNames.Where(name => name == opPort.StreamName).Select(streamName => opPort));
                     }
                 }
             }

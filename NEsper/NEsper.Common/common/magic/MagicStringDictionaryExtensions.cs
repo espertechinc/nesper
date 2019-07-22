@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Reflection;
+
 using com.espertech.esper.compat.threading;
 using com.espertech.esper.compat.threading.locks;
 

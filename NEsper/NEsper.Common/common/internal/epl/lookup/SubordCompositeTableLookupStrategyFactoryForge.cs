@@ -9,6 +9,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.context.aifactory.core;
@@ -16,6 +17,7 @@ using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.@join.querygraph;
 using com.espertech.esper.common.@internal.epl.lookupplan;
 using com.espertech.esper.compat.collections;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.lookup
@@ -70,22 +72,33 @@ namespace com.espertech.esper.common.@internal.epl.lookup
 
                 expressions.AddAll(ExprNodeUtilityPrint.ToExpressionStringsMinPrecedence(forges));
                 hashEval = ExprNodeUtilityCodegen.CodegenEvaluatorMayMultiKeyWCoerce(
-                    forges, _hashTypes, method, GetType(), classScope);
+                    forges,
+                    _hashTypes,
+                    method,
+                    GetType(),
+                    classScope);
             }
 
-            method.Block.DeclareVar(
-                typeof(QueryGraphValueEntryRange[]), "rangeEvals",
+            method.Block.DeclareVar<QueryGraphValueEntryRange[]>(
+                "rangeEvals",
                 NewArrayByLength(typeof(QueryGraphValueEntryRange), Constant(_rangeProps.Count)));
             for (var i = 0; i < _rangeProps.Count; i++) {
-                CodegenExpression rangeEval = _rangeProps[i].RangeInfo.Make(
-                    _coercionRangeTypes[i], parent, symbols, classScope);
+                CodegenExpression rangeEval = _rangeProps[i]
+                    .RangeInfo.Make(
+                        _coercionRangeTypes[i],
+                        parent,
+                        symbols,
+                        classScope);
                 method.Block.AssignArrayElement(Ref("rangeEvals"), Constant(i), rangeEval);
             }
 
             method.Block.MethodReturn(
                 NewInstance<SubordCompositeTableLookupStrategyFactory>(
-                    Constant(isNWOnTrigger), Constant(_numStreams), Constant(expressions.ToArray()),
-                    hashEval, Ref("rangeEvals")));
+                    Constant(isNWOnTrigger),
+                    Constant(_numStreams),
+                    Constant(expressions.ToArray()),
+                    hashEval,
+                    Ref("rangeEvals")));
             return LocalMethod(method);
         }
     }

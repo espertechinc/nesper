@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.@join.queryplan;
@@ -39,28 +40,45 @@ namespace com.espertech.esper.common.@internal.epl.lookupplan
             SubordTableLookupStrategyFactoryForge lookupStrategy;
             if (inKeywordSingleIdxKeys != null) {
                 lookupStrategy = new SubordInKeywordSingleTableLookupStrategyFactoryForge(
-                    isNWOnTrigger, numStreamsTotal, inKeywordSingleIdxKeys);
+                    isNWOnTrigger,
+                    numStreamsTotal,
+                    inKeywordSingleIdxKeys);
             }
             else if (inKeywordMultiIdxKey != null) {
                 lookupStrategy = new SubordInKeywordMultiTableLookupStrategyFactoryForge(
-                    isNWOnTrigger, numStreamsTotal, inKeywordMultiIdxKey);
+                    isNWOnTrigger,
+                    numStreamsTotal,
+                    inKeywordMultiIdxKey);
             }
             else if (hashKeys.IsEmpty() && rangeKeys.IsEmpty()) {
                 lookupStrategy = new SubordFullTableScanLookupStrategyFactoryForge();
             }
             else if (hashKeys.Count > 0 && rangeKeys.IsEmpty()) {
                 lookupStrategy = new SubordHashedTableLookupStrategyFactoryForge(
-                    isNWOnTrigger, numStreamsTotal, hashKeys, hashKeyCoercionTypes, isStrictKeys, hashStrictKeys,
-                    hashStrictKeyStreams, outerStreamTypesZeroIndexed);
+                    isNWOnTrigger,
+                    numStreamsTotal,
+                    hashKeys,
+                    hashKeyCoercionTypes,
+                    isStrictKeys,
+                    hashStrictKeys,
+                    hashStrictKeyStreams,
+                    outerStreamTypesZeroIndexed);
             }
             else if (hashKeys.Count == 0 && rangeKeys.Count == 1) {
                 lookupStrategy = new SubordSortedTableLookupStrategyFactoryForge(
-                    isNWOnTrigger, numStreamsTotal, rangeKeys[0], rangeKeyCoercionTypes);
+                    isNWOnTrigger,
+                    numStreamsTotal,
+                    rangeKeys[0],
+                    rangeKeyCoercionTypes);
             }
             else {
                 lookupStrategy = new SubordCompositeTableLookupStrategyFactoryForge(
-                    isNWOnTrigger, numStreamsTotal, hashKeys, hashKeyCoercionTypes.CoercionTypes,
-                    rangeKeys, rangeKeyCoercionTypes.CoercionTypes);
+                    isNWOnTrigger,
+                    numStreamsTotal,
+                    hashKeys,
+                    hashKeyCoercionTypes.CoercionTypes,
+                    rangeKeys,
+                    rangeKeyCoercionTypes.CoercionTypes);
             }
 
             return lookupStrategy;

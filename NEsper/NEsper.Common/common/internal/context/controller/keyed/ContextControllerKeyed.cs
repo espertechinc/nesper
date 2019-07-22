@@ -61,7 +61,11 @@ namespace com.espertech.esper.common.@internal.context.controller.keyed
                     var subpathOrCPId = GetSubpathOrCPId(path, keyForLookup);
                     if (subpathOrCPId != -1) {
                         realization.ContextPartitionRecursiveVisit(
-                            path, subpathOrCPId, this, visitor, selectorPerLevel);
+                            path,
+                            subpathOrCPId,
+                            this,
+                            visitor,
+                            selectorPerLevel);
                     }
                 }
 
@@ -72,7 +76,8 @@ namespace com.espertech.esper.common.@internal.context.controller.keyed
                 var filtered = (ContextPartitionSelectorFiltered) selector;
                 var identifier = new ContextPartitionIdentifierPartitioned();
                 VisitPartitions(
-                    path, (
+                    path,
+                    (
                         key,
                         subpathOrCPId) => {
                         if (factory.FactoryEnv.IsLeaf) {
@@ -83,7 +88,11 @@ namespace com.espertech.esper.common.@internal.context.controller.keyed
                         identifier.Keys = keys;
                         if (filtered.Filter(identifier)) {
                             realization.ContextPartitionRecursiveVisit(
-                                path, subpathOrCPId, this, visitor, selectorPerLevel);
+                                path,
+                                subpathOrCPId,
+                                this,
+                                visitor,
+                                selectorPerLevel);
                         }
                     });
                 return;
@@ -95,25 +104,35 @@ namespace com.espertech.esper.common.@internal.context.controller.keyed
                     (
                         key,
                         subpathOrCPId) => realization.ContextPartitionRecursiveVisit(
-                        path, subpathOrCPId, this, visitor, selectorPerLevel));
+                        path,
+                        subpathOrCPId,
+                        this,
+                        visitor,
+                        selectorPerLevel));
                 return;
             }
 
             if (selector is ContextPartitionSelectorById) {
                 var ids = (ContextPartitionSelectorById) selector;
                 VisitPartitions(
-                    path, (
+                    path,
+                    (
                         key,
                         subpathOrCPId) => {
                         if (ids.ContextPartitionIds.Contains(subpathOrCPId)) {
                             realization.ContextPartitionRecursiveVisit(
-                                path, subpathOrCPId, this, visitor, selectorPerLevel);
+                                path,
+                                subpathOrCPId,
+                                this,
+                                visitor,
+                                selectorPerLevel);
                         }
                     });
             }
 
             throw ContextControllerSelectorUtil.GetInvalidSelector(
-                new[] {typeof(ContextPartitionSelectorSegmented)}, selector);
+                new[] {typeof(ContextPartitionSelectorSegmented)},
+                selector);
         }
     }
 } // end of namespace

@@ -133,10 +133,11 @@ namespace com.espertech.esper.common.@internal.context.controller.hash
                 .Where(entry => controllerPath.IsParentTo(entry.Key))
                 .ToList();
 
-            entries.ForEach(entry => {
-                result.Add(entry.Value);
-                _optionalHashes.Remove(entry.Key);
-            });
+            entries.ForEach(
+                entry => {
+                    result.Add(entry.Value);
+                    _optionalHashes.Remove(entry.Key);
+                });
 
             return result;
         }

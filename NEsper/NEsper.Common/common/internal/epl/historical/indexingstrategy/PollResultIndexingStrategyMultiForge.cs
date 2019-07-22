@@ -7,9 +7,11 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.IO;
+
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.context.aifactory.core;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.historical.indexingstrategy
@@ -47,17 +49,19 @@ namespace com.espertech.esper.common.@internal.epl.historical.indexingstrategy
         {
             var method = parent.MakeChild(typeof(PollResultIndexingStrategyMulti), GetType(), classScope);
 
-            method.Block.DeclareVar(
-                typeof(PollResultIndexingStrategy[]), "strats",
+            method.Block.DeclareVar<PollResultIndexingStrategy[]>(
+                "strats",
                 NewArrayByLength(typeof(PollResultIndexingStrategy), Constant(indexingStrategies.Length)));
             for (var i = 0; i < indexingStrategies.Length; i++) {
                 method.Block.AssignArrayElement(
-                    Ref("strats"), Constant(i), indexingStrategies[i].Make(method, symbols, classScope));
+                    Ref("strats"),
+                    Constant(i),
+                    indexingStrategies[i].Make(method, symbols, classScope));
             }
 
             method.Block
-                .DeclareVar(
-                    typeof(PollResultIndexingStrategyMulti), "strat",
+                .DeclareVar<PollResultIndexingStrategyMulti>(
+                    "strat",
                     NewInstance(typeof(PollResultIndexingStrategyMulti)))
                 .SetProperty(Ref("strat"), "IndexingStrategies", Ref("strats"))
                 .MethodReturn(Ref("strat"));

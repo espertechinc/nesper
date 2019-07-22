@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -16,6 +17,7 @@ using com.espertech.esper.common.@internal.epl.datetime.eval;
 using com.espertech.esper.common.@internal.epl.datetime.interval;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 using static com.espertech.esper.common.@internal.epl.datetime.dtlocal.DTLocalUtil;
 
@@ -55,8 +57,8 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
 
             var block = methodNode.Block;
             EvaluateCalOpsZDTCodegen(block, "target", forge.calendarForges, methodNode, exprSymbol, codegenClassScope);
-            block.DeclareVar(
-                typeof(long), "time",
+            block.DeclareVar<long>(
+                "time",
                 StaticMethod(typeof(DatetimeLongCoercerDateTime), "CoerceToMillis", Ref("target")));
             block.MethodReturn(
                 forge.intervalForge.Codegen(Ref("time"), Ref("time"), methodNode, exprSymbol, codegenClassScope));
@@ -90,25 +92,30 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
         {
             var methodNode = codegenMethodScope
                 .MakeChild(typeof(bool?), typeof(DTLocalDateTimeOpsIntervalEval), codegenClassScope)
-                .AddParam(typeof(DateTime), "start").AddParam(typeof(DateTime), "end");
+                .AddParam(typeof(DateTime), "start")
+                .AddParam(typeof(DateTime), "end");
 
             var block = methodNode.Block
-                .DeclareVar(
-                    typeof(long), "startMs",
+                .DeclareVar<long>(
+                    "startMs",
                     StaticMethod(typeof(DatetimeLongCoercerDateTime), "CoerceToMillis", Ref("start")))
-                .DeclareVar(
-                    typeof(long), "endMs",
+                .DeclareVar<long>(
+                    "endMs",
                     StaticMethod(typeof(DatetimeLongCoercerDateTime), "CoerceToMillis", Ref("end")))
-                .DeclareVar(typeof(long), "deltaMSec", Op(Ref("endMs"), "-", Ref("startMs")))
-                .DeclareVar(typeof(DateTime), "result", start);
+                .DeclareVar<long>("deltaMSec", Op(Ref("endMs"), "-", Ref("startMs")))
+                .DeclareVar<DateTime>("result", start);
             EvaluateCalOpsZDTCodegen(block, "result", forge.calendarForges, methodNode, exprSymbol, codegenClassScope);
-            block.DeclareVar(
-                typeof(long), "startLong",
+            block.DeclareVar<long>(
+                "startLong",
                 StaticMethod(typeof(DatetimeLongCoercerDateTime), "CoerceToMillis", Ref("result")));
-            block.DeclareVar(typeof(long), "endTime", Op(Ref("startLong"), "+", Ref("deltaMSec")));
+            block.DeclareVar<long>("endTime", Op(Ref("startLong"), "+", Ref("deltaMSec")));
             block.MethodReturn(
                 forge.intervalForge.Codegen(
-                    Ref("startLong"), Ref("endTime"), methodNode, exprSymbol, codegenClassScope));
+                    Ref("startLong"),
+                    Ref("endTime"),
+                    methodNode,
+                    exprSymbol,
+                    codegenClassScope));
             return LocalMethod(methodNode, start, end);
         }
     }

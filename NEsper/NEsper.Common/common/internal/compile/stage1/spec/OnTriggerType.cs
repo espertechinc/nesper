@@ -53,14 +53,19 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
             switch (triggerType) {
                 case OnTriggerType.ON_DELETE:
                     return "on-delete";
+
                 case OnTriggerType.ON_SELECT:
                     return "on-select";
+
                 case OnTriggerType.ON_SPLITSTREAM:
                     return "on-insert-multiple";
+
                 case OnTriggerType.ON_SET:
                     return "on-set";
+
                 case OnTriggerType.ON_UPDATE:
                     return "on-Update";
+
                 case OnTriggerType.ON_MERGE:
                     return "on-merge";
             }

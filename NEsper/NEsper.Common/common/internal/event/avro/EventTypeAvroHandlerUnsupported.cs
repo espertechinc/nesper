@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.configuration.common;
 using com.espertech.esper.common.client.meta;
@@ -113,7 +114,8 @@ namespace com.espertech.esper.common.@internal.@event.avro
 
         private UnsupportedOperationException GetUnsupported()
         {
-            throw new UnsupportedOperationException("Esper-Avro is not enabled in the configuration or is not part of your classpath");
+            throw new UnsupportedOperationException(
+                "Esper-Avro is not enabled in the configuration or is not part of your classpath");
         }
     }
 } // end of namespace

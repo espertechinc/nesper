@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.core;
@@ -42,7 +43,11 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.count
             get {
                 var distinctType = !parent.IsDistinct ? null : parent.ChildNodes[0].Forge.EvaluationType;
                 return new AggregationPortableValidationCount(
-                    parent.IsDistinct, parent.OptionalFilter != null, true, distinctType, ignoreNulls);
+                    parent.IsDistinct,
+                    parent.OptionalFilter != null,
+                    true,
+                    distinctType,
+                    ignoreNulls);
             }
         }
 
@@ -54,8 +59,15 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.count
         {
             var distinctType = !parent.IsDistinct ? null : parent.ChildNodes[0].Forge.EvaluationType;
             aggregator = new AggregatorCount(
-                this, col, rowCtor, membersColumnized, classScope, distinctType, parent.OptionalFilter != null,
-                parent.OptionalFilter, true);
+                this,
+                col,
+                rowCtor,
+                membersColumnized,
+                classScope,
+                distinctType,
+                parent.OptionalFilter != null,
+                parent.OptionalFilter,
+                true);
         }
 
         public override ExprForge[] GetMethodAggregationForge(

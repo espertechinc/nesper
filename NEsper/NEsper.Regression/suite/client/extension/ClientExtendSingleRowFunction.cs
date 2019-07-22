@@ -91,7 +91,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
 
                 // test pattern
                 var textPattern =
-                    "@Name('s0') select * from pattern [a=SupportBean => b=SupportBean(TheString=getValueAsString(a, 'TheString'))]";
+                    "@Name('s0') select * from pattern [a=SupportBean -> b=SupportBean(TheString=getValueAsString(a, 'TheString'))]";
                 env.CompileDeploy(textPattern).AddListener("s0");
                 env.SendEventBean(new SupportBean("E1", 1));
                 env.SendEventBean(new SupportBean("E1", 2));

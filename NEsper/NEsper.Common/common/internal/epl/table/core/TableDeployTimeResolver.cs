@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
@@ -14,6 +15,7 @@ using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.context.module;
 using com.espertech.esper.common.@internal.epl.table.compiletime;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.table.core
@@ -32,7 +34,9 @@ namespace com.espertech.esper.common.@internal.epl.table.core
             var tableResolve = MakeResolveTable(table, EPStatementInitServicesConstants.REF);
             tableInit.Block.MethodReturn(ExprDotMethod(tableResolve, "getEventToPublic"));
             return classScope.NamespaceScope.AddFieldUnshared(
-                true, typeof(TableMetadataInternalEventToPublic), LocalMethod(tableInit, EPStatementInitServicesConstants.REF));
+                true,
+                typeof(TableMetadataInternalEventToPublic),
+                LocalMethod(tableInit, EPStatementInitServicesConstants.REF));
         }
 
         public static CodegenExpression MakeResolveTable(
@@ -40,7 +44,8 @@ namespace com.espertech.esper.common.@internal.epl.table.core
             CodegenExpression initSvc)
         {
             return StaticMethod(
-                typeof(TableDeployTimeResolver), "resolveTable",
+                typeof(TableDeployTimeResolver),
+                "resolveTable",
                 Constant(table.TableName),
                 Constant(table.TableVisibility),
                 Constant(table.TableModuleName),

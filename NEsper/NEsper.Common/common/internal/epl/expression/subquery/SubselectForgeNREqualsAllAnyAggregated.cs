@@ -12,6 +12,7 @@ using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.expression.subquery
@@ -32,7 +33,12 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
             SimpleNumberCoercer coercer,
             ExprForge havingEval)
             : base(
-                subselect, valueEval, selectEval, resultWhenNoMatchingEvents, isNot, coercer)
+                subselect,
+                valueEval,
+                selectEval,
+                resultWhenNoMatchingEvents,
+                isNot,
+                coercer)
         {
             this.havingEval = havingEval;
         }
@@ -50,14 +56,21 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
             method.Block.IfRefNullReturnNull(symbols.GetAddLeftResult(method));
             if (havingEval != null) {
                 CodegenExpression having = LocalMethod(
-                    CodegenLegoMethodExpression.CodegenExpression(havingEval, method, classScope), eps, ConstantTrue(),
+                    CodegenLegoMethodExpression.CodegenExpression(havingEval, method, classScope),
+                    eps,
+                    ConstantTrue(),
                     evalCtx);
                 CodegenLegoBooleanExpression.CodegenReturnValueIfNullOrNotPass(
-                    method.Block, havingEval.EvaluationType, having, ConstantNull());
+                    method.Block,
+                    havingEval.EvaluationType,
+                    having,
+                    ConstantNull());
             }
 
             CodegenExpression select = LocalMethod(
-                CodegenLegoMethodExpression.CodegenExpression(selectEval, method, classScope), eps, ConstantTrue(),
+                CodegenLegoMethodExpression.CodegenExpression(selectEval, method, classScope),
+                eps,
+                ConstantTrue(),
                 evalCtx);
             var rightEvalType = selectEval.EvaluationType.GetBoxedType();
             method.Block
@@ -65,7 +78,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                 .IfRefNullReturnNull("rhs");
 
             if (coercer == null) {
-                method.Block.DeclareVar(typeof(bool), "eq", ExprDotMethod(left, "equals", Ref("rhs")));
+                method.Block.DeclareVar<bool>("eq", ExprDotMethod(left, "equals", Ref("rhs")));
                 if (isNot) {
                     method.Block.IfCondition(Ref("eq")).BlockReturn(ConstantFalse());
                 }
@@ -74,9 +87,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                 }
             }
             else {
-                method.Block.DeclareVar(typeof(object), "left", coercer.CoerceCodegen(left, symbols.LeftResultType))
-                    .DeclareVar(typeof(object), "right", coercer.CoerceCodegen(Ref("rhs"), rightEvalType))
-                    .DeclareVar(typeof(bool), "eq", ExprDotMethod(Ref("left"), "equals", Ref("right")));
+                method.Block.DeclareVar<object>("left", coercer.CoerceCodegen(left, symbols.LeftResultType))
+                    .DeclareVar<object>("right", coercer.CoerceCodegen(Ref("rhs"), rightEvalType))
+                    .DeclareVar<bool>("eq", ExprDotMethod(Ref("left"), "equals", Ref("right")));
                 if (isNot) {
                     method.Block.IfCondition(Ref("eq")).BlockReturn(ConstantFalse());
                 }

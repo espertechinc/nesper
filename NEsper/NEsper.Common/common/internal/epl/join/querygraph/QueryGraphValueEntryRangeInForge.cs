@@ -7,11 +7,13 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.compat;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.join.querygraph
@@ -60,18 +62,28 @@ namespace com.espertech.esper.common.@internal.epl.join.querygraph
         {
             var method = parent.MakeChild(typeof(QueryGraphValueEntryRange), GetType(), classScope);
             method.Block
-                .DeclareVar(
-                    typeof(ExprEvaluator), "start",
+                .DeclareVar<ExprEvaluator>(
+                    "start",
                     ExprNodeUtilityCodegen.CodegenEvaluatorWCoerce(
-                        ExprStart.Forge, optCoercionType, method, GetType(), classScope))
-                .DeclareVar(
-                    typeof(ExprEvaluator), "end",
+                        ExprStart.Forge,
+                        optCoercionType,
+                        method,
+                        GetType(),
+                        classScope))
+                .DeclareVar<ExprEvaluator>(
+                    "end",
                     ExprNodeUtilityCodegen.CodegenEvaluatorWCoerce(
-                        ExprEnd.Forge, optCoercionType, method, GetType(), classScope))
+                        ExprEnd.Forge,
+                        optCoercionType,
+                        method,
+                        GetType(),
+                        classScope))
                 .MethodReturn(
                     NewInstance<QueryGraphValueEntryRangeIn>(
                         EnumValue(typeof(QueryGraphRangeEnum), type.GetName()),
-                        Ref("start"), Ref("end"), Constant(IsAllowRangeReversal)));
+                        Ref("start"),
+                        Ref("end"),
+                        Constant(IsAllowRangeReversal)));
             return LocalMethod(method);
         }
 
@@ -82,16 +94,18 @@ namespace com.espertech.esper.common.@internal.epl.join.querygraph
         {
             var method = parent.MakeChild(typeof(QueryGraphValueEntryRangeIn), GetType(), classScope);
             method.Block
-                .DeclareVar(
-                    typeof(ExprEvaluator), "start",
+                .DeclareVar<ExprEvaluator>(
+                    "start",
                     ExprNodeUtilityCodegen.CodegenEvaluator(ExprStart.Forge, method, GetType(), classScope))
-                .DeclareVar(
-                    typeof(ExprEvaluator), "end",
+                .DeclareVar<ExprEvaluator>(
+                    "end",
                     ExprNodeUtilityCodegen.CodegenEvaluator(ExprEnd.Forge, method, GetType(), classScope))
                 .MethodReturn(
                     NewInstance<QueryGraphValueEntryRangeIn>(
                         EnumValue(typeof(QueryGraphRangeEnum), type.GetName()),
-                        Ref("start"), Ref("end"), Constant(IsAllowRangeReversal)));
+                        Ref("start"),
+                        Ref("end"),
+                        Constant(IsAllowRangeReversal)));
             return LocalMethod(method);
         }
     }

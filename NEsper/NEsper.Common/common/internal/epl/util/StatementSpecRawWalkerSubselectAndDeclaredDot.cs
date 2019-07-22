@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.@internal.compile.stage1.spec;
 using com.espertech.esper.common.@internal.compile.stage2;
 using com.espertech.esper.common.@internal.epl.expression.core;
@@ -71,7 +72,8 @@ namespace com.espertech.esper.common.@internal.epl.util
             foreach (StreamSpecRaw streamSpecRaw in spec.StreamSpecs) {
                 if (streamSpecRaw is PatternStreamSpecRaw) {
                     PatternStreamSpecRaw patternStreamSpecRaw = (PatternStreamSpecRaw) streamSpecRaw;
-                    EvalNodeAnalysisResult analysisResult = EvalNodeUtil.RecursiveAnalyzeChildNodes(patternStreamSpecRaw.EvalForgeNode);
+                    EvalNodeAnalysisResult analysisResult =
+                        EvalNodeUtil.RecursiveAnalyzeChildNodes(patternStreamSpecRaw.EvalForgeNode);
                     foreach (EvalForgeNode evalNode in analysisResult.ActiveNodes) {
                         if (evalNode is EvalFilterForgeNode) {
                             EvalFilterForgeNode filterNode = (EvalFilterForgeNode) evalNode;

@@ -51,7 +51,12 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
                 .AddParam(typeof(DateTimeOffset), "target");
             CodegenBlock block = methodNode.Block;
             DTLocalUtil.EvaluateCalOpsLDTCodegen(
-                block, "target", forge.calendarForges, methodNode, exprSymbol, codegenClassScope);
+                block,
+                "target",
+                forge.calendarForges,
+                methodNode,
+                exprSymbol,
+                codegenClassScope);
             block.MethodReturn(@Ref("target"));
             return LocalMethod(methodNode, inner);
         }

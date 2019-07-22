@@ -7,12 +7,14 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+
 using com.espertech.esper.common.@internal.epl.expression.core;
 
 namespace com.espertech.esper.common.@internal.epl.join.querygraph
 {
     public class QueryGraphValueEntryCustomOperation : QueryGraphValueEntry
     {
-        public IDictionary<int, ExprEvaluator> PositionalExpressions { get; set; } = new Dictionary<int, ExprEvaluator>();
+        public IDictionary<int, ExprEvaluator> PositionalExpressions { get; set; } =
+            new Dictionary<int, ExprEvaluator>();
     }
 } // end of namespace

@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 
 namespace com.espertech.esper.common.@internal.epl.expression.core
@@ -45,7 +46,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             ExprEvaluatorContext context)
         {
             return ProcEvaluateGetROCollectionEvents(
-                eventsPerStream, isNewData, context);
+                eventsPerStream,
+                isNewData,
+                context);
         }
 
         public ICollection<object> EvaluateGetROCollectionScalar(
@@ -54,7 +57,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             ExprEvaluatorContext context)
         {
             return ProcEvaluateGetROCollectionScalar(
-                eventsPerStream, isNewData, context);
+                eventsPerStream,
+                isNewData,
+                context);
         }
 
         public EventBean EvaluateGetEventBean(
@@ -63,7 +68,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             ExprEvaluatorContext context)
         {
             return ProcEvaluateGetEventBean(
-                eventsPerStream, isNewData, context);
+                eventsPerStream,
+                isNewData,
+                context);
         }
     }
 } // end of namespace

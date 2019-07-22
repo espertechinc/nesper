@@ -1299,7 +1299,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 env.CompileDeploy(eplCreate, path);
 
                 var epl =
-                    "@Name('Merge') on pattern[every a=SupportBean(TheString like 'A%') => b=SupportBean(TheString like 'B%', IntPrimitive = a.IntPrimitive)] me " +
+                    "@Name('Merge') on pattern[every a=SupportBean(TheString like 'A%') -> b=SupportBean(TheString like 'B%', IntPrimitive = a.IntPrimitive)] me " +
                     "merge MyInfraPM mw " +
                     "where me.a.TheString = mw.c1 and me.b.TheString = mw.c2 " +
                     "when not matched then " +

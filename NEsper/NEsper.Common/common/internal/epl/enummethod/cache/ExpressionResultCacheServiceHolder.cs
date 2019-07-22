@@ -37,7 +37,8 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.cache
                     _declaredExprLastValue = new ExpressionResultCacheForDeclaredExprLastValueSingle();
                 }
                 else {
-                    _declaredExprLastValue = new ExpressionResultCacheForDeclaredExprLastValueMulti(_declareExprCacheSize);
+                    _declaredExprLastValue =
+                        new ExpressionResultCacheForDeclaredExprLastValueMulti(_declareExprCacheSize);
                 }
             }
 
@@ -46,7 +47,8 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.cache
 
         public ExpressionResultCacheForDeclaredExprLastColl GetAllocateDeclaredExprLastColl()
         {
-            return _declaredExprLastColl ?? (_declaredExprLastColl = new ExpressionResultCacheForDeclaredExprLastCollImpl());
+            return _declaredExprLastColl ??
+                   (_declaredExprLastColl = new ExpressionResultCacheForDeclaredExprLastCollImpl());
         }
 
         public ExpressionResultCacheForEnumerationMethod GetAllocateEnumerationMethod()

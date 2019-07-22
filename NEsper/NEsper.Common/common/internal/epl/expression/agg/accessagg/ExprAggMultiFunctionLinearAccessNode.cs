@@ -9,6 +9,7 @@
 using System;
 using System.IO;
 using System.Linq;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
@@ -26,6 +27,7 @@ using com.espertech.esper.common.@internal.epl.table.compiletime;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.expression.agg.accessagg
@@ -85,8 +87,12 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.accessagg
         {
             var future = GetAggFuture(codegenClassScope);
             return ExprDotMethod(
-                future, "getCollectionScalar", Constant(column), exprSymbol.GetAddEPS(parent),
-                exprSymbol.GetAddIsNewData(parent), exprSymbol.GetAddExprEvalCtx(parent));
+                future,
+                "getCollectionScalar",
+                Constant(column),
+                exprSymbol.GetAddEPS(parent),
+                exprSymbol.GetAddIsNewData(parent),
+                exprSymbol.GetAddExprEvalCtx(parent));
         }
 
         public CodegenExpression EvaluateGetEventBeanCodegen(
@@ -96,8 +102,12 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.accessagg
         {
             var future = GetAggFuture(codegenClassScope);
             return ExprDotMethod(
-                future, "getEventBean", Constant(column), exprSymbol.GetAddEPS(parent),
-                exprSymbol.GetAddIsNewData(parent), exprSymbol.GetAddExprEvalCtx(parent));
+                future,
+                "getEventBean",
+                Constant(column),
+                exprSymbol.GetAddEPS(parent),
+                exprSymbol.GetAddIsNewData(parent),
+                exprSymbol.GetAddExprEvalCtx(parent));
         }
 
         public CodegenExpression EvaluateGetROCollectionEventsCodegen(
@@ -107,8 +117,12 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.accessagg
         {
             var future = GetAggFuture(codegenClassScope);
             return ExprDotMethod(
-                future, "getCollectionOfEvents", Constant(column), exprSymbol.GetAddEPS(parent),
-                exprSymbol.GetAddIsNewData(parent), exprSymbol.GetAddExprEvalCtx(parent));
+                future,
+                "getCollectionOfEvents",
+                Constant(column),
+                exprSymbol.GetAddEPS(parent),
+                exprSymbol.GetAddIsNewData(parent),
+                exprSymbol.GetAddExprEvalCtx(parent));
         }
 
         public EventType GetEventTypeCollection(
@@ -180,14 +194,17 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.accessagg
             var isWildcard = childNodes.Length == 0 || childNodes.Length > 0 && childNodes[0] is ExprWildcard;
             if (isWildcard) {
                 ExprAggMultiFunctionUtil.ValidateWildcardStreamNumbers(
-                    validationContext.StreamTypeService, stateType.ToString().ToLowerInvariant());
+                    validationContext.StreamTypeService,
+                    stateType.ToString().ToLowerInvariant());
                 streamNum = 0;
                 containedType = streamTypeService.EventTypes[0];
                 resultType = containedType.UnderlyingType;
-                var tableMetadataX = validationContext.TableCompileTimeResolver.ResolveTableFromEventType(containedType);
+                var tableMetadataX =
+                    validationContext.TableCompileTimeResolver.ResolveTableFromEventType(containedType);
                 forge = ExprNodeUtilityMake.MakeUnderlyingForge(0, resultType, tableMetadataX);
                 istreamOnly = GetIstreamOnly(streamTypeService, 0);
-                if (stateType == AggregationAccessorLinearType.WINDOW && istreamOnly &&
+                if (stateType == AggregationAccessorLinearType.WINDOW &&
+                    istreamOnly &&
                     !streamTypeService.IsOnDemandStreams) {
                     throw MakeUnboundValidationEx(stateType);
                 }
@@ -196,7 +213,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.accessagg
                 // validate "stream.*"
                 streamNum = ExprAggMultiFunctionUtil.ValidateStreamWildcardGetStreamNum(childNodes[0]);
                 istreamOnly = GetIstreamOnly(streamTypeService, streamNum);
-                if (stateType == AggregationAccessorLinearType.WINDOW && istreamOnly &&
+                if (stateType == AggregationAccessorLinearType.WINDOW &&
+                    istreamOnly &&
                     !streamTypeService.IsOnDemandStreams) {
                     throw MakeUnboundValidationEx(stateType);
                 }
@@ -219,7 +237,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.accessagg
 
                 streamNum = streams.First();
                 istreamOnly = GetIstreamOnly(streamTypeService, streamNum);
-                if (stateType == AggregationAccessorLinearType.WINDOW && istreamOnly &&
+                if (stateType == AggregationAccessorLinearType.WINDOW &&
+                    istreamOnly &&
                     !streamTypeService.IsOnDemandStreams) {
                     throw MakeUnboundValidationEx(stateType);
                 }
@@ -266,7 +285,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.accessagg
                 }
 
                 accessor = new AggregationAccessorFirstLastIndexWEvalForge(
-                    streamNum, forge, forgeIndex, constant, isFirst);
+                    streamNum,
+                    forge,
+                    forgeIndex,
+                    constant,
+                    isFirst);
             }
             else {
                 if (stateType == AggregationAccessorLinearType.FIRST) {
@@ -298,24 +321,45 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.accessagg
                 }
 
                 AggregationForgeFactory factory = new AggregationFactoryMethodFirstLastUnbound(
-                    this, containedType, accessorResultType, streamNum, optionalFilter != null);
+                    this,
+                    containedType,
+                    accessorResultType,
+                    streamNum,
+                    optionalFilter != null);
                 return new AggregationLinearFactoryDesc(
-                    factory, containedType, scalarCollectionComponentType, streamNum);
+                    factory,
+                    containedType,
+                    scalarCollectionComponentType,
+                    streamNum);
             }
 
             var stateKey = new AggregationStateKeyWStream(
-                streamNum, containedType, AggregationStateTypeWStream.DATAWINDOWACCESS_LINEAR,
-                ExprNodeUtilityQuery.EMPTY_EXPR_ARRAY, optionalFilter);
+                streamNum,
+                containedType,
+                AggregationStateTypeWStream.DATAWINDOWACCESS_LINEAR,
+                ExprNodeUtilityQuery.EMPTY_EXPR_ARRAY,
+                optionalFilter);
 
             var optionalFilterForge = optionalFilter == null ? null : optionalFilter.Forge;
             AggregationStateFactoryForge stateFactory = new AggregationStateLinearForge(
-                this, streamNum, optionalFilterForge);
+                this,
+                streamNum,
+                optionalFilterForge);
 
             var factoryX = new AggregationForgeFactoryAccessLinear(
-                this, accessor, accessorResultType,
-                stateKey, stateFactory, AggregationAgentDefault.INSTANCE, containedType);
+                this,
+                accessor,
+                accessorResultType,
+                stateKey,
+                stateFactory,
+                AggregationAgentDefault.INSTANCE,
+                containedType);
             var enumerationType = scalarCollectionComponentType == null ? containedType : null;
-            return new AggregationLinearFactoryDesc(factoryX, enumerationType, scalarCollectionComponentType, streamNum);
+            return new AggregationLinearFactoryDesc(
+                factoryX,
+                enumerationType,
+                scalarCollectionComponentType,
+                streamNum);
         }
 
         private AggregationLinearFactoryDesc HandleCreateTable(
@@ -323,7 +367,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.accessagg
             AggregationAccessorLinearType stateType,
             ExprValidationContext validationContext)
         {
-            var message = "For tables columns, the " + stateType.Name.ToLowerInvariant() +
+            var message = "For tables columns, the " +
+                          stateType.Name.ToLowerInvariant() +
                           " aggregation function requires the 'window(*)' declaration";
             if (stateType != AggregationAccessorLinearType.WINDOW) {
                 throw new ExprValidationException(message);
@@ -343,7 +388,13 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.accessagg
             AggregationAccessorForge accessor = new AggregationAccessorWindowNoEvalForge(componentType);
             AggregationStateFactoryForge stateFactory = new AggregationStateLinearForge(this, 0, null);
             var factory = new AggregationForgeFactoryAccessLinear(
-                this, accessor, TypeHelper.GetArrayType(componentType), null, stateFactory, null, containedType);
+                this,
+                accessor,
+                TypeHelper.GetArrayType(componentType),
+                null,
+                stateFactory,
+                null,
+                containedType);
             return new AggregationLinearFactoryDesc(factory, containedType, null, 0);
         }
 
@@ -387,10 +438,19 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.accessagg
             var componentType = containedType.UnderlyingType;
             AggregationAccessorForge accessor = new AggregationAccessorWindowNoEvalForge(componentType);
             var agent = AggregationAgentForgeFactory.Make(
-                streamNum, optionalFilter, validationContext.ImportService,
-                validationContext.StreamTypeService.IsOnDemandStreams, validationContext.StatementName);
+                streamNum,
+                optionalFilter,
+                validationContext.ImportService,
+                validationContext.StreamTypeService.IsOnDemandStreams,
+                validationContext.StatementName);
             var factory = new AggregationForgeFactoryAccessLinear(
-                this, accessor, TypeHelper.GetArrayType(componentType), null, null, agent, containedType);
+                this,
+                accessor,
+                TypeHelper.GetArrayType(componentType),
+                null,
+                null,
+                agent,
+                containedType);
             return new AggregationLinearFactoryDesc(factory, containedType, null, 0);
         }
 
@@ -421,9 +481,13 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.accessagg
                 var streams = TableCompileTimeUtil.StreamTypeFromTableColumn(validationLinear.ContainedEventType);
                 var localValidationContext = new ExprValidationContext(streams, validationContext);
                 paramNode = ExprNodeUtilityValidate.GetValidatedSubtree(
-                    ExprNodeOrigin.AGGPARAM, paramNode, localValidationContext);
+                    ExprNodeOrigin.AGGPARAM,
+                    paramNode,
+                    localValidationContext);
                 var forge = new AggregationTAAReaderLinearFirstLastForge(
-                    paramNode.Forge.EvaluationType, stateType, paramNode);
+                    paramNode.Forge.EvaluationType,
+                    stateType,
+                    paramNode);
                 return new AggregationTableReadDesc(forge, null, null, null);
             }
 
@@ -447,7 +511,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.accessagg
                 }
 
                 var forge = new AggregationTAAReaderLinearFirstLastIndexForge(
-                    underlyingType, stateType, constant, indexExpr);
+                    underlyingType,
+                    stateType,
+                    constant,
+                    indexExpr);
                 return new AggregationTableReadDesc(forge, null, null, validationLinear.ContainedEventType);
             }
 
@@ -471,10 +538,13 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.accessagg
                 var streams = TableCompileTimeUtil.StreamTypeFromTableColumn(validationLinear.ContainedEventType);
                 var localValidationContext = new ExprValidationContext(streams, validationContext);
                 paramNode = ExprNodeUtilityValidate.GetValidatedSubtree(
-                    ExprNodeOrigin.AGGPARAM, paramNode, localValidationContext);
+                    ExprNodeOrigin.AGGPARAM,
+                    paramNode,
+                    localValidationContext);
                 var paramNodeType = paramNode.Forge.EvaluationType.GetBoxedType();
                 var forge = new AggregationTAAReaderLinearWindowForge(
-                    TypeHelper.GetArrayType(paramNodeType), paramNode);
+                    TypeHelper.GetArrayType(paramNodeType),
+                    paramNode);
                 return new AggregationTableReadDesc(forge, null, paramNodeType, null);
             }
 
@@ -506,7 +576,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.accessagg
             }
 
             var other = (ExprAggMultiFunctionLinearAccessNode) node;
-            return StateType == other.StateType && containedType == other.containedType &&
+            return StateType == other.StateType &&
+                   containedType == other.containedType &&
                    ComponentTypeCollection == other.ComponentTypeCollection;
         }
 

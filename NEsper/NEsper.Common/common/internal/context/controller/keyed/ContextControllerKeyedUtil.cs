@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.collection;
@@ -52,7 +53,12 @@ namespace com.espertech.esper.common.@internal.context.controller.keyed
                     var getter = type.GetGetter(property);
                     if (getter == null) {
                         throw new ExprValidationException(
-                            "For context '" + contextName + "' property name '" + property + "' not found on type " + type.Name);
+                            "For context '" +
+                            contextName +
+                            "' property name '" +
+                            property +
+                            "' not found on type " +
+                            type.Name);
                     }
                 }
             }
@@ -73,14 +79,25 @@ namespace com.espertech.esper.common.@internal.context.controller.keyed
                         EventType compareFrom = partitionSpec.Items[j].FilterSpecCompiled.FilterForEventType;
                         if (compareFrom == compareTo) {
                             throw new ExprValidationException(
-                                "For context '" + contextName + "' the event type '" + compareFrom.Name + "' is listed twice");
+                                "For context '" +
+                                contextName +
+                                "' the event type '" +
+                                compareFrom.Name +
+                                "' is listed twice");
                         }
 
                         if (EventTypeUtility.IsTypeOrSubTypeOf(compareFrom, compareTo) ||
                             EventTypeUtility.IsTypeOrSubTypeOf(compareTo, compareFrom)) {
                             throw new ExprValidationException(
-                                "For context '" + contextName + "' the event type '" + compareFrom.Name + "' is listed twice: Event type '" +
-                                compareFrom.Name + "' is a subtype or supertype of event type '" + compareTo.Name + "'");
+                                "For context '" +
+                                contextName +
+                                "' the event type '" +
+                                compareFrom.Name +
+                                "' is listed twice: Event type '" +
+                                compareFrom.Name +
+                                "' is a subtype or supertype of event type '" +
+                                compareTo.Name +
+                                "'");
                         }
                     }
                 }
@@ -103,26 +120,42 @@ namespace com.espertech.esper.common.@internal.context.controller.keyed
                     // compare number of properties
                     if (nextItem.PropertyNames.Count != types.Length) {
                         throw new ExprValidationException(
-                            "For context '" + contextName + "' expected the same number of property names for each event type, found " +
-                            types.Length + " properties for event type '" + firstItem.FilterSpecCompiled.FilterForEventType.Name +
-                            "' and " + nextItem.PropertyNames.Count + " properties for event type '" +
-                            nextItem.FilterSpecCompiled.FilterForEventType.Name + "'");
+                            "For context '" +
+                            contextName +
+                            "' expected the same number of property names for each event type, found " +
+                            types.Length +
+                            " properties for event type '" +
+                            firstItem.FilterSpecCompiled.FilterForEventType.Name +
+                            "' and " +
+                            nextItem.PropertyNames.Count +
+                            " properties for event type '" +
+                            nextItem.FilterSpecCompiled.FilterForEventType.Name +
+                            "'");
                     }
 
                     // compare property types
                     for (var i = 0; i < nextItem.PropertyNames.Count; i++) {
                         var property = nextItem.PropertyNames[i];
-                        var type = nextItem.FilterSpecCompiled.FilterForEventType.GetPropertyType(property).GetBoxedType();
+                        var type = nextItem.FilterSpecCompiled.FilterForEventType.GetPropertyType(property)
+                            .GetBoxedType();
                         var typeBoxed = type.GetBoxedType();
                         var left = TypeHelper.IsSubclassOrImplementsInterface(typeBoxed, typesBoxed[i]);
                         var right = TypeHelper.IsSubclassOrImplementsInterface(typesBoxed[i], typeBoxed);
                         if (typeBoxed != typesBoxed[i] && !left && !right) {
                             throw new ExprValidationException(
-                                "For context '" + contextName + "' for context '" + contextName + "' found mismatch of property types, property '" +
+                                "For context '" +
+                                contextName +
+                                "' for context '" +
+                                contextName +
+                                "' found mismatch of property types, property '" +
                                 names[i] +
-                                "' of type '" + types[i].GetCleanName() +
-                                "' compared to property '" + property +
-                                "' of type '" + typeBoxed.GetCleanName() + "'");
+                                "' of type '" +
+                                types[i].GetCleanName() +
+                                "' compared to property '" +
+                                property +
+                                "' of type '" +
+                                typeBoxed.GetCleanName() +
+                                "'");
                         }
                     }
                 }
@@ -147,14 +180,16 @@ namespace com.espertech.esper.common.@internal.context.controller.keyed
         {
             // determine whether create-named-window
             var isCreateWindow = optionalStatementDesc != null &&
-                                 optionalStatementDesc.Lightweight.StatementContext.StatementInformationals.StatementType ==
+                                 optionalStatementDesc.Lightweight.StatementContext.StatementInformationals
+                                     .StatementType ==
                                  StatementType.CREATE_WINDOW;
             ContextControllerDetailKeyedItem foundPartition = null;
 
             if (!isCreateWindow) {
                 foreach (var partitionItem in keyedSpec.Items) {
                     var typeOrSubtype = EventTypeUtility.IsTypeOrSubTypeOf(
-                        filtersSpec.FilterForEventType, partitionItem.FilterSpecActivatable.FilterForEventType);
+                        filtersSpec.FilterForEventType,
+                        partitionItem.FilterSpecActivatable.FilterForEventType);
                     if (typeOrSubtype) {
                         foundPartition = partitionItem;
                         break;
@@ -162,7 +197,8 @@ namespace com.espertech.esper.common.@internal.context.controller.keyed
                 }
             }
             else {
-                var factory = (StatementAgentInstanceFactoryCreateNW) optionalStatementDesc.Lightweight.StatementContext.StatementAIFactoryProvider
+                var factory = (StatementAgentInstanceFactoryCreateNW) optionalStatementDesc.Lightweight.StatementContext
+                    .StatementAIFactoryProvider
                     .Factory;
                 var declaredAsName = factory.AsEventTypeName;
                 foreach (var partitionItem in keyedSpec.Items) {
@@ -193,7 +229,10 @@ namespace com.espertech.esper.common.@internal.context.controller.keyed
             addendum[0] = addendumFilters;
 
             var partitionFilters = foundPartition.FilterSpecActivatable.GetValueSet(
-                null, null, agentInstanceContext, agentInstanceContext.StatementContextFilterEvalEnv);
+                null,
+                null,
+                agentInstanceContext,
+                agentInstanceContext.StatementContextFilterEvalEnv);
             if (partitionFilters != null && includePartition) {
                 addendum = FilterAddendumUtil.AddAddendum(partitionFilters, addendum[0]);
             }
@@ -214,7 +253,8 @@ namespace com.espertech.esper.common.@internal.context.controller.keyed
             }
 
             if (found == null) {
-                throw new ArgumentException("Failed to find matching partition for type '" + init.FilterSpecActivatable.FilterForEventType);
+                throw new ArgumentException(
+                    "Failed to find matching partition for type '" + init.FilterSpecActivatable.FilterForEventType);
             }
 
             return found;

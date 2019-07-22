@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -18,6 +19,7 @@ using com.espertech.esper.common.@internal.schedule;
 using com.espertech.esper.common.@internal.view.core;
 using com.espertech.esper.common.@internal.view.util;
 using com.espertech.esper.compat;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 using static com.espertech.esper.common.@internal.epl.expression.core.ExprNodeUtilityCodegen;
 
@@ -56,7 +58,12 @@ namespace com.espertech.esper.common.@internal.view.timetolive
             ViewForgeEnv viewForgeEnv)
         {
             var validated = ViewForgeSupport.Validate(
-                ViewName, parentEventType, viewParameters, true, viewForgeEnv, streamNumber);
+                ViewName,
+                parentEventType,
+                viewParameters,
+                true,
+                viewForgeEnv,
+                streamNumber);
 
             if (viewParameters.Count != 1) {
                 throw new ViewParameterException(ViewParamMessage);
@@ -87,10 +94,12 @@ namespace com.espertech.esper.common.@internal.view.timetolive
             CodegenClassScope classScope)
         {
             method.Block
-                .DeclareVar(
-                    typeof(TimePeriodCompute), "eval",
+                .DeclareVar<TimePeriodCompute>(
+                    "eval",
                     new TimePeriodComputeConstGivenDeltaForge(0).MakeEvaluator(method, classScope))
-                .SetProperty(factory, "TimestampEval",
+                .SetProperty(
+                    factory,
+                    "TimestampEval",
                     CodegenEvaluator(timestampExpression.Forge, method, typeof(TimeOrderViewForge), classScope))
                 .SetProperty(factory, "TimePeriodCompute", Ref("eval"))
                 .SetProperty(factory, "ScheduleCallbackId", Constant(scheduleCallbackId))

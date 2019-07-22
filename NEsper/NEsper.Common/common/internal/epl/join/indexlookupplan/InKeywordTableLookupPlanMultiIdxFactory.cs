@@ -27,7 +27,9 @@ namespace com.espertech.esper.common.@internal.epl.join.indexlookupplan
             TableLookupIndexReqKey[] indexNum,
             ExprEvaluator keyExpr)
             : base(
-                lookupStream, indexedStream, indexNum)
+                lookupStream,
+                indexedStream,
+                indexNum)
         {
             KeyExpr = keyExpr;
         }

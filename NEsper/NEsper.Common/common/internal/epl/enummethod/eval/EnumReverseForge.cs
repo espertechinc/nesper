@@ -7,12 +7,14 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.enummethod.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.compat.collections;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.enummethod.eval
@@ -51,11 +53,12 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
         {
             var method = codegenMethodScope
                 .MakeChild(typeof(ICollection<object>), typeof(EnumReverseForge), codegenClassScope)
-                .AddParam(EnumForgeCodegenNames.PARAMS).Block
+                .AddParam(EnumForgeCodegenNames.PARAMS)
+                .Block
                 .IfCondition(ExprDotMethod(EnumForgeCodegenNames.REF_ENUMCOLL, "isEmpty"))
                 .BlockReturn(EnumForgeCodegenNames.REF_ENUMCOLL)
-                .DeclareVar(
-                    typeof(List<object>), "result",
+                .DeclareVar<List<object>>(
+                    "result",
                     NewInstance<List<object>>(EnumForgeCodegenNames.REF_ENUMCOLL))
                 .StaticMethod(typeof(Collections), "reverse", Ref("result"))
                 .MethodReturn(Ref("result"));

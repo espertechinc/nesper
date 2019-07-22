@@ -8,12 +8,14 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.datetime.calop;
 using com.espertech.esper.common.@internal.epl.datetime.interval;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.time.abacus;
+
 using static com.espertech.esper.common.@internal.epl.datetime.dtlocal.DTLocalUtil;
 
 namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
@@ -27,13 +29,17 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
             IntervalForge intervalForge,
             TimeAbacus timeAbacus)
             : base(
-                calendarForges, intervalForge)
+                calendarForges,
+                intervalForge)
         {
             this.timeAbacus = timeAbacus;
         }
 
         public override DTLocalEvaluator DTEvaluator => new DTLocalLongOpsIntervalEval(
-            GetCalendarOps(calendarForges), intervalForge.Op, TimeZoneInfo.Local, timeAbacus);
+            GetCalendarOps(calendarForges),
+            intervalForge.Op,
+            TimeZoneInfo.Local,
+            timeAbacus);
 
         public override CodegenExpression Codegen(
             CodegenExpression inner,
@@ -43,13 +49,21 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
             CodegenClassScope codegenClassScope)
         {
             return DTLocalLongOpsIntervalEval.CodegenPointInTime(
-                this, inner, innerType, codegenMethodScope, exprSymbol, codegenClassScope);
+                this,
+                inner,
+                innerType,
+                codegenMethodScope,
+                exprSymbol,
+                codegenClassScope);
         }
 
         public override DTLocalEvaluatorIntervalComp MakeEvaluatorComp()
         {
             return new DTLocalLongOpsIntervalEval(
-                GetCalendarOps(calendarForges), intervalForge.Op, TimeZoneInfo.Local, timeAbacus);
+                GetCalendarOps(calendarForges),
+                intervalForge.Op,
+                TimeZoneInfo.Local,
+                timeAbacus);
         }
 
         public override CodegenExpression Codegen(
@@ -60,7 +74,12 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
             CodegenClassScope codegenClassScope)
         {
             return DTLocalLongOpsIntervalEval.CodegenStartEnd(
-                this, start, end, codegenMethodScope, exprSymbol, codegenClassScope);
+                this,
+                start,
+                end,
+                codegenMethodScope,
+                exprSymbol,
+                codegenClassScope);
         }
     }
 } // end of namespace

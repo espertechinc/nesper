@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.context.aifactory.core;
@@ -14,6 +15,7 @@ using com.espertech.esper.common.@internal.context.controller.condition;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.schedule;
 using com.espertech.esper.compat;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.compile.stage1.spec
@@ -52,10 +54,12 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
 
             var method = parent.MakeChild(typeof(ContextConditionDescriptorCrontab), GetType(), classScope);
             method.Block
-                .DeclareVar(
-                    typeof(ContextConditionDescriptorCrontab), "condition",
+                .DeclareVar<ContextConditionDescriptorCrontab>(
+                    "condition",
                     NewInstance(typeof(ContextConditionDescriptorCrontab)))
-                .SetProperty(Ref("condition"), "Evaluators",
+                .SetProperty(
+                    Ref("condition"),
+                    "Evaluators",
                     ExprNodeUtilityCodegen.CodegenEvaluators(forges, method, GetType(), classScope))
                 .SetProperty(Ref("condition"), "ScheduleCallbackId", Constant(ScheduleCallbackId))
                 .SetProperty(Ref("condition"), "Immediate", Constant(IsImmediate))

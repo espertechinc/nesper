@@ -28,7 +28,9 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.querymethod
                 table = value;
                 try {
                     TableUpdateStrategy = TableUpdateStrategyFactory.ValidateGetTableUpdateStrategy(
-                        value.MetaData, UpdateHelperTable, false);
+                        value.MetaData,
+                        UpdateHelperTable,
+                        false);
                 }
                 catch (ExprValidationException e) {
                     throw new EPException(e.Message, e);

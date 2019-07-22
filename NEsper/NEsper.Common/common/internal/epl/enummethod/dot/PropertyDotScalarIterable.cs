@@ -11,6 +11,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -23,6 +24,7 @@ using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.enummethod.dot
@@ -73,7 +75,10 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
             CodegenClassScope codegenClassScope)
         {
             CodegenExpressionRef refEPS = exprSymbol.GetAddEPS(codegenMethodScope);
-            return CodegenEvaluateInternal(ArrayAtIndex(refEPS, Constant(streamId)), codegenMethodScope, codegenClassScope);
+            return CodegenEvaluateInternal(
+                ArrayAtIndex(refEPS, Constant(streamId)),
+                codegenMethodScope,
+                codegenClassScope);
         }
 
         public CodegenExpression EvaluateEventGetROCollectionScalarCodegen(
@@ -82,14 +87,22 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
             CodegenClassScope codegenClassScope)
         {
             if (TypeHelper.IsImplementsInterface(getterReturnType, typeof(ICollection<object>))) {
-                return getter.EventBeanGetCodegen(symbols.GetAddEvent(codegenMethodScope), codegenMethodScope, codegenClassScope);
+                return getter.EventBeanGetCodegen(
+                    symbols.GetAddEvent(codegenMethodScope),
+                    codegenMethodScope,
+                    codegenClassScope);
             }
 
-            CodegenMethod method = codegenMethodScope.MakeChild(typeof(ICollection<object>), typeof(PropertyDotScalarIterable), codegenClassScope);
+            CodegenMethod method = codegenMethodScope.MakeChild(
+                typeof(ICollection<object>),
+                typeof(PropertyDotScalarIterable),
+                codegenClassScope);
             method.Block.DeclareVar(
-                    getterReturnType, "result",
+                    getterReturnType,
+                    "result",
                     CodegenLegoCast.CastSafeFromObjectType(
-                        typeof(IEnumerable), getter.EventBeanGetCodegen(symbols.GetAddEvent(method), codegenMethodScope, codegenClassScope)))
+                        typeof(IEnumerable),
+                        getter.EventBeanGetCodegen(symbols.GetAddEvent(method), codegenMethodScope, codegenClassScope)))
                 .IfRefNullReturnNull("result")
                 .MethodReturn(StaticMethod(typeof(CollectionUtil), "iterableToCollection", @Ref("result")));
             return LocalMethod(method);
@@ -114,7 +127,11 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
             }
 
             if (!(result is IEnumerable)) {
-                Log.Warn("Expected enumerable-type input from property '" + propertyName + "' but received " + result.GetType());
+                Log.Warn(
+                    "Expected enumerable-type input from property '" +
+                    propertyName +
+                    "' but received " +
+                    result.GetType());
                 return null;
             }
 
@@ -130,12 +147,18 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
                 return getter.EventBeanGetCodegen(@event, codegenMethodScope, codegenClassScope);
             }
 
-            CodegenMethod method = codegenMethodScope.MakeChild(typeof(ICollection<object>), typeof(PropertyDotScalarIterable), codegenClassScope)
-                .AddParam(typeof(EventBean), "event").Block
+            CodegenMethod method = codegenMethodScope.MakeChild(
+                    typeof(ICollection<object>),
+                    typeof(PropertyDotScalarIterable),
+                    codegenClassScope)
+                .AddParam(typeof(EventBean), "event")
+                .Block
                 .DeclareVar(
-                    getterReturnType, "result",
+                    getterReturnType,
+                    "result",
                     CodegenLegoCast.CastSafeFromObjectType(
-                        typeof(IEnumerable), getter.EventBeanGetCodegen(@Ref("event"), codegenMethodScope, codegenClassScope)))
+                        typeof(IEnumerable),
+                        getter.EventBeanGetCodegen(@Ref("event"), codegenMethodScope, codegenClassScope)))
                 .IfRefNullReturnNull("result")
                 .MethodReturn(StaticMethod(typeof(CollectionUtil), "iterableToCollection", @Ref("result")));
             return LocalMethodBuild(method).Pass(@event).Call();

@@ -90,11 +90,10 @@ namespace com.espertech.esper.common.@internal.filterspec
         {
             var method = parent.MakeChild(typeof(FilterSpecParam), typeof(FilterSpecParamConstantForge), classScope);
             method.Block
-                .DeclareVar(
-                    typeof(ExprFilterSpecLookupable),
+                .DeclareVar<ExprFilterSpecLookupable>(
                     "lookupable",
                     LocalMethod(lookupable.MakeCodegen(method, symbols, classScope)))
-                .DeclareVar(typeof(FilterOperator), "op", EnumValue(filterOperator));
+                .DeclareVar<FilterOperator>("op", EnumValue(filterOperator));
 
             var param = NewAnonymousClass(
                 method.Block,
@@ -102,7 +101,7 @@ namespace com.espertech.esper.common.@internal.filterspec
                 Arrays.AsList<CodegenExpression>(Ref("lookupable"), Ref("op")));
             var getFilterValue = CodegenMethod.MakeParentNode(typeof(object), GetType(), classScope)
                 .AddParam(FilterSpecParam.GET_FILTER_VALUE_FP);
-            param.AddMethod("getFilterValue", getFilterValue);
+            param.AddMethod("GetFilterValue", getFilterValue);
 
             var returnType = typeof(DoubleRange);
             var castType = typeof(double?);
@@ -112,8 +111,8 @@ namespace com.espertech.esper.common.@internal.filterspec
             }
 
             getFilterValue.Block
-                .DeclareVar(typeof(object), "min", _min.MakeCodegen(classScope, method))
-                .DeclareVar(typeof(object), "max", _max.MakeCodegen(classScope, method))
+                .DeclareVar<object>("min", _min.MakeCodegen(classScope, method))
+                .DeclareVar<object>("max", _max.MakeCodegen(classScope, method))
                 .MethodReturn(NewInstance(returnType, Cast(castType, Ref("min")), Cast(castType, Ref("max"))));
 
             method.Block.MethodReturn(param);

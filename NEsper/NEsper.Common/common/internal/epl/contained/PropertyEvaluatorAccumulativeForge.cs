@@ -10,8 +10,10 @@ using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.epl.expression.core;
+
 using System.Collections.Generic;
 using System.Linq;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.contained
@@ -53,8 +55,11 @@ namespace com.espertech.esper.common.@internal.epl.contained
         {
             CodegenMethod method = parent.MakeChild(typeof(PropertyEvaluatorAccumulative), this.GetType(), classScope);
             method.Block
-                .DeclareVar(typeof(PropertyEvaluatorAccumulative), "pe", NewInstance(typeof(PropertyEvaluatorAccumulative)))
-                .SetProperty(Ref("pe"), "ContainedEventEvals", MakeContained(containedEventEvals, method, symbols, classScope))
+                .DeclareVar<PropertyEvaluatorAccumulative>("pe", NewInstance(typeof(PropertyEvaluatorAccumulative)))
+                .SetProperty(
+                    Ref("pe"),
+                    "ContainedEventEvals",
+                    MakeContained(containedEventEvals, method, symbols, classScope))
                 .SetProperty(Ref("pe"), "WhereClauses", MakeWhere(whereClauses, method, symbols, classScope))
                 .SetProperty(Ref("pe"), "PropertyNames", Constant(propertyNames.ToArray()))
                 .SetProperty(Ref("pe"), "FragmentEventTypeIsIndexed", Constant(fragmentEventTypeIsIndexed))
@@ -72,7 +77,11 @@ namespace com.espertech.esper.common.@internal.epl.contained
             for (int i = 0; i < whereClauses.Length; i++) {
                 expressions[i] = whereClauses[i] == null
                     ? ConstantNull()
-                    : ExprNodeUtilityCodegen.CodegenEvaluator(whereClauses[i], method, typeof(PropertyEvaluatorAccumulativeForge), classScope);
+                    : ExprNodeUtilityCodegen.CodegenEvaluator(
+                        whereClauses[i],
+                        method,
+                        typeof(PropertyEvaluatorAccumulativeForge),
+                        classScope);
             }
 
             return NewArrayWithInit(typeof(ExprEvaluator), expressions);

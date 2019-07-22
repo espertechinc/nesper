@@ -115,7 +115,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.spatial
                     path);
                 var prepared = env.Runtime.FireAndForgetService.PrepareQueryWithParameters(compiled);
                 var start = PerformanceObserver.MilliTime;
-                var fields = "id".SplitCsv();
+                var fields = "Id".SplitCsv();
                 for (var i = 0; i < 500; i++) {
                     var x = random.NextDouble() * 100;
                     var y = random.NextDouble() * 100;
@@ -692,7 +692,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.spatial
                     count++;
                 }
 
-                var query = BuildDeleteQueryWithInClause("PointWindow", "id", ids);
+                var query = BuildDeleteQueryWithInClause("PointWindow", "Id", ids);
                 env.CompileExecuteFAF(query, path);
             }
 
@@ -712,7 +712,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.spatial
                     return;
                 }
 
-                var query = BuildDeleteQueryWithInClause("PointWindow", "id", ids);
+                var query = BuildDeleteQueryWithInClause("PointWindow", "Id", ids);
                 env.CompileExecuteFAF(query, path);
             }
 
@@ -730,7 +730,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.spatial
                     }
                 }
 
-                var query = BuildDeleteQueryWithInClause("PointWindow", "id", ids);
+                var query = BuildDeleteQueryWithInClause("PointWindow", "Id", ids);
                 env.CompileExecuteFAF(query, path);
             }
 
@@ -892,7 +892,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.spatial
 
                 while (!ids.IsEmpty()) {
                     var first = ids.Count < 100 ? ids : ids.SubList(0, 99);
-                    var deleteQuery = BuildDeleteQueryWithInClause("PointWindow", "id", first);
+                    var deleteQuery = BuildDeleteQueryWithInClause("PointWindow", "Id", first);
                     env.CompileExecuteFAF(deleteQuery, path);
                     ids.RemoveAll(first);
                 }

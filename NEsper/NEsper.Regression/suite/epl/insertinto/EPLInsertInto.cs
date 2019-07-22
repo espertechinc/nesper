@@ -277,7 +277,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                 env.SendEventBean(eventS1, "S1");
             }
             else if (rep.IsMapEvent()) {
-                eventS1 = Collections.SingletonMap("id", "myId");
+                eventS1 = Collections.SingletonMap("Id", "myId");
                 env.SendEventMap((IDictionary<string, object>) eventS1, "S1");
             }
             else if (rep.IsObjectArrayEvent()) {
@@ -291,7 +291,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                                 env.DeploymentId("schema1"),
                                 "S1"))
                         .AsRecordSchema());
-                theEvent.Put("id", "myId");
+                theEvent.Put("Id", "myId");
                 eventS1 = theEvent;
                 env.SendEventAvro(theEvent, "S1");
             }
@@ -843,7 +843,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                 // NOTICE: we are inserting the RSTREAM (removed events)
                 var path = new RegressionPath();
                 var stmtText = "insert rstream into StockTicks(mySymbol, myPrice) " +
-                               "select Symbol, price from SupportMarketDataBean#time(60) " +
+                               "select Symbol, Price from SupportMarketDataBean#time(60) " +
                                "output every 5 seconds " +
                                "order by Symbol asc";
                 env.CompileDeploy(stmtText, path);

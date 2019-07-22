@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.client;
 
 namespace com.espertech.esper.common.@internal.support
@@ -29,10 +30,12 @@ namespace com.espertech.esper.common.@internal.support
                     return (
                         desc,
                         eventType) => desc.PropertyName;
+
                 case SupportEventTypeAssertionEnum.TYPE:
                     return (
                         desc,
                         eventType) => desc.PropertyType;
+
                 case SupportEventTypeAssertionEnum.FRAGEMENT_TYPE_NAME:
                     return (
                         desc,
@@ -44,6 +47,7 @@ namespace com.espertech.esper.common.@internal.support
 
                         return fragType.FragmentType.Name;
                     };
+
                 case SupportEventTypeAssertionEnum.FRAGMENT_IS_INDEXED:
                     return (
                         desc,

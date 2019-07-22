@@ -24,7 +24,11 @@ namespace com.espertech.esper.common.@internal.epl.table.core
         protected override PropertyHashedEventTableFactory SetupPrimaryKeyIndexFactory()
         {
             return new PropertyHashedEventTableFactory(
-                0, metaData.KeyColumns, true, metaData.TableName, primaryKeyGetter);
+                0,
+                metaData.KeyColumns,
+                true,
+                metaData.TableName,
+                primaryKeyGetter);
         }
 
         public override TableInstance GetTableInstance(int agentInstanceId)

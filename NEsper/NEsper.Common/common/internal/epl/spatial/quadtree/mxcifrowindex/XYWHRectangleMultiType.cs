@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.@internal.type;
 using com.espertech.esper.compat.collections;
 
@@ -106,11 +107,16 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxcifrowinde
         public override string ToString()
         {
             return "XYWHRectangleMultiType{" +
-                   "x=" + X +
-                   ", y=" + Y +
-                   ", w=" + W +
-                   ", h=" + H +
-                   ", multityped=" + Multityped +
+                   "x=" +
+                   X +
+                   ", y=" +
+                   Y +
+                   ", w=" +
+                   W +
+                   ", h=" +
+                   H +
+                   ", multityped=" +
+                   Multityped +
                    '}';
         }
     }

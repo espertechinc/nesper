@@ -8,6 +8,7 @@
 
 using System.Collections.Generic;
 using System.Reflection;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.context.util;
@@ -37,7 +38,10 @@ namespace com.espertech.esper.common.@internal.epl.output.core
             OutputProcessViewConditionFactory parent,
             AgentInstanceContext agentInstanceContext)
             : base(
-                agentInstanceContext, resultSetProcessor, afterConditionTime, afterConditionNumberOfEvents,
+                agentInstanceContext,
+                resultSetProcessor,
+                afterConditionTime,
+                afterConditionNumberOfEvents,
                 afterConditionSatisfied)
         {
             this.parent = parent;
@@ -201,7 +205,10 @@ namespace com.espertech.esper.common.@internal.epl.output.core
         public override IEnumerator<EventBean> GetEnumerator()
         {
             return OutputStrategyUtil.GetIterator(
-                joinExecutionStrategy, resultSetProcessor, parentView, parent.IsDistinct);
+                joinExecutionStrategy,
+                resultSetProcessor,
+                parentView,
+                parent.IsDistinct);
         }
 
         public override void Terminated()

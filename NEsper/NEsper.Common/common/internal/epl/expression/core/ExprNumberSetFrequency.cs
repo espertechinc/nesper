@@ -9,6 +9,7 @@
 using System;
 using System.IO;
 using System.Reflection;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -17,6 +18,7 @@ using com.espertech.esper.common.@internal.type;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.logging;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.expression.core
@@ -67,10 +69,13 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             var forge = ChildNodes[0].Forge;
             var evaluationType = forge.EvaluationType;
             var methodNode = codegenMethodScope.MakeChild(
-                typeof(FrequencyParameter), typeof(ExprNumberSetFrequency), codegenClassScope);
+                typeof(FrequencyParameter),
+                typeof(ExprNumberSetFrequency),
+                codegenClassScope);
             var block = methodNode.Block
                 .DeclareVar(
-                    evaluationType, "value",
+                    evaluationType,
+                    "value",
                     forge.EvaluateCodegen(requiredType, methodNode, exprSymbol, codegenClassScope));
             if (!evaluationType.IsPrimitive) {
                 block.IfRefNull("value")

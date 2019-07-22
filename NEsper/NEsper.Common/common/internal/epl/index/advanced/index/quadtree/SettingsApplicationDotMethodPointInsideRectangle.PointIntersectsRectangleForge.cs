@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
@@ -47,7 +48,11 @@ namespace com.espertech.esper.common.@internal.epl.index.advanced.index.quadtree
 
             public ExprEvaluator ExprEvaluator {
                 get => new PointIntersectsRectangleEvaluator(
-                    pxEval.ExprEvaluator, pyEval.ExprEvaluator, xEval.ExprEvaluator, yEval.ExprEvaluator, widthEval.ExprEvaluator,
+                    pxEval.ExprEvaluator,
+                    pyEval.ExprEvaluator,
+                    xEval.ExprEvaluator,
+                    yEval.ExprEvaluator,
+                    widthEval.ExprEvaluator,
                     heightEval.ExprEvaluator);
             }
 
@@ -57,7 +62,11 @@ namespace com.espertech.esper.common.@internal.epl.index.advanced.index.quadtree
                 ExprForgeCodegenSymbol exprSymbol,
                 CodegenClassScope codegenClassScope)
             {
-                return PointIntersectsRectangleEvaluator.Codegen(this, codegenMethodScope, exprSymbol, codegenClassScope);
+                return PointIntersectsRectangleEvaluator.Codegen(
+                    this,
+                    codegenMethodScope,
+                    exprSymbol,
+                    codegenClassScope);
             }
 
             public ExprForgeConstantType ForgeConstantType {

@@ -7,11 +7,13 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.@event.core;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.historical.indexingstrategy
@@ -58,23 +60,34 @@ namespace com.espertech.esper.common.@internal.epl.historical.indexingstrategy
                 var propertyGetters = EventTypeUtility.GetGetters(eventType, optHashPropertyNames);
                 var propertyTypes = EventTypeUtility.GetPropertyTypes(eventType, optHashPropertyNames);
                 hashGetter = EventTypeUtility.CodegenGetterMayMultiKeyWCoerce(
-                    eventType, propertyGetters, propertyTypes, optHashCoercedTypes, method, GetType(), classScope);
+                    eventType,
+                    propertyGetters,
+                    propertyTypes,
+                    optHashCoercedTypes,
+                    method,
+                    GetType(),
+                    classScope);
             }
 
-            method.Block.DeclareVar(
-                typeof(EventPropertyValueGetter[]), "rangeGetters",
+            method.Block.DeclareVar<EventPropertyValueGetter[]>(
+                "rangeGetters",
                 NewArrayByLength(typeof(EventPropertyValueGetter), Constant(rangeProps.Length)));
             for (var i = 0; i < rangeProps.Length; i++) {
                 var propertyType = eventType.GetPropertyType(rangeProps[i]);
                 var getterSPI = ((EventTypeSPI) eventType).GetGetterSPI(rangeProps[i]);
                 var getter = EventTypeUtility.CodegenGetterWCoerce(
-                    getterSPI, propertyType, rangeTypes[i], method, GetType(), classScope);
+                    getterSPI,
+                    propertyType,
+                    rangeTypes[i],
+                    method,
+                    GetType(),
+                    classScope);
                 method.Block.AssignArrayElement(Ref("rangeGetters"), Constant(i), getter);
             }
 
             method.Block
-                .DeclareVar(
-                    typeof(PollResultIndexingStrategyComposite), "strat",
+                .DeclareVar<PollResultIndexingStrategyComposite>(
+                    "strat",
                     NewInstance(typeof(PollResultIndexingStrategyComposite)))
                 .SetProperty(Ref("strat"), "StreamNum", Constant(streamNum))
                 .SetProperty(Ref("strat"), "OptionalKeyedProps", Constant(optHashPropertyNames))

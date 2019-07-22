@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.hook.exception;
 using com.espertech.esper.common.@internal.context.util;
@@ -19,7 +20,8 @@ namespace com.espertech.esper.common.@internal.context.mgr
 {
     public class ContextStatementEventEvaluatorDefault : ContextStatementEventEvaluator
     {
-        public readonly static ContextStatementEventEvaluatorDefault INSTANCE = new ContextStatementEventEvaluatorDefault();
+        public readonly static ContextStatementEventEvaluatorDefault INSTANCE =
+            new ContextStatementEventEvaluatorDefault();
 
         private ContextStatementEventEvaluatorDefault()
         {
@@ -51,7 +53,8 @@ namespace com.espertech.esper.common.@internal.context.mgr
             }
 
             // use the right sorted/unsorted Map keyed by AgentInstance to sort
-            bool isPrioritized = agentInstanceContextCreate.RuntimeSettingsService.ConfigurationRuntime.Execution.IsPrioritized;
+            bool isPrioritized = agentInstanceContextCreate.RuntimeSettingsService.ConfigurationRuntime.Execution
+                .IsPrioritized;
             IDictionary<AgentInstance, object> stmtCallbacks;
             if (!isPrioritized) {
                 stmtCallbacks = new Dictionary<AgentInstance, object>();
@@ -69,7 +72,8 @@ namespace com.espertech.esper.common.@internal.context.mgr
                 AgentInstance agentInstanceFound = null;
                 foreach (AgentInstance agentInstance in agentInstances) {
                     AgentInstanceContext agentInstanceContext = agentInstance.AgentInstanceContext;
-                    if (agentInstanceContext.StatementId == statementId && agentInstanceContext.AgentInstanceId == handleCallback.AgentInstanceId) {
+                    if (agentInstanceContext.StatementId == statementId &&
+                        agentInstanceContext.AgentInstanceId == handleCallback.AgentInstanceId) {
                         agentInstanceFound = agentInstance;
                         break;
                     }
@@ -89,7 +93,8 @@ namespace com.espertech.esper.common.@internal.context.mgr
                         stmtCallbacks.Put(agentInstanceFound, handleCallback);
                     }
                     else if (stmtCallback is ArrayDeque<EPStatementHandleCallbackFilter> callbackFilterDeque) {
-                        if (!callbackFilterDeque.Contains(handleCallback)) { // De-duplicate for Filter OR expression paths
+                        if (!callbackFilterDeque.Contains(handleCallback)) {
+                            // De-duplicate for Filter OR expression paths
                             callbackFilterDeque.Add(handleCallback);
                         }
                     }
@@ -122,7 +127,10 @@ namespace com.espertech.esper.common.@internal.context.mgr
                     Process(agentInstance, filterHandleCollection, theEvent);
                 }
                 else {
-                    Process(agentInstance, Collections.SingletonList<FilterHandle>((FilterHandle) callbackList), theEvent);
+                    Process(
+                        agentInstance,
+                        Collections.SingletonList<FilterHandle>((FilterHandle) callbackList),
+                        theEvent);
                 }
 
                 if (agentInstance.AgentInstanceContext.EpStatementAgentInstanceHandle.IsPreemptive) {
@@ -158,7 +166,10 @@ namespace com.espertech.esper.common.@internal.context.mgr
             }
             catch (Exception ex) {
                 agentInstanceContext.ExceptionHandlingService.HandleException(
-                    ex, agentInstanceContext.EpStatementAgentInstanceHandle, ExceptionHandlerExceptionType.PROCESS, theEvent);
+                    ex,
+                    agentInstanceContext.EpStatementAgentInstanceHandle,
+                    ExceptionHandlerExceptionType.PROCESS,
+                    theEvent);
             }
             finally {
                 if (agentInstanceContext.StatementContext.EpStatementHandle.HasTableAccess) {

@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.context.util;
@@ -53,7 +54,10 @@ namespace com.espertech.esper.common.@internal.view.derived
             if (lastNewEvent == null) {
                 if (child != null) {
                     oldDataMap = PopulateMap(
-                        baseStatisticsBean, agentInstanceContext.EventBeanTypedEventFactory, viewFactory.eventType, viewFactory.additionalProps,
+                        baseStatisticsBean,
+                        agentInstanceContext.EventBeanTypedEventFactory,
+                        viewFactory.eventType,
+                        viewFactory.additionalProps,
                         lastValuesEventNew);
                 }
             }
@@ -76,7 +80,8 @@ namespace com.espertech.esper.common.@internal.view.derived
                     }
 
                     for (int val = 0; val < additionalEvals.Length; val++) {
-                        lastValuesEventNew[val] = additionalEvals[val].Evaluate(eventsPerStream, true, agentInstanceContext);
+                        lastValuesEventNew[val] =
+                            additionalEvals[val].Evaluate(eventsPerStream, true, agentInstanceContext);
                     }
                 }
             }
@@ -96,7 +101,10 @@ namespace com.espertech.esper.common.@internal.view.derived
             // If there are child view, call update method
             if (child != null) {
                 EventBean newDataMap = PopulateMap(
-                    baseStatisticsBean, agentInstanceContext.EventBeanTypedEventFactory, viewFactory.eventType, viewFactory.additionalProps,
+                    baseStatisticsBean,
+                    agentInstanceContext.EventBeanTypedEventFactory,
+                    viewFactory.eventType,
+                    viewFactory.additionalProps,
                     lastValuesEventNew);
 
                 EventBean[] oldEvents;
@@ -129,7 +137,8 @@ namespace com.espertech.esper.common.@internal.view.derived
                     baseStatisticsBean,
                     agentInstanceContext.EventBeanTypedEventFactory,
                     viewFactory.eventType,
-                    viewFactory.additionalProps, lastValuesEventNew));
+                    viewFactory.additionalProps,
+                    lastValuesEventNew));
         }
 
         public override string ToString()
@@ -147,8 +156,12 @@ namespace com.espertech.esper.common.@internal.view.derived
             IDictionary<string, object> result = new Dictionary<string, object>();
             result.Put(ViewFieldEnum.UNIVARIATE_STATISTICS__DATAPOINTS.GetName(), baseStatisticsBean.N);
             result.Put(ViewFieldEnum.UNIVARIATE_STATISTICS__TOTAL.GetName(), baseStatisticsBean.XSum);
-            result.Put(ViewFieldEnum.UNIVARIATE_STATISTICS__STDDEV.GetName(), baseStatisticsBean.XStandardDeviationSample);
-            result.Put(ViewFieldEnum.UNIVARIATE_STATISTICS__STDDEVPA.GetName(), baseStatisticsBean.XStandardDeviationPop);
+            result.Put(
+                ViewFieldEnum.UNIVARIATE_STATISTICS__STDDEV.GetName(),
+                baseStatisticsBean.XStandardDeviationSample);
+            result.Put(
+                ViewFieldEnum.UNIVARIATE_STATISTICS__STDDEVPA.GetName(),
+                baseStatisticsBean.XStandardDeviationPop);
             result.Put(ViewFieldEnum.UNIVARIATE_STATISTICS__VARIANCE.GetName(), baseStatisticsBean.XVariance);
             result.Put(ViewFieldEnum.UNIVARIATE_STATISTICS__AVERAGE.GetName(), baseStatisticsBean.XAverage);
             if (additionalProps != null) {
@@ -171,7 +184,8 @@ namespace com.espertech.esper.common.@internal.view.derived
             eventTypeMap.Put(ViewFieldEnum.UNIVARIATE_STATISTICS__VARIANCE.GetName(), typeof(double?));
             eventTypeMap.Put(ViewFieldEnum.UNIVARIATE_STATISTICS__AVERAGE.GetName(), typeof(double?));
             StatViewAdditionalPropsForge.AddCheckDupProperties(
-                eventTypeMap, additionalProps,
+                eventTypeMap,
+                additionalProps,
                 ViewFieldEnum.UNIVARIATE_STATISTICS__DATAPOINTS,
                 ViewFieldEnum.UNIVARIATE_STATISTICS__TOTAL,
                 ViewFieldEnum.UNIVARIATE_STATISTICS__STDDEV,

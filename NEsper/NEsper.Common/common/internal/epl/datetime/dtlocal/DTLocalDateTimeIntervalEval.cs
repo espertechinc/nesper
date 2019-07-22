@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -14,6 +15,7 @@ using com.espertech.esper.common.@internal.epl.datetime.eval;
 using com.espertech.esper.common.@internal.epl.datetime.interval;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
@@ -48,8 +50,8 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
                 .AddParam(typeof(DateTime), "target");
 
             methodNode.Block
-                .DeclareVar(
-                    typeof(long), "time",
+                .DeclareVar<long>(
+                    "time",
                     StaticMethod(typeof(DatetimeLongCoercerDateTime), "CoerceToMillis", Ref("target")))
                 .MethodReturn(
                     forge.intervalForge.Codegen(Ref("time"), Ref("time"), methodNode, exprSymbol, codegenClassScope));
@@ -78,14 +80,15 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
         {
             var methodNode = codegenMethodScope
                 .MakeChild(typeof(bool?), typeof(DTLocalDateTimeIntervalEval), codegenClassScope)
-                .AddParam(typeof(DateTime), "startTimestamp").AddParam(typeof(DateTime), "endTimestamp");
+                .AddParam(typeof(DateTime), "startTimestamp")
+                .AddParam(typeof(DateTime), "endTimestamp");
 
             methodNode.Block
-                .DeclareVar(
-                    typeof(long), "start",
+                .DeclareVar<long>(
+                    "start",
                     StaticMethod(typeof(DatetimeLongCoercerDateTime), "CoerceToMillis", Ref("startTimestamp")))
-                .DeclareVar(
-                    typeof(long), "end",
+                .DeclareVar<long>(
+                    "end",
                     StaticMethod(typeof(DatetimeLongCoercerDateTime), "CoerceToMillis", Ref("endTimestamp")))
                 .MethodReturn(
                     forge.intervalForge.Codegen(Ref("start"), Ref("end"), methodNode, exprSymbol, codegenClassScope));

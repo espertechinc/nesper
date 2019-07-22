@@ -8,6 +8,7 @@
 
 using System.Collections.Generic;
 using System.Linq;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.compat.collections;
@@ -55,19 +56,32 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
                 foreach (var anOldData in oldData) {
                     eventsPerStream[0] = anOldData;
                     processor.AggregationService.ApplyLeave(
-                        eventsPerStream, oldDataMultiKey[count], processor.AgentInstanceContext);
+                        eventsPerStream,
+                        oldDataMultiKey[count],
+                        processor.AgentInstanceContext);
                     count++;
                 }
             }
 
             if (processor.IsSelectRStream) {
                 processor.GenerateOutputBatchedViewPerKey(
-                    oldData, oldDataMultiKey, false, isGenerateSynthetic, outputLastUnordGroupOld, null,
+                    oldData,
+                    oldDataMultiKey,
+                    false,
+                    isGenerateSynthetic,
+                    outputLastUnordGroupOld,
+                    null,
                     eventsPerStream);
             }
 
             processor.GenerateOutputBatchedViewPerKey(
-                newData, newDataMultiKey, false, isGenerateSynthetic, outputLastUnordGroupNew, null, eventsPerStream);
+                newData,
+                newDataMultiKey,
+                false,
+                isGenerateSynthetic,
+                outputLastUnordGroupNew,
+                null,
+                eventsPerStream);
         }
 
         public void ProcessJoin(
@@ -93,18 +107,30 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
                 var count = 0;
                 foreach (var anOldData in oldData) {
                     processor.AggregationService.ApplyLeave(
-                        anOldData.Array, oldDataMultiKey[count], processor.AgentInstanceContext);
+                        anOldData.Array,
+                        oldDataMultiKey[count],
+                        processor.AgentInstanceContext);
                     count++;
                 }
             }
 
             if (processor.IsSelectRStream) {
                 processor.GenerateOutputBatchedJoinPerKey(
-                    oldData, oldDataMultiKey, false, isGenerateSynthetic, outputLastUnordGroupOld, null);
+                    oldData,
+                    oldDataMultiKey,
+                    false,
+                    isGenerateSynthetic,
+                    outputLastUnordGroupOld,
+                    null);
             }
 
             processor.GenerateOutputBatchedJoinPerKey(
-                newData, newDataMultiKey, false, isGenerateSynthetic, outputLastUnordGroupNew, null);
+                newData,
+                newDataMultiKey,
+                false,
+                isGenerateSynthetic,
+                outputLastUnordGroupNew,
+                null);
         }
 
         public UniformPair<EventBean[]> OutputView(bool isSynthesize)

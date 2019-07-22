@@ -49,13 +49,16 @@ namespace com.espertech.esper.common.@internal.epl.lookup
         }
 
         public LookupStrategyDesc LookupStrategyDesc => new LookupStrategyDesc(
-            Properties.Length == 1 ? LookupStrategyType.SINGLEPROP : LookupStrategyType.MULTIPROP, Properties);
+            Properties.Length == 1 ? LookupStrategyType.SINGLEPROP : LookupStrategyType.MULTIPROP,
+            Properties);
 
         public string ToQueryPlan()
         {
             return GetType().Name +
-                   " indexProps=" + CompatExtensions.RenderAny(Properties) +
-                   " keyStreamNums=" + CompatExtensions.RenderAny(KeyStreamNums);
+                   " indexProps=" +
+                   CompatExtensions.RenderAny(Properties) +
+                   " keyStreamNums=" +
+                   CompatExtensions.RenderAny(KeyStreamNums);
         }
     }
 } // end of namespace

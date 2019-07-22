@@ -8,6 +8,7 @@
 
 using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.index.compile
@@ -45,8 +46,12 @@ namespace com.espertech.esper.common.@internal.epl.index.compile
         public CodegenExpression Make(CodegenExpressionRef addInitSvc)
         {
             return NewInstance<IndexCompileTimeKey>(
-                Constant(InfraModuleName), Constant(InfraName), Constant(Visibility), Constant(IsNamedWindow),
-                Constant(IndexName), Constant(IndexModuleName));
+                Constant(InfraModuleName),
+                Constant(InfraName),
+                Constant(Visibility),
+                Constant(IsNamedWindow),
+                Constant(IndexName),
+                Constant(IndexModuleName));
         }
 
         public override bool Equals(object o)
@@ -65,7 +70,9 @@ namespace com.espertech.esper.common.@internal.epl.index.compile
                 return false;
             }
 
-            if (InfraModuleName != null ? !InfraModuleName.Equals(that.InfraModuleName) : that.InfraModuleName != null) {
+            if (InfraModuleName != null
+                ? !InfraModuleName.Equals(that.InfraModuleName)
+                : that.InfraModuleName != null) {
                 return false;
             }
 
@@ -81,7 +88,9 @@ namespace com.espertech.esper.common.@internal.epl.index.compile
                 return false;
             }
 
-            return IndexModuleName != null ? IndexModuleName.Equals(that.IndexModuleName) : that.IndexModuleName == null;
+            return IndexModuleName != null
+                ? IndexModuleName.Equals(that.IndexModuleName)
+                : that.IndexModuleName == null;
         }
 
         public override int GetHashCode()

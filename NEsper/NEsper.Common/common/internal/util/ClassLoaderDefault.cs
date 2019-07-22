@@ -8,6 +8,7 @@
 
 using System;
 using System.IO;
+
 using com.espertech.esper.compat;
 
 namespace com.espertech.esper.common.@internal.util

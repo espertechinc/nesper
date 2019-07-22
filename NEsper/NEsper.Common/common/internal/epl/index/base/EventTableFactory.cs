@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.@internal.context.util;
 
 namespace com.espertech.esper.common.@internal.epl.index.@base

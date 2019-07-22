@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.hook.expr;
 using com.espertech.esper.common.client.render;
@@ -131,13 +132,15 @@ namespace com.espertech.esper.common.@internal.context.util
 
         public DatabaseConfigServiceRuntime DatabaseConfigService => StatementContext.DatabaseConfigService;
 
-        public EPRuntimeEventProcessWrapped EPRuntimeEventProcessWrapped => StatementContext.EPRuntimeEventProcessWrapped;
+        public EPRuntimeEventProcessWrapped EPRuntimeEventProcessWrapped =>
+            StatementContext.EPRuntimeEventProcessWrapped;
 
         public EventServiceSendEventCommon EPRuntimeSendEvent => StatementContext.EPRuntimeSendEvent;
 
         public EPRenderEventService EPRuntimeRenderEvent => StatementContext.EPRuntimeRenderEvent;
 
-        public DataFlowFilterServiceAdapter DataFlowFilterServiceAdapter => StatementContext.DataFlowFilterServiceAdapter;
+        public DataFlowFilterServiceAdapter DataFlowFilterServiceAdapter =>
+            StatementContext.DataFlowFilterServiceAdapter;
 
         public object Runtime => StatementContext.Runtime;
 
@@ -153,7 +156,9 @@ namespace com.espertech.esper.common.@internal.context.util
             get {
                 if (statementContextCPPair == null) {
                     statementContextCPPair = new StatementContextCPPair(
-                        StatementContext.StatementId, AgentInstanceId, StatementContext);
+                        StatementContext.StatementId,
+                        AgentInstanceId,
+                        StatementContext);
                 }
 
                 return statementContextCPPair;

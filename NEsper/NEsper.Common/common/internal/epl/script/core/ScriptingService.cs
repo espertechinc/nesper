@@ -23,13 +23,17 @@ namespace com.espertech.esper.common.@internal.epl.script.core
         /// <param name="dialect">The dialect.</param>
         /// <param name="script">The script.</param>
         /// <returns></returns>
-        Func<ScriptArgs, object> Compile(string dialect, ExpressionScriptProvided script);
+        Func<ScriptArgs, object> Compile(
+            string dialect,
+            ExpressionScriptProvided script);
 
         /// <summary>
         /// Verifies the script given the specified dialect.
         /// </summary>
         /// <param name="dialect">The dialect.</param>
         /// <param name="script">The script.</param>
-        void VerifyScript(string dialect, ExpressionScriptProvided script);
+        void VerifyScript(
+            string dialect,
+            ExpressionScriptProvided script);
     }
 }

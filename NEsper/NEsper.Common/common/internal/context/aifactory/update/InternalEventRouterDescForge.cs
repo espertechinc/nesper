@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -14,6 +15,7 @@ using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.util;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.context.aifactory.update
@@ -53,17 +55,26 @@ namespace com.espertech.esper.common.@internal.context.aifactory.update
         {
             var method = parent.MakeChild(typeof(InternalEventRouterDesc), GetType(), classScope);
             method.Block
-                .DeclareVar(typeof(InternalEventRouterDesc), "ire", NewInstance(typeof(InternalEventRouterDesc)))
+                .DeclareVar<InternalEventRouterDesc>("ire", NewInstance(typeof(InternalEventRouterDesc)))
                 .SetProperty(Ref("ire"), "Wideners", MakeWideners(wideners, method, classScope))
-                .SetProperty(Ref("ire"), "EventType",
+                .SetProperty(
+                    Ref("ire"),
+                    "EventType",
                     EventTypeUtility.ResolveTypeCodegen(eventType, symbols.GetAddInitSvc(method)))
-                .SetProperty(Ref("ire"), "OptionalWhereClauseEval",
+                .SetProperty(
+                    Ref("ire"),
+                    "OptionalWhereClauseEval",
                     optionalWhereClause == null
                         ? ConstantNull()
                         : ExprNodeUtilityCodegen.CodegenEvaluator(
-                            optionalWhereClause.Forge, method, GetType(), classScope))
+                            optionalWhereClause.Forge,
+                            method,
+                            GetType(),
+                            classScope))
                 .SetProperty(Ref("ire"), "Properties", Constant(properties))
-                .SetProperty(Ref("ire"), "Assignments",
+                .SetProperty(
+                    Ref("ire"),
+                    "Assignments",
                     ExprNodeUtilityCodegen.CodegenEvaluators(assignments, method, GetType(), classScope))
                 .MethodReturn(Ref("ire"));
             return LocalMethod(method);

@@ -51,7 +51,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
             Pair<object, object>[] beanTests = {
                 new Pair<object, object>(
                     SupportBeanComplexProps.MakeDefaultBean(),
-                    AllExist("simple", "nestedValue", "nestedNestedValue")),
+                    AllExist("simple", "NestedValue", "nestedNestedValue")),
                 new Pair<object, object>(new SupportMarkerImplA("x"), NOT_EXISTS)
             };
             RunAssertion(env, BEAN_TYPE.Name, FBEAN, null, beanTests, typeof(object));
@@ -61,7 +61,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
             var mapNestedOne = TwoEntryMap<string, object>(
                 "nestedNested",
                 mapNestedNestedOne,
-                "nestedValue",
+                "NestedValue",
                 "abc");
             var mapOne = TwoEntryMap<string, object>("simpleProperty", 5, "nested", mapNestedOne);
             Pair<object, object>[] mapTests = {
@@ -86,7 +86,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
             Pair<object, object>[] xmlTests = {
                 new Pair<object, object>(
                     "<simpleProperty>abc</simpleProperty>" +
-                    "<nested nestedValue=\"100\">\n" +
+                    "<nested NestedValue=\"100\">\n" +
                     "\t<nestedNested nestedNestedValue=\"101\">\n" +
                     "\t</nestedNested>\n" +
                     "</nested>\n",
@@ -110,7 +110,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
             var nestedNestedDatum = new GenericRecord(nestedNestedSchema);
             nestedNestedDatum.Put("nestedNestedValue", 101);
             var nestedDatum = new GenericRecord(nestedSchema);
-            nestedDatum.Put("nestedValue", 100);
+            nestedDatum.Put("NestedValue", 100);
             nestedDatum.Put("nestedNested", nestedNestedDatum);
             var datumOne = new GenericRecord(schema);
             datumOne.Put("simpleProperty", "abc");
@@ -136,8 +136,8 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
             var stmtText = "@Name('s0') select " +
                            "simpleProperty? as simple, " +
                            "exists(simpleProperty?) as exists_simple, " +
-                           "nested?.nestedValue as nested, " +
-                           "exists(nested?.nestedValue) as exists_nested, " +
+                           "nested?.NestedValue as nested, " +
+                           "exists(nested?.NestedValue) as exists_nested, " +
                            "nested?.nestedNested.nestedNestedValue as nestedNested, " +
                            "exists(nested?.nestedNested.nestedNestedValue) as exists_nestedNested " +
                            "from " +

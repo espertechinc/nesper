@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -17,6 +18,7 @@ using com.espertech.esper.common.@internal.epl.lookupplan;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat.collections;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.lookup
@@ -89,12 +91,18 @@ namespace com.espertech.esper.common.@internal.epl.lookup
                 }
 
                 var eval = ExprNodeUtilityCodegen.CodegenEvaluatorMayMultiKeyPropPerStream(
-                    keyStreamTypes, _hashStrictKeys, _hashKeyCoercionTypes.CoercionTypes, keyStreamNums,
-                    methodNode, GetType(), classScope);
+                    keyStreamTypes,
+                    _hashStrictKeys,
+                    _hashKeyCoercionTypes.CoercionTypes,
+                    keyStreamNums,
+                    methodNode,
+                    GetType(),
+                    classScope);
                 methodNode.Block.MethodReturn(
                     NewInstance<SubordHashedTableLookupStrategyPropFactory>(
                         Constant(_hashStrictKeys),
-                        Constant(keyStreamNums), eval));
+                        Constant(keyStreamNums),
+                        eval));
                 return LocalMethod(methodNode);
             }
             else {
@@ -105,11 +113,17 @@ namespace com.espertech.esper.common.@internal.epl.lookup
 
                 var expressions = ExprNodeUtilityPrint.ToExpressionStringsMinPrecedence(forges);
                 CodegenExpression eval = ExprNodeUtilityCodegen.CodegenEvaluatorMayMultiKeyWCoerce(
-                    forges, _hashKeyCoercionTypes.CoercionTypes, methodNode, GetType(), classScope);
+                    forges,
+                    _hashKeyCoercionTypes.CoercionTypes,
+                    methodNode,
+                    GetType(),
+                    classScope);
                 methodNode.Block.MethodReturn(
                     NewInstance<SubordHashedTableLookupStrategyExprFactory>(
-                        Constant(expressions), eval,
-                        Constant(isNWOnTrigger), Constant(_numStreamsOuter)));
+                        Constant(expressions),
+                        eval,
+                        Constant(isNWOnTrigger),
+                        Constant(_numStreamsOuter)));
                 return LocalMethod(methodNode);
             }
         }

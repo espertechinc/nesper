@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.epl.agg.core;
@@ -73,7 +74,10 @@ namespace com.espertech.esper.common.@internal.epl.subselect
             AggregationService aggregationService = null;
             if (aggregationServiceFactory != null) {
                 aggregationService = aggregationServiceFactory.MakeService(
-                    agentInstanceContext, agentInstanceContext.ImportServiceRuntime, true, subqueryNumber,
+                    agentInstanceContext,
+                    agentInstanceContext.ImportServiceRuntime,
+                    true,
+                    subqueryNumber,
                     null);
 
                 var aggregationServiceStoppable = aggregationService;
@@ -85,21 +89,29 @@ namespace com.espertech.esper.common.@internal.epl.subselect
                 if (groupKeyEval == null) {
                     if (filterExprEval == null) {
                         subselectAggregationPreprocessor = new SubselectAggregationPreprocessorUnfilteredUngrouped(
-                            aggregationService, filterExprEval, null);
+                            aggregationService,
+                            filterExprEval,
+                            null);
                     }
                     else {
                         subselectAggregationPreprocessor = new SubselectAggregationPreprocessorFilteredUngrouped(
-                            aggregationService, filterExprEval, null);
+                            aggregationService,
+                            filterExprEval,
+                            null);
                     }
                 }
                 else {
                     if (filterExprEval == null) {
                         subselectAggregationPreprocessor = new SubselectAggregationPreprocessorUnfilteredGrouped(
-                            aggregationService, filterExprEval, groupKeyEval);
+                            aggregationService,
+                            filterExprEval,
+                            groupKeyEval);
                     }
                     else {
                         subselectAggregationPreprocessor = new SubselectAggregationPreprocessorFilteredGrouped(
-                            aggregationService, filterExprEval, groupKeyEval);
+                            aggregationService,
+                            filterExprEval,
+                            groupKeyEval);
                     }
                 }
             }
@@ -121,9 +133,12 @@ namespace com.espertech.esper.common.@internal.epl.subselect
                     }
 
                     subqueryLookup = queryPlan.LookupStrategyFactory.MakeStrategy(
-                        indexes, agentInstanceContext, instance.RootViewInstance.VirtualDataWindow);
+                        indexes,
+                        agentInstanceContext,
+                        instance.RootViewInstance.VirtualDataWindow);
                     subqueryLookup = new SubordIndexedTableLookupStrategyLocking(
-                        subqueryLookup, instance.TailViewInstance.AgentInstanceContext.AgentInstanceLock);
+                        subqueryLookup,
+                        instance.TailViewInstance.AgentInstanceContext.AgentInstanceLock);
                 }
             }
             else {
@@ -146,7 +161,13 @@ namespace com.espertech.esper.common.@internal.epl.subselect
             }
 
             return new SubSelectStrategyRealization(
-                subqueryLookup, subselectAggregationPreprocessor, aggregationService, null, null, null, null);
+                subqueryLookup,
+                subselectAggregationPreprocessor,
+                aggregationService,
+                null,
+                null,
+                null,
+                null);
         }
 
         public LookupStrategyDesc LookupStrategyDesc => queryPlan == null

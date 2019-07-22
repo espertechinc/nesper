@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.context.aifactory.core;
@@ -65,7 +66,10 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.nfa
             CodegenClassScope classScope)
         {
             if (expression != null) {
-                method.Block.SetProperty(eval, "Expression", ExprNodeUtilityCodegen.CodegenEvaluator(expression.Forge, method, GetType(), classScope));
+                method.Block.SetProperty(
+                    eval,
+                    "Expression",
+                    ExprNodeUtilityCodegen.CodegenEvaluator(expression.Forge, method, GetType(), classScope));
             }
         }
     }

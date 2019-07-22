@@ -8,6 +8,7 @@
 
 using System;
 using System.Reflection;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.util;
 
@@ -34,8 +35,12 @@ namespace com.espertech.esper.common.@internal.@event.util
             Exception e)
         {
             var declaring = field.DeclaringType;
-            var message = "Failed to obtain field value for field " + field.Name + " on class " +
-                          declaring.GetCleanName() + ": " + e.Message;
+            var message = "Failed to obtain field value for field " +
+                          field.Name +
+                          " on class " +
+                          declaring.GetCleanName() +
+                          ": " +
+                          e.Message;
             throw new PropertyAccessException(message, e);
         }
 
@@ -58,8 +63,10 @@ namespace com.espertech.esper.common.@internal.@event.util
                 classNameReceived = @object != null ? @object.GetType().GetCleanName() : "null";
             }
 
-            var message = "Mismatched getter instance to event bean type, expected " + classNameExpected +
-                          " but received " + classNameReceived;
+            var message = "Mismatched getter instance to event bean type, expected " +
+                          classNameExpected +
+                          " but received " +
+                          classNameReceived;
             throw new PropertyAccessException(message, e);
         }
 
@@ -82,7 +89,11 @@ namespace com.espertech.esper.common.@internal.@event.util
             Exception e)
         {
             var declaring = method.DeclaringType;
-            var message = "Failed to invoke method " + method.Name + " on class " + declaring.GetCleanName() + ": " +
+            var message = "Failed to invoke method " +
+                          method.Name +
+                          " on class " +
+                          declaring.GetCleanName() +
+                          ": " +
                           e.Message;
             throw new PropertyAccessException(message, e);
         }
@@ -108,7 +119,11 @@ namespace com.espertech.esper.common.@internal.@event.util
             TargetException e)
         {
             var declaring = method.DeclaringType;
-            var message = "Failed to invoke method " + method.Name + " on class " + declaring.GetCleanName() + ": " +
+            var message = "Failed to invoke method " +
+                          method.Name +
+                          " on class " +
+                          declaring.GetCleanName() +
+                          ": " +
                           e.InnerException.Message;
             throw new PropertyAccessException(message, e);
         }
@@ -118,7 +133,11 @@ namespace com.espertech.esper.common.@internal.@event.util
             Exception t)
         {
             var declaring = method.DeclaringType;
-            var message = "Failed to invoke method " + method.Name + " on class " + declaring.GetCleanName() + ": " +
+            var message = "Failed to invoke method " +
+                          method.Name +
+                          " on class " +
+                          declaring.GetCleanName() +
+                          ": " +
                           t.Message;
             throw new PropertyAccessException(message, t);
         }

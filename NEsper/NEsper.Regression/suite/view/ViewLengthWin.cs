@@ -229,7 +229,7 @@ namespace com.espertech.esper.regressionlib.suite.view
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@Name('s0') select Symbol, price from SupportMarketDataBean#length(2)";
+                var epl = "@Name('s0') select Symbol, Price from SupportMarketDataBean#length(2)";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
                 SendEvent(env, "ABC", 20);

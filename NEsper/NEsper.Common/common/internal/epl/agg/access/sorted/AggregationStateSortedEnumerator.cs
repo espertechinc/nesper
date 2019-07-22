@@ -24,7 +24,9 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
         /// </summary>
         /// <param name="window">sorted map with events</param>
         /// <param name="reverse">if set to <c>true</c> [reverse].</param>
-        public AggregationStateSortedEnumerator(SortedDictionary<object, object> window, bool reverse)
+        public AggregationStateSortedEnumerator(
+            SortedDictionary<object, object> window,
+            bool reverse)
             : base(reverse ? Enumerable.Reverse(window.Keys) : window.Keys)
         {
             _window = window;
@@ -35,7 +37,9 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
         /// </summary>
         /// <param name="window">sorted map with events</param>
         /// <param name="reverse">if set to <c>true</c> [reverse].</param>
-        public AggregationStateSortedEnumerator(OrderedDictionary<object, object> window, bool reverse)
+        public AggregationStateSortedEnumerator(
+            OrderedDictionary<object, object> window,
+            bool reverse)
             : base(reverse ? Enumerable.Reverse(window.Keys) : window.Keys)
         {
             _window = window;

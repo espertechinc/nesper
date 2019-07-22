@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -19,6 +20,7 @@ using com.espertech.esper.common.@internal.epl.expression.table;
 using com.espertech.esper.common.@internal.epl.subselect;
 using com.espertech.esper.common.@internal.epl.table.strategy;
 using com.espertech.esper.common.@internal.epl.variable.core;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.onset
@@ -54,7 +56,9 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.onset
         {
             method.Block
                 .SetProperty(saiff, "VariableReadWrite", variableReadWrite.Make(method, symbols, classScope))
-                .SetProperty(saiff, "ResultSetProcessorFactoryProvider",
+                .SetProperty(
+                    saiff,
+                    "ResultSetProcessorFactoryProvider",
                     NewInstance(resultSetProcessorProviderClassName, symbols.GetAddInitSvc(method)));
         }
     }

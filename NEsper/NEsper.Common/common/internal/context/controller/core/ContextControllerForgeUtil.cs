@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.compile.stage2;
 using com.espertech.esper.common.@internal.compile.stage3;
@@ -69,7 +70,8 @@ namespace com.espertech.esper.common.@internal.context.controller.core
             if (spec.Raw.CreateWindowDesc.Columns != null &&
                 spec.Raw.CreateWindowDesc.Columns.Count > 0) {
                 throw new ExprValidationException(
-                    "Segmented context '" + contextName +
+                    "Segmented context '" +
+                    contextName +
                     "' requires that named windows are associated to an existing event type and that the event type is listed among the partitions defined by the create-context statement");
             }
 
@@ -91,9 +93,11 @@ namespace com.espertech.esper.common.@internal.context.controller.core
             string contextName,
             string typeNameEx)
         {
-            return "Segmented context '" + contextName +
+            return "Segmented context '" +
+                   contextName +
                    "' requires that any of the event types that are listed in the segmented context also appear in any of the filter expressions of the statement, type '" +
-                   typeNameEx + "' is not one of the types listed";
+                   typeNameEx +
+                   "' is not one of the types listed";
         }
     }
 } // end of namespace

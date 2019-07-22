@@ -20,7 +20,7 @@ namespace com.espertech.esper.common.@internal.epl.output.view
     /// </summary>
     public class OutputProcessViewDirectDistinctOrAfterPostProcess : OutputProcessViewDirectDistinctOrAfter
     {
-        private readonly OutputStrategyPostProcess postProcessor;
+        private readonly OutputStrategyPostProcess _postProcessor;
 
         public OutputProcessViewDirectDistinctOrAfterPostProcess(
             AgentInstanceContext agentInstanceContext,
@@ -30,9 +30,15 @@ namespace com.espertech.esper.common.@internal.epl.output.view
             bool afterConditionSatisfied,
             OutputProcessViewDirectDistinctOrAfterFactory parent,
             OutputStrategyPostProcess postProcessor)
-            : base(agentInstanceContext, resultSetProcessor, afterConditionTime, afterConditionNumberOfEvents, afterConditionSatisfied, parent)
+            : base(
+                agentInstanceContext,
+                resultSetProcessor,
+                afterConditionTime,
+                afterConditionNumberOfEvents,
+                afterConditionSatisfied,
+                parent)
         {
-            this.postProcessor = postProcessor;
+            _postProcessor = postProcessor;
         }
 
         protected override void PostProcess(
@@ -40,7 +46,7 @@ namespace com.espertech.esper.common.@internal.epl.output.view
             UniformPair<EventBean[]> newOldEvents,
             UpdateDispatchView childView)
         {
-            postProcessor.Output(force, newOldEvents, childView);
+            _postProcessor.Output(force, newOldEvents, childView);
         }
     }
 } // end of namespace

@@ -31,7 +31,8 @@ namespace com.espertech.esper.common.@internal.view.expression
         public override View MakeView(AgentInstanceViewFactoryChainContext agentInstanceViewFactoryContext)
         {
             var builtinBean = new ObjectArrayEventBean(
-                ExpressionViewOAFieldEnumExtensions.GetPrototypeOA(), BuiltinMapType);
+                ExpressionViewOAFieldEnumExtensions.GetPrototypeOA(),
+                BuiltinMapType);
             ViewUpdatedCollection viewUpdatedCollection =
                 agentInstanceViewFactoryContext.StatementContext.ViewServicePreviousFactory
                     .GetOptPreviousExprRelativeAccess(agentInstanceViewFactoryContext);

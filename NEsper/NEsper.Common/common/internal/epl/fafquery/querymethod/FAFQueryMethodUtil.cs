@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.context;
 using com.espertech.esper.common.@internal.context.mgr;
@@ -22,7 +23,8 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.querymethod
             ContextManagementService contextManagementService)
         {
             var contextManager = contextManagementService.GetContextManager(
-                processor.ContextDeploymentId, processor.ContextName);
+                processor.ContextDeploymentId,
+                processor.ContextName);
             return contextManager.Realization.GetAgentInstanceIds(
                 optionalSelector == null ? ContextPartitionSelectorAll.INSTANCE : optionalSelector);
         }

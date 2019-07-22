@@ -9,6 +9,7 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.historical.common;
@@ -69,7 +70,9 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.@base
         {
             lookupRows1Event[0] = prefillPath;
             var indexPerLookupRow = historicalEventViewable.Poll(
-                lookupRows1Event, indexingStrategy, exprEvaluatorContext);
+                lookupRows1Event,
+                indexingStrategy,
+                exprEvaluatorContext);
 
             foreach (var index in indexPerLookupRow) {
                 // Using the index, determine a subset of the whole indexed table to process, unless

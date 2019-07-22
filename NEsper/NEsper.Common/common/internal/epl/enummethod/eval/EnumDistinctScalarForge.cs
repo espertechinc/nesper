@@ -7,14 +7,17 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.enummethod.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.compat.collections;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
-using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionRelational.CodegenRelational;
+using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionRelational.
+    CodegenRelational;
 
 namespace com.espertech.esper.common.@internal.epl.enummethod.eval
 {
@@ -53,7 +56,8 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
         {
             var method = codegenMethodScope
                 .MakeChild(typeof(ICollection<object>), typeof(EnumDistinctScalarForge), codegenClassScope)
-                .AddParam(EnumForgeCodegenNames.PARAMS).Block
+                .AddParam(EnumForgeCodegenNames.PARAMS)
+                .Block
                 .IfCondition(Relational(ExprDotMethod(EnumForgeCodegenNames.REF_ENUMCOLL, "size"), LE, Constant(1)))
                 .BlockReturn(EnumForgeCodegenNames.REF_ENUMCOLL)
                 .IfCondition(InstanceOf(Ref("enumcoll"), typeof(ISet<object>)))

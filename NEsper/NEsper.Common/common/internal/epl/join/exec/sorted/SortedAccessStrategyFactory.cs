@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.join.querygraph;
 using com.espertech.esper.compat;
@@ -31,11 +32,24 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.sorted
                 bool includeEnd = rangeKeyPair.Type.IsIncludeEnd;
                 if (!rangeKeyPair.Type.IsRangeInverted()) {
                     return new SortedAccessStrategyRange(
-                        isNWOnTrigger, lookupStream, numStreams, startExpr, includeStart, endExpr, includeEnd, rangeIn.IsAllowRangeReversal);
+                        isNWOnTrigger,
+                        lookupStream,
+                        numStreams,
+                        startExpr,
+                        includeStart,
+                        endExpr,
+                        includeEnd,
+                        rangeIn.IsAllowRangeReversal);
                 }
                 else {
                     return new SortedAccessStrategyRangeInverted(
-                        isNWOnTrigger, lookupStream, numStreams, startExpr, includeStart, endExpr, includeEnd);
+                        isNWOnTrigger,
+                        lookupStream,
+                        numStreams,
+                        startExpr,
+                        includeStart,
+                        endExpr,
+                        includeEnd);
                 }
             }
             else {

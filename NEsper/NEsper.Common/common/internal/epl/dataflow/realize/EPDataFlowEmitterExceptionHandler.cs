@@ -8,6 +8,7 @@
 
 using System;
 using System.Reflection;
+
 using com.espertech.esper.common.client.dataflow.core;
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.compat.logging;
@@ -66,7 +67,11 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.realize
             if (OptionalExceptionHandler != null) {
                 OptionalExceptionHandler.Handle(
                     new EPDataFlowExceptionContext(
-                        DataFlowName, OperatorName, OperatorNumber, OperatorPrettyPrint, ex.InnerException));
+                        DataFlowName,
+                        OperatorName,
+                        OperatorNumber,
+                        OperatorPrettyPrint,
+                        ex.InnerException));
             }
         }
 
@@ -81,7 +86,11 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.realize
             if (OptionalExceptionHandler != null) {
                 OptionalExceptionHandler.Handle(
                     new EPDataFlowExceptionContext(
-                        DataFlowName, OperatorName, OperatorNumber, OperatorPrettyPrint, ex));
+                        DataFlowName,
+                        OperatorName,
+                        OperatorNumber,
+                        OperatorPrettyPrint,
+                        ex));
             }
         }
 
@@ -90,7 +99,12 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.realize
             object[] parameters)
         {
             agentInstanceContext.AuditProvider.DataflowOp(
-                DataFlowName, instanceId, OperatorName, OperatorNumber, parameters, agentInstanceContext);
+                DataFlowName,
+                instanceId,
+                OperatorName,
+                OperatorNumber,
+                parameters,
+                agentInstanceContext);
         }
     }
 } // end of namespace

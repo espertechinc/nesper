@@ -9,6 +9,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -17,6 +18,7 @@ using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.rettype;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.enummethod.eval
@@ -58,11 +60,17 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             CodegenClassScope codegenClassScope)
         {
             Type type = EPTypeHelper.GetCodegenReturnType(resultType);
-            CodegenMethod method = codegenMethodScope.MakeChild(type, typeof(EnumFirstOfNoPredicateForge), codegenClassScope)
-                .AddParam(EnumForgeCodegenNames.PARAMS).Block
-                .IfCondition(Or(EqualsNull(EnumForgeCodegenNames.REF_ENUMCOLL), ExprDotMethod(EnumForgeCodegenNames.REF_ENUMCOLL, "isEmpty")))
+            CodegenMethod method = codegenMethodScope
+                .MakeChild(type, typeof(EnumFirstOfNoPredicateForge), codegenClassScope)
+                .AddParam(EnumForgeCodegenNames.PARAMS)
+                .Block
+                .IfCondition(
+                    Or(
+                        EqualsNull(EnumForgeCodegenNames.REF_ENUMCOLL),
+                        ExprDotMethod(EnumForgeCodegenNames.REF_ENUMCOLL, "isEmpty")))
                 .BlockReturn(ConstantNull())
-                .MethodReturn(Cast(type, ExprDotMethodChain(EnumForgeCodegenNames.REF_ENUMCOLL).Add("iterator").Add("next")));
+                .MethodReturn(
+                    Cast(type, ExprDotMethodChain(EnumForgeCodegenNames.REF_ENUMCOLL).Add("iterator").Add("next")));
             return LocalMethod(method, args.Expressions);
         }
     }

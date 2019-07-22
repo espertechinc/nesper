@@ -60,7 +60,8 @@ namespace com.espertech.esper.common.client.context
         public override String ToString()
         {
             return "ContextPartitionIdentifierNested{" +
-                   "identifiers=" + (_identifiers) +
+                   "identifiers=" +
+                   (_identifiers) +
                    '}';
         }
     }

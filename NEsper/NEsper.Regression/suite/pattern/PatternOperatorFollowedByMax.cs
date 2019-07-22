@@ -162,7 +162,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 var handler = SupportConditionHandlerFactory.LastHandler;
 
                 var expression = "@Name('s0') select a.Id as a, b.Id as b, c.Id as c from pattern [" +
-                                 "every a=SupportBean_A => b=SupportBean_B -[2]> c=SupportBean_C]";
+                                 "every a=SupportBean_A -> b=SupportBean_B -[2]> c=SupportBean_C]";
                 env.CompileDeploy(expression).AddListener("s0");
 
                 TryAssertionMixed(env, handler);

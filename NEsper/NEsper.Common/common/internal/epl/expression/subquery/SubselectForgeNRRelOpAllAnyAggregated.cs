@@ -12,6 +12,7 @@ using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.type;
 using com.espertech.esper.compat;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.expression.subquery
@@ -25,10 +26,14 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
             ExprForge valueEval,
             ExprForge selectEval,
             bool resultWhenNoMatchingEvents,
-            RelationalOpEnum.Computer computer,
+            RelationalOpEnumComputer computer,
             ExprForge havingEval)
             : base(
-                subselect, valueEval, selectEval, resultWhenNoMatchingEvents, computer)
+                subselect,
+                valueEval,
+                selectEval,
+                resultWhenNoMatchingEvents,
+                computer)
         {
             this.havingEval = havingEval;
         }
@@ -45,14 +50,21 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
 
             if (havingEval != null) {
                 CodegenExpression having = LocalMethod(
-                    CodegenLegoMethodExpression.CodegenExpression(havingEval, method, classScope), eps, ConstantTrue(),
+                    CodegenLegoMethodExpression.CodegenExpression(havingEval, method, classScope),
+                    eps,
+                    ConstantTrue(),
                     evalCtx);
                 CodegenLegoBooleanExpression.CodegenReturnValueIfNullOrNotPass(
-                    method.Block, havingEval.EvaluationType, having, ConstantNull());
+                    method.Block,
+                    havingEval.EvaluationType,
+                    having,
+                    ConstantNull());
             }
 
             CodegenExpression rhsSide = LocalMethod(
-                CodegenLegoMethodExpression.CodegenExpression(selectEval, method, classScope), eps, ConstantTrue(),
+                CodegenLegoMethodExpression.CodegenExpression(selectEval, method, classScope),
+                eps,
+                ConstantTrue(),
                 evalCtx);
             var rhsType = selectEval.EvaluationType.GetBoxedType();
             method.Block

@@ -71,48 +71,91 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
                 CodegenClassScope codegenClassScope)
             {
                 var methodNode = codegenMethodScope.MakeChild(
-                        typeof(bool), typeof(IntervalComputerDuringAndIncludesThresholdEval), codegenClassScope)
+                        typeof(bool),
+                        typeof(IntervalComputerDuringAndIncludesThresholdEval),
+                        codegenClassScope)
                     .AddParam(IntervalForgeCodegenNames.PARAMS);
 
                 var block = methodNode.Block
-                    .DeclareVar(
-                        typeof(long), "thresholdValue",
+                    .DeclareVar<long>(
+                        "thresholdValue",
                         forge.threshold.Codegen(
-                            IntervalForgeCodegenNames.REF_LEFTSTART, methodNode, exprSymbol, codegenClassScope));
+                            IntervalForgeCodegenNames.REF_LEFTSTART,
+                            methodNode,
+                            exprSymbol,
+                            codegenClassScope));
 
                 if (forge.during) {
-                    block.DeclareVar(
-                            typeof(long), "deltaStart",
-                            CodegenExpressionBuilder.Op(IntervalForgeCodegenNames.REF_LEFTSTART, "-", IntervalForgeCodegenNames.REF_RIGHTSTART))
+                    block.DeclareVar<long>(
+                            "deltaStart",
+                            CodegenExpressionBuilder.Op(
+                                IntervalForgeCodegenNames.REF_LEFTSTART,
+                                "-",
+                                IntervalForgeCodegenNames.REF_RIGHTSTART))
                         .IfConditionReturnConst(
                             CodegenExpressionBuilder.Or(
-                                CodegenExpressionBuilder.Relational(CodegenExpressionBuilder.Ref("deltaStart"), CodegenExpressionRelational.CodegenRelational.LE, CodegenExpressionBuilder.Constant(0)),
-                                CodegenExpressionBuilder.Relational(CodegenExpressionBuilder.Ref("deltaStart"), CodegenExpressionRelational.CodegenRelational.GT, CodegenExpressionBuilder.Ref("thresholdValue"))), false)
-                        .DeclareVar(
-                            typeof(long), "deltaEnd",
-                            CodegenExpressionBuilder.Op(IntervalForgeCodegenNames.REF_RIGHTEND, "-", IntervalForgeCodegenNames.REF_LEFTEND))
+                                CodegenExpressionBuilder.Relational(
+                                    CodegenExpressionBuilder.Ref("deltaStart"),
+                                    CodegenExpressionRelational.CodegenRelational.LE,
+                                    CodegenExpressionBuilder.Constant(0)),
+                                CodegenExpressionBuilder.Relational(
+                                    CodegenExpressionBuilder.Ref("deltaStart"),
+                                    CodegenExpressionRelational.CodegenRelational.GT,
+                                    CodegenExpressionBuilder.Ref("thresholdValue"))),
+                            false)
+                        .DeclareVar<long>(
+                            "deltaEnd",
+                            CodegenExpressionBuilder.Op(
+                                IntervalForgeCodegenNames.REF_RIGHTEND,
+                                "-",
+                                IntervalForgeCodegenNames.REF_LEFTEND))
                         .MethodReturn(
                             CodegenExpressionBuilder.Not(
                                 CodegenExpressionBuilder.Or(
-                                    CodegenExpressionBuilder.Relational(CodegenExpressionBuilder.Ref("deltaEnd"), CodegenExpressionRelational.CodegenRelational.LE, CodegenExpressionBuilder.Constant(0)),
-                                    CodegenExpressionBuilder.Relational(CodegenExpressionBuilder.Ref("deltaEnd"), CodegenExpressionRelational.CodegenRelational.GT, CodegenExpressionBuilder.Ref("thresholdValue")))));
+                                    CodegenExpressionBuilder.Relational(
+                                        CodegenExpressionBuilder.Ref("deltaEnd"),
+                                        CodegenExpressionRelational.CodegenRelational.LE,
+                                        CodegenExpressionBuilder.Constant(0)),
+                                    CodegenExpressionBuilder.Relational(
+                                        CodegenExpressionBuilder.Ref("deltaEnd"),
+                                        CodegenExpressionRelational.CodegenRelational.GT,
+                                        CodegenExpressionBuilder.Ref("thresholdValue")))));
                 }
                 else {
-                    block.DeclareVar(
-                            typeof(long), "deltaStart",
-                            CodegenExpressionBuilder.Op(IntervalForgeCodegenNames.REF_RIGHTSTART, "-", IntervalForgeCodegenNames.REF_LEFTSTART))
+                    block.DeclareVar<long>(
+                            "deltaStart",
+                            CodegenExpressionBuilder.Op(
+                                IntervalForgeCodegenNames.REF_RIGHTSTART,
+                                "-",
+                                IntervalForgeCodegenNames.REF_LEFTSTART))
                         .IfConditionReturnConst(
                             CodegenExpressionBuilder.Or(
-                                CodegenExpressionBuilder.Relational(CodegenExpressionBuilder.Ref("deltaStart"), CodegenExpressionRelational.CodegenRelational.LE, CodegenExpressionBuilder.Constant(0)),
-                                CodegenExpressionBuilder.Relational(CodegenExpressionBuilder.Ref("deltaStart"), CodegenExpressionRelational.CodegenRelational.GT, CodegenExpressionBuilder.Ref("thresholdValue"))), false)
-                        .DeclareVar(
-                            typeof(long), "deltaEnd",
-                            CodegenExpressionBuilder.Op(IntervalForgeCodegenNames.REF_LEFTEND, "-", IntervalForgeCodegenNames.REF_RIGHTEND))
+                                CodegenExpressionBuilder.Relational(
+                                    CodegenExpressionBuilder.Ref("deltaStart"),
+                                    CodegenExpressionRelational.CodegenRelational.LE,
+                                    CodegenExpressionBuilder.Constant(0)),
+                                CodegenExpressionBuilder.Relational(
+                                    CodegenExpressionBuilder.Ref("deltaStart"),
+                                    CodegenExpressionRelational.CodegenRelational.GT,
+                                    CodegenExpressionBuilder.Ref("thresholdValue"))),
+                            false)
+                        .DeclareVar<long>(
+                            "deltaEnd",
+                            CodegenExpressionBuilder.Op(
+                                IntervalForgeCodegenNames.REF_LEFTEND,
+                                "-",
+                                IntervalForgeCodegenNames.REF_RIGHTEND))
                         .MethodReturn(
                             CodegenExpressionBuilder.Not(
                                 CodegenExpressionBuilder.Or(
-                                    CodegenExpressionBuilder.Relational(CodegenExpressionBuilder.Ref("deltaEnd"), CodegenExpressionRelational.CodegenRelational.LE, CodegenExpressionBuilder.Constant(0)),
-                                    CodegenExpressionBuilder.Relational(CodegenExpressionBuilder.Ref("deltaEnd"), CodegenExpressionRelational.CodegenRelational.GT, CodegenExpressionBuilder.Ref("thresholdValue")))));
+                                    CodegenExpressionBuilder.Relational(
+                                        CodegenExpressionBuilder.Ref("deltaEnd"),
+                                        CodegenExpressionRelational.CodegenRelational.LE,
+                                        CodegenExpressionBuilder.Constant(0)),
+                                    CodegenExpressionBuilder.Relational(
+                                        CodegenExpressionBuilder.Ref("deltaEnd"),
+                                        CodegenExpressionRelational.CodegenRelational.GT,
+                                        CodegenExpressionBuilder.Ref("thresholdValue")))));
                 }
 
                 return CodegenExpressionBuilder.LocalMethod(methodNode, leftStart, leftEnd, rightStart, rightEnd);

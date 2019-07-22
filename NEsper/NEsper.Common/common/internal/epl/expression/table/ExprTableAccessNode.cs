@@ -88,7 +88,13 @@ namespace com.espertech.esper.common.@internal.epl.expression.table
             CodegenClassScope codegenClassScope)
         {
             return new InstrumentationBuilderExpr(
-                    GetType(), this, InstrumentationQName, requiredType, parent, exprSymbol, codegenClassScope)
+                    GetType(),
+                    this,
+                    InstrumentationQName,
+                    requiredType,
+                    parent,
+                    exprSymbol,
+                    codegenClassScope)
                 .Qparams(InstrumentationQParams)
                 .Build();
         }
@@ -104,24 +110,24 @@ namespace com.espertech.esper.common.@internal.epl.expression.table
         public override ExprNode Validate(ExprValidationContext validationContext)
         {
             tableMeta = validationContext.TableCompileTimeResolver.Resolve(tableName);
-            if (tableMeta == null)
-            {
+            if (tableMeta == null) {
                 throw new ExprValidationException("Failed to resolve table name '" + tableName + "' to a table");
             }
 
-            if (!validationContext.IsAllowBindingConsumption)
-            {
+            if (!validationContext.IsAllowBindingConsumption) {
                 throw new ExprValidationException(
                     "Invalid use of table access expression, expression '" + TableName + "' is not allowed here");
             }
 
             if (tableMeta.OptionalContextName != null &&
                 validationContext.ContextDescriptor != null &&
-                !tableMeta.OptionalContextName.Equals(validationContext.ContextDescriptor.ContextName))
-            {
+                !tableMeta.OptionalContextName.Equals(validationContext.ContextDescriptor.ContextName)) {
                 throw new ExprValidationException(
-                    "Table by name '" + TableName + "' has been declared for context '" +
-                    tableMeta.OptionalContextName + "' and can only be used within the same context");
+                    "Table by name '" +
+                    TableName +
+                    "' has been declared for context '" +
+                    tableMeta.OptionalContextName +
+                    "' and can only be used within the same context");
             }
 
             // additional validations depend on detail
@@ -133,12 +139,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.table
             TableMetaData metadata,
             ExprValidationContext validationContext)
         {
-            if (ChildNodes.Length > 0)
-            {
+            if (ChildNodes.Length > 0) {
                 groupKeyEvaluators = ExprNodeUtilityQuery.GetForges(ChildNodes);
             }
-            else
-            {
+            else {
                 groupKeyEvaluators = new ExprForge[0];
             }
 
@@ -160,7 +164,13 @@ namespace com.espertech.esper.common.@internal.epl.expression.table
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            return MakeEvaluate(GETSCALARCOLL, this, typeof(ICollection<object>), parent, exprSymbol, codegenClassScope);
+            return MakeEvaluate(
+                GETSCALARCOLL,
+                this,
+                typeof(ICollection<object>),
+                parent,
+                exprSymbol,
+                codegenClassScope);
         }
 
         public CodegenExpression EvaluateGetEventBeanCodegen(
@@ -183,12 +193,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.table
         protected void ToPrecedenceFreeEPLInternal(TextWriter writer)
         {
             writer.Write(TableName);
-            if (ChildNodes.Length > 0)
-            {
+            if (ChildNodes.Length > 0) {
                 writer.Write("[");
                 var delimiter = "";
-                foreach (var expr in ChildNodes)
-                {
+                foreach (var expr in ChildNodes) {
                     writer.Write(delimiter);
                     expr.ToEPL(writer, ExprPrecedenceEnum.MINIMUM);
                     delimiter = ",";
@@ -203,8 +211,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.table
             string subpropName)
         {
             var column = tableMetadata.Columns.Get(subpropName);
-            if (column == null)
-            {
+            if (column == null) {
                 throw new ExprValidationException(
                     "A column '" + subpropName + "' could not be found for table '" + TableName + "'");
             }
@@ -216,19 +223,16 @@ namespace com.espertech.esper.common.@internal.epl.expression.table
             ExprNode o,
             bool ignoreStreamPrefix)
         {
-            if (this == o)
-            {
+            if (this == o) {
                 return true;
             }
 
-            if (o == null || GetType() != o.GetType())
-            {
+            if (o == null || GetType() != o.GetType()) {
                 return false;
             }
 
             var that = (ExprTableAccessNode) o;
-            if (!TableName.Equals(that.TableName))
-            {
+            if (!TableName.Equals(that.TableName)) {
                 return false;
             }
 
@@ -243,8 +247,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.table
             ExprForgeCodegenSymbol symbols,
             CodegenClassScope classScope)
         {
-            if (accessNode.TableAccessNumber == -1)
-            {
+            if (accessNode.TableAccessNumber == -1) {
                 throw new IllegalStateException("Table expression node has not been assigned");
             }
 
@@ -255,10 +258,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.table
             CodegenExpression evalCtx = symbols.GetAddExprEvalCtx(method);
 
             var future = classScope.NamespaceScope.AddOrGetFieldWellKnown(
-                new CodegenFieldNameTableAccess(accessNode.TableAccessNumber), typeof(ExprTableEvalStrategy));
+                new CodegenFieldNameTableAccess(accessNode.TableAccessNumber),
+                typeof(ExprTableEvalStrategy));
             var evaluation = ExprDotMethod(future, evaluationType.MethodName, eps, newData, evalCtx);
-            if (resultType != typeof(object))
-            {
+            if (resultType != typeof(object)) {
                 evaluation = Cast(resultType, evaluation);
             }
 

@@ -57,26 +57,37 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             switch (value) {
                 case ExprPrecedenceEnum.UNARY:
                     return (11);
+
                 case ExprPrecedenceEnum.MULTIPLY:
                     return (10);
+
                 case ExprPrecedenceEnum.ADDITIVE:
                     return (9);
+
                 case ExprPrecedenceEnum.CONCAT:
                     return (8);
+
                 case ExprPrecedenceEnum.RELATIONAL_BETWEEN_IN:
                     return (7);
+
                 case ExprPrecedenceEnum.EQUALS:
                     return (6);
+
                 case ExprPrecedenceEnum.NEGATED:
                     return (5);
+
                 case ExprPrecedenceEnum.BITWISE:
                     return (4);
+
                 case ExprPrecedenceEnum.AND:
                     return (3);
+
                 case ExprPrecedenceEnum.OR:
                     return (2);
+
                 case ExprPrecedenceEnum.CASE:
                     return (1);
+
                 case ExprPrecedenceEnum.MINIMUM:
                     return (Int32.MinValue);
             }

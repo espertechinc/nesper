@@ -8,6 +8,7 @@
 
 using System.Collections.Generic;
 using System.Linq;
+
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.namedwindow.compile;
@@ -15,6 +16,7 @@ using com.espertech.esper.common.@internal.epl.script.core;
 using com.espertech.esper.common.@internal.epl.table.compiletime;
 using com.espertech.esper.common.@internal.type;
 using com.espertech.esper.compat.collections;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.context.module
@@ -125,7 +127,7 @@ namespace com.espertech.esper.common.@internal.context.module
         {
             var method = parent.MakeChild(typeof(ModuleDependenciesRuntime), GetType(), classScope);
             method.Block
-                .DeclareVar(typeof(ModuleDependenciesRuntime), "md", NewInstance(typeof(ModuleDependenciesRuntime)))
+                .DeclareVar<ModuleDependenciesRuntime>("md", NewInstance(typeof(ModuleDependenciesRuntime)))
                 .SetProperty(Ref("md"), "PathEventTypes", NameAndModule.MakeArray(pathEventTypes))
                 .SetProperty(Ref("md"), "PathNamedWindows", NameAndModule.MakeArray(pathNamedWindows))
                 .SetProperty(Ref("md"), "PathTables", NameAndModule.MakeArray(pathTables))

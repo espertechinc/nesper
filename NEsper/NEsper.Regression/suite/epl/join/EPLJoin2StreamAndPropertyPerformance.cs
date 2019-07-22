@@ -125,7 +125,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                 var epl = "@Name('s0') select * from " +
                           "SupportMarketDataBean()#length(1000000)," +
                           "SupportBean#length(1000000)" +
-                          " where Symbol=TheString and Volume=LongBoxed and DoublePrimitive=price";
+                          " where Symbol=TheString and Volume=LongBoxed and DoublePrimitive=Price";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
                 // Send events for each stream

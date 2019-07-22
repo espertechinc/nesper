@@ -10,6 +10,7 @@ using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.epl.agg.core;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.agg.access.plugin
@@ -34,8 +35,8 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.plugin
         {
             var method = parent.MakeChild(typeof(AggregationPortableValidationPluginMultiFunc), GetType(), classScope);
             method.Block
-                .DeclareVar(
-                    typeof(AggregationPortableValidationPluginMultiFunc), "portable",
+                .DeclareVar<AggregationPortableValidationPluginMultiFunc>(
+                    "portable",
                     NewInstance(typeof(AggregationPortableValidationPluginMultiFunc)))
                 .SetProperty(Ref("portable"), "AggregationFunctionName", Constant(AggregationFunctionName))
                 .MethodReturn(Ref("portable"));

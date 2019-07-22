@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Text;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.compat.threading;
@@ -38,7 +39,12 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             var buffer = _localBuffer.GetOrCreate();
             buffer.Length = 0;
             return ExprConcatNodeForgeEvalWNew.Evaluate(
-                eventsPerStream, isNewData, context, buffer, _evaluators, _form);
+                eventsPerStream,
+                isNewData,
+                context,
+                buffer,
+                _evaluators,
+                _form);
         }
     }
 } // end of namespace

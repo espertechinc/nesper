@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.client.hook.forgeinject;
 
 namespace com.espertech.esper.common.client.hook.aggfunc

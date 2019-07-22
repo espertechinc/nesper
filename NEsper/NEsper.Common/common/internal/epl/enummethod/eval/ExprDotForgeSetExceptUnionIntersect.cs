@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.compile.stage2;
 using com.espertech.esper.common.@internal.compile.stage3;
@@ -51,7 +52,12 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             ExprDotEvalParam first = bodiesAndParameters[0];
 
             ExprDotEnumerationSourceForge enumSrc = ExprDotNodeUtility.GetEnumerationSource(
-                first.Body, streamTypeService, true, disablePropertyExpressionEventCollCache, statementRawInfo, services);
+                first.Body,
+                streamTypeService,
+                true,
+                disablePropertyExpressionEventCollCache,
+                statementRawInfo,
+                services);
             if (inputEventType != null) {
                 base.TypeInfo = EPTypeHelper.CollectionOfEvents(inputEventType);
             }
@@ -60,18 +66,29 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             }
 
             if (inputEventType != null) {
-                EventType setType = enumSrc.Enumeration == null ? null : enumSrc.Enumeration.GetEventTypeCollection(statementRawInfo, services);
+                EventType setType = enumSrc.Enumeration == null
+                    ? null
+                    : enumSrc.Enumeration.GetEventTypeCollection(statementRawInfo, services);
                 if (setType == null) {
-                    string message = "Enumeration method '" + enumMethodUsedName + "' requires an expression yielding a " +
-                                     "collection of events of type '" + inputEventType.Name + "' as input parameter";
+                    string message = "Enumeration method '" +
+                                     enumMethodUsedName +
+                                     "' requires an expression yielding a " +
+                                     "collection of events of type '" +
+                                     inputEventType.Name +
+                                     "' as input parameter";
                     throw new ExprValidationException(message);
                 }
 
                 if (setType != inputEventType) {
                     bool isSubtype = EventTypeUtility.IsTypeOrSubTypeOf(setType, inputEventType);
                     if (!isSubtype) {
-                        string message = "Enumeration method '" + enumMethodUsedName + "' expects event type '" + inputEventType.Name +
-                                         "' but receives event type '" + setType.Name + "'";
+                        string message = "Enumeration method '" +
+                                         enumMethodUsedName +
+                                         "' expects event type '" +
+                                         inputEventType.Name +
+                                         "' but receives event type '" +
+                                         setType.Name +
+                                         "'";
                         throw new ExprValidationException(message);
                     }
                 }
@@ -79,14 +96,23 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             else {
                 Type setType = enumSrc.Enumeration == null ? null : enumSrc.Enumeration.ComponentTypeCollection;
                 if (setType == null) {
-                    string message = "Enumeration method '" + enumMethodUsedName + "' requires an expression yielding a " +
-                                     "collection of values of type '" + collectionComponentType.Name + "' as input parameter";
+                    string message = "Enumeration method '" +
+                                     enumMethodUsedName +
+                                     "' requires an expression yielding a " +
+                                     "collection of values of type '" +
+                                     collectionComponentType.Name +
+                                     "' as input parameter";
                     throw new ExprValidationException(message);
                 }
 
                 if (!TypeHelper.IsAssignmentCompatible(setType, collectionComponentType)) {
-                    string message = "Enumeration method '" + enumMethodUsedName + "' expects scalar type '" + collectionComponentType.Name +
-                                     "' but receives event type '" + setType.Name + "'";
+                    string message = "Enumeration method '" +
+                                     enumMethodUsedName +
+                                     "' expects scalar type '" +
+                                     collectionComponentType.Name +
+                                     "' but receives event type '" +
+                                     setType.Name +
+                                     "'";
                     throw new ExprValidationException(message);
                 }
             }

@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.configuration.common;
 using com.espertech.esper.common.client.meta;
@@ -48,7 +49,8 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createwindow
             // determine that the window name is not already in use as an event type name
             var existingType = services.EventTypeCompileTimeResolver.GetTypeByName(typeName);
             if (existingType != null && existingType.Metadata.TypeClass != EventTypeTypeClass.NAMED_WINDOW) {
-                throw new ExprValidationException("Error starting statement: An event type or schema by name '" + typeName + "' already exists");
+                throw new ExprValidationException(
+                    "Error starting statement: An event type or schema by name '" + typeName + "' already exists");
             }
 
             // Determine select-from
@@ -61,7 +63,11 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createwindow
             LinkedHashMap<string, object> properties;
             var hasProperties = false;
             if (columns != null && !columns.IsEmpty()) {
-                properties = EventTypeUtility.BuildType(columns, null, services.ImportServiceCompileTime, services.EventTypeCompileTimeResolver);
+                properties = EventTypeUtility.BuildType(
+                    columns,
+                    null,
+                    services.ImportServiceCompileTime,
+                    services.EventTypeCompileTimeResolver);
                 hasProperties = true;
             }
             else {
@@ -82,7 +88,8 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createwindow
                     }
 
                     // Add any properties to the new select clause for use by consumers to the statement itself
-                    newSelectClauseSpecRaw.Add(new SelectClauseExprRawSpec(new ExprIdentNodeImpl(selectElement.AssignedName), null, false));
+                    newSelectClauseSpecRaw.Add(
+                        new SelectClauseExprRawSpec(new ExprIdentNodeImpl(selectElement.AssignedName), null, false));
                     hasProperties = true;
                 }
             }
@@ -95,35 +102,63 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createwindow
             try {
                 if (isWildcard && !isOnlyWildcard) {
                     var metadata = new EventTypeMetadata(
-                        typeName, @base.ModuleName, EventTypeTypeClass.NAMED_WINDOW, EventTypeApplicationType.WRAPPER, namedWindowVisibility,
-                        EventTypeBusModifier.NONBUS, false, EventTypeIdPair.Unassigned());
+                        typeName,
+                        @base.ModuleName,
+                        EventTypeTypeClass.NAMED_WINDOW,
+                        EventTypeApplicationType.WRAPPER,
+                        namedWindowVisibility,
+                        EventTypeBusModifier.NONBUS,
+                        false,
+                        EventTypeIdPair.Unassigned());
                     targetType = WrapperEventTypeUtil.MakeWrapper(
-                        metadata, optionalSelectFrom.EventType, properties, null, services.BeanEventTypeFactoryPrivate,
+                        metadata,
+                        optionalSelectFrom.EventType,
+                        properties,
+                        null,
+                        services.BeanEventTypeFactoryPrivate,
                         services.EventTypeCompileTimeResolver);
                 }
                 else {
                     // Some columns selected, use the types of the columns
                     Func<EventTypeApplicationType, EventTypeMetadata> metadata = type => new EventTypeMetadata(
-                        typeName, @base.ModuleName, EventTypeTypeClass.NAMED_WINDOW, type, namedWindowVisibility, EventTypeBusModifier.NONBUS, false,
+                        typeName,
+                        @base.ModuleName,
+                        EventTypeTypeClass.NAMED_WINDOW,
+                        type,
+                        namedWindowVisibility,
+                        EventTypeBusModifier.NONBUS,
+                        false,
                         EventTypeIdPair.Unassigned());
 
                     if (hasProperties && !isOnlyWildcard) {
-                        var compiledProperties = EventTypeUtility.CompileMapTypeProperties(properties, services.EventTypeCompileTimeResolver);
+                        var compiledProperties = EventTypeUtility.CompileMapTypeProperties(
+                            properties,
+                            services.EventTypeCompileTimeResolver);
                         var representation = EventRepresentationUtil.GetRepresentation(
-                            @base.StatementSpec.Annotations, services.Configuration, AssignedType.NONE);
+                            @base.StatementSpec.Annotations,
+                            services.Configuration,
+                            AssignedType.NONE);
 
                         if (representation == EventUnderlyingType.MAP) {
                             targetType = BaseNestableEventUtil.MakeMapTypeCompileTime(
                                 metadata.Invoke(EventTypeApplicationType.MAP),
-                                compiledProperties, null, null, null, null,
-                                services.BeanEventTypeFactoryPrivate, 
+                                compiledProperties,
+                                null,
+                                null,
+                                null,
+                                null,
+                                services.BeanEventTypeFactoryPrivate,
                                 services.EventTypeCompileTimeResolver);
                         }
                         else if (representation == EventUnderlyingType.OBJECTARRAY) {
                             targetType = BaseNestableEventUtil.MakeOATypeCompileTime(
-                                metadata.Invoke(EventTypeApplicationType.OBJECTARR), 
-                                compiledProperties, null, null, null, null,
-                                services.BeanEventTypeFactoryPrivate, 
+                                metadata.Invoke(EventTypeApplicationType.OBJECTARR),
+                                compiledProperties,
+                                null,
+                                null,
+                                null,
+                                null,
+                                services.BeanEventTypeFactoryPrivate,
                                 services.EventTypeCompileTimeResolver);
                         }
                         else if (representation == EventUnderlyingType.AVRO) {
@@ -132,7 +167,10 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createwindow
                                 services.EventTypeCompileTimeResolver,
                                 services.BeanEventTypeFactoryPrivate.EventBeanTypedEventFactory,
                                 compiledProperties,
-                                @base.StatementRawInfo.Annotations, null, null, null,
+                                @base.StatementRawInfo.Annotations,
+                                null,
+                                null,
+                                null,
                                 @base.StatementName);
                         }
                         else {
@@ -150,36 +188,58 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createwindow
                         if (selectFromType is ObjectArrayEventType) {
                             var oaType = (ObjectArrayEventType) selectFromType;
                             targetType = BaseNestableEventUtil.MakeOATypeCompileTime(
-                                metadata.Invoke(EventTypeApplicationType.OBJECTARR), oaType.Types, null, null, oaType.StartTimestampPropertyName,
-                                oaType.EndTimestampPropertyName, services.BeanEventTypeFactoryPrivate, services.EventTypeCompileTimeResolver);
+                                metadata.Invoke(EventTypeApplicationType.OBJECTARR),
+                                oaType.Types,
+                                null,
+                                null,
+                                oaType.StartTimestampPropertyName,
+                                oaType.EndTimestampPropertyName,
+                                services.BeanEventTypeFactoryPrivate,
+                                services.EventTypeCompileTimeResolver);
                         }
                         else if (selectFromType is AvroSchemaEventType) {
                             var avroSchemaEventType = (AvroSchemaEventType) selectFromType;
                             var avro = new ConfigurationCommonEventTypeAvro();
                             avro.AvroSchema = avroSchemaEventType.Schema;
                             targetType = services.EventTypeAvroHandler.NewEventTypeFromSchema(
-                                metadata.Invoke(EventTypeApplicationType.AVRO), services.BeanEventTypeFactoryPrivate.EventBeanTypedEventFactory, avro,
-                                null, null);
+                                metadata.Invoke(EventTypeApplicationType.AVRO),
+                                services.BeanEventTypeFactoryPrivate.EventBeanTypedEventFactory,
+                                avro,
+                                null,
+                                null);
                         }
                         else if (selectFromType is MapEventType) {
                             var mapType = (MapEventType) selectFromType;
                             targetType = BaseNestableEventUtil.MakeMapTypeCompileTime(
-                                metadata.Invoke(EventTypeApplicationType.MAP), mapType.Types, null, null, mapType.StartTimestampPropertyName,
-                                mapType.EndTimestampPropertyName, services.BeanEventTypeFactoryPrivate, services.EventTypeCompileTimeResolver);
+                                metadata.Invoke(EventTypeApplicationType.MAP),
+                                mapType.Types,
+                                null,
+                                null,
+                                mapType.StartTimestampPropertyName,
+                                mapType.EndTimestampPropertyName,
+                                services.BeanEventTypeFactoryPrivate,
+                                services.EventTypeCompileTimeResolver);
                         }
                         else if (selectFromType is BeanEventType) {
                             var beanType = (BeanEventType) selectFromType;
                             targetType = new BeanEventType(
                                 services.Container,
-                                beanType.Stem, metadata.Invoke(EventTypeApplicationType.CLASS),
-                                services.BeanEventTypeFactoryPrivate, null, null,
-                                beanType.StartTimestampPropertyName, 
+                                beanType.Stem,
+                                metadata.Invoke(EventTypeApplicationType.CLASS),
+                                services.BeanEventTypeFactoryPrivate,
+                                null,
+                                null,
+                                beanType.StartTimestampPropertyName,
                                 beanType.EndTimestampPropertyName);
                         }
                         else {
                             targetType = WrapperEventTypeUtil.MakeWrapper(
-                                metadata.Invoke(EventTypeApplicationType.WRAPPER), selectFromType, new Dictionary<string, object>(), null,
-                                services.BeanEventTypeFactoryPrivate, services.EventTypeCompileTimeResolver);
+                                metadata.Invoke(EventTypeApplicationType.WRAPPER),
+                                selectFromType,
+                                new Dictionary<string, object>(),
+                                null,
+                                services.BeanEventTypeFactoryPrivate,
+                                services.EventTypeCompileTimeResolver);
                         }
                     }
                 }
@@ -191,7 +251,10 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createwindow
             }
 
             var filter = new FilterSpecCompiled(targetType, typeName, new IList<FilterSpecParamForge>[0], null);
-            return new CreateWindowCompileResult(filter, newSelectClauseSpecRaw, optionalSelectFrom == null ? null : optionalSelectFrom.EventType);
+            return new CreateWindowCompileResult(
+                filter,
+                newSelectClauseSpecRaw,
+                optionalSelectFrom == null ? null : optionalSelectFrom.EventType);
         }
 
         private static IList<NamedWindowSelectedProps> CompileLimitedSelect(
@@ -203,9 +266,12 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createwindow
             StreamTypeService streams = new StreamTypeServiceImpl(
                 new[] {selectFromInfo.EventType},
                 new[] {"stream_0"},
-                new[] {false}, false, false);
+                new[] {false},
+                false,
+                false);
 
-            var validationContext = new ExprValidationContextBuilder(streams, @base.StatementRawInfo, compileTimeServices).Build();
+            var validationContext =
+                new ExprValidationContextBuilder(streams, @base.StatementRawInfo, compileTimeServices).Build();
             foreach (var item in @base.StatementSpec.SelectClauseCompiled.SelectExprList) {
                 if (!(item is SelectClauseExprCompiledSpec)) {
                     continue;
@@ -213,7 +279,9 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createwindow
 
                 var exprSpec = (SelectClauseExprCompiledSpec) item;
                 var validatedExpression = ExprNodeUtilityValidate.GetValidatedSubtree(
-                    ExprNodeOrigin.SELECT, exprSpec.SelectExpression, validationContext);
+                    ExprNodeOrigin.SELECT,
+                    exprSpec.SelectExpression,
+                    validationContext);
 
                 // determine an element name if none assigned
                 var asName = exprSpec.ProvidedName;
@@ -231,7 +299,10 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createwindow
                     }
                 }
 
-                var validatedElement = new NamedWindowSelectedProps(validatedExpression.Forge.EvaluationType, asName, fragmentType);
+                var validatedElement = new NamedWindowSelectedProps(
+                    validatedExpression.Forge.EvaluationType,
+                    asName,
+                    fragmentType);
                 selectProps.Add(validatedElement);
             }
 
@@ -246,7 +317,9 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createwindow
                 return null;
             }
 
-            var eventType = StreamSpecCompiler.ResolveTypeName(createWindowDesc.AsEventTypeName, compileTimeServices.EventTypeCompileTimeResolver);
+            var eventType = StreamSpecCompiler.ResolveTypeName(
+                createWindowDesc.AsEventTypeName,
+                compileTimeServices.EventTypeCompileTimeResolver);
             return new SelectFromInfo(eventType, createWindowDesc.AsEventTypeName);
         }
     }

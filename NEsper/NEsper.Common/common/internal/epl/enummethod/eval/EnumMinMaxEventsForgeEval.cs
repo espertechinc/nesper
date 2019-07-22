@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -15,8 +16,10 @@ using com.espertech.esper.common.@internal.epl.enummethod.codegen;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.compat;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
-using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionRelational.CodegenRelational;
+using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionRelational.
+    CodegenRelational;
 
 namespace com.espertech.esper.common.@internal.epl.enummethod.eval
 {
@@ -89,7 +92,10 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
 
             CodegenBlock forEach = block.ForEach(typeof(EventBean), "next", EnumForgeCodegenNames.REF_ENUMCOLL)
                 .AssignArrayElement(EnumForgeCodegenNames.REF_EPS, Constant(forge.streamNumLambda), @Ref("next"))
-                .DeclareVar(innerTypeBoxed, "value", forge.innerExpression.EvaluateCodegen(innerTypeBoxed, methodNode, scope, codegenClassScope));
+                .DeclareVar(
+                    innerTypeBoxed,
+                    "value",
+                    forge.innerExpression.EvaluateCodegen(innerTypeBoxed, methodNode, scope, codegenClassScope));
             if (!innerType.IsPrimitive) {
                 forEach.IfRefNull("value").BlockContinue();
             }
@@ -97,7 +103,11 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             forEach.IfCondition(EqualsNull(@Ref("minKey")))
                 .AssignRef("minKey", @Ref("value"))
                 .IfElse()
-                .IfCondition(Relational(ExprDotMethod(@Ref("minKey"), "compareTo", @Ref("value")), forge.max ? LT : GT, Constant(0)))
+                .IfCondition(
+                    Relational(
+                        ExprDotMethod(@Ref("minKey"), "compareTo", @Ref("value")),
+                        forge.max ? LT : GT,
+                        Constant(0)))
                 .AssignRef("minKey", @Ref("value"));
 
             block.MethodReturn(@Ref("minKey"));

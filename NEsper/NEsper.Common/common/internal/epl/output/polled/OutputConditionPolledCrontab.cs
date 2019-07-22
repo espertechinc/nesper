@@ -30,8 +30,7 @@ namespace com.espertech.esper.common.@internal.epl.output.polled
             this._state = state;
         }
 
-        public OutputConditionPolledState State
-        {
+        public OutputConditionPolledState State {
             get => _state;
         }
 
@@ -39,29 +38,34 @@ namespace com.espertech.esper.common.@internal.epl.output.polled
             int newEventsCount,
             int oldEventsCount)
         {
-            if ((ExecutionPathDebugLog.IsDebugEnabled) && (log.IsDebugEnabled))
-            {
+            if ((ExecutionPathDebugLog.IsDebugEnabled) && (log.IsDebugEnabled)) {
                 log.Debug(
                     ".updateOutputCondition, " +
-                    "  newEventsCount==" + newEventsCount +
-                    "  oldEventsCount==" + oldEventsCount);
+                    "  newEventsCount==" +
+                    newEventsCount +
+                    "  oldEventsCount==" +
+                    oldEventsCount);
             }
 
             bool output = false;
             long currentTime = _agentInstanceContext.StatementContext.SchedulingService.Time;
             ImportServiceRuntime importService = _agentInstanceContext.ImportServiceRuntime;
-            if (_state.CurrentReferencePoint == null)
-            {
+            if (_state.CurrentReferencePoint == null) {
                 _state.CurrentReferencePoint = currentTime;
                 _state.NextScheduledTime = ScheduleComputeHelper.ComputeNextOccurance(
-                    _state.ScheduleSpec, currentTime, importService.TimeZone, importService.TimeAbacus);
+                    _state.ScheduleSpec,
+                    currentTime,
+                    importService.TimeZone,
+                    importService.TimeAbacus);
                 output = true;
             }
 
-            if (_state.NextScheduledTime <= currentTime)
-            {
+            if (_state.NextScheduledTime <= currentTime) {
                 _state.NextScheduledTime = ScheduleComputeHelper.ComputeNextOccurance(
-                    _state.ScheduleSpec, currentTime, importService.TimeZone, importService.TimeAbacus);
+                    _state.ScheduleSpec,
+                    currentTime,
+                    importService.TimeZone,
+                    importService.TimeAbacus);
                 output = true;
             }
 

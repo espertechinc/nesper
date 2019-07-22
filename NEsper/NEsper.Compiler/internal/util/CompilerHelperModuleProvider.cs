@@ -9,6 +9,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.meta;
@@ -56,12 +57,19 @@ namespace com.espertech.esper.compiler.@internal.util
             CompilerOptions compilerOptions)
         {
             var packageName = "generated";
-            IDictionary<string, byte[]> moduleBytes = new Dictionary<string, byte[]>();
-            EPCompiledManifest manifest;
+
             try
             {
-                manifest = CompileToBytes(
-                    moduleBytes, compilables, optionalModuleName, moduleProperties, compileTimeServices, compilerOptions, packageName);
+                var manifest = CompileToBytes(
+                    compilables, 
+                    optionalModuleName, 
+                    moduleProperties, 
+                    compileTimeServices, 
+                    compilerOptions, 
+                    packageName,
+                    out var assembly);
+
+                return new EPCompiled(assembly, manifest);
             }
             catch (EPCompileException)
             {
@@ -72,20 +80,18 @@ namespace com.espertech.esper.compiler.@internal.util
                 throw new EPCompileException("Unexpected exception compiling module: " + ex.Message, ex,
                     new EmptyList<EPCompileExceptionItem>());
             }
-
-            return new EPCompiled(moduleBytes, manifest);
         }
 
         private static EPCompiledManifest CompileToBytes(
-            IDictionary<string, byte[]> moduleBytes,
             IList<Compilable> compilables,
             string optionalModuleName,
             IDictionary<ModuleProperty, object> moduleProperties,
             ModuleCompileTimeServices compileTimeServices,
             CompilerOptions compilerOptions,
-            string packageName)
+            string packageName,
+            out Assembly assembly)
         {
-            var moduleAssignedName = optionalModuleName == null ? Guid.NewGuid().ToString() : optionalModuleName;
+            var moduleAssignedName = optionalModuleName ?? Guid.NewGuid().ToString();
             var moduleIdentPostfix = IdentifierUtil.GetIdentifierMayStartNumeric(moduleAssignedName);
 
             // compile each statement
@@ -102,8 +108,15 @@ namespace com.espertech.esper.compiler.@internal.util
                     var statementCompileTimeServices =
                         new StatementCompileTimeServices(statementNumber, compileTimeServices);
                     className = CompilerHelperStatementProvider.CompileItem(
-                        compilable, optionalModuleName, moduleIdentPostfix, moduleBytes, statementNumber, packageName, statementNames,
-                        statementCompileTimeServices, compilerOptions);
+                        compilable,
+                        optionalModuleName, 
+                        moduleIdentPostfix,
+                        statementNumber,
+                        packageName, 
+                        statementNames,
+                        statementCompileTimeServices,
+                        compilerOptions,
+                        out assembly);
                 }
                 catch (StatementSpecCompileException ex)
                 {
@@ -127,7 +140,13 @@ namespace com.espertech.esper.compiler.@internal.util
 
             // compile module resource
             var moduleProviderClassName = CompileModule(
-                optionalModuleName, moduleProperties, statementClassNames, moduleIdentPostfix, moduleBytes, packageName, compileTimeServices);
+                optionalModuleName, 
+                moduleProperties, 
+                statementClassNames, 
+                moduleIdentPostfix,
+                packageName, 
+                compileTimeServices,
+                out assembly);
 
             // create module XML
             return new EPCompiledManifest(COMPILER_VERSION, moduleProviderClassName, null);
@@ -138,9 +157,9 @@ namespace com.espertech.esper.compiler.@internal.util
             IDictionary<ModuleProperty, object> moduleProperties,
             IList<string> statementClassNames,
             string moduleIdentPostfix,
-            IDictionary<string, byte[]> moduleBytes,
             string packageName,
-            ModuleCompileTimeServices compileTimeServices)
+            ModuleCompileTimeServices compileTimeServices,
+            out Assembly assembly)
         {
             // write code to create an implementation of StatementResource
             var packageScope = new CodegenNamespaceScope(packageName, null, compileTimeServices.IsInstrumented());
@@ -245,10 +264,13 @@ namespace com.espertech.esper.compiler.@internal.util
             // instantiate factories for statements
             var statementsMethod = CodegenMethod.MakeParentNode(
                 typeof(IList<object>), typeof(EPCompilerImpl), CodegenSymbolProviderEmpty.INSTANCE, classScope);
-            statementsMethod.Block.DeclareVar(typeof(IList<object>), "statements", NewInstance(typeof(List<object>), Constant(statementClassNames.Count)));
+            statementsMethod.Block.DeclareVar<IList<object>>(
+                "statements", NewInstance(typeof(List<object>), Constant(statementClassNames.Count)));
             foreach (var statementClassName in statementClassNames)
             {
-                statementsMethod.Block.ExprDotMethod(@Ref("statements"), "add", CodegenExpressionBuilder.NewInstance(statementClassName));
+                statementsMethod.Block.ExprDotMethod(
+                    @Ref("statements"), "Add", 
+                    NewInstance(statementClassName));
             }
 
             statementsMethod.Block.MethodReturn(@Ref("statements"));
@@ -271,7 +293,11 @@ namespace com.espertech.esper.compiler.@internal.util
                 typeof(ModuleProvider), packageName, moduleClassName, classScope,
                 new EmptyList<CodegenTypedParam>(), null, methods,
                 new EmptyList<CodegenInnerClass>());
-            RoslynCompiler.Compile(clazz, moduleBytes, compileTimeServices.Configuration.Compiler.Logging.IsEnableCode);
+            var compiler = new RoslynCompiler()
+                .WithCodeLogging(compileTimeServices.Configuration.Compiler.Logging.IsEnableCode)
+                .WithCodegenClass(clazz);
+
+            assembly = compiler.Compile();
 
             return CodeGenerationIDGenerator.GenerateClassNameWithNamespace(
                 packageName, typeof(ModuleProvider), moduleIdentPostfix);
@@ -295,8 +321,8 @@ namespace com.espertech.esper.compiler.@internal.util
                 return;
             }
 
-            method.Block.DeclareVar(
-                typeof(IDictionary<string, string>), "props",
+            method.Block.DeclareVar<IDictionary<string, string>>(
+"props",
                 NewInstance(typeof(Dictionary<string, string>), Constant(CollectionUtil.CapacityHashMap(props.Count))));
             foreach (var entry in props)
             {
@@ -345,7 +371,7 @@ namespace com.espertech.esper.compiler.@internal.util
             item.OptionalSodaBytes = () => bytes;
 
             method.Block
-                .DeclareVar(typeof(ExpressionDeclItem), "detail", expression.Value.Make(method, symbols, classScope))
+                .DeclareVar<ExpressionDeclItem>("detail", expression.Value.Make(method, symbols, classScope))
                 .Expression(
                     ExprDotMethodChain(symbols.GetAddInitSvc(method)).Add(EPModuleExprDeclaredInitServicesConstants.GETEXPRDECLAREDCOLLECTOR)
                         .Add("registerExprDeclared", Constant(expression.Key), @Ref("detail")));
@@ -377,7 +403,7 @@ namespace com.espertech.esper.compiler.@internal.util
         {
             var method = parent.MakeChild(typeof(void), typeof(EPCompilerImpl), classScope);
             method.Block
-                .DeclareVar(typeof(NamedWindowMetaData), "detail", namedWindow.Value.Make(symbols.GetAddInitSvc(method)))
+                .DeclareVar<NamedWindowMetaData>("detail", namedWindow.Value.Make(symbols.GetAddInitSvc(method)))
                 .Expression(
                     ExprDotMethodChain(symbols.GetAddInitSvc(method))
                         .Add(EPModuleNamedWindowInitServicesConstants.GETNAMEDWINDOWCOLLECTOR)
@@ -395,7 +421,7 @@ namespace com.espertech.esper.compiler.@internal.util
         {
             var method = parent.MakeChild(typeof(void), typeof(EPCompilerImpl), classScope);
             method.Block
-                .DeclareVar(typeof(TableMetaData), "detail", table.Value.Make(parent, symbols, classScope))
+                .DeclareVar<TableMetaData>("detail", table.Value.Make(parent, symbols, classScope))
                 .Expression(
                     ExprDotMethodChain(symbols.GetAddInitSvc(method))
                         .Add(EPModuleTableInitServicesConstants.GETTABLECOLLECTOR)
@@ -413,8 +439,8 @@ namespace com.espertech.esper.compiler.@internal.util
         {
             var method = parent.MakeChild(typeof(void), typeof(EPCompilerImpl), classScope);
             method.Block
-                .DeclareVar(typeof(IndexCompileTimeKey), "key", index.Key.Make(symbols.GetAddInitSvc(method)))
-                .DeclareVar(typeof(IndexDetail), "detail", index.Value.Make(method, symbols, classScope))
+                .DeclareVar<IndexCompileTimeKey>("key", index.Key.Make(symbols.GetAddInitSvc(method)))
+                .DeclareVar<IndexDetail>("detail", index.Value.Make(method, symbols, classScope))
                 .Expression(
                     ExprDotMethodChain(symbols.GetAddInitSvc(method))
                         .Add(EPModuleIndexInitServicesConstants.GETINDEXCOLLECTOR)
@@ -430,7 +456,7 @@ namespace com.espertech.esper.compiler.@internal.util
         {
             var method = parent.MakeChild(typeof(void), typeof(EPCompilerImpl), classScope);
             method.Block
-                .DeclareVar(typeof(ContextMetaData), "detail", context.Value.Make(symbols.GetAddInitSvc(method)))
+                .DeclareVar<ContextMetaData>("detail", context.Value.Make(symbols.GetAddInitSvc(method)))
                 .Expression(
                     ExprDotMethodChain(symbols.GetAddInitSvc(method))
                         .Add(EPModuleContextInitServicesConstants.GETCONTEXTCOLLECTOR)
@@ -446,7 +472,7 @@ namespace com.espertech.esper.compiler.@internal.util
         {
             var method = parent.MakeChild(typeof(void), typeof(EPCompilerImpl), classScope);
             method.Block
-                .DeclareVar(typeof(VariableMetaData), "detail", variable.Value.Make(symbols.GetAddInitSvc(method)))
+                .DeclareVar<VariableMetaData>("detail", variable.Value.Make(symbols.GetAddInitSvc(method)))
                 .Expression(
                     ExprDotMethodChain(symbols.GetAddInitSvc(method))
                         .Add(EPModuleVariableInitServicesConstants.GETVARIABLECOLLECTOR)
@@ -463,7 +489,7 @@ namespace com.espertech.esper.compiler.@internal.util
             var method = parent.MakeChild(typeof(void), typeof(EPCompilerImpl), classScope);
 
             // metadata
-            method.Block.DeclareVar(typeof(EventTypeMetadata), "metadata", eventType.Metadata.ToExpression());
+            method.Block.DeclareVar<EventTypeMetadata>("metadata", eventType.Metadata.ToExpression());
 
             if (eventType is BaseNestableEventType baseNestable)
             {
@@ -491,11 +517,11 @@ namespace com.espertech.esper.compiler.@internal.util
             }
             else if (eventType is WrapperEventType wrapper)
             {
-                method.Block.DeclareVar(
-                    typeof(EventType), "inner",
+                method.Block.DeclareVar<EventType>(
+"inner",
                     EventTypeUtility.ResolveTypeCodegen(wrapper.UnderlyingEventType, symbols.GetAddInitSvc(method)));
-                method.Block.DeclareVar(
-                    typeof(LinkedHashMap<string, object>), "props",
+                method.Block.DeclareVar<LinkedHashMap<string, object>>(
+"props",
                     LocalMethod(
                         MakePropsCodegen(
                             wrapper.UnderlyingMapType.Types, method, symbols, classScope,
@@ -575,8 +601,8 @@ namespace com.espertech.esper.compiler.@internal.util
             }
 
             var method = parent.MakeChild(typeof(ISet<object>), typeof(CompilerHelperModuleProvider), classScope);
-            method.Block.DeclareVar(
-                typeof(ISet<object>), "dst",
+            method.Block.DeclareVar<ISet<object>>(
+"dst",
                 NewInstance(typeof(LinkedHashSet<object>), Constant(CollectionUtil.CapacityHashMap(deepSuperTypes.Count))));
             foreach (var eventType in deepSuperTypes)
             {
@@ -617,7 +643,7 @@ namespace com.espertech.esper.compiler.@internal.util
             var method = parent.MakeChild(typeof(LinkedHashMap<string, object>), typeof(CompilerHelperModuleProvider), classScope);
             symbols.GetAddInitSvc(method);
 
-            method.Block.DeclareVar(typeof(LinkedHashMap<string, object>), "props", NewInstance(typeof(LinkedHashMap<string, object>)));
+            method.Block.DeclareVar<LinkedHashMap<string, object>>("props", NewInstance(typeof(LinkedHashMap<string, object>)));
             foreach (var entry in types)
             {
                 var propertyOfSupertype = IsPropertyOfSupertype(deepSuperTypes, entry.Key);

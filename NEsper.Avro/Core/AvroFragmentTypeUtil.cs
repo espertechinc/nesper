@@ -37,30 +37,31 @@ namespace NEsper.Avro.Core
         {
             var unescapePropName = StringValue.UnescapeDot(propertyName);
             var item = propertyItems.Get(unescapePropName);
-            if (item != null)
-            {
+            if (item != null) {
                 return item.FragmentEventType;
             }
 
             var property = PropertyParser.ParseAndWalkLaxToSimple(propertyName);
             var desc = AvroFieldUtil.FieldForProperty(schema, property);
-            if (desc == null)
-            {
+            if (desc == null) {
                 return null;
             }
 
-            if (desc.IsDynamic)
-            {
+            if (desc.IsDynamic) {
                 return null;
             }
 
             var fieldSchemaByAccess = desc.Field.Schema;
-            if (desc.IsAccessedByIndex)
-            {
+            if (desc.IsAccessedByIndex) {
                 fieldSchemaByAccess = fieldSchemaByAccess.AsArraySchema().ItemSchema;
             }
 
-            return GetFragmentEventTypeForField(fieldSchemaByAccess, moduleName, eventBeanTypedEventFactory, eventTypeAvroHandler, fragmentTypeCache);
+            return GetFragmentEventTypeForField(
+                fieldSchemaByAccess,
+                moduleName,
+                eventBeanTypedEventFactory,
+                eventTypeAvroHandler,
+                fragmentTypeCache);
         }
 
         internal static FragmentEventType GetFragmentEventTypeForField(
@@ -72,34 +73,41 @@ namespace NEsper.Avro.Core
         {
             Schema recordSchema;
             var indexed = false;
-            if (fieldSchema.Tag == Schema.Type.Record)
-            {
+            if (fieldSchema.Tag == Schema.Type.Record) {
                 recordSchema = fieldSchema;
             }
             else if (fieldSchema.Tag == Schema.Type.Array &&
-                     fieldSchema.AsArraySchema().ItemSchema.Tag == Schema.Type.Record)
-            {
+                     fieldSchema.AsArraySchema().ItemSchema.Tag == Schema.Type.Record) {
                 recordSchema = fieldSchema.AsArraySchema().ItemSchema;
                 indexed = true;
             }
-            else
-            {
+            else {
                 return null;
             }
 
             var cached = fragmentTypeCache.Get(recordSchema.Name);
-            if (cached != null)
-            {
+            if (cached != null) {
                 return new FragmentEventType(cached, indexed, false);
             }
 
             var metadata = new EventTypeMetadata(
-                recordSchema.Name, moduleName, EventTypeTypeClass.STREAM, EventTypeApplicationType.AVRO, NameAccessModifier.TRANSIENT,
-                EventTypeBusModifier.NONBUS, false, EventTypeIdPair.Unassigned());
+                recordSchema.Name,
+                moduleName,
+                EventTypeTypeClass.STREAM,
+                EventTypeApplicationType.AVRO,
+                NameAccessModifier.TRANSIENT,
+                EventTypeBusModifier.NONBUS,
+                false,
+                EventTypeIdPair.Unassigned());
             var config = new ConfigurationCommonEventTypeAvro();
             config.AvroSchema = recordSchema;
 
-            var fragmentType = eventTypeAvroHandler.NewEventTypeFromSchema(metadata, eventBeanTypedEventFactory, config, null, null);
+            var fragmentType = eventTypeAvroHandler.NewEventTypeFromSchema(
+                metadata,
+                eventBeanTypedEventFactory,
+                config,
+                null,
+                null);
 
             fragmentTypeCache.Add(recordSchema.Name, fragmentType);
             return new FragmentEventType(fragmentType, indexed, false);

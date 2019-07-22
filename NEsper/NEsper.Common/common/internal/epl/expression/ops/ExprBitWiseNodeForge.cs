@@ -7,12 +7,14 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.metrics.instrumentation;
 using com.espertech.esper.common.@internal.type;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.expression.ops
@@ -40,7 +42,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
         public ExprForgeConstantType ForgeConstantType => ExprForgeConstantType.NONCONST;
 
         public ExprEvaluator ExprEvaluator => new ExprBitWiseNodeForgeEval(
-            this, ForgeRenderable.ChildNodes[0].Forge.ExprEvaluator,
+            this,
+            ForgeRenderable.ChildNodes[0].Forge.ExprEvaluator,
             ForgeRenderable.ChildNodes[1].Forge.ExprEvaluator);
 
         public CodegenExpression EvaluateCodegen(
@@ -50,7 +53,13 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             CodegenClassScope codegenClassScope)
         {
             return new InstrumentationBuilderExpr(
-                    GetType(), this, "ExprBitwise", requiredType, codegenMethodScope, exprSymbol, codegenClassScope)
+                    GetType(),
+                    this,
+                    "ExprBitwise",
+                    requiredType,
+                    codegenMethodScope,
+                    exprSymbol,
+                    codegenClassScope)
                 .Qparam(Constant(ForgeRenderable.BitWiseOpEnum))
                 .Build();
         }
@@ -62,7 +71,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             CodegenClassScope codegenClassScope)
         {
             return ExprBitWiseNodeForgeEval.Codegen(
-                this, requiredType, codegenMethodScope, exprSymbol, codegenClassScope,
+                this,
+                requiredType,
+                codegenMethodScope,
+                exprSymbol,
+                codegenClassScope,
                 ForgeRenderable.ChildNodes[0],
                 ForgeRenderable.ChildNodes[1]);
         }

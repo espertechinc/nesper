@@ -35,7 +35,10 @@ namespace com.espertech.esper.common.@internal.epl.lookup
         {
             _expressions = expressions;
             InnerIndexQuery = CompositeIndexQueryFactory.MakeSubordinate(
-                isNWOnTrigger, numStreams, hashEval, rangeEvals);
+                isNWOnTrigger,
+                numStreams,
+                hashEval,
+                rangeEvals);
         }
 
         public SubordTableLookupStrategy MakeStrategy(

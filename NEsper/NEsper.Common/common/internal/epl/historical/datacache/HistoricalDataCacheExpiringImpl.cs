@@ -8,6 +8,7 @@
 
 using System.Collections.Generic;
 using System.Linq;
+
 using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.epl.index.@base;
@@ -60,7 +61,8 @@ namespace com.espertech.esper.common.@internal.epl.historical.datacache
             }
             else if (cacheReferenceType == CacheReferenceType.SOFT) {
                 cache = new ReferenceMap<object, Item>(
-                    ReferenceType.SOFT, ReferenceType.SOFT);
+                    ReferenceType.SOFT,
+                    ReferenceType.SOFT);
             }
             else {
                 cache = new WeakDictionary<object, Item>();
@@ -114,10 +116,14 @@ namespace com.espertech.esper.common.@internal.epl.historical.datacache
 
             if (!isScheduled) {
                 var callback = new EPStatementHandleCallbackSchedule(
-                    agentInstanceContext.EpStatementAgentInstanceHandle, this);
+                    agentInstanceContext.EpStatementAgentInstanceHandle,
+                    this);
                 var timeDelta = timeAbacus.DeltaForSecondsDouble(PurgeIntervalSec);
                 agentInstanceContext.AuditProvider.ScheduleAdd(
-                    timeDelta, agentInstanceContext, callback, ScheduleObjectType.historicaldatacache,
+                    timeDelta,
+                    agentInstanceContext,
+                    callback,
+                    ScheduleObjectType.historicaldatacache,
                     NAME_AUDITPROVIDER_SCHEDULE);
                 schedulingService.Add(timeDelta, callback, scheduleSlot);
                 isScheduled = true;
@@ -136,7 +142,9 @@ namespace com.espertech.esper.common.@internal.epl.historical.datacache
 
             // purge expired
             agentInstanceContext.AuditProvider.ScheduleFire(
-                agentInstanceContext, ScheduleObjectType.historicaldatacache, NAME_AUDITPROVIDER_SCHEDULE);
+                agentInstanceContext,
+                ScheduleObjectType.historicaldatacache,
+                NAME_AUDITPROVIDER_SCHEDULE);
             var now = agentInstanceContext.SchedulingService.Time;
             var maxAgeMSec = agentInstanceContext.ImportServiceRuntime.TimeAbacus.DeltaForSecondsDouble(MaxAgeSec);
 

@@ -712,7 +712,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
             public void Run(RegressionEnvironment env)
             {
                 var stmt =
-                    "@Name('s0') select * from pattern [every [2] (a=SupportBean_A() => b=SupportBean_B(Id=a.Id))]";
+                    "@Name('s0') select * from pattern [every [2] (a=SupportBean_A() -> b=SupportBean_B(Id=a.Id))]";
 
                 env.CompileDeploy(stmt);
                 env.AddListener("s0");
@@ -875,7 +875,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 // test until
                 env.AdvanceTime(1000000);
                 var eplUntilOne =
-                    "@Name('s0') select * from pattern [a=SupportBean_A => b=SupportBean_B until ([1] every (timer:interval(10) and not SupportBean_C))]";
+                    "@Name('s0') select * from pattern [a=SupportBean_A -> b=SupportBean_B until ([1] every (timer:interval(10) and not SupportBean_C))]";
                 env.CompileDeploy(eplUntilOne).AddListener("s0");
 
                 env.AdvanceTime(1005000);

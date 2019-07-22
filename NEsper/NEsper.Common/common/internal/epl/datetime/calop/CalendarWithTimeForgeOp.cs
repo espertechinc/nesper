@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -14,6 +15,7 @@ using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.datetime.calop
@@ -90,7 +92,8 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
             var block = methodNode.Block;
             CodegenDeclareInts(block, forge, methodNode, exprSymbol, codegenClassScope);
             block.StaticMethod(
-                typeof(CalendarWithTimeForgeOp), "ActionSetHMSMDateTimeEx",
+                typeof(CalendarWithTimeForgeOp),
+                "ActionSetHMSMDateTimeEx",
                 Ref("dateTime"),
                 Ref("hour"),
                 Ref("minute"),
@@ -114,7 +117,8 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
             CodegenDeclareInts(block, forge, methodNode, exprSymbol, codegenClassScope);
             block.MethodReturn(
                 StaticMethod(
-                    typeof(CalendarWithTimeForgeOp), "ActionSetHMSMDateTimeOffset",
+                    typeof(CalendarWithTimeForgeOp),
+                    "ActionSetHMSMDateTimeOffset",
                     Ref("dto"),
                     Ref("hour"),
                     Ref("minute"),
@@ -138,7 +142,8 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
             CodegenDeclareInts(block, forge, methodNode, exprSymbol, codegenClassScope);
             block.MethodReturn(
                 StaticMethod(
-                    typeof(CalendarWithTimeForgeOp), "ActionSetHMSMDateTime",
+                    typeof(CalendarWithTimeForgeOp),
+                    "ActionSetHMSMDateTime",
                     Ref("dateTime"),
                     Ref("hour"),
                     Ref("minute"),
@@ -247,26 +252,34 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
             var secType = forge.sec.EvaluationType;
             var msecType = forge.msec.EvaluationType;
             block
-                .DeclareVar(
-                    typeof(int?), "hour",
+                .DeclareVar<int?>(
+                    "hour",
                     SimpleNumberCoercerFactory.CoercerInt.CoerceCodegenMayNull(
-                        forge.hour.EvaluateCodegen(hourType, methodNode, exprSymbol, codegenClassScope), hourType,
-                        methodNode, codegenClassScope))
-                .DeclareVar(
-                    typeof(int?), "minute",
+                        forge.hour.EvaluateCodegen(hourType, methodNode, exprSymbol, codegenClassScope),
+                        hourType,
+                        methodNode,
+                        codegenClassScope))
+                .DeclareVar<int?>(
+                    "minute",
                     SimpleNumberCoercerFactory.CoercerInt.CoerceCodegenMayNull(
-                        forge.min.EvaluateCodegen(minType, methodNode, exprSymbol, codegenClassScope), minType,
-                        methodNode, codegenClassScope))
-                .DeclareVar(
-                    typeof(int?), "second",
+                        forge.min.EvaluateCodegen(minType, methodNode, exprSymbol, codegenClassScope),
+                        minType,
+                        methodNode,
+                        codegenClassScope))
+                .DeclareVar<int?>(
+                    "second",
                     SimpleNumberCoercerFactory.CoercerInt.CoerceCodegenMayNull(
-                        forge.sec.EvaluateCodegen(secType, methodNode, exprSymbol, codegenClassScope), secType,
-                        methodNode, codegenClassScope))
-                .DeclareVar(
-                    typeof(int?), "msec",
+                        forge.sec.EvaluateCodegen(secType, methodNode, exprSymbol, codegenClassScope),
+                        secType,
+                        methodNode,
+                        codegenClassScope))
+                .DeclareVar<int?>(
+                    "msec",
                     SimpleNumberCoercerFactory.CoercerInt.CoerceCodegenMayNull(
-                        forge.msec.EvaluateCodegen(msecType, methodNode, exprSymbol, codegenClassScope), msecType,
-                        methodNode, codegenClassScope));
+                        forge.msec.EvaluateCodegen(msecType, methodNode, exprSymbol, codegenClassScope),
+                        msecType,
+                        methodNode,
+                        codegenClassScope));
         }
     }
 } // end of namespace

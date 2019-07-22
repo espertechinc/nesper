@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -16,6 +17,7 @@ using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.enummethod.eval
@@ -62,7 +64,11 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
 
             ExprForgeCodegenSymbol scope = new ExprForgeCodegenSymbol(false, null);
             CodegenMethod methodNode = codegenMethodScope
-                .MakeChildWithScope(forge.sumMethodFactory.ValueType, typeof(EnumSumEventsForgeEval), scope, codegenClassScope)
+                .MakeChildWithScope(
+                    forge.sumMethodFactory.ValueType,
+                    typeof(EnumSumEventsForgeEval),
+                    scope,
+                    codegenClassScope)
                 .AddParam(EnumForgeCodegenNames.PARAMS);
 
             CodegenBlock block = methodNode.Block;
@@ -70,7 +76,10 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
 
             CodegenBlock forEach = block.ForEach(typeof(EventBean), "next", EnumForgeCodegenNames.REF_ENUMCOLL)
                 .AssignArrayElement(EnumForgeCodegenNames.REF_EPS, Constant(forge.streamNumLambda), @Ref("next"))
-                .DeclareVar(innerType, "value", forge.innerExpression.EvaluateCodegen(innerType, methodNode, scope, codegenClassScope));
+                .DeclareVar(
+                    innerType,
+                    "value",
+                    forge.innerExpression.EvaluateCodegen(innerType, methodNode, scope, codegenClassScope));
             if (!innerType.IsPrimitive) {
                 forEach.IfRefNull("value").BlockContinue();
             }

@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -18,8 +19,10 @@ using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.@event.arr;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.compat;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
-using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionRelational.CodegenRelational;
+using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionRelational.
+    CodegenRelational;
 
 namespace com.espertech.esper.common.@internal.epl.enummethod.eval
 {
@@ -84,8 +87,11 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             CodegenClassScope codegenClassScope)
         {
             CodegenExpressionField resultTypeMember = codegenClassScope.AddFieldUnshared(
-                true, typeof(ObjectArrayEventType),
-                Cast(typeof(ObjectArrayEventType), EventTypeUtility.ResolveTypeCodegen(forge.resultEventType, EPStatementInitServicesConstants.REF)));
+                true,
+                typeof(ObjectArrayEventType),
+                Cast(
+                    typeof(ObjectArrayEventType),
+                    EventTypeUtility.ResolveTypeCodegen(forge.resultEventType, EPStatementInitServicesConstants.REF)));
             Type innerType = forge.innerExpression.EvaluationType;
             Type innerTypeBoxed = Boxing.GetBoxedType(innerType);
 
@@ -96,15 +102,18 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
 
             CodegenBlock block = methodNode.Block
                 .DeclareVar(innerTypeBoxed, "minKey", ConstantNull())
-                .DeclareVar(
-                    typeof(ObjectArrayEventBean), "resultEvent",
+                .DeclareVar<ObjectArrayEventBean>(
+                    "resultEvent",
                     NewInstance<ObjectArrayEventBean>(NewArrayByLength(typeof(object), Constant(1)), resultTypeMember))
                 .AssignArrayElement(EnumForgeCodegenNames.REF_EPS, Constant(forge.streamNumLambda), @Ref("resultEvent"))
-                .DeclareVar(typeof(object[]), "props", ExprDotMethod(@Ref("resultEvent"), "getProperties"));
+                .DeclareVar<object[]>("props", ExprDotMethod(@Ref("resultEvent"), "getProperties"));
 
             CodegenBlock forEach = block.ForEach(typeof(object), "next", EnumForgeCodegenNames.REF_ENUMCOLL)
                 .AssignArrayElement("props", Constant(0), @Ref("next"))
-                .DeclareVar(innerTypeBoxed, "value", forge.innerExpression.EvaluateCodegen(innerTypeBoxed, methodNode, scope, codegenClassScope));
+                .DeclareVar(
+                    innerTypeBoxed,
+                    "value",
+                    forge.innerExpression.EvaluateCodegen(innerTypeBoxed, methodNode, scope, codegenClassScope));
             if (!innerType.IsPrimitive) {
                 forEach.IfRefNull("value").BlockContinue();
             }
@@ -112,7 +121,11 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             forEach.IfCondition(EqualsNull(@Ref("minKey")))
                 .AssignRef("minKey", @Ref("value"))
                 .IfElse()
-                .IfCondition(Relational(ExprDotMethod(@Ref("minKey"), "compareTo", @Ref("value")), forge.max ? LT : GT, Constant(0)))
+                .IfCondition(
+                    Relational(
+                        ExprDotMethod(@Ref("minKey"), "compareTo", @Ref("value")),
+                        forge.max ? LT : GT,
+                        Constant(0)))
                 .AssignRef("minKey", @Ref("value"));
 
             block.MethodReturn(@Ref("minKey"));

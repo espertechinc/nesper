@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.context.controller.core;
@@ -41,14 +42,25 @@ namespace com.espertech.esper.common.@internal.context.controller.hash
             this.item = item;
 
             AgentInstanceContext agentInstanceContext = callback.AgentInstanceContextCreate;
-            this.filterHandle = new EPStatementHandleCallbackFilter(agentInstanceContext.EpStatementAgentInstanceHandle, this);
+            this.filterHandle = new EPStatementHandleCallbackFilter(
+                agentInstanceContext.EpStatementAgentInstanceHandle,
+                this);
             FilterValueSetParam[][] addendum = ContextManagerUtil.ComputeAddendumNonStmt(
-                parentPartitionKeys, item.FilterSpecActivatable, callback.Realization);
+                parentPartitionKeys,
+                item.FilterSpecActivatable,
+                callback.Realization);
             this.filterValueSet = item.FilterSpecActivatable.GetValueSet(
-                null, addendum, agentInstanceContext, agentInstanceContext.StatementContextFilterEvalEnv);
-            agentInstanceContext.FilterService.Add(item.FilterSpecActivatable.FilterForEventType, filterValueSet, filterHandle);
+                null,
+                addendum,
+                agentInstanceContext,
+                agentInstanceContext.StatementContextFilterEvalEnv);
+            agentInstanceContext.FilterService.Add(
+                item.FilterSpecActivatable.FilterForEventType,
+                filterValueSet,
+                filterHandle);
             long filtersVersion = agentInstanceContext.FilterService.FiltersVersion;
-            agentInstanceContext.EpStatementAgentInstanceHandle.StatementFilterVersion.StmtFilterVersion = filtersVersion;
+            agentInstanceContext.EpStatementAgentInstanceHandle.StatementFilterVersion.StmtFilterVersion =
+                filtersVersion;
         }
 
         public void MatchFound(
@@ -69,9 +81,13 @@ namespace com.espertech.esper.common.@internal.context.controller.hash
         public void Destroy()
         {
             AgentInstanceContext agentInstanceContext = callback.AgentInstanceContextCreate;
-            agentInstanceContext.FilterService.Remove(filterHandle, item.FilterSpecActivatable.FilterForEventType, filterValueSet);
+            agentInstanceContext.FilterService.Remove(
+                filterHandle,
+                item.FilterSpecActivatable.FilterForEventType,
+                filterValueSet);
             long filtersVersion = agentInstanceContext.FilterService.FiltersVersion;
-            agentInstanceContext.EpStatementAgentInstanceHandle.StatementFilterVersion.StmtFilterVersion = filtersVersion;
+            agentInstanceContext.EpStatementAgentInstanceHandle.StatementFilterVersion.StmtFilterVersion =
+                filtersVersion;
         }
 
         public EPStatementHandleCallbackFilter FilterHandle {

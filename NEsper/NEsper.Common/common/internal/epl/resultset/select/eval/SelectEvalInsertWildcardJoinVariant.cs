@@ -44,9 +44,17 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
             CodegenClassScope codegenClassScope)
         {
             CodegenExpressionField variantType = VariantEventTypeUtil.GetField(variantEventType, codegenClassScope);
-            CodegenMethod methodNode = codegenMethodScope.MakeChild(typeof(EventBean), this.GetType(), codegenClassScope);
+            CodegenMethod methodNode = codegenMethodScope.MakeChild(
+                typeof(EventBean),
+                this.GetType(),
+                codegenClassScope);
             CodegenMethod jw = joinWildcardProcessorForge.ProcessCodegen(
-                resultEventType, eventBeanFactory, methodNode, selectSymbol, exprSymbol, codegenClassScope);
+                resultEventType,
+                eventBeanFactory,
+                methodNode,
+                selectSymbol,
+                exprSymbol,
+                codegenClassScope);
             methodNode.Block.MethodReturn(ExprDotMethod(variantType, "getValueAddEventBean", LocalMethod(jw)));
             return methodNode;
         }

@@ -30,8 +30,13 @@ namespace NEsper.Avro.Core
             ISet<EventType> deepSupertypes)
         {
             return new AvroEventType(
-                metadata, schema, optionalConfig?.StartTimestampPropertyName,
-                optionalConfig?.EndTimestampPropertyName, supertypes, deepSupertypes, eventBeanTypedEventFactory,
+                metadata,
+                schema,
+                optionalConfig?.StartTimestampPropertyName,
+                optionalConfig?.EndTimestampPropertyName,
+                supertypes,
+                deepSupertypes,
+                eventBeanTypedEventFactory,
                 this);
         }
 
@@ -39,10 +44,10 @@ namespace NEsper.Avro.Core
             object avroGenericDataDotRecord,
             EventType existingType)
         {
-            if (!(avroGenericDataDotRecord is GenericRecord))
-            {
+            if (!(avroGenericDataDotRecord is GenericRecord)) {
                 throw new EPException(
-                    "Unexpected event object type '" + (avroGenericDataDotRecord == null ? "null" : avroGenericDataDotRecord.GetType().Name) +
+                    "Unexpected event object type '" +
+                    (avroGenericDataDotRecord == null ? "null" : avroGenericDataDotRecord.GetType().Name) +
                     "' encountered, please supply a GenericRecord");
             }
 

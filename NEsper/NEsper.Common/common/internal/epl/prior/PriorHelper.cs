@@ -28,7 +28,8 @@ namespace com.espertech.esper.common.@internal.epl.prior
             }
 
             if (factoryFound == null) {
-                throw new EPRuntimeException("Failed to find 'prior'-handling view factory"); // was verified earlier, should not occur
+                throw new EPRuntimeException(
+                    "Failed to find 'prior'-handling view factory"); // was verified earlier, should not occur
             }
 
             return (PriorEventViewFactory) factoryFound;
@@ -42,7 +43,8 @@ namespace com.espertech.esper.common.@internal.epl.prior
             }
 
             if (priorViewUpdatedCollection is RelativeAccessByEventNIndex) {
-                return new ExprPriorEvalStrategyRelativeAccess((RelativeAccessByEventNIndex) priorViewUpdatedCollection);
+                return new ExprPriorEvalStrategyRelativeAccess(
+                    (RelativeAccessByEventNIndex) priorViewUpdatedCollection);
             }
 
             return null;

@@ -83,12 +83,20 @@ namespace com.espertech.esper.common.@internal.collection
         public static IntSeqKeyFive Read(DataInput input)
         {
             return new IntSeqKeyFive(
-                input.ReadInt(), input.ReadInt(), input.ReadInt(), input.ReadInt(), input.ReadInt());
+                input.ReadInt(),
+                input.ReadInt(),
+                input.ReadInt(),
+                input.ReadInt(),
+                input.ReadInt());
         }
 
         protected bool Equals(IntSeqKeyFive other)
         {
-            return One == other.One && Two == other.Two && Three == other.Three && Four == other.Four && Five == other.Five;
+            return One == other.One &&
+                   Two == other.Two &&
+                   Three == other.Three &&
+                   Four == other.Four &&
+                   Five == other.Five;
         }
 
         public override bool Equals(object obj)

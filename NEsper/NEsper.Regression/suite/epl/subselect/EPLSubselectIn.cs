@@ -99,7 +99,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
             public void Run(RegressionEnvironment env)
             {
                 var subquery = new EPStatementObjectModel();
-                subquery.SelectClause = SelectClause.Create("id");
+                subquery.SelectClause = SelectClause.Create("Id");
                 subquery.FromClause =
                     FromClause.Create(
                         FilterStream.Create("SupportBean_S1")
@@ -107,7 +107,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
 
                 var model = new EPStatementObjectModel();
                 model.FromClause = FromClause.Create(FilterStream.Create("SupportBean_S0"));
-                model.SelectClause = SelectClause.Create().Add(Expressions.SubqueryIn("id", subquery), "value");
+                model.SelectClause = SelectClause.Create().Add(Expressions.SubqueryIn("Id", subquery), "value");
                 model = env.CopyMayFail(model);
 
                 var stmtText = "select Id in (select Id from SupportBean_S1#length(1000)) as value from SupportBean_S0";
@@ -140,7 +140,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
         {
             public void Run(RegressionEnvironment env)
             {
-                string[] fields = {"id"};
+                string[] fields = {"Id"};
                 var text = "@Name('s0') select Id from SupportBean_S0(Id in (select Id from SupportBean_S1#length(2)))";
                 env.CompileDeployAddListenerMileZero(text, "s0");
 
@@ -304,7 +304,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
                 Assert.IsFalse(env.Listener("s0").IsInvoked);
 
                 env.SendEventBean(new SupportBean_S0(4, "A"));
-                Assert.AreEqual(4, env.Listener("s0").AssertOneGetNewAndReset().Get("id"));
+                Assert.AreEqual(4, env.Listener("s0").AssertOneGetNewAndReset().Get("Id"));
 
                 env.SendEventBean(new SupportBean_S1(-2, null));
                 env.SendEventBean(new SupportBean_S0(5, null));

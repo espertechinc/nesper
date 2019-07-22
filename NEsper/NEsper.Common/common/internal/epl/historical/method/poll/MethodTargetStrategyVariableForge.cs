@@ -8,6 +8,7 @@
 
 using System;
 using System.Reflection;
+
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.context.aifactory.core;
@@ -15,6 +16,7 @@ using com.espertech.esper.common.@internal.epl.variable.compiletime;
 using com.espertech.esper.common.@internal.epl.variable.core;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.historical.method.poll
@@ -37,10 +39,18 @@ namespace com.espertech.esper.common.@internal.epl.historical.method.poll
             SAIFFInitializeSymbol symbols,
             CodegenClassScope classScope)
         {
-            CodegenMethod method = parent.MakeChild(typeof(MethodTargetStrategyVariableFactory), this.GetType(), classScope);
+            CodegenMethod method = parent.MakeChild(
+                typeof(MethodTargetStrategyVariableFactory),
+                this.GetType(),
+                classScope);
             method.Block
-                .DeclareVar(typeof(MethodTargetStrategyVariableFactory), "target", NewInstance(typeof(MethodTargetStrategyVariableFactory)))
-                .SetProperty(Ref("target"), "Variable", VariableDeployTimeResolver.MakeResolveVariable(variableMetaData, symbols.GetAddInitSvc(method)))
+                .DeclareVar<MethodTargetStrategyVariableFactory>(
+                    "target",
+                    NewInstance(typeof(MethodTargetStrategyVariableFactory)))
+                .SetProperty(
+                    Ref("target"),
+                    "Variable",
+                    VariableDeployTimeResolver.MakeResolveVariable(variableMetaData, symbols.GetAddInitSvc(method)))
                 .SetProperty(Ref("target"), "MethodName", Constant(reflectionMethod.Name))
                 .SetProperty(Ref("target"), "MethodParameters", Constant(reflectionMethod.GetParameterTypes()))
                 .Expression(ExprDotMethodChain(symbols.GetAddInitSvc(method)).Add("addReadyCallback", @Ref("target")))

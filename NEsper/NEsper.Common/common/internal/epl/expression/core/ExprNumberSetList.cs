@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -19,6 +20,7 @@ using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.expression.core
@@ -85,9 +87,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             CodegenClassScope codegenClassScope)
         {
             var methodNode = codegenMethodScope.MakeChild(
-                typeof(ListParameter), typeof(ExprNumberSetList), codegenClassScope);
+                typeof(ListParameter),
+                typeof(ExprNumberSetList),
+                codegenClassScope);
             var block = methodNode.Block
-                .DeclareVar(typeof(IList<object>), "parameters", NewInstance(typeof(List<object>)));
+                .DeclareVar<IList<object>>("parameters", NewInstance(typeof(List<object>)));
             var count = -1;
             foreach (var node in ChildNodes) {
                 count++;
@@ -95,10 +99,14 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                 var evaluationType = forge.EvaluationType;
                 var refname = "value" + count;
                 block.DeclareVar(
-                        evaluationType, refname,
+                        evaluationType,
+                        refname,
                         forge.EvaluateCodegen(requiredType, methodNode, exprSymbol, codegenClassScope))
                     .StaticMethod(
-                        typeof(ExprNumberSetList), METHOD_HANDLEEXPRNUMBERSETLISTADD, Ref(refname), Ref("parameters"));
+                        typeof(ExprNumberSetList),
+                        METHOD_HANDLEEXPRNUMBERSETLISTADD,
+                        Ref(refname),
+                        Ref("parameters"));
             }
 
             block.StaticMethod(typeof(ExprNumberSetList), METHOD_HANDLEEXPRNUMBERSETLISTEMPTY, Ref("parameters"))

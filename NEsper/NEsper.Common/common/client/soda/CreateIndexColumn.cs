@@ -9,6 +9,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
@@ -75,7 +76,11 @@ namespace com.espertech.esper.common.client.soda
                 writer.Write(")");
             }
 
-            if ((indexType != null) && !String.Equals(indexType, CreateIndexColumnType.HASH.GetName(), StringComparison.InvariantCultureIgnoreCase)) {
+            if ((indexType != null) &&
+                !String.Equals(
+                    indexType,
+                    CreateIndexColumnType.HASH.GetName(),
+                    StringComparison.InvariantCultureIgnoreCase)) {
                 writer.Write(' ');
                 writer.Write(indexType.ToLowerInvariant());
             }

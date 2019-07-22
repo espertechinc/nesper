@@ -12,6 +12,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.Serialization.Formatters.Binary;
+
 using com.espertech.esper.compat;
 
 namespace com.espertech.esper.common.@internal.util
@@ -179,8 +180,9 @@ namespace com.espertech.esper.common.@internal.util
 
             using (var binaryStream = new MemoryStream(bytes)) {
                 var result = serializers.Select(
-                    serializer =>
-                        serializer.DeserializeAny(binaryStream)).ToArray();
+                        serializer =>
+                            serializer.DeserializeAny(binaryStream))
+                    .ToArray();
                 return result;
             }
         }

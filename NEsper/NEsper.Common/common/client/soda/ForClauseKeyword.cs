@@ -36,8 +36,10 @@ namespace com.espertech.esper.common.client.soda
             switch (keyword) {
                 case ForClauseKeyword.GROUPED_DELIVERY:
                     return "grouped_delivery";
+
                 case ForClauseKeyword.DISCRETE_DELIVERY:
                     return "discrete_delivery";
+
                 default:
                     return null;
             }

@@ -7,12 +7,14 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.core;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.context.module;
 using com.espertech.esper.common.@internal.epl.agg.core;
 using com.espertech.esper.common.@internal.serde;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 using static com.espertech.esper.common.@internal.epl.agg.core.AggregationServiceCodegenNames;
 using static com.espertech.esper.common.@internal.epl.expression.codegen.ExprForgeCodegenNames;
@@ -42,13 +44,14 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupall
             AggregationClassNames classNames)
         {
             method.Block
-                .DeclareVar(
-                    typeof(AggregationRowFactory), "rowFactory", NewInstance(classNames.RowFactoryTop, Ref("this")))
-                .DeclareVar(
-                    typeof(DataInputOutputSerdeWCollation<object>), "rowSerde",
+                .DeclareVar<AggregationRowFactory>(
+                    "rowFactory",
+                    NewInstance(classNames.RowFactoryTop, Ref("this")))
+                .DeclareVar<DataInputOutputSerdeWCollation<object>>(
+                    "rowSerde",
                     NewInstance(classNames.RowSerdeTop, Ref("this")))
-                .DeclareVar(
-                    typeof(AggregationServiceFactory), "svcFactory",
+                .DeclareVar<AggregationServiceFactory>(
+                    "svcFactory",
                     NewInstance(classNames.ServiceFactory, Ref("this")))
                 .MethodReturn(
                     ExprDotMethodChain(EPStatementInitServicesConstants.REF)
@@ -111,8 +114,11 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupall
             method.Block
                 .Apply(
                     Instblock(
-                        classScope, "qAggregationUngroupedApplyEnterLeave", ConstantTrue(),
-                        Constant(rowStateDesc.NumMethods), Constant(rowStateDesc.NumAccess)))
+                        classScope,
+                        "qAggregationUngroupedApplyEnterLeave",
+                        ConstantTrue(),
+                        Constant(rowStateDesc.NumMethods),
+                        Constant(rowStateDesc.NumAccess)))
                 .ExprDotMethod(REF_ROW, "applyEnter", REF_EPS, REF_EXPREVALCONTEXT)
                 .Apply(Instblock(classScope, "aAggregationUngroupedApplyEnterLeave", ConstantTrue()));
         }
@@ -126,8 +132,11 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupall
             method.Block
                 .Apply(
                     Instblock(
-                        classScope, "qAggregationUngroupedApplyEnterLeave", ConstantFalse(),
-                        Constant(rowStateDesc.NumMethods), Constant(rowStateDesc.NumAccess)))
+                        classScope,
+                        "qAggregationUngroupedApplyEnterLeave",
+                        ConstantFalse(),
+                        Constant(rowStateDesc.NumMethods),
+                        Constant(rowStateDesc.NumAccess)))
                 .ExprDotMethod(REF_ROW, "applyLeave", REF_EPS, REF_EXPREVALCONTEXT)
                 .Apply(Instblock(classScope, "aAggregationUngroupedApplyEnterLeave", ConstantFalse()));
         }
@@ -175,7 +184,12 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupall
         {
             method.Block.MethodReturn(
                 ExprDotMethod(
-                    REF_ROW, "getCollectionOfEvents", REF_COLUMN, REF_EPS, REF_ISNEWDATA, REF_EXPREVALCONTEXT));
+                    REF_ROW,
+                    "getCollectionOfEvents",
+                    REF_COLUMN,
+                    REF_EPS,
+                    REF_ISNEWDATA,
+                    REF_EXPREVALCONTEXT));
         }
 
         public void AcceptCodegen(

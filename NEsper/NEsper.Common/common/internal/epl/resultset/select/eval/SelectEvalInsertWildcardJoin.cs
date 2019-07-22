@@ -40,8 +40,18 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
             CodegenClassScope codegenClassScope)
         {
             CodegenMethod inner = joinWildcardProcessorForge.ProcessCodegen(
-                resultEventType, eventBeanFactory, methodNode, selectEnv, exprSymbol, codegenClassScope);
-            return ExprDotMethod(eventBeanFactory, "adapterForTypedWrapper", LocalMethod(inner), props, resultEventType);
+                resultEventType,
+                eventBeanFactory,
+                methodNode,
+                selectEnv,
+                exprSymbol,
+                codegenClassScope);
+            return ExprDotMethod(
+                eventBeanFactory,
+                "adapterForTypedWrapper",
+                LocalMethod(inner),
+                props,
+                resultEventType);
         }
     }
 } // end of namespace

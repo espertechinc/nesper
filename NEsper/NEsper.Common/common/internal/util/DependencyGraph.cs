@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+
 using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.util

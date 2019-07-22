@@ -72,7 +72,9 @@ namespace com.espertech.esper.common.@internal.epl.ontrigger
         {
             try {
                 tableUpdateStrategy = TableUpdateStrategyFactory.ValidateGetTableUpdateStrategy(
-                    table.MetaData, tableUpdate, true);
+                    table.MetaData,
+                    tableUpdate,
+                    true);
             }
             catch (ExprValidationException e) {
                 throw new EPException(e.Message, e);
@@ -104,7 +106,10 @@ namespace com.espertech.esper.common.@internal.epl.ontrigger
             }
 
             tableUpdateStrategy.UpdateTable(
-                Collections.SingletonList(matchingEvent), tableStateInstance, eventsPerStream, agentInstanceContext);
+                Collections.SingletonList(matchingEvent),
+                tableStateInstance,
+                eventsPerStream,
+                agentInstanceContext);
             if (changeHandlerAdded != null) {
                 changeHandlerAdded.Add(matchingEvent, eventsPerStream, false, agentInstanceContext);
             }

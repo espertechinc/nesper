@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.epl.index.@base;
@@ -48,11 +49,16 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplan
             ILockable[] tableSecondaryIndexLocks)
         {
             var lookupStrategy = LookupStrategySpec.MakeStrategy(
-                agentInstanceContext, indexesPerStream, streamTypes, viewExternal);
+                agentInstanceContext,
+                indexesPerStream,
+                streamTypes,
+                viewExternal);
             var indexedStream = LookupStrategySpec.IndexedStream;
             if (tableSecondaryIndexLocks[indexedStream] != null) {
                 return new TableOuterLookupExecNodeTableLocking(
-                    indexedStream, lookupStrategy, tableSecondaryIndexLocks[indexedStream]);
+                    indexedStream,
+                    lookupStrategy,
+                    tableSecondaryIndexLocks[indexedStream]);
             }
 
             return new TableOuterLookupExecNode(LookupStrategySpec.IndexedStream, lookupStrategy);

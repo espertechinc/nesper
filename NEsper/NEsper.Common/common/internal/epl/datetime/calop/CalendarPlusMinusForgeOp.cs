@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
@@ -16,6 +17,7 @@ using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.datetime;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.datetime.calop
@@ -89,12 +91,18 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
                     forge.param.EvaluateCodegen(evaluationType, codegenMethodScope, exprSymbol, codegenClassScope),
                     evaluationType);
                 return StaticMethod(
-                    typeof(CalendarPlusMinusForgeOp), "actionCalendarPlusMinusNumber", dtx, Constant(forge.factor),
+                    typeof(CalendarPlusMinusForgeOp),
+                    "actionCalendarPlusMinusNumber",
+                    dtx,
+                    Constant(forge.factor),
                     longDuration);
             }
 
             return StaticMethod(
-                typeof(CalendarPlusMinusForgeOp), "actionCalendarPlusMinusTimePeriod", dtx, Constant(forge.factor),
+                typeof(CalendarPlusMinusForgeOp),
+                "actionCalendarPlusMinusTimePeriod",
+                dtx,
+                Constant(forge.factor),
                 forge.param.EvaluateCodegen(evaluationType, codegenMethodScope, exprSymbol, codegenClassScope));
         }
 
@@ -109,14 +117,22 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
             if (evaluationType.IsNumeric()) {
                 var longDuration = SimpleNumberCoercerFactory.CoercerLong.CodegenLongMayNullBox(
                     forge.param.EvaluateCodegen(evaluationType, codegenMethodScope, exprSymbol, codegenClassScope),
-                    evaluationType, codegenMethodScope, codegenClassScope);
+                    evaluationType,
+                    codegenMethodScope,
+                    codegenClassScope);
                 return StaticMethod(
-                    typeof(CalendarPlusMinusForgeOp), "actionLDTPlusMinusNumber", dto, Constant(forge.factor),
+                    typeof(CalendarPlusMinusForgeOp),
+                    "actionLDTPlusMinusNumber",
+                    dto,
+                    Constant(forge.factor),
                     longDuration);
             }
 
             return StaticMethod(
-                typeof(CalendarPlusMinusForgeOp), "actionLDTPlusMinusTimePeriod", dto, Constant(forge.factor),
+                typeof(CalendarPlusMinusForgeOp),
+                "actionLDTPlusMinusTimePeriod",
+                dto,
+                Constant(forge.factor),
                 forge.param.EvaluateCodegen(evaluationType, codegenMethodScope, exprSymbol, codegenClassScope));
         }
 
@@ -131,14 +147,22 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
             if (evaluationType.IsNumeric()) {
                 var longDuration = SimpleNumberCoercerFactory.CoercerLong.CodegenLongMayNullBox(
                     forge.param.EvaluateCodegen(evaluationType, codegenMethodScope, exprSymbol, codegenClassScope),
-                    evaluationType, codegenMethodScope, codegenClassScope);
+                    evaluationType,
+                    codegenMethodScope,
+                    codegenClassScope);
                 return StaticMethod(
-                    typeof(CalendarPlusMinusForgeOp), "actionZDTPlusMinusNumber", dateTime, Constant(forge.factor),
+                    typeof(CalendarPlusMinusForgeOp),
+                    "actionZDTPlusMinusNumber",
+                    dateTime,
+                    Constant(forge.factor),
                     longDuration);
             }
 
             return StaticMethod(
-                typeof(CalendarPlusMinusForgeOp), "actionZDTPlusMinusTimePeriod", dateTime, Constant(forge.factor),
+                typeof(CalendarPlusMinusForgeOp),
+                "actionZDTPlusMinusTimePeriod",
+                dateTime,
+                Constant(forge.factor),
                 forge.param.EvaluateCodegen(evaluationType, codegenMethodScope, exprSymbol, codegenClassScope));
         }
 

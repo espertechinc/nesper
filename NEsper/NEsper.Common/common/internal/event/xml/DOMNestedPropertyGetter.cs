@@ -8,10 +8,12 @@
 
 using System.Collections.Generic;
 using System.Xml;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.@event.core;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.@event.xml
@@ -154,7 +156,9 @@ namespace com.espertech.esper.common.@internal.@event.xml
             CodegenClassScope codegenClassScope)
         {
             return UnderlyingGetCodegen(
-                CastUnderlying(typeof(XmlNode), beanExpression), codegenMethodScope, codegenClassScope);
+                CastUnderlying(typeof(XmlNode), beanExpression),
+                codegenMethodScope,
+                codegenClassScope);
         }
 
         public CodegenExpression EventBeanExistsCodegen(
@@ -163,7 +167,9 @@ namespace com.espertech.esper.common.@internal.@event.xml
             CodegenClassScope codegenClassScope)
         {
             return UnderlyingExistsCodegen(
-                CastUnderlying(typeof(XmlNode), beanExpression), codegenMethodScope, codegenClassScope);
+                CastUnderlying(typeof(XmlNode), beanExpression),
+                codegenMethodScope,
+                codegenClassScope);
         }
 
         public CodegenExpression EventBeanFragmentCodegen(
@@ -172,7 +178,9 @@ namespace com.espertech.esper.common.@internal.@event.xml
             CodegenClassScope codegenClassScope)
         {
             return UnderlyingFragmentCodegen(
-                CastUnderlying(typeof(XmlNode), beanExpression), codegenMethodScope, codegenClassScope);
+                CastUnderlying(typeof(XmlNode), beanExpression),
+                codegenMethodScope,
+                codegenClassScope);
         }
 
         public CodegenExpression UnderlyingGetCodegen(
@@ -204,12 +212,14 @@ namespace com.espertech.esper.common.@internal.@event.xml
             CodegenClassScope codegenClassScope)
         {
             var member = codegenClassScope.AddFieldUnshared(
-                true, typeof(FragmentFactory),
+                true,
+                typeof(FragmentFactory),
                 fragmentFactory.Make(codegenClassScope.NamespaceScope.InitMethod, codegenClassScope));
             return codegenMethodScope.MakeChild(typeof(object), GetType(), codegenClassScope)
-                .AddParam(typeof(XmlNode), "node").Block
-                .DeclareVar(
-                    typeof(XmlNode), "result",
+                .AddParam(typeof(XmlNode), "node")
+                .Block
+                .DeclareVar<XmlNode>(
+                    "result",
                     GetValueAsNodeCodegen(Ref("node"), codegenMethodScope, codegenClassScope))
                 .IfRefNullReturnNull("result")
                 .MethodReturn(ExprDotMethod(member, "getEvent", Ref("result")));
@@ -220,7 +230,8 @@ namespace com.espertech.esper.common.@internal.@event.xml
             CodegenClassScope codegenClassScope)
         {
             var block = codegenMethodScope.MakeChild(typeof(XmlNode[]), GetType(), codegenClassScope)
-                .AddParam(typeof(XmlNode), "node").Block;
+                .AddParam(typeof(XmlNode), "node")
+                .Block;
             for (var i = 0; i < domGetterChain.Length - 1; i++) {
                 block.AssignRef(
                     "node",
@@ -229,8 +240,11 @@ namespace com.espertech.esper.common.@internal.@event.xml
             }
 
             return block.MethodReturn(
-                domGetterChain[domGetterChain.Length - 1].GetValueAsNodeArrayCodegen(
-                    Ref("node"), codegenMethodScope, codegenClassScope));
+                domGetterChain[domGetterChain.Length - 1]
+                    .GetValueAsNodeArrayCodegen(
+                        Ref("node"),
+                        codegenMethodScope,
+                        codegenClassScope));
         }
 
         private CodegenMethod GetValueAsNodeCodegen(
@@ -238,7 +252,8 @@ namespace com.espertech.esper.common.@internal.@event.xml
             CodegenClassScope codegenClassScope)
         {
             var block = codegenMethodScope.MakeChild(typeof(XmlNode), GetType(), codegenClassScope)
-                .AddParam(typeof(XmlNode), "node").Block;
+                .AddParam(typeof(XmlNode), "node")
+                .Block;
             for (var i = 0; i < domGetterChain.Length; i++) {
                 block.AssignRef(
                     "node",
@@ -266,7 +281,8 @@ namespace com.espertech.esper.common.@internal.@event.xml
             CodegenClassScope codegenClassScope)
         {
             var block = codegenMethodScope.MakeChild(typeof(bool), GetType(), codegenClassScope)
-                .AddParam(typeof(XmlNode), "value").Block;
+                .AddParam(typeof(XmlNode), "value")
+                .Block;
             for (var i = 0; i < domGetterChain.Length; i++) {
                 block.AssignRef(
                     "value",
@@ -282,7 +298,8 @@ namespace com.espertech.esper.common.@internal.@event.xml
             CodegenClassScope codegenClassScope)
         {
             var block = codegenMethodScope.MakeChild(typeof(object), GetType(), codegenClassScope)
-                .AddParam(typeof(XmlNode), "value").Block;
+                .AddParam(typeof(XmlNode), "value")
+                .Block;
             for (var i = 0; i < domGetterChain.Length - 1; i++) {
                 block.AssignRef(
                     "value",
@@ -291,8 +308,11 @@ namespace com.espertech.esper.common.@internal.@event.xml
             }
 
             return block.MethodReturn(
-                domGetterChain[domGetterChain.Length - 1].UnderlyingFragmentCodegen(
-                    Ref("value"), codegenMethodScope, codegenClassScope));
+                domGetterChain[domGetterChain.Length - 1]
+                    .UnderlyingFragmentCodegen(
+                        Ref("value"),
+                        codegenMethodScope,
+                        codegenClassScope));
         }
     }
 } // end of namespace

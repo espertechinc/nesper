@@ -10,6 +10,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+
 using com.espertech.esper.common.@internal.@event.arr;
 using com.espertech.esper.common.@internal.@event.bean.core;
 using com.espertech.esper.common.@internal.@event.bean.getter;
@@ -71,7 +72,10 @@ namespace com.espertech.esper.common.@internal.@event.property
             var propertyDesc = eventType.GetIndexedProperty(PropertyNameAtomic);
             if (propertyDesc != null) {
                 return new KeyedMethodPropertyGetter(
-                    propertyDesc.ReadMethod, Index, eventBeanTypedEventFactory, beanEventTypeFactory);
+                    propertyDesc.ReadMethod,
+                    Index,
+                    eventBeanTypedEventFactory,
+                    beanEventTypeFactory);
             }
 
             // Try the array as a simple property
@@ -85,7 +89,10 @@ namespace com.espertech.esper.common.@internal.@event.property
                 if (propertyDesc.ReadMethod != null) {
                     var method = propertyDesc.ReadMethod;
                     return new ArrayMethodPropertyGetter(
-                        method, Index, eventBeanTypedEventFactory, beanEventTypeFactory);
+                        method,
+                        Index,
+                        eventBeanTypedEventFactory,
+                        beanEventTypeFactory);
                 }
 
                 var field = propertyDesc.AccessorField;
@@ -96,7 +103,10 @@ namespace com.espertech.esper.common.@internal.@event.property
                 if (propertyDesc.ReadMethod != null) {
                     var method = propertyDesc.ReadMethod;
                     return new ListMethodPropertyGetter(
-                        method, Index, eventBeanTypedEventFactory, beanEventTypeFactory);
+                        method,
+                        Index,
+                        eventBeanTypedEventFactory,
+                        beanEventTypeFactory);
                 }
 
                 var field = propertyDesc.AccessorField;
@@ -107,7 +117,10 @@ namespace com.espertech.esper.common.@internal.@event.property
                 if (propertyDesc.ReadMethod != null) {
                     var method = propertyDesc.ReadMethod;
                     return new IterableMethodPropertyGetter(
-                        method, Index, eventBeanTypedEventFactory, beanEventTypeFactory);
+                        method,
+                        Index,
+                        eventBeanTypedEventFactory,
+                        beanEventTypeFactory);
                 }
 
                 var field = propertyDesc.AccessorField;
@@ -249,7 +262,11 @@ namespace com.espertech.esper.common.@internal.@event.property
             var componentType = ((Type) type).GetElementType();
             // its an array
             return new MapArrayPONOEntryIndexedPropertyGetter(
-                PropertyNameAtomic, Index, eventBeanTypedEventFactory, beanEventTypeFactory, componentType);
+                PropertyNameAtomic,
+                Index,
+                eventBeanTypedEventFactory,
+                beanEventTypeFactory,
+                componentType);
         }
 
         public override void ToPropertyEPL(TextWriter writer)
@@ -288,7 +305,8 @@ namespace com.espertech.esper.common.@internal.@event.property
                 }
 
                 return new DOMIndexedGetter(
-                    PropertyNameAtomic, Index,
+                    PropertyNameAtomic,
+                    Index,
                     new FragmentFactoryDOMGetter(eventBeanTypedEventFactory, eventType, propertyExpression));
             }
 
@@ -308,7 +326,12 @@ namespace com.espertech.esper.common.@internal.@event.property
 
                 // return the simple as a non-array since an index is provided
                 return new SchemaElementSimple(
-                    simple.Name, simple.Namespace, simple.SimpleType, simple.TypeName, false, simple.FractionDigits);
+                    simple.Name,
+                    simple.Namespace,
+                    simple.SimpleType,
+                    simple.TypeName,
+                    false,
+                    simple.FractionDigits);
             }
 
             foreach (SchemaElementComplex complex in complexProperty.ComplexElements) {
@@ -323,11 +346,12 @@ namespace com.espertech.esper.common.@internal.@event.property
                 // return the complex as a non-array since an index is provided
                 return new SchemaElementComplex(
                     complex.Name,
-                    complex.Namespace, 
+                    complex.Namespace,
                     complex.Attributes,
                     complex.ComplexElements,
-                    complex.SimpleElements, false, 
-                    complex.OptionalSimpleType, 
+                    complex.SimpleElements,
+                    false,
+                    complex.OptionalSimpleType,
                     complex.OptionalSimpleTypeName);
             }
 
@@ -383,7 +407,11 @@ namespace com.espertech.esper.common.@internal.@event.property
             var componentType = ((Type) type).GetElementType();
             // its an array
             return new ObjectArrayArrayPONOEntryIndexedPropertyGetter(
-                propertyIndex, Index, eventBeanTypedEventFactory, beanEventTypeFactory, componentType);
+                propertyIndex,
+                Index,
+                eventBeanTypedEventFactory,
+                beanEventTypeFactory,
+                componentType);
         }
     }
 } // end of namespace

@@ -74,7 +74,8 @@ namespace com.espertech.esper.common.@internal.epl.output.condition
         public override string ToString()
         {
             return GetType().Name +
-                   " spec=" + scheduleSpec;
+                   " spec=" +
+                   scheduleSpec;
         }
 
         private void ScheduleCallback()
@@ -85,7 +86,9 @@ namespace com.espertech.esper.common.@internal.epl.output.condition
                 ProcScheduledTrigger = () => {
                     context.InstrumentationProvider.QOutputRateConditionScheduledEval();
                     context.AuditProvider.ScheduleFire(
-                        context, ScheduleObjectType.outputratelimiting, NAME_AUDITPROVIDER_SCHEDULE);
+                        context,
+                        ScheduleObjectType.outputratelimiting,
+                        NAME_AUDITPROVIDER_SCHEDULE);
                     isCallbackScheduled = false;
                     outputCallback.Invoke(DO_OUTPUT, FORCE_UPDATE);
                     ScheduleCallback();
@@ -96,10 +99,16 @@ namespace com.espertech.esper.common.@internal.epl.output.condition
             var schedulingService = context.StatementContext.SchedulingService;
             var classpathImportService = context.StatementContext.ImportServiceRuntime;
             long nextScheduledTime = ScheduleComputeHelper.ComputeDeltaNextOccurance(
-                scheduleSpec, schedulingService.Time, classpathImportService.TimeZone,
+                scheduleSpec,
+                schedulingService.Time,
+                classpathImportService.TimeZone,
                 classpathImportService.TimeAbacus);
             context.AuditProvider.ScheduleAdd(
-                nextScheduledTime, context, handle, ScheduleObjectType.outputratelimiting, NAME_AUDITPROVIDER_SCHEDULE);
+                nextScheduledTime,
+                context,
+                handle,
+                ScheduleObjectType.outputratelimiting,
+                NAME_AUDITPROVIDER_SCHEDULE);
             schedulingService.Add(nextScheduledTime, handle, scheduleSlot);
         }
     }

@@ -54,15 +54,14 @@ namespace com.espertech.esper.common.@internal.filterspec
             var get = _exprIdentNodeEvaluator.Getter.EventBeanGetCodegen(Ref("event"), method, classScope);
 
             method.Block
-                .DeclareVar(
-                    typeof(EventBean),
+                .DeclareVar<EventBean>(
                     "event",
                     ExprDotMethod(Ref("matchedEvents"), "getMatchingEventByTag", Constant(ResultEventAsName)))
                 .IfRefNull(Ref("event"))
                 .BlockThrow(
                     NewInstance<IllegalStateException>(
                         Constant("Matching event named '" + ResultEventAsName + "' not found in event result set")))
-                .DeclareVar(typeof(object), "value", Cast(typeof(object), get))
+                .DeclareVar<object>("value", Cast(typeof(object), get))
                 .IfRefNull("value")
                 .BlockReturn(ConstantNull())
                 .MethodReturn(ExprDotMethod(Ref("value"), "doubleValue"));

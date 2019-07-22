@@ -8,6 +8,7 @@
 
 using System.Collections.Generic;
 using System.Linq;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.context.util;
@@ -41,11 +42,13 @@ namespace com.espertech.esper.common.@internal.view.rank
         private readonly IStreamSortRankRandomAccess _optionalRankedRandomAccess;
         private readonly RankWindowViewFactory _rankWindowViewFactory;
 
-        private readonly OrderedDictionary<object, object> _sortedEvents; // key is computed sort-key, value is either List<EventBean> or EventBean
+        private readonly OrderedDictionary<object, object>
+            _sortedEvents; // key is computed sort-key, value is either List<EventBean> or EventBean
 
         private readonly int _sortWindowSize;
 
-        private readonly IDictionary<object, object> _uniqueKeySortKeys; // key is computed unique-key, value is computed sort-key
+        private readonly IDictionary<object, object>
+            _uniqueKeySortKeys; // key is computed unique-key, value is computed sort-key
 
         private int _numberOfEvents;
 
@@ -73,7 +76,10 @@ namespace com.espertech.esper.common.@internal.view.rank
             EventBean[] oldData)
         {
             _agentInstanceContext.AuditProvider.View(newData, oldData, _agentInstanceContext, _rankWindowViewFactory);
-            _agentInstanceContext.InstrumentationProvider.QViewProcessIRStream(_rankWindowViewFactory, newData, oldData);
+            _agentInstanceContext.InstrumentationProvider.QViewProcessIRStream(
+                _rankWindowViewFactory,
+                newData,
+                oldData);
 
             var removedEvents = new OneEventCollection();
 
@@ -175,7 +181,10 @@ namespace com.espertech.esper.common.@internal.view.rank
                     expiredArr = removedEvents.ToArray();
                 }
 
-                _agentInstanceContext.InstrumentationProvider.QViewIndicate(_rankWindowViewFactory, newData, expiredArr);
+                _agentInstanceContext.InstrumentationProvider.QViewIndicate(
+                    _rankWindowViewFactory,
+                    newData,
+                    expiredArr);
                 Child.Update(newData, expiredArr);
                 _agentInstanceContext.InstrumentationProvider.AViewIndicate();
             }
@@ -191,7 +200,11 @@ namespace com.espertech.esper.common.@internal.view.rank
         public void VisitView(ViewDataVisitor viewDataVisitor)
         {
             viewDataVisitor.VisitPrimary(
-                _sortedEvents, false, _rankWindowViewFactory.ViewName, _numberOfEvents, _sortedEvents.Count);
+                _sortedEvents,
+                false,
+                _rankWindowViewFactory.ViewName,
+                _numberOfEvents,
+                _sortedEvents.Count);
         }
 
         public void InternalHandleReplacedKey(
@@ -311,20 +324,28 @@ namespace com.espertech.esper.common.@internal.view.rank
         public override string ToString()
         {
             return GetType().Name +
-                   " isDescending=" + _rankWindowViewFactory.IsDescendingValues.RenderAny() +
-                   " sortWindowSize=" + _sortWindowSize;
+                   " isDescending=" +
+                   _rankWindowViewFactory.IsDescendingValues.RenderAny() +
+                   " sortWindowSize=" +
+                   _sortWindowSize;
         }
 
         public object GetUniqueKey(EventBean theEvent)
         {
             return GetUniqueKey(
-                _eventsPerStream, _rankWindowViewFactory.UniqueEvaluators, theEvent, _agentInstanceContext);
+                _eventsPerStream,
+                _rankWindowViewFactory.UniqueEvaluators,
+                theEvent,
+                _agentInstanceContext);
         }
 
         public object GetSortValues(EventBean theEvent)
         {
             return GetSortKey(
-                _eventsPerStream, _rankWindowViewFactory.SortCriteriaEvaluators, theEvent, _agentInstanceContext);
+                _eventsPerStream,
+                _rankWindowViewFactory.SortCriteriaEvaluators,
+                theEvent,
+                _agentInstanceContext);
         }
 
         public static object GetUniqueKey(

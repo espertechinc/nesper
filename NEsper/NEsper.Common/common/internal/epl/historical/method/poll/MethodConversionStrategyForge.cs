@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -14,6 +15,7 @@ using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.historical.method.poll
@@ -39,7 +41,10 @@ namespace com.espertech.esper.common.@internal.epl.historical.method.poll
             CodegenMethod method = parent.MakeChild(implementation, this.GetType(), classScope);
             method.Block
                 .DeclareVar(implementation, "conv", NewInstance(implementation))
-                .SetProperty(Ref("conv"), "EventType", EventTypeUtility.ResolveTypeCodegen(eventType, symbols.GetAddInitSvc(method)))
+                .SetProperty(
+                    Ref("conv"),
+                    "EventType",
+                    EventTypeUtility.ResolveTypeCodegen(eventType, symbols.GetAddInitSvc(method)))
                 .MethodReturn(@Ref("conv"));
             return LocalMethod(method);
         }

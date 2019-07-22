@@ -39,7 +39,11 @@ namespace com.espertech.esper.common.@internal.@event.arr
         public override object HandleNestedValueFragment(object value)
         {
             return BaseNestableEventUtil.HandleNestedValueArrayWithObjectArrayFragment(
-                value, index, getter, fragmentType, eventBeanTypedEventFactory);
+                value,
+                index,
+                getter,
+                fragmentType,
+                eventBeanTypedEventFactory);
         }
 
         public override bool HandleNestedValueExists(object value)
@@ -53,7 +57,12 @@ namespace com.espertech.esper.common.@internal.@event.arr
             CodegenClassScope codegenClassScope)
         {
             return BaseNestableEventUtil.HandleNestedValueArrayWithObjectArrayCodegen(
-                index, getter, refName, codegenMethodScope, codegenClassScope, GetType());
+                index,
+                getter,
+                refName,
+                codegenMethodScope,
+                codegenClassScope,
+                GetType());
         }
 
         public override CodegenExpression HandleNestedValueExistsCodegen(
@@ -62,7 +71,12 @@ namespace com.espertech.esper.common.@internal.@event.arr
             CodegenClassScope codegenClassScope)
         {
             return BaseNestableEventUtil.HandleNestedValueArrayWithObjectArrayExistsCodegen(
-                index, getter, refName, codegenMethodScope, codegenClassScope, GetType());
+                index,
+                getter,
+                refName,
+                codegenMethodScope,
+                codegenClassScope,
+                GetType());
         }
 
         public override CodegenExpression HandleNestedValueFragmentCodegen(
@@ -71,7 +85,12 @@ namespace com.espertech.esper.common.@internal.@event.arr
             CodegenClassScope codegenClassScope)
         {
             return BaseNestableEventUtil.HandleNestedValueArrayWithObjectArrayFragmentCodegen(
-                index, getter, refName, codegenMethodScope, codegenClassScope, GetType());
+                index,
+                getter,
+                refName,
+                codegenMethodScope,
+                codegenClassScope,
+                GetType());
         }
     }
 } // end of namespace

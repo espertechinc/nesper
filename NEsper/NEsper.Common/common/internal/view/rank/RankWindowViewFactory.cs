@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.context.module;
 using com.espertech.esper.common.@internal.epl.expression.core;
@@ -56,7 +57,9 @@ namespace com.espertech.esper.common.@internal.view.rank
         public View MakeView(AgentInstanceViewFactoryChainContext agentInstanceViewFactoryContext)
         {
             int sortWindowSize = ViewFactoryUtil.EvaluateSizeParam(
-                ViewName, SizeEvaluator, agentInstanceViewFactoryContext.AgentInstanceContext);
+                ViewName,
+                SizeEvaluator,
+                agentInstanceViewFactoryContext.AgentInstanceContext);
             IStreamSortRankRandomAccess rankedRandomAccess =
                 agentInstanceViewFactoryContext.StatementContext.ViewServicePreviousFactory
                     .GetOptPreviousExprSortedRankedAccess(agentInstanceViewFactoryContext);

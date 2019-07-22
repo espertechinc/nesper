@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+
 using com.espertech.esper.collection;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.compile.stage1.spec;
@@ -52,7 +53,13 @@ namespace com.espertech.esper.common.@internal.epl.subselect
             EventType eventType;
             try {
                 var args = new ViewFactoryForgeArgs(
-                    -1, true, subselect.SubselectNumber, StreamSpecOptions.DEFAULT, null, statementRawInfo, services);
+                    -1,
+                    true,
+                    subselect.SubselectNumber,
+                    StreamSpecOptions.DEFAULT,
+                    null,
+                    statementRawInfo,
+                    services);
 
                 if (statementSpec.StreamSpecs[0] is FilterStreamSpecCompiled) {
                     var filterStreamSpecCompiled = (FilterStreamSpecCompiled) statementSpec.StreamSpecs[0];
@@ -65,7 +72,8 @@ namespace com.espertech.esper.common.@internal.epl.subselect
                     }
 
                     viewForges = ViewFactoryForgeUtil.CreateForges(
-                        filterStreamSpecCompiled.ViewSpecs, args,
+                        filterStreamSpecCompiled.ViewSpecs,
+                        args,
                         filterStreamSpecCompiled.FilterSpecCompiled.ResultEventType);
                     // Register filter, create view factories
                     eventType = viewForges.IsEmpty()
@@ -80,7 +88,11 @@ namespace com.espertech.esper.common.@internal.epl.subselect
                     var namedWindowName = namedWindow.EventType.Name;
                     subselecteventTypeName = namedWindowName;
                     EPLValidationUtil.ValidateContextName(
-                        false, namedWindowName, namedWindow.ContextName, statementRawInfo.ContextName, true);
+                        false,
+                        namedWindowName,
+                        namedWindow.ContextName,
+                        statementRawInfo.ContextName,
+                        true);
                     subselect.RawEventType = namedWindow.EventType;
                     eventType = namedWindow.EventType;
                 }
@@ -91,7 +103,8 @@ namespace com.espertech.esper.common.@internal.epl.subselect
 
             // determine a stream name unless one was supplied
             var subexpressionStreamName = SubselectUtil.GetStreamName(
-                filterStreamSpec.OptionalStreamName, subselect.SubselectNumber);
+                filterStreamSpec.OptionalStreamName,
+                subselect.SubselectNumber);
 
             // Named windows don't allow data views
             if (filterStreamSpec is NamedWindowConsumerStreamSpec) {
@@ -131,12 +144,17 @@ namespace com.espertech.esper.common.@internal.epl.subselect
                     var compiled = (SelectClauseExprCompiledSpec) element;
                     var selectExpression = compiled.SelectExpression;
                     var validationContext = new ExprValidationContextBuilder(
-                            subselectTypeService, statementRawInfo, services)
-                        .WithViewResourceDelegate(viewResourceDelegateSubselect).WithAllowBindingConsumption(true)
+                            subselectTypeService,
+                            statementRawInfo,
+                            services)
+                        .WithViewResourceDelegate(viewResourceDelegateSubselect)
+                        .WithAllowBindingConsumption(true)
                         .WithMemberName(new ExprValidationMemberNameQualifiedSubquery(subselect.SubselectNumber))
                         .Build();
                     selectExpression = ExprNodeUtilityValidate.GetValidatedSubtree(
-                        ExprNodeOrigin.SUBQUERYSELECT, selectExpression, validationContext);
+                        ExprNodeOrigin.SUBQUERYSELECT,
+                        selectExpression,
+                        validationContext);
                     subselect.SelectClause = new[] {selectExpression};
                     subselect.SelectAsNames = new[] {compiled.AssignedName};
 

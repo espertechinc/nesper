@@ -9,6 +9,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+
 using com.espertech.esper.collection;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.collection;
@@ -44,7 +45,8 @@ namespace com.espertech.esper.common.@internal.view.groupwin
 
         internal readonly AgentInstanceViewFactoryChainContext agentInstanceContext;
 
-        private readonly Dictionary<View, Pair<object, object>> groupedEvents = new Dictionary<View, Pair<object, object>>();
+        private readonly Dictionary<View, Pair<object, object>> groupedEvents =
+            new Dictionary<View, Pair<object, object>>();
 
         internal readonly IDictionary<object, View> subViewPerKey = new Dictionary<object, View>();
         private readonly EventBean[] eventsPerStream = new EventBean[1];

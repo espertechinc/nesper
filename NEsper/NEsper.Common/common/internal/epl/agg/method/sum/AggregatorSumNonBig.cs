@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.core;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -15,6 +16,7 @@ using com.espertech.esper.common.@internal.epl.agg.core;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 using static com.espertech.esper.common.@internal.epl.agg.method.core.AggregatorCodegenUtil;
 using static com.espertech.esper.common.@internal.epl.agg.method.sum.AggregationFactoryMethodSum;
@@ -34,10 +36,15 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.sum
             ExprNode optionalFilter,
             Type sumType)
             : base(
-                factory, col, rowCtor,
-                membersColumnized, classScope,
-                optionalDistinctValueType, hasFilter,
-                optionalFilter, sumType)
+                factory,
+                col,
+                rowCtor,
+                membersColumnized,
+                classScope,
+                optionalDistinctValueType,
+                hasFilter,
+                optionalFilter,
+                sumType)
 
         {
             ISet<Type> typeSet = Collections.Set(

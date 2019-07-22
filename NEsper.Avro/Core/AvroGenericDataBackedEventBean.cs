@@ -16,7 +16,8 @@ namespace NEsper.Avro.Core
     /// <summary>
     /// For events that are array of properties.
     /// </summary>
-    public interface AvroGenericDataBackedEventBean : EventBean, AvroBackedBean
+    public interface AvroGenericDataBackedEventBean : EventBean,
+        AvroBackedBean
     {
         GenericRecord Properties { get; }
     }

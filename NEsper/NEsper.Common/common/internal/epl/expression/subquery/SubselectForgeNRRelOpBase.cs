@@ -13,14 +13,14 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
 {
     public abstract class SubselectForgeNRRelOpBase : SubselectForgeNRBase
     {
-        internal readonly RelationalOpEnum.Computer computer;
+        internal readonly RelationalOpEnumComputer computer;
 
         public SubselectForgeNRRelOpBase(
             ExprSubselectNode subselect,
             ExprForge valueEval,
             ExprForge selectEval,
             bool resultWhenNoMatchingEvents,
-            RelationalOpEnum.Computer computer)
+            RelationalOpEnumComputer computer)
             : base(subselect, valueEval, selectEval, resultWhenNoMatchingEvents)
         {
             this.computer = computer;

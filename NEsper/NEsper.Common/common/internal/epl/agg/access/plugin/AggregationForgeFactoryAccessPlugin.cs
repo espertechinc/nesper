@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.hook.aggmultifunc;
 using com.espertech.esper.common.@internal.epl.agg.access.core;
@@ -71,7 +72,10 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.plugin
             AggregationMultiFunctionAgentMode agentMode = handler.AgentMode;
             if (agentMode is AggregationMultiFunctionAgentModeManaged) {
                 AggregationMultiFunctionAgentModeManaged managed = (AggregationMultiFunctionAgentModeManaged) agentMode;
-                return new AggregationAgentForgePlugin(this, managed, parent.OptionalFilter == null ? null : parent.OptionalFilter.Forge);
+                return new AggregationAgentForgePlugin(
+                    this,
+                    managed,
+                    parent.OptionalFilter == null ? null : parent.OptionalFilter.Forge);
             }
             else {
                 throw new IllegalStateException("Unrecognized accessor mode " + agentMode);

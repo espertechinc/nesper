@@ -7,12 +7,14 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.compat.collections;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.expression.ops
@@ -52,17 +54,22 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             CodegenClassScope codegenClassScope)
         {
             var methodNode = codegenMethodScope.MakeChild(
-                typeof(IDictionary<string, object>), typeof(ExprNewStructNodeForgeEval), codegenClassScope);
+                typeof(IDictionary<string, object>),
+                typeof(ExprNewStructNodeForgeEval),
+                codegenClassScope);
 
             var block = methodNode.Block
-                .DeclareVar(
-                    typeof(IDictionary<string, object>), "props", NewInstance(typeof(Dictionary<string, object>)));
+                .DeclareVar<IDictionary<string, object>>(
+                    "props",
+                    NewInstance(typeof(Dictionary<string, object>)));
             var nodes = forge.ForgeRenderable.ChildNodes;
             var columnNames = forge.ForgeRenderable.ColumnNames;
             for (var i = 0; i < nodes.Length; i++) {
                 var child = nodes[i].Forge;
                 block.ExprDotMethod(
-                    Ref("props"), "put", Constant(columnNames[i]),
+                    Ref("props"),
+                    "put",
+                    Constant(columnNames[i]),
                     child.EvaluateCodegen(typeof(object), methodNode, exprSymbol, codegenClassScope));
             }
 
@@ -91,17 +98,24 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             CodegenClassScope codegenClassScope)
         {
             var methodNode = codegenMethodScope.MakeChild(
-                typeof(object[]), typeof(ExprNewStructNodeForgeEval), codegenClassScope);
+                typeof(object[]),
+                typeof(ExprNewStructNodeForgeEval),
+                codegenClassScope);
 
             var block = methodNode.Block
-                .DeclareVar(
-                    typeof(object[]), "rows",
+                .DeclareVar<object[]>(
+                    "rows",
                     NewArrayByLength(typeof(object), Constant(forge.ForgeRenderable.ColumnNames.Length)));
             for (var i = 0; i < forge.ForgeRenderable.ColumnNames.Length; i++) {
                 block.AssignArrayElement(
-                    "rows", Constant(i),
-                    forge.ForgeRenderable.ChildNodes[i].Forge.EvaluateCodegen(
-                        typeof(object), methodNode, exprSymbol, codegenClassScope));
+                    "rows",
+                    Constant(i),
+                    forge.ForgeRenderable.ChildNodes[i]
+                        .Forge.EvaluateCodegen(
+                            typeof(object),
+                            methodNode,
+                            exprSymbol,
+                            codegenClassScope));
             }
 
             block.MethodReturn(Ref("rows"));

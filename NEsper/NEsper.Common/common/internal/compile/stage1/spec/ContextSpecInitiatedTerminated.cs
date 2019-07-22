@@ -11,6 +11,7 @@ using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.context.controller.initterm;
 using com.espertech.esper.common.@internal.epl.expression.core;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.compile.stage1.spec
@@ -45,18 +46,26 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
             var method = parent.MakeChild(typeof(ContextControllerDetailInitiatedTerminated), GetType(), classScope);
 
             method.Block
-                .DeclareVar(
-                    typeof(ContextControllerDetailInitiatedTerminated), "detail",
+                .DeclareVar<ContextControllerDetailInitiatedTerminated>(
+                    "detail",
                     NewInstance(typeof(ContextControllerDetailInitiatedTerminated)))
                 .SetProperty(Ref("detail"), "StartCondition", StartCondition.Make(method, symbols, classScope))
                 .SetProperty(Ref("detail"), "EndCondition", EndCondition.Make(method, symbols, classScope))
                 .SetProperty(Ref("detail"), "Overlapping", Constant(IsOverlapping));
             if (DistinctExpressions != null && DistinctExpressions.Length > 0) {
                 method.Block
-                    .SetProperty(Ref("detail"), "DistinctEval",
+                    .SetProperty(
+                        Ref("detail"),
+                        "DistinctEval",
                         ExprNodeUtilityCodegen.CodegenEvaluatorMayMultiKeyWCoerce(
-                            ExprNodeUtilityQuery.GetForges(DistinctExpressions), null, method, GetType(), classScope))
-                    .SetProperty(Ref("detail"), "DistinctTypes",
+                            ExprNodeUtilityQuery.GetForges(DistinctExpressions),
+                            null,
+                            method,
+                            GetType(),
+                            classScope))
+                    .SetProperty(
+                        Ref("detail"),
+                        "DistinctTypes",
                         Constant(ExprNodeUtilityQuery.GetExprResultTypes(DistinctExpressions)));
             }
 

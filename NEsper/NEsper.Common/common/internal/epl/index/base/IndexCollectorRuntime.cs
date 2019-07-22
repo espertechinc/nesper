@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.context.module;
 using com.espertech.esper.common.@internal.epl.index.compile;
@@ -29,7 +30,10 @@ namespace com.espertech.esper.common.@internal.epl.index.@base
             if (indexKey.Visibility == NameAccessModifier.PUBLIC) {
                 moduleIndexes.Add(
                     new ModuleIndexMeta(
-                        indexKey.IsNamedWindow, indexKey.InfraName, indexKey.InfraModuleName, indexKey.IndexName,
+                        indexKey.IsNamedWindow,
+                        indexKey.InfraName,
+                        indexKey.InfraModuleName,
+                        indexKey.IndexName,
                         indexKey.InfraModuleName));
             }
         }

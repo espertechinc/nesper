@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -15,6 +16,7 @@ using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.view.core;
 using com.espertech.esper.common.@internal.view.util;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 using static com.espertech.esper.common.@internal.epl.expression.core.ExprNodeUtilityCodegen;
 
@@ -59,7 +61,12 @@ namespace com.espertech.esper.common.@internal.view.sort
             }
 
             var validated = ViewForgeSupport.Validate(
-                NAME + " window", parentEventType, viewParameters, true, viewForgeEnv, streamNumber);
+                NAME + " window",
+                parentEventType,
+                viewParameters,
+                true,
+                viewForgeEnv,
+                streamNumber);
             for (var i = 1; i < validated.Length; i++) {
                 ViewForgeSupport.AssertReturnsNonConstant(NAME + " window", validated[i], i);
             }
@@ -99,9 +106,13 @@ namespace com.espertech.esper.common.@internal.view.sort
         {
             method.Block
                 .SetProperty(factory, "Size", CodegenEvaluator(sizeForge, method, GetType(), classScope))
-                .SetProperty(factory, "SortCriteriaEvaluators",
+                .SetProperty(
+                    factory,
+                    "SortCriteriaEvaluators",
                     CodegenEvaluators(sortCriteriaExpressions, method, GetType(), classScope))
-                .SetProperty(factory, "SortCriteriaTypes",
+                .SetProperty(
+                    factory,
+                    "SortCriteriaTypes",
                     Constant(ExprNodeUtilityQuery.GetExprResultTypes(sortCriteriaExpressions)))
                 .SetProperty(factory, "IsDescendingValues", Constant(isDescendingValues))
                 .SetProperty(factory, "UseCollatorSort", Constant(useCollatorSort));

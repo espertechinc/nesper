@@ -78,10 +78,10 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
 
             // start
             var t1 = new Thread(writeRunnable.Run) {
-                Name = typeof(InfraTableMTGroupedAccessReadIntoTableWriteAggColConsistency).Name + "write"
+                Name = typeof(InfraTableMTGroupedAccessReadIntoTableWriteAggColConsistency).Name + "-write"
             };
             var t2 = new Thread(readRunnable.Run) {
-                Name = typeof(InfraTableMTGroupedAccessReadIntoTableWriteAggColConsistency).Name + "read"
+                Name = typeof(InfraTableMTGroupedAccessReadIntoTableWriteAggColConsistency).Name + "-read"
             };
             t1.Start();
             t2.Start();

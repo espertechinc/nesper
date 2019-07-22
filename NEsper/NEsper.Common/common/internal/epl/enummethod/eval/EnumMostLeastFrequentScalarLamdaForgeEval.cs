@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -20,6 +21,7 @@ using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.enummethod.eval
@@ -80,29 +82,38 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             CodegenClassScope codegenClassScope)
         {
             CodegenExpressionField resultTypeMember = codegenClassScope.AddFieldUnshared(
-                true, typeof(ObjectArrayEventType),
-                Cast(typeof(ObjectArrayEventType), EventTypeUtility.ResolveTypeCodegen(forge.resultEventType, EPStatementInitServicesConstants.REF)));
+                true,
+                typeof(ObjectArrayEventType),
+                Cast(
+                    typeof(ObjectArrayEventType),
+                    EventTypeUtility.ResolveTypeCodegen(forge.resultEventType, EPStatementInitServicesConstants.REF)));
             Type returnType = Boxing.GetBoxedType(forge.innerExpression.EvaluationType);
 
             ExprForgeCodegenSymbol scope = new ExprForgeCodegenSymbol(false, null);
             CodegenMethod methodNode = codegenMethodScope
-                .MakeChildWithScope(returnType, typeof(EnumMostLeastFrequentScalarLamdaForgeEval), scope, codegenClassScope)
+                .MakeChildWithScope(
+                    returnType,
+                    typeof(EnumMostLeastFrequentScalarLamdaForgeEval),
+                    scope,
+                    codegenClassScope)
                 .AddParam(EnumForgeCodegenNames.PARAMS);
 
             CodegenBlock block = methodNode.Block
                 .IfCondition(ExprDotMethod(EnumForgeCodegenNames.REF_ENUMCOLL, "isEmpty"))
                 .BlockReturn(ConstantNull())
-                .DeclareVar(typeof(IDictionary<object, object>), "items", NewInstance(typeof(LinkedHashMap<object, object>)))
-                .DeclareVar(
-                    typeof(ObjectArrayEventBean), "resultEvent",
+                .DeclareVar<IDictionary<object, object>>("items", NewInstance(typeof(LinkedHashMap<object, object>)))
+                .DeclareVar<ObjectArrayEventBean>(
+                    "resultEvent",
                     NewInstance<ObjectArrayEventBean>(NewArrayByLength(typeof(object), Constant(1)), resultTypeMember))
                 .AssignArrayElement(EnumForgeCodegenNames.REF_EPS, Constant(forge.streamNumLambda), @Ref("resultEvent"))
-                .DeclareVar(typeof(object[]), "props", ExprDotMethod(@Ref("resultEvent"), "getProperties"));
+                .DeclareVar<object[]>("props", ExprDotMethod(@Ref("resultEvent"), "getProperties"));
 
             block.ForEach(typeof(object), "next", EnumForgeCodegenNames.REF_ENUMCOLL)
                 .AssignArrayElement("props", Constant(0), @Ref("next"))
-                .DeclareVar(typeof(object), "item", forge.innerExpression.EvaluateCodegen(typeof(object), methodNode, scope, codegenClassScope))
-                .DeclareVar(typeof(int?), "existing", Cast(typeof(int?), ExprDotMethod(@Ref("items"), "get", @Ref("item"))))
+                .DeclareVar<object>(
+                    "item",
+                    forge.innerExpression.EvaluateCodegen(typeof(object), methodNode, scope, codegenClassScope))
+                .DeclareVar<int?>("existing", Cast(typeof(int?), ExprDotMethod(@Ref("items"), "get", @Ref("item"))))
                 .IfCondition(EqualsNull(@Ref("existing")))
                 .AssignRef("existing", Constant(1))
                 .IfElse()
@@ -113,7 +124,9 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                 Cast(
                     returnType,
                     StaticMethod(
-                        typeof(EnumMostLeastFrequentEventForgeEval), "getEnumMostLeastFrequentResult", @Ref("items"),
+                        typeof(EnumMostLeastFrequentEventForgeEval),
+                        "getEnumMostLeastFrequentResult",
+                        @Ref("items"),
                         Constant(forge.isMostFrequent))));
             return LocalMethod(methodNode, args.Eps, args.Enumcoll, args.IsNewData, args.ExprCtx);
         }

@@ -8,12 +8,14 @@
 
 using System;
 using System.IO;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.metrics.instrumentation;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.expression.funcs
@@ -62,11 +64,13 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
 
             var refEPS = exprSymbol.GetAddEPS(methodNode);
             methodNode.Block
-                .DeclareVar(typeof(EventBean), "event", ArrayAtIndex(refEPS, Constant(identNode.StreamId)))
+                .DeclareVar<EventBean>("event", ArrayAtIndex(refEPS, Constant(identNode.StreamId)))
                 .IfRefNullReturnNull("event")
                 .MethodReturn(
                     identNode.ExprEvaluatorIdent.Getter.EventBeanExistsCodegen(
-                        Ref("event"), methodNode, codegenClassScope));
+                        Ref("event"),
+                        methodNode,
+                        codegenClassScope));
             return LocalMethod(methodNode);
         }
 
@@ -77,7 +81,13 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
             CodegenClassScope codegenClassScope)
         {
             return new InstrumentationBuilderExpr(
-                    GetType(), this, "ExprPropExists", requiredType, codegenMethodScope, exprSymbol, codegenClassScope)
+                    GetType(),
+                    this,
+                    "ExprPropExists",
+                    requiredType,
+                    codegenMethodScope,
+                    exprSymbol,
+                    codegenClassScope)
                 .Build();
         }
 

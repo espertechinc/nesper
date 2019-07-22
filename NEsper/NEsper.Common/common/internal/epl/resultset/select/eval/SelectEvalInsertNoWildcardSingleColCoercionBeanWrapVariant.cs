@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -15,6 +16,7 @@ using com.espertech.esper.common.@internal.epl.resultset.select.core;
 using com.espertech.esper.common.@internal.@event.variant;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
@@ -43,14 +45,20 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
         {
             CodegenExpressionField type = VariantEventTypeUtil.GetField(variantEventType, codegenClassScope);
             CodegenMethod method = codegenMethodScope.MakeChild(typeof(EventBean), this.GetType(), codegenClassScope)
-                .AddParam(evaluationType, "result").Block
-                .DeclareVar(typeof(EventType), "beanEventType", ExprDotMethod(type, "eventTypeForNativeObject", @Ref("result")))
-                .DeclareVar(
-                    typeof(EventBean), "wrappedEvent", ExprDotMethod(eventBeanFactory, "adapterForTypedBean", @Ref("result"), @Ref("beanEventType")))
-                .DeclareVar(typeof(EventBean), "variant", ExprDotMethod(type, "getValueAddEventBean", @Ref("wrappedEvent")))
+                .AddParam(evaluationType, "result")
+                .Block
+                .DeclareVar<EventType>("beanEventType", ExprDotMethod(type, "eventTypeForNativeObject", @Ref("result")))
+                .DeclareVar<EventBean>(
+                    "wrappedEvent",
+                    ExprDotMethod(eventBeanFactory, "adapterForTypedBean", @Ref("result"), @Ref("beanEventType")))
+                .DeclareVar<EventBean>("variant", ExprDotMethod(type, "getValueAddEventBean", @Ref("wrappedEvent")))
                 .MethodReturn(
                     ExprDotMethod(
-                        eventBeanFactory, "adapterForTypedWrapper", @Ref("variant"), StaticMethod(typeof(Collections), "emptyMap"), resultEventType));
+                        eventBeanFactory,
+                        "adapterForTypedWrapper",
+                        @Ref("variant"),
+                        StaticMethod(typeof(Collections), "emptyMap"),
+                        resultEventType));
             return LocalMethodBuild(method).Pass(expression).Call();
         }
     }

@@ -38,7 +38,14 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
                 CodegenClassScope codegenClassScope)
             {
                 return IntervalComputerStartsThresholdEval.Codegen(
-                    this, leftStart, leftEnd, rightStart, rightEnd, codegenMethodScope, exprSymbol, codegenClassScope);
+                    this,
+                    leftStart,
+                    leftEnd,
+                    rightStart,
+                    rightEnd,
+                    codegenMethodScope,
+                    exprSymbol,
+                    codegenClassScope);
             }
         }
     }

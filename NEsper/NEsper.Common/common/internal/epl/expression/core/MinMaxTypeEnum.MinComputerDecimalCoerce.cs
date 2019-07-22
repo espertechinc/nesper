@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -41,31 +42,25 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                 var valueChildOne = childNodes[0].Evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
                 var valueChildTwo = childNodes[1].Evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
 
-                if (valueChildOne == null || valueChildTwo == null)
-                {
+                if (valueChildOne == null || valueChildTwo == null) {
                     return null;
                 }
 
                 object result;
-                if (valueChildOne.AsDecimal() > valueChildTwo.AsDecimal())
-                {
+                if (valueChildOne.AsDecimal() > valueChildTwo.AsDecimal()) {
                     result = valueChildTwo;
                 }
-                else
-                {
+                else {
                     result = valueChildOne;
                 }
 
-                for (var i = 2; i < childNodes.Length; i++)
-                {
+                for (var i = 2; i < childNodes.Length; i++) {
                     var valueChild = childNodes[i].Evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
-                    if (valueChild == null)
-                    {
+                    if (valueChild == null) {
                         return null;
                     }
 
-                    if (valueChild.AsDecimal() < result.AsDecimal())
-                    {
+                    if (valueChild.AsDecimal() < result.AsDecimal()) {
                         result = valueChild;
                     }
                 }

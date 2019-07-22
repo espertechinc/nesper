@@ -7,9 +7,11 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+
 using com.espertech.esper.common.@internal.bytecodemodel.core;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.compat.collections;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 using static com.espertech.esper.common.@internal.epl.expression.codegen.ExprForgeCodegenNames;
 
@@ -21,9 +23,13 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.codegen
         public static readonly CodegenExpressionRef REF_EPS = Ref(NAME_EPS);
 
         public static readonly CodegenNamedParam FP_ENUMCOLL = new CodegenNamedParam(
-            typeof(ICollection<object>), REF_ENUMCOLL);
+            typeof(ICollection<object>),
+            REF_ENUMCOLL);
 
         public static readonly IList<CodegenNamedParam> PARAMS = Collections.List(
-            FP_EPS, FP_ENUMCOLL, FP_ISNEWDATA, FP_EXPREVALCONTEXT);
+            FP_EPS,
+            FP_ENUMCOLL,
+            FP_ISNEWDATA,
+            FP_EXPREVALCONTEXT);
     }
 } // end of namespace

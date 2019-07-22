@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+
 using com.espertech.esper.collection;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
@@ -16,6 +17,7 @@ using com.espertech.esper.common.@internal.filterspec;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.pattern.core
@@ -58,14 +60,15 @@ namespace com.espertech.esper.common.@internal.epl.pattern.core
             }
 
             method.Block
-                .DeclareVar(typeof(EventBean[]), "events", NewArrayByLength(typeof(EventBean), Constant(size)))
-                .DeclareVar(typeof(object[]), "buf", ExprDotMethod(Ref("mem"), "getMatchingEvents"));
+                .DeclareVar<EventBean[]>("events", NewArrayByLength(typeof(EventBean), Constant(size)))
+                .DeclareVar<object[]>("buf", ExprDotMethod(Ref("mem"), "getMatchingEvents"));
 
             var count = 0;
             foreach (var entry in filterTypes) {
                 var indexTag = FindTag(allTags, entry.Key);
                 method.Block.AssignArrayElement(
-                    Ref("events"), Constant(count),
+                    Ref("events"),
+                    Constant(count),
                     Cast(typeof(EventBean), ArrayAtIndex(Ref("buf"), Constant(indexTag))));
                 count++;
             }
@@ -73,14 +76,15 @@ namespace com.espertech.esper.common.@internal.epl.pattern.core
             foreach (var entry in arrayEventTypes) {
                 var indexTag = FindTag(allTags, entry.Key);
                 method.Block
-                    .DeclareVar(
-                        typeof(EventBean[]), "arr" + count,
+                    .DeclareVar<EventBean[]>(
+                        "arr" + count,
                         Cast(typeof(EventBean[]), ArrayAtIndex(Ref("buf"), Constant(indexTag))))
-                    .DeclareVar(
-                        typeof(IDictionary<object, object>), "map" + count,
+                    .DeclareVar<IDictionary<object, object>>(
+                        "map" + count,
                         StaticMethod(typeof(Collections), "singletonMap", Constant(entry.Key), Ref("arr" + count)))
                     .AssignArrayElement(
-                        Ref("events"), Constant(count),
+                        Ref("events"),
+                        Constant(count),
                         NewInstance<MapEventBean>(Ref("map" + count), ConstantNull()));
                 count++;
             }

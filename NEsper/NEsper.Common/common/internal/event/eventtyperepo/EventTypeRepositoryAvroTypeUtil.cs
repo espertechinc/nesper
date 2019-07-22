@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client.configuration.common;
 using com.espertech.esper.common.client.meta;
 using com.espertech.esper.common.client.util;
@@ -25,7 +26,12 @@ namespace com.espertech.esper.common.@internal.@event.eventtyperepo
             EventBeanTypedEventFactory eventBeanTypedEventFactory)
         {
             foreach (var entry in eventTypesAvro) {
-                BuildAvroType(eventTypeRepositoryPreconfigured, entry.Key, entry.Value, eventTypeAvroHandler, eventBeanTypedEventFactory);
+                BuildAvroType(
+                    eventTypeRepositoryPreconfigured,
+                    entry.Key,
+                    entry.Value,
+                    eventTypeAvroHandler,
+                    eventBeanTypedEventFactory);
             }
         }
 
@@ -37,12 +43,24 @@ namespace com.espertech.esper.common.@internal.@event.eventtyperepo
             EventBeanTypedEventFactory eventBeanTypedEventFactory)
         {
             var metadata = new EventTypeMetadata(
-                eventTypeName, null, EventTypeTypeClass.APPLICATION, EventTypeApplicationType.AVRO, NameAccessModifier.PRECONFIGURED,
-                EventTypeBusModifier.NONBUS, false, new EventTypeIdPair(CRC32Util.ComputeCRC32(eventTypeName), -1));
+                eventTypeName,
+                null,
+                EventTypeTypeClass.APPLICATION,
+                EventTypeApplicationType.AVRO,
+                NameAccessModifier.PRECONFIGURED,
+                EventTypeBusModifier.NONBUS,
+                false,
+                new EventTypeIdPair(CRC32Util.ComputeCRC32(eventTypeName), -1));
             var avroSuperTypes = EventTypeUtility.GetSuperTypesDepthFirst(
-                config.SuperTypes, EventUnderlyingType.AVRO, eventTypeRepositoryPreconfigured);
+                config.SuperTypes,
+                EventUnderlyingType.AVRO,
+                eventTypeRepositoryPreconfigured);
             var newEventType = eventTypeAvroHandler.NewEventTypeFromSchema(
-                metadata, eventBeanTypedEventFactory, config, avroSuperTypes.First, avroSuperTypes.Second);
+                metadata,
+                eventBeanTypedEventFactory,
+                config,
+                avroSuperTypes.First,
+                avroSuperTypes.Second);
             eventTypeRepositoryPreconfigured.AddType(newEventType);
         }
     }

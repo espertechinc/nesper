@@ -8,6 +8,7 @@
 
 using System;
 using System.IO;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -51,12 +52,20 @@ namespace com.espertech.esper.common.@internal.epl.resultset.@select.core
                 CodegenClassScope codegenClassScope)
             {
                 var methodNode = codegenMethodScope.MakeChild(
-                    typeof(object), typeof(ExprForgeStreamWithGetter), codegenClassScope);
+                    typeof(object),
+                    typeof(ExprForgeStreamWithGetter),
+                    codegenClassScope);
                 var refEPS = exprSymbol.GetAddEPS(methodNode);
                 methodNode.Block
-                    .DeclareVar(typeof(EventBean), "theEvent", CodegenExpressionBuilder.ArrayAtIndex(refEPS, CodegenExpressionBuilder.Constant(0)))
+                    .DeclareVar<EventBean>(
+                        "theEvent",
+                        CodegenExpressionBuilder.ArrayAtIndex(refEPS, CodegenExpressionBuilder.Constant(0)))
                     .IfRefNotNull("theEvent")
-                    .BlockReturn(getter.EventBeanGetCodegen(CodegenExpressionBuilder.Ref("theEvent"), methodNode, codegenClassScope))
+                    .BlockReturn(
+                        getter.EventBeanGetCodegen(
+                            CodegenExpressionBuilder.Ref("theEvent"),
+                            methodNode,
+                            codegenClassScope))
                     .MethodReturn(CodegenExpressionBuilder.ConstantNull());
                 return CodegenExpressionBuilder.LocalMethod(methodNode);
             }

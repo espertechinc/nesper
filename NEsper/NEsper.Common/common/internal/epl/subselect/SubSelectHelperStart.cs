@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.epl.lookup;
 using com.espertech.esper.common.@internal.util;
@@ -26,18 +27,26 @@ namespace com.espertech.esper.common.@internal.epl.subselect
                 return new EmptyDictionary<int, SubSelectFactoryResult>();
             }
 
-            IDictionary<int, SubSelectFactoryResult> subselectStrategies = new Dictionary<int, SubSelectFactoryResult>();
+            IDictionary<int, SubSelectFactoryResult>
+                subselectStrategies = new Dictionary<int, SubSelectFactoryResult>();
 
             foreach (var subselectEntry in subselects) {
                 var factory = subselectEntry.Value;
 
                 // activate viewable
-                var subselectActivationResult = factory.Activator.Activate(agentInstanceContext, true, isRecoveringResilient);
+                var subselectActivationResult = factory.Activator.Activate(
+                    agentInstanceContext,
+                    true,
+                    isRecoveringResilient);
                 stopCallbacks.Add(subselectActivationResult.StopCallback);
 
                 // apply returning the strategy instance
                 var realization = factory.StrategyFactory.Instantiate(
-                    subselectActivationResult.Viewable, agentInstanceContext, stopCallbacks, subselectEntry.Key, isRecoveringResilient);
+                    subselectActivationResult.Viewable,
+                    agentInstanceContext,
+                    stopCallbacks,
+                    subselectEntry.Key,
+                    isRecoveringResilient);
 
                 // set aggregation
                 var lookupStrategyDefault = realization.LookupStrategy;

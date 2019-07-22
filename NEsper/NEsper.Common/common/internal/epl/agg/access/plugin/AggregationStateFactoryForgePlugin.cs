@@ -37,7 +37,13 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.plugin
             CodegenClassScope classScope)
         {
             access = new AggregatorAccessPlugin(
-                col, join, ctor, membersColumnized, classScope, forgeFactory.AggregationExpression.OptionalFilter, mode);
+                col,
+                join,
+                ctor,
+                membersColumnized,
+                classScope,
+                forgeFactory.AggregationExpression.OptionalFilter,
+                mode);
         }
 
         public AggregatorAccess Aggregator {

@@ -255,12 +255,19 @@ namespace com.espertech.esper.common.@internal.support
                 .ToArray();
         }
 
-        public static SupportBean MakeBean(string @string, int intPrimitive, long longPrimitive)
+        public static SupportBean MakeBean(
+            string @string,
+            int intPrimitive,
+            long longPrimitive)
         {
             return MakeBean(@string, intPrimitive, longPrimitive, 0);
         }
 
-        public static SupportBean MakeBean(string @string, int intPrimitive, long longPrimitive, double doublePrimitive)
+        public static SupportBean MakeBean(
+            string @string,
+            int intPrimitive,
+            long longPrimitive,
+            double doublePrimitive)
         {
             return MakeBean(@string, intPrimitive, longPrimitive, doublePrimitive, false);
         }
@@ -284,12 +291,18 @@ namespace com.espertech.esper.common.@internal.support
             return new SupportBean(@string, -1);
         }
 
-        public static SupportBean MakeBean(string @string, int intPrimitive)
+        public static SupportBean MakeBean(
+            string @string,
+            int intPrimitive)
         {
             return new SupportBean(@string, intPrimitive);
         }
 
-        public static SupportBean MakeBeanWBoxed(string @string, int intPrimitive, double? doubleBoxed, long? longBoxed)
+        public static SupportBean MakeBeanWBoxed(
+            string @string,
+            int intPrimitive,
+            double? doubleBoxed,
+            long? longBoxed)
         {
             SupportBean @event = new SupportBean(@string, intPrimitive);
             @event.DoubleBoxed = doubleBoxed;

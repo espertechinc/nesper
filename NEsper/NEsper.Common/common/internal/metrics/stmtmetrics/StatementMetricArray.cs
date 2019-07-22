@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client.metric;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat.collections;
@@ -174,7 +175,9 @@ namespace com.espertech.esper.common.@internal.metrics.stmtmetrics
                     for (var i = 0; i <= currentLastElement; i++) {
                         if (statementNames[i] != null) {
                             metrics[i] = new StatementMetric(
-                                runtimeURI, statementNames[i].DeploymentId, statementNames[i].Name);
+                                runtimeURI,
+                                statementNames[i].DeploymentId,
+                                statementNames[i].Name);
                         }
                     }
                 }
@@ -215,7 +218,9 @@ namespace com.espertech.esper.common.@internal.metrics.stmtmetrics
             var metric = metrics[index];
             if (metric == null) {
                 metric = new StatementMetric(
-                    runtimeURI, statementNames[index].DeploymentId, statementNames[index].Name);
+                    runtimeURI,
+                    statementNames[index].DeploymentId,
+                    statementNames[index].Name);
                 metrics[index] = metric;
             }
 

@@ -40,8 +40,13 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
         {
             CodegenExpressionRef refEPS = exprSymbol.GetAddEPS(methodNode);
             return StaticMethod(
-                typeof(SelectEvalInsertWildcardSSWrapper), "processSelectExprSSWrapper", props, refEPS, Constant(context.ExprForges.Length == 0),
-                eventBeanFactory, resultEventType);
+                typeof(SelectEvalInsertWildcardSSWrapper),
+                "processSelectExprSSWrapper",
+                props,
+                refEPS,
+                Constant(context.ExprForges.Length == 0),
+                eventBeanFactory,
+                resultEventType);
         }
 
         /// <summary>

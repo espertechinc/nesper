@@ -25,7 +25,8 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.cache
                 () => new ExpressionResultCacheServiceHolder(declareExprCacheSize));
         }
 
-        public ExpressionResultCacheForPropUnwrap AllocateUnwrapProp => _threadCache.GetOrCreate().GetAllocateUnwrapProp();
+        public ExpressionResultCacheForPropUnwrap AllocateUnwrapProp =>
+            _threadCache.GetOrCreate().GetAllocateUnwrapProp();
 
         public ExpressionResultCacheForDeclaredExprLastValue AllocateDeclaredExprLastValue =>
             _threadCache.GetOrCreate().GetAllocateDeclaredExprLastValue();
@@ -33,7 +34,8 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.cache
         public ExpressionResultCacheForDeclaredExprLastColl AllocateDeclaredExprLastColl =>
             _threadCache.GetOrCreate().GetAllocateDeclaredExprLastColl();
 
-        public ExpressionResultCacheForEnumerationMethod AllocateEnumerationMethod => _threadCache.GetOrCreate().GetAllocateEnumerationMethod();
+        public ExpressionResultCacheForEnumerationMethod AllocateEnumerationMethod =>
+            _threadCache.GetOrCreate().GetAllocateEnumerationMethod();
 
         public bool IsDeclaredExprCacheEnabled => _declareExprCacheSize > 0;
     }

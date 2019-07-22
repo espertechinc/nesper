@@ -70,7 +70,8 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createindex
                 foreach (var callback in table.UpdateStrategyCallbacks) {
                     if (callback.IsMerge) {
                         TableUpdateStrategyFactory.ValidateNewUniqueIndex(
-                            callback.TableUpdatedProperties, indexMultiKey.HashIndexedProps);
+                            callback.TableUpdatedProperties,
+                            indexMultiKey.HashIndexedProps);
                     }
                 }
             }
@@ -78,13 +79,21 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createindex
             try {
                 if (namedWindow != null) {
                     namedWindow.ValidateAddIndex(
-                        statementContext.DeploymentId, statementContext.StatementName, indexName, indexModuleName,
-                        explicitIndexDesc, indexMultiKey);
+                        statementContext.DeploymentId,
+                        statementContext.StatementName,
+                        indexName,
+                        indexModuleName,
+                        explicitIndexDesc,
+                        indexMultiKey);
                 }
                 else {
                     table.ValidateAddIndex(
-                        statementContext.DeploymentId, statementContext.StatementName, indexName, indexModuleName,
-                        explicitIndexDesc, indexMultiKey);
+                        statementContext.DeploymentId,
+                        statementContext.StatementName,
+                        indexName,
+                        indexModuleName,
+                        explicitIndexDesc,
+                        indexMultiKey);
                 }
             }
             catch (ExprValidationException ex) {
@@ -96,11 +105,15 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createindex
         {
             if (namedWindow != null) {
                 namedWindow.RemoveIndexReferencesStmtMayRemoveIndex(
-                    indexMultiKey, statementContext.DeploymentId, statementContext.StatementName);
+                    indexMultiKey,
+                    statementContext.DeploymentId,
+                    statementContext.StatementName);
             }
             else {
                 table.RemoveIndexReferencesStmtMayRemoveIndex(
-                    indexMultiKey, statementContext.DeploymentId, statementContext.StatementName);
+                    indexMultiKey,
+                    statementContext.DeploymentId,
+                    statementContext.StatementName);
             }
         }
 
@@ -128,7 +141,10 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createindex
                 else {
                     try {
                         processorInstance.RootViewInstance.AddExplicitIndex(
-                            indexName, indexModuleName, explicitIndexDesc, isRecoveringResilient);
+                            indexName,
+                            indexModuleName,
+                            explicitIndexDesc,
+                            isRecoveringResilient);
                     }
                     catch (ExprValidationException e) {
                         throw new EPException("Failed to create index: " + e.Message, e);

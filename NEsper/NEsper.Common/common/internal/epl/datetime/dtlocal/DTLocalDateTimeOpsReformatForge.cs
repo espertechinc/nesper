@@ -8,11 +8,13 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.datetime.calop;
 using com.espertech.esper.common.@internal.epl.datetime.reformatop;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
+
 using static com.espertech.esper.common.@internal.epl.datetime.dtlocal.DTLocalUtil;
 
 namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
@@ -23,12 +25,14 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
             IList<CalendarForge> calendarForges,
             ReformatForge reformatForge)
             : base(
-                calendarForges, reformatForge)
+                calendarForges,
+                reformatForge)
         {
         }
 
         public override DTLocalEvaluator DTEvaluator => new DTLocalDateTimeOpsReformatEval(
-            GetCalendarOps(calendarForges), reformatForge.Op);
+            GetCalendarOps(calendarForges),
+            reformatForge.Op);
 
         public override CodegenExpression Codegen(
             CodegenExpression inner,
@@ -38,7 +42,11 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
             CodegenClassScope codegenClassScope)
         {
             return DTLocalDateTimeOpsReformatEval.Codegen(
-                this, inner, codegenMethodScope, exprSymbol, codegenClassScope);
+                this,
+                inner,
+                codegenMethodScope,
+                exprSymbol,
+                codegenClassScope);
         }
     }
 } // end of namespace

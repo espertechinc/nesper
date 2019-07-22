@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.index.@base;
@@ -145,7 +146,12 @@ namespace com.espertech.esper.common.@internal.epl.index.hash
             object key)
         {
             string indexNameDisplay = indexName == null ? "" : " '" + indexName + "'";
-            throw new EPException("Unique index violation, index" + indexNameDisplay + " is a unique index and key '" + key + "' already exists");
+            throw new EPException(
+                "Unique index violation, index" +
+                indexNameDisplay +
+                " is a unique index and key '" +
+                key +
+                "' already exists");
         }
     }
 } // end of namespace

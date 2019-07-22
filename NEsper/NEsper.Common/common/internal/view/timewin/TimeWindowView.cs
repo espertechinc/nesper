@@ -8,6 +8,7 @@
 
 using System.Collections.Generic;
 using System.Linq;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.context.util;
@@ -65,7 +66,8 @@ namespace com.espertech.esper.common.@internal.view.timewin
                 }
             };
             handle = new EPStatementHandleCallbackSchedule(
-                agentInstanceContext.EpStatementAgentInstanceHandle, callback);
+                agentInstanceContext.EpStatementAgentInstanceHandle,
+                callback);
         }
 
         /// <summary>
@@ -86,7 +88,10 @@ namespace com.espertech.esper.common.@internal.view.timewin
         {
             if (handle != null) {
                 agentInstanceContext.AuditProvider.ScheduleRemove(
-                    agentInstanceContext, handle, ScheduleObjectType.view, timeWindowViewFactory.ViewName);
+                    agentInstanceContext,
+                    handle,
+                    ScheduleObjectType.view,
+                    timeWindowViewFactory.ViewName);
                 agentInstanceContext.StatementContext.SchedulingService.Remove(handle, scheduleSlot);
             }
         }
@@ -185,15 +190,22 @@ namespace com.espertech.esper.common.@internal.view.timewin
             var oldestTimestamp = timeWindow.OldestTimestamp;
             var currentTimestamp = agentInstanceContext.StatementContext.SchedulingService.Time;
             long scheduleTime = timePeriodProvide.DeltaAdd(
-                                    oldestTimestamp.Value, null, true, agentInstanceContext) +
-                                oldestTimestamp.Value - currentTimestamp;
+                                    oldestTimestamp.Value,
+                                    null,
+                                    true,
+                                    agentInstanceContext) +
+                                oldestTimestamp.Value -
+                                currentTimestamp;
             ScheduleCallback(scheduleTime);
         }
 
         private void ScheduleCallback(long timeAfterCurrentTime)
         {
             agentInstanceContext.AuditProvider.ScheduleAdd(
-                timeAfterCurrentTime, agentInstanceContext, handle, ScheduleObjectType.view,
+                timeAfterCurrentTime,
+                agentInstanceContext,
+                handle,
+                ScheduleObjectType.view,
                 timeWindowViewFactory.ViewName);
             agentInstanceContext.StatementContext.SchedulingService.Add(timeAfterCurrentTime, handle, scheduleSlot);
         }

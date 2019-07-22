@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.context.aifactory.core;
@@ -17,6 +18,7 @@ using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.join.querygraph
@@ -70,7 +72,9 @@ namespace com.espertech.esper.common.@internal.epl.join.querygraph
                 new QueryGraphValueDescForge(
                     new ExprNode[] {indexPropertyIdent},
                     new QueryGraphValueEntryHashKeyedForgeProp(
-                        keyPropNode, keyProperty, keyPropNode.ExprEvaluatorIdent.Getter)));
+                        keyPropNode,
+                        keyProperty,
+                        keyPropNode.ExprEvaluatorIdent.Getter)));
             return true;
         }
 
@@ -233,7 +237,8 @@ namespace com.espertech.esper.common.@internal.epl.join.querygraph
 
             Items.Add(
                 new QueryGraphValueDescForge(
-                    new[] {testPropIdent}, new QueryGraphValueEntryInKeywordSingleIdxForge(setExpressions)));
+                    new[] {testPropIdent},
+                    new QueryGraphValueEntryInKeywordSingleIdxForge(setExpressions)));
         }
 
         public QueryGraphValuePairInKWSingleIdxForge InKeywordSingles {
@@ -343,7 +348,7 @@ namespace com.espertech.esper.common.@internal.epl.join.querygraph
             CodegenClassScope classScope)
         {
             var method = parent.MakeChild(typeof(QueryGraphValue), GetType(), classScope);
-            method.Block.DeclareVar(typeof(IList<object>), "items", NewInstance<List<object>>(Constant(Items.Count)));
+            method.Block.DeclareVar<IList<object>>("items", NewInstance<List<object>>(Constant(Items.Count)));
             for (var i = 0; i < Items.Count; i++) {
                 method.Block.ExprDotMethod(Ref("items"), "add", Items[i].Make(method, symbols, classScope));
             }

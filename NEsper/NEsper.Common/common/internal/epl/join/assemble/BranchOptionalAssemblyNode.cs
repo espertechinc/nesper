@@ -8,6 +8,7 @@
 
 using System.Collections.Generic;
 using System.Linq;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.epl.@join.rep;
 using com.espertech.esper.common.@internal.util;
@@ -83,7 +84,11 @@ namespace com.espertech.esper.common.@internal.epl.join.assemble
                     var row = new EventBean[numStreams];
                     row[streamNum] = _singleResultEvent;
                     parentNode.Result(
-                        row, streamNum, _singleResultNode.ParentEvent, _singleResultNode, resultFinalRows,
+                        row,
+                        streamNum,
+                        _singleResultNode.ParentEvent,
+                        _singleResultNode,
+                        resultFinalRows,
                         resultRootEvent);
                 }
 
@@ -140,7 +145,12 @@ namespace com.espertech.esper.common.@internal.epl.join.assemble
             var row = new EventBean[numStreams];
             row[streamNum] = theEvent;
             parentNode.Result(
-                row, streamNum, currentNode.ParentEvent, currentNode.Parent, resultFinalRows, resultRootEvent);
+                row,
+                streamNum,
+                currentNode.ParentEvent,
+                currentNode.Parent,
+                resultFinalRows,
+                resultRootEvent);
         }
     }
 } // end of namespace

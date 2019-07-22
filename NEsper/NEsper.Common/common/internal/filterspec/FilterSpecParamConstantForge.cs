@@ -55,11 +55,10 @@ namespace com.espertech.esper.common.@internal.filterspec
         {
             var method = parent.MakeChild(typeof(FilterSpecParam), typeof(FilterSpecParamConstantForge), classScope);
             method.Block
-                .DeclareVar(
-                    typeof(ExprFilterSpecLookupable),
+                .DeclareVar<ExprFilterSpecLookupable>(
                     "lookupable",
                     LocalMethod(lookupable.MakeCodegen(method, symbols, classScope)))
-                .DeclareVar(typeof(FilterOperator), "op", EnumValue(typeof(FilterOperator), filterOperator.GetName()));
+                .DeclareVar<FilterOperator>("op", EnumValue(typeof(FilterOperator), filterOperator.GetName()));
 
             var inner = NewAnonymousClass(
                 method.Block,
@@ -67,7 +66,7 @@ namespace com.espertech.esper.common.@internal.filterspec
                 Arrays.AsList<CodegenExpression>(Ref("lookupable"), Ref("op")));
             var getFilterValue = CodegenMethod.MakeParentNode(typeof(object), GetType(), classScope)
                 .AddParam(FilterSpecParam.GET_FILTER_VALUE_FP);
-            inner.AddMethod("getFilterValue", getFilterValue);
+            inner.AddMethod("GetFilterValue", getFilterValue);
             getFilterValue.Block.MethodReturn(Constant(FilterConstant));
 
             method.Block.MethodReturn(inner);

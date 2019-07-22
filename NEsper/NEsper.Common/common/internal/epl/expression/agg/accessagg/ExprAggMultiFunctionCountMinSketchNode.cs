@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
@@ -24,6 +25,7 @@ using com.espertech.esper.common.@internal.epl.table.compiletime;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.expression.agg.accessagg
@@ -213,7 +215,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.accessagg
             }
 
             return new AggregationForgeFactoryAccessCountMinSketchAdd(
-                this, addOrFrequencyEvaluator, addOrFrequencyEvaluatorReturnType);
+                this,
+                addOrFrequencyEvaluator,
+                addOrFrequencyEvaluatorReturnType);
         }
 
         public override bool EqualsNodeAggregateMethodOnly(ExprAggregateNode node)
@@ -246,35 +250,49 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.accessagg
             // define what to populate
             PopulateFieldWValueDescriptor[] descriptors = {
                 new PopulateFieldWValueDescriptor(
-                    NAME_EPS_OF_TOTAL_COUNT, typeof(double?), spec.HashesSpec.GetType(),
+                    NAME_EPS_OF_TOTAL_COUNT,
+                    typeof(double?),
+                    spec.HashesSpec.GetType(),
                     value => {
                         if (value != null) {
                             spec.HashesSpec.EpsOfTotalCount = (double) value;
                         }
-                    }, true),
+                    },
+                    true),
                 new PopulateFieldWValueDescriptor(
-                    NAME_CONFIDENCE, typeof(double?), spec.HashesSpec.GetType(),
+                    NAME_CONFIDENCE,
+                    typeof(double?),
+                    spec.HashesSpec.GetType(),
                     value => {
                         if (value != null) {
                             spec.HashesSpec.Confidence = (double) value;
                         }
-                    }, true),
+                    },
+                    true),
                 new PopulateFieldWValueDescriptor(
-                    NAME_SEED, typeof(int?), spec.HashesSpec.GetType(),
+                    NAME_SEED,
+                    typeof(int?),
+                    spec.HashesSpec.GetType(),
                     value => {
                         if (value != null) {
                             spec.HashesSpec.Seed = value.AsInt();
                         }
-                    }, true),
+                    },
+                    true),
                 new PopulateFieldWValueDescriptor(
-                    NAME_TOPK, typeof(int?), spec.GetType(),
+                    NAME_TOPK,
+                    typeof(int?),
+                    spec.GetType(),
                     value => {
                         if (value != null) {
                             spec.TopkSpec = value.AsInt();
                         }
-                    }, true),
+                    },
+                    true),
                 new PopulateFieldWValueDescriptor(
-                    NAME_AGENT, typeof(string), spec.GetType(),
+                    NAME_AGENT,
+                    typeof(string),
+                    spec.GetType(),
                     value => {
                         if (value != null) {
                             CountMinSketchAgentForge transform;
@@ -285,18 +303,23 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.accessagg
                             }
                             catch (Exception e) {
                                 throw new ExprValidationException(
-                                    "Failed to instantiate agent provider: " + e.Message, e);
+                                    "Failed to instantiate agent provider: " + e.Message,
+                                    e);
                             }
 
                             spec.Agent = transform;
                         }
-                    }, true)
+                    },
+                    true)
             };
 
             // populate from json, validates incorrect names, coerces types, instantiates transform
             PopulateUtil.PopulateSpecCheckParameters(
-                descriptors, valueX.UnwrapStringDictionary(),
-                spec, ExprNodeOrigin.AGGPARAM, exprValidationContext);
+                descriptors,
+                valueX.UnwrapStringDictionary(),
+                spec,
+                ExprNodeOrigin.AGGPARAM,
+                exprValidationContext);
 
             return spec;
         }

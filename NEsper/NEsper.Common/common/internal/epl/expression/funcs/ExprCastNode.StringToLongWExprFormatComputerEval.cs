@@ -52,7 +52,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
                 CodegenClassScope codegenClassScope)
             {
                 var method = codegenMethodScope.MakeChild(
-                        typeof(long), typeof(StringToLongWExprFormatComputerEval), codegenClassScope)
+                        typeof(long),
+                        typeof(StringToLongWExprFormatComputerEval),
+                        codegenClassScope)
                     .AddParam(typeof(object), "input");
                 CodegenExpression format;
                 if (formatForge.ForgeConstantType.IsConstant) {
@@ -60,19 +62,23 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
                 }
                 else {
                     method.Block
-                        .DeclareVar(
-                            typeof(object), "format",
+                        .DeclareVar<object>(
+                            "format",
                             formatForge.EvaluateCodegen(typeof(object), method, exprSymbol, codegenClassScope))
-                        .DeclareVar(
-                            typeof(SimpleDateFormat), "dateFormat",
+                        .DeclareVar<SimpleDateFormat>(
+                            "dateFormat",
                             CodegenExpressionBuilder.StaticMethod(
-                                typeof(ExprCastNode), "stringToSimpleDateFormatSafe", CodegenExpressionBuilder.Ref("format")));
+                                typeof(ExprCastNode),
+                                "stringToSimpleDateFormatSafe",
+                                CodegenExpressionBuilder.Ref("format")));
                     format = CodegenExpressionBuilder.Ref("dateFormat");
                 }
 
                 method.Block.MethodReturn(
                     CodegenExpressionBuilder.StaticMethod(
-                        typeof(StringToLongWStaticFormatComputer), "stringToLongWStaticFormatParseSafe", format,
+                        typeof(StringToLongWStaticFormatComputer),
+                        "stringToLongWStaticFormatParseSafe",
+                        format,
                         CodegenExpressionBuilder.Ref("input")));
                 return CodegenExpressionBuilder.LocalMethod(method, input);
             }

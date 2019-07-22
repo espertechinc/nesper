@@ -92,7 +92,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.time.eval
             var time = secondsEvaluator.Evaluate(eventsPerStream, isNewData, context);
             if (!ExprTimePeriodUtil.ValidateTime(time, timeAbacus)) {
                 throw new EPException(
-                    ExprTimePeriodUtil.GetTimeInvalidMsg("Invalid time computation result", time == null ? "null" : time.ToString(), time));
+                    ExprTimePeriodUtil.GetTimeInvalidMsg(
+                        "Invalid time computation result",
+                        time == null ? "null" : time.ToString(),
+                        time));
             }
 
             return timeAbacus.DeltaForSecondsNumber(time);

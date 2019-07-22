@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.client.hook.forgeinject;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
@@ -33,7 +34,8 @@ namespace com.espertech.esper.common.client.hook.aggmultifunc
         /// </summary>
         /// <param name="strategy">strategy</param>
         /// <returns>itself</returns>
-        public AggregationMultiFunctionAgentModeManaged SetInjectionStrategyAggregationAgentFactory(InjectionStrategy strategy)
+        public AggregationMultiFunctionAgentModeManaged SetInjectionStrategyAggregationAgentFactory(
+            InjectionStrategy strategy)
         {
             this.injectionStrategyAggregationAgentFactory = strategy;
             return this;

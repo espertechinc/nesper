@@ -9,6 +9,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+
 using com.espertech.esper.collection;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.compile.stage1.spec;
@@ -72,8 +73,14 @@ namespace com.espertech.esper.common.@internal.epl.join.@base
             var outerJoinDescs = OuterJoinDesc.ToArray(spec.Raw.OuterJoinDescList);
             if (historicalViewableDesc.IsHistorical && streamTypes.Length == 2) {
                 return MakeComposerHistorical2Stream(
-                    outerJoinDescs, whereClause, streamTypes, streamNames, historicalViewableDesc, queryPlanLogging,
-                    statementRawInfo, compileTimeServices);
+                    outerJoinDescs,
+                    whereClause,
+                    streamTypes,
+                    streamNames,
+                    historicalViewableDesc,
+                    queryPlanLogging,
+                    statementRawInfo,
+                    compileTimeServices);
             }
 
             var isOuterJoins = !OuterJoinDesc.ConsistsOfAllInnerJoins(outerJoinDescs);
@@ -81,7 +88,9 @@ namespace com.espertech.esper.common.@internal.epl.join.@base
             // Query graph for graph relationships between streams/historicals
             // For outer joins the query graph will just contain outer join relationships
             var hint = ExcludePlanHint.GetHint(
-                typeService.StreamNames, statementRawInfo, compileTimeServices);
+                typeService.StreamNames,
+                statementRawInfo,
+                compileTimeServices);
             var queryGraph = new QueryGraphForge(streamTypes.Length, hint, false);
             if (outerJoinDescs.Length > 0) {
                 OuterJoinAnalyzer.Analyze(outerJoinDescs, queryGraph);
@@ -111,9 +120,17 @@ namespace com.espertech.esper.common.@internal.epl.join.@base
                 new HistoricalStreamIndexListForge[streamTypes.Length];
 
             QueryPlanForge queryPlan = QueryPlanBuilder.GetPlan(
-                streamTypes, outerJoinDescs, queryGraph, typeService.StreamNames,
-                historicalViewableDesc, historicalDependencyGraph, historicalStreamIndexLists,
-                joinAnalysisResult, queryPlanLogging, statementRawInfo, compileTimeServices);
+                streamTypes,
+                outerJoinDescs,
+                queryGraph,
+                typeService.StreamNames,
+                historicalViewableDesc,
+                historicalDependencyGraph,
+                historicalStreamIndexLists,
+                joinAnalysisResult,
+                queryPlanLogging,
+                statementRawInfo,
+                compileTimeServices);
 
             // remove unused indexes - consider all streams or all unidirectional
             var usedIndexes = new HashSet<TableLookupIndexReqKey>();
@@ -140,7 +157,8 @@ namespace com.espertech.esper.common.@internal.epl.join.@base
             }
 
             QueryPlanIndexHook hook = QueryPlanIndexHookUtil.GetHook(
-                spec.Annotations, compileTimeServices.ImportServiceCompileTime);
+                spec.Annotations,
+                compileTimeServices.ImportServiceCompileTime);
             if (queryPlanLogging && (QUERY_PLAN_LOG.IsInfoEnabled || hook != null)) {
                 QUERY_PLAN_LOG.Info("Query plan: " + queryPlan.ToQueryPlan());
                 if (hook != null) {
@@ -154,17 +172,28 @@ namespace com.espertech.esper.common.@internal.epl.join.@base
 
             ExprNode postJoinEvaluator;
             if (JoinSetComposerUtil.IsNonUnidirectionalNonSelf(
-                isOuterJoins, joinAnalysisResult.IsUnidirectional, joinAnalysisResult.IsPureSelfJoin)) {
+                isOuterJoins,
+                joinAnalysisResult.IsUnidirectional,
+                joinAnalysisResult.IsPureSelfJoin)) {
                 postJoinEvaluator = GetFilterExpressionInclOnClause(
-                    spec.Raw.WhereClause, outerJoinDescs, statementRawInfo, compileTimeServices);
+                    spec.Raw.WhereClause,
+                    outerJoinDescs,
+                    statementRawInfo,
+                    compileTimeServices);
             }
             else {
                 postJoinEvaluator = spec.Raw.WhereClause;
             }
 
             return new JoinSetComposerPrototypeGeneralForge(
-                typeService.EventTypes, postJoinEvaluator, outerJoinDescs.Length > 0, queryPlan, joinAnalysisResult,
-                typeService.StreamNames, joinRemoveStream, historicalViewableDesc.IsHistorical);
+                typeService.EventTypes,
+                postJoinEvaluator,
+                outerJoinDescs.Length > 0,
+                queryPlan,
+                joinAnalysisResult,
+                typeService.StreamNames,
+                joinRemoveStream,
+                historicalViewableDesc.IsHistorical);
         }
 
         private static JoinSetComposerPrototypeForge MakeComposerHistorical2Stream(
@@ -272,11 +301,18 @@ namespace com.espertech.esper.common.@internal.epl.join.@base
 
             var indexStrategies =
                 DetermineIndexing(
-                    filterForIndexing, streamTypes[polledViewNum], streamTypes[streamViewNum], polledViewNum,
-                    streamViewNum, streamNames, statementRawInfo, services);
+                    filterForIndexing,
+                    streamTypes[polledViewNum],
+                    streamTypes[streamViewNum],
+                    polledViewNum,
+                    streamViewNum,
+                    streamNames,
+                    statementRawInfo,
+                    services);
 
             QueryPlanIndexHook hook = QueryPlanIndexHookUtil.GetHook(
-                statementRawInfo.Annotations, services.ImportServiceCompileTime);
+                statementRawInfo.Annotations,
+                services.ImportServiceCompileTime);
             if (queryPlanLogging && (QUERY_PLAN_LOG.IsInfoEnabled || hook != null)) {
                 QUERY_PLAN_LOG.Info("historical lookup strategy: " + indexStrategies.First.ToQueryPlan());
                 QUERY_PLAN_LOG.Info("historical index strategy: " + indexStrategies.Second.ToQueryPlan());
@@ -289,8 +325,16 @@ namespace com.espertech.esper.common.@internal.epl.join.@base
             }
 
             return new JoinSetComposerPrototypeHistorical2StreamForge(
-                streamTypes, whereClause, isOuterJoin, polledViewNum, streamViewNum, outerJoinEqualsNode,
-                indexStrategies.First, indexStrategies.Second, isAllHistoricalNoSubordinate, outerJoinPerStream);
+                streamTypes,
+                whereClause,
+                isOuterJoin,
+                polledViewNum,
+                streamViewNum,
+                outerJoinEqualsNode,
+                indexStrategies.First,
+                indexStrategies.Second,
+                isAllHistoricalNoSubordinate,
+                outerJoinPerStream);
         }
 
         private static ExprNode GetFilterExpressionInclOnClause(
@@ -359,7 +403,11 @@ namespace com.espertech.esper.common.@internal.epl.join.@base
             FilterExprAnalyzer.Analyze(filterForIndexing, queryGraph, false);
 
             return DetermineIndexing(
-                queryGraph, polledViewType, streamViewType, polledViewStreamNum, streamViewStreamNum);
+                queryGraph,
+                polledViewType,
+                streamViewType,
+                polledViewStreamNum,
+                streamViewStreamNum);
         }
 
         /// <summary>
@@ -400,9 +448,13 @@ namespace com.espertech.esper.common.@internal.epl.join.@base
                     var strategy =
                         new HistoricalIndexLookupStrategyInKeywordSingleForge(streamViewStreamNum, lookup.KeyExprs);
                     var indexing = new PollResultIndexingStrategyHashForge(
-                        polledViewStreamNum, polledViewType, new[] {indexed}, null);
+                        polledViewStreamNum,
+                        polledViewType,
+                        new[] {indexed},
+                        null);
                     return new Pair<HistoricalIndexLookupStrategyForge, PollResultIndexingStrategyForge>(
-                        strategy, indexing);
+                        strategy,
+                        indexing);
                 }
 
                 var multis = queryGraphValue.InKeywordMulti;
@@ -412,10 +464,12 @@ namespace com.espertech.esper.common.@internal.epl.join.@base
                         new HistoricalIndexLookupStrategyInKeywordMultiForge(streamViewStreamNum, multi.Key.KeyExpr);
                     var indexing =
                         new PollResultIndexingStrategyInKeywordMultiForge(
-                            polledViewStreamNum, polledViewType,
+                            polledViewStreamNum,
+                            polledViewType,
                             ExprNodeUtilityQuery.GetIdentResolvedPropertyNames(multi.Indexed));
                     return new Pair<HistoricalIndexLookupStrategyForge, PollResultIndexingStrategyForge>(
-                        strategy, indexing);
+                        strategy,
+                        indexing);
                 }
 
                 return new Pair<HistoricalIndexLookupStrategyForge, PollResultIndexingStrategyForge>(
@@ -424,38 +478,61 @@ namespace com.espertech.esper.common.@internal.epl.join.@base
             }
 
             CoercionDesc keyCoercionTypes = CoercionUtil.GetCoercionTypesHash(
-                new[] {streamViewType, polledViewType}, 0, 1, hashKeys, hashIndexes);
+                new[] {streamViewType, polledViewType},
+                0,
+                1,
+                hashKeys,
+                hashIndexes);
 
             if (rangeKeys.IsEmpty()) {
                 var hashEvals = QueryGraphValueEntryHashKeyedForge.GetForges(hashKeys.ToArray());
                 var lookup = new HistoricalIndexLookupStrategyHashForge(
-                    streamViewStreamNum, hashEvals, keyCoercionTypes.CoercionTypes);
+                    streamViewStreamNum,
+                    hashEvals,
+                    keyCoercionTypes.CoercionTypes);
                 var indexing = new PollResultIndexingStrategyHashForge(
-                    polledViewStreamNum, polledViewType,
-                    hashIndexes, keyCoercionTypes.CoercionTypes);
+                    polledViewStreamNum,
+                    polledViewType,
+                    hashIndexes,
+                    keyCoercionTypes.CoercionTypes);
                 return new Pair<HistoricalIndexLookupStrategyForge, PollResultIndexingStrategyForge>(lookup, indexing);
             }
 
             CoercionDesc rangeCoercionTypes = CoercionUtil.GetCoercionTypesRange(
-                new[] {streamViewType, polledViewType}, 1, rangeIndexes, rangeKeys);
+                new[] {streamViewType, polledViewType},
+                1,
+                rangeIndexes,
+                rangeKeys);
 
             if (rangeKeys.Count == 1 && hashKeys.Count == 0) {
                 var rangeCoercionType = rangeCoercionTypes.CoercionTypes[0];
                 var indexing = new PollResultIndexingStrategySortedForge(
-                    polledViewStreamNum, polledViewType, rangeIndexes[0], rangeCoercionType);
+                    polledViewStreamNum,
+                    polledViewType,
+                    rangeIndexes[0],
+                    rangeCoercionType);
                 var lookup = new HistoricalIndexLookupStrategySortedForge(
-                    streamViewStreamNum, rangeKeys[0], rangeCoercionType);
+                    streamViewStreamNum,
+                    rangeKeys[0],
+                    rangeCoercionType);
                 return new Pair<HistoricalIndexLookupStrategyForge, PollResultIndexingStrategyForge>(lookup, indexing);
             }
             else {
                 var indexing = new PollResultIndexingStrategyCompositeForge(
-                    polledViewStreamNum, polledViewType, hashIndexes, keyCoercionTypes.CoercionTypes, rangeIndexes,
+                    polledViewStreamNum,
+                    polledViewType,
+                    hashIndexes,
+                    keyCoercionTypes.CoercionTypes,
+                    rangeIndexes,
                     rangeCoercionTypes.CoercionTypes);
                 var hashEvals = QueryGraphValueEntryHashKeyedForge.GetForges(hashKeys.ToArray());
                 HistoricalIndexLookupStrategyForge strategy = new HistoricalIndexLookupStrategyCompositeForge(
-                    streamViewStreamNum, hashEvals, rangeKeys.ToArray());
+                    streamViewStreamNum,
+                    hashEvals,
+                    rangeKeys.ToArray());
                 return new Pair<HistoricalIndexLookupStrategyForge, PollResultIndexingStrategyForge>(
-                    strategy, indexing);
+                    strategy,
+                    indexing);
             }
         }
     }

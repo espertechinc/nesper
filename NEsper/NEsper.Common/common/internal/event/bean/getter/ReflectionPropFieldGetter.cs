@@ -8,6 +8,7 @@
 
 using System;
 using System.Reflection;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -16,6 +17,7 @@ using com.espertech.esper.common.@internal.@event.bean.service;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.@event.util;
 using com.espertech.esper.common.@internal.util;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.@event.bean.getter
@@ -26,27 +28,31 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
     public class ReflectionPropFieldGetter : BaseNativePropertyGetter,
         BeanEventPropertyGetter
     {
-        private readonly FieldInfo field;
+        private readonly FieldInfo _field;
 
         public ReflectionPropFieldGetter(
             FieldInfo field,
             EventBeanTypedEventFactory eventBeanTypedEventFactory,
             BeanEventTypeFactory beanEventTypeFactory)
-            : base(eventBeanTypedEventFactory, beanEventTypeFactory, field.FieldType, TypeHelper.GetGenericFieldType(field, true))
+            : base(
+                eventBeanTypedEventFactory,
+                beanEventTypeFactory,
+                field.FieldType,
+                TypeHelper.GetGenericFieldType(field, true))
         {
-            this.field = field;
+            _field = field;
         }
 
         public object GetBeanProp(object @object)
         {
             try {
-                return field.GetValue(@object);
+                return _field.GetValue(@object);
             }
             catch (ArgumentException e) {
-                throw PropertyUtility.GetArgumentException(field, e);
+                throw PropertyUtility.GetArgumentException(_field, e);
             }
             catch (MemberAccessException e) {
-                throw PropertyUtility.GetMemberAccessException(field, e);
+                throw PropertyUtility.GetMemberAccessException(_field, e);
             }
         }
 
@@ -66,16 +72,19 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
             return true; // Property exists as the property is not dynamic (unchecked)
         }
 
-        public override Type BeanPropType => field.FieldType;
+        public override Type BeanPropType => _field.FieldType;
 
-        public override Type TargetType => field.DeclaringType;
+        public override Type TargetType => _field.DeclaringType;
 
         public override CodegenExpression EventBeanGetCodegen(
             CodegenExpression beanExpression,
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            return UnderlyingGetCodegen(CastUnderlying(TargetType, beanExpression), codegenMethodScope, codegenClassScope);
+            return UnderlyingGetCodegen(
+                CastUnderlying(TargetType, beanExpression),
+                codegenMethodScope,
+                codegenClassScope);
         }
 
         public override CodegenExpression EventBeanExistsCodegen(
@@ -91,7 +100,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            return ExprDotName(underlyingExpression, field.Name);
+            return ExprDotName(underlyingExpression, _field.Name);
         }
 
         public override CodegenExpression UnderlyingExistsCodegen(
@@ -105,7 +114,8 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
         public override string ToString()
         {
             return "ReflectionPropFieldGetter " +
-                   "field=" + field.ToString();
+                   "field=" +
+                   _field.ToString();
         }
     }
 } // end of namespace

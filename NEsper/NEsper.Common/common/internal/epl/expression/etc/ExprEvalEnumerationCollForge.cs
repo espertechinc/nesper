@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -15,6 +16,7 @@ using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.util;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.expression.etc
@@ -49,9 +51,12 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
                 CodegenMethod firstMethodNode = codegenMethodScope
                     .MakeChild(typeof(EventBean), typeof(ExprEvalEnumerationCollForge), codegenClassScope);
                 firstMethodNode.Block
-                    .DeclareVar(
-                        typeof(ICollection<object>), typeof(EventBean), "events",
-                        enumerationForge.EvaluateGetROCollectionEventsCodegen(firstMethodNode, exprSymbol, codegenClassScope))
+                    .DeclareVar<ICollection<EventBean>>(
+                        "events",
+                        enumerationForge.EvaluateGetROCollectionEventsCodegen(
+                            firstMethodNode,
+                            exprSymbol,
+                            codegenClassScope))
                     .IfRefNullReturnNull("events")
                     .IfCondition(EqualsIdentity(ExprDotMethod(@Ref("events"), "size"), Constant(0)))
                     .BlockReturn(ConstantNull())
@@ -59,16 +64,18 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
                 return LocalMethod(firstMethodNode);
             }
 
-            CodegenMethod methodNode = codegenMethodScope.MakeChild(typeof(EventBean[]), typeof(ExprEvalEnumerationCollForge), codegenClassScope);
+            CodegenMethod methodNode = codegenMethodScope.MakeChild(
+                typeof(EventBean[]),
+                typeof(ExprEvalEnumerationCollForge),
+                codegenClassScope);
             methodNode.Block
-                .DeclareVar(
-                    typeof(ICollection<object>), typeof(EventBean), "events",
+                .DeclareVar<ICollection<EventBean>>(
+                    "events",
                     enumerationForge.EvaluateGetROCollectionEventsCodegen(methodNode, exprSymbol, codegenClassScope))
                 .IfRefNullReturnNull("events")
                 .MethodReturn(
-                    Cast(
-                        typeof(EventBean[]),
-                        ExprDotMethod(@Ref("events"), "toArray", NewArrayByLength(typeof(EventBean), ExprDotMethod(@Ref("events"), "size")))));
+                    Cast<EventBean[]>(
+                        ExprDotMethod(@Ref("events"), "ToArray")));
             return LocalMethod(methodNode);
         }
 

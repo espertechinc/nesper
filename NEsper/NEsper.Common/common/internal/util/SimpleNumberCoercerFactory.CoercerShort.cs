@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.compat;
@@ -44,8 +45,14 @@ namespace com.espertech.esper.common.@internal.util
                 CodegenClassScope codegenClassScope)
             {
                 return CodegenCoerceMayNull(
-                    typeof(short), typeof(short?), "shortValue", value, valueTypeMustNumeric, codegenMethodScope,
-                    typeof(CoercerShort), codegenClassScope);
+                    typeof(short),
+                    typeof(short?),
+                    "shortValue",
+                    value,
+                    valueTypeMustNumeric,
+                    codegenMethodScope,
+                    typeof(CoercerShort),
+                    codegenClassScope);
             }
 
             public static CodegenExpression CodegenShort(

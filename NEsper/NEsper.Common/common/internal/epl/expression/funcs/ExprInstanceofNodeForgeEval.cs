@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.collection;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
@@ -16,6 +17,7 @@ using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat.collections;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.expression.funcs
@@ -79,19 +81,29 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
             CodegenClassScope codegenClassScope)
         {
             CodegenExpression cache = codegenClassScope.AddFieldUnshared<CopyOnWriteList<Pair<Type, bool>>>(
-                true, NewInstance(typeof(CopyOnWriteList<Pair<Type, bool>>)));
+                true,
+                NewInstance(typeof(CopyOnWriteList<Pair<Type, bool>>)));
             var methodNode = codegenMethodScope.MakeChild(
-                typeof(bool), typeof(ExprInstanceofNodeForgeEval), codegenClassScope);
+                typeof(bool),
+                typeof(ExprInstanceofNodeForgeEval),
+                codegenClassScope);
 
             var block = methodNode.Block
-                .DeclareVar(
-                    typeof(object), "result",
-                    forge.ForgeRenderableInstanceOf.ChildNodes[0].Forge.EvaluateCodegen(
-                        typeof(object), methodNode, exprSymbol, codegenClassScope))
+                .DeclareVar<object>(
+                    "result",
+                    forge.ForgeRenderableInstanceOf.ChildNodes[0]
+                        .Forge.EvaluateCodegen(
+                            typeof(object),
+                            methodNode,
+                            exprSymbol,
+                            codegenClassScope))
                 .IfRefNullReturnFalse("result");
             block.MethodReturn(
                 StaticMethod(
-                    typeof(ExprInstanceofNodeForgeEval), "instanceofCacheCheckOrAdd", Constant(forge.Classes), cache,
+                    typeof(ExprInstanceofNodeForgeEval),
+                    "instanceofCacheCheckOrAdd",
+                    Constant(forge.Classes),
+                    cache,
                     Ref("result")));
             return LocalMethod(methodNode);
         }

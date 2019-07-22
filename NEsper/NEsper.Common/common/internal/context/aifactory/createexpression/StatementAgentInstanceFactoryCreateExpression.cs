@@ -45,7 +45,9 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createexpressio
             bool isRecoveringResilient)
         {
             return new StatementAgentInstanceFactoryCreateExpressionResult(
-                viewable, AgentInstanceStopCallbackNoAction.INSTANCE, agentInstanceContext);
+                viewable,
+                AgentInstanceStopCallbackNoAction.INSTANCE,
+                agentInstanceContext);
         }
 
         public AIRegistryRequirements RegistryRequirements => AIRegistryRequirements.NoRequirements();

@@ -434,11 +434,11 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
         {
             public void Run(RegressionEnvironment env)
             {
-                var stmtText = "@Name('s0') select istream avg(price) as aprice, Symbol from SupportMarketDataBean" +
+                var stmtText = "@Name('s0') select istream avg(Price) as aPrice, Symbol from SupportMarketDataBean" +
                                "#length(2) group by Symbol";
                 env.CompileDeploy(stmtText).AddListener("s0");
 
-                var fields = "aprice,Symbol".SplitCsv();
+                var fields = "aPrice,Symbol".SplitCsv();
 
                 SendEvent(env, "A", 1);
                 EPAssertionUtil.AssertProps(
@@ -947,9 +947,9 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             {
                 // test for ESPER-185
                 var fields = "mycount".SplitCsv();
-                var epl = "@Name('s0') select irstream count(price) as mycount " +
+                var epl = "@Name('s0') select irstream count(Price) as mycount " +
                           "from SupportMarketDataBean#length(5) " +
-                          "group by price";
+                          "group by Price";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
                 SendEvent(env, SYMBOL_DELL, 10);
@@ -1009,9 +1009,9 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             {
                 // test for ESPER-185
                 var fields = "mycount".SplitCsv();
-                var epl = "@Name('s0') select irstream count(price) as mycount " +
+                var epl = "@Name('s0') select irstream count(Price) as mycount " +
                           "from SupportMarketDataBean#length(5) " +
-                          "group by Symbol, price";
+                          "group by Symbol, Price";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 SendEvent(env, SYMBOL_DELL, 10);
@@ -1085,10 +1085,10 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             public void Run(RegressionEnvironment env)
             {
                 // test for ESPER-185
-                var fields = "symbol,price,mycount".SplitCsv();
-                var epl = "@Name('s0') select irstream Symbol,price,count(price) as mycount " +
+                var fields = "symbol,Price,mycount".SplitCsv();
+                var epl = "@Name('s0') select irstream Symbol,Price,count(Price) as mycount " +
                           "from SupportMarketDataBean#length(5) " +
-                          "group by Symbol, price order by Symbol asc";
+                          "group by Symbol, Price order by Symbol asc";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 SendEvent(env, SYMBOL_DELL, 10);
@@ -1235,7 +1235,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             public void Run(RegressionEnvironment env)
             {
                 SendTimer(env, 0);
-                var epl = "insert into MyStream select Symbol, price from SupportMarketDataBean#time_batch(1 sec);\n" +
+                var epl = "insert into MyStream select Symbol, Price from SupportMarketDataBean#time_batch(1 sec);\n" +
                           "@Name('s0') select Symbol " +
                           "from MyStream#time_batch(1 sec)#unique(Symbol) " +
                           "group by Symbol";
@@ -1263,8 +1263,8 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             public void Run(RegressionEnvironment env)
             {
                 var epl = "@Name('s0') select irstream Symbol," +
-                          "sum(price) as mySum," +
-                          "avg(price) as myAvg " +
+                          "sum(Price) as mySum," +
+                          "avg(Price) as myAvg " +
                           "from SupportBeanString#length(100) as one, " +
                           "SupportMarketDataBean#length(3) as two " +
                           "where (Symbol='DELL' or Symbol='IBM' or Symbol='GE') " +
@@ -1287,8 +1287,8 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             public void Run(RegressionEnvironment env)
             {
                 var epl = "@Name('s0') select irstream Symbol," +
-                          "sum(price) as mySum," +
-                          "avg(price) as myAvg " +
+                          "sum(Price) as mySum," +
+                          "avg(Price) as myAvg " +
                           "from SupportMarketDataBean#length(3) " +
                           "where Symbol='DELL' or Symbol='IBM' or Symbol='GE' " +
                           "group by Symbol";

@@ -8,6 +8,7 @@
 
 using System.Collections.Generic;
 using System.Linq;
+
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.compile.stage1.spec;
@@ -19,6 +20,7 @@ using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.variable.core
@@ -85,8 +87,11 @@ namespace com.espertech.esper.common.@internal.epl.variable.core
                 if (subPropertyName != null) {
                     if (variableMetadata.EventType == null) {
                         throw new ExprValidationException(
-                            "Variable by name '" + variableName + "' does not have a property named '" +
-                            subPropertyName + "'");
+                            "Variable by name '" +
+                            variableName +
+                            "' does not have a property named '" +
+                            subPropertyName +
+                            "'");
                     }
 
                     var type = variableMetadata.EventType;
@@ -101,7 +106,10 @@ namespace com.espertech.esper.common.@internal.epl.variable.core
                     var getterType = spi.GetPropertyType(subPropertyName);
                     if (writer == null) {
                         throw new ExprValidationException(
-                            "Variable by name '" + variableName + "' the property '" + subPropertyName +
+                            "Variable by name '" +
+                            variableName +
+                            "' the property '" +
+                            subPropertyName +
                             "' is not writable");
                     }
 
@@ -115,20 +123,32 @@ namespace com.espertech.esper.common.@internal.epl.variable.core
                     writtenProps.PropertiesCopied.Add(subPropertyName);
 
                     writers[count] = new VariableTriggerWriteDescForge(
-                        spi, variableName, writer, getter, getterType, evaluator.EvaluationType);
+                        spi,
+                        variableName,
+                        writer,
+                        getter,
+                        getterType,
+                        evaluator.EvaluationType);
                 }
                 else {
                     // determine types
                     var expressionType = possibleVariableAssignment.Second.Forge.EvaluationType;
 
                     if (variableMetadata.EventType != null) {
-                        if (expressionType != null && !TypeHelper.IsSubclassOrImplementsInterface(
-                                expressionType, variableMetadata.EventType.UnderlyingType)) {
+                        if (expressionType != null &&
+                            !TypeHelper.IsSubclassOrImplementsInterface(
+                                expressionType,
+                                variableMetadata.EventType.UnderlyingType)) {
                             throw new ExprValidationException(
-                                "Variable '" + variableName
-                                             + "' of declared event type '" + variableMetadata.EventType.Name +
-                                             "' underlying type '" + variableMetadata.EventType.UnderlyingType.Name +
-                                             "' cannot be assigned a value of type '" + expressionType.Name + "'");
+                                "Variable '" +
+                                variableName +
+                                "' of declared event type '" +
+                                variableMetadata.EventType.Name +
+                                "' underlying type '" +
+                                variableMetadata.EventType.UnderlyingType.Name +
+                                "' cannot be assigned a value of type '" +
+                                expressionType.Name +
+                                "'");
                         }
 
                         VariableTypes.Put(variableName, variableMetadata.EventType.UnderlyingType);
@@ -175,10 +195,11 @@ namespace com.espertech.esper.common.@internal.epl.variable.core
                 var copyMethod = entry.Key.GetCopyMethodForge(props);
                 if (copyMethod == null) {
                     throw new ExprValidationException(
-                        "Variable '" + entry.Value.VariableName
-                                     + "' of declared type " +
-                                     entry.Key.UnderlyingType.GetCleanName() +
-                                     "' cannot be assigned to");
+                        "Variable '" +
+                        entry.Value.VariableName +
+                        "' of declared type " +
+                        entry.Key.UnderlyingType.GetCleanName() +
+                        "' cannot be assigned to");
                 }
 
                 copyMethods.Put(entry.Key, copyMethod);
@@ -199,12 +220,15 @@ namespace com.espertech.esper.common.@internal.epl.variable.core
             var method = parent.MakeChild(typeof(VariableReadWritePackage), GetType(), classScope);
             var @ref = Ref("rw");
             method.Block
-                .DeclareVar(typeof(VariableReadWritePackage), @ref.Ref, NewInstance(typeof(VariableReadWritePackage)))
+                .DeclareVar<VariableReadWritePackage>(@ref.Ref, NewInstance(typeof(VariableReadWritePackage)))
                 .SetProperty(@ref, "CopyMethods", MakeCopyMethods(copyMethods, method, symbols, classScope))
                 .SetProperty(@ref, "Assignments", MakeAssignments(assignments, method, symbols, classScope))
                 .SetProperty(@ref, "Variables", MakeVariables(variables, method, symbols, classScope))
                 .SetProperty(@ref, "Writers", MakeWriters(writers, method, symbols, classScope))
-                .SetProperty(@ref, "ReadersForGlobalVars", MakeReadersForGlobalVars(variables, method, symbols, classScope))
+                .SetProperty(
+                    @ref,
+                    "ReadersForGlobalVars",
+                    MakeReadersForGlobalVars(variables, method, symbols, classScope))
                 .SetProperty(@ref, "MustCoerce", Constant(mustCoerce))
                 .MethodReturn(@ref);
             return LocalMethod(method);
@@ -217,17 +241,21 @@ namespace com.espertech.esper.common.@internal.epl.variable.core
             CodegenClassScope classScope)
         {
             var method = parent.MakeChild(
-                typeof(VariableReader[]), typeof(VariableReadWritePackageForge), classScope);
-            method.Block.DeclareVar(
-                typeof(VariableReader[]), "readers",
+                typeof(VariableReader[]),
+                typeof(VariableReadWritePackageForge),
+                classScope);
+            method.Block.DeclareVar<VariableReader[]>(
+                "readers",
                 NewArrayByLength(typeof(VariableReader), Constant(variables.Length)));
             for (var i = 0; i < variables.Length; i++) {
                 if (variables[i].OptionalContextName == null) {
                     var resolve = StaticMethod(
-                        typeof(VariableDeployTimeResolver), "resolveVariableReader",
+                        typeof(VariableDeployTimeResolver),
+                        "resolveVariableReader",
                         Constant(variables[i].VariableName),
                         Constant(variables[i].VariableVisibility),
-                        Constant(variables[i].VariableModuleName), ConstantNull(),
+                        Constant(variables[i].VariableModuleName),
+                        ConstantNull(),
                         symbols.GetAddInitSvc(method));
                     method.Block.AssignArrayElement("readers", Constant(i), resolve);
                 }
@@ -244,9 +272,11 @@ namespace com.espertech.esper.common.@internal.epl.variable.core
             CodegenClassScope classScope)
         {
             var method = parent.MakeChild(
-                typeof(VariableTriggerWriteDesc[]), typeof(VariableReadWritePackageForge), classScope);
-            method.Block.DeclareVar(
-                typeof(VariableTriggerWriteDesc[]), "writers",
+                typeof(VariableTriggerWriteDesc[]),
+                typeof(VariableReadWritePackageForge),
+                classScope);
+            method.Block.DeclareVar<VariableTriggerWriteDesc[]>(
+                "writers",
                 NewArrayByLength(typeof(VariableTriggerWriteDesc), Constant(writers.Length)));
             for (var i = 0; i < writers.Length; i++) {
                 var writer =
@@ -265,12 +295,16 @@ namespace com.espertech.esper.common.@internal.epl.variable.core
             CodegenClassScope classScope)
         {
             var method = parent.MakeChild(
-                typeof(Variable[]), typeof(VariableReadWritePackageForge), classScope);
-            method.Block.DeclareVar(
-                typeof(Variable[]), "vars", NewArrayByLength(typeof(Variable), Constant(variables.Length)));
+                typeof(Variable[]),
+                typeof(VariableReadWritePackageForge),
+                classScope);
+            method.Block.DeclareVar<Variable[]>(
+                "vars",
+                NewArrayByLength(typeof(Variable), Constant(variables.Length)));
             for (var i = 0; i < variables.Length; i++) {
                 var resolve = VariableDeployTimeResolver.MakeResolveVariable(
-                    variables[i], symbols.GetAddInitSvc(method));
+                    variables[i],
+                    symbols.GetAddInitSvc(method));
                 method.Block.AssignArrayElement("vars", Constant(i), resolve);
             }
 
@@ -285,15 +319,20 @@ namespace com.espertech.esper.common.@internal.epl.variable.core
             CodegenClassScope classScope)
         {
             var method = parent.MakeChild(
-                typeof(VariableTriggerSetDesc[]), typeof(VariableReadWritePackageForge), classScope);
-            method.Block.DeclareVar(
-                typeof(VariableTriggerSetDesc[]), "sets",
+                typeof(VariableTriggerSetDesc[]),
+                typeof(VariableReadWritePackageForge),
+                classScope);
+            method.Block.DeclareVar<VariableTriggerSetDesc[]>(
+                "sets",
                 NewArrayByLength(typeof(VariableTriggerSetDesc), Constant(assignments.Length)));
             for (var i = 0; i < assignments.Length; i++) {
                 var set = NewInstance<VariableTriggerSetDesc>(
                     Constant(assignments[i].VariableName),
                     ExprNodeUtilityCodegen.CodegenEvaluator(
-                        assignments[i].Forge, method, typeof(VariableReadWritePackageForge), classScope));
+                        assignments[i].Forge,
+                        method,
+                        typeof(VariableReadWritePackageForge),
+                        classScope));
                 method.Block.AssignArrayElement("sets", Constant(i), set);
             }
 
@@ -312,9 +351,11 @@ namespace com.espertech.esper.common.@internal.epl.variable.core
             }
 
             var method = parent.MakeChild(
-                typeof(IDictionary<string, object>), typeof(VariableReadWritePackageForge), classScope);
-            method.Block.DeclareVar(
-                typeof(IDictionary<string, object>), "methods",
+                typeof(IDictionary<string, object>),
+                typeof(VariableReadWritePackageForge),
+                classScope);
+            method.Block.DeclareVar<IDictionary<string, object>>(
+                "methods",
                 NewInstance(typeof(Dictionary<string, object>), Constant(copyMethods.Count)));
             foreach (var entry in copyMethods) {
                 var type = EventTypeUtility.ResolveTypeCodegen(entry.Key, symbols.GetAddInitSvc(method));

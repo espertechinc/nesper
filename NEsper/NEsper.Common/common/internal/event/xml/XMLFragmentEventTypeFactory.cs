@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.configuration.common;
 using com.espertech.esper.common.client.meta;
@@ -103,10 +104,23 @@ namespace com.espertech.esper.common.@internal.@event.xml
             xmlDom.AddNamespacePrefixes(config.NamespacePrefixes);
 
             var metadata = new EventTypeMetadata(
-                derivedEventTypeName, moduleName, EventTypeTypeClass.STREAM, EventTypeApplicationType.XML, NameAccessModifier.PRECONFIGURED,
-                EventTypeBusModifier.BUS, false, new EventTypeIdPair(CRC32Util.ComputeCRC32(derivedEventTypeName), -1));
+                derivedEventTypeName,
+                moduleName,
+                EventTypeTypeClass.STREAM,
+                EventTypeApplicationType.XML,
+                NameAccessModifier.PRECONFIGURED,
+                EventTypeBusModifier.BUS,
+                false,
+                new EventTypeIdPair(CRC32Util.ComputeCRC32(derivedEventTypeName), -1));
             var eventType = (SchemaXMLEventType) eventTypeFactory.EventTypeFactory.CreateXMLType(
-                metadata, xmlDom, type.SchemaModel, representsFragmentOfProperty, rootTypeName, eventTypeFactory, this, eventTypeNameResolver);
+                metadata,
+                xmlDom,
+                type.SchemaModel,
+                representsFragmentOfProperty,
+                rootTypeName,
+                eventTypeFactory,
+                this,
+                eventTypeNameResolver);
             derivedTypes.Put(derivedEventTypeName, eventType);
 
             if (optionalCompileTimeRegistry != null) {

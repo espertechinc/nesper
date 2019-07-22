@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
@@ -26,8 +27,14 @@ namespace com.espertech.esper.common.@internal.epl.expression.table
         )
         {
             if (expectedTypes.Length != providedTypes.Length) {
-                string actual = (providedTypes.Length == 0 ? "no" : "" + providedTypes.Length) + " " + providedName + " expressions";
-                string expected = (expectedTypes.Length == 0 ? "no" : "" + expectedTypes.Length) + " " + expectedName + " expressions";
+                string actual = (providedTypes.Length == 0 ? "no" : "" + providedTypes.Length) +
+                                " " +
+                                providedName +
+                                " expressions";
+                string expected = (expectedTypes.Length == 0 ? "no" : "" + expectedTypes.Length) +
+                                  " " +
+                                  expectedName +
+                                  " expressions";
                 throw new ExprValidationException(
                     "Incompatible number of " +
                     providedName +
@@ -48,10 +55,15 @@ namespace com.espertech.esper.common.@internal.epl.expression.table
                         providedName +
                         " expression for use with table '" +
                         tableName +
-                        "', the " + providedName + " expression '" +
-                        ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceAsList(providedExpr) + "' returns '" +
-                        TypeHelper.GetCleanName(actual) + "' but the table expects '" +
-                        TypeHelper.GetCleanName(expected) + "'");
+                        "', the " +
+                        providedName +
+                        " expression '" +
+                        ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceAsList(providedExpr) +
+                        "' returns '" +
+                        TypeHelper.GetCleanName(actual) +
+                        "' but the table expects '" +
+                        TypeHelper.GetCleanName(expected) +
+                        "'");
                 }
             }
         }

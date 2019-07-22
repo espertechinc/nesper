@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.lookup;
@@ -24,7 +25,8 @@ namespace com.espertech.esper.common.@internal.epl.index.advanced.index.quadtree
             SubordTableLookupStrategyFactoryQuadTree factory,
             int numStreamsOuter)
             : base(
-                index, factory)
+                index,
+                factory)
         {
             events = new EventBean[numStreamsOuter + 1];
         }

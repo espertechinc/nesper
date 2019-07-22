@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.context.controller.core;
 using com.espertech.esper.common.@internal.schedule;
@@ -33,20 +34,37 @@ namespace com.espertech.esper.common.@internal.context.controller.condition
             if (endpoint is ContextConditionDescriptorTimePeriod) {
                 ContextConditionDescriptorTimePeriod timePeriod = (ContextConditionDescriptorTimePeriod) endpoint;
                 long scheduleSlot = controller.Realization.AgentInstanceContextCreate.ScheduleBucket.AllocateSlot();
-                return new ContextControllerConditionTimePeriod(scheduleSlot, timePeriod, conditionPath, callback, controller);
+                return new ContextControllerConditionTimePeriod(
+                    scheduleSlot,
+                    timePeriod,
+                    conditionPath,
+                    callback,
+                    controller);
             }
 
             if (endpoint is ContextConditionDescriptorCrontab) {
                 ContextConditionDescriptorCrontab crontab = (ContextConditionDescriptorCrontab) endpoint;
                 ScheduleSpec schedule = ScheduleExpressionUtil.CrontabScheduleBuild(
-                    crontab.Evaluators, controller.Realization.AgentInstanceContextCreate);
+                    crontab.Evaluators,
+                    controller.Realization.AgentInstanceContextCreate);
                 long scheduleSlot = controller.Realization.AgentInstanceContextCreate.ScheduleBucket.AllocateSlot();
-                return new ContextControllerConditionCrontabImpl(conditionPath, scheduleSlot, schedule, crontab, callback, controller);
+                return new ContextControllerConditionCrontabImpl(
+                    conditionPath,
+                    scheduleSlot,
+                    schedule,
+                    crontab,
+                    callback,
+                    controller);
             }
 
             if (endpoint is ContextConditionDescriptorPattern) {
                 ContextConditionDescriptorPattern pattern = (ContextConditionDescriptorPattern) endpoint;
-                return new ContextControllerConditionPattern(conditionPath, partitionKeys, pattern, callback, controller);
+                return new ContextControllerConditionPattern(
+                    conditionPath,
+                    partitionKeys,
+                    pattern,
+                    callback,
+                    controller);
             }
 
             if (endpoint is ContextConditionDescriptorNever) {

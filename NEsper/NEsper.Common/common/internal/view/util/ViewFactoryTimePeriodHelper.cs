@@ -30,12 +30,22 @@ namespace com.espertech.esper.common.@internal.view.util
             TimePeriodComputeForge forge;
             if (expression is ExprTimePeriod) {
                 var validated = (ExprTimePeriod) ViewForgeSupport.ValidateExpr(
-                    viewName, expression, streamTypeService, viewForgeEnv, expressionNumber, streamNumber);
+                    viewName,
+                    expression,
+                    streamTypeService,
+                    viewForgeEnv,
+                    expressionNumber,
+                    streamNumber);
                 forge = validated.TimePeriodComputeForge;
             }
             else {
                 var validated = ViewForgeSupport.ValidateExpr(
-                    viewName, expression, streamTypeService, viewForgeEnv, expressionNumber, streamNumber);
+                    viewName,
+                    expression,
+                    streamTypeService,
+                    viewForgeEnv,
+                    expressionNumber,
+                    streamNumber);
                 var returnType = validated.Forge.EvaluationType.GetBoxedType();
                 if (!returnType.IsNumeric()) {
                     throw new ViewParameterException(expectedMessage);
@@ -58,7 +68,8 @@ namespace com.espertech.esper.common.@internal.view.util
                 }
                 else {
                     forge = new TimePeriodComputeNCGivenExprForge(
-                        validated.Forge, viewForgeEnv.ImportServiceCompileTime.TimeAbacus);
+                        validated.Forge,
+                        viewForgeEnv.ImportServiceCompileTime.TimeAbacus);
                 }
             }
 

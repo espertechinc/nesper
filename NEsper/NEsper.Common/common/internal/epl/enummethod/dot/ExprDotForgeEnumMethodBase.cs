@@ -9,6 +9,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -49,7 +50,10 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
         }
 
         public ExprDotEval DotEvaluator => new ExprDotForgeEnumMethodEval(
-            this, enumForge.EnumEvaluator, cache, enumEvalNumRequiredEvents);
+            this,
+            enumForge.EnumEvaluator,
+            cache,
+            enumEvalNumRequiredEvents);
 
         public CodegenExpression Codegen(
             CodegenExpression inner,
@@ -59,7 +63,12 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
             CodegenClassScope codegenClassScope)
         {
             return ExprDotForgeEnumMethodEval.Codegen(
-                this, inner, innerType, codegenMethodScope, exprSymbol, codegenClassScope);
+                this,
+                inner,
+                innerType,
+                codegenMethodScope,
+                exprSymbol,
+                codegenClassScope);
         }
 
         public void Init(
@@ -80,7 +89,8 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
 
             if (eventTypeColl == null && collectionComponentType == null && eventTypeBean == null) {
                 throw new ExprValidationException(
-                    "Invalid input for built-in enumeration method '" + enumMethodUsedName +
+                    "Invalid input for built-in enumeration method '" +
+                    enumMethodUsedName +
                     "', expecting collection of event-type or scalar values as input, received " +
                     typeInfo.ToTypeDescriptive());
             }
@@ -91,7 +101,8 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
             // validate parameters
             DotMethodInputTypeMatcher inputTypeMatcher = new ProxyDotMethodInputTypeMatcher {
                 ProcMatches = fp => {
-                    if (fp.Input == DotMethodFPInputEnum.EVENTCOLL && eventTypeBean == null &&
+                    if (fp.Input == DotMethodFPInputEnum.EVENTCOLL &&
+                        eventTypeBean == null &&
                         eventTypeColl == null) {
                         return false;
                     }
@@ -105,13 +116,19 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
             };
 
             DotMethodFP footprint = DotMethodUtil.ValidateParametersDetermineFootprint(
-                enumMethodEnum.GetFootprints(), DotMethodTypeEnum.ENUM, enumMethodUsedName, footprintProvided,
+                enumMethodEnum.GetFootprints(),
+                DotMethodTypeEnum.ENUM,
+                enumMethodUsedName,
+                footprintProvided,
                 inputTypeMatcher);
 
             // validate input criteria met for this footprint
             if (footprint.Input != DotMethodFPInputEnum.ANY) {
-                var message = "Invalid input for built-in enumeration method '" + enumMethodUsedName + "' and " +
-                              footprint.Parameters.Length + "-parameter footprint, expecting collection of ";
+                var message = "Invalid input for built-in enumeration method '" +
+                              enumMethodUsedName +
+                              "' and " +
+                              footprint.Parameters.Length +
+                              "-parameter footprint, expecting collection of ";
                 var received = " as input, received " + EPTypeHelper.ToTypeDescriptive(typeInfo);
                 if (footprint.Input == DotMethodFPInputEnum.EVENTCOLL && eventTypeColl == null) {
                     throw new ExprValidationException(message + "events" + received);
@@ -135,15 +152,26 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
             var inputEventType = eventTypeBean == null ? eventTypeColl : eventTypeBean;
             foreach (var node in parameters) {
                 var bodyAndParameter = GetBodyAndParameter(
-                    enumMethodUsedName, count++, node, inputEventType, collectionComponentType, validationContext,
-                    bodiesAndParameters, footprint);
+                    enumMethodUsedName,
+                    count++,
+                    node,
+                    inputEventType,
+                    collectionComponentType,
+                    validationContext,
+                    bodiesAndParameters,
+                    footprint);
                 bodiesAndParameters.Add(bodyAndParameter);
             }
 
             enumForge = GetEnumForge(
-                validationContext.StreamTypeService, enumMethodUsedName, bodiesAndParameters, inputEventType,
-                collectionComponentType, streamCountIncoming,
-                validationContext.IsDisablePropertyExpressionEventCollCache, validationContext.StatementRawInfo,
+                validationContext.StreamTypeService,
+                enumMethodUsedName,
+                bodiesAndParameters,
+                inputEventType,
+                collectionComponentType,
+                streamCountIncoming,
+                validationContext.IsDisablePropertyExpressionEventCollCache,
+                validationContext.StatementRawInfo,
                 validationContext.StatementCompileTimeService);
             enumEvalNumRequiredEvents = enumForge.StreamNumSize;
 
@@ -226,20 +254,30 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
 
             // Get secondary
             var additionalTypes = GetAddStreamTypes(
-                enumMethodUsedName, goesNode.GoesToNames, inputEventType, collectionComponentType, priorParameters,
-                validationContext.StatementRawInfo, validationContext.StatementCompileTimeService);
+                enumMethodUsedName,
+                goesNode.GoesToNames,
+                inputEventType,
+                collectionComponentType,
+                priorParameters,
+                validationContext.StatementRawInfo,
+                validationContext.StatementCompileTimeService);
             string[] additionalStreamNames = goesNode.GoesToNames.ToArray();
 
             ValidateDuplicateStreamNames(validationContext.StreamTypeService.StreamNames, additionalStreamNames);
 
             // add name and type to list of known types
             var addTypes = CollectionUtil.ArrayExpandAddElements<EventType>(
-                validationContext.StreamTypeService.EventTypes, additionalTypes);
+                validationContext.StreamTypeService.EventTypes,
+                additionalTypes);
             var addNames = CollectionUtil.ArrayExpandAddElements<string>(
-                validationContext.StreamTypeService.StreamNames, additionalStreamNames);
+                validationContext.StreamTypeService.StreamNames,
+                additionalStreamNames);
 
             var types = new StreamTypeServiceImpl(
-                addTypes, addNames, new bool[addTypes.Length], false,
+                addTypes,
+                addNames,
+                new bool[addTypes.Length],
+                false,
                 validationContext.StreamTypeService.IsOptionalStreams);
 
             // validate expression body
@@ -247,25 +285,42 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
             try {
                 var filterValidationContext = new ExprValidationContext(types, validationContext);
                 filter = ExprNodeUtilityValidate.GetValidatedSubtree(
-                    ExprNodeOrigin.DECLAREDEXPRBODY, filter, filterValidationContext);
+                    ExprNodeOrigin.DECLAREDEXPRBODY,
+                    filter,
+                    filterValidationContext);
             }
             catch (ExprValidationException ex) {
                 throw new ExprValidationException(
-                    "Error validating enumeration method '" + enumMethodUsedName + "' parameter " + parameterNum +
-                    ": " + ex.Message, ex);
+                    "Error validating enumeration method '" +
+                    enumMethodUsedName +
+                    "' parameter " +
+                    parameterNum +
+                    ": " +
+                    ex.Message,
+                    ex);
             }
 
             var filterForge = filter.Forge;
             var expectedType = footprint.Parameters[parameterNum].Type;
             // Lambda-methods don't use a specific expected return-type, so passing null for type is fine.
             EPLValidationUtil.ValidateParameterType(
-                enumMethodUsedName, DotMethodTypeEnum.ENUM.GetTypeName(), false, expectedType, null,
-                filterForge.EvaluationType, parameterNum, filter);
+                enumMethodUsedName,
+                DotMethodTypeEnum.ENUM.GetTypeName(),
+                false,
+                expectedType,
+                null,
+                filterForge.EvaluationType,
+                parameterNum,
+                filter);
 
             var numStreamsIncoming = validationContext.StreamTypeService.EventTypes.Length;
             return new ExprDotEvalParamLambda(
-                parameterNum, filter, filterForge,
-                numStreamsIncoming, goesNode.GoesToNames, additionalTypes);
+                parameterNum,
+                filter,
+                filterForge,
+                numStreamsIncoming,
+                goesNode.GoesToNames,
+                additionalTypes);
         }
 
         private void ValidateDuplicateStreamNames(
@@ -275,9 +330,12 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
             for (var added = 0; added < additionalStreamNames.Length; added++) {
                 for (var exist = 0; exist < streamNames.Length; exist++) {
                     if (streamNames[exist] != null &&
-                        streamNames[exist].Equals(additionalStreamNames[added], StringComparison.InvariantCultureIgnoreCase)) {
-                        var message = "Error validating enumeration method '" + enumMethodUsedName +
-                                      "', the lambda-parameter name '" + additionalStreamNames[added] +
+                        streamNames[exist]
+                            .Equals(additionalStreamNames[added], StringComparison.InvariantCultureIgnoreCase)) {
+                        var message = "Error validating enumeration method '" +
+                                      enumMethodUsedName +
+                                      "', the lambda-parameter name '" +
+                                      additionalStreamNames[added] +
                                       "' has already been declared in this context";
                         throw new ExprValidationException(message);
                     }
@@ -288,7 +346,8 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
         public override string ToString()
         {
             return GetType().GetSimpleName() +
-                   " lambda=" + enumMethodEnum;
+                   " lambda=" +
+                   enumMethodEnum;
         }
     }
 } // end of namespace

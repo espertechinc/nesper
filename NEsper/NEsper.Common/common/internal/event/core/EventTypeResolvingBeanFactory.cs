@@ -9,6 +9,7 @@
 using System.Collections.Generic;
 using System.Xml;
 using System.Xml.Linq;
+
 using com.espertech.esper.common.client;
 
 namespace com.espertech.esper.common.@internal.@event.core

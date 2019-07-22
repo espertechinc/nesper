@@ -9,6 +9,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.context.util;
@@ -89,7 +90,9 @@ namespace com.espertech.esper.common.@internal.view.exttimedwin
             ArrayDeque<EventBean> expired = null;
             if (timestamp != -1) {
                 expired = timeWindow.ExpireEvents(
-                    timestamp - timePeriodProvide.DeltaSubtract(timestamp, null, true, agentInstanceViewFactoryContext) + 1);
+                    timestamp -
+                    timePeriodProvide.DeltaSubtract(timestamp, null, true, agentInstanceViewFactoryContext) +
+                    1);
             }
 
             EventBean[] oldDataUpdate = null;

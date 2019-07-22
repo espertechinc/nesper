@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client.configuration.common;
 using com.espertech.esper.common.@internal.@event.bean.core;
 

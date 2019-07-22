@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+
 using com.espertech.esper.collection;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.hook.vdw;
@@ -30,7 +31,9 @@ namespace com.espertech.esper.common.@internal.epl.virtualdw
             foreach (var hashprop in hashedProps) {
                 hashFields.Add(
                     new VirtualDataWindowLookupFieldDesc(
-                        hashprop.IndexPropName, VirtualDataWindowLookupOp.EQUALS, hashprop.CoercionType));
+                        hashprop.IndexPropName,
+                        VirtualDataWindowLookupOp.EQUALS,
+                        hashprop.CoercionType));
             }
 
             IList<VirtualDataWindowLookupFieldDesc> btreeFields = new List<VirtualDataWindowLookupFieldDesc>();
@@ -55,7 +58,9 @@ namespace com.espertech.esper.common.@internal.epl.virtualdw
                         : queryPlanIndexItem.HashPropTypes[count];
                     hashFields.Add(
                         new VirtualDataWindowLookupFieldDesc(
-                            indexProp, VirtualDataWindowLookupOp.EQUALS, coercionType));
+                            indexProp,
+                            VirtualDataWindowLookupOp.EQUALS,
+                            coercionType));
                     count++;
                 }
             }

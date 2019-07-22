@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
@@ -87,11 +88,17 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
         {
             if (IndexedGetter != null) {
                 return ExprDotNodeForgePropertyExprEvalIndexed.Codegen(
-                    this, codegenMethodScope, exprSymbol, codegenClassScope);
+                    this,
+                    codegenMethodScope,
+                    exprSymbol,
+                    codegenClassScope);
             }
 
             return ExprDotNodeForgePropertyExprEvalMapped.Codegen(
-                this, codegenMethodScope, exprSymbol, codegenClassScope);
+                this,
+                codegenMethodScope,
+                exprSymbol,
+                codegenClassScope);
         }
 
         public override CodegenExpression EvaluateCodegen(
@@ -101,7 +108,13 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
             CodegenClassScope codegenClassScope)
         {
             return new InstrumentationBuilderExpr(
-                GetType(), this, "ExprDot", requiredType, codegenMethodScope, exprSymbol, codegenClassScope).Build();
+                GetType(),
+                this,
+                "ExprDot",
+                requiredType,
+                codegenMethodScope,
+                exprSymbol,
+                codegenClassScope).Build();
         }
 
         protected internal string GetWarningText(
@@ -111,7 +124,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
             var receivedText = received == null ? "null" : received.GetType().GetCleanName();
             return string.Format(
                 "Statement '{0}' property {1} parameter expression expected a value of {2} but received {3}",
-                statementName, propertyName, expectedType, receivedText);
+                statementName,
+                propertyName,
+                expectedType,
+                receivedText);
         }
     }
 } // end of namespace

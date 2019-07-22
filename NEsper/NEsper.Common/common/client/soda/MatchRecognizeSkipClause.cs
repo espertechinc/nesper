@@ -32,8 +32,10 @@ namespace com.espertech.esper.common.client.soda
             switch (value) {
                 case MatchRecognizeSkipClause.TO_CURRENT_ROW:
                     return ("to current row");
+
                 case MatchRecognizeSkipClause.TO_NEXT_ROW:
                     return ("to next row");
+
                 case MatchRecognizeSkipClause.PAST_LAST_ROW:
                     return ("past last row");
             }

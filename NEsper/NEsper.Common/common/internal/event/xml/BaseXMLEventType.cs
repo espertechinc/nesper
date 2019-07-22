@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Xml;
 using System.Xml.XPath;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.configuration;
 using com.espertech.esper.common.client.configuration.common;
@@ -65,24 +66,32 @@ namespace com.espertech.esper.common.@internal.@event.xml
             if (configurationEventTypeXMLDOM.XPathFunctionResolver != null) {
                 try {
                     _functionResolver = TypeHelper.Instantiate<IXPathFunctionResolver>(
-                        configurationEventTypeXMLDOM.XPathFunctionResolver, ClassForNameProviderDefault.INSTANCE);
+                        configurationEventTypeXMLDOM.XPathFunctionResolver,
+                        ClassForNameProviderDefault.INSTANCE);
                 }
                 catch (ClassInstantiationException ex) {
                     throw new ConfigurationException(
                         "Error configuring XPath function resolver for XML type '" +
-                        configurationEventTypeXMLDOM.RootElementName + "' : " + ex.Message, ex);
+                        configurationEventTypeXMLDOM.RootElementName +
+                        "' : " +
+                        ex.Message,
+                        ex);
                 }
             }
 
             if (configurationEventTypeXMLDOM.XPathVariableResolver != null) {
                 try {
                     _variableResolver = TypeHelper.Instantiate<IXPathVariableResolver>(
-                        configurationEventTypeXMLDOM.XPathVariableResolver, ClassForNameProviderDefault.INSTANCE);
+                        configurationEventTypeXMLDOM.XPathVariableResolver,
+                        ClassForNameProviderDefault.INSTANCE);
                 }
                 catch (ClassInstantiationException ex) {
                     throw new ConfigurationException(
                         "Error configuring XPath variable resolver for XML type '" +
-                        configurationEventTypeXMLDOM.RootElementName + "' : " + ex.Message, ex);
+                        configurationEventTypeXMLDOM.RootElementName +
+                        "' : " +
+                        ex.Message,
+                        ex);
                 }
             }
         }
@@ -153,7 +162,10 @@ namespace com.espertech.esper.common.@internal.@event.xml
                     xpathExpression = property.XPath;
                     if (Log.IsInfoEnabled) {
                         Log.Info(
-                            "Compiling XPath expression for property '" + property.Name + "' as '" + xpathExpression +
+                            "Compiling XPath expression for property '" +
+                            property.Name +
+                            "' as '" +
+                            xpathExpression +
                             "'");
                     }
 
@@ -163,7 +175,9 @@ namespace com.espertech.esper.common.@internal.@event.xml
                     var isFragment = false;
                     if (property.OptionalEventTypeName != null) {
                         fragmentFactory = new FragmentFactoryXPathPredefinedGetter(
-                            EventBeanTypedEventFactory, EventTypeResolver, property.OptionalEventTypeName,
+                            EventBeanTypedEventFactory,
+                            EventTypeResolver,
+                            property.OptionalEventTypeName,
                             property.Name);
                         isFragment = true;
                     }
@@ -175,22 +189,35 @@ namespace com.espertech.esper.common.@internal.@event.xml
 
                     EventPropertyGetterSPI getter = new XPathPropertyGetter(
                         this,
-                        property.Name, xpathExpression, expression,
+                        property.Name,
+                        xpathExpression,
+                        expression,
                         property.Type,
                         property.OptionalCastToType,
                         fragmentFactory);
                     var returnType = SchemaUtil.ToReturnType(property.Type, property.OptionalCastToType);
 
                     var desc = new EventPropertyDescriptor(
-                        property.Name, returnType, null, false, false, isArray, false, isFragment);
+                        property.Name,
+                        returnType,
+                        null,
+                        false,
+                        false,
+                        isArray,
+                        false,
+                        isFragment);
                     var @explicit = new ExplicitPropertyDescriptor(
-                        desc, getter, isArray, property.OptionalEventTypeName);
+                        desc,
+                        getter,
+                        isArray,
+                        property.OptionalEventTypeName);
                     namedProperties.Put(desc.PropertyName, @explicit);
                 }
             }
             catch (XPathException ex) {
                 throw new EPException(
-                    "XPath expression could not be compiled for expression '" + xpathExpression + '\'', ex);
+                    "XPath expression could not be compiled for expression '" + xpathExpression + '\'',
+                    ex);
             }
 
             Initialize(new List<ExplicitPropertyDescriptor>(namedProperties.Values));

@@ -7,12 +7,14 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.util;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.expression.ops
@@ -60,15 +62,20 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             ExprNode rhs)
         {
             var methodNode = codegenMethodScope.MakeChild(
-                forge.EvaluationType, typeof(ExprBitWiseNodeForgeEval), codegenClassScope);
+                forge.EvaluationType,
+                typeof(ExprBitWiseNodeForgeEval),
+                codegenClassScope);
 
             var leftType = lhs.Forge.EvaluationType;
             var rightType = rhs.Forge.EvaluationType;
             var block = methodNode.Block
                 .DeclareVar(
-                    leftType, "left", lhs.Forge.EvaluateCodegen(leftType, methodNode, exprSymbol, codegenClassScope))
+                    leftType,
+                    "left",
+                    lhs.Forge.EvaluateCodegen(leftType, methodNode, exprSymbol, codegenClassScope))
                 .DeclareVar(
-                    rightType, "right",
+                    rightType,
+                    "right",
                     rhs.Forge.EvaluateCodegen(rightType, methodNode, exprSymbol, codegenClassScope));
             if (!leftType.IsPrimitive) {
                 block.IfRefNullReturnNull("left");

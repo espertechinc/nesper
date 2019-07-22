@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -14,6 +15,7 @@ using com.espertech.esper.common.@internal.compile.stage1.spec;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.metrics.instrumentation;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 using static com.espertech.esper.common.@internal.epl.expression.declared.compiletime.ExprDeclaredForgeBase;
 
@@ -65,13 +67,19 @@ namespace com.espertech.esper.common.@internal.epl.expression.declared.compileti
             }
 
             var methodNode = codegenMethodScope.MakeChild(
-                EvaluationType, typeof(ExprDeclaredForgeConstant), codegenClassScope);
+                EvaluationType,
+                typeof(ExprDeclaredForgeConstant),
+                codegenClassScope);
 
             methodNode.Block
                 .Expression(
-                    ExprDotMethodChain(exprSymbol.GetAddExprEvalCtx(methodNode)).Add("getAuditProvider").Add(
-                        "exprdef", Constant(parent.Prototype.Name), Constant(value),
-                        exprSymbol.GetAddExprEvalCtx(methodNode)))
+                    ExprDotMethodChain(exprSymbol.GetAddExprEvalCtx(methodNode))
+                        .Add("getAuditProvider")
+                        .Add(
+                            "exprdef",
+                            Constant(parent.Prototype.Name),
+                            Constant(value),
+                            exprSymbol.GetAddExprEvalCtx(methodNode)))
                 .MethodReturn(Constant(value));
             return LocalMethod(methodNode);
         }
@@ -83,8 +91,15 @@ namespace com.espertech.esper.common.@internal.epl.expression.declared.compileti
             CodegenClassScope codegenClassScope)
         {
             return new InstrumentationBuilderExpr(
-                    GetType(), this, "ExprDeclared", requiredType, codegenMethodScope, exprSymbol, codegenClassScope)
-                .Qparams(GetInstrumentationQParams(parent, codegenClassScope)).Build();
+                    GetType(),
+                    this,
+                    "ExprDeclared",
+                    requiredType,
+                    codegenMethodScope,
+                    exprSymbol,
+                    codegenClassScope)
+                .Qparams(GetInstrumentationQParams(parent, codegenClassScope))
+                .Build();
         }
 
         public Type EvaluationType { get; }

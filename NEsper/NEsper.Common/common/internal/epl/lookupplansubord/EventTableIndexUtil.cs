@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+
 using com.espertech.esper.collection;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.compile.stage1.spec;
@@ -62,7 +63,12 @@ namespace com.espertech.esper.common.@internal.epl.lookupplansubord
                     }
 
                     advancedIndexProvisionDesc = ValidateAdvanced(
-                        indexName, indexType, columnDesc, eventType, statementRawInfo, services);
+                        indexName,
+                        indexType,
+                        columnDesc,
+                        eventType,
+                        statementRawInfo,
+                        services);
                 }
             }
 
@@ -90,10 +96,13 @@ namespace com.espertech.esper.common.@internal.epl.lookupplansubord
             StreamTypeService streamTypeService = new StreamTypeServiceImpl(eventType, null, false);
             var validationContextColumns =
                 new ExprValidationContextBuilder(streamTypeService, statementRawInfo, services)
-                    .WithDisablePropertyExpressionEventCollCache(true).Build();
+                    .WithDisablePropertyExpressionEventCollCache(true)
+                    .Build();
             var columns = columnDesc.Expressions.ToArray();
             ExprNodeUtilityValidate.GetValidatedSubtree(
-                ExprNodeOrigin.CREATEINDEXCOLUMN, columns, validationContextColumns);
+                ExprNodeOrigin.CREATEINDEXCOLUMN,
+                columns,
+                validationContextColumns);
             ExprNodeUtilityValidate.ValidatePlainExpression(ExprNodeOrigin.CREATEINDEXCOLUMN, columns);
 
             // validate parameters, may not depend on props
@@ -101,7 +110,9 @@ namespace com.espertech.esper.common.@internal.epl.lookupplansubord
             if (columnDesc.Parameters != null && !columnDesc.Parameters.IsEmpty()) {
                 parameters = columnDesc.Parameters.ToArray();
                 ExprNodeUtilityValidate.GetValidatedSubtree(
-                    ExprNodeOrigin.CREATEINDEXPARAMETER, parameters, validationContextColumns);
+                    ExprNodeOrigin.CREATEINDEXPARAMETER,
+                    parameters,
+                    validationContextColumns);
                 ExprNodeUtilityValidate.ValidatePlainExpression(ExprNodeOrigin.CREATEINDEXPARAMETER, parameters);
 
                 // validate no stream dependency of parameters
@@ -146,14 +157,16 @@ namespace com.espertech.esper.common.@internal.epl.lookupplansubord
             if (!(expression is ExprIdentNode)) {
                 throw new ExprValidationException(
                     "Invalid index expression '" +
-                    ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(expression) + "'");
+                    ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(expression) +
+                    "'");
             }
 
             var identNode = (ExprIdentNode) expression;
             if (identNode.FullUnresolvedName.Contains(".")) {
                 throw new ExprValidationException(
                     "Invalid index expression '" +
-                    ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(expression) + "'");
+                    ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(expression) +
+                    "'");
             }
 
             var columnName = identNode.FullUnresolvedName;
@@ -189,7 +202,9 @@ namespace com.espertech.esper.common.@internal.epl.lookupplansubord
 
             var indexCandidates =
                 (IDictionary<IndexMultiKey, EventTableIndexRepositoryEntry>) FindCandidates(
-                    tableIndexesRefCount, hashProps, btreeProps);
+                    tableIndexesRefCount,
+                    hashProps,
+                    btreeProps);
 
             // if there are hints, follow these
             if (optionalIndexHintInstructions != null) {
@@ -201,10 +216,16 @@ namespace com.espertech.esper.common.@internal.epl.lookupplansubord
 
             // Get an existing table, if any, matching the exact requirement, prefer unique
             var indexPropKeyMatch = FindExactMatchNameAndType(
-                tableIndexesRefCount.Keys, true, hashProps, btreeProps);
+                tableIndexesRefCount.Keys,
+                true,
+                hashProps,
+                btreeProps);
             if (indexPropKeyMatch == null) {
                 indexPropKeyMatch = FindExactMatchNameAndType(
-                    tableIndexesRefCount.Keys, false, hashProps, btreeProps);
+                    tableIndexesRefCount.Keys,
+                    false,
+                    hashProps,
+                    btreeProps);
             }
 
             if (indexPropKeyMatch != null) {
@@ -216,7 +237,9 @@ namespace com.espertech.esper.common.@internal.epl.lookupplansubord
             }
 
             return GetBestCandidate(
-                (IDictionary<IndexMultiKey, EventTableIndexEntryBase>) (IDictionary<object, object>) indexCandidates).First;
+                    (IDictionary<IndexMultiKey, EventTableIndexEntryBase>)
+                    (IDictionary<object, object>) indexCandidates)
+                .First;
         }
 
         public static Pair<IndexMultiKey, EventTableIndexEntryBase> FindIndexBestAvailable<T>(
@@ -243,7 +266,9 @@ namespace com.espertech.esper.common.@internal.epl.lookupplansubord
 
             var indexCandidates =
                 (IDictionary<IndexMultiKey, EventTableIndexEntryBase>) FindCandidates(
-                    tablesAvailable, hashProps, rangeProps);
+                    tablesAvailable,
+                    hashProps,
+                    rangeProps);
 
             // handle hint
             if (optionalIndexHintInstructions != null) {
@@ -403,7 +428,8 @@ namespace com.espertech.esper.common.@internal.epl.lookupplansubord
             foreach (var hashPropProvided in hashPropsProvided) {
                 var nameMatch = hashPropProvided.IndexPropName.Equals(hashPropIndexed.IndexPropName);
                 var typeMatch = true;
-                if (hashPropProvided.CoercionType != null && !TypeHelper.IsSubclassOrImplementsInterface(
+                if (hashPropProvided.CoercionType != null &&
+                    !TypeHelper.IsSubclassOrImplementsInterface(
                         hashPropProvided.CoercionType.GetBoxedType(),
                         hashPropIndexed.CoercionType.GetBoxedType())) {
                     typeMatch = false;

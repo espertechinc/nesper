@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
@@ -27,10 +28,13 @@ namespace com.espertech.esper.common.@internal.epl.approx.countminsketch
             switch (enumValue) {
                 case CountMinSketchAggType.ADD:
                     return "countMinSketchAdd";
+
                 case CountMinSketchAggType.FREQ:
                     return "countMinSketchFrequency";
+
                 case CountMinSketchAggType.STATE:
                     return "countMinSketch";
+
                 case CountMinSketchAggType.TOPK:
                     return "countMinSketchTopk";
             }
@@ -43,10 +47,13 @@ namespace com.espertech.esper.common.@internal.epl.approx.countminsketch
             switch (name.ToLowerInvariant()) {
                 case "countminsketchadd":
                     return CountMinSketchAggType.ADD;
+
                 case "countminsketchfrequency":
                     return CountMinSketchAggType.FREQ;
+
                 case "countminsketch":
                     return CountMinSketchAggType.STATE;
+
                 case "countminsketchtopk":
                     return CountMinSketchAggType.TOPK;
             }

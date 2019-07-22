@@ -17,6 +17,7 @@ using com.espertech.esper.common.@internal.epl.@join.querygraph;
 using com.espertech.esper.common.@internal.epl.namedwindow.core;
 using com.espertech.esper.common.@internal.epl.namedwindow.path;
 using com.espertech.esper.compat;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.context.activator
@@ -67,22 +68,32 @@ namespace com.espertech.esper.common.@internal.context.activator
             }
 
             method.Block
-                .DeclareVar(
-                    typeof(ViewableActivatorNamedWindow), "activator",
+                .DeclareVar<ViewableActivatorNamedWindow>(
+                    "activator",
                     ExprDotMethodChain(symbols.GetAddInitSvc(method))
-                        .Add(EPStatementInitServicesConstants.GETVIEWABLEACTIVATORFACTORY).Add("createNamedWindow"))
-                .SetProperty(Ref("activator"), "NamedWindow",
+                        .Add(EPStatementInitServicesConstants.GETVIEWABLEACTIVATORFACTORY)
+                        .Add("createNamedWindow"))
+                .SetProperty(
+                    Ref("activator"),
+                    "NamedWindow",
                     NamedWindowDeployTimeResolver.MakeResolveNamedWindow(namedWindow, symbols.GetAddInitSvc(method)))
                 .SetProperty(Ref("activator"), "NamedWindowConsumerId", Constant(spec.NamedWindowConsumerId))
                 .SetProperty(Ref("activator"), "FilterEvaluator", filter)
-                .SetProperty(Ref("activator"), "FilterQueryGraph",
+                .SetProperty(
+                    Ref("activator"),
+                    "FilterQueryGraph",
                     filterQueryGraph == null ? ConstantNull() : filterQueryGraph.Make(method, symbols, classScope))
                 .SetProperty(Ref("activator"), "Subquery", Constant(subquery))
-                .SetProperty(Ref("activator"), "OptPropertyEvaluator",
+                .SetProperty(
+                    Ref("activator"),
+                    "OptPropertyEvaluator",
                     optPropertyEvaluator == null
                         ? ConstantNull()
                         : optPropertyEvaluator.Make(method, symbols, classScope))
-                .ExprDotMethod(symbols.GetAddInitSvc(method), "addReadyCallback", Ref("activator")) // add ready-callback
+                .ExprDotMethod(
+                    symbols.GetAddInitSvc(method),
+                    "addReadyCallback",
+                    Ref("activator")) // add ready-callback
                 .MethodReturn(Ref("activator"));
             return LocalMethod(method);
         }

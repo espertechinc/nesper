@@ -38,7 +38,10 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.state
             RowRecogPartitionTerminationStateComparator terminationStateCompare)
         {
             return new RowRecogPartitionStateRepoGroup(
-                prevGetter, stateRepoGroupMeta, keepScheduleState, terminationStateCompare);
+                prevGetter,
+                stateRepoGroupMeta,
+                keepScheduleState,
+                terminationStateCompare);
         }
     }
 } // end of namespace

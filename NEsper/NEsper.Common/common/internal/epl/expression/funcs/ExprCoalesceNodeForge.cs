@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
@@ -34,7 +35,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
         ExprNodeRenderable ExprForge.ExprForgeRenderable => ForgeRenderable;
 
         public ExprEvaluator ExprEvaluator => new ExprCoalesceNodeForgeEval(
-            this, ExprNodeUtilityQuery.GetEvaluatorsNoCompile(ForgeRenderable.ChildNodes));
+            this,
+            ExprNodeUtilityQuery.GetEvaluatorsNoCompile(ForgeRenderable.ChildNodes));
 
         public Type EvaluationType { get; }
 
@@ -56,7 +58,13 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
             CodegenClassScope codegenClassScope)
         {
             return new InstrumentationBuilderExpr(
-                    GetType(), this, "ExprCoalesce", requiredType, codegenMethodScope, exprSymbol, codegenClassScope)
+                    GetType(),
+                    this,
+                    "ExprCoalesce",
+                    requiredType,
+                    codegenMethodScope,
+                    exprSymbol,
+                    codegenClassScope)
                 .Build();
         }
     }

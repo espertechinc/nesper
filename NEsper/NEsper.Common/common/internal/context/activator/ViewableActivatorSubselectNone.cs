@@ -21,7 +21,13 @@ namespace com.espertech.esper.common.@internal.context.activator
             bool isRecoveringResilient)
         {
             return new ViewableActivationResult(
-                null, AgentInstanceStopCallbackNoAction.INSTANCE, null, false, false, null, null);
+                null,
+                AgentInstanceStopCallbackNoAction.INSTANCE,
+                null,
+                false,
+                false,
+                null,
+                null);
         }
     }
 } // end of namespace

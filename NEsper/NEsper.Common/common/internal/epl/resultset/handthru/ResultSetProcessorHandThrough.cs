@@ -38,8 +38,8 @@ namespace com.espertech.esper.common.@internal.epl.resultset.handthru
                 Constant(true), REF_ISSYNTHESIZE, REF_AGENTINSTANCECONTEXT);
 
             method.Block
-                .DeclareVar(typeof(EventBean[]), "selectOldEvents", oldEvents)
-                .DeclareVar(typeof(EventBean[]), "selectNewEvents", newEvents)
+                .DeclareVar<EventBean[]>("selectOldEvents", oldEvents)
+                .DeclareVar<EventBean[]>("selectNewEvents", newEvents)
                 .MethodReturn(NewInstance<UniformPair<EventBean>>(Ref("selectNewEvents"), Ref("selectOldEvents")));
         }
 
@@ -59,8 +59,8 @@ namespace com.espertech.esper.common.@internal.epl.resultset.handthru
                 Constant(true), REF_ISSYNTHESIZE, REF_AGENTINSTANCECONTEXT);
 
             method.Block
-                .DeclareVar(typeof(EventBean[]), "selectOldEvents", oldEvents)
-                .DeclareVar(typeof(EventBean[]), "selectNewEvents", newEvents)
+                .DeclareVar<EventBean[]>("selectOldEvents", oldEvents)
+                .DeclareVar<EventBean[]>("selectNewEvents", newEvents)
                 .MethodReturn(NewInstance<UniformPair<EventBean>>(Ref("selectNewEvents"), Ref("selectOldEvents")));
         }
 
@@ -75,9 +75,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.handthru
         internal static void GetIteratorJoinCodegen(CodegenMethod method)
         {
             method.Block
-                .DeclareVar(
-                    typeof(UniformPair<EventBean>),
-                    typeof(EventBean[]),
+                .DeclareVar<UniformPair<EventBean>>(
                     "result",
                     ExprDotMethod(
                         Ref("this"), "ProcessJoinResult", REF_JOINSET,

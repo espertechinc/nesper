@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.hook.exception;
 using com.espertech.esper.common.@internal.context.aifactory.core;
@@ -49,13 +50,17 @@ namespace com.espertech.esper.common.@internal.context.util
                 foreach (KeyValuePair<string, object> entry in optionalTriggeringPattern) {
                     if (entry.Value is EventBean) {
                         evaluator.EvaluateEventForStatement(
-                            (EventBean) entry.Value, agentInstances, agentInstanceContextCreate);
+                            (EventBean) entry.Value,
+                            agentInstances,
+                            agentInstanceContextCreate);
                     }
                     else if (entry.Value is EventBean[]) {
                         EventBean[] eventsArray = (EventBean[]) entry.Value;
                         foreach (EventBean eventElement in eventsArray) {
                             evaluator.EvaluateEventForStatement(
-                                eventElement, agentInstances, agentInstanceContextCreate);
+                                eventElement,
+                                agentInstances,
+                                agentInstanceContextCreate);
                         }
                     }
                 }
@@ -80,7 +85,10 @@ namespace com.espertech.esper.common.@internal.context.util
 
             // we are not removing statement resources from memory as they may still be used for the same event
             Stop(
-                holder.AgentInstanceStopCallback, holder.AgentInstanceContext, holder.FinalView, false,
+                holder.AgentInstanceStopCallback,
+                holder.AgentInstanceContext,
+                holder.FinalView,
+                false,
                 leaveLocksAcquired);
             if (leaveLocksAcquired) {
                 agentInstancesLocksHeld.Add(
@@ -195,7 +203,10 @@ namespace com.espertech.esper.common.@internal.context.util
             AgentInstanceContext agentInstanceContext)
         {
             agentInstanceContext.ExceptionHandlingService.HandleException(
-                e, agentInstanceContext.EpStatementAgentInstanceHandle, ExceptionHandlerExceptionType.UNDEPLOY, null);
+                e,
+                agentInstanceContext.EpStatementAgentInstanceHandle,
+                ExceptionHandlerExceptionType.UNDEPLOY,
+                null);
         }
 
         public static AgentInstance StartStatement(
@@ -206,7 +217,12 @@ namespace com.espertech.esper.common.@internal.context.util
             AgentInstanceFilterProxy proxy)
         {
             StatementAgentInstanceFactoryResult result = AgentInstanceUtil.Start(
-                services, statementDesc, assignedContextId, contextBean, proxy, false);
+                services,
+                statementDesc,
+                assignedContextId,
+                contextBean,
+                proxy,
+                false);
             return new AgentInstance(result.StopCallback, result.AgentInstanceContext, result.FinalView);
         }
 
@@ -223,7 +239,8 @@ namespace com.espertech.esper.common.@internal.context.util
             // create handle that comtains lock for use in scheduling and filter callbacks
             StatementAgentInstanceLock @lock =
                 statementContext.StatementAIFactoryProvider.Factory.ObtainAgentInstanceLock(
-                    statementContext, agentInstanceId);
+                    statementContext,
+                    agentInstanceId);
             EPStatementAgentInstanceHandle agentInstanceHandle =
                 new EPStatementAgentInstanceHandle(statementContext.EpStatementHandle, agentInstanceId, @lock);
 
@@ -231,8 +248,13 @@ namespace com.espertech.esper.common.@internal.context.util
             InstrumentationCommon instrumentationProvider =
                 statementContext.StatementInformationals.InstrumentationProvider;
             AgentInstanceContext agentInstanceContext = new AgentInstanceContext(
-                statementContext, agentInstanceId, agentInstanceHandle, agentInstanceFilterProxy, contextProperties,
-                auditProvider, instrumentationProvider);
+                statementContext,
+                agentInstanceId,
+                agentInstanceHandle,
+                agentInstanceFilterProxy,
+                contextProperties,
+                auditProvider,
+                instrumentationProvider);
             if (agentInstanceId != -1) {
                 agentInstanceContext.AuditProvider.ContextPartition(true, agentInstanceContext);
             }
@@ -248,7 +270,8 @@ namespace com.espertech.esper.common.@internal.context.util
                 // start
                 StatementAgentInstanceFactoryResult startResult =
                     statement.Lightweight.StatementProvider.StatementAIFactoryProvider.Factory.NewContext(
-                        agentInstanceContext, isRecoveringResilient);
+                        agentInstanceContext,
+                        isRecoveringResilient);
 
                 // hook up with listeners+subscribers
                 startResult.FinalView.Child = statement.ContextMergeView; // hook output to merge view
@@ -256,7 +279,8 @@ namespace com.espertech.esper.common.@internal.context.util
                 // assign agents for expression-node based strategies
                 StatementAIResourceRegistry aiResourceRegistry = statementContext.StatementAIResourceRegistry;
                 AIRegistryUtil.AssignFutures(
-                    aiResourceRegistry, agentInstanceId,
+                    aiResourceRegistry,
+                    agentInstanceId,
                     startResult.OptionalAggegationService,
                     startResult.PriorStrategies,
                     startResult.PreviousGetterStrategies,
@@ -274,7 +298,8 @@ namespace com.espertech.esper.common.@internal.context.util
                 StatementResourceHolder holder =
                     services.StatementResourceHolderBuilder.Build(agentInstanceContext, startResult);
                 statementContext.StatementCPCacheService.StatementResourceService.SetPartitioned(
-                    agentInstanceId, holder);
+                    agentInstanceId,
+                    holder);
 
                 // instantiate
                 return startResult;
@@ -297,7 +322,9 @@ namespace com.espertech.esper.common.@internal.context.util
             // context was created - reevaluate for the given event
             ArrayDeque<FilterHandle> callbacks = new ArrayDeque<FilterHandle>();
             agentInstanceContext.FilterService.Evaluate(
-                theEvent, callbacks, agentInstanceContext.StatementContext.StatementId);
+                theEvent,
+                callbacks,
+                agentInstanceContext.StatementContext.StatementId);
 
             try {
                 agentInstanceContext.VariableManagementService.SetLocalVersion();
@@ -316,7 +343,9 @@ namespace com.espertech.esper.common.@internal.context.util
             }
             catch (Exception ex) {
                 agentInstanceContext.ExceptionHandlingService.HandleException(
-                    ex, agentInstanceContext.EpStatementAgentInstanceHandle, ExceptionHandlerExceptionType.PROCESS,
+                    ex,
+                    agentInstanceContext.EpStatementAgentInstanceHandle,
+                    ExceptionHandlerExceptionType.PROCESS,
                     theEvent);
             }
 
@@ -326,7 +355,9 @@ namespace com.espertech.esper.common.@internal.context.util
         public static StatementAgentInstanceLock NewLock(StatementContext statementContext)
         {
             return statementContext.StatementAgentInstanceLockFactory.GetStatementLock(
-                statementContext.StatementName, statementContext.Annotations, statementContext.IsStatelessSelect,
+                statementContext.StatementName,
+                statementContext.Annotations,
+                statementContext.IsStatelessSelect,
                 statementContext.StatementType);
         }
     }

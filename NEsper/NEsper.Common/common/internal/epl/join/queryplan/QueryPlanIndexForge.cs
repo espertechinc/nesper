@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+
 using com.espertech.esper.collection;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
@@ -18,6 +19,7 @@ using com.espertech.esper.common.@internal.bytecodemodel.util;
 using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat.collections;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.join.queryplan
@@ -76,12 +78,12 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplan
             return NewInstance<QueryPlanIndex>(
                 CodegenMakeableUtil.MakeMap(
                     "items",
-                    typeof(TableLookupIndexReqKey), 
+                    typeof(TableLookupIndexReqKey),
                     typeof(QueryPlanIndexItem),
                     itemsAsMakeables,
-                    GetType(), 
+                    GetType(),
                     parent,
-                    symbols, 
+                    symbols,
                     classScope));
         }
 
@@ -108,7 +110,13 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplan
         {
             // find an exact match first
             var proposed = new QueryPlanIndexItemForge(
-                indexProps, new Type[indexProps.Length], rangeProps, new Type[rangeProps.Length], false, null, null);
+                indexProps,
+                new Type[indexProps.Length],
+                rangeProps,
+                new Type[rangeProps.Length],
+                false,
+                null,
+                null);
             foreach (var entry in Items) {
                 if (entry.Value.EqualsCompareSortedProps(proposed)) {
                     return new Pair<TableLookupIndexReqKey, int[]>(entry.Key, null);
@@ -119,7 +127,8 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplan
             foreach (var entry in Items) {
                 if (entry.Value.RangeProps == null || entry.Value.RangeProps.Length == 0) {
                     var indexes = QueryPlanIndexUniqueHelper.CheckSufficientGetAssignment(
-                        entry.Value.HashProps, indexProps);
+                        entry.Value.HashProps,
+                        indexProps);
                     if (indexes != null && indexes.Length != 0) {
                         return new Pair<TableLookupIndexReqKey, int[]>(entry.Key, indexes);
                     }
@@ -138,7 +147,13 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplan
             Items.Put(
                 new TableLookupIndexReqKey(uuid, null),
                 new QueryPlanIndexItemForge(
-                    indexProperties, coercionTypes, new string[0], new Type[0], false, null, eventType));
+                    indexProperties,
+                    coercionTypes,
+                    new string[0],
+                    new Type[0],
+                    false,
+                    null,
+                    eventType));
             return uuid;
         }
 

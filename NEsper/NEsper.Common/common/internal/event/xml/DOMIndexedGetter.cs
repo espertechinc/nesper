@@ -7,10 +7,12 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Xml;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.@event.core;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.@event.xml
@@ -127,7 +129,10 @@ namespace com.espertech.esper.common.@internal.@event.xml
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            return UnderlyingGetCodegen(CastUnderlying(typeof(XmlNode), beanExpression), codegenMethodScope, codegenClassScope);
+            return UnderlyingGetCodegen(
+                CastUnderlying(typeof(XmlNode), beanExpression),
+                codegenMethodScope,
+                codegenClassScope);
         }
 
         public CodegenExpression EventBeanExistsCodegen(
@@ -135,7 +140,10 @@ namespace com.espertech.esper.common.@internal.@event.xml
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            return UnderlyingExistsCodegen(CastUnderlying(typeof(XmlNode), beanExpression), codegenMethodScope, codegenClassScope);
+            return UnderlyingExistsCodegen(
+                CastUnderlying(typeof(XmlNode), beanExpression),
+                codegenMethodScope,
+                codegenClassScope);
         }
 
         public CodegenExpression EventBeanFragmentCodegen(
@@ -143,7 +151,10 @@ namespace com.espertech.esper.common.@internal.@event.xml
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            return UnderlyingFragmentCodegen(CastUnderlying(typeof(XmlNode), beanExpression), codegenMethodScope, codegenClassScope);
+            return UnderlyingFragmentCodegen(
+                CastUnderlying(typeof(XmlNode), beanExpression),
+                codegenMethodScope,
+                codegenClassScope);
         }
 
         public CodegenExpression UnderlyingGetCodegen(
@@ -151,7 +162,12 @@ namespace com.espertech.esper.common.@internal.@event.xml
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            return StaticMethod(GetType(), "getNodeValue", underlyingExpression, Constant(propertyName), Constant(index));
+            return StaticMethod(
+                GetType(),
+                "getNodeValue",
+                underlyingExpression,
+                Constant(propertyName),
+                Constant(index));
         }
 
         public CodegenExpression UnderlyingExistsCodegen(
@@ -159,7 +175,12 @@ namespace com.espertech.esper.common.@internal.@event.xml
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            return StaticMethod(GetType(), "getNodeValueExists", underlyingExpression, Constant(propertyName), Constant(index));
+            return StaticMethod(
+                GetType(),
+                "getNodeValueExists",
+                underlyingExpression,
+                Constant(propertyName),
+                Constant(index));
         }
 
         public CodegenExpression UnderlyingFragmentCodegen(
@@ -179,12 +200,20 @@ namespace com.espertech.esper.common.@internal.@event.xml
             CodegenClassScope codegenClassScope)
         {
             var member = codegenClassScope.AddFieldUnshared(
-                true, typeof(FragmentFactory), fragmentFactory.Make(codegenClassScope.NamespaceScope.InitMethod, codegenClassScope));
-            var method = codegenMethodScope.MakeChild(typeof(object), GetType(), codegenClassScope).AddParam(typeof(XmlNode), "node");
+                true,
+                typeof(FragmentFactory),
+                fragmentFactory.Make(codegenClassScope.NamespaceScope.InitMethod, codegenClassScope));
+            var method = codegenMethodScope.MakeChild(typeof(object), GetType(), codegenClassScope)
+                .AddParam(typeof(XmlNode), "node");
             method.Block
-                .DeclareVar(
-                    typeof(XmlNode), "result",
-                    StaticMethod(typeof(DOMIndexedGetter), "getNodeValue", Ref("node"), Constant(propertyName), Constant(index)))
+                .DeclareVar<XmlNode>(
+                    "result",
+                    StaticMethod(
+                        typeof(DOMIndexedGetter),
+                        "getNodeValue",
+                        Ref("node"),
+                        Constant(propertyName),
+                        Constant(index)))
                 .IfRefNullReturnNull("result")
                 .MethodReturn(ExprDotMethod(member, "getEvent", Ref("result")));
             return method;

@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.@internal.epl.pattern.guard;
 using com.espertech.esper.compat;
 
@@ -33,8 +34,10 @@ namespace com.espertech.esper.common.client.soda
             switch (value) {
                 case GuardEnum.TIMER_WITHIN:
                     return "timer";
+
                 case GuardEnum.TIMER_WITHINMAX:
                     return "timer";
+
                 case GuardEnum.WHILE_GUARD:
                     return "internal";
             }
@@ -51,8 +54,10 @@ namespace com.espertech.esper.common.client.soda
             switch (value) {
                 case GuardEnum.TIMER_WITHIN:
                     return "within";
+
                 case GuardEnum.TIMER_WITHINMAX:
                     return "withinmax";
+
                 case GuardEnum.WHILE_GUARD:
                     return "while";
             }
@@ -97,8 +102,10 @@ namespace com.espertech.esper.common.client.soda
             switch (guardEnum) {
                 case GuardEnum.TIMER_WITHIN:
                     return typeof(TimerWithinGuardForge);
+
                 case GuardEnum.TIMER_WITHINMAX:
                     return typeof(TimerWithinOrMaxCountGuardForge);
+
                 case GuardEnum.WHILE_GUARD:
                     return typeof(ExpressionGuardForge);
             }

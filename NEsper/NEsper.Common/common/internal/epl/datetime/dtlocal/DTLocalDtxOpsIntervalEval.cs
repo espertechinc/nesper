@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -17,6 +18,7 @@ using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.settings;
 using com.espertech.esper.compat;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 using static com.espertech.esper.common.@internal.epl.datetime.dtlocal.DTLocalUtil;
 
@@ -59,10 +61,15 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
                 .AddParam(typeof(DateTimeEx), "target");
 
             var block = methodNode.Block
-                .DeclareVar(typeof(DateTimeEx), "dtx", Cast(typeof(DateTimeEx), ExprDotMethod(Ref("target"), "clone")));
+                .DeclareVar<DateTimeEx>("dtx", Cast(typeof(DateTimeEx), ExprDotMethod(Ref("target"), "clone")));
             EvaluateCalOpsCalendarCodegen(
-                block, forge.calendarForges, Ref("dtx"), methodNode, exprSymbol, codegenClassScope);
-            block.DeclareVar(typeof(long), "time", ExprDotMethod(Ref("dtx"), "getTimeInMillis"))
+                block,
+                forge.calendarForges,
+                Ref("dtx"),
+                methodNode,
+                exprSymbol,
+                codegenClassScope);
+            block.DeclareVar<long>("time", ExprDotMethod(Ref("dtx"), "getTimeInMillis"))
                 .MethodReturn(
                     forge.intervalForge.Codegen(Ref("time"), Ref("time"), methodNode, exprSymbol, codegenClassScope));
             return LocalMethod(methodNode, inner);
@@ -97,21 +104,32 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
                 codegenClassScope.AddOrGetFieldSharable(RuntimeSettingsTimeZoneField.INSTANCE);
             var methodNode = codegenMethodScope
                 .MakeChild(typeof(bool?), typeof(DTLocalDtxOpsIntervalEval), codegenClassScope)
-                .AddParam(typeof(DateTimeEx), "startTimestamp").AddParam(typeof(DateTimeEx), "endTimestamp");
+                .AddParam(typeof(DateTimeEx), "startTimestamp")
+                .AddParam(typeof(DateTimeEx), "endTimestamp");
 
             var block = methodNode.Block
-                .DeclareVar(typeof(long), "startLong", ExprDotMethod(Ref("startTimestamp"), "getTimeInMillis"))
-                .DeclareVar(typeof(long), "endLong", ExprDotMethod(Ref("endTimestamp"), "getTimeInMillis"))
-                .DeclareVar(typeof(DateTimeEx), "dtx", StaticMethod(typeof(DateTimeEx), "getInstance", timeZoneField))
+                .DeclareVar<long>("startLong", ExprDotMethod(Ref("startTimestamp"), "getTimeInMillis"))
+                .DeclareVar<long>("endLong", ExprDotMethod(Ref("endTimestamp"), "getTimeInMillis"))
+                .DeclareVar<DateTimeEx>("dtx", StaticMethod(typeof(DateTimeEx), "getInstance", timeZoneField))
                 .Expression(SetProperty(Ref("dtx"), "TimeInMillis", Ref("startLong")));
             EvaluateCalOpsCalendarCodegen(
-                block, forge.calendarForges, Ref("dtx"), methodNode, exprSymbol, codegenClassScope);
-            block.DeclareVar(typeof(long), "startTime", ExprDotMethod(Ref("dtx"), "getTimeInMillis"))
-                .DeclareVar(
-                    typeof(long), "endTime", Op(Ref("startTime"), "+", Op(Ref("endLong"), "-", Ref("startLong"))))
+                block,
+                forge.calendarForges,
+                Ref("dtx"),
+                methodNode,
+                exprSymbol,
+                codegenClassScope);
+            block.DeclareVar<long>("startTime", ExprDotMethod(Ref("dtx"), "getTimeInMillis"))
+                .DeclareVar<long>(
+                    "endTime",
+                    Op(Ref("startTime"), "+", Op(Ref("endLong"), "-", Ref("startLong"))))
                 .MethodReturn(
                     forge.intervalForge.Codegen(
-                        Ref("startTime"), Ref("endTime"), methodNode, exprSymbol, codegenClassScope));
+                        Ref("startTime"),
+                        Ref("endTime"),
+                        methodNode,
+                        exprSymbol,
+                        codegenClassScope));
             return LocalMethod(methodNode, start, end);
         }
     }

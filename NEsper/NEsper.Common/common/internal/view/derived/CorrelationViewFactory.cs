@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.context.module;
 using com.espertech.esper.common.@internal.epl.expression.core;
@@ -38,7 +39,12 @@ namespace com.espertech.esper.common.@internal.view.derived
         public View MakeView(AgentInstanceViewFactoryChainContext agentInstanceViewFactoryContext)
         {
             return new CorrelationView(
-                this, agentInstanceViewFactoryContext.AgentInstanceContext, expressionXEval, expressionYEval, eventType, additionalProps);
+                this,
+                agentInstanceViewFactoryContext.AgentInstanceContext,
+                expressionXEval,
+                expressionYEval,
+                eventType,
+                additionalProps);
         }
 
         public EventType EventType {

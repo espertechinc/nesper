@@ -8,6 +8,7 @@
 
 using System.Collections.Generic;
 using System.Linq;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.epl.agg.core;
@@ -112,16 +113,24 @@ namespace com.espertech.esper.common.@internal.epl.subselect
         {
             // create factory chain context to hold callbacks specific to "prior" and "prev"
             var viewFactoryChainContext = AgentInstanceViewFactoryChainContext.Create(
-                viewFactories, agentInstanceContext, viewResourceDelegate);
+                viewFactories,
+                agentInstanceContext,
+                viewResourceDelegate);
             var viewables = ViewFactoryUtil.Materialize(
-                viewFactories, viewableRoot, viewFactoryChainContext, stopCallbackList);
+                viewFactories,
+                viewableRoot,
+                viewFactoryChainContext,
+                stopCallbackList);
             var subselectView = viewables.Last;
 
             // make aggregation service
             AggregationService aggregationService = null;
             if (aggregationServiceFactory != null) {
                 aggregationService = aggregationServiceFactory.MakeService(
-                    agentInstanceContext, agentInstanceContext.ImportServiceRuntime, true, subqueryNumber,
+                    agentInstanceContext,
+                    agentInstanceContext.ImportServiceRuntime,
+                    true,
+                    subqueryNumber,
                     null);
 
                 var aggregationServiceStoppable = aggregationService;
@@ -143,21 +152,33 @@ namespace com.espertech.esper.common.@internal.epl.subselect
                 if (groupKeyEval == null) {
                     if (filterExprEval == null) {
                         aggregatorView = new SubselectAggregatorViewUnfilteredUngrouped(
-                            aggregationService, filterExprEval, agentInstanceContext, null);
+                            aggregationService,
+                            filterExprEval,
+                            agentInstanceContext,
+                            null);
                     }
                     else {
                         aggregatorView = new SubselectAggregatorViewFilteredUngrouped(
-                            aggregationService, filterExprEval, agentInstanceContext, null);
+                            aggregationService,
+                            filterExprEval,
+                            agentInstanceContext,
+                            null);
                     }
                 }
                 else {
                     if (filterExprEval == null) {
                         aggregatorView = new SubselectAggregatorViewUnfilteredGrouped(
-                            aggregationService, filterExprEval, agentInstanceContext, groupKeyEval);
+                            aggregationService,
+                            filterExprEval,
+                            agentInstanceContext,
+                            groupKeyEval);
                     }
                     else {
                         aggregatorView = new SubselectAggregatorViewFilteredGrouped(
-                            aggregationService, filterExprEval, agentInstanceContext, groupKeyEval);
+                            aggregationService,
+                            filterExprEval,
+                            agentInstanceContext,
+                            groupKeyEval);
                     }
                 }
 
@@ -168,8 +189,13 @@ namespace com.espertech.esper.common.@internal.epl.subselect
                 }
 
                 return new SubSelectStrategyRealization(
-                    SubordTableLookupStrategyNullRow.INSTANCE, null, aggregationService, priorStrategy, previousGetter,
-                    subselectView, null);
+                    SubordTableLookupStrategyNullRow.INSTANCE,
+                    null,
+                    aggregationService,
+                    priorStrategy,
+                    previousGetter,
+                    subselectView,
+                    null);
             }
 
             // create index/holder table
@@ -185,21 +211,29 @@ namespace com.espertech.esper.common.@internal.epl.subselect
                 if (groupKeyEval == null) {
                     if (filterExprEval == null) {
                         subselectAggregationPreprocessor = new SubselectAggregationPreprocessorUnfilteredUngrouped(
-                            aggregationService, filterExprEval, null);
+                            aggregationService,
+                            filterExprEval,
+                            null);
                     }
                     else {
                         subselectAggregationPreprocessor = new SubselectAggregationPreprocessorFilteredUngrouped(
-                            aggregationService, filterExprEval, null);
+                            aggregationService,
+                            filterExprEval,
+                            null);
                     }
                 }
                 else {
                     if (filterExprEval == null) {
                         subselectAggregationPreprocessor = new SubselectAggregationPreprocessorUnfilteredGrouped(
-                            aggregationService, filterExprEval, groupKeyEval);
+                            aggregationService,
+                            filterExprEval,
+                            groupKeyEval);
                     }
                     else {
                         subselectAggregationPreprocessor = new SubselectAggregationPreprocessorFilteredGrouped(
-                            aggregationService, filterExprEval, groupKeyEval);
+                            aggregationService,
+                            filterExprEval,
+                            groupKeyEval);
                     }
                 }
             }
@@ -214,8 +248,13 @@ namespace com.espertech.esper.common.@internal.epl.subselect
             subselectView.Child = bufferView;
 
             return new SubSelectStrategyRealization(
-                strategy, subselectAggregationPreprocessor, aggregationService, priorStrategy, previousGetter,
-                subselectView, index);
+                strategy,
+                subselectAggregationPreprocessor,
+                aggregationService,
+                priorStrategy,
+                previousGetter,
+                subselectView,
+                index);
         }
 
         public LookupStrategyDesc LookupStrategyDesc => lookupStrategyFactory.LookupStrategyDesc;
@@ -228,8 +267,11 @@ namespace com.espertech.esper.common.@internal.epl.subselect
             var instance = namedWindow.GetNamedWindowInstance(agentInstanceContext);
             if (instance == null) {
                 throw new EPException(
-                    "Named window '" + namedWindow.Name + "' is associated to context '" +
-                    namedWindow.StatementContext.ContextName + "' that is not available for querying");
+                    "Named window '" +
+                    namedWindow.Name +
+                    "' is associated to context '" +
+                    namedWindow.StatementContext.ContextName +
+                    "' that is not available for querying");
             }
 
             var consumerView = instance.TailViewInstance;
@@ -238,10 +280,14 @@ namespace com.espertech.esper.common.@internal.epl.subselect
             ICollection<EventBean> eventsInWindow;
             if (namedWindowFilterExpr != null) {
                 ICollection<EventBean> snapshot = consumerView.SnapshotNoLock(
-                    namedWindowFilterQueryGraph, agentInstanceContext.Annotations);
+                    namedWindowFilterQueryGraph,
+                    agentInstanceContext.Annotations);
                 eventsInWindow = new List<EventBean>(snapshot.Count);
                 ExprNodeUtilityEvaluate.ApplyFilterExpressionIterable(
-                    snapshot.GetEnumerator(), namedWindowFilterExpr, agentInstanceContext, eventsInWindow);
+                    snapshot.GetEnumerator(),
+                    namedWindowFilterExpr,
+                    agentInstanceContext,
+                    eventsInWindow);
             }
             else {
                 eventsInWindow = new List<EventBean>();

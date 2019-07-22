@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -16,6 +17,7 @@ using com.espertech.esper.common.@internal.epl.namedwindow.core;
 using com.espertech.esper.common.@internal.epl.namedwindow.path;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.fafquery.processor
@@ -54,11 +56,19 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.processor
             SAIFFInitializeSymbol symbols,
             CodegenClassScope classScope)
         {
-            CodegenMethod method = parent.MakeChild(typeof(FireAndForgetProcessorNamedWindow), this.GetType(), classScope);
+            CodegenMethod method = parent.MakeChild(
+                typeof(FireAndForgetProcessorNamedWindow),
+                this.GetType(),
+                classScope);
             CodegenExpressionRef nw = @Ref("nw");
             method.Block
-                .DeclareVar(typeof(FireAndForgetProcessorNamedWindow), nw.Ref, NewInstance(typeof(FireAndForgetProcessorNamedWindow)))
-                .SetProperty(nw, "NamedWindow", NamedWindowDeployTimeResolver.MakeResolveNamedWindow(namedWindow, symbols.GetAddInitSvc(method)))
+                .DeclareVar<FireAndForgetProcessorNamedWindow>(
+                    nw.Ref,
+                    NewInstance(typeof(FireAndForgetProcessorNamedWindow)))
+                .SetProperty(
+                    nw,
+                    "NamedWindow",
+                    NamedWindowDeployTimeResolver.MakeResolveNamedWindow(namedWindow, symbols.GetAddInitSvc(method)))
                 .MethodReturn(nw);
             return LocalMethod(method);
         }

@@ -20,20 +20,25 @@ namespace com.espertech.esper.common.@internal.epl.output.view
     /// </summary>
     public class OutputProcessViewConditionFactory : OutputProcessViewDirectDistinctOrAfterFactory
     {
-        private readonly ResultSetProcessorOutputConditionType conditionType;
-        private readonly EventType[] eventTypes;
+        private readonly ResultSetProcessorOutputConditionType _conditionType;
+        private readonly EventType[] _eventTypes;
 
         public OutputProcessViewConditionFactory(OutputProcessViewConditionSpec spec)
-            : base(spec.PostProcessFactory, spec.IsDistinct, spec.AfterTimePeriod, spec.AfterConditionNumberOfEvents, spec.ResultEventType)
+            : base(
+                spec.PostProcessFactory,
+                spec.IsDistinct,
+                spec.AfterTimePeriod,
+                spec.AfterConditionNumberOfEvents,
+                spec.ResultEventType)
         {
             OutputConditionFactory = spec.OutputConditionFactory;
             StreamCount = spec.StreamCount;
-            conditionType = spec.ConditionType;
+            _conditionType = spec.ConditionType;
             IsTerminable = spec.IsTerminable;
             IsAfter = spec.HasAfter;
             IsUnaggregatedUngrouped = spec.IsUnaggregatedUngrouped;
             SelectClauseStreamSelectorEnum = spec.SelectClauseStreamSelector;
-            eventTypes = spec.EventTypes;
+            _eventTypes = spec.EventTypes;
         }
 
         public OutputConditionFactory OutputConditionFactory { get; }
@@ -65,52 +70,95 @@ namespace com.espertech.esper.common.@internal.epl.output.view
                 afterConditionTime = time + delta;
             }
 
-            if (conditionType == ResultSetProcessorOutputConditionType.SNAPSHOT) {
+            if (_conditionType == ResultSetProcessorOutputConditionType.SNAPSHOT) {
                 if (postProcessFactory == null) {
                     return new OutputProcessViewConditionSnapshot(
-                        resultSetProcessor, afterConditionTime, afterConditionNumberOfEvents, isAfterConditionSatisfied, this, agentInstanceContext);
+                        resultSetProcessor,
+                        afterConditionTime,
+                        afterConditionNumberOfEvents,
+                        isAfterConditionSatisfied,
+                        this,
+                        agentInstanceContext);
                 }
 
                 var postProcess = postProcessFactory.Make(agentInstanceContext);
                 return new OutputProcessViewConditionSnapshotPostProcess(
-                    resultSetProcessor, afterConditionTime, afterConditionNumberOfEvents, isAfterConditionSatisfied, this, agentInstanceContext,
+                    resultSetProcessor,
+                    afterConditionTime,
+                    afterConditionNumberOfEvents,
+                    isAfterConditionSatisfied,
+                    this,
+                    agentInstanceContext,
                     postProcess);
             }
 
-            if (conditionType == ResultSetProcessorOutputConditionType.POLICY_FIRST) {
+            if (_conditionType == ResultSetProcessorOutputConditionType.POLICY_FIRST) {
                 if (postProcessFactory == null) {
                     return new OutputProcessViewConditionFirst(
-                        resultSetProcessor, afterConditionTime, afterConditionNumberOfEvents, isAfterConditionSatisfied, this, agentInstanceContext);
+                        resultSetProcessor,
+                        afterConditionTime,
+                        afterConditionNumberOfEvents,
+                        isAfterConditionSatisfied,
+                        this,
+                        agentInstanceContext);
                 }
 
                 var postProcess = postProcessFactory.Make(agentInstanceContext);
                 return new OutputProcessViewConditionFirstPostProcess(
-                    resultSetProcessor, afterConditionTime, afterConditionNumberOfEvents, isAfterConditionSatisfied, this, agentInstanceContext,
+                    resultSetProcessor,
+                    afterConditionTime,
+                    afterConditionNumberOfEvents,
+                    isAfterConditionSatisfied,
+                    this,
+                    agentInstanceContext,
                     postProcess);
             }
 
-            if (conditionType == ResultSetProcessorOutputConditionType.POLICY_LASTALL_UNORDERED) {
+            if (_conditionType == ResultSetProcessorOutputConditionType.POLICY_LASTALL_UNORDERED) {
                 if (postProcessFactory == null) {
                     return new OutputProcessViewConditionLastAllUnord(
-                        resultSetProcessor, afterConditionTime, afterConditionNumberOfEvents, isAfterConditionSatisfied, this, agentInstanceContext);
+                        resultSetProcessor,
+                        afterConditionTime,
+                        afterConditionNumberOfEvents,
+                        isAfterConditionSatisfied,
+                        this,
+                        agentInstanceContext);
                 }
 
                 var postProcess = postProcessFactory.Make(agentInstanceContext);
                 return new OutputProcessViewConditionLastAllUnordPostProcessAll(
-                    resultSetProcessor, afterConditionTime, afterConditionNumberOfEvents, isAfterConditionSatisfied, this, agentInstanceContext,
+                    resultSetProcessor,
+                    afterConditionTime,
+                    afterConditionNumberOfEvents,
+                    isAfterConditionSatisfied,
+                    this,
+                    agentInstanceContext,
                     postProcess);
             }
             else {
                 if (postProcessFactory == null) {
                     return new OutputProcessViewConditionDefault(
-                        resultSetProcessor, afterConditionTime, afterConditionNumberOfEvents, isAfterConditionSatisfied, this, agentInstanceContext,
-                        StreamCount > 1, eventTypes);
+                        resultSetProcessor,
+                        afterConditionTime,
+                        afterConditionNumberOfEvents,
+                        isAfterConditionSatisfied,
+                        this,
+                        agentInstanceContext,
+                        StreamCount > 1,
+                        _eventTypes);
                 }
 
                 var postProcess = postProcessFactory.Make(agentInstanceContext);
                 return new OutputProcessViewConditionDefaultPostProcess(
-                    resultSetProcessor, afterConditionTime, afterConditionNumberOfEvents, isAfterConditionSatisfied, this, agentInstanceContext,
-                    postProcess, StreamCount > 1, eventTypes);
+                    resultSetProcessor,
+                    afterConditionTime,
+                    afterConditionNumberOfEvents,
+                    isAfterConditionSatisfied,
+                    this,
+                    agentInstanceContext,
+                    postProcess,
+                    StreamCount > 1,
+                    _eventTypes);
             }
         }
     }

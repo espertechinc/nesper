@@ -8,6 +8,7 @@
 
 using System.Collections.Generic;
 using System.Linq;
+
 using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.context.controller.condition;
 using com.espertech.esper.compat;
@@ -83,7 +84,9 @@ namespace com.espertech.esper.common.@internal.context.controller.initterm
             ContextControllerConditionNonHA endCondition,
             ContextControllerInitTermPartitionKey partitionKey)
         {
-            endConditions.Put(endConditionPath, new ContextControllerInitTermSvcEntry(subpathIdOrCPId, endCondition, partitionKey));
+            endConditions.Put(
+                endConditionPath,
+                new ContextControllerInitTermSvcEntry(subpathIdOrCPId, endCondition, partitionKey));
         }
 
         public ContextControllerInitTermSvcEntry EndDelete(IntSeqKey conditionPath)

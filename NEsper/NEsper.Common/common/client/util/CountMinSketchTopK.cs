@@ -41,8 +41,10 @@ namespace com.espertech.esper.common.client.util
         public override string ToString()
         {
             return "CountMinSketchFrequency{" +
-                   "frequency=" + Frequency +
-                   ", value=" + Value +
+                   "frequency=" +
+                   Frequency +
+                   ", value=" +
+                   Value +
                    '}';
         }
     }

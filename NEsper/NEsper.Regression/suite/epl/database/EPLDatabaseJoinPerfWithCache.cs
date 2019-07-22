@@ -171,7 +171,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
                     env.SendEventBean(bean);
                     EPAssertionUtil.AssertProps(
                         env.Listener("s0").AssertOneGetNewAndReset(),
-                        new[] {"id", "mycol3", "mycol2"},
+                        new[] {"Id", "mycol3", "mycol2"},
                         new object[] {num, num, col2});
                 }
 

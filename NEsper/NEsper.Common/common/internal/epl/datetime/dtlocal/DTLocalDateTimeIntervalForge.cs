@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.datetime.interval;
@@ -36,7 +37,12 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
             CodegenClassScope codegenClassScope)
         {
             return DTLocalDateTimeIntervalEval.Codegen(
-                this, inner, innerType, codegenMethodScope, exprSymbol, codegenClassScope);
+                this,
+                inner,
+                innerType,
+                codegenMethodScope,
+                exprSymbol,
+                codegenClassScope);
         }
 
         public override CodegenExpression Codegen(
@@ -47,7 +53,12 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
             CodegenClassScope codegenClassScope)
         {
             return DTLocalDateTimeIntervalEval.Codegen(
-                this, start, end, codegenMethodScope, exprSymbol, codegenClassScope);
+                this,
+                start,
+                end,
+                codegenMethodScope,
+                exprSymbol,
+                codegenClassScope);
         }
     }
 } // end of namespace

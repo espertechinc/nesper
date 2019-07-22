@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -18,6 +19,7 @@ using com.espertech.esper.common.@internal.epl.expression.table;
 using com.espertech.esper.common.@internal.epl.table.compiletime;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.compat.collections;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.table.strategy
@@ -38,10 +40,15 @@ namespace com.espertech.esper.common.@internal.epl.table.strategy
         {
             CodegenMethod method = parent.MakeChild(typeof(IDictionary<object, object>), generator, classScope);
             method.Block
-                .DeclareVar(
-                    typeof(IDictionary<object, object>), "ta", NewInstance(typeof(LinkedHashMap<object, object>), Constant(tableAccesses.Count + 2)));
+                .DeclareVar<IDictionary<object, object>>(
+                    "ta",
+                    NewInstance(typeof(LinkedHashMap<object, object>), Constant(tableAccesses.Count + 2)));
             foreach (KeyValuePair<ExprTableAccessNode, ExprTableEvalStrategyFactoryForge> entry in tableAccesses) {
-                method.Block.ExprDotMethod(@Ref("ta"), "put", Constant(entry.Key.TableAccessNumber), entry.Value.Make(method, symbols, classScope));
+                method.Block.ExprDotMethod(
+                    @Ref("ta"),
+                    "put",
+                    Constant(entry.Key.TableAccessNumber),
+                    entry.Value.Make(method, symbols, classScope));
             }
 
             method.Block.MethodReturn(@Ref("ta"));

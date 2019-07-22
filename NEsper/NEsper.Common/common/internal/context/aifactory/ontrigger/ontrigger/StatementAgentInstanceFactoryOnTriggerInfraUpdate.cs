@@ -37,7 +37,11 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.ontri
             StatementContext statementContext)
         {
             return new InfraOnUpdateViewFactory(
-                infraEventType, updateHelperNamedWindow, updateHelperTable, table, statementContext);
+                infraEventType,
+                updateHelperNamedWindow,
+                updateHelperTable,
+                table,
+                statementContext);
         }
 
         public override StatementAgentInstanceLock ObtainAgentInstanceLock(
@@ -45,7 +49,9 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.ontri
             int agentInstanceId)
         {
             return StatementAgentInstanceFactoryOnTriggerUtil.ObtainAgentInstanceLock(
-                this, statementContext, agentInstanceId);
+                this,
+                statementContext,
+                agentInstanceId);
         }
     }
 } // end of namespace

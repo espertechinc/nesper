@@ -17,7 +17,8 @@ namespace com.espertech.esper.common.@internal.epl.lookupplansubord
             string optionalIndexModuleName,
             EventTable table)
             : base(
-                optionalIndexName, optionalIndexModuleName)
+                optionalIndexName,
+                optionalIndexModuleName)
         {
             Table = table;
         }

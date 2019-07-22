@@ -48,8 +48,7 @@ namespace com.espertech.esper.common.@internal.view.expression
         public override void ScheduleCallback()
         {
             var fireBatch = EvaluateExpression(null, window.Count);
-            if (fireBatch)
-            {
+            if (fireBatch) {
                 Expire(window.Count);
             }
         }
@@ -64,24 +63,19 @@ namespace com.espertech.esper.common.@internal.view.expression
             var fireBatch = false;
 
             // remove points from data window
-            if (oldData != null)
-            {
-                foreach (var anOldData in oldData)
-                {
+            if (oldData != null) {
+                foreach (var anOldData in oldData) {
                     window.Remove(anOldData);
                 }
 
-                if (aggregationService != null)
-                {
+                if (aggregationService != null) {
                     aggregationService.ApplyLeave(oldData, null, agentInstanceContext);
                 }
 
-                if (!window.IsEmpty())
-                {
+                if (!window.IsEmpty()) {
                     oldestEvent = window.First();
                 }
-                else
-                {
+                else {
                     oldestEvent = null;
                 }
 
@@ -90,33 +84,26 @@ namespace com.espertech.esper.common.@internal.view.expression
 
             // add data points to the window
             var numEventsInBatch = -1;
-            if (newData != null && newData.Length > 0)
-            {
-                if (window.IsEmpty())
-                {
+            if (newData != null && newData.Length > 0) {
+                if (window.IsEmpty()) {
                     oldestEventTimestamp = agentInstanceContext.StatementContext.SchedulingService.Time;
                 }
 
                 newestEventTimestamp = agentInstanceContext.StatementContext.SchedulingService.Time;
-                if (oldestEvent == null)
-                {
+                if (oldestEvent == null) {
                     oldestEvent = newData[0];
                 }
 
-                foreach (var newEvent in newData)
-                {
+                foreach (var newEvent in newData) {
                     window.Add(newEvent);
-                    if (aggregationService != null)
-                    {
-                        aggregationService.ApplyEnter(new[] { newEvent }, null, agentInstanceContext);
+                    if (aggregationService != null) {
+                        aggregationService.ApplyEnter(new[] {newEvent}, null, agentInstanceContext);
                     }
 
                     newestEvent = newEvent;
-                    if (!fireBatch)
-                    {
+                    if (!fireBatch) {
                         fireBatch = EvaluateExpression(newEvent, window.Count);
-                        if (fireBatch && !((ExpressionBatchViewFactory) factory).IsIncludeTriggeringEvent)
-                        {
+                        if (fireBatch && !((ExpressionBatchViewFactory) factory).IsIncludeTriggeringEvent) {
                             numEventsInBatch = window.Count - 1;
                         }
                     }
@@ -124,8 +111,7 @@ namespace com.espertech.esper.common.@internal.view.expression
             }
 
             // may fire the batch
-            if (fireBatch)
-            {
+            if (fireBatch) {
                 Expire(numEventsInBatch);
             }
 
@@ -136,17 +122,14 @@ namespace com.espertech.esper.common.@internal.view.expression
         // Called when new data arrives.
         public void Expire(int numEventsInBatch)
         {
-            if (numEventsInBatch == window.Count || numEventsInBatch == -1)
-            {
+            if (numEventsInBatch == window.Count || numEventsInBatch == -1) {
                 EventBean[] batchNewData = window.ToArray();
-                if (viewUpdatedCollection != null)
-                {
+                if (viewUpdatedCollection != null) {
                     viewUpdatedCollection.Update(batchNewData, lastBatch);
                 }
 
                 // post
-                if (batchNewData != null || lastBatch != null)
-                {
+                if (batchNewData != null || lastBatch != null) {
                     agentInstanceContext.InstrumentationProvider.QViewIndicate(factory, batchNewData, lastBatch);
                     child.Update(batchNewData, lastBatch);
                     agentInstanceContext.InstrumentationProvider.AViewIndicate();
@@ -155,36 +138,31 @@ namespace com.espertech.esper.common.@internal.view.expression
                 // clear
                 window.Clear();
                 lastBatch = batchNewData;
-                if (aggregationService != null)
-                {
+                if (aggregationService != null) {
                     aggregationService.ClearResults(agentInstanceContext);
                 }
 
                 oldestEvent = null;
                 newestEvent = null;
             }
-            else
-            {
+            else {
                 var batchNewData = new EventBean[numEventsInBatch];
                 var enumerator = window.GetEnumerator();
                 var itemsToDelete = new LinkedList<EventBean>();
-                for (var i = 0; i < batchNewData.Length; i++)
-                {
+                for (var i = 0; i < batchNewData.Length; i++) {
                     var current = enumerator.Current;
                     batchNewData[i] = current;
                     itemsToDelete.AddLast(current);
                 }
 
-                foreach (var eventBean in itemsToDelete)
-                {
+                foreach (var eventBean in itemsToDelete) {
                     window.Remove(eventBean);
                 }
 
                 viewUpdatedCollection?.Update(batchNewData, lastBatch);
 
                 // post
-                if (batchNewData != null || lastBatch != null)
-                {
+                if (batchNewData != null || lastBatch != null) {
                     agentInstanceContext.InstrumentationProvider.QViewIndicate(factory, batchNewData, lastBatch);
                     child.Update(batchNewData, lastBatch);
                     agentInstanceContext.InstrumentationProvider.AViewIndicate();
@@ -208,8 +186,14 @@ namespace com.espertech.esper.common.@internal.view.expression
             int windowSize)
         {
             ExpressionViewOAFieldEnumExtensions.Populate(
-                builtinEventProps.Properties, windowSize, oldestEventTimestamp, newestEventTimestamp, this, 0,
-                oldestEvent, newestEvent);
+                builtinEventProps.Properties,
+                windowSize,
+                oldestEventTimestamp,
+                newestEventTimestamp,
+                this,
+                0,
+                oldestEvent,
+                newestEvent);
             eventsPerStream[0] = arriving;
             return ExpressionBatchViewUtil.Evaluate(eventsPerStream, agentInstanceContext, factory, aggregationService);
         }
@@ -224,10 +208,13 @@ namespace com.espertech.esper.common.@internal.view.expression
             object newValue,
             object oldValue)
         {
-            if (!agentInstanceContext.StatementContext.SchedulingService.IsScheduled(scheduleHandle))
-            {
+            if (!agentInstanceContext.StatementContext.SchedulingService.IsScheduled(scheduleHandle)) {
                 agentInstanceContext.AuditProvider.ScheduleAdd(
-                    0, agentInstanceContext, scheduleHandle, ScheduleObjectType.view, factory.ViewName);
+                    0,
+                    agentInstanceContext,
+                    scheduleHandle,
+                    ScheduleObjectType.view,
+                    factory.ViewName);
                 agentInstanceContext.StatementContext.SchedulingService.Add(0, scheduleHandle, scheduleSlot);
             }
         }

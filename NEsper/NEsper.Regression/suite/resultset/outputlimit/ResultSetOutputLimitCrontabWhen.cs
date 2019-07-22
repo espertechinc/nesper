@@ -569,8 +569,8 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
 
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
-                    "select * from SupportMarketDataBean output when sum(price) > 0",
-                    "Failed to valIdate output limit expression '(sum(price))>0': Property named 'price' is not valId in any stream [select * from SupportMarketDataBean output when sum(price) > 0]");
+                    "select * from SupportMarketDataBean output when sum(Price) > 0",
+                    "Failed to valIdate output limit expression '(sum(Price))>0': Property named 'Price' is not valId in any stream [select * from SupportMarketDataBean output when sum(Price) > 0]");
 
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,

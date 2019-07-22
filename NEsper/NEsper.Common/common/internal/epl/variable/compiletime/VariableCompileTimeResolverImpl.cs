@@ -48,14 +48,18 @@ namespace com.espertech.esper.common.@internal.epl.variable.compiletime
             VariableMetaData path = ResolvePath(variableName);
             VariableMetaData preconfigured = ResolvePreconfigured(variableName);
 
-            return CompileTimeResolverUtil.ValidateAmbiguous(local, path, preconfigured, PathRegistryObjectType.VARIABLE, variableName);
+            return CompileTimeResolverUtil.ValidateAmbiguous(
+                local,
+                path,
+                preconfigured,
+                PathRegistryObjectType.VARIABLE,
+                variableName);
         }
 
         private VariableMetaData ResolvePreconfigured(string variableName)
         {
             VariableMetaData metadata = publicVariables.GetMetadata(variableName);
-            if (metadata == null)
-            {
+            if (metadata == null) {
                 return null;
             }
 
@@ -65,24 +69,23 @@ namespace com.espertech.esper.common.@internal.epl.variable.compiletime
 
         private VariableMetaData ResolvePath(string variableName)
         {
-            try
-            {
+            try {
                 Pair<VariableMetaData, string> pair = pathVariables.GetAnyModuleExpectSingle(variableName, moduleUses);
-                if (pair == null)
-                {
+                if (pair == null) {
                     return null;
                 }
 
-                if (!NameAccessModifierExtensions.Visible(pair.First.VariableVisibility, pair.First.VariableModuleName, moduleName))
-                {
+                if (!NameAccessModifierExtensions.Visible(
+                    pair.First.VariableVisibility,
+                    pair.First.VariableModuleName,
+                    moduleName)) {
                     return null;
                 }
 
                 moduleDependencies.AddPathVariable(variableName, pair.Second);
                 return pair.First;
             }
-            catch (PathException e)
-            {
+            catch (PathException e) {
                 throw CompileTimeResolverUtil.MakePathAmbiguous(PathRegistryObjectType.VARIABLE, variableName, e);
             }
         }

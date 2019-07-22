@@ -9,6 +9,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
@@ -72,7 +73,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
             CodegenExpression expression,
             string property)
         {
-            throw new NotImplementedException();
+            return new CodegenExpressionExprDotName(expression, property);
         }
 
         public static CodegenExpression SetProperty(
@@ -80,7 +81,9 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
             string property,
             CodegenExpression value)
         {
-            throw new NotImplementedException();
+            return new CodegenExpressionAssign(
+                new CodegenExpressionExprDotName(expression, property),
+                value);
         }
 
         public static CodegenExpression EnumValue<T>(T enumValue)
@@ -174,7 +177,9 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
             Type interfaceOrSuperClass)
         {
             return new CodegenExpressionNewAnonymousClass(
-                parentBlock, interfaceOrSuperClass, Collections.GetEmptyList<CodegenExpression>());
+                parentBlock,
+                interfaceOrSuperClass,
+                Collections.GetEmptyList<CodegenExpression>());
         }
 
         public static CodegenExpression Noop()
@@ -195,6 +200,14 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
         {
             return new CodegenExpressionInstanceOf(lhs, clazz, false);
         }
+
+        public static CodegenExpression InstanceOf<T>(
+            CodegenExpression lhs)
+
+        {
+            return new CodegenExpressionInstanceOf(lhs, typeof(T), false);
+        }
+
 
         public static CodegenExpression NotInstanceOf(
             CodegenExpression lhs,
@@ -248,6 +261,12 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
             CodegenExpression expression)
         {
             return new CodegenExpressionNot(isNot, expression);
+        }
+
+        public static CodegenExpression Cast<T>(
+            CodegenExpression expression)
+        {
+            return new CodegenExpressionCastExpression(typeof(T), expression);
         }
 
         public static CodegenExpression Cast(
@@ -380,13 +399,12 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
         public static void RenderExpressions(
             StringBuilder builder,
             CodegenExpression[] expressions,
-            IDictionary<Type, string> imports,
             bool isInnerClass)
         {
             var delimiter = "";
             foreach (var expression in expressions) {
                 builder.Append(delimiter);
-                expression.Render(builder, imports, isInnerClass);
+                expression.Render(builder, isInnerClass);
                 delimiter = ",";
             }
         }

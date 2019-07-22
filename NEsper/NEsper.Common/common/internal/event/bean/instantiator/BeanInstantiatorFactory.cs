@@ -8,6 +8,7 @@
 
 using System;
 using System.Reflection;
+
 using com.espertech.esper.common.@internal.@event.bean.core;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.settings;
@@ -40,7 +41,8 @@ namespace com.espertech.esper.common.@internal.@event.bean.instantiator
 
             throw new EventBeanManufactureException(
                 "Failed to find no-arg constructor and no factory method has been configured and cannot use Sun-JVM reflection to instantiate object of type " +
-                beanEventType.UnderlyingType.Name, ctorNotFoundEx);
+                beanEventType.UnderlyingType.Name,
+                ctorNotFoundEx);
         }
 
         private static BeanInstantiatorForge ResolveFactoryMethod(
@@ -53,12 +55,19 @@ namespace com.espertech.esper.common.@internal.@event.bean.instantiator
             if (lastDotIndex == -1) {
                 try {
                     var method = importService.ResolveMethod(
-                        beanEventType.UnderlyingType, factoryMethodName, new Type[0], new bool[0], new bool[0]);
+                        beanEventType.UnderlyingType,
+                        factoryMethodName,
+                        new Type[0],
+                        new bool[0],
+                        new bool[0]);
                     return new BeanInstantiatorForgeByReflection(method);
                 }
                 catch (ImportException e) {
-                    var message = "Failed to resolve configured factory method '" + factoryMethodName +
-                                  "' expected to exist for class '" + beanEventType.UnderlyingType + "'";
+                    var message = "Failed to resolve configured factory method '" +
+                                  factoryMethodName +
+                                  "' expected to exist for class '" +
+                                  beanEventType.UnderlyingType +
+                                  "'";
                     Log.Info(message, e);
                     throw new EventBeanManufactureException(message, e);
                 }
@@ -68,12 +77,19 @@ namespace com.espertech.esper.common.@internal.@event.bean.instantiator
             var methodName = factoryMethodName.Substring(lastDotIndex + 1);
             try {
                 var method = importService.ResolveMethodOverloadChecked(
-                    className, methodName, new Type[0], new bool[0], new bool[0]);
+                    className,
+                    methodName,
+                    new Type[0],
+                    new bool[0],
+                    new bool[0]);
                 return new BeanInstantiatorForgeByReflection(method);
             }
             catch (ImportException e) {
-                var message = "Failed to resolve configured factory method '" + methodName +
-                              "' expected to exist for class '" + className + "'";
+                var message = "Failed to resolve configured factory method '" +
+                              methodName +
+                              "' expected to exist for class '" +
+                              className +
+                              "'";
                 Log.Info(message, e);
                 throw new EventBeanManufactureException(message, e);
             }

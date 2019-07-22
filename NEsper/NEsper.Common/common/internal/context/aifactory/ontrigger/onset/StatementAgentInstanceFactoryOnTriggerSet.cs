@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+
 using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.context.aifactory.ontrigger.core;
 using com.espertech.esper.common.@internal.context.util;
@@ -46,7 +47,10 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.onset
             // create result-processing
             var pair =
                 StatementAgentInstanceFactoryUtil.StartResultSetAndAggregation(
-                    resultSetProcessorFactoryProvider, agentInstanceContext, false, null);
+                    resultSetProcessorFactoryProvider,
+                    agentInstanceContext,
+                    false,
+                    null);
             var @out = new OutputProcessViewSimpleWProcessor(agentInstanceContext, pair.First);
             @out.Parent = onExprView;
             onExprView.Child = @out;

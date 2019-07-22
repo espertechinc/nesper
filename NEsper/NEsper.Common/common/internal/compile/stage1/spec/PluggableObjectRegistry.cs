@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.collection;
 
 namespace com.espertech.esper.common.@internal.compile.stage1.spec

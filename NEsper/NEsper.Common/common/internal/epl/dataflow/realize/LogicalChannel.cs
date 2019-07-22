@@ -54,9 +54,13 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.realize
         public override string ToString()
         {
             return "LogicalChannel{" +
-                   "channelId=" + ChannelId +
-                   ", produced=" + OutputPort +
-                   ", consumed='" + ConsumingOpPrettyPrint + '\'' +
+                   "channelId=" +
+                   ChannelId +
+                   ", produced=" +
+                   OutputPort +
+                   ", consumed='" +
+                   ConsumingOpPrettyPrint +
+                   '\'' +
                    '}';
         }
 

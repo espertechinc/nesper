@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+
 using com.espertech.esper.common.@internal.epl.spatial.quadtree.core;
 using com.espertech.esper.common.@internal.epl.spatial.quadtree.pointregion;
 
@@ -57,12 +58,15 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.prqdrowindex
                 case QuadrantEnum.NW:
                     branch.Nw = RemoveFromNode(x, y, value, branch.Nw, tree);
                     break;
+
                 case QuadrantEnum.NE:
                     branch.Ne = RemoveFromNode(x, y, value, branch.Ne, tree);
                     break;
+
                 case QuadrantEnum.SW:
                     branch.Sw = RemoveFromNode(x, y, value, branch.Sw, tree);
                     break;
+
                 default:
                     branch.Se = RemoveFromNode(x, y, value, branch.Se, tree);
                     break;

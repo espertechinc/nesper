@@ -8,6 +8,7 @@
 
 using System;
 using System.IO;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -15,6 +16,7 @@ using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.table.compiletime;
 using com.espertech.esper.common.@internal.epl.table.core;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.expression.etc
@@ -57,7 +59,12 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
             CodegenExpression refIsNewData = exprSymbol.GetAddIsNewData(codegenMethodScope);
             CodegenExpressionRef refExprEvalCtx = exprSymbol.GetAddExprEvalCtx(codegenMethodScope);
             return StaticMethod(
-                typeof(ExprEvalStreamTable), "evaluateConvertTableEventToUnd", Constant(streamNum), eventToPublic, refEPS, refIsNewData,
+                typeof(ExprEvalStreamTable),
+                "evaluateConvertTableEventToUnd",
+                Constant(streamNum),
+                eventToPublic,
+                refEPS,
+                refIsNewData,
                 refExprEvalCtx);
         }
 

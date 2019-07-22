@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.context.module;
 using com.espertech.esper.common.@internal.epl.expression.core;
@@ -70,14 +71,17 @@ namespace com.espertech.esper.common.@internal.view.sort
             EPStatementInitServices services)
         {
             comparator = ExprNodeUtilityMake.GetComparatorHashableMultiKeys(
-                sortCriteriaTypes, useCollatorSort,
+                sortCriteriaTypes,
+                useCollatorSort,
                 isDescendingValues); // hashable-key comparator since we may remove sort keys
         }
 
         public View MakeView(AgentInstanceViewFactoryChainContext agentInstanceViewFactoryContext)
         {
             var sortWindowSize = ViewFactoryUtil.EvaluateSizeParam(
-                ViewName, size, agentInstanceViewFactoryContext.AgentInstanceContext);
+                ViewName,
+                size,
+                agentInstanceViewFactoryContext.AgentInstanceContext);
             IStreamSortRankRandomAccess sortedRandomAccess =
                 agentInstanceViewFactoryContext.StatementContext.ViewServicePreviousFactory
                     .GetOptPreviousExprSortedRankedAccess(agentInstanceViewFactoryContext);

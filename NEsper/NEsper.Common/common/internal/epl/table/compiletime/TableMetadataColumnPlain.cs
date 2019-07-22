@@ -9,6 +9,7 @@
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.context.aifactory.core;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.table.compiletime
@@ -36,8 +37,9 @@ namespace com.espertech.esper.common.@internal.epl.table.compiletime
             CodegenClassScope classScope)
         {
             var method = parent.MakeChild(typeof(TableMetadataColumnPlain), GetType(), classScope);
-            method.Block.DeclareVar(
-                typeof(TableMetadataColumnPlain), "col", NewInstance(typeof(TableMetadataColumnPlain)));
+            method.Block.DeclareVar<TableMetadataColumnPlain>(
+                "col",
+                NewInstance(typeof(TableMetadataColumnPlain)));
             base.MakeSettersInline(Ref("col"), method.Block);
             method.Block
                 .SetProperty(Ref("col"), "IndexPlain", Constant(IndexPlain))

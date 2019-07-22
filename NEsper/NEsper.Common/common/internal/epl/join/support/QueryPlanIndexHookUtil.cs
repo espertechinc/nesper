@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.annotation;
 using com.espertech.esper.common.@internal.epl.expression.core;
@@ -24,7 +25,10 @@ namespace com.espertech.esper.common.@internal.epl.join.support
         {
             try {
                 return (QueryPlanIndexHook) ImportUtil.GetAnnotationHook(
-                    annotations, HookType.INTERNAL_QUERY_PLAN, typeof(QueryPlanIndexHook), importService);
+                    annotations,
+                    HookType.INTERNAL_QUERY_PLAN,
+                    typeof(QueryPlanIndexHook),
+                    importService);
             }
             catch (ExprValidationException) {
                 throw new EPException("Failed to obtain hook for " + HookType.INTERNAL_QUERY_PLAN);

@@ -7,9 +7,11 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.IO;
+
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.compat.collections;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.lookup
@@ -56,7 +58,8 @@ namespace com.espertech.esper.common.@internal.epl.lookup
             CodegenClassScope classScope)
         {
             return NewInstance<AdvancedIndexIndexMultiKeyPart>(
-                Constant(IndexTypeName), Constant(IndexExpressions),
+                Constant(IndexTypeName),
+                Constant(IndexExpressions),
                 Constant(IndexedProperties));
         }
     }

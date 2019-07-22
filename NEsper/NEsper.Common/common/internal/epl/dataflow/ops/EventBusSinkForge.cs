@@ -31,14 +31,12 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.ops
 
         public DataFlowOpForgeInitializeResult InitializeForge(DataFlowOpForgeInitializeContext context)
         {
-            if (!context.OutputPorts.IsEmpty())
-            {
+            if (!context.OutputPorts.IsEmpty()) {
                 throw new ArgumentException("EventBusSink operator does not provide an output stream");
             }
 
             eventTypes = new EventType[context.InputPorts.Count];
-            for (var i = 0; i < eventTypes.Length; i++)
-            {
+            for (var i = 0; i < eventTypes.Length; i++) {
                 eventTypes[i] = context.InputPorts[i].TypeDesc.EventType;
             }
 
@@ -50,7 +48,13 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.ops
             SAIFFInitializeSymbol symbols,
             CodegenClassScope classScope)
         {
-            return new SAIFFInitializeBuilder(OP_PACKAGE_NAME + ".eventbussink.EventBusSinkFactory", GetType(), "sink", parent, symbols, classScope)
+            return new SAIFFInitializeBuilder(
+                    OP_PACKAGE_NAME + ".eventbussink.EventBusSinkFactory",
+                    GetType(),
+                    "sink",
+                    parent,
+                    symbols,
+                    classScope)
                 .EventtypesMayNull("eventTypes", eventTypes)
                 .Map("collector", collector)
                 .Build();

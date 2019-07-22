@@ -8,19 +8,174 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Reflection;
 
 using com.espertech.esper.common.@internal.bytecodemodel.core;
 using com.espertech.esper.compat.logging;
+
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
 
 namespace com.espertech.esper.compiler.@internal.util
 {
     public class RoslynCompiler
     {
-        private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-        protected internal static void Compile(CodegenClass clazz, IDictionary<string, byte[]> classes, bool withCodeLogging)
+        private static readonly LanguageVersion MaxLanguageVersion = Enum
+            .GetValues(typeof(LanguageVersion))
+            .Cast<LanguageVersion>()
+            .Max();
+
+        private IReadOnlyCollection<MetadataReference> _metadataReferences = null;
+
+        private Guid _assemblyId;
+        private String _assemblyName;
+        private IList<CodegenClass> _codegenClasses;
+        private bool _isCodeLogging;
+        private Assembly _assembly;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="RoslynCompiler"/> class.
+        /// </summary>
+        public RoslynCompiler()
         {
-            string code = CodegenClassGenerator.Compile(clazz);
+            _assemblyId = Guid.NewGuid();
+            _assemblyName = $"NEsper_{_assemblyId}";
+            _codegenClasses = new List<CodegenClass>();
+        }
+
+        /// <summary>
+        /// Gets or sets the assembly identifier.
+        /// </summary>
+        public Guid AssemblyId
+        {
+            get => _assemblyId;
+        }
+
+        /// <summary>
+        /// Gets or sets the name of the assembly.
+        /// </summary>
+        public string AssemblyName
+        {
+            get => _assemblyName;
+            set => _assemblyName = value;
+        }
+
+        /// <summary>
+        /// Gets the assembly.
+        /// </summary>
+        public Assembly Assembly {
+            get => _assembly;
+        }
+
+        /// <summary>
+        /// Gets or sets the codegen class.
+        /// </summary>
+        public IList<CodegenClass> CodegenClasses
+        {
+            get => _codegenClasses;
+            set => _codegenClasses = value;
+        }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether we include code logging.
+        /// </summary>
+        public bool IsCodeLogging
+        {
+            get => _isCodeLogging;
+            set => _isCodeLogging = value;
+        }
+
+        public RoslynCompiler WithCodegenClasses(IEnumerable<CodegenClass> codegenClasses)
+        {
+            this.CodegenClasses = new List<CodegenClass>(codegenClasses);
+            return this;
+        }
+
+        public RoslynCompiler WithCodegenClass(CodegenClass codegenClass)
+        {
+            this.CodegenClasses.Add(codegenClass);
+            return this;
+        }
+
+        public RoslynCompiler WithCodeLogging(bool isCodeLogging)
+        {
+            this.IsCodeLogging = isCodeLogging;
+            return this;
+        }
+
+        /// <summary>
+        /// Gets the current metadata references.  Metadata references are specific to the AppDomain.
+        /// </summary>
+
+        internal IReadOnlyCollection<MetadataReference> GetCurrentMetadataReferences()
+        {
+            if (_metadataReferences == null)
+            {
+                _metadataReferences = AppDomain.CurrentDomain.GetAssemblies()
+                    .Where(assembly => !assembly.IsDynamic)
+                    .Select(assembly => assembly.Location)
+                    .Select(location => MetadataReference.CreateFromFile(location))
+                    .ToList();
+            }
+
+            return _metadataReferences;
+        }
+
+        private SyntaxTree Compile(CodegenClass codegenClass)
+        {
+            var options = new CSharpParseOptions(kind: SourceCodeKind.Regular, languageVersion: MaxLanguageVersion);
+            // Convert the codegen to source
+            var source = CodegenClassGenerator.Compile(codegenClass);
+            Console.WriteLine(source);
+            // Convert the codegen source to syntax tree
+            var syntaxTree = CSharpSyntaxTree.ParseText(source, options);
+            Console.WriteLine(syntaxTree);
+
+            return syntaxTree;
+        }
+
+        /// <summary>
+        /// Compiles the specified code generation class into an assembly.
+        /// </summary>
+        public Assembly Compile()
+        {
+            // Convert the codegen class into it's source representation.
+            var syntaxTrees = _codegenClasses
+                .Select(Compile)
+                .ToList();
+
+            // Create an in-memory representation of the compiled source.
+            var options = new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary)
+                .WithOptimizationLevel(OptimizationLevel.Debug)
+                .WithAllowUnsafe(true);
+
+            var compilation = CSharpCompilation
+                .Create(_assemblyName, options: options)
+                .AddReferences(GetCurrentMetadataReferences())
+                .AddSyntaxTrees(syntaxTrees);
+
+            using (var stream = new MemoryStream())
+            {
+                var result = compilation.Emit(stream);
+                if (result.Success)
+                {
+                    stream.Seek(0, SeekOrigin.Begin);
+                    _assembly = Assembly.Load(stream.ToArray());
+                }
+                else {
+                    throw new RoslynCompilationException(
+                            "failure during module compilation",
+                            result.Diagnostics);
+                }
+            }
+
+            Console.Error.WriteLine(_assembly);
+
+            return _assembly;
 
 #if false
             try
@@ -73,7 +228,7 @@ namespace com.espertech.esper.compiler.@internal.util
                 ByteArrayProvidingClassLoader cl = new ByteArrayProvidingClassLoader(classes);
                 UnitCompiler unitCompiler = new UnitCompiler(
                         new Parser(scanner).ParseCompilationUnit(),
-                        new ClassLoaderIClassLoader(cl));
+                        new ClassLoaderClassLoader(cl));
                 ClassFile[] classFiles = unitCompiler.CompileUnit(true, true, true);
                 for (int i = 0; i < classFiles.Length; i++)
                 {
@@ -90,8 +245,6 @@ namespace com.espertech.esper.compiler.@internal.util
                 Log.Error("Failed to compile: " + ex.Message + "\ncode:" + CodeWithLineNum(code));
                 throw new RuntimeException(ex);
             }
-#else
-            throw new NotImplementedException();
 #endif
         }
     }

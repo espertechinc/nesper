@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.epl.expression.core;
@@ -51,7 +52,9 @@ namespace com.espertech.esper.common.@internal.epl.output.polled
             ObjectArrayEventBean builtinProperties = null;
             if (isUsingBuiltinProperties) {
                 InitType(agentInstanceContext);
-                builtinProperties = new ObjectArrayEventBean(OutputConditionExpressionTypeUtil.OAPrototype, builtinPropertiesEventType);
+                builtinProperties = new ObjectArrayEventBean(
+                    OutputConditionExpressionTypeUtil.OAPrototype,
+                    builtinPropertiesEventType);
             }
 
             OutputConditionPolledExpressionState expressionState = (OutputConditionPolledExpressionState) state;
@@ -64,11 +67,14 @@ namespace com.espertech.esper.common.@internal.epl.output.polled
             long? lastOutputTimestamp = null;
             if (isUsingBuiltinProperties) {
                 InitType(agentInstanceContext);
-                builtinProperties = new ObjectArrayEventBean(OutputConditionExpressionTypeUtil.OAPrototype, builtinPropertiesEventType);
+                builtinProperties = new ObjectArrayEventBean(
+                    OutputConditionExpressionTypeUtil.OAPrototype,
+                    builtinPropertiesEventType);
                 lastOutputTimestamp = agentInstanceContext.StatementContext.SchedulingService.Time;
             }
 
-            OutputConditionPolledExpressionState state = new OutputConditionPolledExpressionState(0, 0, 0, 0, lastOutputTimestamp);
+            OutputConditionPolledExpressionState state =
+                new OutputConditionPolledExpressionState(0, 0, 0, 0, lastOutputTimestamp);
             return new OutputConditionPolledExpression(this, state, agentInstanceContext, builtinProperties);
         }
 
@@ -84,7 +90,8 @@ namespace com.espertech.esper.common.@internal.epl.output.polled
         {
             if (builtinPropertiesEventType == null) {
                 builtinPropertiesEventType = OutputConditionExpressionTypeUtil.GetBuiltInEventType(
-                    agentInstanceContext.ModuleName, new BeanEventTypeFactoryDisallow(agentInstanceContext.EventBeanTypedEventFactory));
+                    agentInstanceContext.ModuleName,
+                    new BeanEventTypeFactoryDisallow(agentInstanceContext.EventBeanTypedEventFactory));
             }
         }
     }

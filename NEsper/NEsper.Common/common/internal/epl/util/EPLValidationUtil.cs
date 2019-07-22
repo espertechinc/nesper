@@ -8,6 +8,7 @@
 
 using System;
 using System.Reflection;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.compile.stage2;
 using com.espertech.esper.common.@internal.compile.stage3;
@@ -38,7 +39,13 @@ namespace com.espertech.esper.common.@internal.epl.util
         {
             for (var i = 0; i < expressions.Length; i++) {
                 ValidateParameterType(
-                    invocableName, invocableCategory, true, type, null, expressions[i].Forge.EvaluationType, i,
+                    invocableName,
+                    invocableCategory,
+                    true,
+                    type,
+                    null,
+                    expressions[i].Forge.EvaluationType,
+                    i,
                     expressions[i]);
             }
         }
@@ -71,7 +78,8 @@ namespace com.espertech.esper.common.@internal.epl.util
             }
 
             var validationContext = new ExprValidationContextBuilder(streamTypes, statementRawInfo, services)
-                .WithAllowBindingConsumption(allowBindingConsumption).Build();
+                .WithAllowBindingConsumption(allowBindingConsumption)
+                .Build();
             return ExprNodeUtilityValidate.GetValidatedSubtree(origin, expression, validationContext);
         }
 
@@ -106,15 +114,21 @@ namespace com.espertech.esper.common.@internal.epl.util
         {
             try {
                 var validationContext = new ExprValidationContextBuilder(typeService, statementRawInfo, services)
-                    .WithAllowBindingConsumption(true).WithIsFilterExpression(true).Build();
+                    .WithAllowBindingConsumption(true)
+                    .WithIsFilterExpression(true)
+                    .Build();
                 var validated = ExprNodeUtilityValidate.GetValidatedSubtree(
-                    ExprNodeOrigin.FILTER, filterExpression, validationContext);
+                    ExprNodeOrigin.FILTER,
+                    filterExpression,
+                    validationContext);
                 FilterExprAnalyzer.Analyze(validated, queryGraph, false);
             }
             catch (Exception ex) {
                 Log.Warn(
                     "Unexpected exception analyzing filterable expression '" +
-                    ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(filterExpression) + "': " + ex.Message,
+                    ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(filterExpression) +
+                    "': " +
+                    ex.Message,
                     ex);
             }
         }
@@ -128,8 +142,12 @@ namespace com.espertech.esper.common.@internal.epl.util
         {
             if (expectedEnum != receivedNum) {
                 throw new ExprValidationException(
-                    GetInvokablePrefix(invocableName, invocableCategory, isFunction) + "expected " + expectedEnum +
-                    " parameters but received " + receivedNum + " parameters");
+                    GetInvokablePrefix(invocableName, invocableCategory, isFunction) +
+                    "expected " +
+                    expectedEnum +
+                    " parameters but received " +
+                    receivedNum +
+                    " parameters");
             }
         }
 
@@ -146,14 +164,18 @@ namespace com.espertech.esper.common.@internal.epl.util
             if (expectedTypeEnum == EPLExpressionParamType.BOOLEAN && !providedType.IsBoolean()) {
                 throw new ExprValidationException(
                     GetInvokablePrefix(invocableName, invocableCategory, isFunction) +
-                    "expected a boolean-type result for expression parameter " + parameterNum + " but received " +
+                    "expected a boolean-type result for expression parameter " +
+                    parameterNum +
+                    " but received " +
                     providedType.GetCleanName());
             }
 
             if (expectedTypeEnum == EPLExpressionParamType.NUMERIC && !providedType.IsNumeric()) {
                 throw new ExprValidationException(
                     GetInvokablePrefix(invocableName, invocableCategory, isFunction) +
-                    "expected a number-type result for expression parameter " + parameterNum + " but received " +
+                    "expected a number-type result for expression parameter " +
+                    parameterNum +
+                    " but received " +
                     providedType.GetCleanName());
             }
 
@@ -179,8 +201,12 @@ namespace com.espertech.esper.common.@internal.epl.util
                     }
 
                     throw new ExprValidationException(
-                        GetInvokablePrefix(invocableName, invocableCategory, isFunction) + "expected " + expected +
-                        "-type result for expression parameter " + parameterNum + " but received " +
+                        GetInvokablePrefix(invocableName, invocableCategory, isFunction) +
+                        "expected " +
+                        expected +
+                        "-type result for expression parameter " +
+                        parameterNum +
+                        " but received " +
                         providedType.GetCleanName());
                 }
             }
@@ -194,7 +220,9 @@ namespace com.espertech.esper.common.@internal.epl.util
                     throw new ExprValidationException(
                         GetInvokablePrefix(invocableName, invocableCategory, isFunction) +
                         "expected a time-period expression or a numeric-type result for expression parameter " +
-                        parameterNum + " but received " + providedType.GetCleanName());
+                        parameterNum +
+                        " but received " +
+                        providedType.GetCleanName());
                 }
             }
 
@@ -203,7 +231,9 @@ namespace com.espertech.esper.common.@internal.epl.util
                     throw new ExprValidationException(
                         GetInvokablePrefix(invocableName, invocableCategory, isFunction) +
                         "expected a long-typed, Date-typed or Calendar-typed result for expression parameter " +
-                        parameterNum + " but received " + providedType.GetCleanName());
+                        parameterNum +
+                        " but received " +
+                        providedType.GetCleanName());
                 }
             }
         }
@@ -213,8 +243,12 @@ namespace com.espertech.esper.common.@internal.epl.util
             string invocableType,
             bool isFunction)
         {
-            return "Error validating " + invocableType + " " + (isFunction ? "function '" : "method '") +
-                   invocableName + "', ";
+            return "Error validating " +
+                   invocableType +
+                   " " +
+                   (isFunction ? "function '" : "method '") +
+                   invocableName +
+                   "', ";
         }
 
         public static void ValidateContextName(
@@ -243,8 +277,12 @@ namespace com.espertech.esper.common.@internal.epl.util
         {
             var prefix = table ? "Table" : "Named window";
             return new ExprValidationException(
-                prefix + " by name '" + tableOrNamedWindowName + "' has been declared for context '" +
-                tableOrNamedWindowContextName + "' and can only be used within the same context");
+                prefix +
+                " by name '" +
+                tableOrNamedWindowName +
+                "' has been declared for context '" +
+                tableOrNamedWindowContextName +
+                "' and can only be used within the same context");
         }
 
         public static void ValidateAlreadyExistsTableOrVariable(

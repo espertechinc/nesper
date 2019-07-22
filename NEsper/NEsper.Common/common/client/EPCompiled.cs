@@ -7,50 +7,39 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-using System.Collections.Generic;
-using System.IO;
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
+using System.Reflection;
 
 namespace com.espertech.esper.common.client
 {
     /// <summary>
-    /// The byte code and manifest of a compile EPL module or EPL fire-and-forget query.
+    ///     The assembly of a compile EPL module or EPL fire-and-forget query.
     /// </summary>
     [Serializable]
     public class EPCompiled
     {
-        private readonly IDictionary<string, byte[]> classes;
-        private readonly EPCompiledManifest manifest;
-
         /// <summary>
-        /// Ctor.
+        ///     Ctor.
         /// </summary>
-        /// <param name="classes">map of class name and byte code for a classloader</param>
+        /// <param name="assembly">assembly containing classes</param>
         /// <param name="manifest">the manifest</param>
         public EPCompiled(
-            IDictionary<string, byte[]> classes,
+            Assembly assembly,
             EPCompiledManifest manifest)
         {
-            this.classes = classes;
-            this.manifest = manifest;
+            Assembly = assembly;
+            Manifest = manifest;
         }
 
         /// <summary>
-        /// Returns a map of class name and byte code for a classloader
+        ///     Returns a map of class name and byte code for a classloader
         /// </summary>
-        /// <returns>classes</returns>
-        public IDictionary<string, byte[]> GetClasses()
-        {
-            return classes;
-        }
+        /// <value>classes</value>
+        public Assembly Assembly { get; }
 
         /// <summary>
-        /// Returns a manifest object
+        ///     Returns a manifest object
         /// </summary>
         /// <returns>manifest</returns>
-        public EPCompiledManifest Manifest {
-            get => manifest;
-        }
+        public EPCompiledManifest Manifest { get; }
     }
 } // end of namespace

@@ -7,12 +7,14 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Linq;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.compile.stage2;
 using com.espertech.esper.common.@internal.compile.stage3;
 using com.espertech.esper.common.@internal.context.controller.core;
 using com.espertech.esper.compat.function;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.context.controller.hash
@@ -38,7 +40,8 @@ namespace com.espertech.esper.common.@internal.context.controller.hash
                 init[i] = items[i].Make(addInitSvc);
             }
 
-            return NewInstance<ContextControllerHashValidation>(NewArrayWithInit(typeof(ContextControllerHashValidationItem), init));
+            return NewInstance<ContextControllerHashValidation>(
+                NewArrayWithInit(typeof(ContextControllerHashValidationItem), init));
         }
 
         public void ValidateStatement(
@@ -47,7 +50,10 @@ namespace com.espertech.esper.common.@internal.context.controller.hash
             StatementCompileTimeServices compileTimeServices)
         {
             ContextControllerForgeUtil.ValidateStatementKeyAndHash(
-                items.Select(i => (Supplier<EventType>) i.Get), contextName, spec, compileTimeServices);
+                items.Select(i => (Supplier<EventType>) i.Get),
+                contextName,
+                spec,
+                compileTimeServices);
         }
     }
 } // end of namespace

@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client.dataflow.annotations;
 using com.espertech.esper.common.client.dataflow.core;
 using com.espertech.esper.common.client.dataflow.util;
@@ -19,6 +20,7 @@ using com.espertech.esper.common.@internal.epl.dataflow.interfaces;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.streamtype;
 using com.espertech.esper.compat.collections;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 using static com.espertech.esper.common.@internal.epl.dataflow.core.EPDataFlowServiceImpl;
 
@@ -38,12 +40,15 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.ops
         {
             if (context.OutputPorts.Count != 1) {
                 throw new ArgumentException(
-                    "EventBusSource operator requires one output stream but produces " + context.OutputPorts.Count + " streams");
+                    "EventBusSource operator requires one output stream but produces " +
+                    context.OutputPorts.Count +
+                    " streams");
             }
 
             var portZero = context.OutputPorts[0];
             if (portZero.OptionalDeclaredType == null || portZero.OptionalDeclaredType.EventType == null) {
-                throw new ArgumentException("EventBusSource operator requires an event type declated for the output stream");
+                throw new ArgumentException(
+                    "EventBusSource operator requires an event type declated for the output stream");
             }
 
             var eventType = portZero.OptionalDeclaredType.EventType;
@@ -61,8 +66,16 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.ops
 
                 var streamTypeService = new StreamTypeServiceImpl(eventType, eventType.Name, true);
                 FilterSpecCompiled = FilterSpecCompiler.MakeFilterSpec(
-                    eventType, eventType.Name, filters, null,
-                    null, null, streamTypeService, null, context.StatementRawInfo, context.Services);
+                    eventType,
+                    eventType.Name,
+                    filters,
+                    null,
+                    null,
+                    null,
+                    streamTypeService,
+                    null,
+                    context.StatementRawInfo,
+                    context.Services);
             }
             catch (ExprValidationException ex) {
                 throw new ExprValidationException("Failed to obtain filter parameters: " + ex.Message, ex);
@@ -77,11 +90,19 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.ops
             CodegenClassScope classScope)
         {
             var builder = new SAIFFInitializeBuilder(
-                OP_PACKAGE_NAME + ".eventbussource.EventBusSourceFactory", GetType(), "eventbussource", parent, symbols, classScope);
-            builder.Expression("filterSpecActivatable", 
+                OP_PACKAGE_NAME + ".eventbussource.EventBusSourceFactory",
+                GetType(),
+                "eventbussource",
+                parent,
+                symbols,
+                classScope);
+            builder.Expression(
+                    "filterSpecActivatable",
                     LocalMethod(
                         FilterSpecCompiled.MakeCodegen(
-                            builder.Method(), symbols, classScope)))
+                            builder.Method(),
+                            symbols,
+                            classScope)))
                 .Constant("submitEventBean", submitEventBean);
             return builder.Build();
         }

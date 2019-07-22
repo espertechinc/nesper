@@ -9,6 +9,7 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
+
 using com.espertech.esper.collection;
 using com.espertech.esper.common.@internal.compile.stage1.spec;
 using com.espertech.esper.common.@internal.epl.pattern.guard;
@@ -49,8 +50,11 @@ namespace com.espertech.esper.common.@internal.epl.pattern.core
                 }
             }
             catch (InvalidCastException e) {
-                var message = "Error casting observer factory instance to " + typeof(ObserverFactory).Name +
-                              " interface for observer '" + spec.ObjectName + "'";
+                var message = "Error casting observer factory instance to " +
+                              typeof(ObserverFactory).Name +
+                              " interface for observer '" +
+                              spec.ObjectName +
+                              "'";
                 throw new PatternObjectException(message, e);
             }
 
@@ -69,8 +73,11 @@ namespace com.espertech.esper.common.@internal.epl.pattern.core
                 }
             }
             catch (InvalidCastException e) {
-                var message = "Error casting guard forge instance to " + typeof(GuardForge).Name +
-                              " interface for guard '" + spec.ObjectName + "'";
+                var message = "Error casting guard forge instance to " +
+                              typeof(GuardForge).Name +
+                              " interface for guard '" +
+                              spec.ObjectName +
+                              "'";
                 throw new PatternObjectException(message, e);
             }
 
@@ -100,7 +107,8 @@ namespace com.espertech.esper.common.@internal.epl.pattern.core
                         // invalid type: expecting observer, got guard
                         if (type == PluggableObjectType.PATTERN_GUARD) {
                             throw new PatternObjectException(
-                                "Pattern observer function '" + spec.ObjectName +
+                                "Pattern observer function '" +
+                                spec.ObjectName +
                                 "' cannot be used as a pattern guard");
                         }
 

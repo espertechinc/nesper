@@ -9,6 +9,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 
 namespace com.espertech.esper.common.@internal.bytecodemodel.model.statement
@@ -34,16 +35,15 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.statement
 
         public override void RenderStatement(
             StringBuilder builder,
-            IDictionary<Type, string> imports,
             bool isInnerClass)
         {
-            array.Render(builder, imports, isInnerClass);
+            array.Render(builder, isInnerClass);
             builder.Append("[");
-            indexOne.Render(builder, imports, isInnerClass);
+            indexOne.Render(builder, isInnerClass);
             builder.Append("][");
-            indexTwo.Render(builder, imports, isInnerClass);
+            indexTwo.Render(builder, isInnerClass);
             builder.Append("]=");
-            expression.Render(builder, imports, isInnerClass);
+            expression.Render(builder, isInnerClass);
         }
 
         public override void MergeClasses(ISet<Type> classes)

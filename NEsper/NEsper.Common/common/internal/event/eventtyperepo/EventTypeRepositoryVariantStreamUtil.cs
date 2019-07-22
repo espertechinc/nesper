@@ -8,6 +8,7 @@
 
 using System.Collections.Generic;
 using System.Linq;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.configuration;
 using com.espertech.esper.common.client.configuration.common;
@@ -48,7 +49,8 @@ namespace com.espertech.esper.common.@internal.@event.eventtyperepo
                 if (variantStreamConfig.VariantTypeNames.IsEmpty()) {
                     throw new ConfigurationException(
                         "Invalid variant stream configuration, no event type name has been added and default type variance requires at least one type, for name '" +
-                        variantStreamname + "'");
+                        variantStreamname +
+                        "'");
                 }
             }
 
@@ -57,8 +59,11 @@ namespace com.espertech.esper.common.@internal.@event.eventtyperepo
                 var type = repo.GetTypeByName(typeName);
                 if (type == null) {
                     throw new ConfigurationException(
-                        "Event type by name '" + typeName + "' could not be found for use in variant stream configuration by name '" +
-                        variantStreamname + "'");
+                        "Event type by name '" +
+                        typeName +
+                        "' could not be found for use in variant stream configuration by name '" +
+                        variantStreamname +
+                        "'");
                 }
 
                 types.Add(type);
@@ -76,8 +81,14 @@ namespace com.espertech.esper.common.@internal.@event.eventtyperepo
         {
             var variantSpec = ValidateVariantStream(name, config, repo);
             var metadata = new EventTypeMetadata(
-                name, null, EventTypeTypeClass.VARIANT, EventTypeApplicationType.VARIANT, NameAccessModifier.PRECONFIGURED, EventTypeBusModifier.BUS,
-                false, new EventTypeIdPair(CRC32Util.ComputeCRC32(name), -1));
+                name,
+                null,
+                EventTypeTypeClass.VARIANT,
+                EventTypeApplicationType.VARIANT,
+                NameAccessModifier.PRECONFIGURED,
+                EventTypeBusModifier.BUS,
+                false,
+                new EventTypeIdPair(CRC32Util.ComputeCRC32(name), -1));
             var variantEventType = eventTypeFactory.CreateVariant(metadata, variantSpec);
             repo.AddType(variantEventType);
         }

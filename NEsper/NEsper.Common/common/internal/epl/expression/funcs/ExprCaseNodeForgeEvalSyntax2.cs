@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -15,6 +16,7 @@ using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.util;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 using static com.espertech.esper.common.@internal.epl.expression.funcs.ExprCaseNodeForgeEvalSyntax1;
 
@@ -86,24 +88,36 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
                 : forge.EvaluationType;
             var compareType = forge.OptionalCompareExprNode.Forge.EvaluationType;
             var methodNode = codegenMethodScope.MakeChild(
-                evaluationType, typeof(ExprCaseNodeForgeEvalSyntax2), codegenClassScope);
+                evaluationType,
+                typeof(ExprCaseNodeForgeEvalSyntax2),
+                codegenClassScope);
 
             var checkResultType = compareType == null ? typeof(object) : compareType;
             var block = methodNode.Block
                 .DeclareVar(
-                    checkResultType, "checkResult",
+                    checkResultType,
+                    "checkResult",
                     forge.OptionalCompareExprNode.Forge.EvaluateCodegen(
-                        checkResultType, methodNode, exprSymbol, codegenClassScope));
+                        checkResultType,
+                        methodNode,
+                        exprSymbol,
+                        codegenClassScope));
             var num = 0;
             foreach (var pair in forge.WhenThenNodeList) {
                 var refname = "r" + num;
                 var lhsType = pair.First.Forge.EvaluationType;
                 var lhsDeclaredType = lhsType == null ? typeof(object) : lhsType;
                 block.DeclareVar(
-                    lhsDeclaredType, refname,
+                    lhsDeclaredType,
+                    refname,
                     pair.First.Forge.EvaluateCodegen(lhsDeclaredType, methodNode, exprSymbol, codegenClassScope));
                 var compareExpression = CodegenCompare(
-                    Ref("checkResult"), compareType, Ref(refname), pair.First.Forge.EvaluationType, forge, methodNode,
+                    Ref("checkResult"),
+                    compareType,
+                    Ref(refname),
+                    pair.First.Forge.EvaluationType,
+                    forge,
+                    methodNode,
                     codegenClassScope);
                 block.IfCondition(compareExpression)
                     .BlockReturn(CodegenToType(forge, pair.Second, methodNode, exprSymbol, codegenClassScope));
@@ -165,7 +179,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
 
             var block = codegenMethodScope
                 .MakeChild(typeof(bool), typeof(ExprCaseNodeForgeEvalSyntax2), codegenClassScope)
-                .AddParam(lhsType, "leftResult").AddParam(rhsType, "rightResult").Block;
+                .AddParam(lhsType, "leftResult")
+                .AddParam(rhsType, "rightResult")
+                .Block;
             if (!lhsType.IsPrimitive) {
                 var ifBlock = block.IfCondition(EqualsNull(Ref("leftResult")));
                 if (rhsType.IsPrimitive) {
@@ -184,11 +200,14 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
             if (!forge.IsMustCoerce) {
                 method = block.MethodReturn(
                     CodegenLegoCompareEquals.CodegenEqualsNonNullNoCoerce(
-                        Ref("leftResult"), lhsType, Ref("rightResult"), rhsType));
+                        Ref("leftResult"),
+                        lhsType,
+                        Ref("rightResult"),
+                        rhsType));
             }
             else {
-                block.DeclareVar(typeof(object), "left", forge.Coercer.CoerceCodegen(Ref("leftResult"), lhsType));
-                block.DeclareVar(typeof(object), "right", forge.Coercer.CoerceCodegen(Ref("rightResult"), rhsType));
+                block.DeclareVar<object>("left", forge.Coercer.CoerceCodegen(Ref("leftResult"), lhsType));
+                block.DeclareVar<object>("right", forge.Coercer.CoerceCodegen(Ref("rightResult"), rhsType));
                 method = block.MethodReturn(ExprDotMethod(Ref("left"), "equals", Ref("right")));
             }
 

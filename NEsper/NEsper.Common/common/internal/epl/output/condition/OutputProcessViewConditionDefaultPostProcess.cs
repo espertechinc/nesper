@@ -34,7 +34,13 @@ namespace com.espertech.esper.common.@internal.epl.output.condition
             bool isJoin,
             EventType[] eventTypes)
             : base(
-                resultSetProcessor, afterConditionTime, afterConditionNumberOfEvents, afterConditionSatisfied, parent, agentInstanceContext, isJoin,
+                resultSetProcessor,
+                afterConditionTime,
+                afterConditionNumberOfEvents,
+                afterConditionSatisfied,
+                parent,
+                agentInstanceContext,
+                isJoin,
                 eventTypes)
         {
             this.postProcessor = postProcessor;

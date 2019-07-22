@@ -43,14 +43,16 @@ namespace com.espertech.esper.common.@internal.epl.resultset.order
             VariableReader numRowsVariableReader = null;
             if (numRowsVariable != null) {
                 numRowsVariableReader = agentInstanceContext.VariableManagementService.GetReader(
-                    numRowsVariable.DeploymentId, numRowsVariable.MetaData.VariableName,
+                    numRowsVariable.DeploymentId,
+                    numRowsVariable.MetaData.VariableName,
                     agentInstanceContext.AgentInstanceId);
             }
 
             VariableReader offsetVariableReader = null;
             if (offsetVariable != null) {
                 offsetVariableReader = agentInstanceContext.StatementContext.VariableManagementService.GetReader(
-                    offsetVariable.DeploymentId, offsetVariable.MetaData.VariableName,
+                    offsetVariable.DeploymentId,
+                    offsetVariable.MetaData.VariableName,
                     agentInstanceContext.AgentInstanceId);
             }
 

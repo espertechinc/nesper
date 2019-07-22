@@ -13,6 +13,7 @@ using com.espertech.esper.common.@internal.epl.expression.agg.accessagg;
 using com.espertech.esper.common.@internal.epl.expression.agg.@base;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.compat.collections;
+
 using System;
 using System.Collections.Generic;
 
@@ -63,13 +64,16 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.method
                 expressions[count] = child;
 
                 if (!ExprNodeUtilityAggregation.HasRemoveStreamForAggregations(
-                    child, validationContext.StreamTypeService, validationContext.IsResettingAggregations)) {
+                    child,
+                    validationContext.StreamTypeService,
+                    validationContext.IsResettingAggregations)) {
                     hasDataWindows = false;
                 }
 
                 if (child is ExprWildcard) {
                     ExprAggMultiFunctionUtil.CheckWildcardNotJoinOrSubquery(
-                        validationContext.StreamTypeService, functionName);
+                        validationContext.StreamTypeService,
+                        functionName);
                     parameterTypes[count] = validationContext.StreamTypeService.EventTypes[0].UnderlyingType;
                     isConstant[count] = false;
                     constant[count] = null;
@@ -86,7 +90,13 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.method
             }
 
             AggregationFunctionValidationContext context = new AggregationFunctionValidationContext(
-                parameterTypes, isConstant, constant, base.IsDistinct, hasDataWindows, expressions, namedParameters);
+                parameterTypes,
+                isConstant,
+                constant,
+                base.IsDistinct,
+                hasDataWindows,
+                expressions,
+                namedParameters);
             try {
                 // the aggregation function factory is transient, obtain if not provided
                 if (aggregationFunctionForge == null) {
@@ -98,7 +108,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.method
             }
             catch (Exception ex) {
                 throw new ExprValidationException(
-                    "Plug-in aggregation function '" + functionName + "' failed validation: " + ex.Message, ex);
+                    "Plug-in aggregation function '" + functionName + "' failed validation: " + ex.Message,
+                    ex);
             }
 
             AggregationFunctionMode mode = aggregationFunctionForge.AggregationFunctionMode;

@@ -99,7 +99,10 @@ namespace NEsper.Avro.IO
             _jsonWriter.WriteValue(data);
         }
 
-        public void WriteFixed(byte[] data, int start, int len)
+        public void WriteFixed(
+            byte[] data,
+            int start,
+            int len)
         {
             byte[] value = new byte[len];
             Array.Copy(data, start, value, 0, len);

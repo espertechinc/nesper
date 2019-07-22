@@ -25,7 +25,8 @@ namespace com.espertech.esper.common.@internal.epl.namedwindow.core
             CodegenExpression initSvc)
         {
             return StaticMethod(
-                typeof(NamedWindowDeployTimeResolver), "resolveNamedWindow",
+                typeof(NamedWindowDeployTimeResolver),
+                "resolveNamedWindow",
                 Constant(namedWindow.EventType.Name),
                 Constant(namedWindow.EventType.Metadata.AccessModifier),
                 Constant(namedWindow.NamedWindowModuleName),
@@ -39,9 +40,9 @@ namespace com.espertech.esper.common.@internal.epl.namedwindow.core
             EPStatementInitServices services)
         {
             string deploymentId = ResolveDeploymentId(namedWindowName, visibility, optionalModuleName, services);
-            NamedWindow namedWindow = services.NamedWindowManagementService.GetNamedWindow(deploymentId, namedWindowName);
-            if (namedWindow == null)
-            {
+            NamedWindow namedWindow =
+                services.NamedWindowManagementService.GetNamedWindow(deploymentId, namedWindowName);
+            if (namedWindow == null) {
                 throw new EPException("Failed to resolve named window '" + namedWindowName + "'");
             }
 
@@ -55,20 +56,16 @@ namespace com.espertech.esper.common.@internal.epl.namedwindow.core
             EPStatementInitServices services)
         {
             string deploymentId;
-            if (visibility == NameAccessModifier.PRIVATE)
-            {
+            if (visibility == NameAccessModifier.PRIVATE) {
                 deploymentId = services.DeploymentId;
             }
-            else if (visibility == NameAccessModifier.PUBLIC)
-            {
+            else if (visibility == NameAccessModifier.PUBLIC) {
                 deploymentId = services.NamedWindowPathRegistry.GetDeploymentId(tableName, optionalModuleName);
-                if (deploymentId == null)
-                {
+                if (deploymentId == null) {
                     throw new EPException("Failed to resolve path named window '" + tableName + "'");
                 }
             }
-            else
-            {
+            else {
                 throw new ArgumentException("Unrecognized visibility " + visibility);
             }
 

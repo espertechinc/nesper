@@ -12,7 +12,9 @@ using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.@event.variant;
+
 using System;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.expression.core
@@ -82,8 +84,13 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             method.Block
                 .DeclareVar(targetType, "value", CodegenGet(requiredType, method, symbols, classScope))
                 .Expression(
-                    ExprDotMethodChain(symbols.GetAddExprEvalCtx(method)).Add("getAuditProvider").Add(
-                        "property", Constant(identNode.ResolvedPropertyName), @Ref("value"), symbols.GetAddExprEvalCtx(method)))
+                    ExprDotMethodChain(symbols.GetAddExprEvalCtx(method))
+                        .Add("getAuditProvider")
+                        .Add(
+                            "property",
+                            Constant(identNode.ResolvedPropertyName),
+                            @Ref("value"),
+                            symbols.GetAddExprEvalCtx(method)))
                 .MethodReturn(@Ref("value"));
             return LocalMethod(method);
         }
@@ -99,34 +106,47 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             }
 
             Type castTargetType = GetCodegenReturnType(requiredType);
-            bool useUnderlying = exprSymbol.IsAllowUnderlyingReferences && !identNode.ResolvedPropertyName.Contains("?") &&
-                                 !(eventType is WrapperEventType) && !(eventType is VariantEventType);
+            bool useUnderlying = exprSymbol.IsAllowUnderlyingReferences &&
+                                 !identNode.ResolvedPropertyName.Contains("?") &&
+                                 !(eventType is WrapperEventType) &&
+                                 !(eventType is VariantEventType);
             if (useUnderlying && !optionalEvent) {
-                CodegenExpressionRef underlying = exprSymbol.GetAddRequiredUnderlying(codegenMethodScope, streamNum, eventType, false);
+                CodegenExpressionRef underlying = exprSymbol.GetAddRequiredUnderlying(
+                    codegenMethodScope,
+                    streamNum,
+                    eventType,
+                    false);
                 return CodegenLegoCast.CastSafeFromObjectType(
-                    castTargetType, propertyGetter.UnderlyingGetCodegen(underlying, codegenMethodScope, codegenClassScope));
+                    castTargetType,
+                    propertyGetter.UnderlyingGetCodegen(underlying, codegenMethodScope, codegenClassScope));
             }
 
             CodegenMethod method = codegenMethodScope.MakeChild(castTargetType, this.GetType(), codegenClassScope);
             CodegenBlock block = method.Block;
 
             if (useUnderlying) {
-                CodegenExpressionRef underlying = exprSymbol.GetAddRequiredUnderlying(method, streamNum, eventType, true);
+                CodegenExpressionRef underlying = exprSymbol.GetAddRequiredUnderlying(
+                    method,
+                    streamNum,
+                    eventType,
+                    true);
                 block.IfRefNullReturnNull(underlying)
                     .MethodReturn(
                         CodegenLegoCast.CastSafeFromObjectType(
-                            castTargetType, propertyGetter.UnderlyingGetCodegen(underlying, method, codegenClassScope)));
+                            castTargetType,
+                            propertyGetter.UnderlyingGetCodegen(underlying, method, codegenClassScope)));
             }
             else {
                 CodegenExpressionRef refEPS = exprSymbol.GetAddEPS(method);
-                method.Block.DeclareVar(typeof(EventBean), "event", ArrayAtIndex(refEPS, Constant(streamNum)));
+                method.Block.DeclareVar<EventBean>("event", ArrayAtIndex(refEPS, Constant(streamNum)));
                 if (optionalEvent) {
                     block.IfRefNullReturnNull("event");
                 }
 
                 block.MethodReturn(
                     CodegenLegoCast.CastSafeFromObjectType(
-                        castTargetType, propertyGetter.EventBeanGetCodegen(@Ref("event"), method, codegenClassScope)));
+                        castTargetType,
+                        propertyGetter.EventBeanGetCodegen(@Ref("event"), method, codegenClassScope)));
             }
 
             return LocalMethod(method);

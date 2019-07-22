@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.core;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -15,8 +16,10 @@ using com.espertech.esper.common.@internal.epl.agg.method.core;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.compat.function;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
-using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionRelational.CodegenRelational;
+using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionRelational.
+    CodegenRelational;
 using static com.espertech.esper.common.@internal.epl.agg.method.core.AggregatorCodegenUtil;
 
 namespace com.espertech.esper.common.@internal.epl.agg.method.count
@@ -37,7 +40,14 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.count
             ExprNode optionalFilter,
             bool isEver)
             : base(
-                factory, col, rowCtor, membersColumnized, classScope, optionalDistinctValueType, hasFilter, optionalFilter)
+                factory,
+                col,
+                rowCtor,
+                membersColumnized,
+                classScope,
+                optionalDistinctValueType,
+                hasFilter,
+                optionalFilter)
         {
             this.isEver = isEver;
             cnt = membersColumnized.AddMember(col, typeof(long), "cnt");
@@ -59,7 +69,9 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.count
 
             var evalType = forges[0].EvaluationType;
             method.Block.DeclareVar(
-                evalType, "value", forges[0].EvaluateCodegen(evalType, method, symbols, classScope));
+                evalType,
+                "value",
+                forges[0].EvaluateCodegen(evalType, method, symbols, classScope));
             if (!evalType.IsPrimitive) {
                 method.Block.IfRefNull("value").BlockReturnNoValue();
             }
@@ -112,7 +124,9 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.count
 
             var evalType = forges[0].EvaluationType;
             method.Block.DeclareVar(
-                evalType, "value", forges[0].EvaluateCodegen(evalType, method, symbols, classScope));
+                evalType,
+                "value",
+                forges[0].EvaluateCodegen(evalType, method, symbols, classScope));
             if (!evalType.IsPrimitive) {
                 method.Block.IfRefNull("value").BlockReturnNoValue();
             }

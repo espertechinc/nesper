@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.dataflow.annotations;
 using com.espertech.esper.common.client.dataflow.core;
@@ -67,10 +68,21 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createdataflow
 
             string eventTypeName = services.EventTypeNameGeneratorStatement.AnonymousTypeName;
             var metadata = new EventTypeMetadata(
-                eventTypeName, @base.ModuleName, EventTypeTypeClass.STATEMENTOUT, EventTypeApplicationType.MAP,
-                NameAccessModifier.TRANSIENT, EventTypeBusModifier.NONBUS, false, EventTypeIdPair.Unassigned());
+                eventTypeName,
+                @base.ModuleName,
+                EventTypeTypeClass.STATEMENTOUT,
+                EventTypeApplicationType.MAP,
+                NameAccessModifier.TRANSIENT,
+                EventTypeBusModifier.NONBUS,
+                false,
+                EventTypeIdPair.Unassigned());
             EventType eventType = BaseNestableEventUtil.MakeMapTypeCompileTime(
-                metadata, Collections.GetEmptyMap<string, object>(), null, null, null, null,
+                metadata,
+                Collections.GetEmptyMap<string, object>(),
+                null,
+                null,
+                null,
+                null,
                 services.BeanEventTypeFactoryPrivate,
                 services.EventTypeCompileTimeResolver);
             services.EventTypeCompileTimeRegistry.NewType(eventType);
@@ -82,9 +94,12 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createdataflow
             var dataflowForge = BuildForge(createDataFlowDesc, codegenEnv, @base, services);
 
             var packageScope = new CodegenNamespaceScope(
-                packageName, statementFieldsClassName, services.IsInstrumented);
+                packageName,
+                statementFieldsClassName,
+                services.IsInstrumented);
             var aiFactoryProviderClassName = CodeGenerationIDGenerator.GenerateClassNameSimple(
-                typeof(StatementAIFactoryProvider), classPostfix);
+                typeof(StatementAIFactoryProvider),
+                classPostfix);
             var forge =
                 new StatementAgentInstanceFactoryCreateDataflowForge(eventType, dataflowForge);
             var aiFactoryForgable =
@@ -97,11 +112,16 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createdataflow
                 Collections.GetEmptyList<ScheduleHandleCallbackProvider>(),
                 Collections.GetEmptyList<NamedWindowConsumerStreamSpec>(),
                 false,
-                selectSubscriberDescriptor, packageScope, services);
+                selectSubscriberDescriptor,
+                packageScope,
+                services);
             var statementProviderClassName =
                 CodeGenerationIDGenerator.GenerateClassNameSimple(typeof(StatementProvider), classPostfix);
             var stmtProvider = new StmtClassForgableStmtProvider(
-                aiFactoryProviderClassName, statementProviderClassName, informationals, packageScope);
+                aiFactoryProviderClassName,
+                statementProviderClassName,
+                informationals,
+                packageScope);
 
             IList<StmtClassForgable> forgables = new List<StmtClassForgable>();
             forgables.Add(aiFactoryForgable);
@@ -118,7 +138,8 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createdataflow
             }
 
             var filterBooleanExpr = FilterSpecCompiled.MakeExprNodeList(
-                filterSpecCompileds, Collections.GetEmptyList<FilterSpecParamExprNodeForge>());
+                filterSpecCompileds,
+                Collections.GetEmptyList<FilterSpecParamExprNodeForge>());
             IList<NamedWindowConsumerStreamSpec> namedWindowConsumers = new List<NamedWindowConsumerStreamSpec>();
             IList<ScheduleHandleCallbackProvider> scheduleds = new List<ScheduleHandleCallbackProvider>();
 
@@ -127,11 +148,16 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createdataflow
                 foreach (var v in Enumerable.Reverse(additional.Forgables)) {
                     forgables.Insert(0, v);
                 }
+
                 scheduleds.AddAll(additional.Scheduleds);
             }
 
             return new StmtForgeMethodResult(
-                forgables, filterSpecCompileds, scheduleds, namedWindowConsumers, filterBooleanExpr);
+                forgables,
+                filterSpecCompileds,
+                scheduleds,
+                namedWindowConsumers,
+                filterBooleanExpr);
         }
 
         private static DataflowDescForge BuildForge(
@@ -150,7 +176,9 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createdataflow
                 Attribute[] operatorAnnotation;
                 try {
                     operatorAnnotation = AnnotationUtil.CompileAnnotations(
-                        spec.Annotations, services.ImportServiceCompileTime, null);
+                        spec.Annotations,
+                        services.ImportServiceCompileTime,
+                        null);
                 }
                 catch (StatementSpecCompileException e) {
                     throw new ExprValidationException("Invalid annotation: " + e.Message, e);
@@ -167,7 +195,10 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createdataflow
 
             // resolve operator classes
             var operatorMetadata = ResolveMetadata(
-                desc, operatorAnnotations, @base, services);
+                desc,
+                operatorAnnotations,
+                @base,
+                services);
 
             // build dependency graph:  operator -> [input_providing_op, input_providing_op]
             var operatorDependencies = AnalyzeDependencies(desc);
@@ -177,21 +208,42 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createdataflow
 
             // instantiate operator forges
             var operatorForges = InstantiateOperatorForges(
-                operatorDependencies, operatorMetadata, operatorAnnotations, declaredTypes, desc, @base, services);
+                operatorDependencies,
+                operatorMetadata,
+                operatorAnnotations,
+                declaredTypes,
+                desc,
+                @base,
+                services);
 
             // Build graph that references port numbers (port number is simply the method offset number or to-be-generated slot in the list)
             var initForgesResult = DetermineChannelsInitForges(
-                operatorForges, operatorBuildOrder, operatorAnnotations, operatorDependencies, operatorMetadata,
-                declaredTypes, desc, codegenEnv, @base, services);
+                operatorForges,
+                operatorBuildOrder,
+                operatorAnnotations,
+                operatorDependencies,
+                operatorMetadata,
+                declaredTypes,
+                desc,
+                codegenEnv,
+                @base,
+                services);
             if (Log.IsDebugEnabled) {
                 Log.Debug(
-                    "For flow '" + desc.GraphName + "' channels are: " +
+                    "For flow '" +
+                    desc.GraphName +
+                    "' channels are: " +
                     LogicalChannelUtil.PrintChannels(initForgesResult.LogicalChannels));
             }
 
             return new DataflowDescForge(
-                desc.GraphName, declaredTypes, operatorMetadata, operatorBuildOrder,
-                operatorForges, initForgesResult.LogicalChannels, initForgesResult.AdditionalForgables);
+                desc.GraphName,
+                declaredTypes,
+                operatorMetadata,
+                operatorBuildOrder,
+                operatorForges,
+                initForgesResult.LogicalChannels,
+                initForgesResult.AdditionalForgables);
         }
 
         private static InitForgesResult DetermineChannelsInitForges(
@@ -216,9 +268,19 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createdataflow
                 var operatorForge = operatorForges.Get(operatorNum);
                 var operatorSpec = desc.Operators[operatorNum];
                 var annotationPorts = DetermineAnnotatedOutputPorts(
-                    operatorNum, operatorForge, operatorSpec, metadata, @base, services);
+                    operatorNum,
+                    operatorForge,
+                    operatorSpec,
+                    metadata,
+                    @base,
+                    services);
                 var graphDeclaredPorts = DetermineGraphDeclaredOutputPorts(
-                    operatorNum, operatorForge, operatorSpec, metadata, declaredTypes, services);
+                    operatorNum,
+                    operatorForge,
+                    operatorSpec,
+                    metadata,
+                    declaredTypes,
+                    services);
 
                 IList<LogicalChannelProducingPortDeclared> allDeclaredPorts =
                     new List<LogicalChannelProducingPortDeclared>();
@@ -247,9 +309,20 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createdataflow
                 // Compile type information, call method, obtain output types.
                 var incomingDependentOpNums = operatorDependencies[operatorNum].Incoming;
                 var initializeResult = InitializeOperatorForge(
-                    container, operatorNum, operatorForge, operatorAnno, metadata, operatorSpec,
-                    declaredOutputPorts, compiledOutputPorts, declaredTypes, incomingDependentOpNums,
-                    desc, codegenEnv, @base, services);
+                    container,
+                    operatorNum,
+                    operatorForge,
+                    operatorAnno,
+                    metadata,
+                    operatorSpec,
+                    declaredOutputPorts,
+                    compiledOutputPorts,
+                    declaredTypes,
+                    incomingDependentOpNums,
+                    desc,
+                    codegenEnv,
+                    @base,
+                    services);
 
                 GraphTypeDesc[] typesPerOutput = null;
                 if (initializeResult != null) {
@@ -291,7 +364,9 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createdataflow
                     // get producers
                     IList<LogicalChannelProducingPortCompiled> producingPorts =
                         LogicalChannelUtil.GetOutputPortByStreamName(
-                            dependencies.Incoming, inputName.InputStreamNames, compiledOutputPorts);
+                            dependencies.Incoming,
+                            inputName.InputStreamNames,
+                            compiledOutputPorts);
                     if (producingPorts.Count < inputName.InputStreamNames.Length) {
                         throw new IllegalStateException("Failed to find producing ports");
                     }
@@ -302,7 +377,10 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createdataflow
                         for (var i = 1; i < producingPorts.Count; i++) {
                             var other = producingPorts[i];
                             CompareTypeInfo(
-                                descriptor.OperatorName, first.StreamName, first.GraphTypeDesc, other.StreamName,
+                                descriptor.OperatorName,
+                                first.StreamName,
+                                first.GraphTypeDesc,
+                                other.StreamName,
                                 other.GraphTypeDesc);
                         }
                     }
@@ -314,8 +392,14 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createdataflow
                         foreach (var port in producingPorts) {
                             if (port.StreamName.Equals(streamName)) {
                                 var channel = new LogicalChannel(
-                                    channelId++, descriptor.OperatorName, operatorNum, streamNum, streamName,
-                                    optionalAlias, descriptor.OperatorPrettyPrint, port);
+                                    channelId++,
+                                    descriptor.OperatorName,
+                                    operatorNum,
+                                    streamNum,
+                                    streamName,
+                                    optionalAlias,
+                                    descriptor.OperatorPrettyPrint,
+                                    port);
                                 channels.Add(channel);
                             }
                         }
@@ -338,7 +422,11 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createdataflow
             IDictionary<int, DataFlowOperatorForge> forges = new Dictionary<int, DataFlowOperatorForge>();
             foreach (var entry in operatorMetadata) {
                 var forge = InstantiateOperatorForge(
-                    createDataFlowDesc, entry.Key, entry.Value, @base, services);
+                    createDataFlowDesc,
+                    entry.Key,
+                    entry.Value,
+                    @base,
+                    services);
                 forges.Put(entry.Key, forge);
             }
 
@@ -367,19 +455,30 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createdataflow
 
             // inject properties
             var exprValidationContext = new ExprValidationContextBuilder(
-                    new StreamTypeServiceImpl(false), @base.StatementRawInfo, services)
+                    new StreamTypeServiceImpl(false),
+                    @base.StatementRawInfo,
+                    services)
                 .Build();
             var configs = operatorSpec.Detail == null
                 ? Collections.GetEmptyMap<string, object>()
                 : operatorSpec.Detail.Configs;
             InjectObjectProperties(
-                dataflowName, operatorSpec.OperatorName, operatorNum, configs, forgeObject, null, null,
+                dataflowName,
+                operatorSpec.OperatorName,
+                operatorNum,
+                configs,
+                forgeObject,
+                null,
+                null,
                 exprValidationContext);
 
             if (!(forgeObject is DataFlowOperatorForge)) {
                 throw new ExprValidationException(
-                    "Operator object '" + forgeObject.GetType().Name + "' does not implement the '" +
-                    typeof(DataFlowOperatorForge) + "' interface ");
+                    "Operator object '" +
+                    forgeObject.GetType().Name +
+                    "' does not implement the '" +
+                    typeof(DataFlowOperatorForge) +
+                    "' interface ");
             }
 
             return (DataFlowOperatorForge) forgeObject;
@@ -399,7 +498,9 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createdataflow
                 var inputItem = operatorSpec.Input.StreamNamesAndAliases[inputPortNum];
                 IList<LogicalChannelProducingPortCompiled> producingPorts =
                     LogicalChannelUtil.GetOutputPortByStreamName(
-                        incomingDependentOpNums, inputItem.InputStreamNames, compiledOutputPorts);
+                        incomingDependentOpNums,
+                        inputItem.InputStreamNames,
+                        compiledOutputPorts);
 
                 DataFlowOpInputPort port;
                 if (producingPorts.IsEmpty()) {
@@ -407,7 +508,8 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createdataflow
                     var declareds = declaredOutputPorts.Get(operatorNumber);
                     if (declareds == null || declareds.IsEmpty()) {
                         throw new ExprValidationException(
-                            "Failed validation for operator '" + operatorSpec.OperatorName +
+                            "Failed validation for operator '" +
+                            operatorSpec.OperatorName +
                             "': No output ports declared");
                     }
 
@@ -421,18 +523,22 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createdataflow
 
                     if (foundDeclared == null) {
                         throw new ExprValidationException(
-                            "Failed validation for operator '" + operatorSpec.OperatorName +
+                            "Failed validation for operator '" +
+                            operatorSpec.OperatorName +
                             "': Failed to find output port declared");
                     }
 
                     port = new DataFlowOpInputPort(
-                        foundDeclared.TypeDesc, new HashSet<string>(inputItem.InputStreamNames),
-                        inputItem.OptionalAsName, false);
+                        foundDeclared.TypeDesc,
+                        new HashSet<string>(inputItem.InputStreamNames),
+                        inputItem.OptionalAsName,
+                        false);
                 }
                 else {
                     port = new DataFlowOpInputPort(
                         new GraphTypeDesc(false, false, producingPorts[0].GraphTypeDesc.EventType),
-                        new HashSet<string>(inputItem.InputStreamNames), inputItem.OptionalAsName,
+                        new HashSet<string>(inputItem.InputStreamNames),
+                        inputItem.OptionalAsName,
                         producingPorts[0].HasPunctuation);
                 }
 
@@ -473,20 +579,32 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createdataflow
 
                     if (forgeClass == null) {
                         throw new ExprValidationException(
-                            "Failed to resolve forge class for operator '" + operatorSpec.OperatorName + "': " +
-                            e.Message, e);
+                            "Failed to resolve forge class for operator '" +
+                            operatorSpec.OperatorName +
+                            "': " +
+                            e.Message,
+                            e);
                     }
                 }
 
                 // if the factory implements the interface use that
                 if (!TypeHelper.IsImplementsInterface(forgeClass, typeof(DataFlowOperatorForge))) {
                     throw new ExprValidationException(
-                        "Forge class for operator '" + operatorSpec.OperatorName + "' does not implement interface '" +
-                        typeof(DataFlowOperatorForge).Name + "' (class '" + forgeClass.Name + "')");
+                        "Forge class for operator '" +
+                        operatorSpec.OperatorName +
+                        "' does not implement interface '" +
+                        typeof(DataFlowOperatorForge).Name +
+                        "' (class '" +
+                        forgeClass.Name +
+                        "')");
                 }
 
                 var descriptor = new OperatorMetadataDescriptor(
-                    forgeClass, operatorPrettyPrint, operatorAnnotation, numOutputPorts, operatorName);
+                    forgeClass,
+                    operatorPrettyPrint,
+                    operatorAnnotation,
+                    numOutputPorts,
+                    operatorName);
                 operatorClasses.Put(i, descriptor);
             }
 
@@ -513,8 +631,11 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createdataflow
                 foreach (var @out in spec.Output.Items) {
                     if (@out.TypeInfo.Count > 1) {
                         throw new ExprValidationException(
-                            "Failed to validate operator '" + spec.OperatorName +
-                            "': Multiple output types for a single stream '" + @out.StreamName + "' are not supported");
+                            "Failed to validate operator '" +
+                            spec.OperatorName +
+                            "': Multiple output types for a single stream '" +
+                            @out.StreamName +
+                            "' are not supported");
                     }
                 }
             }
@@ -658,7 +779,10 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createdataflow
 
                         if (!found) {
                             throw new ExprValidationException(
-                                "Input stream '" + inputStreamName + "' consumed by operator '" + op.OperatorName +
+                                "Input stream '" +
+                                inputStreamName +
+                                "' consumed by operator '" +
+                                op.OperatorName +
                                 "' could not be found");
                         }
                     }
@@ -725,10 +849,13 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createdataflow
         {
             // determine if there is a property holder which holds all properties
             ICollection<FieldInfo> propertyHolderFields = TypeHelper.FindAnnotatedFields(
-                instance.GetType(), typeof(DataFlowOpPropertyHolderAttribute));
+                instance.GetType(),
+                typeof(DataFlowOpPropertyHolderAttribute));
             if (propertyHolderFields.Count > 1) {
                 throw new ArgumentException(
-                    "May apply " + typeof(DataFlowOpPropertyHolderAttribute).Name + " annotation only to a single field");
+                    "May apply " +
+                    typeof(DataFlowOpPropertyHolderAttribute).Name +
+                    " annotation only to a single field");
             }
 
             // determine which class to write properties to
@@ -743,14 +870,22 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createdataflow
                 }
                 catch (Exception e) {
                     throw new ExprValidationException(
-                        "Failed to instantiate '" + propertyHolderClass + "': " + e.Message, e);
+                        "Failed to instantiate '" + propertyHolderClass + "': " + e.Message,
+                        e);
                 }
             }
 
             // populate either the instance itself or the property-holder
             PopulateUtil.PopulateObject(
-                operatorName, operatorNum, dataFlowName, configs, propertyInstance, ExprNodeOrigin.DATAFLOW,
-                exprValidationContext, optionalParameterProvider, optionalParameterURIs);
+                operatorName,
+                operatorNum,
+                dataFlowName,
+                configs,
+                propertyInstance,
+                ExprNodeOrigin.DATAFLOW,
+                exprValidationContext,
+                optionalParameterProvider,
+                optionalParameterURIs);
 
             // set holder
             if (!propertyHolderFields.IsEmpty()) {
@@ -793,7 +928,8 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createdataflow
                     else {
                         string typeName = outputType.TypeName;
                         clazz = TypeHelper.GetTypeForSimpleName(
-                            typeName, services.ImportServiceCompileTime.ClassForNameProvider);
+                            typeName,
+                            services.ImportServiceCompileTime.ClassForNameProvider);
                         if (clazz == null) {
                             try {
                                 clazz = services.ImportServiceCompileTime.ResolveClass(typeName, false);
@@ -808,14 +944,27 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createdataflow
                 }
 
                 var propertiesCompiled = EventTypeUtility.CompileMapTypeProperties(
-                    propertiesRaw, services.EventTypeCompileTimeResolver);
+                    propertiesRaw,
+                    services.EventTypeCompileTimeResolver);
                 var eventTypeName =
                     services.EventTypeNameGeneratorStatement.GetDataflowOperatorTypeName(operatorNumber);
                 var metadata = new EventTypeMetadata(
-                    eventTypeName, @base.ModuleName, EventTypeTypeClass.DBDERIVED, EventTypeApplicationType.OBJECTARR,
-                    NameAccessModifier.TRANSIENT, EventTypeBusModifier.NONBUS, false, EventTypeIdPair.Unassigned());
+                    eventTypeName,
+                    @base.ModuleName,
+                    EventTypeTypeClass.DBDERIVED,
+                    EventTypeApplicationType.OBJECTARR,
+                    NameAccessModifier.TRANSIENT,
+                    EventTypeBusModifier.NONBUS,
+                    false,
+                    EventTypeIdPair.Unassigned());
                 EventType eventType = BaseNestableEventUtil.MakeOATypeCompileTime(
-                    metadata, propertiesCompiled, null, null, null, null, services.BeanEventTypeFactoryPrivate,
+                    metadata,
+                    propertiesCompiled,
+                    null,
+                    null,
+                    null,
+                    null,
+                    services.BeanEventTypeFactoryPrivate,
                     services.EventTypeCompileTimeResolver);
                 services.EventTypeCompileTimeRegistry.NewType(eventType);
 
@@ -835,8 +984,12 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createdataflow
                     typeof(DataFlowOpProvideSignalAttribute),
                     forge.GetType().GetCustomAttributes().UnwrapIntoArray<Attribute>());
                 var port = new LogicalChannelProducingPortDeclared(
-                    operatorNumber, descriptor.OperatorPrettyPrint, streamName, outputTypes.PortNumber,
-                    new GraphTypeDesc(false, false, eventType), isDeclaredPunctuated);
+                    operatorNumber,
+                    descriptor.OperatorPrettyPrint,
+                    streamName,
+                    outputTypes.PortNumber,
+                    new GraphTypeDesc(false, false, eventType),
+                    isDeclaredPunctuated);
                 ports.Add(port);
             }
 
@@ -867,7 +1020,11 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createdataflow
                         operatorForgeClass.GetCustomAttributes().UnwrapIntoArray<Attribute>());
                     ports.Add(
                         new LogicalChannelProducingPortDeclared(
-                            producingOpNum, metadata.OperatorPrettyPrint, outputItem.StreamName, portNumber, typeDesc,
+                            producingOpNum,
+                            metadata.OperatorPrettyPrint,
+                            outputItem.StreamName,
+                            portNumber,
+                            typeDesc,
                             isDeclaredPunctuated));
                 }
 
@@ -947,7 +1104,9 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createdataflow
                 GraphOperatorInputNamesAlias inputItem = operatorSpec.Input.StreamNamesAndAliases[inputPortNum];
                 IList<LogicalChannelProducingPortCompiled> producingPorts =
                     LogicalChannelUtil.GetOutputPortByStreamName(
-                        incomingDependentOpNums, inputItem.InputStreamNames, compiledOutputPorts);
+                        incomingDependentOpNums,
+                        inputItem.InputStreamNames,
+                        compiledOutputPorts);
 
                 DataFlowOpInputPort port;
                 if (producingPorts.IsEmpty()) {
@@ -955,7 +1114,8 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createdataflow
                     var declareds = declaredOutputPorts.Get(operatorNumber);
                     if (declareds == null || declareds.IsEmpty()) {
                         throw new ExprValidationException(
-                            "Failed validation for operator '" + operatorSpec.OperatorName +
+                            "Failed validation for operator '" +
+                            operatorSpec.OperatorName +
                             "': No output ports declared");
                     }
 
@@ -969,18 +1129,23 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createdataflow
 
                     if (foundDeclared == null) {
                         throw new ExprValidationException(
-                            "Failed validation for operator '" + operatorSpec.OperatorName +
-                            "': Failed to find output port for input port " + inputPortNum);
+                            "Failed validation for operator '" +
+                            operatorSpec.OperatorName +
+                            "': Failed to find output port for input port " +
+                            inputPortNum);
                     }
 
                     port = new DataFlowOpInputPort(
-                        foundDeclared.TypeDesc, new HashSet<string>(inputItem.InputStreamNames),
-                        inputItem.OptionalAsName, false);
+                        foundDeclared.TypeDesc,
+                        new HashSet<string>(inputItem.InputStreamNames),
+                        inputItem.OptionalAsName,
+                        false);
                 }
                 else {
                     port = new DataFlowOpInputPort(
                         new GraphTypeDesc(false, false, producingPorts[0].GraphTypeDesc.EventType),
-                        new HashSet<string>(inputItem.InputStreamNames), inputItem.OptionalAsName,
+                        new HashSet<string>(inputItem.InputStreamNames),
+                        inputItem.OptionalAsName,
                         producingPorts[0].HasPunctuation);
                 }
 
@@ -1000,7 +1165,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createdataflow
                     operatorSpec,
                     inputPorts,
                     outputPorts,
-                    codegenEnv, 
+                    codegenEnv,
                     @base,
                     services);
                 initializeResult = forge.InitializeForge(context);
@@ -1010,7 +1175,8 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createdataflow
             }
             catch (Exception t) {
                 throw new ExprValidationException(
-                    "Failed to obtain operator '" + operatorSpec.OperatorName + "': " + t.Message, t);
+                    "Failed to obtain operator '" + operatorSpec.OperatorName + "': " + t.Message,
+                    t);
             }
 
             return initializeResult;
@@ -1051,13 +1217,17 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createdataflow
                     }
                 }
 
-                if (foundDeclared == null && (typesPerOutput == null || typesPerOutput.Length <= port ||
-                                              typesPerOutput[port] == null)) {
+                if (foundDeclared == null &&
+                    (typesPerOutput == null ||
+                     typesPerOutput.Length <= port ||
+                     typesPerOutput[port] == null)) {
                     throw new ExprValidationException(
                         "Operator neither declares an output type nor provided by the operator itself in a 'prepare' method");
                 }
 
-                if (foundDeclared != null && typesPerOutput != null && typesPerOutput.Length > port &&
+                if (foundDeclared != null &&
+                    typesPerOutput != null &&
+                    typesPerOutput.Length > port &&
                     typesPerOutput[port] != null) {
                     throw new ExprValidationException(
                         "Operator both declares an output type and provided a type in the 'prepare' method");
@@ -1079,7 +1249,12 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createdataflow
                 }
 
                 var compiled = new LogicalChannelProducingPortCompiled(
-                    myOpNum, metadata.OperatorPrettyPrint, portStreamName, port, compiledType, hasPunctuationSignal);
+                    myOpNum,
+                    metadata.OperatorPrettyPrint,
+                    portStreamName,
+                    port,
+                    compiledType,
+                    hasPunctuationSignal);
                 result.Add(compiled);
 
                 // check type compatibility
@@ -1087,7 +1262,11 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createdataflow
                 types.Put(portStreamName, compiledType);
                 if (existingType != null) {
                     CompareTypeInfo(
-                        operatorSpec.OperatorName, portStreamName, existingType, portStreamName, compiledType);
+                        operatorSpec.OperatorName,
+                        portStreamName,
+                        existingType,
+                        portStreamName,
+                        compiledType);
                 }
             }
 
@@ -1101,7 +1280,9 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createdataflow
         {
             foreach (var inputItem in input.StreamNamesAndAliases) {
                 IList<LogicalChannelProducingPortCompiled> list = LogicalChannelUtil.GetOutputPortByStreamName(
-                    incomingDependentOpNums, inputItem.InputStreamNames, compiledOutputPorts);
+                    incomingDependentOpNums,
+                    inputItem.InputStreamNames,
+                    compiledOutputPorts);
                 foreach (var port in list) {
                     if (port.HasPunctuation) {
                         return true;
@@ -1119,25 +1300,48 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createdataflow
             string otherName,
             GraphTypeDesc otherType)
         {
-            if (firstType.EventType != null && otherType.EventType != null &&
+            if (firstType.EventType != null &&
+                otherType.EventType != null &&
                 !firstType.EventType.Equals(otherType.EventType)) {
                 throw new ExprValidationException(
-                    "For operator '" + operatorName + "' stream '" + firstName + "'" +
-                    " typed '" + firstType.EventType.Name + "'" +
-                    " is not the same type as stream '" + otherName + "'" +
-                    " typed '" + otherType.EventType.Name + "'");
+                    "For operator '" +
+                    operatorName +
+                    "' stream '" +
+                    firstName +
+                    "'" +
+                    " typed '" +
+                    firstType.EventType.Name +
+                    "'" +
+                    " is not the same type as stream '" +
+                    otherName +
+                    "'" +
+                    " typed '" +
+                    otherType.EventType.Name +
+                    "'");
             }
 
             if (firstType.IsWildcard != otherType.IsWildcard) {
                 throw new ExprValidationException(
-                    "For operator '" + operatorName + "' streams '" + firstName + "'" +
-                    " and '" + otherName + "' have differing wildcard type information");
+                    "For operator '" +
+                    operatorName +
+                    "' streams '" +
+                    firstName +
+                    "'" +
+                    " and '" +
+                    otherName +
+                    "' have differing wildcard type information");
             }
 
             if (firstType.IsUnderlying != otherType.IsUnderlying) {
                 throw new ExprValidationException(
-                    "For operator '" + operatorName + "' streams '" + firstName + "'" +
-                    " and '" + otherName + "' have differing underlying information");
+                    "For operator '" +
+                    operatorName +
+                    "' streams '" +
+                    firstName +
+                    "'" +
+                    " and '" +
+                    otherName +
+                    "' have differing underlying information");
             }
         }
 

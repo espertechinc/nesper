@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.schedule;
@@ -50,7 +51,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.time.eval
             bool isNewData,
             ExprEvaluatorContext context)
         {
-            return new TimePeriodDeltaResult(TimePeriodUtil.DeltaAddWReference(fromTime, reference, timeDelta), reference);
+            return new TimePeriodDeltaResult(
+                TimePeriodUtil.DeltaAddWReference(fromTime, reference, timeDelta),
+                reference);
         }
 
         public long DeltaUseRuntimeTime(

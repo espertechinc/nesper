@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.compile.stage1.spec;
@@ -65,7 +66,9 @@ namespace com.espertech.esper.common.@internal.epl.ontrigger
             EventBean[] oldData)
         {
             agentInstanceContext.InstrumentationProvider.QInfraOnAction(
-                OnTriggerType.ON_MERGE, newData, CollectionUtil.EVENTBEANARRAY_EMPTY);
+                OnTriggerType.ON_MERGE,
+                newData,
+                CollectionUtil.EVENTBEANARRAY_EMPTY);
 
             if (newData == null) {
                 agentInstanceContext.InstrumentationProvider.AInfraOnAction();

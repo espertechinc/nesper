@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.context.airegistry;
@@ -53,19 +54,30 @@ namespace com.espertech.esper.common.@internal.context.aifactory.update
             IList<AgentInstanceStopCallback> stopCallbacks = new List<AgentInstanceStopCallback>();
             stopCallbacks.Add(
                 new ProxyAgentInstanceStopCallback {
-                    ProcStop = services => { agentInstanceContext.InternalEventRouter.RemovePreprocessing(desc.EventType, desc); }
+                    ProcStop = services => {
+                        agentInstanceContext.InternalEventRouter.RemovePreprocessing(desc.EventType, desc);
+                    }
                 });
 
             var subselectActivations = SubSelectHelperStart.StartSubselects(
-                subselects, agentInstanceContext, stopCallbacks, isRecoveringResilient);
+                subselects,
+                agentInstanceContext,
+                stopCallbacks,
+                isRecoveringResilient);
 
             var hasSubselect = !subselectActivations.IsEmpty();
             agentInstanceContext.InternalEventRouter.AddPreprocessing(
-                desc, viewable, agentInstanceContext.AgentInstanceLock, hasSubselect);
+                desc,
+                viewable,
+                agentInstanceContext.AgentInstanceLock,
+                hasSubselect);
 
             var stopCallback = AgentInstanceUtil.FinalizeSafeStopCallbacks(stopCallbacks);
             return new StatementAgentInstanceFactoryUpdateResult(
-                viewable, stopCallback, agentInstanceContext, subselectActivations);
+                viewable,
+                stopCallback,
+                agentInstanceContext,
+                subselectActivations);
         }
 
         public AIRegistryRequirements RegistryRequirements => AIRegistryRequirements.NoRequirements();

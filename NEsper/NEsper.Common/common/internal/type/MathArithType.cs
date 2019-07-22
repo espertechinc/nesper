@@ -25,30 +25,68 @@ namespace com.espertech.esper.common.@internal.type
         static MathArithType()
         {
             computers = new Dictionary<HashableMultiKey, Computer>();
-            computers.Put(new HashableMultiKey(new object[] { typeof(double?), MathArithTypeEnum.ADD }), new AddDouble());
-            computers.Put(new HashableMultiKey(new object[] { typeof(float?), MathArithTypeEnum.ADD }), new AddFloat());
-            computers.Put(new HashableMultiKey(new object[] { typeof(long?), MathArithTypeEnum.ADD }), new AddLong());
-            computers.Put(new HashableMultiKey(new object[] { typeof(int?), MathArithTypeEnum.ADD }), new AddInt());
-            computers.Put(new HashableMultiKey(new object[] { typeof(decimal?), MathArithTypeEnum.ADD }), new AddDecimal());
-            computers.Put(new HashableMultiKey(new object[] { typeof(BigInteger), MathArithTypeEnum.ADD }), new AddBigInt());
-            computers.Put(new HashableMultiKey(new object[] { typeof(double?), MathArithTypeEnum.SUBTRACT }), new SubtractDouble());
-            computers.Put(new HashableMultiKey(new object[] { typeof(float?), MathArithTypeEnum.SUBTRACT }), new SubtractFloat());
-            computers.Put(new HashableMultiKey(new object[] { typeof(long?), MathArithTypeEnum.SUBTRACT }), new SubtractLong());
-            computers.Put(new HashableMultiKey(new object[] { typeof(int?), MathArithTypeEnum.SUBTRACT }), new SubtractInt());
-            computers.Put(new HashableMultiKey(new object[] { typeof(decimal?), MathArithTypeEnum.SUBTRACT }), new SubtractDecimal());
-            computers.Put(new HashableMultiKey(new object[] { typeof(BigInteger), MathArithTypeEnum.SUBTRACT }), new SubtractBigInt());
-            computers.Put(new HashableMultiKey(new object[] { typeof(double?), MathArithTypeEnum.MULTIPLY }), new MultiplyDouble());
-            computers.Put(new HashableMultiKey(new object[] { typeof(float?), MathArithTypeEnum.MULTIPLY }), new MultiplyFloat());
-            computers.Put(new HashableMultiKey(new object[] { typeof(long?), MathArithTypeEnum.MULTIPLY }), new MultiplyLong());
-            computers.Put(new HashableMultiKey(new object[] { typeof(int?), MathArithTypeEnum.MULTIPLY }), new MultiplyInt());
-            computers.Put(new HashableMultiKey(new object[] { typeof(decimal?), MathArithTypeEnum.MULTIPLY }), new MultiplyDecimal());
-            computers.Put(new HashableMultiKey(new object[] { typeof(BigInteger), MathArithTypeEnum.MULTIPLY }), new MultiplyBigInt());
-            computers.Put(new HashableMultiKey(new object[] { typeof(double?), MathArithTypeEnum.MODULO }), new ModuloDouble());
-            computers.Put(new HashableMultiKey(new object[] { typeof(float?), MathArithTypeEnum.MODULO }), new ModuloFloat());
-            computers.Put(new HashableMultiKey(new object[] { typeof(long?), MathArithTypeEnum.MODULO }), new ModuloLong());
-            computers.Put(new HashableMultiKey(new object[] { typeof(int?), MathArithTypeEnum.MODULO }), new ModuloInt());
-            computers.Put(new HashableMultiKey(new object[] { typeof(decimal?), MathArithTypeEnum.MODULO }), new ModuloDouble());
-            computers.Put(new HashableMultiKey(new object[] { typeof(BigInteger), MathArithTypeEnum.MODULO }), new ModuloLong());
+            computers.Put(new HashableMultiKey(new object[] {typeof(double?), MathArithTypeEnum.ADD}), new AddDouble());
+            computers.Put(new HashableMultiKey(new object[] {typeof(float?), MathArithTypeEnum.ADD}), new AddFloat());
+            computers.Put(new HashableMultiKey(new object[] {typeof(long?), MathArithTypeEnum.ADD}), new AddLong());
+            computers.Put(new HashableMultiKey(new object[] {typeof(int?), MathArithTypeEnum.ADD}), new AddInt());
+            computers.Put(
+                new HashableMultiKey(new object[] {typeof(decimal?), MathArithTypeEnum.ADD}),
+                new AddDecimal());
+            computers.Put(
+                new HashableMultiKey(new object[] {typeof(BigInteger), MathArithTypeEnum.ADD}),
+                new AddBigInt());
+            computers.Put(
+                new HashableMultiKey(new object[] {typeof(double?), MathArithTypeEnum.SUBTRACT}),
+                new SubtractDouble());
+            computers.Put(
+                new HashableMultiKey(new object[] {typeof(float?), MathArithTypeEnum.SUBTRACT}),
+                new SubtractFloat());
+            computers.Put(
+                new HashableMultiKey(new object[] {typeof(long?), MathArithTypeEnum.SUBTRACT}),
+                new SubtractLong());
+            computers.Put(
+                new HashableMultiKey(new object[] {typeof(int?), MathArithTypeEnum.SUBTRACT}),
+                new SubtractInt());
+            computers.Put(
+                new HashableMultiKey(new object[] {typeof(decimal?), MathArithTypeEnum.SUBTRACT}),
+                new SubtractDecimal());
+            computers.Put(
+                new HashableMultiKey(new object[] {typeof(BigInteger), MathArithTypeEnum.SUBTRACT}),
+                new SubtractBigInt());
+            computers.Put(
+                new HashableMultiKey(new object[] {typeof(double?), MathArithTypeEnum.MULTIPLY}),
+                new MultiplyDouble());
+            computers.Put(
+                new HashableMultiKey(new object[] {typeof(float?), MathArithTypeEnum.MULTIPLY}),
+                new MultiplyFloat());
+            computers.Put(
+                new HashableMultiKey(new object[] {typeof(long?), MathArithTypeEnum.MULTIPLY}),
+                new MultiplyLong());
+            computers.Put(
+                new HashableMultiKey(new object[] {typeof(int?), MathArithTypeEnum.MULTIPLY}),
+                new MultiplyInt());
+            computers.Put(
+                new HashableMultiKey(new object[] {typeof(decimal?), MathArithTypeEnum.MULTIPLY}),
+                new MultiplyDecimal());
+            computers.Put(
+                new HashableMultiKey(new object[] {typeof(BigInteger), MathArithTypeEnum.MULTIPLY}),
+                new MultiplyBigInt());
+            computers.Put(
+                new HashableMultiKey(new object[] {typeof(double?), MathArithTypeEnum.MODULO}),
+                new ModuloDouble());
+            computers.Put(
+                new HashableMultiKey(new object[] {typeof(float?), MathArithTypeEnum.MODULO}),
+                new ModuloFloat());
+            computers.Put(
+                new HashableMultiKey(new object[] {typeof(long?), MathArithTypeEnum.MODULO}),
+                new ModuloLong());
+            computers.Put(new HashableMultiKey(new object[] {typeof(int?), MathArithTypeEnum.MODULO}), new ModuloInt());
+            computers.Put(
+                new HashableMultiKey(new object[] {typeof(decimal?), MathArithTypeEnum.MODULO}),
+                new ModuloDouble());
+            computers.Put(
+                new HashableMultiKey(new object[] {typeof(BigInteger), MathArithTypeEnum.MODULO}),
+                new ModuloLong());
         }
 
         /// <summary>
@@ -78,64 +116,60 @@ namespace com.espertech.esper.common.@internal.type
                 coercedType != typeof(decimal?) &&
                 coercedType != typeof(BigInteger) &&
                 coercedType != typeof(short?) &&
-                coercedType != typeof(byte))
-            {
+                coercedType != typeof(byte)) {
                 throw new ArgumentException(
                     "Expected base numeric type for computation result but got type " + coercedType);
             }
 
-            if (coercedType == typeof(decimal?))
-            {
+            if (coercedType == typeof(decimal?)) {
                 return MakeDecimalComputer(
-                    operation, typeOne, typeTwo, isDivisionByZeroReturnsNull, optionalMathContext);
+                    operation,
+                    typeOne,
+                    typeTwo,
+                    isDivisionByZeroReturnsNull,
+                    optionalMathContext);
             }
 
-            if (coercedType == typeof(BigInteger))
-            {
+            if (coercedType == typeof(BigInteger)) {
                 return MakeBigIntegerComputer(
-                    operation, typeOne, typeTwo);
+                    operation,
+                    typeOne,
+                    typeTwo);
             }
 
-            if (operation != MathArithTypeEnum.DIVIDE)
-            {
-                var key = new HashableMultiKey(new object[] { coercedType, operation });
+            if (operation != MathArithTypeEnum.DIVIDE) {
+                var key = new HashableMultiKey(new object[] {coercedType, operation});
                 var computer = computers.Get(key);
-                if (computer == null)
-                {
-                    throw new ArgumentException("Could not determine process or type " + operation + " type " + coercedType);
+                if (computer == null) {
+                    throw new ArgumentException(
+                        "Could not determine process or type " + operation + " type " + coercedType);
                 }
 
                 return computer;
             }
 
-            if (!isIntegerDivision)
-            {
+            if (!isIntegerDivision) {
                 //return new DivideDecimal(isDivisionByZeroReturnsNull);
                 return new DivideDouble(isDivisionByZeroReturnsNull);
             }
 
-            if (coercedType == typeof(decimal?))
-            {
+            if (coercedType == typeof(decimal?)) {
                 return new DivideDecimal(isDivisionByZeroReturnsNull);
             }
 
-            if (coercedType == typeof(double?))
-            {
+            if (coercedType == typeof(double?)) {
                 return new DivideDouble(isDivisionByZeroReturnsNull);
             }
 
-            if (coercedType == typeof(float?))
-            {
+            if (coercedType == typeof(float?)) {
                 return new DivideFloat();
             }
 
-            if (coercedType == typeof(long?))
-            {
+            if (coercedType == typeof(long?)) {
                 return new DivideLong();
             }
 
-            if (coercedType == typeof(int?))
-            {
+            if (coercedType == typeof(int?)) {
                 return new DivideInt();
             }
 
@@ -149,42 +183,34 @@ namespace com.espertech.esper.common.@internal.type
             bool divisionByZeroReturnsNull,
             MathContext optionalMathContext)
         {
-            if (typeOne == typeof(decimal?) && typeTwo == typeof(decimal?))
-            {
-                if (operation == MathArithTypeEnum.DIVIDE)
-                {
-                    if (optionalMathContext != null)
-                    {
+            if (typeOne == typeof(decimal?) && typeTwo == typeof(decimal?)) {
+                if (operation == MathArithTypeEnum.DIVIDE) {
+                    if (optionalMathContext != null) {
                         return new DivideDecimalWMathContext(divisionByZeroReturnsNull, optionalMathContext);
                     }
 
                     return new DivideDecimal(divisionByZeroReturnsNull);
                 }
 
-                return computers.Get(new HashableMultiKey(new object[] { typeof(decimal?), operation }));
+                return computers.Get(new HashableMultiKey(new object[] {typeof(decimal?), operation}));
             }
 
             var convertorOne = SimpleNumberCoercerFactory.GetCoercer(typeOne, typeof(decimal));
             var convertorTwo = SimpleNumberCoercerFactory.GetCoercer(typeTwo, typeof(decimal));
-            if (operation == MathArithTypeEnum.ADD)
-            {
+            if (operation == MathArithTypeEnum.ADD) {
                 return new AddDecimalConvComputer(convertorOne, convertorTwo);
             }
 
-            if (operation == MathArithTypeEnum.SUBTRACT)
-            {
+            if (operation == MathArithTypeEnum.SUBTRACT) {
                 return new SubtractDecimalConvComputer(convertorOne, convertorTwo);
             }
 
-            if (operation == MathArithTypeEnum.MULTIPLY)
-            {
+            if (operation == MathArithTypeEnum.MULTIPLY) {
                 return new MultiplyDecimalConvComputer(convertorOne, convertorTwo);
             }
 
-            if (operation == MathArithTypeEnum.DIVIDE)
-            {
-                if (optionalMathContext == null)
-                {
+            if (operation == MathArithTypeEnum.DIVIDE) {
+                if (optionalMathContext == null) {
                     return new DivideDecimalConvComputerNoMathCtx(
                         convertorOne,
                         convertorTwo,
@@ -206,39 +232,32 @@ namespace com.espertech.esper.common.@internal.type
             Type typeOne,
             Type typeTwo)
         {
-            if (typeOne == typeof(decimal?) && typeTwo == typeof(decimal?))
-            {
-                return computers.Get(new HashableMultiKey(new object[] { typeof(decimal?), operation }));
+            if (typeOne == typeof(decimal?) && typeTwo == typeof(decimal?)) {
+                return computers.Get(new HashableMultiKey(new object[] {typeof(decimal?), operation}));
             }
 
-            if (typeOne == typeof(BigInteger) && typeTwo == typeof(BigInteger))
-            {
-                var computer = computers.Get(new HashableMultiKey(new object[] { typeof(BigInteger), operation }));
-                if (computer != null)
-                {
+            if (typeOne == typeof(BigInteger) && typeTwo == typeof(BigInteger)) {
+                var computer = computers.Get(new HashableMultiKey(new object[] {typeof(BigInteger), operation}));
+                if (computer != null) {
                     return computer;
                 }
             }
 
             var convertorOne = SimpleNumberCoercerFactory.GetCoercerBigInteger(typeOne);
             var convertorTwo = SimpleNumberCoercerFactory.GetCoercerBigInteger(typeTwo);
-            if (operation == MathArithTypeEnum.ADD)
-            {
+            if (operation == MathArithTypeEnum.ADD) {
                 return new AddBigIntConvComputer(convertorOne, convertorTwo);
             }
 
-            if (operation == MathArithTypeEnum.SUBTRACT)
-            {
+            if (operation == MathArithTypeEnum.SUBTRACT) {
                 return new SubtractBigIntConvComputer(convertorOne, convertorTwo);
             }
 
-            if (operation == MathArithTypeEnum.MULTIPLY)
-            {
+            if (operation == MathArithTypeEnum.MULTIPLY) {
                 return new MultiplyBigIntConvComputer(convertorOne, convertorTwo);
             }
 
-            if (operation == MathArithTypeEnum.DIVIDE)
-            {
+            if (operation == MathArithTypeEnum.DIVIDE) {
                 return new DivideBigIntConvComputer(convertorOne, convertorTwo);
             }
 

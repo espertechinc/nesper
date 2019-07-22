@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -17,6 +18,7 @@ using com.espertech.esper.common.@internal.epl.datetime.interval;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.settings;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 using static com.espertech.esper.common.@internal.epl.datetime.dtlocal.DTLocalUtil;
 
@@ -58,10 +60,13 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
 
             var block = methodNode.Block;
             EvaluateCalOpsLDTCodegen(block, "target", forge.calendarForges, methodNode, exprSymbol, codegenClassScope);
-            block.DeclareVar(
-                typeof(long), "time",
+            block.DeclareVar<long>(
+                "time",
                 StaticMethod(
-                    typeof(DatetimeLongCoercerDateTimeOffset), "CoerceToMillis", Ref("target"), timeZoneField));
+                    typeof(DatetimeLongCoercerDateTimeOffset),
+                    "CoerceToMillis",
+                    Ref("target"),
+                    timeZoneField));
             block.MethodReturn(
                 forge.intervalForge.Codegen(Ref("time"), Ref("time"), methodNode, exprSymbol, codegenClassScope));
             return LocalMethod(methodNode, inner);
@@ -96,28 +101,42 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
                 codegenClassScope.AddOrGetFieldSharable(RuntimeSettingsTimeZoneField.INSTANCE);
             var methodNode = codegenMethodScope
                 .MakeChild(typeof(bool?), typeof(DTLocalDtxOpsIntervalEval), codegenClassScope)
-                .AddParam(typeof(DateTimeOffset), "start").AddParam(typeof(DateTimeOffset), "end");
+                .AddParam(typeof(DateTimeOffset), "start")
+                .AddParam(typeof(DateTimeOffset), "end");
 
             var block = methodNode.Block
-                .DeclareVar(
-                    typeof(long), "startMs",
+                .DeclareVar<long>(
+                    "startMs",
                     StaticMethod(
-                        typeof(DatetimeLongCoercerDateTimeOffset), "CoerceToMillis", Ref("start"), timeZoneField))
-                .DeclareVar(
-                    typeof(long), "endMs",
+                        typeof(DatetimeLongCoercerDateTimeOffset),
+                        "CoerceToMillis",
+                        Ref("start"),
+                        timeZoneField))
+                .DeclareVar<long>(
+                    "endMs",
                     StaticMethod(
-                        typeof(DatetimeLongCoercerDateTimeOffset), "CoerceToMillis", Ref("end"), timeZoneField))
-                .DeclareVar(typeof(long), "deltaMSec", Op(Ref("endMs"), "-", Ref("startMs")))
-                .DeclareVar(typeof(DateTimeOffset), "result", start);
+                        typeof(DatetimeLongCoercerDateTimeOffset),
+                        "CoerceToMillis",
+                        Ref("end"),
+                        timeZoneField))
+                .DeclareVar<long>("deltaMSec", Op(Ref("endMs"), "-", Ref("startMs")))
+                .DeclareVar<DateTimeOffset>("result", start);
             EvaluateCalOpsLDTCodegen(block, "result", forge.calendarForges, methodNode, exprSymbol, codegenClassScope);
-            block.DeclareVar(
-                typeof(long), "startLong",
+            block.DeclareVar<long>(
+                "startLong",
                 StaticMethod(
-                    typeof(DatetimeLongCoercerDateTimeOffset), "CoerceToMillis", Ref("result"), timeZoneField));
-            block.DeclareVar(typeof(long), "endTime", Op(Ref("startLong"), "+", Ref("deltaMSec")));
+                    typeof(DatetimeLongCoercerDateTimeOffset),
+                    "CoerceToMillis",
+                    Ref("result"),
+                    timeZoneField));
+            block.DeclareVar<long>("endTime", Op(Ref("startLong"), "+", Ref("deltaMSec")));
             block.MethodReturn(
                 forge.intervalForge.Codegen(
-                    Ref("startLong"), Ref("endTime"), methodNode, exprSymbol, codegenClassScope));
+                    Ref("startLong"),
+                    Ref("endTime"),
+                    methodNode,
+                    exprSymbol,
+                    codegenClassScope));
             return LocalMethod(methodNode, start, end);
         }
     }

@@ -8,6 +8,7 @@
 
 using System.Collections.Generic;
 using System.Linq;
+
 using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.script.core

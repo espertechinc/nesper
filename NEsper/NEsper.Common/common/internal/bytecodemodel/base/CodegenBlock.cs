@@ -9,6 +9,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+
 using com.espertech.esper.common.@internal.bytecodemodel.core;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.bytecodemodel.model.statement;
@@ -16,6 +17,7 @@ using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.function;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.bytecodemodel.@base
@@ -235,7 +237,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
             CodegenExpression initializer)
         {
             CheckClosed();
-            statements.Add(new CodegenStatementDeclareVar(clazz, null, var, initializer));
+            statements.Add(new CodegenStatementDeclareVar(clazz, var, initializer));
             return this;
         }
 
@@ -245,10 +247,11 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
             CodegenExpression initializer)
         {
             CheckClosed();
-            statements.Add(new CodegenStatementDeclareVar(typeName, null, var, initializer));
+            statements.Add(new CodegenStatementDeclareVar(typeName, var, initializer));
             return this;
         }
 
+#if false
         public CodegenBlock DeclareVar(
             Type clazz,
             Type optionalTypeVariable,
@@ -259,6 +262,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
             statements.Add(new CodegenStatementDeclareVar(clazz, optionalTypeVariable, var, initializer));
             return this;
         }
+#endif
 
         public CodegenBlock DeclareVarNoInit<T>(
             string var)
@@ -271,7 +275,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
             string var)
         {
             CheckClosed();
-            statements.Add(new CodegenStatementDeclareVar(clazz, null, var, null));
+            statements.Add(new CodegenStatementDeclareVar(clazz, var, null));
             return this;
         }
 
@@ -354,21 +358,6 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
             return this;
         }
 
-        public CodegenBlock GetProperty(
-            CodegenExpression expression,
-            string property)
-        {
-            throw new NotImplementedException();
-        }
-
-        public CodegenBlock SetProperty(
-            CodegenExpression expression,
-            string property,
-            CodegenExpression value)
-        {
-            throw new NotImplementedException();
-        }
-
         public CodegenBlock StaticMethod(
             Type clazz,
             string method,
@@ -387,7 +376,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
             return this;
         }
 
-        public CodegenBlock LocalMethod(
+        public CodegenBlock InstanceMethod(
             CodegenMethod methodNode,
             params CodegenExpression[] parameters)
         {
@@ -562,14 +551,13 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
 
         public void Render(
             StringBuilder builder,
-            IDictionary<Type, string> imports,
             bool isInnerClass,
             int level,
             CodegenIndent indent)
         {
             foreach (var statement in statements) {
                 indent.Indent(builder, level);
-                statement.Render(builder, imports, isInnerClass, level, indent);
+                statement.Render(builder, isInnerClass, level, indent);
             }
         }
 
@@ -756,6 +744,16 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
             whileStmt.Block = block;
             statements.Add(whileStmt);
             return block;
+        }
+
+        public CodegenBlock SetProperty(
+            CodegenExpression @ref,
+            string propertyName,
+            CodegenExpression value)
+        {
+            CheckClosed();
+            AssignRef(GetProperty(@ref, propertyName), value);
+            return this;
         }
     }
 } // end of namespace

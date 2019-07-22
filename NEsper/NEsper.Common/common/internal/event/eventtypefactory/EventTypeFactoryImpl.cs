@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.configuration.common;
 using com.espertech.esper.common.client.meta;
@@ -42,7 +43,14 @@ namespace com.espertech.esper.common.@internal.@event.eventtypefactory
             string endTimestampPropertyName)
         {
             return new BeanEventType(
-                Container, stem, metadata, beanEventTypeFactory, superTypes, deepSuperTypes, startTimestampPropertyName, endTimestampPropertyName);
+                Container,
+                stem,
+                metadata,
+                beanEventTypeFactory,
+                superTypes,
+                deepSuperTypes,
+                startTimestampPropertyName,
+                endTimestampPropertyName);
         }
 
         public MapEventType CreateMap(
@@ -54,11 +62,18 @@ namespace com.espertech.esper.common.@internal.@event.eventtypefactory
             BeanEventTypeFactory beanEventTypeFactory,
             EventTypeNameResolver eventTypeNameResolver)
         {
-            var st = EventTypeUtility.GetSuperTypesDepthFirst(superTypes, EventUnderlyingType.MAP, eventTypeNameResolver);
+            var st = EventTypeUtility.GetSuperTypesDepthFirst(
+                superTypes,
+                EventUnderlyingType.MAP,
+                eventTypeNameResolver);
             properties = BaseNestableEventUtil.ResolvePropertyTypes(properties, eventTypeNameResolver);
             return new MapEventType(
-                metadata, properties,
-                st.First, st.Second, startTimestampPropertyName, endTimestampPropertyName,
+                metadata,
+                properties,
+                st.First,
+                st.Second,
+                startTimestampPropertyName,
+                endTimestampPropertyName,
                 beanEventTypeFactory);
         }
 
@@ -71,11 +86,19 @@ namespace com.espertech.esper.common.@internal.@event.eventtypefactory
             BeanEventTypeFactory beanEventTypeFactory,
             EventTypeNameResolver eventTypeNameResolver)
         {
-            var st = EventTypeUtility.GetSuperTypesDepthFirst(superTypes, EventUnderlyingType.OBJECTARRAY, eventTypeNameResolver);
+            var st = EventTypeUtility.GetSuperTypesDepthFirst(
+                superTypes,
+                EventUnderlyingType.OBJECTARRAY,
+                eventTypeNameResolver);
             properties = BaseNestableEventUtil.ResolvePropertyTypes(properties, eventTypeNameResolver);
             return new ObjectArrayEventType(
-                metadata, properties, st.First, st.Second,
-                startTimestampPropertyName, endTimestampPropertyName, beanEventTypeFactory);
+                metadata,
+                properties,
+                st.First,
+                st.Second,
+                startTimestampPropertyName,
+                endTimestampPropertyName,
+                beanEventTypeFactory);
         }
 
         public WrapperEventType CreateWrapper(
@@ -86,7 +109,12 @@ namespace com.espertech.esper.common.@internal.@event.eventtypefactory
             EventTypeNameResolver eventTypeNameResolver)
         {
             return WrapperEventTypeUtil.MakeWrapper(
-                metadata, underlying, properties, beanEventTypeFactory.EventBeanTypedEventFactory, beanEventTypeFactory, eventTypeNameResolver);
+                metadata,
+                underlying,
+                properties,
+                beanEventTypeFactory.EventBeanTypedEventFactory,
+                beanEventTypeFactory,
+                eventTypeNameResolver);
         }
 
         public EventType CreateXMLType(
@@ -101,12 +129,22 @@ namespace com.espertech.esper.common.@internal.@event.eventtypefactory
         {
             if (metadata.IsPropertyAgnostic) {
                 return new SimpleXMLEventType(
-                    metadata, detail, beanEventTypeFactory.EventBeanTypedEventFactory, eventTypeNameResolver, xmlFragmentEventTypeFactory);
+                    metadata,
+                    detail,
+                    beanEventTypeFactory.EventBeanTypedEventFactory,
+                    eventTypeNameResolver,
+                    xmlFragmentEventTypeFactory);
             }
 
             return new SchemaXMLEventType(
-                metadata, detail, schemaModel, representsFragmentOfProperty, representsOriginalTypeName,
-                beanEventTypeFactory.EventBeanTypedEventFactory, eventTypeNameResolver, xmlFragmentEventTypeFactory);
+                metadata,
+                detail,
+                schemaModel,
+                representsFragmentOfProperty,
+                representsOriginalTypeName,
+                beanEventTypeFactory.EventBeanTypedEventFactory,
+                eventTypeNameResolver,
+                xmlFragmentEventTypeFactory);
         }
 
         public VariantEventType CreateVariant(

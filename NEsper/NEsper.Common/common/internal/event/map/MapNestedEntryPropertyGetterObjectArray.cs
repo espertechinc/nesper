@@ -12,6 +12,7 @@ using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.@event.arr;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.@event.util;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.@event.map
@@ -67,8 +68,12 @@ namespace com.espertech.esper.common.@internal.@event.map
             CodegenClassScope codegenClassScope)
         {
             var method = CodegenLegoPropertyBeanOrUnd.From(
-                codegenMethodScope, codegenClassScope, typeof(object[]), arrayGetter,
-                CodegenLegoPropertyBeanOrUnd.AccessType.GET, GetType());
+                codegenMethodScope,
+                codegenClassScope,
+                typeof(object[]),
+                arrayGetter,
+                CodegenLegoPropertyBeanOrUnd.AccessType.GET,
+                GetType());
             return LocalMethod(method, name);
         }
 
@@ -78,8 +83,12 @@ namespace com.espertech.esper.common.@internal.@event.map
             CodegenClassScope codegenClassScope)
         {
             var method = CodegenLegoPropertyBeanOrUnd.From(
-                codegenMethodScope, codegenClassScope, typeof(object[]), arrayGetter,
-                CodegenLegoPropertyBeanOrUnd.AccessType.FRAGMENT, GetType());
+                codegenMethodScope,
+                codegenClassScope,
+                typeof(object[]),
+                arrayGetter,
+                CodegenLegoPropertyBeanOrUnd.AccessType.FRAGMENT,
+                GetType());
             return LocalMethod(method, name);
         }
     }

@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.hook.aggmultifunc;
 using com.espertech.esper.common.@internal.epl.agg.core;
@@ -173,7 +174,11 @@ namespace com.espertech.esper.common.@internal.epl.agg.table
             currentAggregationRow = (AggregationRow) bean.Properties[0];
 
             var instrumentationCommon = exprEvaluatorContext.InstrumentationProvider;
-            instrumentationCommon.QAggregationGroupedApplyEnterLeave(true, methodPairs.Length, accessAgents.Length, groupByKey);
+            instrumentationCommon.QAggregationGroupedApplyEnterLeave(
+                true,
+                methodPairs.Length,
+                accessAgents.Length,
+                groupByKey);
 
             for (var i = 0; i < methodPairs.Length; i++) {
                 var methodPair = methodPairs[i];
@@ -185,7 +190,12 @@ namespace com.espertech.esper.common.@internal.epl.agg.table
 
             for (var i = 0; i < accessAgents.Length; i++) {
                 instrumentationCommon.QAggAccessEnterLeave(true, i, null);
-                accessAgents[i].ApplyEnter(eventsPerStream, exprEvaluatorContext, currentAggregationRow, accessColumnsZeroOffset[i]);
+                accessAgents[i]
+                    .ApplyEnter(
+                        eventsPerStream,
+                        exprEvaluatorContext,
+                        currentAggregationRow,
+                        accessColumnsZeroOffset[i]);
                 instrumentationCommon.AAggAccessEnterLeave(true, i);
             }
 
@@ -203,7 +213,11 @@ namespace com.espertech.esper.common.@internal.epl.agg.table
             currentAggregationRow = (AggregationRow) bean.Properties[0];
 
             var instrumentationCommon = exprEvaluatorContext.InstrumentationProvider;
-            instrumentationCommon.QAggregationGroupedApplyEnterLeave(false, methodPairs.Length, accessAgents.Length, groupByKey);
+            instrumentationCommon.QAggregationGroupedApplyEnterLeave(
+                false,
+                methodPairs.Length,
+                accessAgents.Length,
+                groupByKey);
 
             for (var i = 0; i < methodPairs.Length; i++) {
                 var methodPair = methodPairs[i];
@@ -215,7 +229,12 @@ namespace com.espertech.esper.common.@internal.epl.agg.table
 
             for (var i = 0; i < accessAgents.Length; i++) {
                 instrumentationCommon.QAggAccessEnterLeave(false, i, null);
-                accessAgents[i].ApplyLeave(eventsPerStream, exprEvaluatorContext, currentAggregationRow, accessColumnsZeroOffset[i]);
+                accessAgents[i]
+                    .ApplyLeave(
+                        eventsPerStream,
+                        exprEvaluatorContext,
+                        currentAggregationRow,
+                        accessColumnsZeroOffset[i]);
                 instrumentationCommon.AAggAccessEnterLeave(false, i);
             }
 

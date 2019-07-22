@@ -206,7 +206,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
             var fields = "a.Id,b.Id,c.Id".SplitCsv();
             var epl = "@Name('s0') select * from pattern " +
                       GetText(target) +
-                      "[every a=SupportIdEventA => b=SupportIdEventB => c=SupportIdEventC(pc=a.pa)]";
+                      "[every a=SupportIdEventA -> b=SupportIdEventB => c=SupportIdEventC(pc=a.pa)]";
             env.CompileDeploy(testSoda, epl).AddListener("s0");
 
             SendAEvent(env, "A1", "x");
@@ -397,7 +397,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
             var epl = "@Name('s0') select * from pattern " +
                       (matchDiscard ? GetText(TargetEnum.DISCARD_ONLY) : "") +
                       " [" +
-                      "every a=SupportIdEventA=> b=SupportIdEventB and c=SupportIdEventC(pc=a.pa)]";
+                      "every a=SupportIdEventA-> b=SupportIdEventB and c=SupportIdEventC(pc=a.pa)]";
             env.CompileDeploy(epl).AddListener("s0");
 
             SendAEvent(env, "A1", "x");
@@ -489,7 +489,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
             var epl = "@Name('s0') select * from pattern " +
                       (matchDiscard ? GetText(TargetEnum.DISCARD_ONLY) : "") +
                       "[" +
-                      "every a=SupportIdEventA=> b=SupportIdEventB => c=SupportIdEventC(pc=a.pa) where timer:within(1)]";
+                      "every a=SupportIdEventA-> b=SupportIdEventB => c=SupportIdEventC(pc=a.pa) where timer:within(1)]";
             env.CompileDeploy(epl).AddListener("s0");
 
             SendAEvent(env, "A1", "x");
@@ -756,7 +756,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 var epl = "@Name('s0') select * from pattern " +
                           GetText(TargetEnum.DISCARD_ONLY) +
                           " [" +
-                          "every a=SupportIdEventA => b=SupportIdEventB => timer:interval(a.mysec)]";
+                          "every a=SupportIdEventA -> b=SupportIdEventB => timer:interval(a.mysec)]";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 SendAEvent(env, "A1", 5); // 5 seconds for this one

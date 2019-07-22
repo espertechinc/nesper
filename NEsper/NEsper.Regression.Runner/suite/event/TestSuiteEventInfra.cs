@@ -379,7 +379,7 @@ namespace com.espertech.esper.regressionrun.suite.@event
             object[] types_2 = {typeof(object)};
             configuration.Common.AddEventType(type_2, names_2, types_2);
             var type_1 = EventInfraPropertyNestedDynamicRootedSimple.OA_TYPENAME + "_1";
-            string[] names_1 = {"nestedValue", "nestedNested"};
+            string[] names_1 = {"NestedValue", "nestedNested"};
             object[] types_1 = {typeof(object), type_2};
             configuration.Common.AddEventType(type_1, names_1, types_1);
             string[] names = {"simpleProperty", "nested"};
@@ -403,7 +403,7 @@ namespace com.espertech.esper.regressionrun.suite.@event
                 TypeBuilder.OptionalInt("nestedNestedValue"));
             var s2 = SchemaBuilder.Record(
                 EventInfraPropertyNestedDynamicRootedSimple.AVRO_TYPENAME + "_2",
-                TypeBuilder.OptionalInt("nestedValue"),
+                TypeBuilder.OptionalInt("NestedValue"),
                 TypeBuilder.Field(
                     "nestedNested",
                     TypeBuilder.Union(
@@ -495,7 +495,7 @@ namespace com.espertech.esper.regressionrun.suite.@event
             object[] types_3 = {typeof(object)};
             configuration.Common.AddEventType(type_3, names_3, types_3);
             var type_2 = EventInfraPropertyNestedDynamicDeep.OA_TYPENAME + "_2";
-            string[] names_2 = {"nestedNested", "nestedValue"};
+            string[] names_2 = {"nestedNested", "NestedValue"};
             object[] types_2 = {type_3, typeof(object)};
             configuration.Common.AddEventType(type_2, names_2, types_2);
             var type_1 = EventInfraPropertyNestedDynamicDeep.OA_TYPENAME + "_1";
@@ -530,7 +530,7 @@ namespace com.espertech.esper.regressionrun.suite.@event
                 TypeBuilder.OptionalInt("nestedNestedValue"));
             var s2 = SchemaBuilder.Record(
                 EventInfraPropertyNestedDynamicDeep.AVRO_TYPENAME + "_2",
-                TypeBuilder.OptionalInt("nestedValue"),
+                TypeBuilder.OptionalInt("NestedValue"),
                 TypeBuilder.Field(
                     "nestedNested",
                     TypeBuilder.Union(

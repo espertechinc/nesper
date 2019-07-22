@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -16,6 +17,7 @@ using com.espertech.esper.common.@internal.epl.index.@base;
 using com.espertech.esper.common.@internal.epl.@join.queryplan;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.compat.collections;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.index.hash
@@ -63,7 +65,13 @@ namespace com.espertech.esper.common.@internal.epl.index.hash
             var propertyTypes = EventTypeUtility.GetPropertyTypes(eventType, indexedProps);
             var getters = EventTypeUtility.GetGetters(eventType, indexedProps);
             var getter = EventTypeUtility.CodegenGetterMayMultiKeyWCoerce(
-                eventType, getters, propertyTypes, hashCoercionDesc.CoercionTypes, method, GetType(), classScope);
+                eventType,
+                getters,
+                propertyTypes,
+                hashCoercionDesc.CoercionTypes,
+                method,
+                GetType(),
+                classScope);
             @params.Add(getter);
             return @params;
         }
@@ -72,8 +80,10 @@ namespace com.espertech.esper.common.@internal.epl.index.hash
         {
             return GetType().Name +
                    (unique ? " unique" : " non-unique") +
-                   " streamNum=" + indexedStreamNum +
-                   " propertyNames=" + indexedProps.RenderAny();
+                   " streamNum=" +
+                   indexedStreamNum +
+                   " propertyNames=" +
+                   indexedProps.RenderAny();
         }
     }
 } // end of namespace

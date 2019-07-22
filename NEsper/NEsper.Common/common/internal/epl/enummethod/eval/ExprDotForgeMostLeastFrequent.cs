@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.compile.stage2;
 using com.espertech.esper.common.@internal.compile.stage3;
@@ -33,7 +34,12 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             StatementCompileTimeServices services)
         {
             return ExprDotNodeUtility.GetSingleLambdaParamEventType(
-                enumMethodUsedName, goesToNames, inputEventType, collectionComponentType, statementRawInfo, services);
+                enumMethodUsedName,
+                goesToNames,
+                inputEventType,
+                collectionComponentType,
+                statementRawInfo,
+                services);
         }
 
         public override EnumForge GetEnumForge(
@@ -50,7 +56,10 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             if (bodiesAndParameters.IsEmpty()) {
                 var returnTypeX = collectionComponentType.GetBoxedType();
                 TypeInfo = EPTypeHelper.SingleValue(returnTypeX);
-                return new EnumMostLeastFrequentScalarForge(numStreamsIncoming, EnumMethodEnum == EnumMethodEnum.MOSTFREQUENT, returnTypeX);
+                return new EnumMostLeastFrequentScalarForge(
+                    numStreamsIncoming,
+                    EnumMethodEnum == EnumMethodEnum.MOSTFREQUENT,
+                    returnTypeX);
             }
 
             var first = (ExprDotEvalParamLambda) bodiesAndParameters[0];
@@ -60,7 +69,9 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             var mostFrequent = EnumMethodEnum == EnumMethodEnum.MOSTFREQUENT;
             if (inputEventType == null) {
                 return new EnumMostLeastFrequentScalarLamdaForge(
-                    first.BodyForge, first.StreamCountIncoming, mostFrequent,
+                    first.BodyForge,
+                    first.StreamCountIncoming,
+                    mostFrequent,
                     (ObjectArrayEventType) first.GoesToTypes[0]);
             }
 

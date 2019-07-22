@@ -9,6 +9,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.core;
 using com.espertech.esper.compat;
@@ -46,17 +47,23 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.statement
 
         public override void Render(
             StringBuilder builder,
-            IDictionary<Type, string> imports,
             bool isInnerClass,
             int level,
             CodegenIndent indent)
         {
-            builder.Append("switch(").Append(@ref).Append(") {\n");
+            builder
+                .Append("switch(")
+                .Append(@ref)
+                .Append(") {\n");
 
             for (int i = 0; i < options.Length; i++) {
                 indent.Indent(builder, level + 1);
-                builder.Append("case ").Append(options[i]).Append(": {\n");
-                blocks[i].Render(builder, imports, isInnerClass, level + 2, indent);
+                builder
+                    .Append("case ")
+                    .Append(options[i])
+                    .Append(": {\n");
+
+                blocks[i].Render(builder, isInnerClass, level + 2, indent);
 
                 if (!blocksReturnValues) {
                     indent.Indent(builder, level + 2);

@@ -9,6 +9,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.annotation;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
@@ -23,6 +24,7 @@ using com.espertech.esper.common.@internal.epl.streamtype;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.expression.declared.compiletime
@@ -120,8 +122,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.declared.compileti
 
                 if (!outerStreamNames.TryGetValue(parameterName, out var streamIdFound)) {
                     throw new ExprValidationException(
-                        "Failed validation of expression declaration '" + prototype.Name +
-                        "': Invalid parameter to expression declaration, parameter " + param +
+                        "Failed validation of expression declaration '" +
+                        prototype.Name +
+                        "': Invalid parameter to expression declaration, parameter " +
+                        param +
                         " is not the name of a stream in the query");
                 }
 
@@ -138,7 +142,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.declared.compileti
             if (prototype.IsAlias) {
                 try {
                     ExpressionBodyCopy = ExprNodeUtilityValidate.GetValidatedSubtree(
-                        ExprNodeOrigin.ALIASEXPRBODY, ExpressionBodyCopy, validationContext);
+                        ExprNodeOrigin.ALIASEXPRBODY,
+                        ExpressionBodyCopy,
+                        validationContext);
                 }
                 catch (ExprValidationException ex) {
                     var message = "Error validating expression alias '" + prototype.Name + "': " + ex.Message;
@@ -162,7 +168,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.declared.compileti
             foreach (var expr in ChainParameters) {
                 validated.Add(
                     ExprNodeUtilityValidate.GetValidatedSubtree(
-                        ExprNodeOrigin.DECLAREDEXPRPARAM, expr, validationContext));
+                        ExprNodeOrigin.DECLAREDEXPRPARAM,
+                        expr,
+                        validationContext));
             }
 
             ChainParameters = validated;
@@ -190,7 +198,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.declared.compileti
                 else if (parameter is ExprWildcard) {
                     if (validationContext.StreamTypeService.EventTypes.Length != 1) {
                         throw new ExprValidationException(
-                            "Expression '" + prototype.Name +
+                            "Expression '" +
+                            prototype.Name +
                             "' only allows a wildcard parameter if there is a single stream available, please use a stream or tag name instead");
                     }
 
@@ -210,7 +219,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.declared.compileti
 
             var streamTypeService = validationContext.StreamTypeService;
             var copyTypes = new StreamTypeServiceImpl(
-                eventTypes, streamNames, isIStreamOnly,
+                eventTypes,
+                streamNames,
+                isIStreamOnly,
                 streamTypeService.IsOnDemandStreams,
                 streamTypeService.IsOptionalStreams);
             copyTypes.RequireStreamNames = true;
@@ -219,7 +230,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.declared.compileti
             try {
                 var expressionBodyContext = new ExprValidationContext(copyTypes, validationContext);
                 ExpressionBodyCopy = ExprNodeUtilityValidate.GetValidatedSubtree(
-                    ExprNodeOrigin.DECLAREDEXPRBODY, ExpressionBodyCopy, expressionBodyContext);
+                    ExprNodeOrigin.DECLAREDEXPRBODY,
+                    ExpressionBodyCopy,
+                    expressionBodyContext);
             }
             catch (ExprValidationException ex) {
                 var message = "Error validating expression declaration '" + prototype.Name + "': " + ex.Message;
@@ -239,8 +252,12 @@ namespace com.espertech.esper.common.@internal.epl.expression.declared.compileti
             if (ExpressionBodyCopy.Forge.ForgeConstantType.IsConstant) {
                 // pre-evaluated
                 forge = new ExprDeclaredForgeConstant(
-                    this, ExpressionBodyCopy.Forge.EvaluationType, prototype,
-                    ExpressionBodyCopy.Forge.ExprEvaluator.Evaluate(null, true, null), audit, statementName);
+                    this,
+                    ExpressionBodyCopy.Forge.EvaluationType,
+                    prototype,
+                    ExpressionBodyCopy.Forge.ExprEvaluator.Evaluate(null, true, null),
+                    audit,
+                    statementName);
             }
             else if (prototype.ParametersNames.Length == 0 ||
                      allStreamIdsMatch && prototype.ParametersNames.Length == streamTypeService.EventTypes.Length) {
@@ -248,7 +265,12 @@ namespace com.espertech.esper.common.@internal.epl.expression.declared.compileti
             }
             else {
                 forge = new ExprDeclaredForgeRewrite(
-                    this, ExpressionBodyCopy.Forge, isCache, streamsIdsPerStream, audit, statementName);
+                    this,
+                    ExpressionBodyCopy.Forge,
+                    isCache,
+                    streamsIdsPerStream,
+                    audit,
+                    statementName);
             }
 
             return null;
@@ -313,7 +335,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.declared.compileti
                 return new ExprFilterSpecLookupableForge(
                     ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(this),
                     new DeclaredNodeEventPropertyGetterForge(forgeX),
-                    forgeX.EvaluationType, true);
+                    forgeX.EvaluationType,
+                    true);
             }
         }
 
@@ -324,8 +347,12 @@ namespace com.espertech.esper.common.@internal.epl.expression.declared.compileti
             var prototype = PrototypeWVisibility;
             if (ChainParameters.Count != prototype.ParametersNames.Length) {
                 throw new ExprValidationException(
-                    "Parameter count mismatches for declared expression '" + prototype.Name + "', expected " +
-                    prototype.ParametersNames.Length + " parameters but received " + ChainParameters.Count +
+                    "Parameter count mismatches for declared expression '" +
+                    prototype.Name +
+                    "', expected " +
+                    prototype.ParametersNames.Length +
+                    " parameters but received " +
+                    ChainParameters.Count +
                     " parameters");
             }
         }
@@ -370,7 +397,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.declared.compileti
                     CodegenLegoMethodExpression.CodegenExpression(exprForge, method, codegenClassScope);
 
                 method.Block
-                    .DeclareVar(typeof(EventBean[]), "events", NewArrayByLength(typeof(EventBean), Constant(1)))
+                    .DeclareVar<EventBean[]>("events", NewArrayByLength(typeof(EventBean), Constant(1)))
                     .AssignArrayElement(Ref("events"), Constant(0), Ref("bean"))
                     .MethodReturn(LocalMethod(exprMethod, Ref("events"), ConstantTrue(), ConstantNull()));
 

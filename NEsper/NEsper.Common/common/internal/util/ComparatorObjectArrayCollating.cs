@@ -8,7 +8,9 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.compat.collections;
+
 using static com.espertech.esper.common.@internal.util.CollectionUtil;
 
 namespace com.espertech.esper.common.@internal.util
@@ -62,7 +64,10 @@ namespace com.espertech.esper.common.@internal.util
                 }
                 else {
                     var comparisonResult = CollectionUtil.CompareValuesCollated(
-                        valueOne, valueTwo, isDescending, collator);
+                        valueOne,
+                        valueTwo,
+                        isDescending,
+                        collator);
                     if (comparisonResult != 0) {
                         return comparisonResult;
                     }

@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.@join.lookup;
@@ -75,7 +76,8 @@ namespace com.espertech.esper.common.@internal.epl.table.update
             ISet<string> affectedIndexNames = null;
             var uniqueIndexUpdated = false;
 
-            foreach (KeyValuePair<IndexMultiKey, EventTableIndexMetadataEntry> index in tableMetadata.IndexMetadata.Indexes) {
+            foreach (KeyValuePair<IndexMultiKey, EventTableIndexMetadataEntry> index in tableMetadata.IndexMetadata
+                .Indexes) {
                 foreach (var updatedProperty in updatedProperties) {
                     var match = DetermineUpdatesIndex(updatedProperty, index.Key);
                     if (match) {

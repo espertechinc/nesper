@@ -8,6 +8,7 @@
 
 using System.Collections.Generic;
 using System.Linq;
+
 using com.espertech.esper.common.@internal.epl.agg.core;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.settings;
@@ -43,8 +44,16 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupbylocal
                 var levelDesc = localGroupDesc.Levels[i];
                 if (levelDesc.PartitionExpr.Length == 0) {
                     optionalTopLevel = GetLevel(
-                        -1, levelDesc, methodForges, methodFactories, accessAggregations, columns,
-                        groupByExpressions.Length == 0, accessors, importService, fireAndForget,
+                        -1,
+                        levelDesc,
+                        methodForges,
+                        methodFactories,
+                        accessAggregations,
+                        columns,
+                        groupByExpressions.Length == 0,
+                        accessors,
+                        importService,
+                        fireAndForget,
                         statementName);
                 }
             }
@@ -59,11 +68,21 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupbylocal
 
                 var isDefaultLevel = groupByExpressions != null &&
                                      ExprNodeUtilityCompare.DeepEqualsIgnoreDupAndOrder(
-                                         groupByExpressions, levelDesc.PartitionExpr);
+                                         groupByExpressions,
+                                         levelDesc.PartitionExpr);
                 if (isDefaultLevel) {
                     var level = GetLevel(
-                        0, levelDesc, methodForges, methodFactories, accessAggregations, columns, isDefaultLevel,
-                        accessors, importService, fireAndForget, statementName);
+                        0,
+                        levelDesc,
+                        methodForges,
+                        methodFactories,
+                        accessAggregations,
+                        columns,
+                        isDefaultLevel,
+                        accessors,
+                        importService,
+                        fireAndForget,
+                        statementName);
                     levelsList.Add(level);
                     levelNumber++;
                     break;
@@ -79,14 +98,24 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupbylocal
 
                 var isDefaultLevel = groupByExpressions != null &&
                                      ExprNodeUtilityCompare.DeepEqualsIgnoreDupAndOrder(
-                                         groupByExpressions, levelDesc.PartitionExpr);
+                                         groupByExpressions,
+                                         levelDesc.PartitionExpr);
                 if (isDefaultLevel) {
                     continue;
                 }
 
                 var level = GetLevel(
-                    levelNumber, levelDesc, methodForges, methodFactories, accessAggregations, columns, isDefaultLevel,
-                    accessors, importService, fireAndForget, statementName);
+                    levelNumber,
+                    levelDesc,
+                    methodForges,
+                    methodFactories,
+                    accessAggregations,
+                    columns,
+                    isDefaultLevel,
+                    accessors,
+                    importService,
+                    fireAndForget,
+                    statementName);
                 levelsList.Add(level);
                 levelNumber++;
             }
@@ -156,13 +185,20 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupbylocal
                 }
 
                 columns[column] = new AggregationLocalGroupByColumnForge(
-                    defaultLevel, partitionForges, methodOffset, methodAgg, pair, levelNumber);
+                    defaultLevel,
+                    partitionForges,
+                    methodOffset,
+                    methodAgg,
+                    pair,
+                    levelNumber);
             }
 
             return new AggregationLocalGroupByLevelForge(
                 methodForges.ToArray(),
                 methodFactories.ToArray(),
-                stateFactories.ToArray(), partitionForges, defaultLevel);
+                stateFactories.ToArray(),
+                partitionForges,
+                defaultLevel);
         }
     }
 } // end of namespace

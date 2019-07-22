@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.meta;
 using com.espertech.esper.common.client.util;
@@ -49,15 +50,28 @@ namespace com.espertech.esper.common.@internal.@event.bean.service
 
             // metadata
             var metadata = new EventTypeMetadata(
-                clazz.Name, null, EventTypeTypeClass.BEAN_INCIDENTAL, EventTypeApplicationType.CLASS, NameAccessModifier.TRANSIENT,
-                EventTypeBusModifier.NONBUS, false, ComputeTypeId(clazz.Name));
+                clazz.Name,
+                null,
+                EventTypeTypeClass.BEAN_INCIDENTAL,
+                EventTypeApplicationType.CLASS,
+                NameAccessModifier.TRANSIENT,
+                EventTypeBusModifier.NONBUS,
+                false,
+                ComputeTypeId(clazz.Name));
 
             // supertypes
             var superTypes = GetSuperTypes(stem.SuperTypes);
             var deepSuperTypes = GetDeepSupertypes(stem.DeepSuperTypes);
 
             // bean type
-            var eventType = EventTypeFactory.CreateBeanType(stem, metadata, this, superTypes, deepSuperTypes, null, null);
+            var eventType = EventTypeFactory.CreateBeanType(
+                stem,
+                metadata,
+                this,
+                superTypes,
+                deepSuperTypes,
+                null,
+                null);
 
             types.Put(clazz, eventType);
             return eventType;

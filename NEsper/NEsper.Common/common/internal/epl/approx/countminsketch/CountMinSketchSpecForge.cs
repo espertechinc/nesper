@@ -9,6 +9,7 @@
 using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.approx.countminsketch
@@ -37,7 +38,7 @@ namespace com.espertech.esper.common.@internal.epl.approx.countminsketch
         {
             var method = parent.MakeChild(typeof(CountMinSketchSpec), GetType(), classScope);
             method.Block
-                .DeclareVar(typeof(CountMinSketchSpec), "spec", NewInstance<CountMinSketchSpec>())
+                .DeclareVar<CountMinSketchSpec>("spec", NewInstance<CountMinSketchSpec>())
                 .SetProperty(Ref("spec"), "HashesSpec", HashesSpec.CodegenMake(method, classScope))
                 .SetProperty(Ref("spec"), "TopkSpec", Constant(TopkSpec))
                 .SetProperty(Ref("spec"), "Agent", Agent.CodegenMake(method, classScope))

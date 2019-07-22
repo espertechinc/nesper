@@ -95,7 +95,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
             {
                 var path = new RegressionPath();
                 var stmtTextOne =
-                    "insert into MyStreamABBean select a, b from pattern [a=SupportBean_A => b=SupportBean_B]";
+                    "insert into MyStreamABBean select a, b from pattern [a=SupportBean_A -> b=SupportBean_B]";
                 env.CompileDeploy(stmtTextOne, path);
 
                 var stmtTextTwo = "@Name('s0') select a.Id, b.Id from MyStreamABBean";
@@ -118,7 +118,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
             {
                 var path = new RegressionPath();
                 var stmtTextOne =
-                    "@Name('i1') insert into MyStreamABMap select a, b from pattern [a=AEventMap => b=BEventMap]";
+                    "@Name('i1') insert into MyStreamABMap select a, b from pattern [a=AEventMap -> b=BEventMap]";
                 env.CompileDeploy(stmtTextOne, path).AddListener("i1");
                 Assert.AreEqual(
                     typeof(IDictionary<string, object>),
@@ -132,8 +132,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                 Assert.AreEqual(typeof(string), env.Statement("s0").EventType.GetPropertyType("a.Id"));
                 Assert.AreEqual(typeof(string), env.Statement("s0").EventType.GetPropertyType("b.Id"));
 
-                var eventOne = MakeMap(new[] {new object[] {"id", "A1"}});
-                var eventTwo = MakeMap(new[] {new object[] {"id", "B1"}});
+                var eventOne = MakeMap(new[] {new object[] {"Id", "A1"}});
+                var eventTwo = MakeMap(new[] {new object[] {"Id", "B1"}});
 
                 env.SendEventMap(eventOne, "AEventMap");
                 env.SendEventMap(eventTwo, "BEventMap");

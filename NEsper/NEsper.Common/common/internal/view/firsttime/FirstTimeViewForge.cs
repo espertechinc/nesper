@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -18,6 +19,7 @@ using com.espertech.esper.common.@internal.schedule;
 using com.espertech.esper.common.@internal.view.core;
 using com.espertech.esper.common.@internal.view.util;
 using com.espertech.esper.compat;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.view.firsttime
@@ -51,7 +53,12 @@ namespace com.espertech.esper.common.@internal.view.firsttime
             }
 
             timePeriodComputeForge = ViewFactoryTimePeriodHelper.ValidateAndEvaluateTimeDeltaFactory(
-                ViewName, parameters[0], ViewParamMessage, 0, viewForgeEnv, streamNumber);
+                ViewName,
+                parameters[0],
+                ViewParamMessage,
+                0,
+                viewForgeEnv,
+                streamNumber);
         }
 
         public override void Attach(
@@ -83,7 +90,7 @@ namespace com.espertech.esper.common.@internal.view.firsttime
             }
 
             method.Block
-                .DeclareVar(typeof(TimePeriodCompute), "eval", timePeriodComputeForge.MakeEvaluator(method, classScope))
+                .DeclareVar<TimePeriodCompute>("eval", timePeriodComputeForge.MakeEvaluator(method, classScope))
                 .SetProperty(factory, "TimePeriodCompute", Ref("eval"))
                 .SetProperty(factory, "ScheduleCallbackId", Constant(scheduleCallbackId));
         }

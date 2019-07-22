@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.compile.faf;
 using com.espertech.esper.common.@internal.compile.stage2;
@@ -17,6 +18,7 @@ using com.espertech.esper.common.@internal.epl.annotation;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.fafquery.processor;
 using com.espertech.esper.common.@internal.epl.table.strategy;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.fafquery.querymethod
@@ -68,17 +70,50 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.querymethod
         {
             var select = Ref("select");
             method.Block
-                .DeclareVar(typeof(FAFQueryMethodSelect), select.Ref, NewInstance(typeof(FAFQueryMethodSelect)))
-                .SetProperty(select, "Annotations", LocalMethod(AnnotationUtil.MakeAnnotations(typeof(Attribute[]), _desc.Annotations, method, classScope)))
-                .SetProperty(select, "Processors", FireAndForgetProcessorForgeExtensions.MakeArray(_desc.Processors, method, symbols, classScope))
-                .DeclareVar(_classNameResultSetProcessor, "rsp", NewInstance(_classNameResultSetProcessor, symbols.GetAddInitSvc(method)))
+                .DeclareVar<FAFQueryMethodSelect>(select.Ref, NewInstance(typeof(FAFQueryMethodSelect)))
+                .SetProperty(
+                    select,
+                    "Annotations",
+                    LocalMethod(
+                        AnnotationUtil.MakeAnnotations(typeof(Attribute[]), _desc.Annotations, method, classScope)))
+                .SetProperty(
+                    select,
+                    "Processors",
+                    FireAndForgetProcessorForgeExtensions.MakeArray(_desc.Processors, method, symbols, classScope))
+                .DeclareVar(
+                    _classNameResultSetProcessor,
+                    "rsp",
+                    NewInstance(_classNameResultSetProcessor, symbols.GetAddInitSvc(method)))
                 .SetProperty(select, "ResultSetProcessorFactoryProvider", Ref("rsp"))
                 .SetProperty(select, "QueryGraph", _desc.QueryGraph.Make(method, symbols, classScope))
-                .SetProperty(select, "WhereClause", _desc.WhereClause == null ? ConstantNull() : ExprNodeUtilityCodegen.CodegenEvaluator(_desc.WhereClause.Forge, method, GetType(), classScope))
-                .SetProperty(select, "JoinSetComposerPrototype", _desc.Joins == null ? ConstantNull() : _desc.Joins.Make(method, symbols, classScope))
-                .SetProperty(select, "ConsumerFilters", ExprNodeUtilityCodegen.CodegenEvaluators(_desc.ConsumerFilters, method, GetType(), classScope))
+                .SetProperty(
+                    select,
+                    "WhereClause",
+                    _desc.WhereClause == null
+                        ? ConstantNull()
+                        : ExprNodeUtilityCodegen.CodegenEvaluator(
+                            _desc.WhereClause.Forge,
+                            method,
+                            GetType(),
+                            classScope))
+                .SetProperty(
+                    select,
+                    "JoinSetComposerPrototype",
+                    _desc.Joins == null ? ConstantNull() : _desc.Joins.Make(method, symbols, classScope))
+                .SetProperty(
+                    select,
+                    "ConsumerFilters",
+                    ExprNodeUtilityCodegen.CodegenEvaluators(_desc.ConsumerFilters, method, GetType(), classScope))
                 .SetProperty(select, "ContextName", Constant(_desc.ContextName))
-                .SetProperty(select, "TableAccesses", ExprTableEvalStrategyUtil.CodegenInitMap(_desc.TableAccessForges, GetType(), method, symbols, classScope))
+                .SetProperty(
+                    select,
+                    "TableAccesses",
+                    ExprTableEvalStrategyUtil.CodegenInitMap(
+                        _desc.TableAccessForges,
+                        GetType(),
+                        method,
+                        symbols,
+                        classScope))
                 .SetProperty(select, "HasTableAccess", Constant(_desc.HasTableAccess))
                 .SetProperty(select, "Distinct", Constant(_desc.IsDistinct))
                 .MethodReturn(select);

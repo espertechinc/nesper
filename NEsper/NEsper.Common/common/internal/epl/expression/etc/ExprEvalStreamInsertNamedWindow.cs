@@ -8,6 +8,7 @@
 
 using System;
 using System.IO;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -16,6 +17,7 @@ using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.compat;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.expression.etc
@@ -60,19 +62,29 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            CodegenExpressionField eventSvc = codegenClassScope.AddOrGetFieldSharable(EventBeanTypedEventFactoryCodegenField.INSTANCE);
+            CodegenExpressionField eventSvc =
+                codegenClassScope.AddOrGetFieldSharable(EventBeanTypedEventFactoryCodegenField.INSTANCE);
             CodegenExpressionField namedWindowType = codegenClassScope.AddFieldUnshared(
-                true, typeof(EventType), EventTypeUtility.ResolveTypeCodegen(namedWindowAsType, EPStatementInitServicesConstants.REF));
-            CodegenMethod methodNode = codegenMethodScope.MakeChild(typeof(EventBean), typeof(ExprEvalStreamInsertNamedWindow), codegenClassScope);
+                true,
+                typeof(EventType),
+                EventTypeUtility.ResolveTypeCodegen(namedWindowAsType, EPStatementInitServicesConstants.REF));
+            CodegenMethod methodNode = codegenMethodScope.MakeChild(
+                typeof(EventBean),
+                typeof(ExprEvalStreamInsertNamedWindow),
+                codegenClassScope);
 
             CodegenExpressionRef refEPS = exprSymbol.GetAddEPS(methodNode);
 
             string method = EventTypeUtility.GetAdapterForMethodName(namedWindowAsType);
             methodNode.Block
-                .DeclareVar(typeof(EventBean), "event", ArrayAtIndex(refEPS, Constant(streamNum)))
+                .DeclareVar<EventBean>("event", ArrayAtIndex(refEPS, Constant(streamNum)))
                 .IfRefNullReturnNull("event")
                 .MethodReturn(
-                    ExprDotMethod(eventSvc, method, Cast(namedWindowAsType.UnderlyingType, ExprDotUnderlying(@Ref("event"))), namedWindowType));
+                    ExprDotMethod(
+                        eventSvc,
+                        method,
+                        Cast(namedWindowAsType.UnderlyingType, ExprDotUnderlying(@Ref("event"))),
+                        namedWindowType));
             return LocalMethod(methodNode);
         }
 

@@ -7,12 +7,14 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.time.abacus;
 using com.espertech.esper.common.@internal.epl.expression.time.adder;
 using com.espertech.esper.common.@internal.epl.expression.time.node;
 using com.espertech.esper.common.@internal.settings;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.expression.time.eval
@@ -44,12 +46,17 @@ namespace com.espertech.esper.common.@internal.epl.expression.time.eval
         {
             var method = parent.MakeChild(typeof(TimePeriodComputeConstGivenCalAddEval), GetType(), classScope);
             method.Block
-                .DeclareVar(typeof(TimePeriodComputeConstGivenCalAddEval), "eval", NewInstance(typeof(TimePeriodComputeConstGivenCalAddEval)))
+                .DeclareVar<TimePeriodComputeConstGivenCalAddEval>(
+                    "eval",
+                    NewInstance(typeof(TimePeriodComputeConstGivenCalAddEval)))
                 .SetProperty(Ref("eval"), "Adders", TimePeriodAdderUtil.MakeArray(adders, parent, classScope))
                 .SetProperty(Ref("eval"), "Added", Constant(added))
                 .SetProperty(Ref("eval"), "TimeAbacus", classScope.AddOrGetFieldSharable(TimeAbacusField.INSTANCE))
                 .SetProperty(Ref("eval"), "IndexMicroseconds", Constant(indexMicroseconds))
-                .SetProperty(Ref("eval"), "TimeZone", classScope.AddOrGetFieldSharable(RuntimeSettingsTimeZoneField.INSTANCE))
+                .SetProperty(
+                    Ref("eval"),
+                    "TimeZone",
+                    classScope.AddOrGetFieldSharable(RuntimeSettingsTimeZoneField.INSTANCE))
                 .MethodReturn(Ref("eval"));
             return LocalMethod(method);
         }

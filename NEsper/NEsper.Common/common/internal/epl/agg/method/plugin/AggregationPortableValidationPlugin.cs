@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.context.aifactory.core;
@@ -14,6 +15,7 @@ using com.espertech.esper.common.@internal.epl.agg.core;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.agg.method.plugin
@@ -57,7 +59,8 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.plugin
         {
             AggregationPortableValidationPlugin that = (AggregationPortableValidationPlugin) intoTableAgg;
             if (!functionName.Equals(that.functionName)) {
-                throw new ExprValidationException("The aggregation declares '" + functionName + "' and provided is '" + that.functionName + "'");
+                throw new ExprValidationException(
+                    "The aggregation declares '" + functionName + "' and provided is '" + that.functionName + "'");
             }
         }
 

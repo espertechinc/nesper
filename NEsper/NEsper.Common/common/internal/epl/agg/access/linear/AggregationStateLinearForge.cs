@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.core;
@@ -14,6 +15,7 @@ using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.agg.core;
 using com.espertech.esper.common.@internal.epl.expression.agg.accessagg;
 using com.espertech.esper.common.@internal.epl.expression.core;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.agg.access.linear
@@ -57,11 +59,21 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
         {
             if (!join) {
                 AggregatorLinear = new AggregatorAccessLinearNonJoin(
-                    this, col, rowCtor, membersColumnized, classScope, expr.OptionalFilter);
+                    this,
+                    col,
+                    rowCtor,
+                    membersColumnized,
+                    classScope,
+                    expr.OptionalFilter);
             }
             else {
                 AggregatorLinear = new AggregatorAccessLinearJoin(
-                    this, col, rowCtor, membersColumnized, classScope, expr.OptionalFilter);
+                    this,
+                    col,
+                    rowCtor,
+                    membersColumnized,
+                    classScope,
+                    expr.OptionalFilter);
             }
         }
 

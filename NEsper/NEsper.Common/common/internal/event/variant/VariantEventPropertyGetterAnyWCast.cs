@@ -11,6 +11,7 @@ using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.util;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 using static com.espertech.esper.common.@internal.@event.variant.VariantEventPropertyGetterAny;
 
@@ -65,8 +66,14 @@ namespace com.espertech.esper.common.@internal.@event.variant
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            var cache = codegenClassScope.AddOrGetFieldSharable(new VariantPropertyGetterCacheCodegenField(variantEventType));
-            return StaticMethod(typeof(VariantEventPropertyGetterAny), "variantExists", beanExpression, cache, Constant(propertyName));
+            var cache = codegenClassScope.AddOrGetFieldSharable(
+                new VariantPropertyGetterCacheCodegenField(variantEventType));
+            return StaticMethod(
+                typeof(VariantEventPropertyGetterAny),
+                "variantExists",
+                beanExpression,
+                cache,
+                Constant(propertyName));
         }
 
         public CodegenExpression EventBeanFragmentCodegen(
@@ -105,13 +112,19 @@ namespace com.espertech.esper.common.@internal.@event.variant
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            var cache = codegenClassScope.AddOrGetFieldSharable(new VariantPropertyGetterCacheCodegenField(variantEventType));
+            var cache = codegenClassScope.AddOrGetFieldSharable(
+                new VariantPropertyGetterCacheCodegenField(variantEventType));
             var method = codegenMethodScope.MakeChild(typeof(object), GetType(), codegenClassScope)
                 .AddParam(typeof(EventBean), "eventBean");
             method.Block
-                .DeclareVar(
-                    typeof(object), "value",
-                    StaticMethod(typeof(VariantEventPropertyGetterAny), "variantGet", Ref("eventBean"), cache, Constant(propertyName)))
+                .DeclareVar<object>(
+                    "value",
+                    StaticMethod(
+                        typeof(VariantEventPropertyGetterAny),
+                        "variantGet",
+                        Ref("eventBean"),
+                        cache,
+                        Constant(propertyName)))
                 .MethodReturn(caster.Codegen(Ref("value"), typeof(object), method, codegenClassScope));
             return method;
         }

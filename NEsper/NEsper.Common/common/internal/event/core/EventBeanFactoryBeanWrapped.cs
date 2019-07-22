@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.compat.collections;
 
@@ -34,7 +35,9 @@ namespace com.espertech.esper.common.@internal.@event.core
         {
             var bean = eventBeanTypedEventFactory.AdapterForTypedBean(underlying, beanEventType);
             return eventBeanTypedEventFactory.AdapterForTypedWrapper(
-                bean, Collections.GetEmptyMap<string, object>(), wrapperEventType);
+                bean,
+                Collections.GetEmptyMap<string, object>(),
+                wrapperEventType);
         }
     }
 } // end of namespace

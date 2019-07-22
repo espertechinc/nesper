@@ -7,10 +7,12 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.epl.expression.core;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.lookup
@@ -37,21 +39,30 @@ namespace com.espertech.esper.common.@internal.epl.lookup
             CodegenClassScope classScope)
         {
             var method = parent.MakeChild(
-                typeof(SubordInKeywordSingleTableLookupStrategyFactory), GetType(), classScope);
+                typeof(SubordInKeywordSingleTableLookupStrategyFactory),
+                GetType(),
+                classScope);
 
             var expressions = new string[exprNodes.Count];
-            method.Block.DeclareVar(
-                typeof(ExprEvaluator[]), "evals", NewArrayByLength(typeof(ExprEvaluator), Constant(exprNodes.Count)));
+            method.Block.DeclareVar<ExprEvaluator[]>(
+                "evals",
+                NewArrayByLength(typeof(ExprEvaluator), Constant(exprNodes.Count)));
             for (var i = 0; i < exprNodes.Count; i++) {
                 CodegenExpression eval = ExprNodeUtilityCodegen.CodegenEvaluatorNoCoerce(
-                    exprNodes[i].Forge, method, GetType(), classScope);
+                    exprNodes[i].Forge,
+                    method,
+                    GetType(),
+                    classScope);
                 method.Block.AssignArrayElement(Ref("evals"), Constant(i), eval);
                 expressions[i] = ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(exprNodes[i]);
             }
 
             method.Block.MethodReturn(
                 NewInstance<SubordInKeywordSingleTableLookupStrategyFactory>(
-                    Constant(_isNwOnTrigger), Constant(_streamCountOuter), Ref("evals"), Constant(expressions)));
+                    Constant(_isNwOnTrigger),
+                    Constant(_streamCountOuter),
+                    Ref("evals"),
+                    Constant(expressions)));
             return LocalMethod(method);
         }
 

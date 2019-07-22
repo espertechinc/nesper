@@ -65,20 +65,34 @@ namespace com.espertech.esper.common.@internal.epl.join.@base
 
             var viewable = (HistoricalEventViewable) streamViews[polledNum];
             queryStrategies[streamNum] = new HistoricalDataQueryStrategy(
-                streamNum, polledNum, viewable, outerJoinPerStream[streamNum], outerJoinEqualsEval,
-                lookupStrategy, indexingStrategy);
+                streamNum,
+                polledNum,
+                viewable,
+                outerJoinPerStream[streamNum],
+                outerJoinEqualsEval,
+                lookupStrategy,
+                indexingStrategy);
 
             // for strictly historical joins, create a query strategy for the non-subordinate historical view
             if (isAllHistoricalNoSubordinate) {
                 viewable = (HistoricalEventViewable) streamViews[streamNum];
                 queryStrategies[polledNum] = new HistoricalDataQueryStrategy(
-                    polledNum, streamNum, viewable, outerJoinPerStream[polledNum], outerJoinEqualsEval,
-                    HistoricalIndexLookupStrategyNoIndex.INSTANCE, PollResultIndexingStrategyNoIndex.INSTANCE);
+                    polledNum,
+                    streamNum,
+                    viewable,
+                    outerJoinPerStream[polledNum],
+                    outerJoinEqualsEval,
+                    HistoricalIndexLookupStrategyNoIndex.INSTANCE,
+                    PollResultIndexingStrategyNoIndex.INSTANCE);
             }
 
             var allowIndexInit = agentInstanceContext.EventTableIndexService.AllowInitIndex(isRecoveringResilient);
             JoinSetComposer composer = new JoinSetComposerHistoricalImpl(
-                allowIndexInit, null, queryStrategies, streamViews, agentInstanceContext);
+                allowIndexInit,
+                null,
+                queryStrategies,
+                streamViews,
+                agentInstanceContext);
             return new JoinSetComposerDesc(composer, postJoinFilterEvaluator);
         }
     }

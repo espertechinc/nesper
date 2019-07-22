@@ -38,13 +38,19 @@ namespace com.espertech.esper.common.@internal.context.activator
                     var agentInstanceContext = services.AgentInstanceContext;
                     if (agentInstanceContext.AgentInstanceFilterProxy != null) {
                         addendum = agentInstanceContext.AgentInstanceFilterProxy.GetAddendumFilters(
-                            _filterSpecActivatable, agentInstanceContext);
+                            _filterSpecActivatable,
+                            agentInstanceContext);
                     }
 
                     var filterValues = _filterSpecActivatable.GetValueSet(
-                        null, addendum, agentInstanceContext, agentInstanceContext.StatementContextFilterEvalEnv);
+                        null,
+                        addendum,
+                        agentInstanceContext,
+                        agentInstanceContext.StatementContextFilterEvalEnv);
                     services.AgentInstanceContext.FilterService.Remove(
-                        _filterHandle, _filterSpecActivatable.FilterForEventType, filterValues);
+                        _filterHandle,
+                        _filterSpecActivatable.FilterForEventType,
+                        filterValues);
                 }
 
                 _filterHandle = null;

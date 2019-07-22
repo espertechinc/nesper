@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -19,6 +20,7 @@ using com.espertech.esper.common.@internal.epl.table.core;
 using com.espertech.esper.common.@internal.rettype;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.enummethod.dot
@@ -53,12 +55,19 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            CodegenExpressionField eventToPublic = TableDeployTimeResolver.MakeTableEventToPublicField(table, codegenClassScope, this.GetType());
+            CodegenExpressionField eventToPublic =
+                TableDeployTimeResolver.MakeTableEventToPublicField(table, codegenClassScope, this.GetType());
             CodegenExpressionRef refEPS = exprSymbol.GetAddEPS(codegenMethodScope);
             CodegenExpression refIsNewData = exprSymbol.GetAddIsNewData(codegenMethodScope);
             CodegenExpressionRef refExprEvalCtx = exprSymbol.GetAddExprEvalCtx(codegenMethodScope);
             return StaticMethod(
-                typeof(ExprDotForgeUnpackCollEventBeanTable), "convertToTableUnderling", inner, eventToPublic, refEPS, refIsNewData, refExprEvalCtx);
+                typeof(ExprDotForgeUnpackCollEventBeanTable),
+                "convertToTableUnderling",
+                inner,
+                eventToPublic,
+                refEPS,
+                refIsNewData,
+                refExprEvalCtx);
         }
 
         /// <summary>

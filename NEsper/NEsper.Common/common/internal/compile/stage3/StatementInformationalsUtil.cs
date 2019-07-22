@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client.annotation;
 using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
@@ -76,12 +77,16 @@ namespace com.espertech.esper.common.@internal.compile.stage3
                 }
             }
 
-            var hasVariables = hasHint || !@base.StatementSpec.Raw.ReferencedVariables.IsEmpty() ||
+            var hasVariables = hasHint ||
+                               !@base.StatementSpec.Raw.ReferencedVariables.IsEmpty() ||
                                @base.StatementSpec.Raw.CreateContextDesc != null;
             var writesToTables = StatementLifecycleSvcUtil.IsWritesToTables(
-                @base.StatementSpec.Raw, services.TableCompileTimeResolver);
+                @base.StatementSpec.Raw,
+                services.TableCompileTimeResolver);
             bool hasTableAccess = StatementLifecycleSvcUtil.DetermineHasTableAccess(
-                @base.StatementSpec.SubselectNodes, @base.StatementSpec.Raw, services.TableCompileTimeResolver);
+                @base.StatementSpec.SubselectNodes,
+                @base.StatementSpec.Raw,
+                services.TableCompileTimeResolver);
 
             IDictionary<StatementProperty, object> properties = new Dictionary<StatementProperty, object>();
             if (services.Configuration.Compiler.ByteCode.IsAttachEPL) {
@@ -102,34 +107,35 @@ namespace com.espertech.esper.common.@internal.compile.stage3
             bool allowSubscriber = services.Configuration.Compiler.ByteCode.IsAllowSubscriber;
 
             return new StatementInformationalsCompileTime(
-                @base.StatementName, 
+                @base.StatementName,
                 alwaysSynthesizeOutputEvents,
-                contextName, 
-                contextModuleName, 
-                contextVisibility, 
-                canSelfJoin, 
+                contextName,
+                contextModuleName,
+                contextVisibility,
+                canSelfJoin,
                 hasSubquery,
-                needDedup, 
-                specCompiled.Annotations, 
-                stateless, 
+                needDedup,
+                specCompiled.Annotations,
+                stateless,
                 @base.UserObjectCompileTime,
-                filterSpecCompileds.Count, 
-                schedules.Count, 
+                filterSpecCompileds.Count,
+                schedules.Count,
                 namedWindowConsumers.Count,
                 @base.StatementRawInfo.StatementType,
-                annotationData.Priority, 
-                annotationData.IsPremptive, 
-                hasVariables, 
-                writesToTables, 
+                annotationData.Priority,
+                annotationData.IsPremptive,
+                hasVariables,
+                writesToTables,
                 hasTableAccess,
-                selectSubscriberDescriptor.SelectClauseTypes, 
+                selectSubscriberDescriptor.SelectClauseTypes,
                 selectSubscriberDescriptor.SelectClauseColumnNames,
-                selectSubscriberDescriptor.IsForClauseDelivery, 
-                selectSubscriberDescriptor.GroupDelivery, properties,
+                selectSubscriberDescriptor.IsForClauseDelivery,
+                selectSubscriberDescriptor.GroupDelivery,
+                properties,
                 @base.StatementSpec.Raw.MatchRecognizeSpec != null,
                 services.IsInstrumented,
-                namespaceScope, 
-                insertIntoLatchName, 
+                namespaceScope,
+                insertIntoLatchName,
                 allowSubscriber);
         }
 

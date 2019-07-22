@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -21,6 +22,7 @@ using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.rettype;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.enummethod.dot
@@ -88,33 +90,37 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
             var forgeMember = codegenClassScope.AddFieldUnshared(true, typeof(object), NewInstance(typeof(object)));
             var block = methodNode.Block;
             if (innerType == typeof(EventBean)) {
-                block.DeclareVar(
-                    typeof(ICollection<object>), "coll",
+                block.DeclareVar<ICollection<object>>(
+                    "coll",
                     StaticMethod(typeof(Collections), "singletonList", Ref("param")));
             }
             else {
-                block.DeclareVar(typeof(ICollection<object>), "coll", Ref("param"));
+                block.DeclareVar<ICollection<object>>("coll", Ref("param"));
             }
 
-            block.DeclareVar(
-                typeof(ExpressionResultCacheForEnumerationMethod), "cache",
-                ExprDotMethodChain(refExprEvalCtx).Add("getExpressionResultCacheService")
+            block.DeclareVar<ExpressionResultCacheForEnumerationMethod>(
+                "cache",
+                ExprDotMethodChain(refExprEvalCtx)
+                    .Add("getExpressionResultCacheService")
                     .Add("getAllocateEnumerationMethod"));
             var premade = new EnumForgeCodegenParams(Ref("eventsLambda"), Ref("coll"), refIsNewData, refExprEvalCtx);
             if (forge.cache) {
-                block.DeclareVar(
-                        typeof(ExpressionResultCacheEntryLongArrayAndObj), "cacheValue",
+                block.DeclareVar<ExpressionResultCacheEntryLongArrayAndObj>(
+                        "cacheValue",
                         ExprDotMethod(Ref("cache"), "getEnumerationMethodLastValue", forgeMember))
                     .IfCondition(NotEqualsNull(Ref("cacheValue")))
                     .BlockReturn(Cast(returnType, ExprDotMethod(Ref("cacheValue"), "getResult")))
                     .IfRefNullReturnNull("coll")
-                    .DeclareVar(
-                        typeof(EventBean[]), "eventsLambda",
+                    .DeclareVar<EventBean[]>(
+                        "eventsLambda",
                         StaticMethod(
-                            typeof(ExprDotForgeEnumMethodEval), "allocateCopyEventLambda", refEPS,
+                            typeof(ExprDotForgeEnumMethodEval),
+                            "allocateCopyEventLambda",
+                            refEPS,
                             Constant(forge.enumEvalNumRequiredEvents)))
                     .DeclareVar(
-                        EPTypeHelper.GetCodegenReturnType(forge.TypeInfo), "result",
+                        EPTypeHelper.GetCodegenReturnType(forge.TypeInfo),
+                        "result",
                         forge.enumForge.Codegen(premade, methodNode, codegenClassScope))
                     .Expression(
                         ExprDotMethod(Ref("cache"), "saveEnumerationMethodLastValue", forgeMember, Ref("result")))
@@ -122,15 +128,19 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
             }
             else {
                 var contextNumberMember = codegenClassScope.AddFieldUnshared(
-                    true, typeof(AtomicLong), NewInstance(typeof(AtomicLong)));
-                block.DeclareVar(typeof(long), "contextNumber", ExprDotMethod(contextNumberMember, "getAndIncrement"))
+                    true,
+                    typeof(AtomicLong),
+                    NewInstance(typeof(AtomicLong)));
+                block.DeclareVar<long>("contextNumber", ExprDotMethod(contextNumberMember, "getAndIncrement"))
                     .TryCatch()
                     .Expression(ExprDotMethod(Ref("cache"), "pushContext", Ref("contextNumber")))
                     .IfRefNullReturnNull("coll")
-                    .DeclareVar(
-                        typeof(EventBean[]), "eventsLambda",
+                    .DeclareVar<EventBean[]>(
+                        "eventsLambda",
                         StaticMethod(
-                            typeof(ExprDotForgeEnumMethodEval), "allocateCopyEventLambda", refEPS,
+                            typeof(ExprDotForgeEnumMethodEval),
+                            "allocateCopyEventLambda",
+                            refEPS,
                             Constant(forge.enumEvalNumRequiredEvents)))
                     .TryReturn(forge.enumForge.Codegen(premade, methodNode, codegenClassScope))
                     .TryFinally()

@@ -9,6 +9,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -17,6 +18,7 @@ using com.espertech.esper.common.@internal.compile.stage3;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.@event.core;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.enummethod.dot
@@ -79,11 +81,13 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
             CodegenClassScope codegenClassScope)
         {
             var methodNode = codegenMethodScope.MakeChild(
-                typeof(EventBean), typeof(PropertyDotEventSingleForge), codegenClassScope);
+                typeof(EventBean),
+                typeof(PropertyDotEventSingleForge),
+                codegenClassScope);
 
             var refEPS = exprSymbol.GetAddEPS(methodNode);
             methodNode.Block
-                .DeclareVar(typeof(EventBean), "event", ArrayAtIndex(refEPS, Constant(streamId)))
+                .DeclareVar<EventBean>("event", ArrayAtIndex(refEPS, Constant(streamId)))
                 .IfRefNullReturnNull("event")
                 .MethodReturn(
                     Cast(
@@ -157,14 +161,18 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
             CodegenClassScope codegenClassScope)
         {
             var methodNode = parent.MakeChild(
-                typeof(EventBean), typeof(PropertyDotEventSingleForge), codegenClassScope);
+                typeof(EventBean),
+                typeof(PropertyDotEventSingleForge),
+                codegenClassScope);
             methodNode.Block
                 .IfRefNullReturnNull(symbols.GetAddEvent(methodNode))
                 .MethodReturn(
                     Cast(
                         typeof(EventBean),
                         getter.EventBeanFragmentCodegen(
-                            symbols.GetAddEvent(methodNode), methodNode, codegenClassScope)));
+                            symbols.GetAddEvent(methodNode),
+                            methodNode,
+                            codegenClassScope)));
             return LocalMethod(methodNode);
         }
 

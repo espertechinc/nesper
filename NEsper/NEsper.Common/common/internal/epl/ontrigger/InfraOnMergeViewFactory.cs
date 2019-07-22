@@ -38,11 +38,16 @@ namespace com.espertech.esper.common.@internal.epl.ontrigger
             View view;
             if (OnMergeHelper.InsertUnmatched != null) {
                 view = new OnExprViewNamedWindowMergeInsertUnmatched(
-                    namedWindowRootViewInstance, agentInstanceContext, this);
+                    namedWindowRootViewInstance,
+                    agentInstanceContext,
+                    this);
             }
             else {
                 view = new OnExprViewNamedWindowMerge(
-                    lookupStrategy, namedWindowRootViewInstance, agentInstanceContext, this);
+                    lookupStrategy,
+                    namedWindowRootViewInstance,
+                    agentInstanceContext,
+                    this);
             }
 
             return new InfraOnExprBaseViewResult(view, null);

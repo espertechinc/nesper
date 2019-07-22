@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.configuration.common;
 using com.espertech.esper.common.@internal.context.util;
@@ -31,14 +32,15 @@ namespace com.espertech.esper.common.@internal.epl.historical.method.core
                     agentInstanceContext.ImportServiceRuntime.GetConfigurationMethodRef(factory.ConfigurationName);
                 ConfigurationCommonCache dataCacheDesc = configCache != null ? configCache.DataCacheDesc : null;
                 this.dataCache = agentInstanceContext.HistoricalDataCacheFactory.GetDataCache(
-                    dataCacheDesc, agentInstanceContext, factory.StreamNumber, factory.ScheduleCallbackId);
+                    dataCacheDesc,
+                    agentInstanceContext,
+                    factory.StreamNumber,
+                    factory.ScheduleCallbackId);
             }
-            catch (EPException)
-            {
+            catch (EPException) {
                 throw;
             }
-            catch (Exception e)
-            {
+            catch (Exception e) {
                 throw new EPException("Failed to obtain cache: " + e.Message, e);
             }
         }

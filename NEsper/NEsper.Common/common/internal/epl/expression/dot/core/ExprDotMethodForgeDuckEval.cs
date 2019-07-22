@@ -9,6 +9,7 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -18,6 +19,7 @@ using com.espertech.esper.common.@internal.rettype;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.expression.dot.core
@@ -53,7 +55,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
             }
 
             var method = DotMethodDuckGetMethod(
-                target.GetType(), cache, forge.MethodName, forge.ParameterTypes, new bool[forge.Parameters.Length]);
+                target.GetType(),
+                cache,
+                forge.MethodName,
+                forge.ParameterTypes,
+                new bool[forge.Parameters.Length]);
             if (method == null) {
                 return null;
             }
@@ -77,33 +83,44 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
             CodegenClassScope codegenClassScope)
         {
             CodegenExpression mCache = codegenClassScope.AddFieldUnshared<IDictionary<Type, MethodInfo>>(
-                true, NewInstance(typeof(Dictionary<Type, MethodInfo>)));
+                true,
+                NewInstance(typeof(Dictionary<Type, MethodInfo>)));
             var methodNode = codegenMethodScope
                 .MakeChild(typeof(object), typeof(ExprDotMethodForgeDuckEval), codegenClassScope)
                 .AddParam(innerType, "target");
 
             var block = methodNode.Block
                 .IfRefNullReturnNull("target")
-                .DeclareVar(
-                    typeof(MethodInfo), "method", StaticMethod(
-                        typeof(ExprDotMethodForgeDuckEval), "dotMethodDuckGetMethod",
+                .DeclareVar<MethodInfo>(
+                    "method",
+                    StaticMethod(
+                        typeof(ExprDotMethodForgeDuckEval),
+                        "dotMethodDuckGetMethod",
                         ExprDotMethod(Ref("target"), "getClass"),
-                        mCache, Constant(forge.MethodName), Constant(forge.ParameterTypes),
+                        mCache,
+                        Constant(forge.MethodName),
+                        Constant(forge.ParameterTypes),
                         Constant(new bool[forge.ParameterTypes.Length])))
                 .IfRefNullReturnNull("method")
-                .DeclareVar(
-                    typeof(object[]), "args", NewArrayByLength(typeof(object), Constant(forge.Parameters.Length)));
+                .DeclareVar<object[]>(
+                    "args",
+                    NewArrayByLength(typeof(object), Constant(forge.Parameters.Length)));
             for (var i = 0; i < forge.Parameters.Length; i++) {
                 block.AssignArrayElement(
-                    "args", Constant(i),
+                    "args",
+                    Constant(i),
                     forge.Parameters[i].EvaluateCodegen(typeof(object), methodNode, exprSymbol, codegenClassScope));
             }
 
             var statementName = ExprDotMethod(exprSymbol.GetAddExprEvalCtx(methodNode), "getStatementName");
             block.MethodReturn(
                 StaticMethod(
-                    typeof(ExprDotMethodForgeDuckEval), "dotMethodDuckInvokeMethod", Ref("method"), Ref("target"),
-                    Ref("args"), statementName));
+                    typeof(ExprDotMethodForgeDuckEval),
+                    "dotMethodDuckInvokeMethod",
+                    Ref("method"),
+                    Ref("target"),
+                    Ref("args"),
+                    statementName));
             return LocalMethod(methodNode, inner);
         }
 
@@ -159,7 +176,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
                     statementName,
                     method,
                     target.GetType().GetCleanName(),
-                    args, 
+                    args,
                     e);
                 Log.Error(message, e);
             }

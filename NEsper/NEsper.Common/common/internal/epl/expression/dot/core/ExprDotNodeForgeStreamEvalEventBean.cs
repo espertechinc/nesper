@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -16,6 +17,7 @@ using com.espertech.esper.common.@internal.metrics.instrumentation;
 using com.espertech.esper.common.@internal.rettype;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.expression.dot.core
@@ -43,7 +45,13 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
                 return null;
             }
 
-            return ExprDotNodeUtility.EvaluateChain(forge.Evaluators, evaluators, theEvent, eventsPerStream, isNewData, exprEvaluatorContext);
+            return ExprDotNodeUtility.EvaluateChain(
+                forge.Evaluators,
+                evaluators,
+                theEvent,
+                eventsPerStream,
+                isNewData,
+                exprEvaluatorContext);
         }
 
         public static CodegenExpression Codegen(
@@ -53,27 +61,41 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
             CodegenClassScope codegenClassScope)
         {
             CodegenMethod methodNode = codegenMethodScope.MakeChild(
-                forge.EvaluationType, typeof(ExprDotNodeForgeStreamEvalEventBean), codegenClassScope);
+                forge.EvaluationType,
+                typeof(ExprDotNodeForgeStreamEvalEventBean),
+                codegenClassScope);
             CodegenExpressionRef refEPS = exprSymbol.GetAddEPS(methodNode);
 
             CodegenExpression typeInformation = ConstantNull();
             if (codegenClassScope.IsInstrumented) {
                 typeInformation =
-                    codegenClassScope.AddOrGetFieldSharable(new EPTypeCodegenSharable(EPTypeHelper.SingleEvent(forge.EventType), codegenClassScope));
+                    codegenClassScope.AddOrGetFieldSharable(
+                        new EPTypeCodegenSharable(EPTypeHelper.SingleEvent(forge.EventType), codegenClassScope));
             }
 
             methodNode.Block
-                .DeclareVar(typeof(EventBean), "event", ArrayAtIndex(refEPS, Constant(forge.StreamNumber)))
+                .DeclareVar<EventBean>("event", ArrayAtIndex(refEPS, Constant(forge.StreamNumber)))
                 .Apply(
                     InstrumentationCode.Instblock(
-                        codegenClassScope, "qExprDotChain", typeInformation, @Ref("event"), Constant(forge.Evaluators.Length)))
+                        codegenClassScope,
+                        "qExprDotChain",
+                        typeInformation,
+                        @Ref("event"),
+                        Constant(forge.Evaluators.Length)))
                 .IfRefNull("event")
                 .Apply(InstrumentationCode.Instblock(codegenClassScope, "aExprDotChain"))
                 .BlockReturn(ConstantNull())
                 .DeclareVar(
-                    forge.EvaluationType, "result",
+                    forge.EvaluationType,
+                    "result",
                     ExprDotNodeUtility.EvaluateChainCodegen(
-                        methodNode, exprSymbol, codegenClassScope, @Ref("event"), typeof(EventBean), forge.Evaluators, null))
+                        methodNode,
+                        exprSymbol,
+                        codegenClassScope,
+                        @Ref("event"),
+                        typeof(EventBean),
+                        forge.Evaluators,
+                        null))
                 .Apply(InstrumentationCode.Instblock(codegenClassScope, "aExprDotChain"))
                 .MethodReturn(@Ref("result"));
             return LocalMethod(methodNode);

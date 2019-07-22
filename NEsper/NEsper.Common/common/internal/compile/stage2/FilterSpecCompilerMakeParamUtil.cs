@@ -9,6 +9,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+
 using com.espertech.esper.collection;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.epl.expression.core;
@@ -79,7 +80,9 @@ namespace com.espertech.esper.common.@internal.compile.stage2
 
             if (constituent is FilterSpecCompilerAdvIndexDescProvider) {
                 var param = HandleAdvancedIndexDescProvider(
-                    (FilterSpecCompilerAdvIndexDescProvider) constituent, arrayEventTypes, statementName);
+                    (FilterSpecCompilerAdvIndexDescProvider) constituent,
+                    arrayEventTypes,
+                    statementName);
                 if (param != null) {
                     return param;
                 }
@@ -136,26 +139,53 @@ namespace com.espertech.esper.common.@internal.compile.stage2
             }
 
             var lookupable = new FilterSpecLookupableAdvancedIndexForge(
-                expression, null, returnType, config, xGetter, yGetter, widthGetter, heightGetter,
+                expression,
+                null,
+                returnType,
+                config,
+                xGetter,
+                yGetter,
+                widthGetter,
+                heightGetter,
                 filterDesc.IndexType);
 
             var indexExpressions = filterDesc.IndexExpressions;
             var xEval = ResolveFilterIndexDoubleEval(
-                filterDesc.IndexName, indexExpressions[0], arrayEventTypes, statementName);
+                filterDesc.IndexName,
+                indexExpressions[0],
+                arrayEventTypes,
+                statementName);
             var yEval = ResolveFilterIndexDoubleEval(
-                filterDesc.IndexName, indexExpressions[1], arrayEventTypes, statementName);
+                filterDesc.IndexName,
+                indexExpressions[1],
+                arrayEventTypes,
+                statementName);
             switch (filterDesc.IndexType) {
                 case SettingsApplicationDotMethodPointInsideRectangle.INDEXTYPE_NAME:
                     return new FilterSpecParamAdvancedIndexQuadTreePointRegionForge(
-                        lookupable, FilterOperator.ADVANCED_INDEX, xEval, yEval);
+                        lookupable,
+                        FilterOperator.ADVANCED_INDEX,
+                        xEval,
+                        yEval);
 
                 case SettingsApplicationDotMethodRectangeIntersectsRectangle.INDEXTYPE_NAME:
                     var widthEval = ResolveFilterIndexDoubleEval(
-                        filterDesc.IndexName, indexExpressions[2], arrayEventTypes, statementName);
+                        filterDesc.IndexName,
+                        indexExpressions[2],
+                        arrayEventTypes,
+                        statementName);
                     var heightEval = ResolveFilterIndexDoubleEval(
-                        filterDesc.IndexName, indexExpressions[3], arrayEventTypes, statementName);
+                        filterDesc.IndexName,
+                        indexExpressions[3],
+                        arrayEventTypes,
+                        statementName);
                     return new FilterSpecParamAdvancedIndexQuadTreeMXCIFForge(
-                        lookupable, FilterOperator.ADVANCED_INDEX, xEval, yEval, widthEval, heightEval);
+                        lookupable,
+                        FilterOperator.ADVANCED_INDEX,
+                        xEval,
+                        yEval,
+                        widthEval,
+                        heightEval);
 
                 default:
                     throw new IllegalStateException("Unrecognized index type " + filterDesc.IndexType);
@@ -190,8 +220,10 @@ namespace com.espertech.esper.common.@internal.compile.stage2
 
             throw new ExprValidationException(
                 "Invalid filter-indexable expression '" +
-                ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(indexExpression) + "' in respect to index '" +
-                indexName + "': expected either a constant, context-builtin or property from a previous pattern match");
+                ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(indexExpression) +
+                "' in respect to index '" +
+                indexName +
+                "': expected either a constant, context-builtin or property from a previous pattern match");
         }
 
         private static EventPropertyGetterSPI ResolveFilterIndexRequiredGetter(
@@ -202,7 +234,9 @@ namespace com.espertech.esper.common.@internal.compile.stage2
                 throw new ExprValidationException(
                     "Invalid filter-index lookup expression '" +
                     ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(keyExpression) +
-                    "' in respect to index '" + indexName + "': expected an event property name");
+                    "' in respect to index '" +
+                    indexName +
+                    "': expected an event property name");
             }
 
             return ((ExprIdentNode) keyExpression).ExprEvaluatorIdent.Getter;
@@ -296,10 +330,12 @@ namespace com.espertech.esper.common.@internal.compile.stage2
                     return HandleProperty(op, identNodeLeft, identNodeRight, arrayEventTypes, statementName);
                 }
 
-                if (identNodeRight.StreamId == 0 && identNodeRight.FilterLookupEligible &&
+                if (identNodeRight.StreamId == 0 &&
+                    identNodeRight.FilterLookupEligible &&
                     identNodeLeft.StreamId != 0) {
                     op = GetReversedOperator(
-                        constituent, op); // reverse operators, as the expression is "stream1.prop xyz stream0.prop"
+                        constituent,
+                        op); // reverse operators, as the expression is "stream1.prop xyz stream0.prop"
                     return HandleProperty(op, identNodeRight, identNodeLeft, arrayEventTypes, statementName);
                 }
             }
@@ -310,7 +346,9 @@ namespace com.espertech.esper.common.@internal.compile.stage2
                 var lookupable = filterOptimizableNode.FilterLookupable;
                 if (filterOptimizableNode.FilterLookupEligible) {
                     var numberCoercer = GetNumberCoercer(
-                        lookupable.ReturnType, ctxNode.Type, lookupable.Expression);
+                        lookupable.ReturnType,
+                        ctxNode.Type,
+                        lookupable.Expression);
                     return new FilterSpecParamContextPropForge(lookupable, op, ctxNode.Getter, numberCoercer);
                 }
             }
@@ -321,14 +359,18 @@ namespace com.espertech.esper.common.@internal.compile.stage2
                 var lookupable = filterOptimizableNode.FilterLookupable;
                 if (filterOptimizableNode.FilterLookupEligible) {
                     op = GetReversedOperator(
-                        constituent, op); // reverse operators, as the expression is "stream1.prop xyz stream0.prop"
+                        constituent,
+                        op); // reverse operators, as the expression is "stream1.prop xyz stream0.prop"
                     var numberCoercer = GetNumberCoercer(
-                        lookupable.ReturnType, ctxNode.Type, lookupable.Expression);
+                        lookupable.ReturnType,
+                        ctxNode.Type,
+                        lookupable.Expression);
                     return new FilterSpecParamContextPropForge(lookupable, op, ctxNode.Getter, numberCoercer);
                 }
             }
 
-            if (left is ExprFilterOptimizableNode && right.Forge.ForgeConstantType.IsDeployTimeTimeConstant &&
+            if (left is ExprFilterOptimizableNode &&
+                right.Forge.ForgeConstantType.IsDeployTimeTimeConstant &&
                 right is ExprNodeDeployTimeConst) {
                 var filterOptimizableNode = (ExprFilterOptimizableNode) left;
                 var deployTimeConst = (ExprNodeDeployTimeConst) right;
@@ -337,11 +379,16 @@ namespace com.espertech.esper.common.@internal.compile.stage2
                     var returnType = right.Forge.EvaluationType;
                     var numberCoercer = GetNumberCoercer(lookupable.ReturnType, returnType, lookupable.Expression);
                     return new FilterSpecParamDeployTimeConstParamForge(
-                        lookupable, op, deployTimeConst, returnType, numberCoercer);
+                        lookupable,
+                        op,
+                        deployTimeConst,
+                        returnType,
+                        numberCoercer);
                 }
             }
 
-            if (left.Forge.ForgeConstantType.IsDeployTimeTimeConstant && left is ExprNodeDeployTimeConst &&
+            if (left.Forge.ForgeConstantType.IsDeployTimeTimeConstant &&
+                left is ExprNodeDeployTimeConst &&
                 right is ExprFilterOptimizableNode) {
                 var filterOptimizableNode = (ExprFilterOptimizableNode) right;
                 var deployTimeConst = (ExprNodeDeployTimeConst) left;
@@ -349,10 +396,15 @@ namespace com.espertech.esper.common.@internal.compile.stage2
                 if (filterOptimizableNode.FilterLookupEligible) {
                     var returnType = left.Forge.EvaluationType;
                     op = GetReversedOperator(
-                        constituent, op); // reverse operators, as the expression is "stream1.prop xyz stream0.prop"
+                        constituent,
+                        op); // reverse operators, as the expression is "stream1.prop xyz stream0.prop"
                     var numberCoercer = GetNumberCoercer(lookupable.ReturnType, returnType, lookupable.Expression);
                     return new FilterSpecParamDeployTimeConstParamForge(
-                        lookupable, op, deployTimeConst, returnType, numberCoercer);
+                        lookupable,
+                        op,
+                        deployTimeConst,
+                        returnType,
+                        numberCoercer);
                 }
             }
 
@@ -410,15 +462,28 @@ namespace com.espertech.esper.common.@internal.compile.stage2
                 var innerEventType = GetArrayInnerEventType(arrayEventTypes, streamName);
                 var indexAndProp = GetStreamIndex(identNodeRight.ResolvedPropertyName);
                 return new FilterSpecParamEventPropIndexedForge(
-                    identNodeLeft.FilterLookupable, op, identNodeRight.ResolvedStreamName, indexAndProp.First,
-                    indexAndProp.Second, innerEventType, isMustCoerce, numberCoercer, numericCoercionType,
+                    identNodeLeft.FilterLookupable,
+                    op,
+                    identNodeRight.ResolvedStreamName,
+                    indexAndProp.First,
+                    indexAndProp.Second,
+                    innerEventType,
+                    isMustCoerce,
+                    numberCoercer,
+                    numericCoercionType,
                     statementName);
             }
 
             return new FilterSpecParamEventPropForge(
-                identNodeLeft.FilterLookupable, op, identNodeRight.ResolvedStreamName,
-                identNodeRight.ResolvedPropertyName, identNodeRight.ExprEvaluatorIdent,
-                isMustCoerce, numberCoercer, numericCoercionType, statementName);
+                identNodeLeft.FilterLookupable,
+                op,
+                identNodeRight.ResolvedStreamName,
+                identNodeRight.ResolvedPropertyName,
+                identNodeRight.ExprEvaluatorIdent,
+                isMustCoerce,
+                numberCoercer,
+                numericCoercionType,
+                statementName);
         }
 
         private static EventType GetArrayInnerEventType(
@@ -465,7 +530,8 @@ namespace com.espertech.esper.common.@internal.compile.stage2
 
             if (!(nested.Properties[0] is IndexedProperty)) {
                 throw new IllegalStateException(
-                    "Expected an indexed property for array match '" + resolvedPropertyName +
+                    "Expected an indexed property for array match '" +
+                    resolvedPropertyName +
                     "', please provide an index");
             }
 
@@ -558,7 +624,9 @@ namespace com.espertech.esper.common.@internal.compile.stage2
             for (var i = 0; i < constituent.ChildNodes.Length; i++) {
                 var child = constituent.ChildNodes[i];
                 var nodeindex = ExprNodeUtilityCompare.DeepEquals(
-                    commonExpressionNode, childNodes[i].ChildNodes[0], false)
+                    commonExpressionNode,
+                    childNodes[i].ChildNodes[0],
+                    false)
                     ? 1
                     : 0;
                 @in.AddChildNode(child.ChildNodes[nodeindex]);
@@ -605,7 +673,8 @@ namespace com.espertech.esper.common.@internal.compile.stage2
                 var filterOptimizableNode = (ExprFilterOptimizableNode) left;
                 var lookupable = filterOptimizableNode.FilterLookupable;
                 FilterOperator op = FilterOperatorExtensions.ParseRangeOperator(
-                    betweenNode.IsLowEndpointIncluded, betweenNode.IsHighEndpointIncluded,
+                    betweenNode.IsLowEndpointIncluded,
+                    betweenNode.IsHighEndpointIncluded,
                     betweenNode.IsNotBetween);
 
                 var low = HandleRangeNodeEndpoint(betweenNode.ChildNodes[1], arrayEventTypes, statementName);
@@ -673,16 +742,22 @@ namespace com.espertech.esper.common.@internal.compile.stage2
                 return null;
             }
 
-            if (arrayEventTypes != null && !arrayEventTypes.IsEmpty() &&
+            if (arrayEventTypes != null &&
+                !arrayEventTypes.IsEmpty() &&
                 arrayEventTypes.ContainsKey(node.ResolvedStreamName)) {
                 var indexAndProp = GetStreamIndex(node.ResolvedPropertyName);
                 var eventType = GetArrayInnerEventType(arrayEventTypes, node.ResolvedStreamName);
                 return new FilterForEvalEventPropIndexedDoubleForge(
-                    node.ResolvedStreamName, indexAndProp.First, indexAndProp.Second, eventType);
+                    node.ResolvedStreamName,
+                    indexAndProp.First,
+                    indexAndProp.Second,
+                    eventType);
             }
 
             return new FilterForEvalEventPropDoubleForge(
-                node.ResolvedStreamName, node.ResolvedPropertyName, node.ExprEvaluatorIdent);
+                node.ResolvedStreamName,
+                node.ResolvedPropertyName,
+                node.ExprEvaluatorIdent);
         }
 
         private static FilterSpecParamForge HandleInSetNode(
@@ -744,13 +819,18 @@ namespace com.espertech.esper.common.@internal.compile.stage2
                     }
                     else {
                         coercer = GetNumberCoercer(
-                            left.Forge.EvaluationType, contextPropertyNode.Type, lookupable.Expression);
+                            left.Forge.EvaluationType,
+                            contextPropertyNode.Type,
+                            lookupable.Expression);
                     }
 
                     var finalReturnType = coercer != null ? coercer.ReturnType : returnType;
                     listofValues.Add(
                         new FilterForEvalContextPropForge(
-                            contextPropertyNode.PropertyName, contextPropertyNode.Getter, coercer, finalReturnType));
+                            contextPropertyNode.PropertyName,
+                            contextPropertyNode.Getter,
+                            coercer,
+                            finalReturnType));
                 }
                 else if (subNode.Forge.ForgeConstantType.IsDeployTimeTimeConstant &&
                          subNode is ExprNodeDeployTimeConst) {
@@ -798,18 +878,26 @@ namespace com.espertech.esper.common.@internal.compile.stage2
 
                     FilterSpecParamInValueForge inValue;
                     var streamName = identNodeInner.ResolvedStreamName;
-                    if (arrayEventTypes != null && !arrayEventTypes.IsEmpty() &&
+                    if (arrayEventTypes != null &&
+                        !arrayEventTypes.IsEmpty() &&
                         arrayEventTypes.ContainsKey(streamName)) {
                         var indexAndProp = GetStreamIndex(identNodeInner.ResolvedPropertyName);
                         var innerEventType = GetArrayInnerEventType(arrayEventTypes, streamName);
                         inValue = new FilterForEvalEventPropIndexedForge(
-                            identNodeInner.ResolvedStreamName, indexAndProp.First,
-                            indexAndProp.Second, innerEventType, isMustCoerce, coerceToType);
+                            identNodeInner.ResolvedStreamName,
+                            indexAndProp.First,
+                            indexAndProp.Second,
+                            innerEventType,
+                            isMustCoerce,
+                            coerceToType);
                     }
                     else {
                         inValue = new FilterForEvalEventPropForge(
-                            identNodeInner.ResolvedStreamName, identNodeInner.ResolvedPropertyName,
-                            identNodeInner.ExprEvaluatorIdent, isMustCoerce, coerceToType);
+                            identNodeInner.ResolvedStreamName,
+                            identNodeInner.ResolvedPropertyName,
+                            identNodeInner.ExprEvaluatorIdent,
+                            isMustCoerce,
+                            coerceToType);
                     }
 
                     listofValues.Add(inValue);

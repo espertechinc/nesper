@@ -9,6 +9,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.configuration.common;
 using com.espertech.esper.common.client.meta;
@@ -48,7 +49,8 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createschema
             var spec = statementSpec.Raw.CreateSchemaDesc;
 
             if (services.EventTypeCompileTimeResolver.GetTypeByName(spec.SchemaName) != null) {
-                throw new ExprValidationException("Event type named '" + spec.SchemaName + "' has already been declared");
+                throw new ExprValidationException(
+                    "Event type named '" + spec.SchemaName + "' has already been declared");
             }
 
             EPLValidationUtil.ValidateTableExists(services.TableCompileTimeResolver, spec.SchemaName);
@@ -56,9 +58,14 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createschema
 
             var packageScope = new CodegenNamespaceScope(packageName, null, services.IsInstrumented);
 
-            var aiFactoryProviderClassName = CodeGenerationIDGenerator.GenerateClassNameSimple(typeof(StatementAIFactoryProvider), classPostfix);
+            var aiFactoryProviderClassName = CodeGenerationIDGenerator.GenerateClassNameSimple(
+                typeof(StatementAIFactoryProvider),
+                classPostfix);
             var forge = new StatementAgentInstanceFactoryCreateSchemaForge(eventType);
-            var aiFactoryForgable = new StmtClassForgableAIFactoryProviderCreateSchema(aiFactoryProviderClassName, packageScope, forge);
+            var aiFactoryForgable = new StmtClassForgableAIFactoryProviderCreateSchema(
+                aiFactoryProviderClassName,
+                packageScope,
+                forge);
 
             var selectSubscriberDescriptor = new SelectSubscriberDescriptor();
             var informationals = StatementInformationalsUtil.GetInformationals(
@@ -67,10 +74,16 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createschema
                 new EmptyList<ScheduleHandleCallbackProvider>(),
                 new EmptyList<NamedWindowConsumerStreamSpec>(),
                 false,
-                selectSubscriberDescriptor, packageScope, services);
-            var statementProviderClassName = CodeGenerationIDGenerator.GenerateClassNameSimple(typeof(StatementProvider), classPostfix);
+                selectSubscriberDescriptor,
+                packageScope,
+                services);
+            var statementProviderClassName =
+                CodeGenerationIDGenerator.GenerateClassNameSimple(typeof(StatementProvider), classPostfix);
             var stmtProvider = new StmtClassForgableStmtProvider(
-                aiFactoryProviderClassName, statementProviderClassName, informationals, packageScope);
+                aiFactoryProviderClassName,
+                statementProviderClassName,
+                informationals,
+                packageScope);
 
             IList<StmtClassForgable> forgables = new List<StmtClassForgable>();
             forgables.Add(aiFactoryForgable);
@@ -128,7 +141,11 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createschema
                     var eventType = services.EventTypeCompileTimeResolver.GetTypeByName(typeName);
                     if (eventType == null) {
                         throw new ExprValidationException(
-                            "Event type by name '" + typeName + "' could not be found for use in variant stream by name '" + eventTypeName + "'");
+                            "Event type by name '" +
+                            typeName +
+                            "' could not be found for use in variant stream by name '" +
+                            eventTypeName +
+                            "'");
                     }
 
                     types.Add(eventType);
@@ -138,12 +155,20 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createschema
             var eventTypes = types.ToArray();
             var variantSpec = new VariantSpec(eventTypes, isAny ? TypeVariance.ANY : TypeVariance.PREDEFINED);
 
-            var visibility = services.ModuleVisibilityRules.GetAccessModifierEventType(@base.StatementRawInfo, spec.SchemaName);
-            var eventBusVisibility = services.ModuleVisibilityRules.GetBusModifierEventType(@base.StatementRawInfo, eventTypeName);
+            var visibility =
+                services.ModuleVisibilityRules.GetAccessModifierEventType(@base.StatementRawInfo, spec.SchemaName);
+            var eventBusVisibility =
+                services.ModuleVisibilityRules.GetBusModifierEventType(@base.StatementRawInfo, eventTypeName);
             EventTypeUtility.ValidateModifiers(spec.SchemaName, eventBusVisibility, visibility);
 
             var metadata = new EventTypeMetadata(
-                eventTypeName, @base.ModuleName, EventTypeTypeClass.VARIANT, EventTypeApplicationType.VARIANT, visibility, eventBusVisibility, false,
+                eventTypeName,
+                @base.ModuleName,
+                EventTypeTypeClass.VARIANT,
+                EventTypeApplicationType.VARIANT,
+                visibility,
+                eventBusVisibility,
+                false,
                 EventTypeIdPair.Unassigned());
             var variantEventType = new VariantEventType(metadata, variantSpec);
             services.EventTypeCompileTimeRegistry.NewType(variantEventType);

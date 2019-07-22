@@ -35,22 +35,23 @@ namespace com.espertech.esper.common.@internal.util
 
         public CodegenExpression InitCtorScoped()
         {
-            CodegenExpressionNewAnonymousClass anonymousClass = NewAnonymousClass(classScope.NamespaceScope.InitMethod.Block, typeof(SimpleTypeParser));
-            CodegenMethod parse = CodegenMethod.MakeParentNode(typeof(object), this.GetType(), classScope).AddParam(typeof(string), "text");
-            anonymousClass.AddMethod("parse", parse);
+            CodegenExpressionNewAnonymousClass anonymousClass = NewAnonymousClass(
+                classScope.NamespaceScope.InitMethod.Block,
+                typeof(SimpleTypeParser));
+            CodegenMethod parse = CodegenMethod.MakeParentNode(typeof(object), this.GetType(), classScope)
+                .AddParam(typeof(string), "text");
+            anonymousClass.AddMethod("Parse", parse);
             parse.Block.MethodReturn(parser.Codegen(@Ref("text")));
             return anonymousClass;
         }
 
         public override bool Equals(object o)
         {
-            if (this == o)
-            {
+            if (this == o) {
                 return true;
             }
 
-            if (o == null || GetType() != o.GetType())
-            {
+            if (o == null || GetType() != o.GetType()) {
                 return false;
             }
 

@@ -7,11 +7,13 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.metrics.instrumentation;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.expression.ops
@@ -46,7 +48,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
 
                 var nodes = ForgeRenderable.ChildNodes;
                 return new ExprBetweenNodeForgeEval(
-                    this, nodes[0].Forge.ExprEvaluator, nodes[1].Forge.ExprEvaluator, nodes[2].Forge.ExprEvaluator);
+                    this,
+                    nodes[0].Forge.ExprEvaluator,
+                    nodes[1].Forge.ExprEvaluator,
+                    nodes[2].Forge.ExprEvaluator);
             }
         }
 
@@ -72,7 +77,13 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             CodegenClassScope codegenClassScope)
         {
             return new InstrumentationBuilderExpr(
-                    GetType(), this, "ExprBetween", requiredType, codegenMethodScope, exprSymbol, codegenClassScope)
+                    GetType(),
+                    this,
+                    "ExprBetween",
+                    requiredType,
+                    codegenMethodScope,
+                    exprSymbol,
+                    codegenClassScope)
                 .Build();
         }
 

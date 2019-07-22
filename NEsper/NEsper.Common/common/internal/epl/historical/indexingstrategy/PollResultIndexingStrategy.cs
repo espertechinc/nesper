@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.epl.index.@base;
@@ -43,7 +44,8 @@ namespace com.espertech.esper.common.@internal.epl.historical.indexingstrategy
         {
         }
 
-        public ProxyPollResultIndexingStrategy(Func<IList<EventBean>, bool, AgentInstanceContext, EventTable[]> procIndex)
+        public ProxyPollResultIndexingStrategy(
+            Func<IList<EventBean>, bool, AgentInstanceContext, EventTable[]> procIndex)
         {
             ProcIndex = procIndex;
         }

@@ -471,7 +471,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                 env.CompileDeploy(epl).AddListener("select").AddListener("create");
 
                 env.SendEventBean(new SupportBean_A("E1"));
-                string[] fields = {"id"};
+                string[] fields = {"Id"};
                 EPAssertionUtil.AssertProps(
                     env.Listener("create").AssertOneGetNewAndReset(),
                     fields,
@@ -518,7 +518,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                 env.CompileDeploy(epl).AddListener("select").AddListener("create");
 
                 env.SendEventBean(new SupportBean_A("E1"));
-                string[] fields = {"id"};
+                string[] fields = {"Id"};
                 EPAssertionUtil.AssertProps(
                     env.Listener("create").AssertOneGetNewAndReset(),
                     fields,
@@ -552,7 +552,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                 env.CompileDeploy(epl).AddListener("select").AddListener("create");
 
                 env.SendEventBean(new SupportBean_A("E1"));
-                string[] fields = {"id"};
+                string[] fields = {"Id"};
                 EPAssertionUtil.AssertProps(
                     env.Listener("create").AssertOneGetNewAndReset(),
                     fields,
@@ -577,7 +577,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                 env.CompileDeploy(epl).AddListener("select").AddListener("create");
 
                 env.SendEventBean(new SupportBean_A("E1"));
-                string[] fields = {"id", "myId"};
+                string[] fields = {"Id", "myId"};
                 EPAssertionUtil.AssertProps(
                     env.Listener("create").AssertOneGetNewAndReset(),
                     fields,

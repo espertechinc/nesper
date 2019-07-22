@@ -7,11 +7,13 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.core;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.compat.collections;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.expression.codegen
@@ -33,6 +35,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.codegen
             new CodegenNamedParam(typeof(ExprEvaluatorContext), NAME_EXPREVALCONTEXT);
 
         public static readonly IList<CodegenNamedParam> PARAMS = Collections.List(
-            FP_EPS, FP_ISNEWDATA, FP_EXPREVALCONTEXT);
+            FP_EPS,
+            FP_ISNEWDATA,
+            FP_EXPREVALCONTEXT);
     }
 } // end of namespace

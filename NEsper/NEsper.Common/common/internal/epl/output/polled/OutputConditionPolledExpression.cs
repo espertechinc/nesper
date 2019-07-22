@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.epl.output.condition;
@@ -78,9 +79,12 @@ namespace com.espertech.esper.common.@internal.epl.output.polled
         private void PopulateBuiltinProperties()
         {
             OutputConditionExpressionTypeUtil.Populate(
-                builtinProperties.Properties, state.TotalNewEventsCount,
-                state.TotalOldEventsCount, state.TotalNewEventsSum,
-                state.TotalOldEventsSum, state.LastOutputTimestamp);
+                builtinProperties.Properties,
+                state.TotalNewEventsCount,
+                state.TotalOldEventsCount,
+                state.TotalNewEventsSum,
+                state.TotalOldEventsSum,
+                state.LastOutputTimestamp);
         }
 
         private bool Evaluate()

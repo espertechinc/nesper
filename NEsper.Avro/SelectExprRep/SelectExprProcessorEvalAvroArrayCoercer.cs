@@ -52,11 +52,12 @@ namespace NEsper.Avro.SelectExprRep
             CodegenClassScope codegenClassScope)
         {
             return _widener.WidenCodegen(
-                _forge.EvaluateCodegen(requiredType, codegenMethodScope, exprSymbol, codegenClassScope), codegenMethodScope, codegenClassScope);
+                _forge.EvaluateCodegen(requiredType, codegenMethodScope, exprSymbol, codegenClassScope),
+                codegenMethodScope,
+                codegenClassScope);
         }
 
-        public ExprEvaluator ExprEvaluator
-        {
+        public ExprEvaluator ExprEvaluator {
             get {
                 _eval = _forge.ExprEvaluator;
                 return this;
@@ -65,13 +66,11 @@ namespace NEsper.Avro.SelectExprRep
 
         public Type EvaluationType { get; }
 
-        public ExprForgeConstantType ForgeConstantType
-        {
+        public ExprForgeConstantType ForgeConstantType {
             get => ExprForgeConstantType.NONCONST;
         }
 
-        public ExprNodeRenderable ForgeRenderable
-        {
+        public ExprNodeRenderable ForgeRenderable {
             get => this;
         }
 

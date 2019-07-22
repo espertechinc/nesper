@@ -82,7 +82,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
                     new EventPropertyDescriptor("prop6", typeof(string[]), null, false, false, true, false, false),
                     new EventPropertyDescriptor("prop7", typeof(string[]), null, false, false, true, false, false),
                     new EventPropertyDescriptor("prop8", typeof(string[]), null, false, false, true, false, false),
-                    new EventPropertyDescriptor("id", typeof(string), null, false, false, false, false, false)
+                    new EventPropertyDescriptor("Id", typeof(string), null, false, false, false, false, false)
                 },
                 fragmentTypeNested4.FragmentType.PropertyDescriptors);
             SupportEventTypeAssertionUtil.AssertConsistency(fragmentTypeNested4.FragmentType);
@@ -95,7 +95,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
                     new EventPropertyDescriptor("prop6", typeof(string[]), null, false, false, true, false, false),
                     new EventPropertyDescriptor("prop7", typeof(string[]), null, false, false, true, false, false),
                     new EventPropertyDescriptor("prop8", typeof(string[]), null, false, false, true, false, false),
-                    new EventPropertyDescriptor("id", typeof(string), null, false, false, false, false, false)
+                    new EventPropertyDescriptor("Id", typeof(string), null, false, false, false, false, false)
                 },
                 fragmentTypeNested4Item.FragmentType.PropertyDescriptors);
             SupportEventTypeAssertionUtil.AssertConsistency(fragmentTypeNested4Item.FragmentType);
@@ -135,7 +135,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
             Assert.IsTrue(wildcardStmtEvent.Get("nested4array") is NodeList);
 
             var nested4arrayItem = (EventBean) wildcardStmtEvent.GetFragment("nested4array[1]");
-            Assert.AreEqual("b", nested4arrayItem.Get("id"));
+            Assert.AreEqual("b", nested4arrayItem.Get("Id"));
 
             env.UndeployAll();
         }

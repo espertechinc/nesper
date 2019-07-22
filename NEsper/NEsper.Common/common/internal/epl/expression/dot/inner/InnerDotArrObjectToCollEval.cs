@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -16,6 +17,7 @@ using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.expression.dot.core;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.expression.dot.inner
@@ -49,12 +51,16 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.inner
             CodegenClassScope codegenClassScope)
         {
             CodegenMethod methodNode = codegenMethodScope.MakeChild(
-                typeof(ICollection<object>), typeof(InnerDotArrObjectToCollEval), codegenClassScope);
+                typeof(ICollection<object>),
+                typeof(InnerDotArrObjectToCollEval),
+                codegenClassScope);
 
             Type evalType = forge.rootForge.EvaluationType;
             methodNode.Block
                 .DeclareVar(
-                    forge.rootForge.EvaluationType, "array", forge.rootForge.EvaluateCodegen(evalType, methodNode, exprSymbol, codegenClassScope))
+                    forge.rootForge.EvaluationType,
+                    "array",
+                    forge.rootForge.EvaluateCodegen(evalType, methodNode, exprSymbol, codegenClassScope))
                 .IfRefNullReturnNull("array")
                 .MethodReturn(StaticMethod(typeof(CompatExtensions), "AsList", @Ref("array")));
             return LocalMethod(methodNode);

@@ -15,6 +15,7 @@ using com.espertech.esper.common.@internal.context.controller.hash;
 using com.espertech.esper.common.@internal.context.module;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.@event.core;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.compile.stage1.spec
@@ -43,25 +44,38 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
             CodegenClassScope classScope)
         {
             var method = parent.MakeChild(typeof(ContextControllerDetailHashItem), GetType(), classScope);
-            method.Block.DeclareVar(
-                typeof(EventType), "eventType",
-                EventTypeUtility.ResolveTypeCodegen(FilterSpecCompiled.FilterForEventType, symbols.GetAddInitSvc(method)));
+            method.Block.DeclareVar<EventType>(
+                "eventType",
+                EventTypeUtility.ResolveTypeCodegen(
+                    FilterSpecCompiled.FilterForEventType,
+                    symbols.GetAddInitSvc(method)));
 
             var symbolsWithType = new SAIFFInitializeSymbolWEventType();
-            var methodLookupableMake = parent.MakeChildWithScope(typeof(ExprFilterSpecLookupable), GetType(), symbolsWithType, classScope)
-                .AddParam(typeof(EventType), "eventType").AddParam(typeof(EPStatementInitServices), SAIFFInitializeSymbol.REF_STMTINITSVC.Ref);
+            var methodLookupableMake = parent.MakeChildWithScope(
+                    typeof(ExprFilterSpecLookupable),
+                    GetType(),
+                    symbolsWithType,
+                    classScope)
+                .AddParam(typeof(EventType), "eventType")
+                .AddParam(typeof(EPStatementInitServices), SAIFFInitializeSymbol.REF_STMTINITSVC.Ref);
             var methodLookupable = Lookupable.MakeCodegen(methodLookupableMake, symbolsWithType, classScope);
             methodLookupableMake.Block.MethodReturn(LocalMethod(methodLookupable));
 
             method.Block
-                .DeclareVar(typeof(ContextControllerDetailHashItem), "item", NewInstance(typeof(ContextControllerDetailHashItem)))
-                .DeclareVar(
-                    typeof(ExprFilterSpecLookupable), "lookupable",
+                .DeclareVar<ContextControllerDetailHashItem>(
+                    "item",
+                    NewInstance(typeof(ContextControllerDetailHashItem)))
+                .DeclareVar<ExprFilterSpecLookupable>(
+                    "lookupable",
                     LocalMethod(methodLookupableMake, Ref("eventType"), symbols.GetAddInitSvc(method)))
-                .SetProperty(Ref("item"), "FilterSpecActivatable", LocalMethod(FilterSpecCompiled.MakeCodegen(method, symbols, classScope)))
+                .SetProperty(
+                    Ref("item"),
+                    "FilterSpecActivatable",
+                    LocalMethod(FilterSpecCompiled.MakeCodegen(method, symbols, classScope)))
                 .SetProperty(Ref("item"), "Lookupable", Ref("lookupable"))
                 .Expression(
-                    ExprDotMethodChain(symbols.GetAddInitSvc(method)).Add(EPStatementInitServicesConstants.GETFILTERSHAREDLOOKUPABLEREGISTERY)
+                    ExprDotMethodChain(symbols.GetAddInitSvc(method))
+                        .Add(EPStatementInitServicesConstants.GETFILTERSHAREDLOOKUPABLEREGISTERY)
                         .Add("registerLookupable", Ref("eventType"), Ref("lookupable")))
                 .MethodReturn(Ref("item"));
 

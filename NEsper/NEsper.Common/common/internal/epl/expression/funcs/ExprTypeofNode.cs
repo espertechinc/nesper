@@ -8,10 +8,12 @@
 
 using System;
 using System.IO;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.@event.core;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.expression.funcs
@@ -56,7 +58,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
                     }
                 };
                 return new ExprFilterSpecLookupableForge(
-                    ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(this), eventPropertyForge, typeof(string),
+                    ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(this),
+                    eventPropertyForge,
+                    typeof(string),
                     true);
             }
         }
@@ -87,7 +91,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
                 if (fragmentEventType != null) {
                     var getter = ((EventTypeSPI) eventType).GetGetterSPI(ident.ResolvedPropertyName);
                     forge = new ExprTypeofNodeForgeFragmentType(
-                        this, ident.StreamId, getter, fragmentEventType.FragmentType.Name);
+                        this,
+                        ident.StreamId,
+                        getter,
+                        fragmentEventType.FragmentType.Name);
                     return null;
                 }
             }

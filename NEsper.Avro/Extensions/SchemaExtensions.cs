@@ -107,8 +107,7 @@ namespace NEsper.Avro.Extensions
         public static TSchema AsSchema<TSchema>(this Schema schema) where TSchema : Schema
         {
             var castSchema = schema as TSchema;
-            if (castSchema == null)
-            {
+            if (castSchema == null) {
                 throw new ArgumentException("schema of incorrect type", nameof(schema));
             }
 
@@ -151,7 +150,9 @@ namespace NEsper.Avro.Extensions
         /// <param name="recordSchema">The record schema.</param>
         /// <param name="fieldName">Name of the field.</param>
         /// <returns></returns>
-        public static Field GetField(this Schema recordSchema, string fieldName)
+        public static Field GetField(
+            this Schema recordSchema,
+            string fieldName)
         {
             return recordSchema.AsRecordSchema()[fieldName];
         }
@@ -164,20 +165,17 @@ namespace NEsper.Avro.Extensions
         public static PropertyMap GetPropertyMap(this Schema schema)
         {
             var property = typeof(Schema).GetProperty("Props", BindingFlags.Instance | BindingFlags.NonPublic);
-            if (property == null)
-            {
+            if (property == null) {
                 return null;
             }
 
             var getMethod = property.GetGetMethod(true);
-            if (getMethod == null)
-            {
+            if (getMethod == null) {
                 return null;
             }
 
             var propertyMap = (PropertyMap) getMethod.Invoke(schema, NO_ARGS);
-            if (propertyMap == null)
-            {
+            if (propertyMap == null) {
                 return null;
             }
 
@@ -190,23 +188,22 @@ namespace NEsper.Avro.Extensions
         /// <param name="schema">The schema.</param>
         /// <param name="name">The name.</param>
         /// <returns></returns>
-        public static string GetProp(this Schema schema, String name)
+        public static string GetProp(
+            this Schema schema,
+            String name)
         {
             var property = typeof(Schema).GetProperty("Props", BindingFlags.Instance | BindingFlags.NonPublic);
-            if (property == null)
-            {
+            if (property == null) {
                 return null;
             }
 
             var getMethod = property.GetGetMethod(true);
-            if (getMethod == null)
-            {
+            if (getMethod == null) {
                 return null;
             }
 
             var propertyMap = (PropertyMap) getMethod.Invoke(schema, NO_ARGS);
-            if (propertyMap == null)
-            {
+            if (propertyMap == null) {
                 return null;
             }
 

@@ -10,7 +10,7 @@ using com.espertech.esper.common.@internal.epl.spatial.quadtree.core;
 
 namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.pointregion
 {
-    public class PointRegionQuadTreeFactory<TL> 
+    public class PointRegionQuadTreeFactory<TL>
         where TL : class
     {
         public const int DEFAULT_LEAF_CAPACITY = 4;

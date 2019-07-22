@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.@event.util;
@@ -50,7 +51,9 @@ namespace com.espertech.esper.common.@internal.@event.map
         {
             if (!(theEvent is IDictionary<string, object>)) {
                 throw new EPException(
-                    "Unexpected event object of type " + theEvent.GetType().Name + ", expected " +
+                    "Unexpected event object of type " +
+                    theEvent.GetType().Name +
+                    ", expected " +
                     typeof(IDictionary<object, object>).Name);
             }
 
@@ -69,7 +72,9 @@ namespace com.espertech.esper.common.@internal.@event.map
         {
             if (!(theEvent is IDictionary<string, object>)) {
                 throw new EPException(
-                    "Unexpected event object of type " + theEvent.GetType().Name + ", expected " +
+                    "Unexpected event object of type " +
+                    theEvent.GetType().Name +
+                    ", expected " +
                     typeof(IDictionary<object, object>).Name);
             }
 

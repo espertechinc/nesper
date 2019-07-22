@@ -8,6 +8,7 @@
 
 using System.Collections.Generic;
 using System.Linq;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.epl.expression.time.eval;
@@ -52,13 +53,17 @@ namespace com.espertech.esper.common.@internal.view.time_accum
             ScheduleHandleCallback callback = new ProxyScheduleHandleCallback() {
                 ProcScheduledTrigger = () => {
                     agentInstanceContext.AuditProvider.ScheduleFire(
-                        agentInstanceContext.AgentInstanceContext, ScheduleObjectType.view, _factory.ViewName);
+                        agentInstanceContext.AgentInstanceContext,
+                        ScheduleObjectType.view,
+                        _factory.ViewName);
                     agentInstanceContext.InstrumentationProvider.QViewScheduledEval(_factory);
                     SendRemoveStream();
                     agentInstanceContext.InstrumentationProvider.AViewScheduledEval();
                 },
             };
-            _handle = new EPStatementHandleCallbackSchedule(agentInstanceContext.EpStatementAgentInstanceHandle, callback);
+            _handle = new EPStatementHandleCallbackSchedule(
+                agentInstanceContext.EpStatementAgentInstanceHandle,
+                callback);
         }
 
         public override EventType EventType => Parent.EventType;
@@ -79,7 +84,8 @@ namespace com.espertech.esper.common.@internal.view.time_accum
                 // if the window is already filled, then we may need to reschedule
                 if (!_currentBatch.IsEmpty()) {
                     // check if we need to reschedule
-                    long callbackTime = timestamp + _timePeriodProvide.DeltaAdd(timestamp, null, true, _agentInstanceContext);
+                    long callbackTime =
+                        timestamp + _timePeriodProvide.DeltaAdd(timestamp, null, true, _agentInstanceContext);
                     if (callbackTime != _callbackScheduledTime) {
                         removeSchedule = true;
                         addSchedule = true;
@@ -90,7 +96,11 @@ namespace com.espertech.esper.common.@internal.view.time_accum
                 }
 
                 if (removeSchedule) {
-                    _agentInstanceContext.AuditProvider.ScheduleRemove(_agentInstanceContext, _handle, ScheduleObjectType.view, _factory.ViewName);
+                    _agentInstanceContext.AuditProvider.ScheduleRemove(
+                        _agentInstanceContext,
+                        _handle,
+                        ScheduleObjectType.view,
+                        _factory.ViewName);
                     _agentInstanceContext.StatementContext.SchedulingService.Remove(_handle, _scheduleSlot);
                     _callbackScheduledTime = -1;
                 }
@@ -98,8 +108,15 @@ namespace com.espertech.esper.common.@internal.view.time_accum
                 if (addSchedule) {
                     long timeIntervalSize = _timePeriodProvide.DeltaAdd(timestamp, null, true, _agentInstanceContext);
                     _agentInstanceContext.AuditProvider.ScheduleAdd(
-                        timeIntervalSize, _agentInstanceContext, _handle, ScheduleObjectType.view, _factory.ViewName);
-                    _agentInstanceContext.StatementContext.SchedulingService.Add(timeIntervalSize, _handle, _scheduleSlot);
+                        timeIntervalSize,
+                        _agentInstanceContext,
+                        _handle,
+                        ScheduleObjectType.view,
+                        _factory.ViewName);
+                    _agentInstanceContext.StatementContext.SchedulingService.Add(
+                        timeIntervalSize,
+                        _handle,
+                        _scheduleSlot);
                     _callbackScheduledTime = timeIntervalSize + timestamp;
                 }
 
@@ -121,7 +138,11 @@ namespace com.espertech.esper.common.@internal.view.time_accum
 
                 // we may need to reschedule as the newest event may have been deleted
                 if (_currentBatch.Count == 0) {
-                    _agentInstanceContext.AuditProvider.ScheduleRemove(_agentInstanceContext, _handle, ScheduleObjectType.view, _factory.ViewName);
+                    _agentInstanceContext.AuditProvider.ScheduleRemove(
+                        _agentInstanceContext,
+                        _handle,
+                        ScheduleObjectType.view,
+                        _factory.ViewName);
                     _agentInstanceContext.StatementContext.SchedulingService.Remove(_handle, _scheduleSlot);
                     _callbackScheduledTime = -1;
                     _lastEvent = null;
@@ -135,15 +156,30 @@ namespace com.espertech.esper.common.@internal.view.time_accum
 
                         // reschedule, newest event deleted
                         long timestamp = _agentInstanceContext.StatementContext.SchedulingService.Time;
-                        long callbackTime = lastTimestamp + _timePeriodProvide.DeltaAdd(lastTimestamp, null, true, _agentInstanceContext);
+                        long callbackTime = lastTimestamp +
+                                            _timePeriodProvide.DeltaAdd(
+                                                lastTimestamp,
+                                                null,
+                                                true,
+                                                _agentInstanceContext);
                         long deltaFromNow = callbackTime - timestamp;
                         if (callbackTime != _callbackScheduledTime) {
                             _agentInstanceContext.AuditProvider.ScheduleRemove(
-                                _agentInstanceContext, _handle, ScheduleObjectType.view, _factory.ViewName);
+                                _agentInstanceContext,
+                                _handle,
+                                ScheduleObjectType.view,
+                                _factory.ViewName);
                             _agentInstanceContext.StatementContext.SchedulingService.Remove(_handle, _scheduleSlot);
                             _agentInstanceContext.AuditProvider.ScheduleAdd(
-                                deltaFromNow, _agentInstanceContext, _handle, ScheduleObjectType.view, _factory.ViewName);
-                            _agentInstanceContext.StatementContext.SchedulingService.Add(deltaFromNow, _handle, _scheduleSlot);
+                                deltaFromNow,
+                                _agentInstanceContext,
+                                _handle,
+                                ScheduleObjectType.view,
+                                _factory.ViewName);
+                            _agentInstanceContext.StatementContext.SchedulingService.Add(
+                                deltaFromNow,
+                                _handle,
+                                _scheduleSlot);
                             _callbackScheduledTime = callbackTime;
                         }
                     }
@@ -211,7 +247,11 @@ namespace com.espertech.esper.common.@internal.view.time_accum
         public void Stop(AgentInstanceStopServices services)
         {
             if (_handle != null) {
-                _agentInstanceContext.AuditProvider.ScheduleRemove(_agentInstanceContext, _handle, ScheduleObjectType.view, _factory.ViewName);
+                _agentInstanceContext.AuditProvider.ScheduleRemove(
+                    _agentInstanceContext,
+                    _handle,
+                    ScheduleObjectType.view,
+                    _factory.ViewName);
                 _agentInstanceContext.StatementContext.SchedulingService.Remove(_handle, _scheduleSlot);
             }
         }

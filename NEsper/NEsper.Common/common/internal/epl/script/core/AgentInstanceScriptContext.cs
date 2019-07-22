@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client.hook.expr;
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.compat.collections;

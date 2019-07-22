@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.settings;
 using com.espertech.esper.common.@internal.util;
@@ -143,7 +144,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
                 }
                 catch (TypeLoadException e) {
                     throw new ExprValidationException(
-                        "Class as listed in instanceof function by name '" + className + "' cannot be loaded", e);
+                        "Class as listed in instanceof function by name '" + className + "' cannot be loaded",
+                        e);
                 }
 
                 // Add primitive and boxed types, or type itself if not built-in

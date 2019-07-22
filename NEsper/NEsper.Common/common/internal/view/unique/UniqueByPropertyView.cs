@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.context.util;
@@ -128,7 +129,9 @@ namespace com.espertech.esper.common.@internal.view.unique
                     else {
                         EventBean[] postOldDataArray = postOldData.ToArray();
                         agentInstanceContext.InstrumentationProvider.QViewIndicate(
-                            viewFactory, newData, postOldDataArray);
+                            viewFactory,
+                            newData,
+                            postOldDataArray);
                         child.Update(newData, postOldDataArray);
                         agentInstanceContext.InstrumentationProvider.AViewIndicate();
                     }
@@ -141,7 +144,10 @@ namespace com.espertech.esper.common.@internal.view.unique
         public void VisitView(ViewDataVisitor viewDataVisitor)
         {
             viewDataVisitor.VisitPrimary(
-                mostRecentEvents, true, UniqueByPropertyViewFactory.NAME, mostRecentEvents.Count,
+                mostRecentEvents,
+                true,
+                UniqueByPropertyViewFactory.NAME,
+                mostRecentEvents.Count,
                 mostRecentEvents.Count);
         }
 

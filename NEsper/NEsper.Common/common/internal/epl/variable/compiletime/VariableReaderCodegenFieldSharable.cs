@@ -34,7 +34,8 @@ namespace com.espertech.esper.common.@internal.epl.variable.compiletime
         public CodegenExpression InitCtorScoped()
         {
             return StaticMethod(
-                typeof(VariableDeployTimeResolver), "resolveVariableReader",
+                typeof(VariableDeployTimeResolver),
+                "resolveVariableReader",
                 Constant(metaWVisibility.VariableName),
                 Constant(metaWVisibility.VariableVisibility),
                 Constant(metaWVisibility.VariableModuleName),
@@ -44,13 +45,11 @@ namespace com.espertech.esper.common.@internal.epl.variable.compiletime
 
         public override bool Equals(object o)
         {
-            if (this == o)
-            {
+            if (this == o) {
                 return true;
             }
 
-            if (o == null || GetType() != o.GetType())
-            {
+            if (o == null || GetType() != o.GetType()) {
                 return false;
             }
 

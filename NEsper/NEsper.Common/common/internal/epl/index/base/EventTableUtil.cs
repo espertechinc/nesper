@@ -49,34 +49,63 @@ namespace com.espertech.esper.common.@internal.epl.index.@base
             EventTable table;
             if (item.AdvancedIndexProvisionDesc != null) {
                 table = eventTableIndexService.CreateCustom(
-                        optionalIndexName, indexedStreamNum, eventType, item.IsUnique, item.AdvancedIndexProvisionDesc)
+                        optionalIndexName,
+                        indexedStreamNum,
+                        eventType,
+                        item.IsUnique,
+                        item.AdvancedIndexProvisionDesc)
                     .MakeEventTables(agentInstanceContext, null)[0];
             }
             else if (rangeProps == null || rangeProps.Length == 0) {
                 if (indexProps == null || indexProps.Length == 0) {
                     var factory = eventTableIndexService.CreateUnindexed(
-                        indexedStreamNum, eventType, optionalSerde, isFireAndForget,
+                        indexedStreamNum,
+                        eventType,
+                        optionalSerde,
+                        isFireAndForget,
                         agentInstanceContext.StatementContext);
                     table = factory.MakeEventTables(agentInstanceContext, null)[0];
                 }
                 else {
                     var factory = eventTableIndexService.CreateHashedOnly(
-                        indexedStreamNum, eventType, indexProps, indexTypes, unique, optionalIndexName, indexGetter,
-                        optionalSerde, isFireAndForget, agentInstanceContext.StatementContext);
+                        indexedStreamNum,
+                        eventType,
+                        indexProps,
+                        indexTypes,
+                        unique,
+                        optionalIndexName,
+                        indexGetter,
+                        optionalSerde,
+                        isFireAndForget,
+                        agentInstanceContext.StatementContext);
                     table = factory.MakeEventTables(agentInstanceContext, null)[0];
                 }
             }
             else {
                 if (rangeProps.Length == 1 && (indexProps == null || indexProps.Length == 0)) {
                     var factory = eventTableIndexService.CreateSorted(
-                        indexedStreamNum, eventType, rangeProps[0], rangeTypes[0], rangeGetters[0], optionalSerde,
-                        isFireAndForget, agentInstanceContext.StatementContext);
+                        indexedStreamNum,
+                        eventType,
+                        rangeProps[0],
+                        rangeTypes[0],
+                        rangeGetters[0],
+                        optionalSerde,
+                        isFireAndForget,
+                        agentInstanceContext.StatementContext);
                     table = factory.MakeEventTables(agentInstanceContext, null)[0];
                 }
                 else {
                     var factory = eventTableIndexService.CreateComposite(
-                        indexedStreamNum, eventType, indexProps, indexTypes, indexGetter, rangeProps, rangeTypes,
-                        rangeGetters, optionalSerde, isFireAndForget);
+                        indexedStreamNum,
+                        eventType,
+                        indexProps,
+                        indexTypes,
+                        indexGetter,
+                        rangeProps,
+                        rangeTypes,
+                        rangeGetters,
+                        optionalSerde,
+                        isFireAndForget);
                     return factory.MakeEventTables(agentInstanceContext, null)[0];
                 }
             }

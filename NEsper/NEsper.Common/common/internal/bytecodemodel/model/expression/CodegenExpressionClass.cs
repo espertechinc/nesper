@@ -9,6 +9,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.core.CodeGenerationHelper;
 
 namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
@@ -28,10 +29,9 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
 
         public void Render(
             StringBuilder builder,
-            IDictionary<Type, string> imports,
             bool isInnerClass)
         {
-            RenderClass(target, builder, imports);
+            RenderClass(target, builder);
         }
 
         public void MergeClasses(ISet<Type> classes)
@@ -41,10 +41,9 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
 
         public static void RenderClass(
             Type clazz,
-            StringBuilder builder,
-            IDictionary<Type, string> imports)
+            StringBuilder builder)
         {
-            AppendClassName(builder, clazz, null, imports);
+            AppendClassName(builder, clazz);
             builder.Append(".");
             builder.Append("class");
         }

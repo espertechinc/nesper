@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -43,13 +44,15 @@ namespace com.espertech.esper.common.@internal.epl.join.indexlookupplan
         public QueryGraphValueEntryRangeForge RangeKeyPair { get; }
 
         public override TableLookupKeyDesc KeyDescriptor => new TableLookupKeyDesc(
-            Collections.GetEmptyList<QueryGraphValueEntryHashKeyedForge>(), Collections.SingletonList(RangeKeyPair));
+            Collections.GetEmptyList<QueryGraphValueEntryHashKeyedForge>(),
+            Collections.SingletonList(RangeKeyPair));
 
         public override string ToString()
         {
             return "SortedTableLookupPlan " +
                    base.ToString() +
-                   " keyProperties=" + RangeKeyPair.ToQueryPlan();
+                   " keyProperties=" +
+                   RangeKeyPair.ToQueryPlan();
         }
 
         public override Type TypeOfPlanFactory()

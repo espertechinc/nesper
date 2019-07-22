@@ -8,6 +8,7 @@
 
 using System.Collections.Generic;
 using System.Reflection;
+
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.util;
 using com.espertech.esper.common.@internal.compile.stage1.spec;
@@ -17,7 +18,9 @@ using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.variable.compiletime;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
-using static com.espertech.esper.common.@internal.bytecodemodel.util.CodegenFieldSharableComparator.CodegenSharableSerdeName;
+
+using static com.espertech.esper.common.@internal.bytecodemodel.util.CodegenFieldSharableComparator.
+    CodegenSharableSerdeName;
 
 namespace com.espertech.esper.common.@internal.epl.resultset.order
 {
@@ -48,7 +51,9 @@ namespace com.espertech.esper.common.@internal.epl.resultset.order
                 Log.Debug(".getProcessor Using no OrderByProcessor");
                 if (rowLimitSpec != null) {
                     var rowLimitProcessorFactory = new RowLimitProcessorFactoryForge(
-                        rowLimitSpec, variableCompileTimeResolver, optionalContextName);
+                        rowLimitSpec,
+                        variableCompileTimeResolver,
+                        optionalContextName);
                     return new OrderByProcessorRowLimitOnlyForge(rowLimitProcessorFactory);
                 }
 
@@ -77,14 +82,19 @@ namespace com.espertech.esper.common.@internal.epl.resultset.order
             var elements = ToElementArray(orderByList);
             var comparator = GetComparator(elements, isSortUsingCollator);
             var orderByProcessorForge = new OrderByProcessorForgeImpl(
-                elements, needsGroupByKeys, orderByRollup, comparator);
+                elements,
+                needsGroupByKeys,
+                orderByRollup,
+                comparator);
             if (rowLimitSpec == null) {
                 return orderByProcessorForge;
             }
 
             {
                 var rowLimitProcessorFactory = new RowLimitProcessorFactoryForge(
-                    rowLimitSpec, variableCompileTimeResolver, optionalContextName);
+                    rowLimitSpec,
+                    variableCompileTimeResolver,
+                    optionalContextName);
                 return new OrderByProcessorOrderedLimitForge(orderByProcessorForge, rowLimitProcessorFactory);
             }
         }
@@ -124,7 +134,10 @@ namespace com.espertech.esper.common.@internal.epl.resultset.order
 
             var types = ExprNodeUtilityQuery.GetExprResultTypes(nodes);
             return new CodegenFieldSharableComparator(
-                COMPARATORHASHABLEMULTIKEYS, types, isSortUsingCollator, descending);
+                COMPARATORHASHABLEMULTIKEYS,
+                types,
+                isSortUsingCollator,
+                descending);
         }
 
         private static OrderByElementForge[] ToElementArray(IList<OrderByItem> orderByList)

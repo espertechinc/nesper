@@ -35,9 +35,13 @@ namespace com.espertech.esper.common.@internal.epl.join.analyze
                 var keyStreamEnd = identNodeEnd.StreamId;
                 var valueStream = identNodeValue.StreamId;
                 queryGraph.AddRangeStrict(
-                    keyStreamStart, identNodeStart, keyStreamEnd,
-                    identNodeEnd, valueStream,
-                    identNodeValue, rangeOp);
+                    keyStreamStart,
+                    identNodeStart,
+                    keyStreamEnd,
+                    identNodeEnd,
+                    valueStream,
+                    identNodeValue,
+                    rangeOp);
                 return;
             }
 
@@ -57,7 +61,12 @@ namespace com.espertech.esper.common.@internal.epl.join.analyze
                 }
 
                 queryGraph.AddRangeExpr(
-                    indexedStream, identNode, start, eligibilityStart.StreamNum, end, eligibilityEnd.StreamNum,
+                    indexedStream,
+                    identNode,
+                    start,
+                    eligibilityStart.StreamNum,
+                    end,
+                    eligibilityEnd.StreamNum,
                     rangeOp);
             }
         }

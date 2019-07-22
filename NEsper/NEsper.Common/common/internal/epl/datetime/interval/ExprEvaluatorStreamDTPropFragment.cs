@@ -8,12 +8,14 @@
 
 using System;
 using System.IO;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.@event.core;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.datetime.interval
@@ -66,14 +68,16 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
             CodegenClassScope codegenClassScope)
         {
             var methodNode = codegenMethodScope.MakeChild(
-                typeof(long), typeof(ExprEvaluatorStreamDTPropFragment), codegenClassScope);
+                typeof(long),
+                typeof(ExprEvaluatorStreamDTPropFragment),
+                codegenClassScope);
             var refEPS = exprSymbol.GetAddEPS(methodNode);
 
             methodNode.Block
-                .DeclareVar(typeof(EventBean), "theEvent", ArrayAtIndex(refEPS, Constant(streamId)))
+                .DeclareVar<EventBean>("theEvent", ArrayAtIndex(refEPS, Constant(streamId)))
                 .IfRefNullReturnNull("theEvent")
-                .DeclareVar(
-                    typeof(object), "event",
+                .DeclareVar<object>(
+                    "event",
                     getterFragment.EventBeanFragmentCodegen(Ref("theEvent"), methodNode, codegenClassScope))
                 .IfCondition(Not(InstanceOf(Ref("event"), typeof(EventBean))))
                 .BlockReturn(ConstantNull())
@@ -81,7 +85,9 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
                     CodegenLegoCast.CastSafeFromObjectType(
                         typeof(long),
                         getterTimestamp.EventBeanGetCodegen(
-                            Cast(typeof(EventBean), Ref("event")), methodNode, codegenClassScope)));
+                            Cast(typeof(EventBean), Ref("event")),
+                            methodNode,
+                            codegenClassScope)));
             return LocalMethod(methodNode);
         }
 

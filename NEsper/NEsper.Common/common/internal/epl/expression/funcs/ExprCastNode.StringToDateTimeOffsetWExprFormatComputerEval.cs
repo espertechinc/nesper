@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -34,7 +35,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
                 var format = dateFormatEval.Evaluate(eventsPerStream, newData, exprEvaluatorContext);
                 var formatter = StringToDateTimeFormatterSafe(format);
                 return StringToDateTimeOffsetWStaticFormatComputer.StringToDateTimeOffsetWStaticFormatParse(
-                    input.ToString(), formatter);
+                    input.ToString(),
+                    formatter);
             }
 
             public static CodegenExpression Codegen(
@@ -45,25 +47,30 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
                 CodegenClassScope codegenClassScope)
             {
                 var method = codegenMethodScope.MakeChild(
-                        typeof(DateTimeOffset), typeof(StringToDateTimeOffsetWExprFormatComputerEval), codegenClassScope)
+                        typeof(DateTimeOffset),
+                        typeof(StringToDateTimeOffsetWExprFormatComputerEval),
+                        codegenClassScope)
                     .AddParam(typeof(string), "input");
                 CodegenExpression formatter;
                 if (dateFormatForge.ForgeConstantType.IsConstant) {
                     formatter = FormatFieldExpr(typeof(DateTimeFormat), dateFormatForge, codegenClassScope);
                 }
                 else {
-                    method.Block.DeclareVar(
-                        typeof(DateTimeFormat), "formatter",
+                    method.Block.DeclareVar<DateTimeFormat>(
+                        "formatter",
                         CodegenExpressionBuilder.StaticMethod(
-                            typeof(ExprCastNode), "stringToDateTimeFormatterSafe",
+                            typeof(ExprCastNode),
+                            "stringToDateTimeFormatterSafe",
                             dateFormatForge.EvaluateCodegen(typeof(object), method, exprSymbol, codegenClassScope)));
                     formatter = CodegenExpressionBuilder.Ref("formatter");
                 }
 
                 method.Block.MethodReturn(
                     CodegenExpressionBuilder.StaticMethod(
-                        typeof(StringToDateTimeOffsetWStaticFormatComputer), "StringToLocalDateTimeWStaticFormatParse",
-                        CodegenExpressionBuilder.Ref("input"), formatter));
+                        typeof(StringToDateTimeOffsetWStaticFormatComputer),
+                        "StringToLocalDateTimeWStaticFormatParse",
+                        CodegenExpressionBuilder.Ref("input"),
+                        formatter));
                 return CodegenExpressionBuilder.LocalMethod(method, input);
             }
         }

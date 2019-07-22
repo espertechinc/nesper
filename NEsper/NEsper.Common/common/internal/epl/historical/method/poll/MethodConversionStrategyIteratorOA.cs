@@ -19,7 +19,8 @@ namespace com.espertech.esper.common.@internal.epl.historical.method.poll
             AgentInstanceContext agentInstanceContext)
         {
             return agentInstanceContext.EventBeanTypedEventFactory.AdapterForTypedObjectArray(
-                value.UnwrapIntoArray<object>(), eventType);
+                value.UnwrapIntoArray<object>(),
+                eventType);
         }
     }
 } // end of namespace

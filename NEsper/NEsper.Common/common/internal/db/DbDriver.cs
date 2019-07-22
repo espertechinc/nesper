@@ -9,6 +9,7 @@
 using System;
 using System.Collections.Generic;
 using System.Data.Common;
+
 using com.espertech.esper.common.client.configuration.common;
 using com.espertech.esper.common.@internal.epl.historical.database.core;
 using com.espertech.esper.common.@internal.util;

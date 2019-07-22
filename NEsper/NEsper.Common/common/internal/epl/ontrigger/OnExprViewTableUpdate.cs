@@ -24,7 +24,10 @@ namespace com.espertech.esper.common.@internal.epl.ontrigger
             AgentInstanceContext agentInstanceContext,
             InfraOnUpdateViewFactory parent)
             : base(
-                lookupStrategy, tableInstance, agentInstanceContext, true)
+                lookupStrategy,
+                tableInstance,
+                agentInstanceContext,
+                true)
         {
             this.parent = parent;
         }
@@ -34,7 +37,9 @@ namespace com.espertech.esper.common.@internal.epl.ontrigger
             EventBean[] matchingEvents)
         {
             agentInstanceContext.InstrumentationProvider.QInfraOnAction(
-                OnTriggerType.ON_UPDATE, triggerEvents, matchingEvents);
+                OnTriggerType.ON_UPDATE,
+                triggerEvents,
+                matchingEvents);
 
             var eventsPerStream = new EventBean[3];
 
@@ -43,7 +48,11 @@ namespace com.espertech.esper.common.@internal.epl.ontrigger
             EventBean[] postedOld = null;
             if (postUpdates) {
                 postedOld = OnExprViewTableUtil.ToPublic(
-                    matchingEvents, tableInstance.Table, triggerEvents, false, ExprEvaluatorContext);
+                    matchingEvents,
+                    tableInstance.Table,
+                    triggerEvents,
+                    false,
+                    ExprEvaluatorContext);
             }
 
             var tableUpdateStrategy = parent.TableUpdateStrategy;
@@ -51,13 +60,20 @@ namespace com.espertech.esper.common.@internal.epl.ontrigger
             foreach (var triggerEvent in triggerEvents) {
                 eventsPerStream[1] = triggerEvent;
                 tableUpdateStrategy.UpdateTable(
-                    matchingEvents, tableInstance, eventsPerStream, agentInstanceContext);
+                    matchingEvents,
+                    tableInstance,
+                    eventsPerStream,
+                    agentInstanceContext);
             }
 
             // The on-delete listeners receive the events deleted, but only if there is interest
             if (postUpdates) {
                 var postedNew = OnExprViewTableUtil.ToPublic(
-                    matchingEvents, tableInstance.Table, triggerEvents, true, ExprEvaluatorContext);
+                    matchingEvents,
+                    tableInstance.Table,
+                    triggerEvents,
+                    true,
+                    ExprEvaluatorContext);
                 Child.Update(postedNew, postedOld);
             }
 

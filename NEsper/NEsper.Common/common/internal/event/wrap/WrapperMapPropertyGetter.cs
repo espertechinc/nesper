@@ -7,12 +7,14 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.@event.map;
 using com.espertech.esper.compat;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.@event.wrap
@@ -115,9 +117,13 @@ namespace com.espertech.esper.common.@internal.@event.wrap
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            return codegenMethodScope.MakeChild(typeof(object), GetType(), codegenClassScope).AddParam(typeof(EventBean), "theEvent").Block
+            return codegenMethodScope.MakeChild(typeof(object), GetType(), codegenClassScope)
+                .AddParam(typeof(EventBean), "theEvent")
+                .Block
                 .DeclareVarWCast(typeof(DecoratingEventBean), "wrapperEvent", "theEvent")
-                .DeclareVar(typeof(IDictionary<object, object>), "map", ExprDotMethod(Ref("wrapperEvent"), "getDecoratingProperties"))
+                .DeclareVar<IDictionary<object, object>>(
+                    "map",
+                    ExprDotMethod(Ref("wrapperEvent"), "getDecoratingProperties"))
                 .MethodReturn(mapGetter.UnderlyingGetCodegen(Ref("map"), codegenMethodScope, codegenClassScope));
         }
 
@@ -125,15 +131,20 @@ namespace com.espertech.esper.common.@internal.@event.wrap
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            return codegenMethodScope.MakeChild(typeof(object), GetType(), codegenClassScope).AddParam(typeof(EventBean), "theEvent").Block
+            return codegenMethodScope.MakeChild(typeof(object), GetType(), codegenClassScope)
+                .AddParam(typeof(EventBean), "theEvent")
+                .Block
                 .DeclareVarWCast(typeof(DecoratingEventBean), "wrapperEvent", "theEvent")
-                .DeclareVar(typeof(IDictionary<object, object>), "map", ExprDotMethod(Ref("wrapperEvent"), "getDecoratingProperties"))
+                .DeclareVar<IDictionary<object, object>>(
+                    "map",
+                    ExprDotMethod(Ref("wrapperEvent"), "getDecoratingProperties"))
                 .MethodReturn(mapGetter.UnderlyingFragmentCodegen(Ref("map"), codegenMethodScope, codegenClassScope));
         }
 
         private UnsupportedOperationException ImplementationNotProvided()
         {
-            return new UnsupportedOperationException("Wrapper event type does not provide an implementation for underlying get");
+            return new UnsupportedOperationException(
+                "Wrapper event type does not provide an implementation for underlying get");
         }
     }
 } // end of namespace

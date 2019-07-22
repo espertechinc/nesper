@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+
 using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.context.aifactory.ontrigger.core;
 using com.espertech.esper.common.@internal.context.module;
@@ -62,8 +63,14 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.onspl
             }
 
             View view = new RouteResultView(
-                isFirst, StatementEventType, statementContext.EpStatementHandle, statementContext.InternalEventRouter,
-                tableStateInstances, items, processors, agentInstanceContext);
+                isFirst,
+                StatementEventType,
+                statementContext.EpStatementHandle,
+                statementContext.InternalEventRouter,
+                tableStateInstances,
+                items,
+                processors,
+                agentInstanceContext);
             return new InfraOnExprBaseViewResult(view, null);
         }
 

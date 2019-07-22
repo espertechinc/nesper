@@ -8,6 +8,7 @@
 
 using System;
 using System.Reflection;
+
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
@@ -44,9 +45,15 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
             CodegenClassScope codegenClassScope)
         {
             return new InstrumentationBuilderExpr(
-                    GetType(), this, "ExprPlugInSingleRow", requiredType, codegenMethodScope, exprSymbol,
+                    GetType(),
+                    this,
+                    "ExprPlugInSingleRow",
+                    requiredType,
+                    codegenMethodScope,
+                    exprSymbol,
                     codegenClassScope)
-                .Qparams(MethodAsParams).Build();
+                .Qparams(MethodAsParams)
+                .Build();
         }
 
         public override CodegenExpression EvaluateCodegenUninstrumented(

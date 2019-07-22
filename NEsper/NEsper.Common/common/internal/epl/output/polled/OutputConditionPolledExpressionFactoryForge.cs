@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.compile.stage1.spec;
@@ -19,6 +20,7 @@ using com.espertech.esper.common.@internal.epl.expression.visitor;
 using com.espertech.esper.common.@internal.epl.variable.core;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.output.polled
@@ -82,12 +84,18 @@ namespace com.espertech.esper.common.@internal.epl.output.polled
             variableInit.Block
                 .MethodReturn(variableReadWritePackage.Make(variableInit, symbols, classScope));
             var variableRW = classScope.NamespaceScope.AddFieldUnshared(
-                true, typeof(VariableReadWritePackage), LocalMethod(variableInit, EPStatementInitServicesConstants.REF));
+                true,
+                typeof(VariableReadWritePackage),
+                LocalMethod(variableInit, EPStatementInitServicesConstants.REF));
 
             var method = parent.MakeChild(typeof(OutputConditionPolledExpressionFactory), this.GetType(), classScope);
             method.Block
-                .DeclareVar(typeof(OutputConditionPolledExpressionFactory), "factory", NewInstance(typeof(OutputConditionPolledExpressionFactory)))
-                .SetProperty(Ref("factory"), "WhenExpression",
+                .DeclareVar<OutputConditionPolledExpressionFactory>(
+                    "factory",
+                    NewInstance(typeof(OutputConditionPolledExpressionFactory)))
+                .SetProperty(
+                    Ref("factory"),
+                    "WhenExpression",
                     ExprNodeUtilityCodegen.CodegenEvaluator(whenExpressionNode, method, this.GetType(), classScope))
                 .SetProperty(Ref("factory"), "VariableReadWritePackage", variableRW)
                 .SetProperty(Ref("factory"), "UsingBuiltinProperties", Constant(isUsingBuiltinProperties))

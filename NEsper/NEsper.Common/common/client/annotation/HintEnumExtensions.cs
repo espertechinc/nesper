@@ -9,6 +9,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+
 using com.espertech.esper.common.@internal.epl.annotation;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
@@ -24,34 +25,49 @@ namespace com.espertech.esper.common.client.annotation
             switch (@enum) {
                 case HintEnum.ITERATE_ONLY:
                     return "ITERATE_ONLY";
+
                 case HintEnum.DISABLE_RECLAIM_GROUP:
                     return "DISABLE_RECLAIM_GROUP";
+
                 case HintEnum.RECLAIM_GROUP_AGED:
                     return "RECLAIM_GROUP_AGED";
+
                 case HintEnum.RECLAIM_GROUP_FREQ:
                     return "RECLAIM_GROUP_FREQ";
+
                 case HintEnum.ENABLE_WINDOW_SUBQUERY_INDEXSHARE:
                     return "ENABLE_WINDOW_SUBQUERY_INDEXSHARE";
+
                 case HintEnum.DISABLE_WINDOW_SUBQUERY_INDEXSHARE:
                     return "DISABLE_WINDOW_SUBQUERY_INDEXSHARE";
+
                 case HintEnum.SET_NOINDEX:
                     return "SET_NOINDEX";
+
                 case HintEnum.FORCE_NESTED_ITER:
                     return "FORCE_NESTED_ITER";
+
                 case HintEnum.PREFER_MERGE_JOIN:
                     return "PREFER_MERGE_JOIN";
+
                 case HintEnum.INDEX:
                     return "INDEX";
+
                 case HintEnum.EXCLUDE_PLAN:
                     return "EXCLUDE_PLAN";
+
                 case HintEnum.DISABLE_UNIQUE_IMPLICIT_IDX:
                     return "DISABLE_UNIQUE_IMPLICIT_IDX";
+
                 case HintEnum.MAX_FILTER_WIDTH:
                     return "MAX_FILTER_WIDTH";
+
                 case HintEnum.DISABLE_WHEREEXPR_MOVETO_FILTER:
                     return "DISABLE_WHEREEXPR_MOVETO_FILTER";
+
                 case HintEnum.ENABLE_OUTPUTLIMIT_OPT:
                     return "ENABLE_OUTPUTLIMIT_OPT";
+
                 case HintEnum.DISABLE_OUTPUTLIMIT_OPT:
                     return "DISABLE_OUTPUTLIMIT_OPT";
             }
@@ -66,34 +82,49 @@ namespace com.espertech.esper.common.client.annotation
             switch (@enum) {
                 case HintEnum.ITERATE_ONLY:
                     return false;
+
                 case HintEnum.DISABLE_RECLAIM_GROUP:
                     return false;
+
                 case HintEnum.RECLAIM_GROUP_AGED:
                     return true;
+
                 case HintEnum.RECLAIM_GROUP_FREQ:
                     return true;
+
                 case HintEnum.ENABLE_WINDOW_SUBQUERY_INDEXSHARE:
                     return false;
+
                 case HintEnum.DISABLE_WINDOW_SUBQUERY_INDEXSHARE:
                     return false;
+
                 case HintEnum.SET_NOINDEX:
                     return false;
+
                 case HintEnum.FORCE_NESTED_ITER:
                     return false;
+
                 case HintEnum.PREFER_MERGE_JOIN:
                     return false;
+
                 case HintEnum.INDEX:
                     return false;
+
                 case HintEnum.EXCLUDE_PLAN:
                     return false;
+
                 case HintEnum.DISABLE_UNIQUE_IMPLICIT_IDX:
                     return false;
+
                 case HintEnum.MAX_FILTER_WIDTH:
                     return true;
+
                 case HintEnum.DISABLE_WHEREEXPR_MOVETO_FILTER:
                     return false;
+
                 case HintEnum.ENABLE_OUTPUTLIMIT_OPT:
                     return false;
+
                 case HintEnum.DISABLE_OUTPUTLIMIT_OPT:
                     return false;
             }
@@ -112,34 +143,49 @@ namespace com.espertech.esper.common.client.annotation
             switch (@enum) {
                 case HintEnum.ITERATE_ONLY:
                     return false;
+
                 case HintEnum.DISABLE_RECLAIM_GROUP:
                     return false;
+
                 case HintEnum.RECLAIM_GROUP_AGED:
                     return true;
+
                 case HintEnum.RECLAIM_GROUP_FREQ:
                     return true;
+
                 case HintEnum.ENABLE_WINDOW_SUBQUERY_INDEXSHARE:
                     return false;
+
                 case HintEnum.DISABLE_WINDOW_SUBQUERY_INDEXSHARE:
                     return false;
+
                 case HintEnum.SET_NOINDEX:
                     return false;
+
                 case HintEnum.FORCE_NESTED_ITER:
                     return false;
+
                 case HintEnum.PREFER_MERGE_JOIN:
                     return false;
+
                 case HintEnum.INDEX:
                     return false;
+
                 case HintEnum.EXCLUDE_PLAN:
                     return false;
+
                 case HintEnum.DISABLE_UNIQUE_IMPLICIT_IDX:
                     return false;
+
                 case HintEnum.MAX_FILTER_WIDTH:
                     return true;
+
                 case HintEnum.DISABLE_WHEREEXPR_MOVETO_FILTER:
                     return false;
+
                 case HintEnum.ENABLE_OUTPUTLIMIT_OPT:
                     return false;
+
                 case HintEnum.DISABLE_OUTPUTLIMIT_OPT:
                     return false;
             }
@@ -152,34 +198,49 @@ namespace com.espertech.esper.common.client.annotation
             switch (@enum) {
                 case HintEnum.ITERATE_ONLY:
                     return false;
+
                 case HintEnum.DISABLE_RECLAIM_GROUP:
                     return false;
+
                 case HintEnum.RECLAIM_GROUP_AGED:
                     return false;
+
                 case HintEnum.RECLAIM_GROUP_FREQ:
                     return false;
+
                 case HintEnum.ENABLE_WINDOW_SUBQUERY_INDEXSHARE:
                     return false;
+
                 case HintEnum.DISABLE_WINDOW_SUBQUERY_INDEXSHARE:
                     return false;
+
                 case HintEnum.SET_NOINDEX:
                     return false;
+
                 case HintEnum.FORCE_NESTED_ITER:
                     return false;
+
                 case HintEnum.PREFER_MERGE_JOIN:
                     return false;
+
                 case HintEnum.INDEX:
                     return true;
+
                 case HintEnum.EXCLUDE_PLAN:
                     return true;
+
                 case HintEnum.DISABLE_UNIQUE_IMPLICIT_IDX:
                     return false;
+
                 case HintEnum.MAX_FILTER_WIDTH:
                     return false;
+
                 case HintEnum.DISABLE_WHEREEXPR_MOVETO_FILTER:
                     return false;
+
                 case HintEnum.ENABLE_OUTPUTLIMIT_OPT:
                     return false;
+
                 case HintEnum.DISABLE_OUTPUTLIMIT_OPT:
                     return false;
             }

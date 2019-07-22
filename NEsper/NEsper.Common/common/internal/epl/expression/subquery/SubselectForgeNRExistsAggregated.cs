@@ -10,6 +10,7 @@ using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 using static com.espertech.esper.common.@internal.epl.expression.subquery.SubselectForgeCodegenUtil;
 
@@ -32,11 +33,17 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
             var method = parent.MakeChild(typeof(bool), GetType(), classScope);
             var havingMethod = CodegenLegoMethodExpression.CodegenExpression(havingEval, method, classScope);
             CodegenExpression having = LocalMethod(
-                havingMethod, REF_EVENTS_SHIFTED, symbols.GetAddIsNewData(method), symbols.GetAddExprEvalCtx(method));
+                havingMethod,
+                REF_EVENTS_SHIFTED,
+                symbols.GetAddIsNewData(method),
+                symbols.GetAddExprEvalCtx(method));
 
             method.Block.ApplyTri(DECLARE_EVENTS_SHIFTED, method, symbols);
             CodegenLegoBooleanExpression.CodegenReturnValueIfNullOrNotPass(
-                method.Block, typeof(bool?), having, ConstantFalse());
+                method.Block,
+                typeof(bool?),
+                having,
+                ConstantFalse());
             method.Block.MethodReturn(ConstantTrue());
             return LocalMethod(method);
         }

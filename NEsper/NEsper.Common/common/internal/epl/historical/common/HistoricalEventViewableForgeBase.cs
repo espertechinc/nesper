@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -17,6 +18,7 @@ using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.streamtype;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.compat.collections;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.historical.common
@@ -50,12 +52,21 @@ namespace com.espertech.esper.common.@internal.epl.historical.common
             var @ref = Ref("hist");
             method.Block.DeclareVar(TypeOfImplementation(), @ref.Ref, NewInstance(TypeOfImplementation()))
                 .SetProperty(@ref, "StreamNumber", Constant(streamNum))
-                .SetProperty(@ref, "EventType", EventTypeUtility.ResolveTypeCodegen(eventType, symbols.GetAddInitSvc(method)))
+                .SetProperty(
+                    @ref,
+                    "EventType",
+                    EventTypeUtility.ResolveTypeCodegen(eventType, symbols.GetAddInitSvc(method)))
                 .SetProperty(@ref, "HasRequiredStreams", Constant(!subordinateStreams.IsEmpty()))
                 .SetProperty(@ref, "ScheduleCallbackId", Constant(scheduleCallbackId))
-                .SetProperty(@ref, "Evaluator",
+                .SetProperty(
+                    @ref,
+                    "Evaluator",
                     ExprNodeUtilityCodegen.CodegenEvaluatorMayMultiKeyWCoerce(
-                        inputParamEvaluators, null, method, GetType(), classScope));
+                        inputParamEvaluators,
+                        null,
+                        method,
+                        GetType(),
+                        classScope));
             CodegenSetter(@ref, method, symbols, classScope);
             method.Block
                 .Expression(ExprDotMethodChain(symbols.GetAddInitSvc(method)).Add("addReadyCallback", @ref))

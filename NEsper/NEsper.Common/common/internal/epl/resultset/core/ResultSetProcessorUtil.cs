@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.core;
@@ -22,6 +23,7 @@ using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.common.@internal.view.core;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.function;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 using static com.espertech.esper.common.@internal.epl.expression.codegen.ExprForgeCodegenNames;
 using static com.espertech.esper.common.@internal.epl.resultset.codegen.ResultSetProcessorCodegenNames;
@@ -38,7 +40,8 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
         public const string METHOD_CLEARANDAGGREGATEUNGROUPED = "ClearAndAggregateUngrouped";
         public const string METHOD_POPULATESELECTJOINEVENTSNOHAVING = "PopulateSelectJoinEventsNoHaving";
 
-        public const string METHOD_POPULATESELECTJOINEVENTSNOHAVINGWITHORDERBY = "PopulateSelectJoinEventsNoHavingWithOrderBy";
+        public const string METHOD_POPULATESELECTJOINEVENTSNOHAVINGWITHORDERBY =
+            "PopulateSelectJoinEventsNoHavingWithOrderBy";
 
         public const string METHOD_POPULATESELECTEVENTSNOHAVING = "PopulateSelectEventsNoHaving";
         public const string METHOD_POPULATESELECTEVENTSNOHAVINGWITHORDERBY = "PopulateSelectEventsNoHavingWithOrderBy";
@@ -60,21 +63,32 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
                 else {
                     method.Block
                         .Apply(Instblock(classScope, "qHavingClause", REF_EPS))
-                        .DeclareVar(
-                            typeof(bool), "passed",
+                        .DeclareVar<bool>(
+                            "passed",
                             CodegenLegoMethodExpression.CodegenBooleanExpressionReturnTrueFalse(
-                                optionalHavingClause, classScope, method, REF_EPS, ExprForgeCodegenNames.REF_ISNEWDATA,
+                                optionalHavingClause,
+                                classScope,
+                                method,
+                                REF_EPS,
+                                ExprForgeCodegenNames.REF_ISNEWDATA,
                                 REF_EXPREVALCONTEXT))
                         .Apply(Instblock(classScope, "aHavingClause", Ref("passed")))
                         .MethodReturn(Ref("passed"));
                 }
             };
             instance.Methods.AddMethod(
-                typeof(bool), "evaluateHavingClause",
+                typeof(bool),
+                "evaluateHavingClause",
                 CodegenNamedParam.From(
-                    typeof(EventBean[]), NAME_EPS, typeof(bool), ExprForgeCodegenNames.NAME_ISNEWDATA,
+                    typeof(EventBean[]),
+                    NAME_EPS,
+                    typeof(bool),
+                    ExprForgeCodegenNames.NAME_ISNEWDATA,
                     typeof(ExprEvaluatorContext),
-                    NAME_EXPREVALCONTEXT), typeof(ResultSetProcessorUtil), classScope, code);
+                    NAME_EXPREVALCONTEXT),
+                typeof(ResultSetProcessorUtil),
+                classScope,
+                code);
         }
 
         /// <summary>
@@ -205,7 +219,11 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
             }
 
             return orderByProcessor.SortPlain(
-                result, eventGenerators, isNewData, exprEvaluatorContext, aggregationService);
+                result,
+                eventGenerators,
+                isNewData,
+                exprEvaluatorContext,
+                aggregationService);
         }
 
         /// <summary>
@@ -250,7 +268,10 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
                 }
 
                 var generated = exprProcessor.Process(
-                    eventsPerStream, isNewData, isSynthesize, exprEvaluatorContext);
+                    eventsPerStream,
+                    isNewData,
+                    isSynthesize,
+                    exprEvaluatorContext);
                 if (generated != null) {
                     if (result == null) {
                         result = new ArrayDeque<EventBean>(events.Length);
@@ -264,8 +285,11 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
 
             if (result != null) {
                 return orderByProcessor.SortPlain(
-                    CollectionUtil.ToArrayEvents(result), CollectionUtil.ToArrayEventsArray(eventGenerators), isNewData,
-                    exprEvaluatorContext, aggregationService);
+                    CollectionUtil.ToArrayEvents(result),
+                    CollectionUtil.ToArrayEventsArray(eventGenerators),
+                    isNewData,
+                    exprEvaluatorContext,
+                    aggregationService);
             }
 
             return null;
@@ -277,60 +301,85 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
         {
             Consumer<CodegenMethod> code = methodNode => {
                 methodNode.Block.IfRefNullReturnNull("events")
-                    .DeclareVar(typeof(ArrayDeque<EventBean>), "result", ConstantNull())
-                    .DeclareVar(typeof(ArrayDeque<EventBean>), "eventGenerators", ConstantNull())
-                    .DeclareVar(typeof(EventBean[]), NAME_EPS, NewArrayByLength(typeof(EventBean), Constant(1)));
+                    .DeclareVar<ArrayDeque<EventBean>>("result", ConstantNull())
+                    .DeclareVar<ArrayDeque<EventBean>>("eventGenerators", ConstantNull())
+                    .DeclareVar<EventBean[]>(NAME_EPS, NewArrayByLength(typeof(EventBean), Constant(1)));
                 {
                     var forEach = methodNode.Block.ForEach(typeof(EventBean), "theEvent", Ref("events"));
                     forEach.AssignArrayElement(NAME_EPS, Constant(0), Ref("theEvent"));
                     forEach.IfCondition(
-                        Not(
-                            LocalMethod(
-                                instance.Methods.GetMethod("evaluateHavingClause"), REF_EPS,
-                                ExprForgeCodegenNames.REF_ISNEWDATA,
-                                REF_EXPREVALCONTEXT))).BlockContinue();
-                    forEach.DeclareVar(
-                            typeof(EventBean), "generated",
+                            Not(
+                                LocalMethod(
+                                    instance.Methods.GetMethod("evaluateHavingClause"),
+                                    REF_EPS,
+                                    ExprForgeCodegenNames.REF_ISNEWDATA,
+                                    REF_EXPREVALCONTEXT)))
+                        .BlockContinue();
+                    forEach.DeclareVar<EventBean>(
+                            "generated",
                             ExprDotMethod(
-                                REF_SELECTEXPRNONMEMBER, "process", REF_EPS, ExprForgeCodegenNames.REF_ISNEWDATA,
+                                REF_SELECTEXPRNONMEMBER,
+                                "process",
+                                REF_EPS,
+                                ExprForgeCodegenNames.REF_ISNEWDATA,
                                 REF_ISSYNTHESIZE,
                                 REF_EXPREVALCONTEXT))
                         .IfCondition(NotEqualsNull(Ref("generated")))
                         .IfCondition(EqualsNull(Ref("result")))
                         .AssignRef("result", NewInstance<ArrayDeque<EventBean>>(ArrayLength(Ref("events"))))
                         .AssignRef(
-                            "eventGenerators", NewInstance<ArrayDeque<EventBean>>(ArrayLength(Ref("events"))))
+                            "eventGenerators",
+                            NewInstance<ArrayDeque<EventBean>>(ArrayLength(Ref("events"))))
                         .BlockEnd()
                         .ExprDotMethod(Ref("result"), "add", Ref("generated"))
-                        .DeclareVar(typeof(EventBean[]), "tmp", NewArrayByLength(typeof(EventBean), Constant(0)))
+                        .DeclareVar<EventBean[]>("tmp", NewArrayByLength(typeof(EventBean), Constant(0)))
                         .AssignArrayElement("tmp", Constant(0), Ref("theEvent"))
                         .ExprDotMethod(Ref("eventGenerators"), "add", Ref("tmp"))
                         .BlockEnd();
                 }
 
                 methodNode.Block.IfRefNullReturnNull("result")
-                    .DeclareVar(
-                        typeof(EventBean[]), "arr",
+                    .DeclareVar<EventBean[]>(
+                        "arr",
                         StaticMethod(typeof(CollectionUtil), CollectionUtil.METHOD_TOARRAYEVENTS, Ref("result")))
-                    .DeclareVar(
-                        typeof(EventBean[][]), "gen",
+                    .DeclareVar<EventBean[][]>(
+                        "gen",
                         StaticMethod(
-                            typeof(CollectionUtil), CollectionUtil.METHOD_TOARRAYEVENTSARRAY, Ref("eventGenerators")))
+                            typeof(CollectionUtil),
+                            CollectionUtil.METHOD_TOARRAYEVENTSARRAY,
+                            Ref("eventGenerators")))
                     .MethodReturn(
                         ExprDotMethod(
-                            REF_ORDERBYPROCESSOR, "sortPlain", Ref("arr"), Ref("gen"),
+                            REF_ORDERBYPROCESSOR,
+                            "sortPlain",
+                            Ref("arr"),
+                            Ref("gen"),
                             ExprForgeCodegenNames.REF_ISNEWDATA,
-                            REF_EXPREVALCONTEXT, REF_AGGREGATIONSVC));
+                            REF_EXPREVALCONTEXT,
+                            REF_AGGREGATIONSVC));
             };
 
             return instance.Methods.AddMethod(
-                typeof(EventBean[]), "getSelectEventsHavingWithOrderBy",
+                typeof(EventBean[]),
+                "getSelectEventsHavingWithOrderBy",
                 CodegenNamedParam.From(
-                    typeof(AggregationService), REF_AGGREGATIONSVC.Ref, typeof(SelectExprProcessor),
-                    NAME_SELECTEXPRPROCESSOR, typeof(OrderByProcessor), NAME_ORDERBYPROCESSOR, typeof(EventBean[]),
-                    "events", typeof(bool), ExprForgeCodegenNames.NAME_ISNEWDATA, typeof(bool), NAME_ISSYNTHESIZE,
-                    typeof(ExprEvaluatorContext), NAME_EXPREVALCONTEXT),
-                typeof(ResultSetProcessorUtil), classScope, code);
+                    typeof(AggregationService),
+                    REF_AGGREGATIONSVC.Ref,
+                    typeof(SelectExprProcessor),
+                    NAME_SELECTEXPRPROCESSOR,
+                    typeof(OrderByProcessor),
+                    NAME_ORDERBYPROCESSOR,
+                    typeof(EventBean[]),
+                    "events",
+                    typeof(bool),
+                    ExprForgeCodegenNames.NAME_ISNEWDATA,
+                    typeof(bool),
+                    NAME_ISSYNTHESIZE,
+                    typeof(ExprEvaluatorContext),
+                    NAME_EXPREVALCONTEXT),
+                typeof(ResultSetProcessorUtil),
+                classScope,
+                code);
         }
 
         /// <summary>
@@ -370,7 +419,10 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
                 }
 
                 var generated = exprProcessor.Process(
-                    eventsPerStream, isNewData, isSynthesize, exprEvaluatorContext);
+                    eventsPerStream,
+                    isNewData,
+                    isSynthesize,
+                    exprEvaluatorContext);
                 if (generated != null) {
                     if (result == null) {
                         result = new ArrayDeque<EventBean>(events.Length);
@@ -390,42 +442,59 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
             Consumer<CodegenMethod> code = methodNode => {
                 methodNode.Block
                     .IfRefNullReturnNull("events")
-                    .DeclareVar(typeof(ArrayDeque<EventBean>), "result", ConstantNull())
-                    .DeclareVar(
-                        typeof(EventBean[]), "eventsPerStream", NewArrayByLength(typeof(EventBean), Constant(1)));
+                    .DeclareVar<ArrayDeque<EventBean>>("result", ConstantNull())
+                    .DeclareVar<EventBean[]>(
+                        "eventsPerStream",
+                        NewArrayByLength(typeof(EventBean), Constant(1)));
 
                 {
                     var forEach = methodNode.Block.ForEach(typeof(EventBean), "theEvent", Ref("events"));
                     forEach.AssignArrayElement(REF_EPS, Constant(0), Ref("theEvent"));
                     forEach.IfCondition(
-                        Not(
-                            LocalMethod(
-                                instance.Methods.GetMethod("evaluateHavingClause"), REF_EPS,
-                                ExprForgeCodegenNames.REF_ISNEWDATA,
-                                REF_EXPREVALCONTEXT))).BlockContinue();
-                    forEach.DeclareVar(
-                            typeof(EventBean), "generated",
+                            Not(
+                                LocalMethod(
+                                    instance.Methods.GetMethod("evaluateHavingClause"),
+                                    REF_EPS,
+                                    ExprForgeCodegenNames.REF_ISNEWDATA,
+                                    REF_EXPREVALCONTEXT)))
+                        .BlockContinue();
+                    forEach.DeclareVar<EventBean>(
+                            "generated",
                             ExprDotMethod(
-                                REF_SELECTEXPRNONMEMBER, "process", REF_EPS, ExprForgeCodegenNames.REF_ISNEWDATA,
+                                REF_SELECTEXPRNONMEMBER,
+                                "process",
+                                REF_EPS,
+                                ExprForgeCodegenNames.REF_ISNEWDATA,
                                 REF_ISSYNTHESIZE,
                                 REF_EXPREVALCONTEXT))
                         .IfCondition(NotEqualsNull(Ref("generated")))
                         .IfCondition(EqualsNull(Ref("result")))
                         .AssignRef("result", NewInstance<ArrayDeque<EventBean>>(ArrayLength(Ref("events"))))
                         .BlockEnd()
-                        .ExprDotMethod(Ref("result"), "add", Ref("generated")).BlockEnd();
+                        .ExprDotMethod(Ref("result"), "add", Ref("generated"))
+                        .BlockEnd();
                 }
                 methodNode.Block.MethodReturn(
                     StaticMethod(typeof(CollectionUtil), CollectionUtil.METHOD_TOARRAYMAYNULL, Ref("result")));
             };
 
             return instance.Methods.AddMethod(
-                typeof(EventBean[]), "getSelectEventsHaving",
+                typeof(EventBean[]),
+                "getSelectEventsHaving",
                 CodegenNamedParam.From(
-                    typeof(SelectExprProcessor), NAME_SELECTEXPRPROCESSOR, typeof(EventBean[]), "events", typeof(bool),
-                    ExprForgeCodegenNames.NAME_ISNEWDATA, typeof(bool), NAME_ISSYNTHESIZE, typeof(ExprEvaluatorContext),
+                    typeof(SelectExprProcessor),
+                    NAME_SELECTEXPRPROCESSOR,
+                    typeof(EventBean[]),
+                    "events",
+                    typeof(bool),
+                    ExprForgeCodegenNames.NAME_ISNEWDATA,
+                    typeof(bool),
+                    NAME_ISSYNTHESIZE,
+                    typeof(ExprEvaluatorContext),
                     NAME_EXPREVALCONTEXT),
-                typeof(ResultSetProcessorUtil), classScope, code);
+                typeof(ResultSetProcessorUtil),
+                classScope,
+                code);
         }
 
         /// <summary>
@@ -465,7 +534,11 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
             }
 
             return orderByProcessor.SortPlain(
-                result, eventGenerators, isNewData, exprEvaluatorContext, aggregationService);
+                result,
+                eventGenerators,
+                isNewData,
+                exprEvaluatorContext,
+                aggregationService);
         }
 
         /// <summary>
@@ -537,7 +610,10 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
                 }
 
                 var resultEvent = exprProcessor.Process(
-                    eventsPerStream, isNewData, isSynthesize, exprEvaluatorContext);
+                    eventsPerStream,
+                    isNewData,
+                    isSynthesize,
+                    exprEvaluatorContext);
                 if (resultEvent != null) {
                     if (result == null) {
                         result = new ArrayDeque<EventBean>(events.Count);
@@ -559,43 +635,59 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
                     .IfCondition(Or(EqualsNull(Ref("events")), ExprDotMethod(Ref("events"), "isEmpty")))
                     .BlockReturn(ConstantNull())
                     .IfRefNullReturnNull("events")
-                    .DeclareVar(typeof(ArrayDeque<EventBean>), "result", ConstantNull());
+                    .DeclareVar<ArrayDeque<EventBean>>("result", ConstantNull());
                 {
                     var forEach = methodNode.Block.ForEach(typeof(MultiKey<EventBean>), "key", Ref("events"));
-                    forEach.DeclareVar(
-                        typeof(EventBean[]), NAME_EPS,
+                    forEach.DeclareVar<EventBean[]>(
+                        NAME_EPS,
                         Cast(typeof(EventBean[]), ExprDotMethod(Ref("key"), "getArray")));
                     forEach.IfCondition(
-                        Not(
-                            LocalMethod(
-                                instance.Methods.GetMethod("evaluateHavingClause"), REF_EPS,
-                                ExprForgeCodegenNames.REF_ISNEWDATA,
-                                REF_EXPREVALCONTEXT))).BlockContinue();
-                    forEach.DeclareVar(
-                            typeof(EventBean), "generated",
+                            Not(
+                                LocalMethod(
+                                    instance.Methods.GetMethod("evaluateHavingClause"),
+                                    REF_EPS,
+                                    ExprForgeCodegenNames.REF_ISNEWDATA,
+                                    REF_EXPREVALCONTEXT)))
+                        .BlockContinue();
+                    forEach.DeclareVar<EventBean>(
+                            "generated",
                             ExprDotMethod(
-                                REF_SELECTEXPRNONMEMBER, "process", REF_EPS, ExprForgeCodegenNames.REF_ISNEWDATA,
+                                REF_SELECTEXPRNONMEMBER,
+                                "process",
+                                REF_EPS,
+                                ExprForgeCodegenNames.REF_ISNEWDATA,
                                 REF_ISSYNTHESIZE,
                                 REF_EXPREVALCONTEXT))
                         .IfCondition(NotEqualsNull(Ref("generated")))
                         .IfCondition(EqualsNull(Ref("result")))
                         .AssignRef(
-                            "result", NewInstance<ArrayDeque<EventBean>>(ExprDotMethod(Ref("events"), "size")))
+                            "result",
+                            NewInstance<ArrayDeque<EventBean>>(ExprDotMethod(Ref("events"), "size")))
                         .BlockEnd()
-                        .ExprDotMethod(Ref("result"), "add", Ref("generated")).BlockEnd();
+                        .ExprDotMethod(Ref("result"), "add", Ref("generated"))
+                        .BlockEnd();
                 }
                 methodNode.Block.MethodReturn(
                     StaticMethod(typeof(CollectionUtil), CollectionUtil.METHOD_TOARRAYMAYNULL, Ref("result")));
             };
 
             return instance.Methods.AddMethod(
-                typeof(EventBean[]), "getSelectJoinEventsHaving",
+                typeof(EventBean[]),
+                "getSelectJoinEventsHaving",
                 CodegenNamedParam.From(
-                    typeof(SelectExprProcessor), NAME_SELECTEXPRPROCESSOR, typeof(ISet<EventBean>), "events",
+                    typeof(SelectExprProcessor),
+                    NAME_SELECTEXPRPROCESSOR,
+                    typeof(ISet<EventBean>),
+                    "events",
                     typeof(bool),
-                    ExprForgeCodegenNames.NAME_ISNEWDATA, typeof(bool), NAME_ISSYNTHESIZE, typeof(ExprEvaluatorContext),
+                    ExprForgeCodegenNames.NAME_ISNEWDATA,
+                    typeof(bool),
+                    NAME_ISSYNTHESIZE,
+                    typeof(ExprEvaluatorContext),
                     NAME_EXPREVALCONTEXT),
-                typeof(ResultSetProcessorUtil), classScope, code);
+                typeof(ResultSetProcessorUtil),
+                classScope,
+                code);
         }
 
         /// <summary>
@@ -639,7 +731,10 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
                 }
 
                 var resultEvent = exprProcessor.Process(
-                    eventsPerStream, isNewData, isSynthesize, exprEvaluatorContext);
+                    eventsPerStream,
+                    isNewData,
+                    isSynthesize,
+                    exprEvaluatorContext);
                 if (resultEvent != null) {
                     if (result == null) {
                         result = new ArrayDeque<EventBean>(events.Count);
@@ -653,8 +748,11 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
 
             if (result != null) {
                 return orderByProcessor.SortPlain(
-                    CollectionUtil.ToArrayEvents(result), CollectionUtil.ToArrayEventsArray(eventGenerators), isNewData,
-                    exprEvaluatorContext, aggregationService);
+                    CollectionUtil.ToArrayEvents(result),
+                    CollectionUtil.ToArrayEventsArray(eventGenerators),
+                    isNewData,
+                    exprEvaluatorContext,
+                    aggregationService);
             }
 
             return null;
@@ -669,29 +767,35 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
                     .IfCondition(Or(EqualsNull(Ref("events")), ExprDotMethod(Ref("events"), "isEmpty")))
                     .BlockReturn(ConstantNull())
                     .IfRefNullReturnNull("events")
-                    .DeclareVar(typeof(ArrayDeque<EventBean>), "result", ConstantNull())
-                    .DeclareVar(typeof(ArrayDeque<EventBean>), "eventGenerators", ConstantNull());
+                    .DeclareVar<ArrayDeque<EventBean>>("result", ConstantNull())
+                    .DeclareVar<ArrayDeque<EventBean>>("eventGenerators", ConstantNull());
                 {
                     var forEach = methodNode.Block.ForEach(typeof(MultiKey<EventBean>), "key", Ref("events"));
-                    forEach.DeclareVar(
-                        typeof(EventBean[]), NAME_EPS,
+                    forEach.DeclareVar<EventBean[]>(
+                        NAME_EPS,
                         Cast(typeof(EventBean[]), ExprDotMethod(Ref("key"), "getArray")));
                     forEach.IfCondition(
-                        Not(
-                            LocalMethod(
-                                instance.Methods.GetMethod("evaluateHavingClause"), REF_EPS,
-                                ExprForgeCodegenNames.REF_ISNEWDATA,
-                                REF_EXPREVALCONTEXT))).BlockContinue();
-                    forEach.DeclareVar(
-                            typeof(EventBean), "resultEvent",
+                            Not(
+                                LocalMethod(
+                                    instance.Methods.GetMethod("evaluateHavingClause"),
+                                    REF_EPS,
+                                    ExprForgeCodegenNames.REF_ISNEWDATA,
+                                    REF_EXPREVALCONTEXT)))
+                        .BlockContinue();
+                    forEach.DeclareVar<EventBean>(
+                            "resultEvent",
                             ExprDotMethod(
-                                REF_SELECTEXPRNONMEMBER, "process", REF_EPS, ExprForgeCodegenNames.REF_ISNEWDATA,
+                                REF_SELECTEXPRNONMEMBER,
+                                "process",
+                                REF_EPS,
+                                ExprForgeCodegenNames.REF_ISNEWDATA,
                                 REF_ISSYNTHESIZE,
                                 REF_EXPREVALCONTEXT))
                         .IfCondition(NotEqualsNull(Ref("resultEvent")))
                         .IfCondition(EqualsNull(Ref("result")))
                         .AssignRef(
-                            "result", NewInstance<ArrayDeque<EventBean>>(ExprDotMethod(Ref("events"), "size")))
+                            "result",
+                            NewInstance<ArrayDeque<EventBean>>(ExprDotMethod(Ref("events"), "size")))
                         .AssignRef(
                             "eventGenerators",
                             NewInstance<ArrayDeque<EventBean>>(ExprDotMethod(Ref("events"), "size")))
@@ -701,30 +805,47 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
                         .BlockEnd();
                 }
                 methodNode.Block.IfRefNullReturnNull("result")
-                    .DeclareVar(
-                        typeof(EventBean[]), "arr",
+                    .DeclareVar<EventBean[]>(
+                        "arr",
                         StaticMethod(typeof(CollectionUtil), CollectionUtil.METHOD_TOARRAYEVENTS, Ref("result")))
-                    .DeclareVar(
-                        typeof(EventBean[][]), "gen",
+                    .DeclareVar<EventBean[][]>(
+                        "gen",
                         StaticMethod(
-                            typeof(CollectionUtil), CollectionUtil.METHOD_TOARRAYEVENTSARRAY, Ref("eventGenerators")))
+                            typeof(CollectionUtil),
+                            CollectionUtil.METHOD_TOARRAYEVENTSARRAY,
+                            Ref("eventGenerators")))
                     .MethodReturn(
                         ExprDotMethod(
-                            REF_ORDERBYPROCESSOR, "sortPlain", Ref("arr"), Ref("gen"),
+                            REF_ORDERBYPROCESSOR,
+                            "sortPlain",
+                            Ref("arr"),
+                            Ref("gen"),
                             ExprForgeCodegenNames.REF_ISNEWDATA,
-                            REF_EXPREVALCONTEXT, REF_AGGREGATIONSVC));
+                            REF_EXPREVALCONTEXT,
+                            REF_AGGREGATIONSVC));
             };
 
             return instance.Methods.AddMethod(
-                typeof(EventBean[]), "getSelectJoinEventsHavingWithOrderBy",
+                typeof(EventBean[]),
+                "getSelectJoinEventsHavingWithOrderBy",
                 CodegenNamedParam.From(
-                    typeof(AggregationService), REF_AGGREGATIONSVC.Ref, typeof(SelectExprProcessor),
-                    NAME_SELECTEXPRPROCESSOR, typeof(OrderByProcessor), NAME_ORDERBYPROCESSOR, typeof(ISet<EventBean>),
+                    typeof(AggregationService),
+                    REF_AGGREGATIONSVC.Ref,
+                    typeof(SelectExprProcessor),
+                    NAME_SELECTEXPRPROCESSOR,
+                    typeof(OrderByProcessor),
+                    NAME_ORDERBYPROCESSOR,
+                    typeof(ISet<EventBean>),
                     "events",
-                    typeof(bool), ExprForgeCodegenNames.NAME_ISNEWDATA, typeof(bool), NAME_ISSYNTHESIZE,
+                    typeof(bool),
+                    ExprForgeCodegenNames.NAME_ISNEWDATA,
+                    typeof(bool),
+                    NAME_ISSYNTHESIZE,
                     typeof(ExprEvaluatorContext),
                     NAME_EXPREVALCONTEXT),
-                typeof(ResultSetProcessorUtil), classScope, code);
+                typeof(ResultSetProcessorUtil),
+                classScope,
+                code);
         }
 
         public static void PopulateSelectEventsNoHaving(
@@ -744,7 +865,10 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
                 eventsPerStream[0] = theEvent;
 
                 var resultEvent = exprProcessor.Process(
-                    eventsPerStream, isNewData, isSynthesize, exprEvaluatorContext);
+                    eventsPerStream,
+                    isNewData,
+                    isSynthesize,
+                    exprEvaluatorContext);
                 if (resultEvent != null) {
                     result.Add(resultEvent);
                 }
@@ -770,7 +894,10 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
                 eventsPerStream[0] = theEvent;
 
                 var resultEvent = exprProcessor.Process(
-                    eventsPerStream, isNewData, isSynthesize, exprEvaluatorContext);
+                    eventsPerStream,
+                    isNewData,
+                    isSynthesize,
+                    exprEvaluatorContext);
                 if (resultEvent != null) {
                     result.Add(resultEvent);
                     sortKeys.Add(orderByProcessor.GetSortKey(eventsPerStream, isNewData, exprEvaluatorContext));
@@ -801,7 +928,10 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
                 }
 
                 var resultEvent = exprProcessor.Process(
-                    eventsPerStream, isNewData, isSynthesize, exprEvaluatorContext);
+                    eventsPerStream,
+                    isNewData,
+                    isSynthesize,
+                    exprEvaluatorContext);
                 if (resultEvent != null) {
                     result.Add(resultEvent);
                 }
@@ -814,23 +944,30 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
         {
             Consumer<CodegenMethod> code = methodNode => {
                 methodNode.Block
-                    .IfRefNull("events").BlockReturnNoValue()
-                    .DeclareVar(
-                        typeof(EventBean[]), "eventsPerStream", NewArrayByLength(typeof(EventBean), Constant(1)));
+                    .IfRefNull("events")
+                    .BlockReturnNoValue()
+                    .DeclareVar<EventBean[]>(
+                        "eventsPerStream",
+                        NewArrayByLength(typeof(EventBean), Constant(1)));
 
                 {
                     var forEach = methodNode.Block.ForEach(typeof(EventBean), "theEvent", Ref("events"));
                     forEach.AssignArrayElement(REF_EPS, Constant(0), Ref("theEvent"));
                     forEach.IfCondition(
-                        Not(
-                            LocalMethod(
-                                instance.Methods.GetMethod("evaluateHavingClause"), REF_EPS,
-                                ExprForgeCodegenNames.REF_ISNEWDATA,
-                                REF_EXPREVALCONTEXT))).BlockContinue();
-                    forEach.DeclareVar(
-                            typeof(EventBean), "resultEvent",
+                            Not(
+                                LocalMethod(
+                                    instance.Methods.GetMethod("evaluateHavingClause"),
+                                    REF_EPS,
+                                    ExprForgeCodegenNames.REF_ISNEWDATA,
+                                    REF_EXPREVALCONTEXT)))
+                        .BlockContinue();
+                    forEach.DeclareVar<EventBean>(
+                            "resultEvent",
                             ExprDotMethod(
-                                REF_SELECTEXPRNONMEMBER, "process", REF_EPS, ExprForgeCodegenNames.REF_ISNEWDATA,
+                                REF_SELECTEXPRNONMEMBER,
+                                "process",
+                                REF_EPS,
+                                ExprForgeCodegenNames.REF_ISNEWDATA,
                                 REF_ISSYNTHESIZE,
                                 REF_EXPREVALCONTEXT))
                         .IfCondition(NotEqualsNull(Ref("resultEvent")))
@@ -839,13 +976,24 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
             };
 
             return instance.Methods.AddMethod(
-                typeof(void), "populateSelectEventsHaving",
+                typeof(void),
+                "populateSelectEventsHaving",
                 CodegenNamedParam.From(
-                    typeof(SelectExprProcessor), NAME_SELECTEXPRPROCESSOR, typeof(EventBean[]), "events", typeof(bool),
-                    ExprForgeCodegenNames.NAME_ISNEWDATA, typeof(bool), NAME_ISSYNTHESIZE, typeof(IList<object>),
+                    typeof(SelectExprProcessor),
+                    NAME_SELECTEXPRPROCESSOR,
+                    typeof(EventBean[]),
+                    "events",
+                    typeof(bool),
+                    ExprForgeCodegenNames.NAME_ISNEWDATA,
+                    typeof(bool),
+                    NAME_ISSYNTHESIZE,
+                    typeof(IList<object>),
                     "result",
-                    typeof(ExprEvaluatorContext), NAME_EXPREVALCONTEXT),
-                typeof(ResultSetProcessorUtil), classScope, code);
+                    typeof(ExprEvaluatorContext),
+                    NAME_EXPREVALCONTEXT),
+                typeof(ResultSetProcessorUtil),
+                classScope,
+                code);
         }
 
         public static void PopulateSelectEventsHavingWithOrderBy(
@@ -873,7 +1021,10 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
                 }
 
                 var resultEvent = exprProcessor.Process(
-                    eventsPerStream, isNewData, isSynthesize, exprEvaluatorContext);
+                    eventsPerStream,
+                    isNewData,
+                    isSynthesize,
+                    exprEvaluatorContext);
                 if (resultEvent != null) {
                     result.Add(resultEvent);
                     optSortKeys.Add(orderByProcessor.GetSortKey(eventsPerStream, isNewData, exprEvaluatorContext));
@@ -887,44 +1038,69 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
         {
             Consumer<CodegenMethod> code = methodNode => {
                 methodNode.Block
-                    .IfRefNull("events").BlockReturnNoValue()
-                    .DeclareVar(
-                        typeof(EventBean[]), "eventsPerStream", NewArrayByLength(typeof(EventBean), Constant(1)));
+                    .IfRefNull("events")
+                    .BlockReturnNoValue()
+                    .DeclareVar<EventBean[]>(
+                        "eventsPerStream",
+                        NewArrayByLength(typeof(EventBean), Constant(1)));
 
                 {
                     var forEach = methodNode.Block.ForEach(typeof(EventBean), "theEvent", Ref("events"));
                     forEach.AssignArrayElement(REF_EPS, Constant(0), Ref("theEvent"));
                     forEach.IfCondition(
-                        Not(
-                            LocalMethod(
-                                instance.Methods.GetMethod("evaluateHavingClause"), REF_EPS,
-                                ExprForgeCodegenNames.REF_ISNEWDATA,
-                                REF_EXPREVALCONTEXT))).BlockContinue();
-                    forEach.DeclareVar(
-                            typeof(EventBean), "resultEvent",
+                            Not(
+                                LocalMethod(
+                                    instance.Methods.GetMethod("evaluateHavingClause"),
+                                    REF_EPS,
+                                    ExprForgeCodegenNames.REF_ISNEWDATA,
+                                    REF_EXPREVALCONTEXT)))
+                        .BlockContinue();
+                    forEach.DeclareVar<EventBean>(
+                            "resultEvent",
                             ExprDotMethod(
-                                REF_SELECTEXPRNONMEMBER, "process", REF_EPS, ExprForgeCodegenNames.REF_ISNEWDATA,
+                                REF_SELECTEXPRNONMEMBER,
+                                "process",
+                                REF_EPS,
+                                ExprForgeCodegenNames.REF_ISNEWDATA,
                                 REF_ISSYNTHESIZE,
                                 REF_EXPREVALCONTEXT))
                         .IfCondition(NotEqualsNull(Ref("resultEvent")))
                         .ExprDotMethod(Ref("result"), "add", Ref("resultEvent"))
                         .ExprDotMethod(
-                            Ref("optSortKeys"), "add",
+                            Ref("optSortKeys"),
+                            "add",
                             ExprDotMethod(
-                                REF_ORDERBYPROCESSOR, "getSortKey", REF_EPS, ExprForgeCodegenNames.REF_ISNEWDATA,
+                                REF_ORDERBYPROCESSOR,
+                                "getSortKey",
+                                REF_EPS,
+                                ExprForgeCodegenNames.REF_ISNEWDATA,
                                 REF_EXPREVALCONTEXT));
                 }
             };
 
             return instance.Methods.AddMethod(
-                typeof(void), "populateSelectEventsHavingWithOrderBy",
+                typeof(void),
+                "populateSelectEventsHavingWithOrderBy",
                 CodegenNamedParam.From(
-                    typeof(SelectExprProcessor), NAME_SELECTEXPRPROCESSOR, typeof(OrderByProcessor),
-                    NAME_ORDERBYPROCESSOR, typeof(EventBean[]), "events", typeof(bool),
-                    ExprForgeCodegenNames.NAME_ISNEWDATA, typeof(bool),
-                    NAME_ISSYNTHESIZE, typeof(IList<object>), "result", typeof(IList<object>), "optSortKeys",
-                    typeof(ExprEvaluatorContext), NAME_EXPREVALCONTEXT),
-                typeof(ResultSetProcessorUtil), classScope, code);
+                    typeof(SelectExprProcessor),
+                    NAME_SELECTEXPRPROCESSOR,
+                    typeof(OrderByProcessor),
+                    NAME_ORDERBYPROCESSOR,
+                    typeof(EventBean[]),
+                    "events",
+                    typeof(bool),
+                    ExprForgeCodegenNames.NAME_ISNEWDATA,
+                    typeof(bool),
+                    NAME_ISSYNTHESIZE,
+                    typeof(IList<object>),
+                    "result",
+                    typeof(IList<object>),
+                    "optSortKeys",
+                    typeof(ExprEvaluatorContext),
+                    NAME_EXPREVALCONTEXT),
+                typeof(ResultSetProcessorUtil),
+                classScope,
+                code);
         }
 
         public static void PopulateSelectJoinEventsHaving(
@@ -949,7 +1125,10 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
                 }
 
                 var resultEvent = exprProcessor.Process(
-                    eventsPerStream, isNewData, isSynthesize, exprEvaluatorContext);
+                    eventsPerStream,
+                    isNewData,
+                    isSynthesize,
+                    exprEvaluatorContext);
                 if (resultEvent != null) {
                     result.Add(resultEvent);
                 }
@@ -965,19 +1144,24 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
 
                 {
                     var forEach = methodNode.Block.ForEach(typeof(MultiKey<EventBean>), "key", Ref("events"));
-                    forEach.DeclareVar(
-                        typeof(EventBean[]), NAME_EPS,
+                    forEach.DeclareVar<EventBean[]>(
+                        NAME_EPS,
                         Cast(typeof(EventBean[]), ExprDotMethod(Ref("key"), "getArray")));
                     forEach.IfCondition(
-                        Not(
-                            LocalMethod(
-                                instance.Methods.GetMethod("evaluateHavingClause"), REF_EPS,
-                                ExprForgeCodegenNames.REF_ISNEWDATA,
-                                REF_EXPREVALCONTEXT))).BlockContinue();
-                    forEach.DeclareVar(
-                            typeof(EventBean), "resultEvent",
+                            Not(
+                                LocalMethod(
+                                    instance.Methods.GetMethod("evaluateHavingClause"),
+                                    REF_EPS,
+                                    ExprForgeCodegenNames.REF_ISNEWDATA,
+                                    REF_EXPREVALCONTEXT)))
+                        .BlockContinue();
+                    forEach.DeclareVar<EventBean>(
+                            "resultEvent",
                             ExprDotMethod(
-                                REF_SELECTEXPRNONMEMBER, "process", REF_EPS, ExprForgeCodegenNames.REF_ISNEWDATA,
+                                REF_SELECTEXPRNONMEMBER,
+                                "process",
+                                REF_EPS,
+                                ExprForgeCodegenNames.REF_ISNEWDATA,
                                 REF_ISSYNTHESIZE,
                                 REF_EXPREVALCONTEXT))
                         .IfCondition(NotEqualsNull(Ref("resultEvent")))
@@ -986,13 +1170,24 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
             };
 
             return instance.Methods.AddMethod(
-                typeof(void), "populateSelectJoinEventsHavingCodegen",
+                typeof(void),
+                "populateSelectJoinEventsHavingCodegen",
                 CodegenNamedParam.From(
-                    typeof(SelectExprProcessor), NAME_SELECTEXPRPROCESSOR, typeof(ISet<object>), "events", typeof(bool),
-                    ExprForgeCodegenNames.NAME_ISNEWDATA, typeof(bool), NAME_ISSYNTHESIZE, typeof(IList<object>),
+                    typeof(SelectExprProcessor),
+                    NAME_SELECTEXPRPROCESSOR,
+                    typeof(ISet<object>),
+                    "events",
+                    typeof(bool),
+                    ExprForgeCodegenNames.NAME_ISNEWDATA,
+                    typeof(bool),
+                    NAME_ISSYNTHESIZE,
+                    typeof(IList<object>),
                     "result",
-                    typeof(ExprEvaluatorContext), NAME_EXPREVALCONTEXT),
-                typeof(ResultSetProcessorUtil), classScope, code);
+                    typeof(ExprEvaluatorContext),
+                    NAME_EXPREVALCONTEXT),
+                typeof(ResultSetProcessorUtil),
+                classScope,
+                code);
         }
 
         public static void PopulateSelectJoinEventsHavingWithOrderBy(
@@ -1019,7 +1214,10 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
                 }
 
                 var resultEvent = exprProcessor.Process(
-                    eventsPerStream, isNewData, isSynthesize, exprEvaluatorContext);
+                    eventsPerStream,
+                    isNewData,
+                    isSynthesize,
+                    exprEvaluatorContext);
                 if (resultEvent != null) {
                     result.Add(resultEvent);
                     sortKeys.Add(orderByProcessor.GetSortKey(eventsPerStream, isNewData, exprEvaluatorContext));
@@ -1036,41 +1234,63 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
 
                 {
                     var forEach = methodNode.Block.ForEach(typeof(MultiKey<EventBean>), "key", Ref("events"));
-                    forEach.DeclareVar(
-                        typeof(EventBean[]), NAME_EPS,
+                    forEach.DeclareVar<EventBean[]>(
+                        NAME_EPS,
                         Cast(typeof(EventBean[]), ExprDotMethod(Ref("key"), "getArray")));
                     forEach.IfCondition(
-                        Not(
-                            LocalMethod(
-                                instance.Methods.GetMethod("evaluateHavingClause"), REF_EPS,
-                                ExprForgeCodegenNames.REF_ISNEWDATA,
-                                REF_EXPREVALCONTEXT))).BlockContinue();
-                    forEach.DeclareVar(
-                            typeof(EventBean), "resultEvent",
+                            Not(
+                                LocalMethod(
+                                    instance.Methods.GetMethod("evaluateHavingClause"),
+                                    REF_EPS,
+                                    ExprForgeCodegenNames.REF_ISNEWDATA,
+                                    REF_EXPREVALCONTEXT)))
+                        .BlockContinue();
+                    forEach.DeclareVar<EventBean>(
+                            "resultEvent",
                             ExprDotMethod(
-                                REF_SELECTEXPRNONMEMBER, "process", REF_EPS, ExprForgeCodegenNames.REF_ISNEWDATA,
+                                REF_SELECTEXPRNONMEMBER,
+                                "process",
+                                REF_EPS,
+                                ExprForgeCodegenNames.REF_ISNEWDATA,
                                 REF_ISSYNTHESIZE,
                                 REF_EXPREVALCONTEXT))
                         .IfCondition(NotEqualsNull(Ref("resultEvent")))
                         .ExprDotMethod(Ref("result"), "add", Ref("resultEvent"))
                         .ExprDotMethod(
-                            Ref("sortKeys"), "add",
+                            Ref("sortKeys"),
+                            "add",
                             ExprDotMethod(
-                                REF_ORDERBYPROCESSOR, "getSortKey", REF_EPS, ExprForgeCodegenNames.REF_ISNEWDATA,
+                                REF_ORDERBYPROCESSOR,
+                                "getSortKey",
+                                REF_EPS,
+                                ExprForgeCodegenNames.REF_ISNEWDATA,
                                 REF_EXPREVALCONTEXT));
                 }
             };
 
             return instance.Methods.AddMethod(
-                typeof(void), "populateSelectJoinEventsHavingWithOrderBy",
+                typeof(void),
+                "populateSelectJoinEventsHavingWithOrderBy",
                 CodegenNamedParam.From(
-                    typeof(SelectExprProcessor), NAME_SELECTEXPRPROCESSOR, typeof(OrderByProcessor),
-                    NAME_ORDERBYPROCESSOR, typeof(ISet<object>), "events", typeof(bool),
-                    ExprForgeCodegenNames.NAME_ISNEWDATA, typeof(bool),
-                    NAME_ISSYNTHESIZE, typeof(IList<object>), "result", typeof(IList<object>), "sortKeys",
+                    typeof(SelectExprProcessor),
+                    NAME_SELECTEXPRPROCESSOR,
+                    typeof(OrderByProcessor),
+                    NAME_ORDERBYPROCESSOR,
+                    typeof(ISet<object>),
+                    "events",
+                    typeof(bool),
+                    ExprForgeCodegenNames.NAME_ISNEWDATA,
+                    typeof(bool),
+                    NAME_ISSYNTHESIZE,
+                    typeof(IList<object>),
+                    "result",
+                    typeof(IList<object>),
+                    "sortKeys",
                     typeof(ExprEvaluatorContext),
                     NAME_EXPREVALCONTEXT),
-                typeof(ResultSetProcessorUtil), classScope, code);
+                typeof(ResultSetProcessorUtil),
+                classScope,
+                code);
         }
 
         public static void PopulateSelectJoinEventsNoHaving(
@@ -1089,7 +1309,10 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
             foreach (var key in events) {
                 var eventsPerStream = key.Array;
                 var resultEvent = exprProcessor.Process(
-                    eventsPerStream, isNewData, isSynthesize, exprEvaluatorContext);
+                    eventsPerStream,
+                    isNewData,
+                    isSynthesize,
+                    exprEvaluatorContext);
                 if (resultEvent != null) {
                     result.Add(resultEvent);
                 }
@@ -1114,7 +1337,10 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
             foreach (var key in events) {
                 var eventsPerStream = key.Array;
                 var resultEvent = exprProcessor.Process(
-                    eventsPerStream, isNewData, isSynthesize, exprEvaluatorContext);
+                    eventsPerStream,
+                    isNewData,
+                    isSynthesize,
+                    exprEvaluatorContext);
                 if (resultEvent != null) {
                     result.Add(resultEvent);
                     optSortKeys.Add(orderByProcessor.GetSortKey(eventsPerStream, isNewData, exprEvaluatorContext));
@@ -1184,16 +1410,27 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
                         method.Block.AssignRef(
                             "selectOldEvents",
                             StaticMethod(
-                                typeof(ResultSetProcessorUtil), METHOD_GETSELECTEVENTSNOHAVING, REF_SELECTEXPRPROCESSOR,
-                                REF_OLDDATA, Constant(false), REF_ISSYNTHESIZE, REF_AGENTINSTANCECONTEXT));
+                                typeof(ResultSetProcessorUtil),
+                                METHOD_GETSELECTEVENTSNOHAVING,
+                                REF_SELECTEXPRPROCESSOR,
+                                REF_OLDDATA,
+                                Constant(false),
+                                REF_ISSYNTHESIZE,
+                                REF_AGENTINSTANCECONTEXT));
                     }
                     else {
                         method.Block.AssignRef(
                             "selectOldEvents",
                             StaticMethod(
-                                typeof(ResultSetProcessorUtil), METHOD_GETSELECTEVENTSNOHAVINGWITHORDERBY,
-                                REF_AGGREGATIONSVC, REF_SELECTEXPRPROCESSOR, REF_ORDERBYPROCESSOR, REF_OLDDATA,
-                                ConstantFalse(), REF_ISSYNTHESIZE, REF_AGENTINSTANCECONTEXT));
+                                typeof(ResultSetProcessorUtil),
+                                METHOD_GETSELECTEVENTSNOHAVINGWITHORDERBY,
+                                REF_AGGREGATIONSVC,
+                                REF_SELECTEXPRPROCESSOR,
+                                REF_ORDERBYPROCESSOR,
+                                REF_OLDDATA,
+                                ConstantFalse(),
+                                REF_ISSYNTHESIZE,
+                                REF_AGENTINSTANCECONTEXT));
                     }
                 }
 
@@ -1201,16 +1438,27 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
                     method.Block.AssignRef(
                         "selectNewEvents",
                         StaticMethod(
-                            typeof(ResultSetProcessorUtil), METHOD_GETSELECTEVENTSNOHAVING, REF_SELECTEXPRPROCESSOR,
-                            REF_NEWDATA, Constant(true), REF_ISSYNTHESIZE, REF_AGENTINSTANCECONTEXT));
+                            typeof(ResultSetProcessorUtil),
+                            METHOD_GETSELECTEVENTSNOHAVING,
+                            REF_SELECTEXPRPROCESSOR,
+                            REF_NEWDATA,
+                            Constant(true),
+                            REF_ISSYNTHESIZE,
+                            REF_AGENTINSTANCECONTEXT));
                 }
                 else {
                     method.Block.AssignRef(
                         "selectNewEvents",
                         StaticMethod(
-                            typeof(ResultSetProcessorUtil), METHOD_GETSELECTEVENTSNOHAVINGWITHORDERBY,
-                            REF_AGGREGATIONSVC, REF_SELECTEXPRPROCESSOR, REF_ORDERBYPROCESSOR, REF_NEWDATA,
-                            ConstantTrue(), REF_ISSYNTHESIZE, REF_AGENTINSTANCECONTEXT));
+                            typeof(ResultSetProcessorUtil),
+                            METHOD_GETSELECTEVENTSNOHAVINGWITHORDERBY,
+                            REF_AGGREGATIONSVC,
+                            REF_SELECTEXPRPROCESSOR,
+                            REF_ORDERBYPROCESSOR,
+                            REF_NEWDATA,
+                            ConstantTrue(),
+                            REF_ISSYNTHESIZE,
+                            REF_AGENTINSTANCECONTEXT));
                 }
             }
             else {
@@ -1220,7 +1468,11 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
                         method.Block.AssignRef(
                             "selectOldEvents",
                             LocalMethod(
-                                select, REF_SELECTEXPRPROCESSOR, REF_OLDDATA, ConstantFalse(), REF_ISSYNTHESIZE,
+                                select,
+                                REF_SELECTEXPRPROCESSOR,
+                                REF_OLDDATA,
+                                ConstantFalse(),
+                                REF_ISSYNTHESIZE,
                                 REF_AGENTINSTANCECONTEXT));
                     }
                     else {
@@ -1228,8 +1480,14 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
                         method.Block.AssignRef(
                             "selectOldEvents",
                             LocalMethod(
-                                select, REF_AGGREGATIONSVC, REF_SELECTEXPRPROCESSOR, REF_ORDERBYPROCESSOR, REF_OLDDATA,
-                                ConstantFalse(), REF_ISSYNTHESIZE, REF_AGENTINSTANCECONTEXT));
+                                select,
+                                REF_AGGREGATIONSVC,
+                                REF_SELECTEXPRPROCESSOR,
+                                REF_ORDERBYPROCESSOR,
+                                REF_OLDDATA,
+                                ConstantFalse(),
+                                REF_ISSYNTHESIZE,
+                                REF_AGENTINSTANCECONTEXT));
                     }
                 }
 
@@ -1238,7 +1496,11 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
                     method.Block.AssignRef(
                         "selectNewEvents",
                         LocalMethod(
-                            select, REF_SELECTEXPRPROCESSOR, REF_NEWDATA, ConstantTrue(), REF_ISSYNTHESIZE,
+                            select,
+                            REF_SELECTEXPRPROCESSOR,
+                            REF_NEWDATA,
+                            ConstantTrue(),
+                            REF_ISSYNTHESIZE,
                             REF_AGENTINSTANCECONTEXT));
                 }
                 else {
@@ -1246,8 +1508,14 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
                     method.Block.AssignRef(
                         "selectNewEvents",
                         LocalMethod(
-                            select, REF_AGGREGATIONSVC, REF_SELECTEXPRPROCESSOR, REF_ORDERBYPROCESSOR, REF_NEWDATA,
-                            ConstantTrue(), REF_ISSYNTHESIZE, REF_AGENTINSTANCECONTEXT));
+                            select,
+                            REF_AGGREGATIONSVC,
+                            REF_SELECTEXPRPROCESSOR,
+                            REF_ORDERBYPROCESSOR,
+                            REF_NEWDATA,
+                            ConstantTrue(),
+                            REF_ISSYNTHESIZE,
+                            REF_AGENTINSTANCECONTEXT));
                 }
             }
 
@@ -1275,17 +1543,27 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
                         method.Block.AssignRef(
                             "selectOldEvents",
                             StaticMethod(
-                                typeof(ResultSetProcessorUtil), METHOD_GETSELECTJOINEVENTSNOHAVING,
-                                REF_SELECTEXPRPROCESSOR, REF_OLDDATA, ConstantFalse(), REF_ISSYNTHESIZE,
+                                typeof(ResultSetProcessorUtil),
+                                METHOD_GETSELECTJOINEVENTSNOHAVING,
+                                REF_SELECTEXPRPROCESSOR,
+                                REF_OLDDATA,
+                                ConstantFalse(),
+                                REF_ISSYNTHESIZE,
                                 REF_AGENTINSTANCECONTEXT));
                     }
                     else {
                         method.Block.AssignRef(
                             "selectOldEvents",
                             StaticMethod(
-                                typeof(ResultSetProcessorUtil), METHOD_GETSELECTJOINEVENTSNOHAVINGWITHORDERBY,
-                                ConstantNull(), REF_SELECTEXPRPROCESSOR, REF_ORDERBYPROCESSOR, REF_OLDDATA,
-                                ConstantFalse(), REF_ISSYNTHESIZE, REF_AGENTINSTANCECONTEXT));
+                                typeof(ResultSetProcessorUtil),
+                                METHOD_GETSELECTJOINEVENTSNOHAVINGWITHORDERBY,
+                                ConstantNull(),
+                                REF_SELECTEXPRPROCESSOR,
+                                REF_ORDERBYPROCESSOR,
+                                REF_OLDDATA,
+                                ConstantFalse(),
+                                REF_ISSYNTHESIZE,
+                                REF_AGENTINSTANCECONTEXT));
                     }
                 }
 
@@ -1293,16 +1571,27 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
                     method.Block.AssignRef(
                         "selectNewEvents ",
                         StaticMethod(
-                            typeof(ResultSetProcessorUtil), METHOD_GETSELECTJOINEVENTSNOHAVING, REF_SELECTEXPRPROCESSOR,
-                            REF_NEWDATA, ConstantTrue(), REF_ISSYNTHESIZE, REF_AGENTINSTANCECONTEXT));
+                            typeof(ResultSetProcessorUtil),
+                            METHOD_GETSELECTJOINEVENTSNOHAVING,
+                            REF_SELECTEXPRPROCESSOR,
+                            REF_NEWDATA,
+                            ConstantTrue(),
+                            REF_ISSYNTHESIZE,
+                            REF_AGENTINSTANCECONTEXT));
                 }
                 else {
                     method.Block.AssignRef(
                         "selectNewEvents ",
                         StaticMethod(
-                            typeof(ResultSetProcessorUtil), METHOD_GETSELECTJOINEVENTSNOHAVINGWITHORDERBY,
-                            ConstantNull(), REF_SELECTEXPRPROCESSOR, REF_ORDERBYPROCESSOR, REF_NEWDATA, ConstantTrue(),
-                            REF_ISSYNTHESIZE, REF_AGENTINSTANCECONTEXT));
+                            typeof(ResultSetProcessorUtil),
+                            METHOD_GETSELECTJOINEVENTSNOHAVINGWITHORDERBY,
+                            ConstantNull(),
+                            REF_SELECTEXPRPROCESSOR,
+                            REF_ORDERBYPROCESSOR,
+                            REF_NEWDATA,
+                            ConstantTrue(),
+                            REF_ISSYNTHESIZE,
+                            REF_AGENTINSTANCECONTEXT));
                 }
             }
             else {
@@ -1312,7 +1601,11 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
                         method.Block.AssignRef(
                             "selectOldEvents",
                             LocalMethod(
-                                select, REF_SELECTEXPRPROCESSOR, REF_OLDDATA, ConstantFalse(), REF_ISSYNTHESIZE,
+                                select,
+                                REF_SELECTEXPRPROCESSOR,
+                                REF_OLDDATA,
+                                ConstantFalse(),
+                                REF_ISSYNTHESIZE,
                                 REF_AGENTINSTANCECONTEXT));
                     }
                     else {
@@ -1320,8 +1613,14 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
                         method.Block.AssignRef(
                             "selectOldEvents",
                             LocalMethod(
-                                select, REF_AGGREGATIONSVC, REF_SELECTEXPRPROCESSOR, REF_ORDERBYPROCESSOR, REF_OLDDATA,
-                                ConstantFalse(), REF_ISSYNTHESIZE, REF_EXPREVALCONTEXT));
+                                select,
+                                REF_AGGREGATIONSVC,
+                                REF_SELECTEXPRPROCESSOR,
+                                REF_ORDERBYPROCESSOR,
+                                REF_OLDDATA,
+                                ConstantFalse(),
+                                REF_ISSYNTHESIZE,
+                                REF_EXPREVALCONTEXT));
                     }
                 }
 
@@ -1330,7 +1629,11 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
                     method.Block.AssignRef(
                         "selectNewEvents",
                         LocalMethod(
-                            select, REF_SELECTEXPRPROCESSOR, REF_NEWDATA, ConstantTrue(), REF_ISSYNTHESIZE,
+                            select,
+                            REF_SELECTEXPRPROCESSOR,
+                            REF_NEWDATA,
+                            ConstantTrue(),
+                            REF_ISSYNTHESIZE,
                             REF_AGENTINSTANCECONTEXT));
                 }
                 else {
@@ -1338,8 +1641,14 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
                     method.Block.AssignRef(
                         "selectNewEvents",
                         LocalMethod(
-                            select, REF_AGGREGATIONSVC, REF_SELECTEXPRPROCESSOR, REF_ORDERBYPROCESSOR, REF_NEWDATA,
-                            ConstantTrue(), REF_ISSYNTHESIZE, REF_AGENTINSTANCECONTEXT));
+                            select,
+                            REF_AGGREGATIONSVC,
+                            REF_SELECTEXPRPROCESSOR,
+                            REF_ORDERBYPROCESSOR,
+                            REF_NEWDATA,
+                            ConstantTrue(),
+                            REF_ISSYNTHESIZE,
+                            REF_AGENTINSTANCECONTEXT));
                 }
             }
 
@@ -1369,7 +1678,9 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
             var outgoingEventsArr = CollectionUtil.ToArrayEvents(outgoingEvents);
             var orderKeysArr = CollectionUtil.ToArrayObjects(orderKeys);
             IList<EventBean> orderedEvents = orderByProcessor.SortWOrderKeys(
-                outgoingEventsArr, orderKeysArr, exprEvaluatorContext);
+                outgoingEventsArr,
+                orderKeysArr,
+                exprEvaluatorContext);
             return orderedEvents.GetEnumerator();
         }
 
@@ -1411,7 +1722,12 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
 
             if (orderByProcessor != null) {
                 events = orderByProcessor.SortWGroupKeys(
-                    events, currentGenerators, keys, isNewData, agentInstanceContext, aggregationService);
+                    events,
+                    currentGenerators,
+                    keys,
+                    isNewData,
+                    agentInstanceContext,
+                    aggregationService);
             }
 
             return events;
@@ -1426,7 +1742,8 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
             bool hasOrderBy)
         {
             var resize = block.IfCondition(Not(EqualsIdentity(count, ArrayLength(events))));
-            resize.IfCondition(EqualsIdentity(count, Constant(0))).BlockReturn(ConstantNull())
+            resize.IfCondition(EqualsIdentity(count, Constant(0)))
+                .BlockReturn(ConstantNull())
                 .AssignRef(
                     events.Ref,
                     StaticMethod(typeof(CollectionUtil), CollectionUtil.METHOD_SHRINKARRAYEVENTS, count, events));
@@ -1438,7 +1755,9 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
                     .AssignRef(
                         currentGenerators.Ref,
                         StaticMethod(
-                            typeof(CollectionUtil), CollectionUtil.METHOD_SHRINKARRAYEVENTARRAY, count,
+                            typeof(CollectionUtil),
+                            CollectionUtil.METHOD_SHRINKARRAYEVENTARRAY,
+                            count,
                             currentGenerators));
             }
 
@@ -1446,9 +1765,14 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
                 block.AssignRef(
                     events.Ref,
                     ExprDotMethod(
-                        REF_ORDERBYPROCESSOR, "sortWGroupKeys", events, currentGenerators, keys,
+                        REF_ORDERBYPROCESSOR,
+                        "sortWGroupKeys",
+                        events,
+                        currentGenerators,
+                        keys,
                         ExprForgeCodegenNames.REF_ISNEWDATA,
-                        REF_AGENTINSTANCECONTEXT, REF_AGGREGATIONSVC));
+                        REF_AGENTINSTANCECONTEXT,
+                        REF_AGGREGATIONSVC));
             }
 
             block.MethodReturn(events);
@@ -1501,43 +1825,56 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
             bool selectRStream,
             bool hasOrderBy)
         {
-            block.DeclareVar(
-                    typeof(EventBean[]), "newEventsArr",
+            block.DeclareVar<EventBean[]>(
+                    "newEventsArr",
                     StaticMethod(typeof(CollectionUtil), CollectionUtil.METHOD_TOARRAYNULLFOREMPTYEVENTS, newEvents))
-                .DeclareVar(
-                    typeof(EventBean[]), "oldEventsArr",
+                .DeclareVar<EventBean[]>(
+                    "oldEventsArr",
                     selectRStream
                         ? StaticMethod(
-                            typeof(CollectionUtil), CollectionUtil.METHOD_TOARRAYNULLFOREMPTYEVENTS, oldEvents)
+                            typeof(CollectionUtil),
+                            CollectionUtil.METHOD_TOARRAYNULLFOREMPTYEVENTS,
+                            oldEvents)
                         : ConstantNull());
 
             if (hasOrderBy) {
-                block.DeclareVar(
-                        typeof(object[]), "sortKeysNew",
+                block.DeclareVar<object[]>(
+                        "sortKeysNew",
                         StaticMethod(
-                            typeof(CollectionUtil), CollectionUtil.METHOD_TOARRAYNULLFOREMPTYOBJECTS, newEventsSortKey))
+                            typeof(CollectionUtil),
+                            CollectionUtil.METHOD_TOARRAYNULLFOREMPTYOBJECTS,
+                            newEventsSortKey))
                     .AssignRef(
                         "newEventsArr",
                         ExprDotMethod(
-                            REF_ORDERBYPROCESSOR, "sortWOrderKeys", Ref("newEventsArr"), Ref("sortKeysNew"),
+                            REF_ORDERBYPROCESSOR,
+                            "sortWOrderKeys",
+                            Ref("newEventsArr"),
+                            Ref("sortKeysNew"),
                             REF_AGENTINSTANCECONTEXT));
                 if (selectRStream) {
-                    block.DeclareVar(
-                            typeof(object[]), "sortKeysOld",
+                    block.DeclareVar<object[]>(
+                            "sortKeysOld",
                             StaticMethod(
-                                typeof(CollectionUtil), CollectionUtil.METHOD_TOARRAYNULLFOREMPTYOBJECTS,
+                                typeof(CollectionUtil),
+                                CollectionUtil.METHOD_TOARRAYNULLFOREMPTYOBJECTS,
                                 oldEventsSortKey))
                         .AssignRef(
                             "oldEventsArr",
                             ExprDotMethod(
-                                REF_ORDERBYPROCESSOR, "sortWOrderKeys", Ref("oldEventsArr"), Ref("sortKeysOld"),
+                                REF_ORDERBYPROCESSOR,
+                                "sortWOrderKeys",
+                                Ref("oldEventsArr"),
+                                Ref("sortKeysOld"),
                                 REF_AGENTINSTANCECONTEXT));
                 }
             }
 
             block.ReturnMethodOrBlock(
                 StaticMethod(
-                    typeof(ResultSetProcessorUtil), METHOD_TOPAIRNULLIFALLNULL, Ref("newEventsArr"),
+                    typeof(ResultSetProcessorUtil),
+                    METHOD_TOPAIRNULLIFALLNULL,
+                    Ref("newEventsArr"),
                     Ref("oldEventsArr")));
         }
 
@@ -1546,13 +1883,13 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
             bool sorting,
             bool selectRStream)
         {
-            block.DeclareVar(typeof(IList<object>), "newEvents", NewInstance(typeof(List<object>)))
-                .DeclareVar(
-                    typeof(IList<object>), "oldEvents",
+            block.DeclareVar<IList<object>>("newEvents", NewInstance(typeof(List<object>)))
+                .DeclareVar<IList<object>>(
+                    "oldEvents",
                     selectRStream ? NewInstance(typeof(List<object>)) : ConstantNull());
 
-            block.DeclareVar(typeof(IList<object>), "newEventsSortKey", ConstantNull())
-                .DeclareVar(typeof(IList<object>), "oldEventsSortKey", ConstantNull());
+            block.DeclareVar<IList<object>>("newEventsSortKey", ConstantNull())
+                .DeclareVar<IList<object>>("oldEventsSortKey", ConstantNull());
             if (sorting) {
                 block.AssignRef("newEventsSortKey", NewInstance(typeof(List<object>)))
                     .AssignRef("oldEventsSortKey", selectRStream ? NewInstance(typeof(List<object>)) : ConstantNull());

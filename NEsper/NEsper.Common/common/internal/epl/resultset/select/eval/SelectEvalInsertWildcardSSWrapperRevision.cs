@@ -47,8 +47,12 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
             CodegenExpressionField type = VariantEventTypeUtil.GetField(variantEventType, codegenClassScope);
             CodegenExpression refEPS = exprSymbol.GetAddEPS(methodNode);
             return StaticMethod(
-                typeof(SelectEvalInsertWildcardSSWrapperRevision), "selectExprInsertWildcardSSWrapRevision", refEPS,
-                evaluators == null ? Constant(0) : Constant(evaluators.Length), props, type);
+                typeof(SelectEvalInsertWildcardSSWrapperRevision),
+                "selectExprInsertWildcardSSWrapRevision",
+                refEPS,
+                evaluators == null ? Constant(0) : Constant(evaluators.Length),
+                props,
+                type);
         }
 
         /// <summary>
@@ -66,15 +70,12 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
             VariantEventType variantEventType)
         {
             DecoratingEventBean wrapper = (DecoratingEventBean) eventsPerStream[0];
-            if (wrapper != null)
-            {
+            if (wrapper != null) {
                 IDictionary<string, object> map = wrapper.DecoratingProperties;
-                if ((numEvaluators == 0) && (!map.IsEmpty()))
-                {
+                if ((numEvaluators == 0) && (!map.IsEmpty())) {
                     // no action
                 }
-                else
-                {
+                else {
                     props.PutAll(map);
                 }
             }

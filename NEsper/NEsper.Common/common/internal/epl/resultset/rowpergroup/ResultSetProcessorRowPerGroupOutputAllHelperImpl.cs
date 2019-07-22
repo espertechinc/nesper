@@ -8,6 +8,7 @@
 
 using System.Collections.Generic;
 using System.Linq;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.compat.collections;
@@ -17,7 +18,9 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergroup
     public class ResultSetProcessorRowPerGroupOutputAllHelperImpl : ResultSetProcessorRowPerGroupOutputAllHelper
     {
         private readonly IDictionary<object, EventBean[]> groupReps = new LinkedHashMap<object, EventBean[]>();
-        private readonly IDictionary<object, EventBean> groupRepsOutputLastUnordRStream = new LinkedHashMap<object, EventBean>();
+
+        private readonly IDictionary<object, EventBean> groupRepsOutputLastUnordRStream =
+            new LinkedHashMap<object, EventBean>();
 
         internal readonly ResultSetProcessorRowPerGroup processor;
         private bool first;
@@ -41,7 +44,12 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergroup
                     groupReps.Put(mk, eventsPerStream);
 
                     if (processor.IsSelectRStream && !groupRepsOutputLastUnordRStream.ContainsKey(mk)) {
-                        var @event = processor.GenerateOutputBatchedNoSortWMap(false, mk, eventsPerStream, true, isGenerateSynthetic);
+                        var @event = processor.GenerateOutputBatchedNoSortWMap(
+                            false,
+                            mk,
+                            eventsPerStream,
+                            true,
+                            isGenerateSynthetic);
                         if (@event != null) {
                             groupRepsOutputLastUnordRStream.Put(mk, @event);
                         }
@@ -57,7 +65,12 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergroup
                     var mk = processor.GenerateGroupKeySingle(eventsPerStream, true);
 
                     if (processor.IsSelectRStream && !groupRepsOutputLastUnordRStream.ContainsKey(mk)) {
-                        var @event = processor.GenerateOutputBatchedNoSortWMap(false, mk, eventsPerStream, false, isGenerateSynthetic);
+                        var @event = processor.GenerateOutputBatchedNoSortWMap(
+                            false,
+                            mk,
+                            eventsPerStream,
+                            false,
+                            isGenerateSynthetic);
                         if (@event != null) {
                             groupRepsOutputLastUnordRStream.Put(mk, @event);
                         }
@@ -81,7 +94,12 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergroup
                     groupReps.Put(mk, aNewData.Array);
 
                     if (processor.IsSelectRStream && !groupRepsOutputLastUnordRStream.ContainsKey(mk)) {
-                        var @event = processor.GenerateOutputBatchedNoSortWMap(true, mk, aNewData.Array, true, isGenerateSynthetic);
+                        var @event = processor.GenerateOutputBatchedNoSortWMap(
+                            true,
+                            mk,
+                            aNewData.Array,
+                            true,
+                            isGenerateSynthetic);
                         if (@event != null) {
                             groupRepsOutputLastUnordRStream.Put(mk, @event);
                         }
@@ -95,7 +113,12 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergroup
                 foreach (var anOldData in oldData) {
                     var mk = processor.GenerateGroupKeySingle(anOldData.Array, false);
                     if (processor.IsSelectRStream && !groupRepsOutputLastUnordRStream.ContainsKey(mk)) {
-                        var @event = processor.GenerateOutputBatchedNoSortWMap(true, mk, anOldData.Array, false, isGenerateSynthetic);
+                        var @event = processor.GenerateOutputBatchedNoSortWMap(
+                            true,
+                            mk,
+                            anOldData.Array,
+                            false,
+                            isGenerateSynthetic);
                         if (@event != null) {
                             groupRepsOutputLastUnordRStream.Put(mk, @event);
                         }
@@ -129,7 +152,13 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergroup
         {
             // generate latest new-events from group representatives
             IList<EventBean> newEvents = new List<EventBean>(4);
-            processor.GenerateOutputBatchedArrFromIterator(join, groupReps.GetEnumerator(), true, isSynthesize, newEvents, null);
+            processor.GenerateOutputBatchedArrFromIterator(
+                join,
+                groupReps.GetEnumerator(),
+                true,
+                isSynthesize,
+                newEvents,
+                null);
             var newEventsArr = newEvents.IsEmpty() ? null : newEvents.ToArray();
 
             // use old-events as retained, if any
@@ -156,7 +185,12 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergroup
             if (first && processor.IsSelectRStream) {
                 foreach (var groupRep in groupReps) {
                     var mk = processor.GenerateGroupKeySingle(groupRep.Value, false);
-                    var @event = processor.GenerateOutputBatchedNoSortWMap(join, mk, groupRep.Value, false, isSynthesize);
+                    var @event = processor.GenerateOutputBatchedNoSortWMap(
+                        join,
+                        mk,
+                        groupRep.Value,
+                        false,
+                        isSynthesize);
                     if (@event != null) {
                         groupRepsOutputLastUnordRStream.Put(mk, @event);
                     }

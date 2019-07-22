@@ -13,7 +13,8 @@ namespace com.espertech.esper.common.@internal.collection
         public PathExceptionAmbiguous(
             string name,
             PathRegistryObjectType objectType)
-            : base(objectType.Prefix + " " + objectType.Name + " by name '" + name + "' is exported by multiple modules")
+            : base(
+                objectType.Prefix + " " + objectType.Name + " by name '" + name + "' is exported by multiple modules")
         {
         }
     }

@@ -21,6 +21,7 @@
  */
 
 using System.Collections.Generic;
+
 using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.util.apachecommonstext
@@ -132,7 +133,9 @@ namespace com.espertech.esper.common.@internal.util.apachecommonstext
             initialMap.Put("\u00B8", "&cedil;"); // cedilla = spacing cedilla
             initialMap.Put("\u00B9", "&sup1;"); // superscript one = superscript digit one
             initialMap.Put("\u00BA", "&ordm;"); // masculine ordinal indicator
-            initialMap.Put("\u00BB", "&raquo;"); // right-pointing double angle quotation mark = right pointing guillemet
+            initialMap.Put(
+                "\u00BB",
+                "&raquo;"); // right-pointing double angle quotation mark = right pointing guillemet
             initialMap.Put("\u00BC", "&frac14;"); // vulgar fraction one quarter = fraction one quarter
             initialMap.Put("\u00BD", "&frac12;"); // vulgar fraction one half = fraction one half
             initialMap.Put("\u00BE", "&frac34;"); // vulgar fraction three quarters = fraction three quarters
@@ -290,7 +293,9 @@ namespace com.espertech.esper.common.@internal.util.apachecommonstext
             initialMap.Put("\u2192", "&rarr;"); // rightwards arrow, U+2192 ISOnum -->
             initialMap.Put("\u2193", "&darr;"); // downwards arrow, U+2193 ISOnum -->
             initialMap.Put("\u2194", "&harr;"); // left right arrow, U+2194 ISOamsa -->
-            initialMap.Put("\u21B5", "&crarr;"); // downwards arrow with corner leftwards= carriage return, U+21B5 NEW -->
+            initialMap.Put(
+                "\u21B5",
+                "&crarr;"); // downwards arrow with corner leftwards= carriage return, U+21B5 NEW -->
             initialMap.Put("\u21D0", "&lArr;"); // leftwards double arrow, U+21D0 ISOtech -->
             // <!-- ISO 10646 does not say that lArr is the same as the 'is implied by'
             // arrow but also does not have any other character for that function.

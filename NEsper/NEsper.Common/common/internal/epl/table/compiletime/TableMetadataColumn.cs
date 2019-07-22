@@ -7,9 +7,11 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.context.aifactory.core;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.table.compiletime
@@ -51,12 +53,19 @@ namespace com.espertech.esper.common.@internal.epl.table.compiletime
             ModuleTableInitializeSymbol symbols,
             CodegenClassScope classScope)
         {
-            var method = parent.MakeChild(typeof(IDictionary<string, TableMetadataColumn>), typeof(TableMetadataColumn), classScope);
-            method.Block.DeclareVar(
-                typeof(IDictionary<string, TableMetadataColumn>), "cols", NewInstance(typeof(Dictionary<string, TableMetadataColumn>)));
+            var method = parent.MakeChild(
+                typeof(IDictionary<string, TableMetadataColumn>),
+                typeof(TableMetadataColumn),
+                classScope);
+            method.Block.DeclareVar<IDictionary<string, TableMetadataColumn>>(
+                "cols",
+                NewInstance(typeof(Dictionary<string, TableMetadataColumn>)));
             foreach (KeyValuePair<string, TableMetadataColumn> entry in columns) {
                 method.Block.ExprDotMethod(
-                    Ref("cols"), "put", Constant(entry.Key), entry.Value.Make(method, symbols, classScope));
+                    Ref("cols"),
+                    "put",
+                    Constant(entry.Key),
+                    entry.Value.Make(method, symbols, classScope));
             }
 
             method.Block.MethodReturn(Ref("cols"));

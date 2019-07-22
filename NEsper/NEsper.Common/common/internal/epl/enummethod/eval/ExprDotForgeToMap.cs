@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.compile.stage2;
 using com.espertech.esper.common.@internal.compile.stage3;
@@ -31,7 +32,12 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             StatementCompileTimeServices services)
         {
             return ExprDotNodeUtility.GetSingleLambdaParamEventType(
-                enumMethodUsedName, goesToNames, inputEventType, collectionComponentType, statementRawInfo, services);
+                enumMethodUsedName,
+                goesToNames,
+                inputEventType,
+                collectionComponentType,
+                statementRawInfo,
+                services);
         }
 
         public override EnumForge GetEnumForge(
@@ -50,7 +56,9 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             var second = (ExprDotEvalParamLambda) bodiesAndParameters[1];
             if (inputEventType == null) {
                 return new EnumToMapScalarLambdaForge(
-                    first.BodyForge, first.StreamCountIncoming, second.BodyForge,
+                    first.BodyForge,
+                    first.StreamCountIncoming,
+                    second.BodyForge,
                     (ObjectArrayEventType) first.GoesToTypes[0]);
             }
 

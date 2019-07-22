@@ -38,7 +38,9 @@ namespace com.espertech.esper.common.@internal.view.lengthbatch
         public View MakeView(AgentInstanceViewFactoryChainContext agentInstanceViewFactoryContext)
         {
             var size = ViewFactoryUtil.EvaluateSizeParam(
-                ViewName, this.size, agentInstanceViewFactoryContext.AgentInstanceContext);
+                ViewName,
+                this.size,
+                agentInstanceViewFactoryContext.AgentInstanceContext);
             var viewUpdatedCollection =
                 agentInstanceViewFactoryContext.StatementContext.ViewServicePreviousFactory
                     .GetOptPreviousExprRelativeAccess(agentInstanceViewFactoryContext);

@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.epl.pattern.core;
 using com.espertech.esper.common.@internal.filterspec;
@@ -124,14 +125,20 @@ namespace com.espertech.esper.common.@internal.epl.pattern.and
             // So we are quitting if all non-not child nodes have quit, since the not-node wait for evaluate false
             if (quitted) {
                 agentInstanceContext.AuditProvider.PatternInstance(
-                    false, evalAndNode.factoryNode, agentInstanceContext);
+                    false,
+                    evalAndNode.factoryNode,
+                    agentInstanceContext);
                 QuitInternal();
             }
 
             // Send results to parent
             foreach (var theEvent in result) {
                 agentInstanceContext.AuditProvider.PatternTrue(
-                    evalAndNode.FactoryNode, this, theEvent, quitted, agentInstanceContext);
+                    evalAndNode.FactoryNode,
+                    this,
+                    theEvent,
+                    quitted,
+                    agentInstanceContext);
                 ParentEvaluator.EvaluateTrue(theEvent, this, quitted, optionalTriggeringEvent);
             }
 

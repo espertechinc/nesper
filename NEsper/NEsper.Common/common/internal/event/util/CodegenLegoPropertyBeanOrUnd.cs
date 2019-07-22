@@ -7,11 +7,13 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.compat;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.@event.util
@@ -41,7 +43,9 @@ namespace com.espertech.esper.common.@internal.@event.util
             Type generator)
         {
             var methodNode = codegenMethodScope.MakeChild(
-                    accessType == AccessType.EXISTS ? typeof(bool) : typeof(object), generator, codegenClassScope)
+                    accessType == AccessType.EXISTS ? typeof(bool) : typeof(object),
+                    generator,
+                    codegenClassScope)
                 .AddParam(typeof(object), "value");
             var block = methodNode.Block
                 .IfNotInstanceOf("value", expectedUnderlyingType)
@@ -69,15 +73,21 @@ namespace com.espertech.esper.common.@internal.@event.util
             CodegenExpression expression;
             if (accessType == AccessType.GET) {
                 expression = innerGetter.UnderlyingGetCodegen(
-                    Cast(expectedUnderlyingType, Ref("value")), codegenMethodScope, codegenClassScope);
+                    Cast(expectedUnderlyingType, Ref("value")),
+                    codegenMethodScope,
+                    codegenClassScope);
             }
             else if (accessType == AccessType.EXISTS) {
                 expression = innerGetter.UnderlyingExistsCodegen(
-                    Cast(expectedUnderlyingType, Ref("value")), codegenMethodScope, codegenClassScope);
+                    Cast(expectedUnderlyingType, Ref("value")),
+                    codegenMethodScope,
+                    codegenClassScope);
             }
             else if (accessType == AccessType.FRAGMENT) {
                 expression = innerGetter.UnderlyingFragmentCodegen(
-                    Cast(expectedUnderlyingType, Ref("value")), codegenMethodScope, codegenClassScope);
+                    Cast(expectedUnderlyingType, Ref("value")),
+                    codegenMethodScope,
+                    codegenClassScope);
             }
             else {
                 throw new UnsupportedOperationException("Invalid access type " + accessType);

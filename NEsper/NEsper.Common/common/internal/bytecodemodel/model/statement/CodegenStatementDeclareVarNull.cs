@@ -9,6 +9,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.core.CodeGenerationHelper;
 
 namespace com.espertech.esper.common.@internal.bytecodemodel.model.statement
@@ -28,11 +29,13 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.statement
 
         public override void RenderStatement(
             StringBuilder builder,
-            IDictionary<Type, string> imports,
             bool isInnerClass)
         {
-            AppendClassName(builder, clazz, null, imports);
-            builder.Append(" ").Append(var).Append("=null");
+            AppendClassName(builder, clazz);
+            builder
+                .Append(" ")
+                .Append(var)
+                .Append("=null");
         }
 
         public override void MergeClasses(ISet<Type> classes)

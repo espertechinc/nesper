@@ -112,7 +112,7 @@ namespace com.espertech.esper.regressionlib.suite.view
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@Name('s0') select Symbol, price from SupportMarketDataBean#keepall";
+                var epl = "@Name('s0') select Symbol, Price from SupportMarketDataBean#keepall";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
                 SendEvent(env, "ABC", 20);
@@ -154,7 +154,7 @@ namespace com.espertech.esper.regressionlib.suite.view
             public void Run(RegressionEnvironment env)
             {
                 var epl =
-                    "@Name('s0') select irstream Symbol, count(*) as cnt, sum(price) as mysum from SupportMarketDataBean#keepall group by Symbol";
+                    "@Name('s0') select irstream Symbol, count(*) as cnt, sum(Price) as mysum from SupportMarketDataBean#keepall group by Symbol";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
                 SendEvent(env, "S1", 100);

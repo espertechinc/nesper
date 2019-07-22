@@ -30,7 +30,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                 message = e.Message;
             }
             else {
-                message = "Failed to resolve '" + resolvedExpression +
+                message = "Failed to resolve '" +
+                          resolvedExpression +
                           "' to a property, single-row function, aggregation function, script, stream or class name";
             }
 

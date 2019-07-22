@@ -28,8 +28,7 @@ namespace NEsper.Avro.Core
             string writeablePropertyName,
             string statementName)
         {
-            if (columnType != null && columnType.IsArray && writeablePropertyType.IsGenericCollection())
-            {
+            if (columnType != null && columnType.IsArray && writeablePropertyType.IsGenericCollection()) {
                 return TypeWidenerFactory.GetArrayToCollectionCoercer(columnType.GetElementType());
             }
 

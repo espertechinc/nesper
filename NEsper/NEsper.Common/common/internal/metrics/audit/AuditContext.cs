@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Text;
+
 using com.espertech.esper.common.client.annotation;
 
 namespace com.espertech.esper.common.@internal.metrics.audit

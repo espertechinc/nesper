@@ -15,6 +15,7 @@ using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.util;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.compat.collections;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.context.controller.category
@@ -44,7 +45,8 @@ namespace com.espertech.esper.common.@internal.context.controller.category
 
             // Category validation
             var isCreateWindow = spec.Raw.CreateWindowDesc != null;
-            var message = "Category context '" + contextName +
+            var message = "Category context '" +
+                          contextName +
                           "' requires that any of the events types that are listed in the category context also appear in any of the filter expressions of the statement";
 
             // if no create-window: at least one of the filters must match one of the filters specified by the context

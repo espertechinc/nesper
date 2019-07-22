@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.hook.condition;
 using com.espertech.esper.common.client.hook.exception;
@@ -52,10 +53,12 @@ namespace com.espertech.esper.common.@internal.settings
             StatementContext statement)
         {
             if (UnhandledCondition == null) {
-                var message = "Condition encountered processing deployment id '" 
-                              + statement.DeploymentId + "' statement '" 
-                              + statement.StatementName + "'";
-                
+                var message = "Condition encountered processing deployment id '" +
+                              statement.DeploymentId +
+                              "' statement '" +
+                              statement.StatementName +
+                              "'";
+
                 var epl = (string) statement.StatementInformationals.Properties.Get(StatementProperty.EPL);
                 if (epl != null) {
                     message += " statement text '" + epl + "'";
@@ -69,7 +72,10 @@ namespace com.espertech.esper.common.@internal.settings
 
             UnhandledCondition(
                 new ConditionHandlerContext(
-                    RuntimeURI, statement.StatementName, statement.DeploymentId, condition));
+                    RuntimeURI,
+                    statement.StatementName,
+                    statement.DeploymentId,
+                    condition));
         }
 
         public void HandleException(
@@ -81,9 +87,10 @@ namespace com.espertech.esper.common.@internal.settings
             HandleException(
                 ex,
                 handle.StatementHandle.DeploymentId,
-                handle.StatementHandle.StatementName, 
-                handle.StatementHandle.OptionalStatementEPL, 
-                type, optionalCurrentEvent);
+                handle.StatementHandle.StatementName,
+                handle.StatementHandle.OptionalStatementEPL,
+                type,
+                optionalCurrentEvent);
         }
 
         public void HandleException(
@@ -109,12 +116,12 @@ namespace com.espertech.esper.common.@internal.settings
                 writer.Write("statement '");
                 writer.Write(statementName);
                 writer.Write("'");
-                if (epl != null)
-                {
+                if (epl != null) {
                     writer.Write(" expression '");
                     writer.Write(epl);
                     writer.Write("'");
                 }
+
                 writer.Write(" : ");
                 writer.Write(ex.Message);
 
@@ -132,9 +139,16 @@ namespace com.espertech.esper.common.@internal.settings
 
             if (UnhandledException != null) {
                 UnhandledException(
-                    this, new ExceptionHandlerEventArgs {
+                    this,
+                    new ExceptionHandlerEventArgs {
                         Context = new ExceptionHandlerContext(
-                            RuntimeURI, ex, deploymentId, statementName, epl, type, optionalCurrentEvent)
+                            RuntimeURI,
+                            ex,
+                            deploymentId,
+                            statementName,
+                            epl,
+                            type,
+                            optionalCurrentEvent)
                     });
             }
         }
@@ -146,7 +160,8 @@ namespace com.espertech.esper.common.@internal.settings
         {
             if (UnhandledException != null) {
                 UnhandledException(
-                    this, new ExceptionHandlerEventArgs {
+                    this,
+                    new ExceptionHandlerEventArgs {
                         InboundPoolContext = new ExceptionHandlerContextUnassociated(engineURI, exception, @event)
                     });
             }

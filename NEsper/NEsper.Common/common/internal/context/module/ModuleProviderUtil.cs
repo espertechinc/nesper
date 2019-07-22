@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.settings;
 using com.espertech.esper.common.@internal.util;

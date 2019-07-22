@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.epl.pattern.core;
 using com.espertech.esper.common.@internal.filterspec;
@@ -71,7 +72,11 @@ namespace com.espertech.esper.common.@internal.epl.pattern.or
             }
 
             agentInstanceContext.AuditProvider.PatternTrue(
-                evalOrNode.FactoryNode, this, matchEvent, isQuitted, agentInstanceContext);
+                evalOrNode.FactoryNode,
+                this,
+                matchEvent,
+                isQuitted,
+                agentInstanceContext);
             ParentEvaluator.EvaluateTrue(matchEvent, this, isQuitted, optionalTriggeringEvent);
 
             agentInstanceContext.InstrumentationProvider.APatternOrEvaluateTrue(isQuitted);

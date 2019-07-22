@@ -8,6 +8,7 @@
 
 using System;
 using System.Reflection;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.context.aifactory.core;
@@ -52,18 +53,26 @@ namespace com.espertech.esper.common.@internal.epl.historical.method.poll
                 switch (invokeType) {
                     case MethodTargetStrategyStaticMethodInvokeType.NOPARAM:
                         return method.Invoke(null, null);
+
                     case MethodTargetStrategyStaticMethodInvokeType.SINGLE:
                         return method.Invoke(null, new[] {lookupValues});
+
                     case MethodTargetStrategyStaticMethodInvokeType.MULTIKEY:
                         return method.Invoke(null, ((HashableMultiKey) lookupValues).Keys);
+
                     default:
                         throw new IllegalStateException("Unrecognized value for " + invokeType);
                 }
             }
             catch (TargetException ex) {
                 throw new EPException(
-                    "Method '" + method.Name + "' of class '" + method.DeclaringType.Name +
-                    "' reported an exception: " + ex.InnerException, ex.InnerException);
+                    "Method '" +
+                    method.Name +
+                    "' of class '" +
+                    method.DeclaringType.Name +
+                    "' reported an exception: " +
+                    ex.InnerException,
+                    ex.InnerException);
             }
         }
 
@@ -93,10 +102,13 @@ namespace com.espertech.esper.common.@internal.epl.historical.method.poll
                 method = clazz.GetMethod(methodName, methodParameters);
             }
             catch (Exception ex)
-            when (ex is AmbiguousMatchException || ex is ArgumentNullException)
-            {
+                when (ex is AmbiguousMatchException || ex is ArgumentNullException) {
                 throw new EPException(
-                    "Failed to find method '" + methodName + "' of class '" + clazz.Name + "' with parameters " +
+                    "Failed to find method '" +
+                    methodName +
+                    "' of class '" +
+                    clazz.Name +
+                    "' with parameters " +
                     TypeHelper.GetParameterAsString(methodParameters));
             }
 

@@ -8,6 +8,7 @@
 
 using System;
 using System.IO;
+
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
@@ -36,7 +37,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
         ExprNodeRenderable ExprForge.ExprForgeRenderable => ForgeRenderable;
 
         public ExprEvaluator ExprEvaluator => new ExprOrNodeEval(
-            this, ExprNodeUtilityQuery.GetEvaluatorsNoCompile(ChildNodes));
+            this,
+            ExprNodeUtilityQuery.GetEvaluatorsNoCompile(ChildNodes));
 
         public CodegenExpression EvaluateCodegenUninstrumented(
             Type requiredType,
@@ -54,7 +56,13 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             CodegenClassScope codegenClassScope)
         {
             return new InstrumentationBuilderExpr(
-                GetType(), this, "ExprOr", requiredType, codegenMethodScope, exprSymbol, codegenClassScope).Build();
+                GetType(),
+                this,
+                "ExprOr",
+                requiredType,
+                codegenMethodScope,
+                exprSymbol,
+                codegenClassScope).Build();
         }
 
         public ExprForgeConstantType ForgeConstantType => ExprForgeConstantType.NONCONST;

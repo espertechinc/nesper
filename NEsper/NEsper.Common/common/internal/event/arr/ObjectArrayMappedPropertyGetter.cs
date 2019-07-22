@@ -10,6 +10,7 @@ using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.@event.core;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.@event.arr
@@ -76,7 +77,9 @@ namespace com.espertech.esper.common.@internal.@event.arr
             CodegenClassScope codegenClassScope)
         {
             return UnderlyingGetCodegen(
-                CastUnderlying(typeof(object[]), beanExpression), codegenMethodScope, codegenClassScope);
+                CastUnderlying(typeof(object[]), beanExpression),
+                codegenMethodScope,
+                codegenClassScope);
         }
 
         public CodegenExpression EventBeanExistsCodegen(
@@ -85,7 +88,9 @@ namespace com.espertech.esper.common.@internal.@event.arr
             CodegenClassScope codegenClassScope)
         {
             return UnderlyingExistsCodegen(
-                CastUnderlying(typeof(object[]), beanExpression), codegenMethodScope, codegenClassScope);
+                CastUnderlying(typeof(object[]), beanExpression),
+                codegenMethodScope,
+                codegenClassScope);
         }
 
         public CodegenExpression EventBeanFragmentCodegen(
@@ -102,7 +107,11 @@ namespace com.espertech.esper.common.@internal.@event.arr
             CodegenClassScope codegenClassScope)
         {
             return StaticMethod(
-                GetType(), "getOAMapValue", underlyingExpression, Constant(propertyIndex), Constant(key));
+                GetType(),
+                "getOAMapValue",
+                underlyingExpression,
+                Constant(propertyIndex),
+                Constant(key));
         }
 
         public CodegenExpression UnderlyingExistsCodegen(
@@ -111,7 +120,11 @@ namespace com.espertech.esper.common.@internal.@event.arr
             CodegenClassScope codegenClassScope)
         {
             return StaticMethod(
-                GetType(), "getOAMapExists", underlyingExpression, Constant(propertyIndex), Constant(key));
+                GetType(),
+                "getOAMapExists",
+                underlyingExpression,
+                Constant(propertyIndex),
+                Constant(key));
         }
 
         public CodegenExpression UnderlyingFragmentCodegen(
@@ -129,7 +142,10 @@ namespace com.espertech.esper.common.@internal.@event.arr
             CodegenExpression key)
         {
             return StaticMethod(
-                GetType(), "getOAMapValue", CastUnderlying(typeof(object[]), beanExpression), Constant(propertyIndex),
+                GetType(),
+                "getOAMapValue",
+                CastUnderlying(typeof(object[]), beanExpression),
+                Constant(propertyIndex),
                 key);
         }
 

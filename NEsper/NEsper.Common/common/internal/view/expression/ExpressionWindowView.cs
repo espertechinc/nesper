@@ -8,6 +8,7 @@
 
 using System.Collections.Generic;
 using System.Linq;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.@event.arr;
@@ -33,7 +34,10 @@ namespace com.espertech.esper.common.@internal.view.expression
             ObjectArrayEventBean builtinEventProps,
             AgentInstanceViewFactoryChainContext agentInstanceContext)
             : base(
-                factory, viewUpdatedCollection, builtinEventProps, agentInstanceContext)
+                factory,
+                viewUpdatedCollection,
+                builtinEventProps,
+                agentInstanceContext)
         {
         }
 
@@ -168,8 +172,14 @@ namespace com.espertech.esper.common.@internal.view.expression
             int numExpired)
         {
             ExpressionViewOAFieldEnumExtensions.Populate(
-                builtinEventProps.Properties, window.Count, first.Timestamp, newest.Timestamp,
-                this, numExpired, first.TheEvent, newest.TheEvent);
+                builtinEventProps.Properties,
+                window.Count,
+                first.Timestamp,
+                newest.Timestamp,
+                this,
+                numExpired,
+                first.TheEvent,
+                newest.TheEvent);
             eventsPerStream[0] = first.TheEvent;
             return ExpressionBatchViewUtil.Evaluate(eventsPerStream, agentInstanceContext, factory, aggregationService);
         }
@@ -186,7 +196,11 @@ namespace com.espertech.esper.common.@internal.view.expression
         {
             if (!agentInstanceContext.StatementContext.SchedulingService.IsScheduled(scheduleHandle)) {
                 agentInstanceContext.AuditProvider.ScheduleAdd(
-                    0, agentInstanceContext, scheduleHandle, ScheduleObjectType.view, factory.ViewName);
+                    0,
+                    agentInstanceContext,
+                    scheduleHandle,
+                    ScheduleObjectType.view,
+                    factory.ViewName);
                 agentInstanceContext.StatementContext.SchedulingService.Add(0, scheduleHandle, scheduleSlot);
             }
         }

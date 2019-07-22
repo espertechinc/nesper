@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.context.util;
@@ -72,7 +73,10 @@ namespace com.espertech.esper.common.@internal.view.timelengthbatch
         {
             if (handle != null) {
                 agentInstanceContext.AuditProvider.ScheduleRemove(
-                    agentInstanceContext, handle, ScheduleObjectType.view, factory.ViewName);
+                    agentInstanceContext,
+                    handle,
+                    ScheduleObjectType.view,
+                    factory.ViewName);
                 agentInstanceContext.StatementContext.SchedulingService.Remove(handle, scheduleSlot);
             }
         }
@@ -159,7 +163,10 @@ namespace com.espertech.esper.common.@internal.view.timelengthbatch
                 // Remove schedule if called from on overflow due to number of events
                 if (callbackScheduledTime != null) {
                     agentInstanceContext.AuditProvider.ScheduleRemove(
-                        agentInstanceContext, handle, ScheduleObjectType.view, factory.ViewName);
+                        agentInstanceContext,
+                        handle,
+                        ScheduleObjectType.view,
+                        factory.ViewName);
                     agentInstanceContext.StatementContext.SchedulingService.Remove(handle, scheduleSlot);
                     callbackScheduledTime = null;
                 }
@@ -192,9 +199,9 @@ namespace com.espertech.esper.common.@internal.view.timelengthbatch
 
             // Only if there have been any events in this or the last interval do we schedule a callback,
             // such as to not waste resources when no events arrive.
-            if (!currentBatch.IsEmpty() || lastBatch != null && !lastBatch.IsEmpty()
-                                        ||
-                                        factory.isForceUpdate) {
+            if (!currentBatch.IsEmpty() ||
+                lastBatch != null && !lastBatch.IsEmpty() ||
+                factory.isForceUpdate) {
                 ScheduleCallback(0);
             }
 
@@ -221,7 +228,8 @@ namespace com.espertech.esper.common.@internal.view.timelengthbatch
         public override string ToString()
         {
             return GetType().Name +
-                   " numberOfEvents=" + size;
+                   " numberOfEvents=" +
+                   size;
         }
 
         protected void ScheduleCallback(long delta)
@@ -229,14 +237,17 @@ namespace com.espertech.esper.common.@internal.view.timelengthbatch
             ScheduleHandleCallback callback = new ProxyScheduleHandleCallback {
                 ProcScheduledTrigger = () => {
                     agentInstanceContext.AuditProvider.ScheduleFire(
-                        agentInstanceContext, ScheduleObjectType.view, factory.ViewName);
+                        agentInstanceContext,
+                        ScheduleObjectType.view,
+                        factory.ViewName);
                     agentInstanceContext.InstrumentationProvider.QViewScheduledEval(factory);
                     SendBatch(true);
                     agentInstanceContext.InstrumentationProvider.AViewScheduledEval();
                 }
             };
             handle = new EPStatementHandleCallbackSchedule(
-                agentInstanceContext.EpStatementAgentInstanceHandle, callback);
+                agentInstanceContext.EpStatementAgentInstanceHandle,
+                callback);
             var currentTime = agentInstanceContext.StatementContext.SchedulingService.Time;
             var scheduled = timePeriodProvide.DeltaAdd(currentTime, null, true, agentInstanceContext) - delta;
             agentInstanceContext.StatementContext.SchedulingService.Add(scheduled, handle, scheduleSlot);

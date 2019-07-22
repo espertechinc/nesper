@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.epl.datetime.calop;
 using com.espertech.esper.common.@internal.epl.datetime.interval;
@@ -41,7 +42,8 @@ namespace com.espertech.esper.common.@internal.epl.datetime.eval
             TableCompileTimeResolver tableCompileTimeResolver)
         {
             // verify input
-            var message = "Date-time enumeration method '" + dtMethodName +
+            var message = "Date-time enumeration method '" +
+                          dtMethodName +
                           "' requires either a DateTimeEx, Date, long, DateTimeOffset or DateTime value as input or events of an event type that declares a timestamp property";
             if (inputType is EventEPType) {
                 if (((EventEPType) inputType).EventType.StartTimestampPropertyName == null) {
@@ -82,23 +84,36 @@ namespace com.espertech.esper.common.@internal.epl.datetime.eval
 
                 // validate parameters
                 DotMethodUtil.ValidateParametersDetermineFootprint(
-                    currentMethod.Footprints, DotMethodTypeEnum.DATETIME, currentMethodName, footprintProvided,
+                    currentMethod.Footprints,
+                    DotMethodTypeEnum.DATETIME,
+                    currentMethodName,
+                    footprintProvided,
                     DotMethodInputTypeMatcherImpl.DEFAULT_ALL);
 
                 if (opFactory is CalendarForgeFactory) {
                     var calendarForge = ((CalendarForgeFactory) currentMethod.ForgeFactory).GetOp(
-                        currentMethod, currentMethodName, currentParameters, forges);
+                        currentMethod,
+                        currentMethodName,
+                        currentParameters,
+                        forges);
                     calendarForges.Add(calendarForge);
                 }
                 else if (opFactory is ReformatForgeFactory) {
                     reformatForge = ((ReformatForgeFactory) opFactory).GetForge(
-                        inputType, timeAbacus, currentMethod, currentMethodName, currentParameters,
+                        inputType,
+                        timeAbacus,
+                        currentMethod,
+                        currentMethodName,
+                        currentParameters,
                         exprEvaluatorContext);
 
                     // compile filter analyzer information if there are no calendar op in the chain
                     if (calendarForges.IsEmpty()) {
                         filterAnalyzerDesc = reformatForge.GetFilterDesc(
-                            streamTypeService.EventTypes, currentMethod, currentParameters, inputDesc);
+                            streamTypeService.EventTypes,
+                            currentMethod,
+                            currentParameters,
+                            inputDesc);
                     }
                     else {
                         filterAnalyzerDesc = null;
@@ -106,13 +121,20 @@ namespace com.espertech.esper.common.@internal.epl.datetime.eval
                 }
                 else if (opFactory is IntervalForgeFactory) {
                     intervalForge = ((IntervalForgeFactory) opFactory).GetForge(
-                        streamTypeService, currentMethod, currentMethodName, currentParameters, timeAbacus,
+                        streamTypeService,
+                        currentMethod,
+                        currentMethodName,
+                        currentParameters,
+                        timeAbacus,
                         tableCompileTimeResolver);
 
                     // compile filter analyzer information if there are no calendar op in the chain
                     if (calendarForges.IsEmpty()) {
                         filterAnalyzerDesc = intervalForge.GetFilterDesc(
-                            streamTypeService.EventTypes, currentMethod, currentParameters, inputDesc);
+                            streamTypeService.EventTypes,
+                            currentMethod,
+                            currentParameters,
+                            inputDesc);
                     }
                     else {
                         filterAnalyzerDesc = null;
@@ -142,7 +164,10 @@ namespace com.espertech.esper.common.@internal.epl.datetime.eval
             EPType returnType;
 
             dotForge = new ExprDotDTForge(
-                calendarForges, timeAbacus, reformatForge, intervalForge,
+                calendarForges,
+                timeAbacus,
+                reformatForge,
+                intervalForge,
                 EPTypeHelper.GetClassSingleValued(inputType),
                 EPTypeHelper.GetEventTypeSingleValued(inputType));
             returnType = dotForge.TypeInfo;

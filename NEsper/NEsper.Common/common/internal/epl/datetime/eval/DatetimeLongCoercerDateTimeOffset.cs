@@ -7,10 +7,12 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.settings;
 using com.espertech.esper.compat;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.datetime.eval
@@ -41,7 +43,9 @@ namespace com.espertech.esper.common.@internal.epl.datetime.eval
 
             CodegenExpression timeZoneField =
                 codegenClassScope.AddOrGetFieldSharable(RuntimeSettingsTimeZoneField.INSTANCE);
-            return ExprDotMethodChain(value).Add("atZone", ExprDotMethod(timeZoneField, "toZoneId")).Add("toInstant")
+            return ExprDotMethodChain(value)
+                .Add("atZone", ExprDotMethod(timeZoneField, "toZoneId"))
+                .Add("toInstant")
                 .Add("toEpochMilli");
         }
     }

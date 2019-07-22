@@ -8,9 +8,11 @@
 
 using System;
 using System.Reflection;
+
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.compat.logging;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.@event.bean.instantiator
@@ -33,14 +35,22 @@ namespace com.espertech.esper.common.@internal.@event.bean.instantiator
                 return method.Invoke(null, null);
             }
             catch (TargetException e) {
-                var message = "Unexpected exception encountered invoking factory method '" + method.Name + "' on class '" +
-                              method.DeclaringType.Name + "': " + e.InnerException.Message;
+                var message = "Unexpected exception encountered invoking factory method '" +
+                              method.Name +
+                              "' on class '" +
+                              method.DeclaringType.Name +
+                              "': " +
+                              e.InnerException.Message;
                 Log.Error(message, e);
                 return null;
             }
             catch (MemberAccessException ex) {
-                var message = "Unexpected exception encountered invoking factory method '" + method.Name + "' on class '" +
-                              method.DeclaringType.Name + "': " + ex.Message;
+                var message = "Unexpected exception encountered invoking factory method '" +
+                              method.Name +
+                              "' on class '" +
+                              method.DeclaringType.Name +
+                              "': " +
+                              ex.Message;
                 Log.Error(message, ex);
                 return null;
             }

@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.core;
@@ -21,6 +22,7 @@ using com.espertech.esper.common.@internal.epl.resultset.rowperevent;
 using com.espertech.esper.common.@internal.epl.resultset.rowpergroup;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.function;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 using static com.espertech.esper.common.@internal.epl.expression.codegen.ExprForgeCodegenNames;
 using static com.espertech.esper.common.@internal.epl.resultset.codegen.ResultSetProcessorCodegenNames;
@@ -120,50 +122,75 @@ namespace com.espertech.esper.common.@internal.epl.resultset.grouped
 
                 methodNode.Block.Apply(
                     Instblock(
-                        classScope, "qResultSetProcessComputeGroupKeys", ExprForgeCodegenNames.REF_ISNEWDATA, Constant(expressions),
+                        classScope,
+                        "qResultSetProcessComputeGroupKeys",
+                        ExprForgeCodegenNames.REF_ISNEWDATA,
+                        Constant(expressions),
                         REF_EPS));
 
                 if (groupKeyExpressions.Length == 1) {
                     var expression = CodegenLegoMethodExpression.CodegenExpression(
-                        groupKeyExpressions[0].Forge, methodNode, classScope);
+                        groupKeyExpressions[0].Forge,
+                        methodNode,
+                        classScope);
                     methodNode.Block
-                        .DeclareVar(
-                            typeof(object), "key",
+                        .DeclareVar<object>(
+                            "key",
                             LocalMethod(
-                                expression, REF_EPS, ExprForgeCodegenNames.REF_ISNEWDATA, REF_AGENTINSTANCECONTEXT))
+                                expression,
+                                REF_EPS,
+                                ExprForgeCodegenNames.REF_ISNEWDATA,
+                                REF_AGENTINSTANCECONTEXT))
                         .Apply(
                             Instblock(
-                                classScope, "aResultSetProcessComputeGroupKeys", ExprForgeCodegenNames.REF_ISNEWDATA,
+                                classScope,
+                                "aResultSetProcessComputeGroupKeys",
+                                ExprForgeCodegenNames.REF_ISNEWDATA,
                                 Ref("key")))
                         .MethodReturn(Ref("key"));
                     return;
                 }
 
-                methodNode.Block.DeclareVar(
-                    typeof(object[]), "keys", NewArrayByLength(typeof(object), Constant(groupKeyExpressions.Length)));
+                methodNode.Block.DeclareVar<object[]>(
+                    "keys",
+                    NewArrayByLength(typeof(object), Constant(groupKeyExpressions.Length)));
                 for (var i = 0; i < groupKeyExpressions.Length; i++) {
                     var expression = CodegenLegoMethodExpression.CodegenExpression(
-                        groupKeyExpressions[i].Forge, methodNode, classScope);
+                        groupKeyExpressions[i].Forge,
+                        methodNode,
+                        classScope);
                     methodNode.Block.AssignArrayElement(
-                        "keys", Constant(i),
+                        "keys",
+                        Constant(i),
                         LocalMethod(
-                            expression, REF_EPS, ExprForgeCodegenNames.REF_ISNEWDATA, REF_AGENTINSTANCECONTEXT));
+                            expression,
+                            REF_EPS,
+                            ExprForgeCodegenNames.REF_ISNEWDATA,
+                            REF_AGENTINSTANCECONTEXT));
                 }
 
                 methodNode.Block
-                    .DeclareVar(typeof(HashableMultiKey), "key", NewInstance<HashableMultiKey>(Ref("keys")))
+                    .DeclareVar<HashableMultiKey>("key", NewInstance<HashableMultiKey>(Ref("keys")))
                     .Apply(
                         Instblock(
-                            classScope, "aResultSetProcessComputeGroupKeys", ExprForgeCodegenNames.REF_ISNEWDATA,
+                            classScope,
+                            "aResultSetProcessComputeGroupKeys",
+                            ExprForgeCodegenNames.REF_ISNEWDATA,
                             Ref("key")))
                     .MethodReturn(Ref("key"));
             };
 
             return instance.Methods.AddMethod(
-                typeof(object), "generateGroupKeySingle",
+                typeof(object),
+                "generateGroupKeySingle",
                 CodegenNamedParam.From(
-                    typeof(EventBean[]), NAME_EPS, typeof(bool), ResultSetProcessorCodegenNames.NAME_ISNEWDATA),
-                typeof(ResultSetProcessorUtil), classScope, code);
+                    typeof(EventBean[]),
+                    NAME_EPS,
+                    typeof(bool),
+                    ResultSetProcessorCodegenNames.NAME_ISNEWDATA),
+                typeof(ResultSetProcessorUtil),
+                classScope,
+                code);
         }
 
         public static CodegenMethod GenerateGroupKeyArrayViewCodegen(
@@ -175,24 +202,34 @@ namespace com.espertech.esper.common.@internal.epl.resultset.grouped
 
             Consumer<CodegenMethod> code = method => {
                 method.Block.IfRefNullReturnNull("events")
-                    .DeclareVar(
-                        typeof(EventBean[]), "eventsPerStream", NewArrayByLength(typeof(EventBean), Constant(1)))
-                    .DeclareVar(typeof(object[]), "keys", NewArrayByLength(typeof(object), ArrayLength(Ref("events"))));
+                    .DeclareVar<EventBean[]>(
+                        "eventsPerStream",
+                        NewArrayByLength(typeof(EventBean), Constant(1)))
+                    .DeclareVar<object[]>("keys", NewArrayByLength(typeof(object), ArrayLength(Ref("events"))));
                 {
                     var forLoop = method.Block.ForLoopIntSimple("i", ArrayLength(Ref("events")));
                     forLoop.AssignArrayElement("eventsPerStream", Constant(0), ArrayAtIndex(Ref("events"), Ref("i")))
                         .AssignArrayElement(
-                            "keys", Ref("i"),
+                            "keys",
+                            Ref("i"),
                             LocalMethod(
-                                generateGroupKeySingle, Ref("eventsPerStream"), ExprForgeCodegenNames.REF_ISNEWDATA));
+                                generateGroupKeySingle,
+                                Ref("eventsPerStream"),
+                                ExprForgeCodegenNames.REF_ISNEWDATA));
                 }
                 method.Block.MethodReturn(Ref("keys"));
             };
             return instance.Methods.AddMethod(
-                typeof(object[]), "generateGroupKeyArrayView",
+                typeof(object[]),
+                "generateGroupKeyArrayView",
                 CodegenNamedParam.From(
-                    typeof(EventBean[]), "events", typeof(bool), ResultSetProcessorCodegenNames.NAME_ISNEWDATA),
-                typeof(ResultSetProcessorRowPerGroup), classScope, code);
+                    typeof(EventBean[]),
+                    "events",
+                    typeof(bool),
+                    ResultSetProcessorCodegenNames.NAME_ISNEWDATA),
+                typeof(ResultSetProcessorRowPerGroup),
+                classScope,
+                code);
         }
 
         public static CodegenMethod GenerateGroupKeyArrayJoinCodegen(
@@ -202,27 +239,33 @@ namespace com.espertech.esper.common.@internal.epl.resultset.grouped
         {
             var generateGroupKeySingle = GenerateGroupKeySingleCodegen(groupKeyExpressions, classScope, instance);
             Consumer<CodegenMethod> code = method => {
-                method.Block.IfCondition(ExprDotMethod(Ref("resultSet"), "isEmpty")).BlockReturn(ConstantNull())
-                    .DeclareVar(
-                        typeof(object[]), "keys",
+                method.Block.IfCondition(ExprDotMethod(Ref("resultSet"), "isEmpty"))
+                    .BlockReturn(ConstantNull())
+                    .DeclareVar<object[]>(
+                        "keys",
                         NewArrayByLength(typeof(object), ExprDotMethod(Ref("resultSet"), "size")))
-                    .DeclareVar(typeof(int), "count", Constant(0))
+                    .DeclareVar<int>("count", Constant(0))
                     .ForEach(typeof(MultiKey<object>), "eventsPerStream", Ref("resultSet"))
                     .AssignArrayElement(
-                        "keys", Ref("count"),
+                        "keys",
+                        Ref("count"),
                         LocalMethod(
                             generateGroupKeySingle,
                             Cast(
-                                typeof(EventBean[]), ExprDotMethod(Ref("eventsPerStream"), "getArray")),
+                                typeof(EventBean[]),
+                                ExprDotMethod(Ref("eventsPerStream"), "getArray")),
                             ExprForgeCodegenNames.REF_ISNEWDATA))
                     .Increment("count")
                     .BlockEnd()
                     .MethodReturn(Ref("keys"));
             };
             return instance.Methods.AddMethod(
-                typeof(object[]), "generateGroupKeyArrayJoin",
+                typeof(object[]),
+                "generateGroupKeyArrayJoin",
                 CodegenNamedParam.From(typeof(ISet<object>), "resultSet", typeof(bool), "isNewData"),
-                typeof(ResultSetProcessorRowPerEventImpl), classScope, code);
+                typeof(ResultSetProcessorRowPerEventImpl),
+                classScope,
+                code);
         }
     }
 } // end of namespace

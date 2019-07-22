@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.core;
@@ -16,6 +17,7 @@ using com.espertech.esper.common.@internal.compile.stage1.spec;
 using com.espertech.esper.common.@internal.epl.resultset.core;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat.function;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 using static com.espertech.esper.common.@internal.epl.resultset.codegen.ResultSetProcessorCodegenNames;
 using static com.espertech.esper.common.@internal.epl.resultset.core.ResultSetProcessorUtil;
@@ -56,12 +58,16 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowforall
             }
 
             method.Block
-                .DeclareVar(typeof(EventBean[]), "selectOldEvents", selectOld)
+                .DeclareVar<EventBean[]>("selectOldEvents", selectOld)
                 .StaticMethod(
-                    typeof(ResultSetProcessorUtil), METHOD_APPLYAGGJOINRESULT, REF_AGGREGATIONSVC,
-                    REF_AGENTINSTANCECONTEXT, REF_NEWDATA, REF_OLDDATA)
-                .DeclareVar(
-                    typeof(EventBean[]), "selectNewEvents",
+                    typeof(ResultSetProcessorUtil),
+                    METHOD_APPLYAGGJOINRESULT,
+                    REF_AGGREGATIONSVC,
+                    REF_AGENTINSTANCECONTEXT,
+                    REF_NEWDATA,
+                    REF_OLDDATA)
+                .DeclareVar<EventBean[]>(
+                    "selectNewEvents",
                     LocalMethod(selectList, ConstantTrue(), REF_ISSYNTHESIZE, ConstantTrue()))
                 .IfCondition(And(EqualsNull(Ref("selectNewEvents")), EqualsNull(Ref("selectOldEvents"))))
                 .BlockReturn(ConstantNull())
@@ -86,13 +92,18 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowforall
             }
 
             method.Block
-                .DeclareVar(typeof(EventBean[]), "selectOldEvents", selectOld)
-                .DeclareVar(typeof(EventBean[]), "eventsPerStream", NewArrayByLength(typeof(EventBean), Constant(1)))
+                .DeclareVar<EventBean[]>("selectOldEvents", selectOld)
+                .DeclareVar<EventBean[]>("eventsPerStream", NewArrayByLength(typeof(EventBean), Constant(1)))
                 .StaticMethod(
-                    typeof(ResultSetProcessorUtil), METHOD_APPLYAGGVIEWRESULT, REF_AGGREGATIONSVC,
-                    REF_AGENTINSTANCECONTEXT, REF_NEWDATA, REF_OLDDATA, Ref("eventsPerStream"))
-                .DeclareVar(
-                    typeof(EventBean[]), "selectNewEvents",
+                    typeof(ResultSetProcessorUtil),
+                    METHOD_APPLYAGGVIEWRESULT,
+                    REF_AGGREGATIONSVC,
+                    REF_AGENTINSTANCECONTEXT,
+                    REF_NEWDATA,
+                    REF_OLDDATA,
+                    Ref("eventsPerStream"))
+                .DeclareVar<EventBean[]>(
+                    "selectNewEvents",
                     LocalMethod(selectList, ConstantTrue(), REF_ISSYNTHESIZE, ConstantFalse()))
                 .IfCondition(And(EqualsNull(Ref("selectNewEvents")), EqualsNull(Ref("selectOldEvents"))))
                 .BlockReturn(ConstantNull())
@@ -114,9 +125,12 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowforall
 
             method.Block
                 .StaticMethod(
-                    typeof(ResultSetProcessorUtil), METHOD_CLEARANDAGGREGATEUNGROUPED, REF_AGENTINSTANCECONTEXT,
-                    REF_AGGREGATIONSVC, REF_VIEWABLE)
-                .DeclareVar(typeof(IEnumerator<EventBean>), "iterator", LocalMethod(obtainMethod))
+                    typeof(ResultSetProcessorUtil),
+                    METHOD_CLEARANDAGGREGATEUNGROUPED,
+                    REF_AGENTINSTANCECONTEXT,
+                    REF_AGGREGATIONSVC,
+                    REF_VIEWABLE)
+                .DeclareVar<IEnumerator<EventBean>>("iterator", LocalMethod(obtainMethod))
                 .Expression(ExprDotMethod(REF_AGGREGATIONSVC, "clearResults", REF_AGENTINSTANCECONTEXT))
                 .MethodReturn(Ref("iterator"));
         }
@@ -129,8 +143,9 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowforall
         {
             var select = GetSelectListEventsAsArrayCodegen(forge, classScope, instance);
             method.Block
-                .DeclareVar(
-                    typeof(EventBean[]), "result", LocalMethod(select, Constant(true), ConstantTrue(), ConstantTrue()))
+                .DeclareVar<EventBean[]>(
+                    "result",
+                    LocalMethod(select, Constant(true), ConstantTrue(), ConstantTrue()))
                 .MethodReturn(NewInstance<ArrayEventEnumerator>(Ref("result")));
         }
 
@@ -170,15 +185,24 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowforall
         public static void ApplyViewResultCodegen(CodegenMethod method)
         {
             method.Block.StaticMethod(
-                typeof(ResultSetProcessorUtil), METHOD_APPLYAGGVIEWRESULT, REF_AGGREGATIONSVC, REF_AGENTINSTANCECONTEXT,
-                REF_NEWDATA, REF_OLDDATA, NewArrayByLength(typeof(EventBean), Constant(1)));
+                typeof(ResultSetProcessorUtil),
+                METHOD_APPLYAGGVIEWRESULT,
+                REF_AGGREGATIONSVC,
+                REF_AGENTINSTANCECONTEXT,
+                REF_NEWDATA,
+                REF_OLDDATA,
+                NewArrayByLength(typeof(EventBean), Constant(1)));
         }
 
         public static void ApplyJoinResultCodegen(CodegenMethod method)
         {
             method.Block.StaticMethod(
-                typeof(ResultSetProcessorUtil), METHOD_APPLYAGGJOINRESULT, REF_AGGREGATIONSVC, REF_AGENTINSTANCECONTEXT,
-                REF_NEWDATA, REF_OLDDATA);
+                typeof(ResultSetProcessorUtil),
+                METHOD_APPLYAGGJOINRESULT,
+                REF_AGGREGATIONSVC,
+                REF_AGENTINSTANCECONTEXT,
+                REF_NEWDATA,
+                REF_OLDDATA);
         }
 
         public static void StopCodegen(
@@ -227,7 +251,11 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowforall
                     NAME_OUTPUTALLHELPER,
                     ExprDotMethod(factory, "makeRSRowForAllOutputAll", Ref("this"), REF_AGENTINSTANCECONTEXT));
                 method.Block.ExprDotMethod(
-                    Ref(NAME_OUTPUTALLHELPER), methodName, REF_NEWDATA, REF_OLDDATA, REF_ISSYNTHESIZE);
+                    Ref(NAME_OUTPUTALLHELPER),
+                    methodName,
+                    REF_NEWDATA,
+                    REF_OLDDATA,
+                    REF_ISSYNTHESIZE);
             }
             else if (forge.OutputLimitSpec.DisplayLimit == OutputLimitLimitType.LAST) {
                 instance.AddMember(NAME_OUTPUTLASTHELPER, typeof(ResultSetProcessorRowForAllOutputLastHelper));
@@ -235,7 +263,11 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowforall
                     NAME_OUTPUTLASTHELPER,
                     ExprDotMethod(factory, "makeRSRowForAllOutputLast", Ref("this"), REF_AGENTINSTANCECONTEXT));
                 method.Block.ExprDotMethod(
-                    Ref(NAME_OUTPUTLASTHELPER), methodName, REF_NEWDATA, REF_OLDDATA, REF_ISSYNTHESIZE);
+                    Ref(NAME_OUTPUTLASTHELPER),
+                    methodName,
+                    REF_NEWDATA,
+                    REF_OLDDATA,
+                    REF_ISSYNTHESIZE);
             }
         }
 
@@ -294,26 +326,41 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowforall
                 }
 
                 if (forge.IsSelectRStream) {
-                    forEach.LocalMethod(getSelectListEventAddList, ConstantFalse(), REF_ISSYNTHESIZE, Ref("oldEvents"));
+                    forEach.InstanceMethod(
+                        getSelectListEventAddList,
+                        ConstantFalse(),
+                        REF_ISSYNTHESIZE,
+                        Ref("oldEvents"));
                     if (forge.IsSorting) {
                         forEach.ExprDotMethod(
-                            Ref("oldEventsSortKey"), "add",
+                            Ref("oldEventsSortKey"),
+                            "add",
                             ExprDotMethod(
-                                REF_ORDERBYPROCESSOR, "getSortKey", ConstantNull(), ConstantFalse(),
+                                REF_ORDERBYPROCESSOR,
+                                "getSortKey",
+                                ConstantNull(),
+                                ConstantFalse(),
                                 REF_AGENTINSTANCECONTEXT));
                     }
                 }
 
                 forEach.StaticMethod(
-                    typeof(ResultSetProcessorUtil), METHOD_APPLYAGGJOINRESULT, REF_AGGREGATIONSVC,
-                    REF_AGENTINSTANCECONTEXT, Cast(typeof(ISet<EventBean>), ExprDotMethod(Ref("pair"), "getFirst")),
+                    typeof(ResultSetProcessorUtil),
+                    METHOD_APPLYAGGJOINRESULT,
+                    REF_AGGREGATIONSVC,
+                    REF_AGENTINSTANCECONTEXT,
+                    Cast(typeof(ISet<EventBean>), ExprDotMethod(Ref("pair"), "getFirst")),
                     Cast(typeof(ISet<EventBean>), ExprDotMethod(Ref("pair"), "getSecond")));
-                forEach.LocalMethod(getSelectListEventAddList, ConstantTrue(), REF_ISSYNTHESIZE, Ref("newEvents"));
+                forEach.InstanceMethod(getSelectListEventAddList, ConstantTrue(), REF_ISSYNTHESIZE, Ref("newEvents"));
                 if (forge.IsSorting) {
                     forEach.ExprDotMethod(
-                        Ref("newEventsSortKey"), "add",
+                        Ref("newEventsSortKey"),
+                        "add",
                         ExprDotMethod(
-                            REF_ORDERBYPROCESSOR, "getSortKey", ConstantNull(), ConstantTrue(),
+                            REF_ORDERBYPROCESSOR,
+                            "getSortKey",
+                            ConstantNull(),
+                            ConstantTrue(),
                             REF_AGENTINSTANCECONTEXT));
                 }
 
@@ -322,20 +369,27 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowforall
 
             var ifEmpty = method.Block.IfCondition(Not(ExprDotMethod(REF_JOINEVENTSSET, "isEmpty")));
             FinalizeOutputMaySortMayRStreamCodegen(
-                ifEmpty, Ref("newEvents"), Ref("newEventsSortKey"), Ref("oldEvents"), Ref("oldEventsSortKey"),
-                forge.IsSelectRStream, forge.IsSorting);
+                ifEmpty,
+                Ref("newEvents"),
+                Ref("newEventsSortKey"),
+                Ref("oldEvents"),
+                Ref("oldEventsSortKey"),
+                forge.IsSelectRStream,
+                forge.IsSorting);
 
-            method.Block.DeclareVar(
-                    typeof(EventBean[]), "newEventsArr",
+            method.Block.DeclareVar<EventBean[]>(
+                    "newEventsArr",
                     LocalMethod(getSelectListEventAsArray, ConstantTrue(), REF_ISSYNTHESIZE, ConstantFalse()))
-                .DeclareVar(
-                    typeof(EventBean[]), "oldEventsArr",
+                .DeclareVar<EventBean[]>(
+                    "oldEventsArr",
                     forge.IsSelectRStream
                         ? LocalMethod(getSelectListEventAsArray, ConstantFalse(), REF_ISSYNTHESIZE, ConstantFalse())
                         : ConstantNull())
                 .MethodReturn(
                     StaticMethod(
-                        typeof(ResultSetProcessorUtil), METHOD_TOPAIRNULLIFALLNULL, Ref("newEventsArr"),
+                        typeof(ResultSetProcessorUtil),
+                        METHOD_TOPAIRNULLIFALLNULL,
+                        Ref("newEventsArr"),
                         Ref("oldEventsArr")));
         }
 
@@ -347,8 +401,8 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowforall
         {
             var getSelectListEventSingle = GetSelectListEventSingleCodegen(forge, classScope, instance);
 
-            method.Block.DeclareVar(typeof(EventBean), "lastOldEvent", ConstantNull())
-                .DeclareVar(typeof(EventBean), "lastNewEvent", ConstantNull());
+            method.Block.DeclareVar<EventBean>("lastOldEvent", ConstantNull())
+                .DeclareVar<EventBean>("lastNewEvent", ConstantNull());
 
             {
                 var forEach = method.Block.ForEach(typeof(UniformPair<EventBean>), "pair", REF_JOINEVENTSSET);
@@ -359,37 +413,44 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowforall
                 if (forge.IsSelectRStream) {
                     forEach.IfCondition(EqualsNull(Ref("lastOldEvent")))
                         .AssignRef(
-                            "lastOldEvent", LocalMethod(getSelectListEventSingle, ConstantFalse(), REF_ISSYNTHESIZE))
+                            "lastOldEvent",
+                            LocalMethod(getSelectListEventSingle, ConstantFalse(), REF_ISSYNTHESIZE))
                         .BlockEnd();
                 }
 
                 forEach.StaticMethod(
-                    typeof(ResultSetProcessorUtil), METHOD_APPLYAGGJOINRESULT, REF_AGGREGATIONSVC,
-                    REF_AGENTINSTANCECONTEXT, Cast(typeof(ISet<EventBean>), ExprDotMethod(Ref("pair"), "getFirst")),
+                    typeof(ResultSetProcessorUtil),
+                    METHOD_APPLYAGGJOINRESULT,
+                    REF_AGGREGATIONSVC,
+                    REF_AGENTINSTANCECONTEXT,
+                    Cast(typeof(ISet<EventBean>), ExprDotMethod(Ref("pair"), "getFirst")),
                     Cast(typeof(ISet<EventBean>), ExprDotMethod(Ref("pair"), "getSecond")));
                 forEach.AssignRef(
-                    "lastNewEvent", LocalMethod(getSelectListEventSingle, ConstantTrue(), REF_ISSYNTHESIZE));
+                    "lastNewEvent",
+                    LocalMethod(getSelectListEventSingle, ConstantTrue(), REF_ISSYNTHESIZE));
             }
 
             {
                 var ifEmpty = method.Block.IfCondition(ExprDotMethod(REF_JOINEVENTSSET, "isEmpty"));
                 if (forge.IsSelectRStream) {
                     ifEmpty.AssignRef(
-                            "lastOldEvent", LocalMethod(getSelectListEventSingle, ConstantFalse(), REF_ISSYNTHESIZE))
+                            "lastOldEvent",
+                            LocalMethod(getSelectListEventSingle, ConstantFalse(), REF_ISSYNTHESIZE))
                         .AssignRef("lastNewEvent", Ref("lastOldEvent"));
                 }
                 else {
                     ifEmpty.AssignRef(
-                        "lastNewEvent", LocalMethod(getSelectListEventSingle, ConstantTrue(), REF_ISSYNTHESIZE));
+                        "lastNewEvent",
+                        LocalMethod(getSelectListEventSingle, ConstantTrue(), REF_ISSYNTHESIZE));
                 }
             }
 
             method.Block
-                .DeclareVar(
-                    typeof(EventBean[]), "lastNew",
+                .DeclareVar<EventBean[]>(
+                    "lastNew",
                     StaticMethod(typeof(CollectionUtil), CollectionUtil.METHOD_TOARRAYMAYNULL, Ref("lastNewEvent")))
-                .DeclareVar(
-                    typeof(EventBean[]), "lastOld",
+                .DeclareVar<EventBean[]>(
+                    "lastOld",
                     StaticMethod(typeof(CollectionUtil), CollectionUtil.METHOD_TOARRAYMAYNULL, Ref("lastOldEvent")))
                 .IfCondition(And(EqualsNull(Ref("lastNew")), EqualsNull(Ref("lastOld"))))
                 .BlockReturn(ConstantNull())
@@ -407,31 +468,48 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowforall
 
             PrefixCodegenNewOldEvents(method.Block, forge.IsSorting, forge.IsSelectRStream);
 
-            method.Block.DeclareVar(
-                typeof(EventBean[]), "eventsPerStream", NewArrayByLength(typeof(EventBean), Constant(1)));
+            method.Block.DeclareVar<EventBean[]>(
+                "eventsPerStream",
+                NewArrayByLength(typeof(EventBean), Constant(1)));
             var forEach = method.Block.ForEach(typeof(UniformPair<EventBean>), "pair", REF_VIEWEVENTSLIST);
             {
                 if (forge.IsSelectRStream) {
-                    forEach.LocalMethod(getSelectListEventAddList, ConstantFalse(), REF_ISSYNTHESIZE, Ref("oldEvents"));
+                    forEach.InstanceMethod(
+                        getSelectListEventAddList,
+                        ConstantFalse(),
+                        REF_ISSYNTHESIZE,
+                        Ref("oldEvents"));
                     if (forge.IsSorting) {
                         forEach.ExprDotMethod(
-                            Ref("oldEventsSortKey"), "add",
+                            Ref("oldEventsSortKey"),
+                            "add",
                             ExprDotMethod(
-                                REF_ORDERBYPROCESSOR, "getSortKey", ConstantNull(), ConstantFalse(),
+                                REF_ORDERBYPROCESSOR,
+                                "getSortKey",
+                                ConstantNull(),
+                                ConstantFalse(),
                                 REF_AGENTINSTANCECONTEXT));
                     }
                 }
 
                 forEach.StaticMethod(
-                    typeof(ResultSetProcessorUtil), METHOD_APPLYAGGVIEWRESULT, REF_AGGREGATIONSVC,
-                    REF_AGENTINSTANCECONTEXT, Cast(typeof(EventBean[]), ExprDotMethod(Ref("pair"), "getFirst")),
-                    Cast(typeof(EventBean[]), ExprDotMethod(Ref("pair"), "getSecond")), Ref("eventsPerStream"));
-                forEach.LocalMethod(getSelectListEventAddList, ConstantTrue(), REF_ISSYNTHESIZE, Ref("newEvents"));
+                    typeof(ResultSetProcessorUtil),
+                    METHOD_APPLYAGGVIEWRESULT,
+                    REF_AGGREGATIONSVC,
+                    REF_AGENTINSTANCECONTEXT,
+                    Cast(typeof(EventBean[]), ExprDotMethod(Ref("pair"), "getFirst")),
+                    Cast(typeof(EventBean[]), ExprDotMethod(Ref("pair"), "getSecond")),
+                    Ref("eventsPerStream"));
+                forEach.InstanceMethod(getSelectListEventAddList, ConstantTrue(), REF_ISSYNTHESIZE, Ref("newEvents"));
                 if (forge.IsSorting) {
                     forEach.ExprDotMethod(
-                        Ref("newEventsSortKey"), "add",
+                        Ref("newEventsSortKey"),
+                        "add",
                         ExprDotMethod(
-                            REF_ORDERBYPROCESSOR, "getSortKey", ConstantNull(), ConstantTrue(),
+                            REF_ORDERBYPROCESSOR,
+                            "getSortKey",
+                            ConstantNull(),
+                            ConstantTrue(),
                             REF_AGENTINSTANCECONTEXT));
                 }
 
@@ -440,20 +518,27 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowforall
 
             var ifEmpty = method.Block.IfCondition(Not(ExprDotMethod(REF_VIEWEVENTSLIST, "isEmpty")));
             FinalizeOutputMaySortMayRStreamCodegen(
-                ifEmpty, Ref("newEvents"), Ref("newEventsSortKey"), Ref("oldEvents"), Ref("oldEventsSortKey"),
-                forge.IsSelectRStream, forge.IsSorting);
+                ifEmpty,
+                Ref("newEvents"),
+                Ref("newEventsSortKey"),
+                Ref("oldEvents"),
+                Ref("oldEventsSortKey"),
+                forge.IsSelectRStream,
+                forge.IsSorting);
 
-            method.Block.DeclareVar(
-                    typeof(EventBean[]), "newEventsArr",
+            method.Block.DeclareVar<EventBean[]>(
+                    "newEventsArr",
                     LocalMethod(getSelectListEventAsArray, ConstantTrue(), REF_ISSYNTHESIZE, ConstantFalse()))
-                .DeclareVar(
-                    typeof(EventBean[]), "oldEventsArr",
+                .DeclareVar<EventBean[]>(
+                    "oldEventsArr",
                     forge.IsSelectRStream
                         ? LocalMethod(getSelectListEventAsArray, ConstantFalse(), REF_ISSYNTHESIZE, ConstantFalse())
                         : ConstantNull())
                 .MethodReturn(
                     StaticMethod(
-                        typeof(ResultSetProcessorUtil), METHOD_TOPAIRNULLIFALLNULL, Ref("newEventsArr"),
+                        typeof(ResultSetProcessorUtil),
+                        METHOD_TOPAIRNULLIFALLNULL,
+                        Ref("newEventsArr"),
                         Ref("oldEventsArr")));
         }
 
@@ -465,46 +550,54 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowforall
         {
             var getSelectListEventSingle = GetSelectListEventSingleCodegen(forge, classScope, instance);
 
-            method.Block.DeclareVar(typeof(EventBean), "lastOldEvent", ConstantNull())
-                .DeclareVar(typeof(EventBean), "lastNewEvent", ConstantNull())
-                .DeclareVar(typeof(EventBean[]), "eventsPerStream", NewArrayByLength(typeof(EventBean), Constant(1)));
+            method.Block.DeclareVar<EventBean>("lastOldEvent", ConstantNull())
+                .DeclareVar<EventBean>("lastNewEvent", ConstantNull())
+                .DeclareVar<EventBean[]>("eventsPerStream", NewArrayByLength(typeof(EventBean), Constant(1)));
 
             {
                 var forEach = method.Block.ForEach(typeof(UniformPair<EventBean>), "pair", REF_VIEWEVENTSLIST);
                 if (forge.IsSelectRStream) {
                     forEach.IfCondition(EqualsNull(Ref("lastOldEvent")))
                         .AssignRef(
-                            "lastOldEvent", LocalMethod(getSelectListEventSingle, ConstantFalse(), REF_ISSYNTHESIZE))
+                            "lastOldEvent",
+                            LocalMethod(getSelectListEventSingle, ConstantFalse(), REF_ISSYNTHESIZE))
                         .BlockEnd();
                 }
 
                 forEach.StaticMethod(
-                    typeof(ResultSetProcessorUtil), METHOD_APPLYAGGVIEWRESULT, REF_AGGREGATIONSVC,
-                    REF_AGENTINSTANCECONTEXT, Cast(typeof(EventBean[]), ExprDotMethod(Ref("pair"), "getFirst")),
-                    Cast(typeof(EventBean[]), ExprDotMethod(Ref("pair"), "getSecond")), Ref("eventsPerStream"));
+                    typeof(ResultSetProcessorUtil),
+                    METHOD_APPLYAGGVIEWRESULT,
+                    REF_AGGREGATIONSVC,
+                    REF_AGENTINSTANCECONTEXT,
+                    Cast(typeof(EventBean[]), ExprDotMethod(Ref("pair"), "getFirst")),
+                    Cast(typeof(EventBean[]), ExprDotMethod(Ref("pair"), "getSecond")),
+                    Ref("eventsPerStream"));
                 forEach.AssignRef(
-                    "lastNewEvent", LocalMethod(getSelectListEventSingle, ConstantTrue(), REF_ISSYNTHESIZE));
+                    "lastNewEvent",
+                    LocalMethod(getSelectListEventSingle, ConstantTrue(), REF_ISSYNTHESIZE));
             }
 
             {
                 var ifEmpty = method.Block.IfCondition(ExprDotMethod(REF_VIEWEVENTSLIST, "isEmpty"));
                 if (forge.IsSelectRStream) {
                     ifEmpty.AssignRef(
-                            "lastOldEvent", LocalMethod(getSelectListEventSingle, ConstantFalse(), REF_ISSYNTHESIZE))
+                            "lastOldEvent",
+                            LocalMethod(getSelectListEventSingle, ConstantFalse(), REF_ISSYNTHESIZE))
                         .AssignRef("lastNewEvent", Ref("lastOldEvent"));
                 }
                 else {
                     ifEmpty.AssignRef(
-                        "lastNewEvent", LocalMethod(getSelectListEventSingle, ConstantTrue(), REF_ISSYNTHESIZE));
+                        "lastNewEvent",
+                        LocalMethod(getSelectListEventSingle, ConstantTrue(), REF_ISSYNTHESIZE));
                 }
             }
 
             method.Block
-                .DeclareVar(
-                    typeof(EventBean[]), "lastNew",
+                .DeclareVar<EventBean[]>(
+                    "lastNew",
                     StaticMethod(typeof(CollectionUtil), CollectionUtil.METHOD_TOARRAYMAYNULL, Ref("lastNewEvent")))
-                .DeclareVar(
-                    typeof(EventBean[]), "lastOld",
+                .DeclareVar<EventBean[]>(
+                    "lastOld",
                     StaticMethod(typeof(CollectionUtil), CollectionUtil.METHOD_TOARRAYMAYNULL, Ref("lastOldEvent")))
                 .IfCondition(And(EqualsNull(Ref("lastNew")), EqualsNull(Ref("lastOld"))))
                 .BlockReturn(ConstantNull())
@@ -519,9 +612,11 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowforall
         {
             var selectList = GetSelectListEventsAsArrayCodegen(forge, classScope, instance);
             var method = parent.MakeChild(
-                typeof(IEnumerator<EventBean>), typeof(ResultSetProcessorRowForAllImpl), classScope);
-            method.Block.DeclareVar(
-                    typeof(EventBean[]), "events",
+                typeof(IEnumerator<EventBean>),
+                typeof(ResultSetProcessorRowForAllImpl),
+                classScope);
+            method.Block.DeclareVar<EventBean[]>(
+                    "events",
                     LocalMethod(selectList, ConstantTrue(), ConstantTrue(), ConstantFalse()))
                 .IfRefNull("events")
                 .BlockReturn(EnumValue(typeof(CollectionUtil), "NULL_EVENT_ITERATOR"))
@@ -539,20 +634,29 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowforall
                     method.Block.IfCondition(
                             Not(
                                 LocalMethod(
-                                    instance.Methods.GetMethod("evaluateHavingClause"), ConstantNull(), REF_ISNEWDATA,
+                                    instance.Methods.GetMethod("evaluateHavingClause"),
+                                    ConstantNull(),
+                                    REF_ISNEWDATA,
                                     REF_AGENTINSTANCECONTEXT)))
                         .BlockReturn(ConstantNull());
                 }
 
                 method.Block.MethodReturn(
                     ExprDotMethod(
-                        REF_SELECTEXPRPROCESSOR, "process", EnumValue(typeof(CollectionUtil), "EVENTBEANARRAY_EMPTY"),
-                        REF_ISNEWDATA, REF_ISSYNTHESIZE, REF_AGENTINSTANCECONTEXT));
+                        REF_SELECTEXPRPROCESSOR,
+                        "process",
+                        EnumValue(typeof(CollectionUtil), "EVENTBEANARRAY_EMPTY"),
+                        REF_ISNEWDATA,
+                        REF_ISSYNTHESIZE,
+                        REF_AGENTINSTANCECONTEXT));
             };
             return instance.Methods.AddMethod(
-                typeof(EventBean), "getSelectListEventSingle",
+                typeof(EventBean),
+                "getSelectListEventSingle",
                 CodegenNamedParam.From(typeof(bool), NAME_ISNEWDATA, typeof(bool), NAME_ISSYNTHESIZE),
-                typeof(ResultSetProcessorRowForAllImpl), classScope, code);
+                typeof(ResultSetProcessorRowForAllImpl),
+                classScope,
+                code);
         }
 
         protected internal static CodegenMethod GetSelectListEventsAddListCodegen(
@@ -565,25 +669,37 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowforall
                     method.Block.IfCondition(
                             Not(
                                 LocalMethod(
-                                    instance.Methods.GetMethod("EvaluateHavingClause"), ConstantNull(), REF_ISNEWDATA,
+                                    instance.Methods.GetMethod("EvaluateHavingClause"),
+                                    ConstantNull(),
+                                    REF_ISNEWDATA,
                                     REF_AGENTINSTANCECONTEXT)))
                         .BlockReturnNoValue();
                 }
 
-                method.Block.DeclareVar(
-                        typeof(EventBean), "theEvent",
+                method.Block.DeclareVar<EventBean>(
+                        "theEvent",
                         ExprDotMethod(
-                            REF_SELECTEXPRPROCESSOR, "process",
-                            EnumValue(typeof(CollectionUtil), "EVENTBEANARRAY_EMPTY"), REF_ISNEWDATA, REF_ISSYNTHESIZE,
+                            REF_SELECTEXPRPROCESSOR,
+                            "process",
+                            EnumValue(typeof(CollectionUtil), "EVENTBEANARRAY_EMPTY"),
+                            REF_ISNEWDATA,
+                            REF_ISSYNTHESIZE,
                             REF_AGENTINSTANCECONTEXT))
                     .Expression(ExprDotMethod(Ref("resultEvents"), "add", Ref("theEvent")));
             };
             return instance.Methods.AddMethod(
-                typeof(void), "getSelectListEventsAddList",
+                typeof(void),
+                "getSelectListEventsAddList",
                 CodegenNamedParam.From(
-                    typeof(bool), NAME_ISNEWDATA, typeof(bool), NAME_ISSYNTHESIZE, typeof(IList<object>),
+                    typeof(bool),
+                    NAME_ISNEWDATA,
+                    typeof(bool),
+                    NAME_ISSYNTHESIZE,
+                    typeof(IList<object>),
                     "resultEvents"),
-                typeof(ResultSetProcessorRowForAllImpl), classScope, code);
+                typeof(ResultSetProcessorRowForAllImpl),
+                classScope,
+                code);
         }
 
         protected internal static CodegenMethod GetSelectListEventsAsArrayCodegen(
@@ -596,26 +712,39 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowforall
                     method.Block.IfCondition(
                             Not(
                                 LocalMethod(
-                                    instance.Methods.GetMethod("evaluateHavingClause"), ConstantNull(), REF_ISNEWDATA,
+                                    instance.Methods.GetMethod("evaluateHavingClause"),
+                                    ConstantNull(),
+                                    REF_ISNEWDATA,
                                     REF_AGENTINSTANCECONTEXT)))
                         .BlockReturn(ConstantNull());
                 }
 
-                method.Block.DeclareVar(
-                        typeof(EventBean), "theEvent",
+                method.Block.DeclareVar<EventBean>(
+                        "theEvent",
                         ExprDotMethod(
-                            REF_SELECTEXPRPROCESSOR, "process",
-                            EnumValue(typeof(CollectionUtil), "EVENTBEANARRAY_EMPTY"), REF_ISNEWDATA, REF_ISSYNTHESIZE,
+                            REF_SELECTEXPRPROCESSOR,
+                            "process",
+                            EnumValue(typeof(CollectionUtil), "EVENTBEANARRAY_EMPTY"),
+                            REF_ISNEWDATA,
+                            REF_ISSYNTHESIZE,
                             REF_AGENTINSTANCECONTEXT))
-                    .DeclareVar(typeof(EventBean[]), "result", NewArrayByLength(typeof(EventBean), Constant(1)))
+                    .DeclareVar<EventBean[]>("result", NewArrayByLength(typeof(EventBean), Constant(1)))
                     .AssignArrayElement("result", Constant(0), Ref("theEvent"))
                     .MethodReturn(Ref("result"));
             };
             return instance.Methods.AddMethod(
-                typeof(EventBean[]), "getSelectListEventsAsArray",
+                typeof(EventBean[]),
+                "getSelectListEventsAsArray",
                 CodegenNamedParam.From(
-                    typeof(bool), NAME_ISNEWDATA, typeof(bool), NAME_ISSYNTHESIZE, typeof(bool), "join"),
-                typeof(ResultSetProcessorRowForAllImpl), classScope, code);
+                    typeof(bool),
+                    NAME_ISNEWDATA,
+                    typeof(bool),
+                    NAME_ISSYNTHESIZE,
+                    typeof(bool),
+                    "join"),
+                typeof(ResultSetProcessorRowForAllImpl),
+                classScope,
+                code);
         }
     }
 } // end of namespace

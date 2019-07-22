@@ -9,6 +9,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+
 using com.espertech.esper.common.@internal.bytecodemodel.core;
 
 namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
@@ -29,13 +30,12 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
 
         public void Render(
             StringBuilder builder,
-            IDictionary<Type, string> imports,
             bool isInnerClass)
         {
             builder.Append("new ");
-            CodeGenerationHelper.AppendClassName(builder, _clazz, null, imports);
+            CodeGenerationHelper.AppendClassName(builder, _clazz);
             builder.Append("(");
-            CodegenExpressionBuilder.RenderExpressions(builder, _params, imports, isInnerClass);
+            CodegenExpressionBuilder.RenderExpressions(builder, _params, isInnerClass);
             builder.Append(")");
         }
 

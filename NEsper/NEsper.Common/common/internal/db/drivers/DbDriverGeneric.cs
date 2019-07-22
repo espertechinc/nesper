@@ -81,8 +81,7 @@ namespace com.espertech.esper.common.@internal.db.drivers
             : base(info, context)
         {
             var container = (IContainer) context.Context;
-            if (container == null)
-            {
+            if (container == null) {
                 throw new IllegalStateException("context is not set to container");
             }
 
@@ -124,19 +123,20 @@ namespace com.espertech.esper.common.@internal.db.drivers
         /// <returns></returns>
         public override DbConnection CreateConnection()
         {
-            try
-            {
+            try {
                 var dbConnection = _dbProviderFactory.CreateConnection();
                 dbConnection.ConnectionString = ConnectionString;
                 dbConnection.Open();
                 return dbConnection;
             }
-            catch (DbException ex)
-            {
+            catch (DbException ex) {
                 var detail = "DbException: " + ex.Message + " VendorError: " + ex.ErrorCode;
                 throw new DatabaseConfigException(
-                    "Error obtaining database connection using connection-string '" + ConnectionString +
-                    "' with detail " + detail, ex);
+                    "Error obtaining database connection using connection-string '" +
+                    ConnectionString +
+                    "' with detail " +
+                    detail,
+                    ex);
             }
         }
 

@@ -7,12 +7,14 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.enummethod.codegen;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.enummethod.eval
@@ -40,14 +42,18 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
         {
             var scope = new ExprForgeCodegenSymbol(false, null);
             var methodNode = codegenMethodScope.MakeChildWithScope(
-                    sumMethodFactory.ValueType, typeof(EnumSumScalarForge), scope, codegenClassScope)
+                    sumMethodFactory.ValueType,
+                    typeof(EnumSumScalarForge),
+                    scope,
+                    codegenClassScope)
                 .AddParam(EnumForgeCodegenNames.PARAMS);
             var block = methodNode.Block;
 
             sumMethodFactory.CodegenDeclare(block);
 
             var forEach = block.ForEach(typeof(object), "next", EnumForgeCodegenNames.REF_ENUMCOLL)
-                .IfRefNull("next").BlockContinue();
+                .IfRefNull("next")
+                .BlockContinue();
             sumMethodFactory.CodegenEnterObjectTypedNonNull(forEach, Ref("next"));
 
             sumMethodFactory.CodegenReturn(block);

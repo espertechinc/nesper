@@ -291,8 +291,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                 var stmtTextTwo = "@Name('s0') select a.Id, b.Id from MyStreamTE";
                 env.CompileDeploy(stmtTextTwo, path).AddListener("s0");
 
-                var eventOne = MakeMap(new[] {new object[] {"id", "A1"}});
-                var eventTwo = MakeMap(new[] {new object[] {"id", "B1"}});
+                var eventOne = MakeMap(new[] {new object[] {"Id", "A1"}});
+                var eventTwo = MakeMap(new[] {new object[] {"Id", "B1"}});
                 env.SendEventMap(eventOne, "AEventTE");
                 env.SendEventMap(eventTwo, "BEventTE");
 
@@ -336,14 +336,14 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                 var stmtTextOne = "insert into MyStreamComplex select nested as inneritem from SupportBeanComplexProps";
                 env.CompileDeploy(stmtTextOne, path);
 
-                var stmtTextTwo = "@Name('s0') select inneritem.nestedValue as result from MyStreamComplex";
+                var stmtTextTwo = "@Name('s0') select inneritem.NestedValue as result from MyStreamComplex";
                 env.CompileDeploy(stmtTextTwo, path).AddListener("s0");
 
                 env.SendEventBean(SupportBeanComplexProps.MakeDefaultBean());
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     "result".SplitCsv(),
-                    new object[] {"nestedValue"});
+                    new object[] {"NestedValue"});
 
                 env.UndeployAll();
             }
@@ -360,8 +360,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                 TryInvalidCompile(
                     env,
                     path,
-                    "select inneritem.nestedValue as result from MyStreamComplexMap",
-                    "Failed to valIdate select-clause expression 'inneritem.nestedValue': Failed to resolve property 'inneritem.nestedValue' (property 'inneritem' is a mapped property and requires keyed access) [select inneritem.nestedValue as result from MyStreamComplexMap]");
+                    "select inneritem.NestedValue as result from MyStreamComplexMap",
+                    "Failed to valIdate select-clause expression 'inneritem.NestedValue': Failed to resolve property 'inneritem.NestedValue' (property 'inneritem' is a mapped property and requires keyed access) [select inneritem.NestedValue as result from MyStreamComplexMap]");
 
                 // test invalid unwrap-properties
                 TryInvalidCompile(

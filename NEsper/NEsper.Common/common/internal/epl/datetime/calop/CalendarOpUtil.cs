@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.epl.datetime.reformatop;
 using com.espertech.esper.common.@internal.epl.expression.core;
@@ -44,13 +45,17 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
             }
 
             var fieldname = (string) exprNode.Forge.ExprEvaluator.Evaluate(null, true, null);
-            try
-            {
+            try {
                 return EnumHelper.Parse<DateTimeFieldEnum>(fieldname);
             }
             catch (ArgumentException e) {
                 throw new ExprValidationException(
-                    GetMessage(methodName) + " datetime-field name '" + fieldname + "' is not recognized, " + GetValidFieldNamesMessage(), e);
+                    GetMessage(methodName) +
+                    " datetime-field name '" +
+                    fieldname +
+                    "' is not recognized, " +
+                    GetValidFieldNamesMessage(),
+                    e);
             }
         }
 
@@ -60,7 +65,8 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
             ExprNode exprNode)
         {
             if (!(inputType is ClassEPType)) {
-                throw new ExprValidationException(GetMessage(methodName) + " requires a datetime input value but received " + inputType);
+                throw new ExprValidationException(
+                    GetMessage(methodName) + " requires a datetime input value but received " + inputType);
             }
 
             if (!exprNode.Forge.ForgeConstantType.IsConstant) {
@@ -75,7 +81,10 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
 
             object format = null;
             if (formatForge.ForgeConstantType.IsCompileTimeConstant) {
-                format = ExprNodeUtilityEvaluate.EvaluateValidationTimeNoStreams(exprNode.Forge.ExprEvaluator, null, "date format");
+                format = ExprNodeUtilityEvaluate.EvaluateValidationTimeNoStreams(
+                    exprNode.Forge.ExprEvaluator,
+                    null,
+                    "date format");
                 if (format == null) {
                     throw new ExprValidationException(GetMessage(methodName) + " invalid null format object");
                 }
@@ -83,10 +92,10 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
 
             // handle legacy date
             var input = (ClassEPType) inputType;
-            if (input.Clazz.GetBoxedType() == typeof(long?)
-                || TypeHelper.IsSubclassOrImplementsInterface(input.Clazz, typeof(DateTime))
-                || TypeHelper.IsSubclassOrImplementsInterface(input.Clazz, typeof(DateTimeOffset))
-                || TypeHelper.IsSubclassOrImplementsInterface(input.Clazz, typeof(DateTimeEx))) {
+            if (input.Clazz.GetBoxedType() == typeof(long?) ||
+                TypeHelper.IsSubclassOrImplementsInterface(input.Clazz, typeof(DateTime)) ||
+                TypeHelper.IsSubclassOrImplementsInterface(input.Clazz, typeof(DateTimeOffset)) ||
+                TypeHelper.IsSubclassOrImplementsInterface(input.Clazz, typeof(DateTimeEx))) {
                 if (TypeHelper.IsSubclassOrImplementsInterface(formatType, typeof(DateFormat))) {
                     return new ReformatFormatForgeDesc(typeof(DateFormat));
                 }
@@ -98,7 +107,8 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
                         }
                         catch (Exception ex) {
                             throw new ExprValidationException(
-                                GetMessage(methodName) + " invalid format string (SimpleDateFormat): " + ex.Message, ex);
+                                GetMessage(methodName) + " invalid format string (SimpleDateFormat): " + ex.Message,
+                                ex);
                         }
                     }
 
@@ -119,7 +129,9 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
                         DateTimeFormat.For((string) format);
                     }
                     catch (Exception ex) {
-                        throw new ExprValidationException(GetMessage(methodName) + " invalid format string (DateTimeFormatter): " + ex.Message, ex);
+                        throw new ExprValidationException(
+                            GetMessage(methodName) + " invalid format string (DateTimeFormatter): " + ex.Message,
+                            ex);
                     }
                 }
 
@@ -135,7 +147,11 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
             Type received)
         {
             return new ExprValidationException(
-                GetMessage(methodName) + " invalid format, expected string-format or " + expected.Name + " but received " + received.GetCleanName());
+                GetMessage(methodName) +
+                " invalid format, expected string-format or " +
+                expected.Name +
+                " but received " +
+                received.GetCleanName());
         }
 
         private static string ValidateConstant(

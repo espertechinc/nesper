@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.client.dataflow.core;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;

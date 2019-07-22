@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.client.configuration;
 using com.espertech.esper.common.@internal.compile.stage1.spec;
 using com.espertech.esper.common.@internal.compile.stage2;
@@ -53,7 +54,8 @@ namespace com.espertech.esper.common.@internal.view.core
 
         public BeanEventTypeFactory BeanEventTypeFactoryPrivate => CompileTimeServices.BeanEventTypeFactoryPrivate;
 
-        public EventTypeCompileTimeRegistry EventTypeModuleCompileTimeRegistry => CompileTimeServices.EventTypeCompileTimeRegistry;
+        public EventTypeCompileTimeRegistry EventTypeModuleCompileTimeRegistry =>
+            CompileTimeServices.EventTypeCompileTimeRegistry;
 
         public Attribute[] Annotations => StatementRawInfo.Annotations;
 

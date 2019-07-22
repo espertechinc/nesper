@@ -7,19 +7,22 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat.collections;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.join.querygraph
 {
     public class QueryGraphValueEntryCustomForge : QueryGraphValueEntryForge
     {
-        private readonly IDictionary<QueryGraphValueEntryCustomKeyForge, QueryGraphValueEntryCustomOperationForge> operations =
-            new LinkedHashMap<QueryGraphValueEntryCustomKeyForge, QueryGraphValueEntryCustomOperationForge>();
+        private readonly IDictionary<QueryGraphValueEntryCustomKeyForge, QueryGraphValueEntryCustomOperationForge>
+            operations =
+                new LinkedHashMap<QueryGraphValueEntryCustomKeyForge, QueryGraphValueEntryCustomOperationForge>();
 
         public CodegenExpression Make(
             CodegenMethodScope parent,
@@ -33,12 +36,16 @@ namespace com.espertech.esper.common.@internal.epl.join.querygraph
                 map = StaticMethod(typeof(Collections), "emptyMap");
             }
             else {
-                method.Block.DeclareVar(
-                    typeof(IDictionary<string, object>), "map",
-                    NewInstance(typeof(LinkedHashMap<string, object>), Constant(CollectionUtil.CapacityHashMap(operations.Count))));
+                method.Block.DeclareVar<IDictionary<string, object>>(
+                    "map",
+                    NewInstance(
+                        typeof(LinkedHashMap<string, object>),
+                        Constant(CollectionUtil.CapacityHashMap(operations.Count))));
                 foreach (var entry in operations) {
                     method.Block.ExprDotMethod(
-                        Ref("map"), "put", entry.Key.Make(parent, symbols, classScope),
+                        Ref("map"),
+                        "put",
+                        entry.Key.Make(parent, symbols, classScope),
                         entry.Value.Make(parent, symbols, classScope));
                 }
 
@@ -46,14 +53,16 @@ namespace com.espertech.esper.common.@internal.epl.join.querygraph
             }
 
             method.Block
-                .DeclareVar(
-                    typeof(QueryGraphValueEntryCustom), "custom", NewInstance(typeof(QueryGraphValueEntryCustom)))
+                .DeclareVar<QueryGraphValueEntryCustom>(
+                    "custom",
+                    NewInstance(typeof(QueryGraphValueEntryCustom)))
                 .SetProperty(Ref("custom"), "Operations", map)
                 .MethodReturn(Ref("custom"));
             return LocalMethod(method);
         }
 
-        public IDictionary<QueryGraphValueEntryCustomKeyForge, QueryGraphValueEntryCustomOperationForge> Operations => operations;
+        public IDictionary<QueryGraphValueEntryCustomKeyForge, QueryGraphValueEntryCustomOperationForge> Operations =>
+            operations;
 
         public void MergeInto(
             IDictionary<QueryGraphValueEntryCustomKeyForge, QueryGraphValueEntryCustomOperationForge> customIndexOps)

@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -14,6 +15,7 @@ using com.espertech.esper.common.@internal.epl.enummethod.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.type;
 using com.espertech.esper.compat;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.enummethod.eval
@@ -63,12 +65,14 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                 codegenClassScope.AddOrGetFieldSharable(new MathContextCodegenField(optionalMathContext));
             var method = codegenMethodScope
                 .MakeChild(typeof(decimal), typeof(EnumAverageScalarForge), codegenClassScope)
-                .AddParam(EnumForgeCodegenNames.PARAMS).Block
-                .DeclareVar(
-                    typeof(EnumAverageDecimalEventsForgeEval.AggregatorAvgBigDecimal), "agg",
+                .AddParam(EnumForgeCodegenNames.PARAMS)
+                .Block
+                .DeclareVar<EnumAverageDecimalEventsForgeEval.AggregatorAvgBigDecimal>(
+                    "agg",
                     NewInstance(typeof(EnumAverageDecimalEventsForgeEval.AggregatorAvgBigDecimal), math))
                 .ForEach(typeof(object), "num", EnumForgeCodegenNames.REF_ENUMCOLL)
-                .IfRefNull("num").BlockContinue()
+                .IfRefNull("num")
+                .BlockContinue()
                 .Expression(ExprDotMethod(Ref("agg"), "enter", Ref("num")))
                 .BlockEnd()
                 .MethodReturn(ExprDotMethod(Ref("agg"), "getValue"));

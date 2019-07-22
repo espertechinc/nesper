@@ -47,8 +47,8 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
             // Map
             Pair<object, object>[] mapTests = {
                 new Pair<object, object>(Collections.SingletonMap("somekey", "10"), NotExists()),
-                new Pair<object, object>(Collections.SingletonMap("id", "abc"), Exists("abc")),
-                new Pair<object, object>(Collections.SingletonMap("id", 10), Exists(10))
+                new Pair<object, object>(Collections.SingletonMap("Id", "abc"), Exists("abc")),
+                new Pair<object, object>(Collections.SingletonMap("Id", 10), Exists(10))
             };
             RunAssertion(env, MAP_TYPENAME, FMAP, null, mapTests, typeof(object));
 
@@ -73,9 +73,9 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
                 .ResolveAvroSchema(env.Runtime.EventTypeService.GetEventTypePreconfigured(AVRO_TYPENAME));
             var datumEmpty = new GenericRecord(SchemaBuilder.Record(AVRO_TYPENAME));
             var datumOne = new GenericRecord(avroSchema.AsRecordSchema());
-            datumOne.Put("id", 101);
+            datumOne.Put("Id", 101);
             var datumTwo = new GenericRecord(avroSchema.AsRecordSchema());
-            datumTwo.Put("id", null);
+            datumTwo.Put("Id", null);
             Pair<object, object>[] avroTests = {
                 new Pair<object, object>(datumEmpty, NotExists()),
                 new Pair<object, object>(datumOne, Exists(101)),

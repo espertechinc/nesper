@@ -48,19 +48,19 @@ namespace com.espertech.esper.common.@internal.epl.script.compiletime
 
             // try self-originated protected types first
             ExpressionScriptProvided localExpr = locals.Scripts.Get(key);
-            if (localExpr != null)
-            {
+            if (localExpr != null) {
                 return localExpr;
             }
 
-            try
-            {
+            try {
                 var expression = path.GetAnyModuleExpectSingle(
-                    new NameAndParamNum(name, numParameters), moduleUses);
-                if (expression != null)
-                {
-                    if (!NameAccessModifierExtensions.Visible(expression.First.Visibility, expression.First.ModuleName, moduleName))
-                    {
+                    new NameAndParamNum(name, numParameters),
+                    moduleUses);
+                if (expression != null) {
+                    if (!NameAccessModifierExtensions.Visible(
+                        expression.First.Visibility,
+                        expression.First.ModuleName,
+                        moduleName)) {
                         return null;
                     }
 
@@ -68,8 +68,7 @@ namespace com.espertech.esper.common.@internal.epl.script.compiletime
                     return expression.First;
                 }
             }
-            catch (PathException e)
-            {
+            catch (PathException e) {
                 throw CompileTimeResolverUtil.MakePathAmbiguous(PathRegistryObjectType.SCRIPT, name, e);
             }
 

@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.filterspec;
 using com.espertech.esper.common.@internal.schedule;
@@ -57,7 +58,10 @@ namespace com.espertech.esper.common.@internal.epl.pattern.observer
         {
             AgentInstanceContext agentInstanceContext = observerEventEvaluator.Context.AgentInstanceContext;
             agentInstanceContext.InstrumentationProvider.QPatternObserverScheduledEval();
-            agentInstanceContext.AuditProvider.ScheduleFire(agentInstanceContext, ScheduleObjectType.pattern, NAME_AUDITPROVIDER_SCHEDULE);
+            agentInstanceContext.AuditProvider.ScheduleFire(
+                agentInstanceContext,
+                ScheduleObjectType.pattern,
+                NAME_AUDITPROVIDER_SCHEDULE);
             observerEventEvaluator.ObserverEvaluateTrue(beginState, true);
             isTimerActive = false;
             agentInstanceContext.InstrumentationProvider.APatternObserverScheduledEval();
@@ -70,14 +74,22 @@ namespace com.espertech.esper.common.@internal.epl.pattern.observer
             }
 
             scheduleHandle = new EPStatementHandleCallbackSchedule(
-                observerEventEvaluator.Context.AgentInstanceContext.EpStatementAgentInstanceHandle, this);
+                observerEventEvaluator.Context.AgentInstanceContext.EpStatementAgentInstanceHandle,
+                this);
             AgentInstanceContext agentInstanceContext = observerEventEvaluator.Context.AgentInstanceContext;
             SchedulingService schedulingService = agentInstanceContext.SchedulingService;
             ImportServiceRuntime importService = agentInstanceContext.ImportServiceRuntime;
             long nextScheduledTime = ScheduleComputeHelper.ComputeDeltaNextOccurance(
-                scheduleSpec, schedulingService.Time, importService.TimeZone, importService.TimeAbacus);
+                scheduleSpec,
+                schedulingService.Time,
+                importService.TimeZone,
+                importService.TimeAbacus);
             agentInstanceContext.AuditProvider.ScheduleAdd(
-                nextScheduledTime, agentInstanceContext, scheduleHandle, ScheduleObjectType.pattern, NAME_AUDITPROVIDER_SCHEDULE);
+                nextScheduledTime,
+                agentInstanceContext,
+                scheduleHandle,
+                ScheduleObjectType.pattern,
+                NAME_AUDITPROVIDER_SCHEDULE);
             schedulingService.Add(nextScheduledTime, scheduleHandle, scheduleSlot);
             isTimerActive = true;
         }
@@ -87,7 +99,10 @@ namespace com.espertech.esper.common.@internal.epl.pattern.observer
             if (isTimerActive) {
                 AgentInstanceContext agentInstanceContext = observerEventEvaluator.Context.AgentInstanceContext;
                 agentInstanceContext.AuditProvider.ScheduleRemove(
-                    agentInstanceContext, scheduleHandle, ScheduleObjectType.pattern, NAME_AUDITPROVIDER_SCHEDULE);
+                    agentInstanceContext,
+                    scheduleHandle,
+                    ScheduleObjectType.pattern,
+                    NAME_AUDITPROVIDER_SCHEDULE);
                 agentInstanceContext.SchedulingService.Remove(scheduleHandle, scheduleSlot);
                 isTimerActive = false;
                 scheduleHandle = null;

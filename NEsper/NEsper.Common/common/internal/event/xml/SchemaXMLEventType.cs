@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Text;
 using System.Xml;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.configuration.common;
 using com.espertech.esper.common.client.meta;
@@ -49,7 +50,11 @@ namespace com.espertech.esper.common.@internal.@event.xml
             EventTypeNameResolver eventTypeResolver,
             XMLFragmentEventTypeFactory xmlEventTypeFactory)
             : base(
-                eventTypeMetadata, config, eventBeanTypedEventFactory, eventTypeResolver, xmlEventTypeFactory)
+                eventTypeMetadata,
+                config,
+                eventBeanTypedEventFactory,
+                eventTypeResolver,
+                xmlEventTypeFactory)
         {
             propertyGetterCache = new Dictionary<string, EventPropertyGetterSPI>();
             SchemaModel = schemaModel;
@@ -85,7 +90,8 @@ namespace com.espertech.esper.common.@internal.@event.xml
                 }
 
                 if (complex.IsArray) {
-                    returnType = typeof(XmlNode[]); // We use Node[] for arrays and NodeList for XPath-Expressions returning Nodeset
+                    returnType =
+                        typeof(XmlNode[]); // We use Node[] for arrays and NodeList for XPath-Expressions returning Nodeset
                     propertyComponentType = typeof(XmlNode);
                 }
 
@@ -96,7 +102,14 @@ namespace com.espertech.esper.common.@internal.@event.xml
 
                 var getter = DoResolvePropertyGetter(propertyName, true);
                 var desc = new EventPropertyDescriptor(
-                    propertyName, returnType, propertyComponentType, false, false, complex.IsArray, false, isFragment);
+                    propertyName,
+                    returnType,
+                    propertyComponentType,
+                    false,
+                    false,
+                    complex.IsArray,
+                    false,
+                    isFragment);
                 var @explicit = new ExplicitPropertyDescriptor(desc, getter, false, null);
                 additionalSchemaProps.Add(@explicit);
             }
@@ -107,7 +120,14 @@ namespace com.espertech.esper.common.@internal.@event.xml
                 var returnType = SchemaUtil.ToReturnType(simple);
                 var getter = DoResolvePropertyGetter(propertyName, true);
                 var desc = new EventPropertyDescriptor(
-                    propertyName, returnType, null, false, false, simple.IsArray, false, false);
+                    propertyName,
+                    returnType,
+                    null,
+                    false,
+                    false,
+                    simple.IsArray,
+                    false,
+                    false);
                 var @explicit = new ExplicitPropertyDescriptor(desc, getter, false, null);
                 additionalSchemaProps.Add(@explicit);
             }
@@ -118,7 +138,14 @@ namespace com.espertech.esper.common.@internal.@event.xml
                 var returnType = SchemaUtil.ToReturnType(attribute);
                 var getter = DoResolvePropertyGetter(propertyName, true);
                 var desc = new EventPropertyDescriptor(
-                    propertyName, returnType, null, false, false, false, false, false);
+                    propertyName,
+                    returnType,
+                    null,
+                    false,
+                    false,
+                    false,
+                    false,
+                    false);
                 var @explicit = new ExplicitPropertyDescriptor(desc, getter, false, null);
                 additionalSchemaProps.Add(@explicit);
             }
@@ -171,12 +198,19 @@ namespace com.espertech.esper.common.@internal.@event.xml
                 : RepresentsFragmentOfProperty + "." + property;
             try {
                 newType = XmlEventTypeFactory.GetCreateXMLDOMType(
-                    RepresentsOriginalTypeName, derivedEventTypeName, Metadata.ModuleName, complex, represents);
+                    RepresentsOriginalTypeName,
+                    derivedEventTypeName,
+                    Metadata.ModuleName,
+                    complex,
+                    represents);
             }
             catch (Exception ex) {
                 Log.Error(
-                    "Failed to add dynamic event type for fragment of XML schema for property '" + property + "' :" +
-                    ex.Message, ex);
+                    "Failed to add dynamic event type for fragment of XML schema for property '" +
+                    property +
+                    "' :" +
+                    ex.Message,
+                    ex);
                 return null;
             }
 
@@ -267,7 +301,9 @@ namespace com.espertech.esper.common.@internal.@event.xml
 
                         if (descriptor.PropertyType == typeof(XmlNodeList)) {
                             FragmentFactorySPI fragmentFactory = new FragmentFactoryDOMGetter(
-                                EventBeanTypedEventFactory, this, indexedProp.PropertyNameAtomic);
+                                EventBeanTypedEventFactory,
+                                this,
+                                indexedProp.PropertyNameAtomic);
                             return new XPathPropertyArrayItemGetter(getter, indexedProp.Index, fragmentFactory);
                         }
                     }
@@ -296,7 +332,8 @@ namespace com.espertech.esper.common.@internal.@event.xml
                         }
                         else {
                             getter = new DOMConvertingArrayGetter(
-                                (DOMPropertyGetter) getter, returnType.GetElementType());
+                                (DOMPropertyGetter) getter,
+                                returnType.GetElementType());
                         }
                     }
                 }
@@ -307,8 +344,15 @@ namespace com.espertech.esper.common.@internal.@event.xml
             else {
                 var allowFragments = !ConfigurationEventTypeXMLDOM.IsXPathPropertyExpr;
                 getter = SchemaXMLPropertyParser.GetXPathResolution(
-                    propertyExpression, NamespaceContext, RootElementName, rootElementNamespace, SchemaModel,
-                    EventBeanTypedEventFactory, this, allowFragments, ConfigurationEventTypeXMLDOM.DefaultNamespace);
+                    propertyExpression,
+                    NamespaceContext,
+                    RootElementName,
+                    rootElementNamespace,
+                    SchemaModel,
+                    EventBeanTypedEventFactory,
+                    this,
+                    allowFragments,
+                    ConfigurationEventTypeXMLDOM.DefaultNamespace);
             }
 
             propertyGetterCache.Put(propertyExpression, getter);

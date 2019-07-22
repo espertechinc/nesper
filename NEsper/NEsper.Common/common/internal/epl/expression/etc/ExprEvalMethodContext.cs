@@ -8,12 +8,14 @@
 
 using System;
 using System.IO;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.hook.expr;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.expression.etc
@@ -64,7 +66,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
             CodegenClassScope codegenClassScope)
         {
             var methodNode = codegenMethodScope.MakeChild(
-                typeof(EPLMethodInvocationContext), typeof(ExprEvalMethodContext), codegenClassScope);
+                typeof(EPLMethodInvocationContext),
+                typeof(ExprEvalMethodContext),
+                codegenClassScope);
             var refExprEvalCtx = exprSymbol.GetAddExprEvalCtx(methodNode);
 
             var stmtName = ExprDotMethod(refExprEvalCtx, "getStatementName");
@@ -76,12 +80,20 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
                 .IfCondition(EqualsNull(refExprEvalCtx))
                 .BlockReturn(
                     NewInstance<EPLMethodInvocationContext>(
-                        ConstantNull(), Constant(-1), ConstantNull(),
-                        Constant(functionName), ConstantNull(), ConstantNull()))
+                        ConstantNull(),
+                        Constant(-1),
+                        ConstantNull(),
+                        Constant(functionName),
+                        ConstantNull(),
+                        ConstantNull()))
                 .MethodReturn(
                     NewInstance<EPLMethodInvocationContext>(
-                        stmtName, cpid, runtimeURI, Constant(functionName),
-                        userObject, eventBeanSvc));
+                        stmtName,
+                        cpid,
+                        runtimeURI,
+                        Constant(functionName),
+                        userObject,
+                        eventBeanSvc));
             return LocalMethod(methodNode);
         }
 

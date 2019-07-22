@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
@@ -72,10 +73,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             Type typeOne = Boxing.GetBoxedType(ChildNodes[0].Forge.EvaluationType);
 
             // collections, array or map not supported
-            if ((typeOne.IsArray)
-                || (TypeHelper.IsImplementsInterface(typeOne, typeof(ICollection<object>)))
-                || (TypeHelper.IsImplementsInterface(typeOne, typeof(IDictionary<object, object>)))) {
-                throw new ExprValidationException("Collection or array comparison is not allowed for the IN, ANY, SOME or ALL keywords");
+            if ((typeOne.IsArray) ||
+                (TypeHelper.IsImplementsInterface(typeOne, typeof(ICollection<object>))) ||
+                (TypeHelper.IsImplementsInterface(typeOne, typeof(IDictionary<object, object>)))) {
+                throw new ExprValidationException(
+                    "Collection or array comparison is not allowed for the IN, ANY, SOME or ALL keywords");
             }
 
             IList<Type> comparedTypes = new List<Type>();

@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.filterspec;
@@ -33,7 +34,9 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.filtersvcadapter
             FilterValueSetParam[][] @params,
             int filterCallbackId)
         {
-            var handle = new EPStatementHandleCallbackFilter(agentInstanceContext.EpStatementAgentInstanceHandle, filterHandleCallback);
+            var handle = new EPStatementHandleCallbackFilter(
+                agentInstanceContext.EpStatementAgentInstanceHandle,
+                filterHandleCallback);
             agentInstanceContext.FilterService.Add(eventType, @params, handle);
             handlesPerOp.Put(filterHandleCallback, handle);
         }

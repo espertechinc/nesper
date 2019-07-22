@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.epl.agg.core;
 using com.espertech.esper.common.@internal.epl.expression.core;
@@ -36,7 +37,13 @@ namespace com.espertech.esper.common.@internal.epl.table.strategy
             }
 
             AggregationRow row = ExprTableEvalStrategyUtil.GetRow(@event);
-            return ExprTableEvalStrategyUtil.EvalMap(@event, row, factory.Table.MetaData.Columns, eventsPerStream, isNewData, context);
+            return ExprTableEvalStrategyUtil.EvalMap(
+                @event,
+                row,
+                factory.Table.MetaData.Columns,
+                eventsPerStream,
+                isNewData,
+                context);
         }
 
         public override object[] EvaluateTypableSingle(

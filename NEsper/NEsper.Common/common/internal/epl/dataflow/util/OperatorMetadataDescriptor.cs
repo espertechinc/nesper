@@ -7,11 +7,13 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 using static com.espertech.esper.common.@internal.epl.annotation.AnnotationUtil;
 
@@ -50,10 +52,12 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.util
         {
             CodegenMethod method = parent.MakeChild(typeof(OperatorMetadataDescriptor), this.GetType(), classScope);
             method.Block
-                .DeclareVar(typeof(OperatorMetadataDescriptor), "op", NewInstance(typeof(OperatorMetadataDescriptor)))
+                .DeclareVar<OperatorMetadataDescriptor>("op", NewInstance(typeof(OperatorMetadataDescriptor)))
                 .SetProperty(Ref("op"), "ForgeClass", Constant(forgeClass))
                 .SetProperty(Ref("op"), "OperatorPrettyPrint", Constant(operatorPrettyPrint))
-                .SetProperty(Ref("op"), "OperatorAnnotations",
+                .SetProperty(
+                    Ref("op"),
+                    "OperatorAnnotations",
                     operatorAnnotations == null
                         ? ConstantNull()
                         : LocalMethod(MakeAnnotations(typeof(Attribute[]), operatorAnnotations, method, classScope)))

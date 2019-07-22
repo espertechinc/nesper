@@ -8,6 +8,7 @@
 
 using System;
 using System.IO;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
@@ -20,6 +21,7 @@ using com.espertech.esper.common.@internal.epl.variable.core;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.metrics.instrumentation;
 using com.espertech.esper.compat;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.expression.variable
@@ -87,16 +89,18 @@ namespace com.espertech.esper.common.@internal.epl.expression.variable
             }
 
             var block = methodNode.Block
-                .DeclareVar(typeof(VariableReader), "reader", readerExpression);
+                .DeclareVar<VariableReader>("reader", readerExpression);
             if (VariableMetadata.EventType == null) {
                 block.DeclareVar(
-                        EvaluationType, "value", Cast(EvaluationType, ExprDotMethod(Ref("reader"), "getValue")))
+                        EvaluationType,
+                        "value",
+                        Cast(EvaluationType, ExprDotMethod(Ref("reader"), "getValue")))
                     .MethodReturn(Ref("value"));
             }
             else {
-                block.DeclareVar(typeof(object), "value", ExprDotMethod(Ref("reader"), "getValue"))
+                block.DeclareVar<object>("value", ExprDotMethod(Ref("reader"), "getValue"))
                     .IfRefNullReturnNull("value")
-                    .DeclareVar(typeof(EventBean), "theEvent", Cast(typeof(EventBean), Ref("value")));
+                    .DeclareVar<EventBean>("theEvent", Cast(typeof(EventBean), Ref("value")));
                 if (optSubPropName == null) {
                     block.MethodReturn(Cast(EvaluationType, ExprDotUnderlying(Ref("theEvent"))));
                 }
@@ -118,7 +122,13 @@ namespace com.espertech.esper.common.@internal.epl.expression.variable
             CodegenClassScope classScope)
         {
             return new InstrumentationBuilderExpr(
-                GetType(), this, "ExprVariable", requiredType, parent, symbols, classScope).Build();
+                GetType(),
+                this,
+                "ExprVariable",
+                requiredType,
+                parent,
+                symbols,
+                classScope).Build();
         }
 
         public VariableMetaData VariableMetadata { get; }
@@ -200,7 +210,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.variable
                 }
 
                 // for simple-value variables that are constant and created by the same module and not preconfigured we can use compile-time constant
-                if (VariableMetadata.IsConstant && VariableMetadata.IsCreatedByCurrentModule &&
+                if (VariableMetadata.IsConstant &&
+                    VariableMetadata.IsCreatedByCurrentModule &&
                     VariableMetadata.VariableVisibility != NameAccessModifier.PRECONFIGURED &&
                     VariableMetadata.EventType == null) {
                     return ExprForgeConstantType.COMPILETIMECONST;

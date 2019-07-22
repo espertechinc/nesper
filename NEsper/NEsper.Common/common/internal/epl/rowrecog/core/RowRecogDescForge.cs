@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+
 using com.espertech.esper.collection;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
@@ -21,6 +22,7 @@ using com.espertech.esper.common.@internal.epl.rowrecog.nfa;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat.collections;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.rowrecog.core
@@ -134,8 +136,12 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
                         var aggSvc = _aggregationServices[i];
                         var aggregationClassNames = new AggregationClassNames("_mra" + i);
                         var result = AggregationServiceFactoryCompiler.MakeInnerClassesAndInit(
-                            false, aggSvc.AggregationServiceFactoryForge, method, classScope,
-                            classScope.OutermostClassName, aggregationClassNames);
+                            false,
+                            aggSvc.AggregationServiceFactoryForge,
+                            method,
+                            classScope,
+                            classScope.OutermostClassName,
+                            aggregationClassNames);
                         classScope.AddInnerClasses(result.InnerClasses);
                         initAggsSvcs[i] = LocalMethod(result.InitMethod, symbols.GetAddInitSvc(parent));
                     }
@@ -145,22 +151,32 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
             }
 
             method.Block
-                .DeclareVar(typeof(RowRecogDesc), desc.Ref, NewInstance(typeof(RowRecogDesc)))
+                .DeclareVar<RowRecogDesc>(desc.Ref, NewInstance(typeof(RowRecogDesc)))
                 .SetProperty(desc, "ParentEventType", EventTypeUtility.ResolveTypeCodegen(_parentEventType, init))
                 .SetProperty(desc, "RowEventType", EventTypeUtility.ResolveTypeCodegen(RowEventType, init))
                 .SetProperty(desc, "CompositeEventType", EventTypeUtility.ResolveTypeCodegen(_compositeEventType, init))
-                .SetProperty(desc, "MultimatchEventType",
+                .SetProperty(
+                    desc,
+                    "MultimatchEventType",
                     _multimatchEventType == null
                         ? ConstantNull()
                         : EventTypeUtility.ResolveTypeCodegen(_multimatchEventType, init))
                 .SetProperty(desc, "MultimatchStreamNumToVariable", Constant(_multimatchStreamNumToVariable))
                 .SetProperty(desc, "MultimatchVariableToStreamNum", Constant(_multimatchVariableToStreamNum))
-                .SetProperty(desc, "PartitionEvalMayNull",
+                .SetProperty(
+                    desc,
+                    "PartitionEvalMayNull",
                     _partitionBy == null
                         ? ConstantNull()
                         : ExprNodeUtilityCodegen.CodegenEvaluatorMayMultiKeyWCoerce(
-                            ExprNodeUtilityQuery.GetForges(_partitionBy), null, method, GetType(), classScope))
-                .SetProperty(desc, "PartitionEvalTypes",
+                            ExprNodeUtilityQuery.GetForges(_partitionBy),
+                            null,
+                            method,
+                            GetType(),
+                            classScope))
+                .SetProperty(
+                    desc,
+                    "PartitionEvalTypes",
                     _partitionBy == null
                         ? ConstantNull()
                         : Constant(ExprNodeUtilityQuery.GetExprResultTypes(_partitionBy)))
@@ -178,14 +194,20 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
                 .SetProperty(desc, "StartStates", Constant(startStateNums))
                 .SetProperty(desc, "AllMatches", Constant(_allMatches))
                 .SetProperty(desc, "Skip", Constant(_skip))
-                .SetProperty(desc, "ColumnEvaluators",
+                .SetProperty(
+                    desc,
+                    "ColumnEvaluators",
                     ExprNodeUtilityCodegen.CodegenEvaluators(_columnEvaluators, method, GetType(), classScope))
                 .SetProperty(desc, "ColumnNames", Constant(_columnNames))
-                .SetProperty(desc, "IntervalCompute",
+                .SetProperty(
+                    desc,
+                    "IntervalCompute",
                     _intervalCompute == null ? ConstantNull() : _intervalCompute.MakeEvaluator(method, classScope))
                 .SetProperty(desc, "PreviousRandomAccessIndexes", Constant(_previousRandomAccessIndexes))
                 .SetProperty(desc, "AggregationServiceFactories", aggregationServiceFactories)
-                .SetProperty(desc, "AggregationResultFutureAssignables",
+                .SetProperty(
+                    desc,
+                    "AggregationResultFutureAssignables",
                     _aggregationServices == null ? ConstantNull() : MakeAggAssignables(method, classScope))
                 .MethodReturn(desc);
             return LocalMethod(method);
@@ -197,8 +219,8 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
         {
             var method = parent.MakeChild(typeof(AggregationResultFutureAssignable[]), GetType(), classScope);
             method.Block
-                .DeclareVar(
-                    typeof(AggregationResultFutureAssignable[]), "assignables",
+                .DeclareVar<AggregationResultFutureAssignable[]>(
+                    "assignables",
                     NewArrayByLength(typeof(AggregationResultFutureAssignable), Constant(_aggregationServices.Length)));
 
             for (var i = 0; i < _aggregationServices.Length; i++) {
@@ -209,7 +231,8 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
                     anonymousClass.AddMethod("assign", assign);
 
                     CodegenExpression field = classScope.NamespaceScope.AddOrGetFieldWellKnown(
-                        new CodegenFieldNameMatchRecognizeAgg(i), typeof(AggregationResultFuture));
+                        new CodegenFieldNameMatchRecognizeAgg(i),
+                        typeof(AggregationResultFuture));
                     assign.Block.AssignRef(field, Ref("future"));
 
                     method.Block.AssignArrayElement(Ref("assignables"), Constant(i), anonymousClass);
@@ -226,8 +249,8 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
             CodegenClassScope classScope)
         {
             var method = parent.MakeChild(typeof(RowRecogNFAStateBase[]), GetType(), classScope);
-            method.Block.DeclareVar(
-                typeof(RowRecogNFAStateBase[]), "states",
+            method.Block.DeclareVar<RowRecogNFAStateBase[]>(
+                "states",
                 NewArrayByLength(typeof(RowRecogNFAStateBase), Constant(_allStates.Length)));
             for (var i = 0; i < _allStates.Length; i++) {
                 method.Block.AssignArrayElement("states", Constant(i), _allStates[i].Make(method, symbols, classScope));
@@ -252,11 +275,14 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
             }
 
             var method = parent.MakeChild(typeof(IList<object>), GetType(), classScope);
-            method.Block.DeclareVar(
-                typeof(IList<object>), "next", NewInstance<List<object>>(Constant(nextStates.Count)));
+            method.Block.DeclareVar<IList<object>>(
+                "next",
+                NewInstance<List<object>>(Constant(nextStates.Count)));
             foreach (var pair in nextStates) {
                 method.Block.ExprDotMethod(
-                    Ref("next"), "add", NewInstance(typeof(Pair<int, int[]>), Constant(pair.First), Constant(pair.Second)));
+                    Ref("next"),
+                    "add",
+                    NewInstance(typeof(Pair<int, int[]>), Constant(pair.First), Constant(pair.Second)));
             }
 
             method.Block.MethodReturn(Ref("next"));
@@ -270,14 +296,16 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
         {
             var method = parent.MakeChild(typeof(LinkedHashMap<string, Pair<int, bool>>), GetType(), classScope);
             method.Block
-                .DeclareVar(
-                    typeof(LinkedHashMap<string, Pair<int, bool>>), "vars",
+                .DeclareVar<LinkedHashMap<string, Pair<int, bool>>>(
+                    "vars",
                     NewInstance(
                         typeof(LinkedHashMap<string, Pair<int, bool>>),
                         Constant(CollectionUtil.CapacityHashMap(_variableStreams.Count))));
             foreach (var entry in _variableStreams) {
                 method.Block.ExprDotMethod(
-                    Ref("vars"), "put", Constant(entry.Key),
+                    Ref("vars"),
+                    "put",
+                    Constant(entry.Key),
                     NewInstance(typeof(Pair<int, bool>), Constant(entry.Value.First), Constant(entry.Value.Second)));
             }
 

@@ -9,6 +9,7 @@
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.epl.agg.core;
 using com.espertech.esper.compat.collections;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
@@ -29,8 +30,8 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
         {
             var forge = (AggregatorAccessSorted) context.AccessStateForge.Aggregator;
             context.Method.Block
-                .DeclareVar(
-                    typeof(EventBean), "bean",
+                .DeclareVar<EventBean>(
+                    "bean",
                     max
                         ? forge.GetLastValueCodegen(context.ClassScope, context.Method)
                         : forge.GetFirstValueCodegen(context.ClassScope, context.Method))

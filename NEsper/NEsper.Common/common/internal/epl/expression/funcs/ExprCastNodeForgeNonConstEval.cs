@@ -11,6 +11,7 @@ using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.expression.funcs
@@ -61,18 +62,26 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
             }
 
             var methodNode = codegenMethodScope.MakeChild(
-                forge.EvaluationType, typeof(ExprCastNodeForgeNonConstEval), codegenClassScope);
+                forge.EvaluationType,
+                typeof(ExprCastNodeForgeNonConstEval),
+                codegenClassScope);
 
             var block = methodNode.Block
                 .DeclareVar(
-                    childType, "result",
+                    childType,
+                    "result",
                     child.Forge.EvaluateCodegen(childType, methodNode, exprSymbol, codegenClassScope));
             if (!childType.IsPrimitive) {
                 block.IfRefNullReturnNull("result");
             }
 
             var cast = forge.CasterParserComputerForge.CodegenPremade(
-                forge.EvaluationType, Ref("result"), childType, methodNode, exprSymbol, codegenClassScope);
+                forge.EvaluationType,
+                Ref("result"),
+                childType,
+                methodNode,
+                exprSymbol,
+                codegenClassScope);
             block.MethodReturn(cast);
             return LocalMethod(methodNode);
         }

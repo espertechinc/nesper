@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -41,7 +42,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
                 ExprForgeCodegenSymbol exprSymbol,
                 CodegenClassScope codegenClassScope)
             {
-                return CodegenExpressionBuilder.StaticMethod(typeof(StringToLongWStaticISOFormatComputer), "stringToLongWStaticISOParse", input);
+                return CodegenExpressionBuilder.StaticMethod(
+                    typeof(StringToLongWStaticISOFormatComputer),
+                    "stringToLongWStaticISOParse",
+                    input);
             }
 
             public CasterParserComputer EvaluatorComputer => this;

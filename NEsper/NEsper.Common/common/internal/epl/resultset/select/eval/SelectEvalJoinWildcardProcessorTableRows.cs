@@ -35,14 +35,12 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
             this.types = types;
             this.innerForge = inner;
             tables = new TableMetaData[types.Length];
-            for (int i = 0; i < types.Length; i++)
-            {
+            for (int i = 0; i < types.Length; i++) {
                 tables[i] = tableResolver.ResolveTableFromEventType(types[i]);
             }
         }
 
-        public EventType ResultEventType
-        {
+        public EventType ResultEventType {
             get => innerForge.ResultEventType;
         }
 
@@ -54,34 +52,53 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            CodegenMethod methodNode = codegenMethodScope.MakeChild(typeof(EventBean), this.GetType(), codegenClassScope);
+            CodegenMethod methodNode = codegenMethodScope.MakeChild(
+                typeof(EventBean),
+                this.GetType(),
+                codegenClassScope);
             CodegenExpressionRef refEPS = exprSymbol.GetAddEPS(methodNode);
             CodegenExpression refIsNewData = exprSymbol.GetAddIsNewData(methodNode);
             CodegenExpressionRef refExprEvalCtx = exprSymbol.GetAddExprEvalCtx(methodNode);
-            methodNode.Block.DeclareVar(
-                typeof(EventBean[]), "eventsPerStreamWTableRows", NewArrayByLength(typeof(EventBean), Constant(types.Length)));
-            for (int i = 0; i < types.Length; i++)
-            {
-                if (tables[i] == null)
-                {
-                    methodNode.Block.AssignArrayElement("eventsPerStreamWTableRows", Constant(i), ArrayAtIndex(refEPS, Constant(i)));
+            methodNode.Block.DeclareVar<EventBean[]>(
+                "eventsPerStreamWTableRows",
+                NewArrayByLength(typeof(EventBean), Constant(types.Length)));
+            for (int i = 0; i < types.Length; i++) {
+                if (tables[i] == null) {
+                    methodNode.Block.AssignArrayElement(
+                        "eventsPerStreamWTableRows",
+                        Constant(i),
+                        ArrayAtIndex(refEPS, Constant(i)));
                 }
-                else
-                {
+                else {
                     CodegenExpressionField eventToPublic =
-                        TableDeployTimeResolver.MakeTableEventToPublicField(tables[i], codegenClassScope, this.GetType());
+                        TableDeployTimeResolver.MakeTableEventToPublicField(
+                            tables[i],
+                            codegenClassScope,
+                            this.GetType());
                     string refname = "e" + i;
-                    methodNode.Block.DeclareVar(typeof(EventBean), refname, ArrayAtIndex(refEPS, Constant(i)))
+                    methodNode.Block.DeclareVar<EventBean>(refname, ArrayAtIndex(refEPS, Constant(i)))
                         .IfRefNotNull(refname)
                         .AssignArrayElement(
-                            "eventsPerStreamWTableRows", Constant(i),
-                            ExprDotMethod(eventToPublic, "convert", @Ref(refname), refEPS, refIsNewData, refExprEvalCtx))
+                            "eventsPerStreamWTableRows",
+                            Constant(i),
+                            ExprDotMethod(
+                                eventToPublic,
+                                "convert",
+                                @Ref(refname),
+                                refEPS,
+                                refIsNewData,
+                                refExprEvalCtx))
                         .BlockEnd();
                 }
             }
 
             CodegenMethod innerMethod = innerForge.ProcessCodegen(
-                resultEventType, eventBeanFactory, codegenMethodScope, selectSymbol, exprSymbol, codegenClassScope);
+                resultEventType,
+                eventBeanFactory,
+                codegenMethodScope,
+                selectSymbol,
+                exprSymbol,
+                codegenClassScope);
             methodNode.Block.AssignRef(refEPS.Ref, @Ref("eventsPerStreamWTableRows"))
                 .MethodReturn(LocalMethod(innerMethod));
             return methodNode;

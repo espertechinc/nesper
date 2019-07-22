@@ -9,11 +9,10 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.core;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.bytecodemodel.model.statement
 {
@@ -46,15 +45,14 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.statement
 
         public void Render(
             StringBuilder builder,
-            IDictionary<Type, string> imports,
             bool isInnerClass,
             int level,
             CodegenIndent indent)
         {
             builder.Append("if (");
-            condition.Render(builder, imports, isInnerClass);
+            condition.Render(builder, isInnerClass);
             builder.Append(") {\n");
-            block.Render(builder, imports, isInnerClass, level + 1, indent);
+            block.Render(builder, isInnerClass, level + 1, indent);
             indent.Indent(builder, level);
             builder.Append("}");
         }

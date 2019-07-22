@@ -77,12 +77,10 @@ namespace com.espertech.esper.common.@internal.epl.historical.database.core
         protected internal static void Close(Pair<DbDriver, DbDriverCommand> pair)
         {
             Log.Info(".close Closing statement and connection");
-            try
-            {
+            try {
                 pair.Second.Dispose();
             }
-            catch (DbException ex)
-            {
+            catch (DbException ex) {
                 throw new EPException("Error closing statement", ex);
             }
         }
@@ -95,8 +93,7 @@ namespace com.espertech.esper.common.@internal.epl.historical.database.core
         {
             Log.Info(".MakeNew Obtaining new connection and statement");
 
-            try
-            {
+            try {
                 // Get the driver
                 DbDriver dbDriver = _databaseConnectionFactory.Driver;
                 // Get the command
@@ -104,8 +101,7 @@ namespace com.espertech.esper.common.@internal.epl.historical.database.core
 
                 return new Pair<DbDriver, DbDriverCommand>(dbDriver, dbCommand);
             }
-            catch (DatabaseConfigException ex)
-            {
+            catch (DatabaseConfigException ex) {
                 throw new EPException("Error obtaining connection", ex);
             }
         }

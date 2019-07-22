@@ -72,8 +72,10 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
         public override string ToString()
         {
             return "BeanEventBean" +
-                   " eventType=" + EventType +
-                   " bean=" + Underlying;
+                   " eventType=" +
+                   EventType +
+                   " bean=" +
+                   Underlying;
         }
     }
 } // end of namespace

@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -23,6 +24,7 @@ using com.espertech.esper.common.@internal.rettype;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.datetime.eval
@@ -88,7 +90,9 @@ namespace com.espertech.esper.common.@internal.epl.datetime.eval
             CodegenClassScope codegenClassScope)
         {
             var methodNode = codegenMethodScope.MakeChild(
-                    ((ClassEPType) TypeInfo).Clazz, typeof(ExprDotDTForge), codegenClassScope)
+                    ((ClassEPType) TypeInfo).Clazz,
+                    typeof(ExprDotDTForge),
+                    codegenClassScope)
                 .AddParam(innerType, "target");
 
             var block = methodNode.Block;
@@ -213,14 +217,21 @@ namespace com.espertech.esper.common.@internal.epl.datetime.eval
 
             if (intervalForge == null) { // only calendar op
                 var inner = GetForge(calendarForges, timeAbacus, getterResultType, null, null, null);
-                return new DTLocalBeanCalOpsForge(getter, getterResultType, inner, EPTypeHelper.GetNormalizedClass(TypeInfo));
+                return new DTLocalBeanCalOpsForge(
+                    getter,
+                    getterResultType,
+                    inner,
+                    EPTypeHelper.GetNormalizedClass(TypeInfo));
             }
 
             // have interval op but no end timestamp
             if (inputEventType.EndTimestampPropertyName == null) {
                 var inner = GetForge(calendarForges, timeAbacus, getterResultType, null, null, intervalForge);
                 return new DTLocalBeanIntervalNoEndTSForge(
-                    getter, getterResultType, inner, EPTypeHelper.GetNormalizedClass(TypeInfo));
+                    getter,
+                    getterResultType,
+                    inner,
+                    EPTypeHelper.GetNormalizedClass(TypeInfo));
             }
 
             // interval op and have end timestamp
@@ -228,9 +239,18 @@ namespace com.espertech.esper.common.@internal.epl.datetime.eval
                 ((EventTypeSPI) inputEventType).GetGetterSPI(inputEventType.EndTimestampPropertyName);
             var getterEndType = inputEventType.GetPropertyType(inputEventType.EndTimestampPropertyName);
             var innerX = (DTLocalForgeIntervalComp) GetForge(
-                calendarForges, timeAbacus, getterResultType, null, null, intervalForge);
+                calendarForges,
+                timeAbacus,
+                getterResultType,
+                null,
+                null,
+                intervalForge);
             return new DTLocalBeanIntervalWithEndForge(
-                getter, getterResultType, getterEndTimestamp, getterEndType, innerX);
+                getter,
+                getterResultType,
+                getterEndTimestamp,
+                getterEndType,
+                innerX);
         }
     }
 } // end of namespace

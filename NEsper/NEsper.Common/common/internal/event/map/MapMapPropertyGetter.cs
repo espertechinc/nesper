@@ -8,11 +8,13 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.compat.collections;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.@event.map
@@ -83,7 +85,8 @@ namespace com.espertech.esper.common.@internal.@event.map
             CodegenClassScope codegenClassScope)
         {
             return UnderlyingGetCodegen(
-                CastUnderlying(typeof(IDictionary<object, object>), beanExpression), codegenMethodScope,
+                CastUnderlying(typeof(IDictionary<object, object>), beanExpression),
+                codegenMethodScope,
                 codegenClassScope);
         }
 
@@ -93,7 +96,8 @@ namespace com.espertech.esper.common.@internal.@event.map
             CodegenClassScope codegenClassScope)
         {
             return UnderlyingExistsCodegen(
-                CastUnderlying(typeof(IDictionary<object, object>), beanExpression), codegenMethodScope,
+                CastUnderlying(typeof(IDictionary<object, object>), beanExpression),
+                codegenMethodScope,
                 codegenClassScope);
         }
 
@@ -134,11 +138,12 @@ namespace com.espertech.esper.common.@internal.@event.map
             CodegenClassScope codegenClassScope)
         {
             return codegenMethodScope.MakeChild(typeof(object), GetType(), codegenClassScope)
-                .AddParam(typeof(IDictionary<object, object>), "map").Block
-                .DeclareVar(typeof(object), "valueTopObj", ExprDotMethod(Ref("map"), "get", Constant(propertyMap)))
+                .AddParam(typeof(IDictionary<object, object>), "map")
+                .Block
+                .DeclareVar<object>("valueTopObj", ExprDotMethod(Ref("map"), "get", Constant(propertyMap)))
                 .IfRefNotTypeReturnConst("valueTopObj", typeof(IDictionary<object, object>), null)
-                .DeclareVar(
-                    typeof(IDictionary<object, object>), "value",
+                .DeclareVar<IDictionary<object, object>>(
+                    "value",
                     CastRef(typeof(IDictionary<object, object>), "valueTopObj"))
                 .MethodReturn(getter.UnderlyingGetCodegen(Ref("value"), codegenMethodScope, codegenClassScope));
         }
@@ -148,11 +153,12 @@ namespace com.espertech.esper.common.@internal.@event.map
             CodegenClassScope codegenClassScope)
         {
             return codegenMethodScope.MakeChild(typeof(bool), GetType(), codegenClassScope)
-                .AddParam(typeof(IDictionary<object, object>), "map").Block
-                .DeclareVar(typeof(object), "valueTopObj", ExprDotMethod(Ref("map"), "get", Constant(propertyMap)))
+                .AddParam(typeof(IDictionary<object, object>), "map")
+                .Block
+                .DeclareVar<object>("valueTopObj", ExprDotMethod(Ref("map"), "get", Constant(propertyMap)))
                 .IfRefNotTypeReturnConst("valueTopObj", typeof(IDictionary<object, object>), false)
-                .DeclareVar(
-                    typeof(IDictionary<object, object>), "value",
+                .DeclareVar<IDictionary<object, object>>(
+                    "value",
                     CastRef(typeof(IDictionary<object, object>), "valueTopObj"))
                 .MethodReturn(getter.UnderlyingExistsCodegen(Ref("value"), codegenMethodScope, codegenClassScope));
         }

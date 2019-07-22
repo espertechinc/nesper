@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.meta;
 using com.espertech.esper.common.@internal.@event.bean.service;
@@ -38,9 +39,14 @@ namespace com.espertech.esper.common.@internal.@event.core
             EventTypeNameResolver eventTypeNameResolver)
         {
             IDictionary<string, object> verified = BaseNestableEventUtil.ResolvePropertyTypes(
-                propertyTypesMayPrimitive, eventTypeNameResolver);
+                propertyTypesMayPrimitive,
+                eventTypeNameResolver);
             return new WrapperEventType(
-                metadata, underlyingEventType, verified, eventBeanTypedEventFactory, beanEventTypeFactory);
+                metadata,
+                underlyingEventType,
+                verified,
+                eventBeanTypedEventFactory,
+                beanEventTypeFactory);
         }
     }
 } // end of namespace

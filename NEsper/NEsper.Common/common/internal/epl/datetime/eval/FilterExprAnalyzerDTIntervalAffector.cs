@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+
 using com.espertech.esper.collection;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.epl.expression.core;
@@ -63,12 +64,18 @@ namespace com.espertech.esper.common.@internal.epl.datetime.eval
             }
 
             var targetStartExpr = ExprNodeUtilityMake.MakeExprIdentNode(
-                typesPerStream, targetStreamNum, targetStartProp);
+                typesPerStream,
+                targetStreamNum,
+                targetStartProp);
             var targetEndExpr = ExprNodeUtilityMake.MakeExprIdentNode(typesPerStream, targetStreamNum, targetEndProp);
             var parameterStartExpr = ExprNodeUtilityMake.MakeExprIdentNode(
-                typesPerStream, parameterStreamNum, parameterStartProp);
+                typesPerStream,
+                parameterStreamNum,
+                parameterStartProp);
             var parameterEndExpr = ExprNodeUtilityMake.MakeExprIdentNode(
-                typesPerStream, parameterStreamNum, parameterEndProp);
+                typesPerStream,
+                parameterStreamNum,
+                parameterEndProp);
 
             if (targetStartExpr.Forge.EvaluationType != parameterStartExpr.Forge.EvaluationType) {
                 return;
@@ -77,32 +84,48 @@ namespace com.espertech.esper.common.@internal.epl.datetime.eval
             if (currentMethod == DateTimeMethodEnum.BEFORE) {
                 // a.end < b.start
                 filterQueryGraph.AddRelationalOpStrict(
-                    targetStreamNum, targetEndExpr,
-                    parameterStreamNum, parameterStartExpr,
+                    targetStreamNum,
+                    targetEndExpr,
+                    parameterStreamNum,
+                    parameterStartExpr,
                     RelationalOpEnum.LT);
             }
             else if (currentMethod == DateTimeMethodEnum.AFTER) {
                 // a.start > b.end
                 filterQueryGraph.AddRelationalOpStrict(
-                    targetStreamNum, targetStartExpr,
-                    parameterStreamNum, parameterEndExpr,
+                    targetStreamNum,
+                    targetStartExpr,
+                    parameterStreamNum,
+                    parameterEndExpr,
                     RelationalOpEnum.GT);
             }
             else if (currentMethod == DateTimeMethodEnum.COINCIDES) {
                 // a.startTimestamp = b.startTimestamp and a.endTimestamp = b.endTimestamp
                 filterQueryGraph.AddStrictEquals(
-                    targetStreamNum, targetStartProp, targetStartExpr,
-                    parameterStreamNum, parameterStartProp, parameterStartExpr);
+                    targetStreamNum,
+                    targetStartProp,
+                    targetStartExpr,
+                    parameterStreamNum,
+                    parameterStartProp,
+                    parameterStartExpr);
 
                 var noDuration = parameterEndProp.Equals(parameterStartProp) && targetEndProp.Equals(targetStartProp);
                 if (!noDuration) {
                     var leftEndExpr = ExprNodeUtilityMake.MakeExprIdentNode(
-                        typesPerStream, targetStreamNum, targetEndProp);
+                        typesPerStream,
+                        targetStreamNum,
+                        targetEndProp);
                     var rightEndExpr = ExprNodeUtilityMake.MakeExprIdentNode(
-                        typesPerStream, parameterStreamNum, parameterEndProp);
+                        typesPerStream,
+                        parameterStreamNum,
+                        parameterEndProp);
                     filterQueryGraph.AddStrictEquals(
-                        targetStreamNum, targetEndProp, leftEndExpr,
-                        parameterStreamNum, parameterEndProp, rightEndExpr);
+                        targetStreamNum,
+                        targetEndProp,
+                        leftEndExpr,
+                        parameterStreamNum,
+                        parameterEndProp,
+                        rightEndExpr);
                 }
             }
             else if (currentMethod == DateTimeMethodEnum.DURING || currentMethod == DateTimeMethodEnum.INCLUDES) {
@@ -110,13 +133,17 @@ namespace com.espertech.esper.common.@internal.epl.datetime.eval
                 // INCLUDES: a.startTimestamp < b.startTimestamp <= b.endTimestamp < a.endTimestamp
                 var relop = currentMethod == DateTimeMethodEnum.DURING ? RelationalOpEnum.LT : RelationalOpEnum.GT;
                 filterQueryGraph.AddRelationalOpStrict(
-                    parameterStreamNum, parameterStartExpr,
-                    targetStreamNum, targetStartExpr,
+                    parameterStreamNum,
+                    parameterStartExpr,
+                    targetStreamNum,
+                    targetStartExpr,
                     relop);
 
                 filterQueryGraph.AddRelationalOpStrict(
-                    targetStreamNum, targetEndExpr,
-                    parameterStreamNum, parameterEndExpr,
+                    targetStreamNum,
+                    targetEndExpr,
+                    parameterStreamNum,
+                    parameterEndExpr,
                     relop);
             }
             else if (currentMethod == DateTimeMethodEnum.FINISHES || currentMethod == DateTimeMethodEnum.FINISHEDBY) {
@@ -124,50 +151,72 @@ namespace com.espertech.esper.common.@internal.epl.datetime.eval
                 // FINISHEDBY: a.startTimestamp < b.startTimestamp and a.endTimestamp = b.endTimestamp
                 var relop = currentMethod == DateTimeMethodEnum.FINISHES ? RelationalOpEnum.LT : RelationalOpEnum.GT;
                 filterQueryGraph.AddRelationalOpStrict(
-                    parameterStreamNum, parameterStartExpr,
-                    targetStreamNum, targetStartExpr,
+                    parameterStreamNum,
+                    parameterStartExpr,
+                    targetStreamNum,
+                    targetStartExpr,
                     relop);
 
                 filterQueryGraph.AddStrictEquals(
-                    targetStreamNum, targetEndProp, targetEndExpr,
-                    parameterStreamNum, parameterEndProp, parameterEndExpr);
+                    targetStreamNum,
+                    targetEndProp,
+                    targetEndExpr,
+                    parameterStreamNum,
+                    parameterEndProp,
+                    parameterEndExpr);
             }
             else if (currentMethod == DateTimeMethodEnum.MEETS) {
                 // a.endTimestamp = b.startTimestamp
                 filterQueryGraph.AddStrictEquals(
-                    targetStreamNum, targetEndProp, targetEndExpr,
-                    parameterStreamNum, parameterStartProp, parameterStartExpr);
+                    targetStreamNum,
+                    targetEndProp,
+                    targetEndExpr,
+                    parameterStreamNum,
+                    parameterStartProp,
+                    parameterStartExpr);
             }
             else if (currentMethod == DateTimeMethodEnum.METBY) {
                 // a.startTimestamp = b.endTimestamp
                 filterQueryGraph.AddStrictEquals(
-                    targetStreamNum, targetStartProp, targetStartExpr,
-                    parameterStreamNum, parameterEndProp, parameterEndExpr);
+                    targetStreamNum,
+                    targetStartProp,
+                    targetStartExpr,
+                    parameterStreamNum,
+                    parameterEndProp,
+                    parameterEndExpr);
             }
             else if (currentMethod == DateTimeMethodEnum.OVERLAPS || currentMethod == DateTimeMethodEnum.OVERLAPPEDBY) {
                 // OVERLAPS:     a.startTimestamp < b.startTimestamp < a.endTimestamp < b.endTimestamp
                 // OVERLAPPEDBY: b.startTimestamp < a.startTimestamp < b.endTimestamp < a.endTimestamp
                 var relop = currentMethod == DateTimeMethodEnum.OVERLAPS ? RelationalOpEnum.LT : RelationalOpEnum.GT;
                 filterQueryGraph.AddRelationalOpStrict(
-                    targetStreamNum, targetStartExpr,
-                    parameterStreamNum, parameterStartExpr,
+                    targetStreamNum,
+                    targetStartExpr,
+                    parameterStreamNum,
+                    parameterStartExpr,
                     relop);
 
                 filterQueryGraph.AddRelationalOpStrict(
-                    targetStreamNum, targetEndExpr,
-                    parameterStreamNum, parameterEndExpr,
+                    targetStreamNum,
+                    targetEndExpr,
+                    parameterStreamNum,
+                    parameterEndExpr,
                     relop);
 
                 if (currentMethod == DateTimeMethodEnum.OVERLAPS) {
                     filterQueryGraph.AddRelationalOpStrict(
-                        parameterStreamNum, parameterStartExpr,
-                        targetStreamNum, targetEndExpr,
+                        parameterStreamNum,
+                        parameterStartExpr,
+                        targetStreamNum,
+                        targetEndExpr,
                         RelationalOpEnum.LT);
                 }
                 else {
                     filterQueryGraph.AddRelationalOpStrict(
-                        targetStreamNum, targetStartExpr,
-                        parameterStreamNum, parameterEndExpr,
+                        targetStreamNum,
+                        targetStartExpr,
+                        parameterStreamNum,
+                        parameterEndExpr,
                         RelationalOpEnum.LT);
                 }
             }
@@ -175,13 +224,19 @@ namespace com.espertech.esper.common.@internal.epl.datetime.eval
                 // STARTS:       a.startTimestamp = b.startTimestamp and a.endTimestamp < b.endTimestamp
                 // STARTEDBY:    a.startTimestamp = b.startTimestamp and b.endTimestamp < a.endTimestamp
                 filterQueryGraph.AddStrictEquals(
-                    targetStreamNum, targetStartProp, targetStartExpr,
-                    parameterStreamNum, parameterStartProp, parameterStartExpr);
+                    targetStreamNum,
+                    targetStartProp,
+                    targetStartExpr,
+                    parameterStreamNum,
+                    parameterStartProp,
+                    parameterStartExpr);
 
                 var relop = currentMethod == DateTimeMethodEnum.STARTS ? RelationalOpEnum.LT : RelationalOpEnum.GT;
                 filterQueryGraph.AddRelationalOpStrict(
-                    targetStreamNum, targetEndExpr,
-                    parameterStreamNum, parameterEndExpr,
+                    targetStreamNum,
+                    targetEndExpr,
+                    parameterStreamNum,
+                    parameterEndExpr,
                     relop);
             }
         }

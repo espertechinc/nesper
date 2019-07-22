@@ -11,6 +11,7 @@ using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.compat;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.@event.wrap
@@ -111,27 +112,37 @@ namespace com.espertech.esper.common.@internal.@event.wrap
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            return codegenMethodScope.MakeChild(typeof(object), GetType(), codegenClassScope).AddParam(typeof(EventBean), "theEvent").Block
+            return codegenMethodScope.MakeChild(typeof(object), GetType(), codegenClassScope)
+                .AddParam(typeof(EventBean), "theEvent")
+                .Block
                 .DeclareVarWCast(typeof(DecoratingEventBean), "wrapperEvent", "theEvent")
-                .DeclareVar(typeof(EventBean), "wrappedEvent", ExprDotMethod(Ref("wrapperEvent"), "getUnderlyingEvent"))
+                .DeclareVar<EventBean>("wrappedEvent", ExprDotMethod(Ref("wrapperEvent"), "getUnderlyingEvent"))
                 .IfRefNullReturnNull("wrappedEvent")
-                .MethodReturn(underlyingGetter.EventBeanGetCodegen(Ref("wrappedEvent"), codegenMethodScope, codegenClassScope));
+                .MethodReturn(
+                    underlyingGetter.EventBeanGetCodegen(Ref("wrappedEvent"), codegenMethodScope, codegenClassScope));
         }
 
         private CodegenMethod GetFragmentCodegen(
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            return codegenMethodScope.MakeChild(typeof(object), GetType(), codegenClassScope).AddParam(typeof(EventBean), "theEvent").Block
+            return codegenMethodScope.MakeChild(typeof(object), GetType(), codegenClassScope)
+                .AddParam(typeof(EventBean), "theEvent")
+                .Block
                 .DeclareVarWCast(typeof(DecoratingEventBean), "wrapperEvent", "theEvent")
-                .DeclareVar(typeof(EventBean), "wrappedEvent", ExprDotMethod(Ref("wrapperEvent"), "getUnderlyingEvent"))
+                .DeclareVar<EventBean>("wrappedEvent", ExprDotMethod(Ref("wrapperEvent"), "getUnderlyingEvent"))
                 .IfRefNullReturnNull("wrappedEvent")
-                .MethodReturn(underlyingGetter.EventBeanFragmentCodegen(Ref("wrappedEvent"), codegenMethodScope, codegenClassScope));
+                .MethodReturn(
+                    underlyingGetter.EventBeanFragmentCodegen(
+                        Ref("wrappedEvent"),
+                        codegenMethodScope,
+                        codegenClassScope));
         }
 
         private UnsupportedOperationException ImplementationNotProvided()
         {
-            return new UnsupportedOperationException("Wrapper event type does not provide an implementation for underlying get");
+            return new UnsupportedOperationException(
+                "Wrapper event type does not provide an implementation for underlying get");
         }
     }
 } // end of namespace

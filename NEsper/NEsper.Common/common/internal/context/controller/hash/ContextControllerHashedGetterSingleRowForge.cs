@@ -9,6 +9,7 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
+
 using com.espertech.esper.collection;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
@@ -24,6 +25,7 @@ using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 using static com.espertech.esper.common.@internal.epl.expression.codegen.StaticMethodCallHelper;
 
@@ -47,9 +49,16 @@ namespace com.espertech.esper.common.@internal.context.controller.hash
             StatementCompileTimeServices services)
         {
             ExprNodeUtilMethodDesc staticMethodDesc = ExprNodeUtilityResolve.ResolveMethodAllowWildcardAndStream(
-                func.First.Name, null, func.Second.MethodName,
-                parameters, true, eventType, new ExprNodeUtilResolveExceptionHandlerDefault(func.Second.MethodName, true), func.Second.MethodName,
-                statementRawInfo, services);
+                func.First.Name,
+                null,
+                func.Second.MethodName,
+                parameters,
+                true,
+                eventType,
+                new ExprNodeUtilResolveExceptionHandlerDefault(func.Second.MethodName, true),
+                func.Second.MethodName,
+                statementRawInfo,
+                services);
             this.granularity = granularity;
             this.nodes = staticMethodDesc.ChildForges;
             this.reflectionMethod = staticMethodDesc.ReflectionMethod;
@@ -61,17 +70,27 @@ namespace com.espertech.esper.common.@internal.context.controller.hash
             CodegenMethodScope parent,
             CodegenClassScope classScope)
         {
-            CodegenMethod method = parent.MakeChild(typeof(object), this.GetType(), classScope).AddParam(typeof(EventBean), "eventBean");
-            method.Block.DeclareVar(typeof(EventBean[]), "events", NewArrayWithInit(typeof(EventBean), @Ref("eventBean")));
+            CodegenMethod method = parent.MakeChild(typeof(object), this.GetType(), classScope)
+                .AddParam(typeof(EventBean), "eventBean");
+            method.Block.DeclareVar<EventBean[]>("events", NewArrayWithInit(typeof(EventBean), @Ref("eventBean")));
 
             // method to evaluate expressions and compute hash
             ExprForgeCodegenSymbol exprSymbol = new ExprForgeCodegenSymbol(true, true);
             CodegenMethod exprMethod = method
-                .MakeChildWithScope(reflectionMethod.ReturnType, typeof(CodegenLegoMethodExpression), exprSymbol, classScope)
+                .MakeChildWithScope(
+                    reflectionMethod.ReturnType,
+                    typeof(CodegenLegoMethodExpression),
+                    exprSymbol,
+                    classScope)
                 .AddParam(ExprForgeCodegenNames.PARAMS);
 
             // generate args
-            StaticMethodCodegenArgDesc[] args = AllArgumentExpressions(nodes, reflectionMethod, exprMethod, exprSymbol, classScope);
+            StaticMethodCodegenArgDesc[] args = AllArgumentExpressions(
+                nodes,
+                reflectionMethod,
+                exprMethod,
+                exprSymbol,
+                classScope);
             AppendArgExpressions(args, exprMethod.Block);
 
             // try block
@@ -84,13 +103,16 @@ namespace com.espertech.esper.common.@internal.context.controller.hash
 
             exprMethod.Block.MethodReturn(Constant(0));
 
-            method.Block.DeclareVar(reflectionMethod.ReturnType, "result", LocalMethod(exprMethod, @Ref("events"), ConstantTrue(), ConstantNull()));
+            method.Block.DeclareVar(
+                reflectionMethod.ReturnType,
+                "result",
+                LocalMethod(exprMethod, @Ref("events"), ConstantTrue(), ConstantNull()));
             if (!reflectionMethod.ReturnType.IsPrimitive) {
                 method.Block.IfRefNull("result").BlockReturn(Constant(0));
             }
 
-            method.Block.DeclareVar(
-                    typeof(int), "value",
+            method.Block.DeclareVar<int>(
+                    "value",
                     SimpleNumberCoercerFactory.GetCoercer(reflectionMethod.ReturnType, typeof(int?))
                         .CoerceCodegen(@Ref("result"), reflectionMethod.ReturnType))
                 .IfCondition(Relational(@Ref("value"), CodegenExpressionRelational.CodegenRelational.GE, Constant(0)))

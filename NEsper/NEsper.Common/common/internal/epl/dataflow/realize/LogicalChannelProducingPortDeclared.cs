@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.@internal.epl.dataflow.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
@@ -65,10 +66,16 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.realize
         public override string ToString()
         {
             return "LogicalChannelProducingPortSpec{" +
-                   "op=" + producingOpPrettyPrint + '\'' +
-                   ", streamName='" + streamName + '\'' +
-                   ", portNumber=" + streamNumber +
-                   ", hasPunctuation=" + hasPunctuation +
+                   "op=" +
+                   producingOpPrettyPrint +
+                   '\'' +
+                   ", streamName='" +
+                   streamName +
+                   '\'' +
+                   ", portNumber=" +
+                   streamNumber +
+                   ", hasPunctuation=" +
+                   hasPunctuation +
                    '}';
         }
     }

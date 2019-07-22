@@ -9,6 +9,7 @@
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.context.aifactory.core;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.historical.lookupstrategy
@@ -33,8 +34,8 @@ namespace com.espertech.esper.common.@internal.epl.historical.lookupstrategy
         {
             var method = parent.MakeChild(typeof(HistoricalIndexLookupStrategyMulti), GetType(), classScope);
             method.Block
-                .DeclareVar(
-                    typeof(HistoricalIndexLookupStrategyMulti), "strat",
+                .DeclareVar<HistoricalIndexLookupStrategyMulti>(
+                    "strat",
                     NewInstance(typeof(HistoricalIndexLookupStrategyMulti)))
                 .SetProperty(Ref("strat"), "IndexUsed", Constant(indexUsed))
                 .SetProperty(Ref("strat"), "InnerLookupStrategy", innerLookupStrategy.Make(method, symbols, classScope))

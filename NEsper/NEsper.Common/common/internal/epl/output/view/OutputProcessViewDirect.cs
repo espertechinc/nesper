@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.context.util;
@@ -25,22 +26,22 @@ namespace com.espertech.esper.common.@internal.epl.output.view
     /// </summary>
     public class OutputProcessViewDirect : OutputProcessView
     {
-        private readonly AgentInstanceContext agentInstanceContext;
-        private readonly ResultSetProcessor resultSetProcessor;
+        private readonly AgentInstanceContext _agentInstanceContext;
+        private readonly ResultSetProcessor _resultSetProcessor;
 
         public OutputProcessViewDirect(
             AgentInstanceContext agentInstanceContext,
             ResultSetProcessor resultSetProcessor)
         {
-            this.agentInstanceContext = agentInstanceContext;
-            this.resultSetProcessor = resultSetProcessor;
+            _agentInstanceContext = agentInstanceContext;
+            _resultSetProcessor = resultSetProcessor;
         }
 
         public override int NumChangesetRows => 0;
 
         public override OutputCondition OptionalOutputCondition => null;
 
-        public override EventType EventType => resultSetProcessor.ResultEventType;
+        public override EventType EventType => _resultSetProcessor.ResultEventType;
 
         /// <summary>
         ///     The update method is called if the view does not participate in a join.
@@ -51,22 +52,23 @@ namespace com.espertech.esper.common.@internal.epl.output.view
             EventBean[] newData,
             EventBean[] oldData)
         {
-            var statementResultService = agentInstanceContext.StatementResultService;
+            var statementResultService = _agentInstanceContext.StatementResultService;
             var isGenerateSynthetic = statementResultService.IsMakeSynthetic;
             var isGenerateNatural = statementResultService.IsMakeNatural;
 
-            var newOldEvents = resultSetProcessor.ProcessViewResult(newData, oldData, isGenerateSynthetic);
+            var newOldEvents = _resultSetProcessor.ProcessViewResult(newData, oldData, isGenerateSynthetic);
 
             if (!isGenerateSynthetic && !isGenerateNatural) {
                 if (AuditPath.isAuditEnabled) {
-                    OutputStrategyUtil.IndicateEarlyReturn(agentInstanceContext.StatementContext, newOldEvents);
+                    OutputStrategyUtil.IndicateEarlyReturn(_agentInstanceContext.StatementContext, newOldEvents);
                 }
 
                 return;
             }
 
             var forceOutput = false;
-            if (newData == null && oldData == null &&
+            if (newData == null &&
+                oldData == null &&
                 (newOldEvents == null || newOldEvents.First == null && newOldEvents.Second == null)) {
                 forceOutput = true;
             }
@@ -87,15 +89,15 @@ namespace com.espertech.esper.common.@internal.epl.output.view
             ISet<MultiKey<EventBean>> oldEvents,
             ExprEvaluatorContext exprEvaluatorContext)
         {
-            var statementResultService = agentInstanceContext.StatementResultService;
+            var statementResultService = _agentInstanceContext.StatementResultService;
             var isGenerateSynthetic = statementResultService.IsMakeSynthetic;
             var isGenerateNatural = statementResultService.IsMakeNatural;
 
-            var newOldEvents = resultSetProcessor.ProcessJoinResult(newEvents, oldEvents, isGenerateSynthetic);
+            var newOldEvents = _resultSetProcessor.ProcessJoinResult(newEvents, oldEvents, isGenerateSynthetic);
 
             if (!isGenerateSynthetic && !isGenerateNatural) {
                 if (AuditPath.isAuditEnabled) {
-                    OutputStrategyUtil.IndicateEarlyReturn(agentInstanceContext.StatementContext, newOldEvents);
+                    OutputStrategyUtil.IndicateEarlyReturn(_agentInstanceContext.StatementContext, newOldEvents);
                 }
 
                 return;
@@ -121,7 +123,7 @@ namespace com.espertech.esper.common.@internal.epl.output.view
 
         public override IEnumerator<EventBean> GetEnumerator()
         {
-            return OutputStrategyUtil.GetIterator(joinExecutionStrategy, resultSetProcessor, parentView, false);
+            return OutputStrategyUtil.GetIterator(joinExecutionStrategy, _resultSetProcessor, parentView, false);
         }
 
         public override void Terminated()

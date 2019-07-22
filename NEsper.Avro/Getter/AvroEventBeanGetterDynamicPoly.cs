@@ -61,7 +61,10 @@ namespace NEsper.Avro.Getter
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            return UnderlyingGetCodegen(CodegenExpressionBuilder.CastUnderlying(typeof(GenericRecord), beanExpression), codegenMethodScope, codegenClassScope);
+            return UnderlyingGetCodegen(
+                CodegenExpressionBuilder.CastUnderlying(typeof(GenericRecord), beanExpression),
+                codegenMethodScope,
+                codegenClassScope);
         }
 
         public CodegenExpression EventBeanExistsCodegen(
@@ -85,7 +88,9 @@ namespace NEsper.Avro.Getter
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            return CodegenExpressionBuilder.LocalMethod(GetAvroFieldValuePolyCodegen(codegenMethodScope, codegenClassScope, _getters), underlyingExpression);
+            return CodegenExpressionBuilder.LocalMethod(
+                GetAvroFieldValuePolyCodegen(codegenMethodScope, codegenClassScope, _getters),
+                underlyingExpression);
         }
 
         public CodegenExpression UnderlyingExistsCodegen(
@@ -108,8 +113,7 @@ namespace NEsper.Avro.Getter
             GenericRecord record,
             AvroEventPropertyGetter[] getters)
         {
-            if (record == null)
-            {
+            if (record == null) {
                 return false;
             }
 
@@ -123,25 +127,33 @@ namespace NEsper.Avro.Getter
             AvroEventPropertyGetter[] getters)
         {
             return codegenMethodScope.MakeChild(typeof(bool), typeof(AvroEventBeanGetterDynamicPoly), codegenClassScope)
-                .AddParam(typeof(GenericRecord), "record").Block
+                .AddParam(typeof(GenericRecord), "record")
+                .Block
                 .IfRefNullReturnFalse("record")
-                .AssignRef("record", CodegenExpressionBuilder.LocalMethod(NavigatePolyCodegen(codegenMethodScope, codegenClassScope, getters), CodegenExpressionBuilder.Ref("record")))
+                .AssignRef(
+                    "record",
+                    CodegenExpressionBuilder.LocalMethod(
+                        NavigatePolyCodegen(codegenMethodScope, codegenClassScope, getters),
+                        CodegenExpressionBuilder.Ref("record")))
                 .IfRefNullReturnFalse("record")
-                .MethodReturn(getters[getters.Length - 1].UnderlyingExistsCodegen(CodegenExpressionBuilder.Ref("record"), codegenMethodScope, codegenClassScope));
+                .MethodReturn(
+                    getters[getters.Length - 1]
+                        .UnderlyingExistsCodegen(
+                            CodegenExpressionBuilder.Ref("record"),
+                            codegenMethodScope,
+                            codegenClassScope));
         }
 
         internal static object GetAvroFieldValuePoly(
             GenericRecord record,
             AvroEventPropertyGetter[] getters)
         {
-            if (record == null)
-            {
+            if (record == null) {
                 return null;
             }
 
             record = NavigatePoly(record, getters);
-            if (record == null)
-            {
+            if (record == null) {
                 return null;
             }
 
@@ -153,26 +165,37 @@ namespace NEsper.Avro.Getter
             CodegenClassScope codegenClassScope,
             AvroEventPropertyGetter[] getters)
         {
-            return codegenMethodScope.MakeChild(typeof(object), typeof(AvroEventBeanGetterDynamicPoly), codegenClassScope)
-                .AddParam(typeof(GenericRecord), "record").Block
+            return codegenMethodScope.MakeChild(
+                    typeof(object),
+                    typeof(AvroEventBeanGetterDynamicPoly),
+                    codegenClassScope)
+                .AddParam(typeof(GenericRecord), "record")
+                .Block
                 .IfRefNullReturnNull("record")
-                .AssignRef("record", CodegenExpressionBuilder.LocalMethod(NavigatePolyCodegen(codegenMethodScope, codegenClassScope, getters), CodegenExpressionBuilder.Ref("record")))
+                .AssignRef(
+                    "record",
+                    CodegenExpressionBuilder.LocalMethod(
+                        NavigatePolyCodegen(codegenMethodScope, codegenClassScope, getters),
+                        CodegenExpressionBuilder.Ref("record")))
                 .IfRefNullReturnNull("record")
-                .MethodReturn(getters[getters.Length - 1].UnderlyingGetCodegen(CodegenExpressionBuilder.Ref("record"), codegenMethodScope, codegenClassScope));
+                .MethodReturn(
+                    getters[getters.Length - 1]
+                        .UnderlyingGetCodegen(
+                            CodegenExpressionBuilder.Ref("record"),
+                            codegenMethodScope,
+                            codegenClassScope));
         }
 
         internal static object GetAvroFieldFragmentPoly(
             GenericRecord record,
             AvroEventPropertyGetter[] getters)
         {
-            if (record == null)
-            {
+            if (record == null) {
                 return null;
             }
 
             record = NavigatePoly(record, getters);
-            if (record == null)
-            {
+            if (record == null) {
                 return null;
             }
 
@@ -184,23 +207,34 @@ namespace NEsper.Avro.Getter
             CodegenClassScope codegenClassScope,
             AvroEventPropertyGetter[] getters)
         {
-            return codegenMethodScope.MakeChild(typeof(object), typeof(AvroEventBeanGetterDynamicPoly), codegenClassScope)
-                .AddParam(typeof(GenericRecord), "record").Block
+            return codegenMethodScope.MakeChild(
+                    typeof(object),
+                    typeof(AvroEventBeanGetterDynamicPoly),
+                    codegenClassScope)
+                .AddParam(typeof(GenericRecord), "record")
+                .Block
                 .IfRefNullReturnNull("record")
-                .AssignRef("record", CodegenExpressionBuilder.LocalMethod(NavigatePolyCodegen(codegenMethodScope, codegenClassScope, getters), CodegenExpressionBuilder.Ref("record")))
+                .AssignRef(
+                    "record",
+                    CodegenExpressionBuilder.LocalMethod(
+                        NavigatePolyCodegen(codegenMethodScope, codegenClassScope, getters),
+                        CodegenExpressionBuilder.Ref("record")))
                 .IfRefNullReturnNull("record")
-                .MethodReturn(getters[getters.Length - 1].UnderlyingFragmentCodegen(CodegenExpressionBuilder.Ref("record"), codegenMethodScope, codegenClassScope));
+                .MethodReturn(
+                    getters[getters.Length - 1]
+                        .UnderlyingFragmentCodegen(
+                            CodegenExpressionBuilder.Ref("record"),
+                            codegenMethodScope,
+                            codegenClassScope));
         }
 
         internal static GenericRecord NavigatePoly(
             GenericRecord record,
             AvroEventPropertyGetter[] getters)
         {
-            for (var i = 0; i < getters.Length - 1; i++)
-            {
+            for (var i = 0; i < getters.Length - 1; i++) {
                 var value = getters[i].GetAvroFieldValue(record);
-                if (!(value is GenericRecord))
-                {
+                if (!(value is GenericRecord)) {
                     return null;
                 }
 
@@ -215,14 +249,25 @@ namespace NEsper.Avro.Getter
             CodegenClassScope codegenClassScope,
             AvroEventPropertyGetter[] getters)
         {
-            var block = codegenMethodScope.MakeChild(typeof(GenericRecord), typeof(AvroEventBeanGetterDynamicPoly), codegenClassScope)
-                .AddParam(typeof(GenericRecord), "record").Block;
-            block.DeclareVar(typeof(object), "value", CodegenExpressionBuilder.ConstantNull());
-            for (var i = 0; i < getters.Length - 1; i++)
-            {
-                block.AssignRef("value", getters[i].UnderlyingGetCodegen(CodegenExpressionBuilder.Ref("record"), codegenMethodScope, codegenClassScope))
+            var block = codegenMethodScope.MakeChild(
+                    typeof(GenericRecord),
+                    typeof(AvroEventBeanGetterDynamicPoly),
+                    codegenClassScope)
+                .AddParam(typeof(GenericRecord), "record")
+                .Block;
+            block.DeclareVar<object>("value", CodegenExpressionBuilder.ConstantNull());
+            for (var i = 0; i < getters.Length - 1; i++) {
+                block.AssignRef(
+                        "value",
+                        getters[i]
+                            .UnderlyingGetCodegen(
+                                CodegenExpressionBuilder.Ref("record"),
+                                codegenMethodScope,
+                                codegenClassScope))
                     .IfRefNotTypeReturnConst("value", typeof(GenericRecord), null)
-                    .AssignRef("record", CodegenExpressionBuilder.Cast(typeof(GenericRecord), CodegenExpressionBuilder.Ref("value")));
+                    .AssignRef(
+                        "record",
+                        CodegenExpressionBuilder.Cast(typeof(GenericRecord), CodegenExpressionBuilder.Ref("value")));
             }
 
             return block.MethodReturn(CodegenExpressionBuilder.Ref("record"));

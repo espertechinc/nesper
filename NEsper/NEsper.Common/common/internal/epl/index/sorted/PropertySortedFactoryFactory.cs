@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.epl.index.@base;
@@ -39,8 +40,14 @@ namespace com.espertech.esper.common.@internal.epl.index.sorted
             StatementContext statementContext)
         {
             return statementContext.EventTableIndexService.CreateSorted(
-                indexedStreamNum, eventType, indexProp, indexType,
-                valueGetter, optionalSerde, isFireAndForget, statementContext);
+                indexedStreamNum,
+                eventType,
+                indexProp,
+                indexType,
+                valueGetter,
+                optionalSerde,
+                isFireAndForget,
+                statementContext);
         }
     }
 } // end of namespace

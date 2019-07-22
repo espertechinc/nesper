@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
@@ -39,7 +40,10 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
         }
 
         public DTLocalEvaluator DTEvaluator {
-            get => new DTLocalBeanIntervalWithEndEval(getterStartTimestamp, getterEndTimestamp, inner.MakeEvaluatorComp());
+            get => new DTLocalBeanIntervalWithEndEval(
+                getterStartTimestamp,
+                getterEndTimestamp,
+                inner.MakeEvaluatorComp());
         }
 
         public CodegenExpression Codegen(
@@ -49,7 +53,12 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            return DTLocalBeanIntervalWithEndEval.Codegen(this, inner, codegenMethodScope, exprSymbol, codegenClassScope);
+            return DTLocalBeanIntervalWithEndEval.Codegen(
+                this,
+                inner,
+                codegenMethodScope,
+                exprSymbol,
+                codegenClassScope);
         }
     }
 } // end of namespace

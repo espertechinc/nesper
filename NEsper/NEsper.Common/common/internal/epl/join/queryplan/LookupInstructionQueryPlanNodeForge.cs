@@ -8,6 +8,7 @@
 
 using System.Collections.Generic;
 using System.Linq;
+
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.bytecodemodel.util;
@@ -18,6 +19,7 @@ using com.espertech.esper.common.@internal.epl.@join.queryplanouter;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.join.queryplan
@@ -84,8 +86,13 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplan
                 Constant(NumStreams),
                 Constant(RequiredPerStream),
                 CodegenMakeableUtil.MakeArray(
-                    "lookupInstructions", typeof(LookupInstructionPlan), LookupInstructions.ToArray(), GetType(),
-                    parent, symbols, classScope),
+                    "lookupInstructions",
+                    typeof(LookupInstructionPlan),
+                    LookupInstructions.ToArray(),
+                    GetType(),
+                    parent,
+                    symbols,
+                    classScope),
                 LocalMethod(method));
         }
 
@@ -133,14 +140,22 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplan
             }
 
             method.Block
-                .DeclareVar(
-                    typeof(BaseAssemblyNodeFactory[]), "factories",
+                .DeclareVar<BaseAssemblyNodeFactory[]>(
+                    "factories",
                     CodegenMakeableUtil.MakeArray(
-                        "assemblyInstructions", typeof(BaseAssemblyNodeFactory), factories.ToArray(), GetType(), parent,
-                        symbols, classScope))
+                        "assemblyInstructions",
+                        typeof(BaseAssemblyNodeFactory),
+                        factories.ToArray(),
+                        GetType(),
+                        parent,
+                        symbols,
+                        classScope))
                 .StaticMethod(
-                    typeof(LookupInstructionQueryPlanNodeForge), "assembleFactoriesIntoTree", Ref("factories"),
-                    Constant(parents), Constant(children))
+                    typeof(LookupInstructionQueryPlanNodeForge),
+                    "assembleFactoriesIntoTree",
+                    Ref("factories"),
+                    Constant(parents),
+                    Constant(children))
                 .MethodReturn(Ref("factories"));
 
             return method;
@@ -150,8 +165,10 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplan
         {
             writer.WriteLine(
                 "LookupInstructionQueryPlanNode" +
-                " rootStream=" + RootStream +
-                " requiredPerStream=" + RequiredPerStream.RenderAny());
+                " rootStream=" +
+                RootStream +
+                " requiredPerStream=" +
+                RequiredPerStream.RenderAny());
 
             writer.IncrIndent();
             for (var i = 0; i < LookupInstructions.Count; i++) {

@@ -42,8 +42,7 @@ namespace com.espertech.esper.common.@internal.epl.table.compiletime
 
         public TableMetaData ResolveTableFromEventType(EventType containedType)
         {
-            if (containedType != null && containedType.Metadata.TypeClass == EventTypeTypeClass.TABLE_INTERNAL)
-            {
+            if (containedType != null && containedType.Metadata.TypeClass == EventTypeTypeClass.TABLE_INTERNAL) {
                 string tableName = EventTypeNameUtil.GetTableNameFromInternalTypeName(containedType.Name);
                 return Resolve(tableName);
             }
@@ -54,18 +53,17 @@ namespace com.espertech.esper.common.@internal.epl.table.compiletime
         public TableMetaData Resolve(string tableName)
         {
             TableMetaData metaData = compileTimeRegistry.GetTable(tableName);
-            if (metaData != null)
-            {
+            if (metaData != null) {
                 return metaData;
             }
 
-            try
-            {
+            try {
                 var data = pathTables.GetAnyModuleExpectSingle(tableName, moduleUses);
-                if (data != null)
-                {
-                    if (!NameAccessModifierExtensions.Visible(data.First.TableVisibility, data.First.TableModuleName, moduleName))
-                    {
+                if (data != null) {
+                    if (!NameAccessModifierExtensions.Visible(
+                        data.First.TableVisibility,
+                        data.First.TableModuleName,
+                        moduleName)) {
                         return null;
                     }
 
@@ -73,8 +71,7 @@ namespace com.espertech.esper.common.@internal.epl.table.compiletime
                     return data.First;
                 }
             }
-            catch (PathException e)
-            {
+            catch (PathException e) {
                 throw CompileTimeResolverUtil.MakePathAmbiguous(PathRegistryObjectType.TABLE, tableName, e);
             }
 

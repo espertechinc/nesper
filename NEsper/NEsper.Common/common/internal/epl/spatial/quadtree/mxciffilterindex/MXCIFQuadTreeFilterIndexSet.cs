@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+
 using com.espertech.esper.common.@internal.epl.spatial.quadtree.core;
 using com.espertech.esper.common.@internal.epl.spatial.quadtree.mxcif;
 using com.espertech.esper.common.@internal.epl.spatial.quadtree.mxcifrowindex;
@@ -38,13 +39,11 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxciffilteri
             MXCIFQuadTreeNode<object> node,
             MXCIFQuadTree<object> tree)
         {
-            if (node is MXCIFQuadTreeNodeLeaf<object> leaf)
-            {
+            if (node is MXCIFQuadTreeNodeLeaf<object> leaf) {
                 var count = SetOnNodeWithRect(leaf, x, y, width, height, value);
                 leaf.IncCount(count);
 
-                if (leaf.Count <= tree.LeafCapacity || node.Level >= tree.MaxTreeHeight)
-                {
+                if (leaf.Count <= tree.LeafCapacity || node.Level >= tree.MaxTreeHeight) {
                     return leaf;
                 }
 
@@ -65,13 +64,11 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxciffilteri
             MXCIFQuadTreeNode<object> node,
             MXCIFQuadTree<object> tree)
         {
-            if (node is MXCIFQuadTreeNodeLeaf<object> leaf)
-            {
+            if (node is MXCIFQuadTreeNodeLeaf<object> leaf) {
                 var count = SetOnNode(leaf, x, y, width, height, value);
                 leaf.IncCount(count);
 
-                if (leaf.Count <= tree.LeafCapacity || node.Level >= tree.MaxTreeHeight)
-                {
+                if (leaf.Count <= tree.LeafCapacity || node.Level >= tree.MaxTreeHeight) {
                     return leaf;
                 }
 
@@ -92,24 +89,28 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxciffilteri
             XYWHRectangleWValue<TL> value,
             MXCIFQuadTree<object> tree)
         {
-            switch (branch.Bb.GetQuadrantApplies(x, y, width, height))
-            {
+            switch (branch.Bb.GetQuadrantApplies(x, y, width, height)) {
                 case QuadrantAppliesEnum.NW:
                     branch.Nw = SetOnNodeWithRect(x, y, width, height, value, branch.Nw, tree);
                     break;
+
                 case QuadrantAppliesEnum.NE:
                     branch.Ne = SetOnNodeWithRect(x, y, width, height, value, branch.Ne, tree);
                     break;
+
                 case QuadrantAppliesEnum.SW:
                     branch.Sw = SetOnNodeWithRect(x, y, width, height, value, branch.Sw, tree);
                     break;
+
                 case QuadrantAppliesEnum.SE:
                     branch.Se = SetOnNodeWithRect(x, y, width, height, value, branch.Se, tree);
                     break;
+
                 case QuadrantAppliesEnum.SOME:
                     var count = SetOnNodeWithRect(branch, x, y, width, height, value);
                     branch.IncCount(count);
                     break;
+
                 default:
                     throw new IllegalStateException("Quandrant not applies to any");
             }
@@ -124,24 +125,28 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxciffilteri
             TL value,
             MXCIFQuadTree<object> tree)
         {
-            switch (branch.Bb.GetQuadrantApplies(x, y, width, height))
-            {
+            switch (branch.Bb.GetQuadrantApplies(x, y, width, height)) {
                 case QuadrantAppliesEnum.NW:
                     branch.Nw = SetOnNode(x, y, width, height, value, branch.Nw, tree);
                     break;
+
                 case QuadrantAppliesEnum.NE:
                     branch.Ne = SetOnNode(x, y, width, height, value, branch.Ne, tree);
                     break;
+
                 case QuadrantAppliesEnum.SW:
                     branch.Sw = SetOnNode(x, y, width, height, value, branch.Sw, tree);
                     break;
+
                 case QuadrantAppliesEnum.SE:
                     branch.Se = SetOnNode(x, y, width, height, value, branch.Se, tree);
                     break;
+
                 case QuadrantAppliesEnum.SOME:
                     var count = SetOnNode(branch, x, y, width, height, value);
                     branch.IncCount(count);
                     break;
+
                 default:
                     throw new IllegalStateException("Quandrant not applies to any");
             }
@@ -167,15 +172,12 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxciffilteri
             var branch = new MXCIFQuadTreeNodeBranch<object>(leaf.Bb, leaf.Level, null, 0, nw, ne, sw, se);
 
             var rectangles = leaf.Data;
-            if (rectangles is XYWHRectangleWValue<TL> asRectangle)
-            {
+            if (rectangles is XYWHRectangleWValue<TL> asRectangle) {
                 Subdivide(asRectangle, branch, tree);
             }
-            else
-            {
+            else {
                 var collection = (ICollection<XYWHRectangleWValue<TL>>) rectangles;
-                foreach (var rectangle in collection)
-                {
+                foreach (var rectangle in collection) {
                     Subdivide(rectangle, branch, tree);
                 }
             }
@@ -193,29 +195,23 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxciffilteri
             var w = rectangle.W;
             var h = rectangle.H;
             var quadrant = branch.Bb.GetQuadrantApplies(x, y, w, h);
-            if (quadrant == QuadrantAppliesEnum.NW)
-            {
+            if (quadrant == QuadrantAppliesEnum.NW) {
                 branch.Nw = SetOnNodeWithRect(x, y, w, h, rectangle, branch.Nw, tree);
             }
-            else if (quadrant == QuadrantAppliesEnum.NE)
-            {
+            else if (quadrant == QuadrantAppliesEnum.NE) {
                 branch.Ne = SetOnNodeWithRect(x, y, w, h, rectangle, branch.Ne, tree);
             }
-            else if (quadrant == QuadrantAppliesEnum.SW)
-            {
+            else if (quadrant == QuadrantAppliesEnum.SW) {
                 branch.Sw = SetOnNodeWithRect(x, y, w, h, rectangle, branch.Sw, tree);
             }
-            else if (quadrant == QuadrantAppliesEnum.SE)
-            {
+            else if (quadrant == QuadrantAppliesEnum.SE) {
                 branch.Se = SetOnNodeWithRect(x, y, w, h, rectangle, branch.Se, tree);
             }
-            else if (quadrant == QuadrantAppliesEnum.SOME)
-            {
+            else if (quadrant == QuadrantAppliesEnum.SOME) {
                 var numAdded = SetOnNodeWithRect(branch, x, y, w, h, rectangle);
                 branch.IncCount(numAdded);
             }
-            else
-            {
+            else {
                 throw new IllegalStateException("No intersection");
             }
         }
@@ -228,8 +224,7 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxciffilteri
             double height,
             XYWHRectangleWValue<TL> value)
         {
-            if (!value.CoordinateEquals(x, y, width, height))
-            {
+            if (!value.CoordinateEquals(x, y, width, height)) {
                 throw new IllegalStateException();
             }
 
@@ -245,16 +240,13 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxciffilteri
             TL value)
         {
             var currentValue = node.Data;
-            if (currentValue == null)
-            {
+            if (currentValue == null) {
                 node.Data = new XYWHRectangleWValue<TL>(x, y, width, height, value);
                 return 1;
             }
 
-            if (currentValue is XYWHRectangleWValue<TL> otherXY)
-            {
-                if (otherXY.CoordinateEquals(x, y, width, height))
-                {
+            if (currentValue is XYWHRectangleWValue<TL> otherXY) {
+                if (otherXY.CoordinateEquals(x, y, width, height)) {
                     otherXY.Value = value;
                     return 0;
                 }
@@ -267,10 +259,8 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxciffilteri
             }
 
             var collection = (ICollection<XYWHRectangleWValue<TL>>) currentValue;
-            foreach (var other in collection)
-            {
-                if (other.CoordinateEquals(x, y, width, height))
-                {
+            foreach (var other in collection) {
+                if (other.CoordinateEquals(x, y, width, height)) {
                     other.Value = value;
                     return 0;
                 }

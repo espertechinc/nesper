@@ -11,6 +11,7 @@ using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.@event.core;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.contained
@@ -36,7 +37,7 @@ namespace com.espertech.esper.common.@internal.epl.contained
             var method = parent.MakeChild(typeof(ContainedEventEvalArrayToEvent), GetType(), classScope);
             CodegenExpression eval = ExprNodeUtilityCodegen.CodegenEvaluator(evaluator, method, GetType(), classScope);
             method.Block
-                .DeclareVar(typeof(EventBeanManufacturer), "manu", manufacturer.Make(method, classScope))
+                .DeclareVar<EventBeanManufacturer>("manu", manufacturer.Make(method, classScope))
                 .MethodReturn(NewInstance<ContainedEventEvalArrayToEvent>(eval, Ref("manu")));
             return LocalMethod(method);
         }

@@ -9,6 +9,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.@join.exec.@base;
@@ -176,11 +177,16 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.outer
         {
             writer.WriteLine(
                 "LookupInstructionExec" +
-                " fromStream=" + FromStream +
-                " fromStreamName=" + fromStreamName +
-                " numSubStreams=" + numSubStreams +
-                " requiredSubStreams=" + requiredSubStreams.RenderAny() +
-                " optionalSubStreams=" + optionalSubStreams.RenderAny());
+                " fromStream=" +
+                FromStream +
+                " fromStreamName=" +
+                fromStreamName +
+                " numSubStreams=" +
+                numSubStreams +
+                " requiredSubStreams=" +
+                requiredSubStreams.RenderAny() +
+                " optionalSubStreams=" +
+                optionalSubStreams.RenderAny());
 
             writer.IncrIndent();
             for (var i = 0; i < lookupStrategies.Length; i++) {

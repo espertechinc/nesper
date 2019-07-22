@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.context.util;
@@ -28,8 +29,8 @@ namespace com.espertech.esper.common.@internal.epl.output.view
     /// </summary>
     public class OutputProcessViewConditionDefault : OutputProcessViewBaseWAfter
     {
-        private readonly OutputCondition outputCondition;
-        private readonly OutputProcessViewConditionFactory parent;
+        private readonly OutputCondition _outputCondition;
+        private readonly OutputProcessViewConditionFactory _parent;
 
         public OutputProcessViewConditionDefault(
             ResultSetProcessor resultSetProcessor,
@@ -41,24 +42,28 @@ namespace com.espertech.esper.common.@internal.epl.output.view
             bool isJoin,
             EventType[] eventTypes)
             : base(
-                agentInstanceContext, resultSetProcessor, afterConditionTime, afterConditionNumberOfEvents,
+                agentInstanceContext,
+                resultSetProcessor,
+                afterConditionTime,
+                afterConditionNumberOfEvents,
                 afterConditionSatisfied)
         {
-            this.parent = parent;
+            _parent = parent;
 
             var outputCallback = GetCallbackToLocal(parent.StreamCount);
-            outputCondition =
+            _outputCondition =
                 parent.OutputConditionFactory.InstantiateOutputCondition(agentInstanceContext, outputCallback);
             OptionalDeltaSet =
                 agentInstanceContext.ResultSetProcessorHelperFactory.MakeOutputConditionChangeSet(
-                    eventTypes, agentInstanceContext);
+                    eventTypes,
+                    agentInstanceContext);
         }
 
         public override int NumChangesetRows => OptionalDeltaSet.NumChangesetRows;
 
         public OutputProcessViewConditionDeltaSet OptionalDeltaSet { get; }
 
-        public override OutputCondition OptionalOutputCondition => outputCondition;
+        public override OutputCondition OptionalOutputCondition => _outputCondition;
 
         public override OutputProcessViewAfterState OptionalAfterConditionState => null;
 
@@ -75,10 +80,10 @@ namespace com.espertech.esper.common.@internal.epl.output.view
             instrumentationCommon.QOutputProcessWCondition(newData, oldData);
 
             // add the incoming events to the event batches
-            if (parent.IsAfter) {
+            if (_parent.IsAfter) {
                 var afterSatisfied = CheckAfterCondition(newData, agentInstanceContext.StatementContext);
                 if (!afterSatisfied) {
-                    if (!parent.IsUnaggregatedUngrouped) {
+                    if (!_parent.IsUnaggregatedUngrouped) {
                         OptionalDeltaSet.AddView(new UniformPair<EventBean[]>(newData, oldData));
                     }
 
@@ -103,7 +108,7 @@ namespace com.espertech.esper.common.@internal.epl.output.view
             }
 
             instrumentationCommon.QOutputRateConditionUpdate(newDataLength, oldDataLength);
-            outputCondition.UpdateOutputCondition(newDataLength, oldDataLength);
+            _outputCondition.UpdateOutputCondition(newDataLength, oldDataLength);
             instrumentationCommon.AOutputRateConditionUpdate();
 
             instrumentationCommon.AOutputProcessWCondition(false);
@@ -123,10 +128,10 @@ namespace com.espertech.esper.common.@internal.epl.output.view
             instrumentationCommon.QOutputProcessWConditionJoin(newEvents, oldEvents);
 
             // add the incoming events to the event batches
-            if (parent.IsAfter) {
+            if (_parent.IsAfter) {
                 var afterSatisfied = CheckAfterCondition(newEvents, agentInstanceContext.StatementContext);
                 if (!afterSatisfied) {
-                    if (!parent.IsUnaggregatedUngrouped) {
+                    if (!_parent.IsUnaggregatedUngrouped) {
                         AddToChangeset(newEvents, oldEvents, OptionalDeltaSet);
                     }
 
@@ -151,7 +156,7 @@ namespace com.espertech.esper.common.@internal.epl.output.view
             }
 
             instrumentationCommon.QOutputRateConditionUpdate(newEventsSize, oldEventsSize);
-            outputCondition.UpdateOutputCondition(newEventsSize, oldEventsSize);
+            _outputCondition.UpdateOutputCondition(newEventsSize, oldEventsSize);
             instrumentationCommon.AOutputRateConditionUpdate();
 
             instrumentationCommon.AOutputProcessWConditionJoin(false);
@@ -179,11 +184,12 @@ namespace com.espertech.esper.common.@internal.epl.output.view
 
             // Process the events and get the result
             var newOldEvents = resultSetProcessor.ProcessOutputLimitedView(
-                OptionalDeltaSet.ViewEventsSet, isGenerateSynthetic);
+                OptionalDeltaSet.ViewEventsSet,
+                isGenerateSynthetic);
 
-            if (parent.IsDistinct && newOldEvents != null) {
-                newOldEvents.First = EventBeanUtility.GetDistinctByProp(newOldEvents.First, parent.EventBeanReader);
-                newOldEvents.Second = EventBeanUtility.GetDistinctByProp(newOldEvents.Second, parent.EventBeanReader);
+            if (_parent.IsDistinct && newOldEvents != null) {
+                newOldEvents.First = EventBeanUtility.GetDistinctByProp(newOldEvents.First, _parent.EventBeanReader);
+                newOldEvents.Second = EventBeanUtility.GetDistinctByProp(newOldEvents.Second, _parent.EventBeanReader);
             }
 
             if (!isGenerateSynthetic && !isGenerateNatural) {
@@ -215,7 +221,7 @@ namespace com.espertech.esper.common.@internal.epl.output.view
         {
             base.Stop(services);
             OptionalDeltaSet.Destroy();
-            outputCondition.StopOutputCondition();
+            _outputCondition.StopOutputCondition();
         }
 
         private void ResetEventBatches()
@@ -245,11 +251,12 @@ namespace com.espertech.esper.common.@internal.epl.output.view
 
             // Process the events and get the result
             var newOldEvents = resultSetProcessor.ProcessOutputLimitedJoin(
-                OptionalDeltaSet.JoinEventsSet, isGenerateSynthetic);
+                OptionalDeltaSet.JoinEventsSet,
+                isGenerateSynthetic);
 
-            if (parent.IsDistinct && newOldEvents != null) {
-                newOldEvents.First = EventBeanUtility.GetDistinctByProp(newOldEvents.First, parent.EventBeanReader);
-                newOldEvents.Second = EventBeanUtility.GetDistinctByProp(newOldEvents.Second, parent.EventBeanReader);
+            if (_parent.IsDistinct && newOldEvents != null) {
+                newOldEvents.First = EventBeanUtility.GetDistinctByProp(newOldEvents.First, _parent.EventBeanReader);
+                newOldEvents.Second = EventBeanUtility.GetDistinctByProp(newOldEvents.Second, _parent.EventBeanReader);
             }
 
             if (!isGenerateSynthetic && !isGenerateNatural) {
@@ -289,13 +296,16 @@ namespace com.espertech.esper.common.@internal.epl.output.view
         public override IEnumerator<EventBean> GetEnumerator()
         {
             return OutputStrategyUtil.GetIterator(
-                joinExecutionStrategy, resultSetProcessor, parentView, parent.IsDistinct);
+                joinExecutionStrategy,
+                resultSetProcessor,
+                parentView,
+                _parent.IsDistinct);
         }
 
         public override void Terminated()
         {
-            if (parent.IsTerminable) {
-                outputCondition.Terminated();
+            if (_parent.IsTerminable) {
+                _outputCondition.Terminated();
             }
         }
 

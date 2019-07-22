@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.meta;
 using com.espertech.esper.common.@internal.@event.bean.core;
@@ -22,7 +23,7 @@ namespace com.espertech.esper.common.@internal.@event.path
 
     public class EventTypeResolverConstants
     {
-        public const string RESOLVE_METHOD = "resolve";
-        public const string RESOLVE_PRIVATE_BEAN_METHOD = "resolvePrivateBean";
+        public const string RESOLVE_METHOD = "Resolve";
+        public const string RESOLVE_PRIVATE_BEAN_METHOD = "ResolvePrivateBean";
     }
 } // end of namespace

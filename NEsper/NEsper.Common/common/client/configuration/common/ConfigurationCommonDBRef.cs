@@ -88,8 +88,7 @@ namespace com.espertech.esper.common.client.configuration.common
         ///     is true to set auto-commit to true, or false to set auto-commit to false, or null to accepts the
         ///     default
         /// </value>
-        public bool ConnectionAutoCommit
-        {
+        public bool ConnectionAutoCommit {
             set => ConnectionSettings.AutoCommit = value;
         }
 
@@ -97,8 +96,7 @@ namespace com.espertech.esper.common.client.configuration.common
         ///     Sets the transaction isolation level on new connections created for this database.
         /// </summary>
         /// <value>is the transaction isolation level</value>
-        public IsolationLevel? ConnectionTransactionIsolation
-        {
+        public IsolationLevel? ConnectionTransactionIsolation {
             get => ConnectionSettings.TransactionIsolation;
             set => ConnectionSettings.TransactionIsolation = value;
         }
@@ -107,8 +105,7 @@ namespace com.espertech.esper.common.client.configuration.common
         ///     Sets the read-only flag on new connections created for this database.
         /// </summary>
         /// <value>is the read-only flag</value>
-        public bool ConnectionReadOnly
-        {
+        public bool ConnectionReadOnly {
             get => ConnectionSettings.ReadOnly;
             set => ConnectionSettings.ReadOnly = value;
         }
@@ -117,8 +114,7 @@ namespace com.espertech.esper.common.client.configuration.common
         ///     Sets the catalog name for new connections created for this database.
         /// </summary>
         /// <value>is the catalog name</value>
-        public string ConnectionCatalog
-        {
+        public string ConnectionCatalog {
             get => ConnectionSettings.Catalog;
             set => ConnectionSettings.Catalog = value;
         }
@@ -137,8 +133,7 @@ namespace com.espertech.esper.common.client.configuration.common
         ///     event type and perform expression type checking.
         /// </summary>
         /// <value>indication how to retrieve metadata</value>
-        public MetadataOriginEnum MetadataOrigin
-        {
+        public MetadataOriginEnum MetadataOrigin {
             set => MetadataRetrievalEnum = value;
         }
 
@@ -211,7 +206,12 @@ namespace com.espertech.esper.common.client.configuration.common
             string password,
             Properties connectionArgs)
         {
-            ConnectionFactoryDesc = new DriverManagerConnection(className, connectionString, username, password, connectionArgs);
+            ConnectionFactoryDesc = new DriverManagerConnection(
+                className,
+                connectionString,
+                username,
+                password,
+                connectionArgs);
         }
 
         /// <summary>
@@ -239,7 +239,9 @@ namespace com.espertech.esper.common.client.configuration.common
             double purgeIntervalSeconds)
         {
             DataCacheDesc = new ConfigurationCommonCacheExpiryTime(
-                maxAgeSeconds, purgeIntervalSeconds, CacheReferenceType.DEFAULT);
+                maxAgeSeconds,
+                purgeIntervalSeconds,
+                CacheReferenceType.DEFAULT);
         }
 
         /// <summary>
@@ -258,7 +260,9 @@ namespace com.espertech.esper.common.client.configuration.common
             CacheReferenceType cacheReferenceType)
         {
             DataCacheDesc = new ConfigurationCommonCacheExpiryTime(
-                maxAgeSeconds, purgeIntervalSeconds, cacheReferenceType);
+                maxAgeSeconds,
+                purgeIntervalSeconds,
+                cacheReferenceType);
         }
 
         /// <summary>
@@ -266,15 +270,17 @@ namespace com.espertech.esper.common.client.configuration.common
         /// </summary>
         /// <param name="sqlType">Type of the SQL.</param>
         /// <param name="desiredType">The desired type.</param>
-        public void AddTypeBinding(Type sqlType, Type desiredType)
+        public void AddTypeBinding(
+            Type sqlType,
+            Type desiredType)
         {
             var typeEnum = DatabaseTypeEnum.GetEnum(desiredType.FullName);
-            if (typeEnum == null)
-            {
+            if (typeEnum == null) {
                 var supported = DatabaseTypeEnum.VALUES.RenderAny();
                 throw new ConfigurationException(
                     "Unsupported type '" + desiredType.FullName + "' when expecting any of: " + supported);
             }
+
             DataTypesMapping[sqlType] = desiredType;
         }
 
@@ -284,11 +290,14 @@ namespace com.espertech.esper.common.client.configuration.common
         /// <param name="container">The container.</param>
         /// <param name="driverName">Name of the driver.</param>
         /// <param name="properties">The properties.</param>
-
-        public void SetDatabaseDriver(IContainer container, String driverName, Properties properties)
+        public void SetDatabaseDriver(
+            IContainer container,
+            String driverName,
+            Properties properties)
         {
             var driver = DriverConnectionFactoryDesc.ResolveDriverFromName(
-                container, driverName);
+                container,
+                driverName);
             driver.Properties = properties;
 
             ConnectionFactoryDesc = new DriverConnectionFactoryDesc(driver);
@@ -308,7 +317,9 @@ namespace com.espertech.esper.common.client.configuration.common
         /// </summary>
         /// <param name="driverConnectionFactoryDesc">The db driver factory connection.</param>
         /// <param name="properties">The properties.</param>
-        public void SetDatabaseDriver(DriverConnectionFactoryDesc driverConnectionFactoryDesc, Properties properties)
+        public void SetDatabaseDriver(
+            DriverConnectionFactoryDesc driverConnectionFactoryDesc,
+            Properties properties)
         {
             ConnectionFactoryDesc = new DriverConnectionFactoryDesc(
                 driverConnectionFactoryDesc.Driver);

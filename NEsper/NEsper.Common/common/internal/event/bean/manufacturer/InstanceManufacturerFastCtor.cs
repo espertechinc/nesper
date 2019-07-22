@@ -8,11 +8,13 @@
 
 using System;
 using System.Reflection;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.@event.bean.manufacturer
@@ -74,8 +76,11 @@ namespace com.espertech.esper.common.@internal.@event.bean.manufacturer
         {
             var targetException = thrown is TargetException ? ((TargetException) thrown).InnerException : thrown;
             return new EPException(
-                "TargetException received invoking constructor for type '" + targetClassName + "': " +
-                targetException.Message, targetException);
+                "TargetException received invoking constructor for type '" +
+                targetClassName +
+                "': " +
+                targetException.Message,
+                targetException);
         }
 
         public static CodegenExpression Codegen(
@@ -86,12 +91,18 @@ namespace com.espertech.esper.common.@internal.@event.bean.manufacturer
             ExprForge[] forges)
         {
             var methodNode = codegenMethodScope.MakeChild(
-                targetClass, typeof(InstanceManufacturerFastCtor), codegenClassScope);
+                targetClass,
+                typeof(InstanceManufacturerFastCtor),
+                codegenClassScope);
 
             var @params = new CodegenExpression[forges.Length];
             for (var i = 0; i < forges.Length; i++) {
-                @params[i] = forges[i].EvaluateCodegen(
-                    forges[i].EvaluationType, methodNode, exprSymbol, codegenClassScope);
+                @params[i] = forges[i]
+                    .EvaluateCodegen(
+                        forges[i].EvaluationType,
+                        methodNode,
+                        exprSymbol,
+                        codegenClassScope);
             }
 
             methodNode.Block
@@ -100,8 +111,10 @@ namespace com.espertech.esper.common.@internal.@event.bean.manufacturer
                 .AddCatch(typeof(Exception), "t")
                 .BlockThrow(
                     StaticMethod(
-                        typeof(InstanceManufacturerFastCtor), "GetTargetExceptionAsEPException",
-                        Constant(targetClass.Name), Ref("t")))
+                        typeof(InstanceManufacturerFastCtor),
+                        "GetTargetExceptionAsEPException",
+                        Constant(targetClass.Name),
+                        Ref("t")))
                 .MethodEnd();
             return LocalMethod(methodNode);
         }

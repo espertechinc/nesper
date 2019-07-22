@@ -26,8 +26,10 @@ namespace com.espertech.esper.common.@internal.@event.propertyparser
         public override string ToString()
         {
             return "TokenInfo{" +
-                   "regex=" + regex +
-                   ", token=" + token +
+                   "regex=" +
+                   regex +
+                   ", token=" +
+                   token +
                    '}';
         }
     }

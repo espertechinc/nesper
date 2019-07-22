@@ -9,6 +9,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+
 using com.espertech.esper.common.@internal.bytecodemodel.core;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 
@@ -25,13 +26,12 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.statement
 
         public void Render(
             StringBuilder builder,
-            IDictionary<Type, string> imports,
             bool isInnerClass,
             int level,
             CodegenIndent indent)
         {
             builder.Append("if (");
-            @ref.Render(builder, imports, isInnerClass);
+            @ref.Render(builder, isInnerClass);
             builder.Append(" == null) {return null;}\n");
         }
 

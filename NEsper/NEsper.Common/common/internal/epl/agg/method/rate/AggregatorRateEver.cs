@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.core;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -16,6 +17,7 @@ using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.schedule;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.io;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 using static com.espertech.esper.common.@internal.epl.agg.method.core.AggregatorCodegenUtil;
 
@@ -40,7 +42,13 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.rate
             bool hasFilter,
             ExprNode optionalFilter)
             : base(
-                factory, col, rowCtor, membersColumnized, classScope, optionalDistinctValueType, hasFilter,
+                factory,
+                col,
+                rowCtor,
+                membersColumnized,
+                classScope,
+                optionalDistinctValueType,
+                hasFilter,
                 optionalFilter)
         {
             this.factory = factory;
@@ -105,21 +113,29 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.rate
             CodegenClassScope classScope)
         {
             method.Block.IfCondition(Not(ExprDotMethod(points, "isEmpty")))
-                .DeclareVar(typeof(long), "newest", Cast(typeof(long), ExprDotMethod(points, "getLast")))
-                .DeclareVar(
-                    typeof(bool), "leave",
+                .DeclareVar<long>("newest", Cast(typeof(long), ExprDotMethod(points, "getLast")))
+                .DeclareVar<bool>(
+                    "leave",
                     StaticMethod(
-                        typeof(AggregatorRateEver), "removeFromHead", points, Ref("newest"),
+                        typeof(AggregatorRateEver),
+                        "removeFromHead",
+                        points,
+                        Ref("newest"),
                         Constant(factory.IntervalTime)))
                 .AssignCompound(hasLeave, "|", Ref("leave"))
                 .BlockEnd()
-                .IfCondition(Not(hasLeave)).BlockReturn(ConstantNull())
-                .IfCondition(ExprDotMethod(points, "isEmpty")).BlockReturn(Constant(0d))
+                .IfCondition(Not(hasLeave))
+                .BlockReturn(ConstantNull())
+                .IfCondition(ExprDotMethod(points, "isEmpty"))
+                .BlockReturn(Constant(0d))
                 .MethodReturn(
                     Op(
                         Op(
-                            Op(ExprDotMethod(points, "size"), "*", Constant(factory.TimeAbacus.OneSecond)), "*",
-                            Constant(1d)), "/", Constant(factory.IntervalTime)));
+                            Op(ExprDotMethod(points, "size"), "*", Constant(factory.TimeAbacus.OneSecond)),
+                            "*",
+                            Constant(1d)),
+                        "/",
+                        Constant(factory.IntervalTime)));
         }
 
         protected override void WriteWODistinct(
@@ -160,23 +176,25 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.rate
             Deque<long> points)
         {
             output.WriteInt(points.Count);
-            foreach (long value in points) 
-                {
-                    output.WriteLong(value);
-                }
+            foreach (long value in points) {
+                output.WriteLong(value);
             }
+        }
 
-             protected void Apply(
+        protected void Apply(
             CodegenMethod method,
             CodegenClassScope classScope)
         {
             CodegenExpression timeProvider = classScope.AddOrGetFieldSharable(TimeProviderField.INSTANCE);
-            method.Block.DeclareVar(typeof(long), "timestamp", ExprDotMethod(timeProvider, "getTime"))
+            method.Block.DeclareVar<long>("timestamp", ExprDotMethod(timeProvider, "getTime"))
                 .ExprDotMethod(points, "add", Ref("timestamp"))
-                .DeclareVar(
-                    typeof(bool), "leave",
+                .DeclareVar<bool>(
+                    "leave",
                     StaticMethod(
-                        typeof(AggregatorRateEver), "removeFromHead", points, Ref("timestamp"),
+                        typeof(AggregatorRateEver),
+                        "removeFromHead",
+                        points,
+                        Ref("timestamp"),
                         Constant(factory.IntervalTime)))
                 .AssignCompound(hasLeave, "|", Ref("leave"));
         }

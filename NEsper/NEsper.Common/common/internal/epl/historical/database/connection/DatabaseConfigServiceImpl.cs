@@ -50,30 +50,25 @@ namespace com.espertech.esper.common.@internal.epl.historical.database.connectio
         {
             // check if we already have a reference
             var factory = connectionFactories.Get(databaseName);
-            if (factory != null)
-            {
+            if (factory != null) {
                 return factory;
             }
 
             var config = mapDatabaseRef.Get(databaseName);
-            if (config == null)
-            {
+            if (config == null) {
                 throw new DatabaseConfigException(
                     "Cannot locate configuration information for database '" + databaseName + '\'');
             }
 
             var settings = config.ConnectionSettings;
-            if (config.ConnectionFactoryDesc is DriverConnectionFactoryDesc)
-            {
+            if (config.ConnectionFactoryDesc is DriverConnectionFactoryDesc) {
                 var dbConfig = (DriverConnectionFactoryDesc) config.ConnectionFactoryDesc;
                 factory = new DatabaseDriverConnFactory(dbConfig, settings);
             }
-            else if (config.ConnectionFactoryDesc == null)
-            {
+            else if (config.ConnectionFactoryDesc == null) {
                 throw new DatabaseConfigException("No connection factory setting provided in configuration");
             }
-            else
-            {
+            else {
                 throw new DatabaseConfigException("Unknown connection factory setting provided in configuration");
             }
 
@@ -85,8 +80,7 @@ namespace com.espertech.esper.common.@internal.epl.historical.database.connectio
         public ColumnSettings GetQuerySetting(string databaseName)
         {
             var config = mapDatabaseRef.Get(databaseName);
-            if (config == null)
-            {
+            if (config == null) {
                 throw new DatabaseConfigException(
                     "Cannot locate configuration information for database '" + databaseName + '\'');
             }
@@ -104,15 +98,17 @@ namespace com.espertech.esper.common.@internal.epl.historical.database.connectio
             int scheduleCallbackId)
         {
             var config = mapDatabaseRef.Get(databaseName);
-            if (config == null)
-            {
+            if (config == null) {
                 throw new DatabaseConfigException(
                     "Cannot locate configuration information for database '" + databaseName + '\'');
             }
 
             var dataCacheDesc = config.DataCacheDesc;
             return agentInstanceContext.HistoricalDataCacheFactory.GetDataCache(
-                dataCacheDesc, agentInstanceContext, streamNumber, scheduleCallbackId);
+                dataCacheDesc,
+                agentInstanceContext,
+                streamNumber,
+                scheduleCallbackId);
         }
 
         public ConnectionCache GetConnectionCache(
@@ -121,8 +117,7 @@ namespace com.espertech.esper.common.@internal.epl.historical.database.connectio
             IEnumerable<Attribute> contextAttributes)
         {
             var config = mapDatabaseRef.Get(databaseName);
-            if (config == null)
-            {
+            if (config == null) {
                 throw new DatabaseConfigException(
                     "Cannot locate configuration information for database '" + databaseName + '\'');
             }
@@ -130,8 +125,7 @@ namespace com.espertech.esper.common.@internal.epl.historical.database.connectio
             var connectionFactory = GetConnectionFactory(databaseName);
 
             var retain = config.ConnectionLifecycleEnum.Equals(ConnectionLifecycleEnum.RETAIN);
-            if (retain)
-            {
+            if (retain) {
                 return new ConnectionCacheImpl(connectionFactory, preparedStatementText, contextAttributes);
             }
 

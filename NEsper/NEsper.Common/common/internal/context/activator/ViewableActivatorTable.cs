@@ -28,8 +28,13 @@ namespace com.espertech.esper.common.@internal.context.activator
         {
             var state = Table.GetTableInstance(agentInstanceContext.AgentInstanceId);
             return new ViewableActivationResult(
-                new TableStateViewableInternal(state, FilterEval), AgentInstanceStopCallbackNoAction.INSTANCE, null,
-                false, false, null, null);
+                new TableStateViewableInternal(state, FilterEval),
+                AgentInstanceStopCallbackNoAction.INSTANCE,
+                null,
+                false,
+                false,
+                null,
+                null);
         }
     }
 } // end of namespace

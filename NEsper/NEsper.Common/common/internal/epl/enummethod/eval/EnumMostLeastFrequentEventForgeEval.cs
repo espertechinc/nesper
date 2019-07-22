@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -15,6 +16,7 @@ using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.enummethod.eval
@@ -73,21 +75,26 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             var returnType = Boxing.GetBoxedType(forge.innerExpression.EvaluationType);
             var scope = new ExprForgeCodegenSymbol(false, null);
             var methodNode = codegenMethodScope.MakeChildWithScope(
-                    returnType, typeof(EnumMostLeastFrequentEventForgeEval), scope, codegenClassScope)
+                    returnType,
+                    typeof(EnumMostLeastFrequentEventForgeEval),
+                    scope,
+                    codegenClassScope)
                 .AddParam(EnumForgeCodegenNames.PARAMS);
 
             var block = methodNode.Block
                 .IfCondition(ExprDotMethod(EnumForgeCodegenNames.REF_ENUMCOLL, "isEmpty"))
                 .BlockReturn(ConstantNull())
-                .DeclareVar(
-                    typeof(IDictionary<string, object>), "items", NewInstance(typeof(LinkedHashMap<string, object>)));
+                .DeclareVar<IDictionary<string, object>>(
+                    "items",
+                    NewInstance(typeof(LinkedHashMap<string, object>)));
             var forEach = block.ForEach(typeof(EventBean), "next", EnumForgeCodegenNames.REF_ENUMCOLL)
                 .AssignArrayElement(EnumForgeCodegenNames.REF_EPS, Constant(forge.streamNumLambda), Ref("next"))
-                .DeclareVar(
-                    typeof(object), "item",
+                .DeclareVar<object>(
+                    "item",
                     forge.innerExpression.EvaluateCodegen(typeof(object), methodNode, scope, codegenClassScope))
-                .DeclareVar(
-                    typeof(int?), "existing", Cast(typeof(int?), ExprDotMethod(Ref("items"), "get", Ref("item"))))
+                .DeclareVar<int?>(
+                    "existing",
+                    Cast(typeof(int?), ExprDotMethod(Ref("items"), "get", Ref("item"))))
                 .IfCondition(EqualsNull(Ref("existing")))
                 .AssignRef("existing", Constant(1))
                 .IfElse()
@@ -98,7 +105,9 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                 Cast(
                     returnType,
                     StaticMethod(
-                        typeof(EnumMostLeastFrequentEventForgeEval), "getEnumMostLeastFrequentResult", Ref("items"),
+                        typeof(EnumMostLeastFrequentEventForgeEval),
+                        "getEnumMostLeastFrequentResult",
+                        Ref("items"),
                         Constant(forge.isMostFrequent))));
             return LocalMethod(methodNode, args.Eps, args.Enumcoll, args.IsNewData, args.ExprCtx);
         }

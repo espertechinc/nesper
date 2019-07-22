@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.@join.analyze;
@@ -62,13 +63,21 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanbuild
                     var hashIndexProps = hashKeyAndIndexProps.Indexed;
                     var hashKeyProps = hashKeyAndIndexProps.Keys;
                     var indexCoercionTypes = CoercionUtil.GetCoercionTypesHash(
-                        typePerStream, streamLookup, streamIndexed, hashKeyProps, hashIndexProps);
+                        typePerStream,
+                        streamLookup,
+                        streamIndexed,
+                        hashKeyProps,
+                        hashIndexProps);
                     var hashCoercionTypeArr = indexCoercionTypes.CoercionTypes;
 
                     var rangeAndIndexProps = value.RangeProps;
                     var rangeIndexProps = rangeAndIndexProps.Indexed;
                     var rangeKeyProps = rangeAndIndexProps.Keys;
-                    var rangeCoercionTypes = CoercionUtil.GetCoercionTypesRange(typePerStream, streamIndexed, rangeIndexProps, rangeKeyProps);
+                    var rangeCoercionTypes = CoercionUtil.GetCoercionTypesRange(
+                        typePerStream,
+                        streamIndexed,
+                        rangeIndexProps,
+                        rangeKeyProps);
                     var rangeCoercionTypeArr = rangeCoercionTypes.CoercionTypes;
 
                     if (hashIndexProps.Length == 0 && rangeIndexProps.Length == 0) {
@@ -77,7 +86,13 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanbuild
                             var indexedProp = singles.Indexed[0];
                             var indexedType = typePerStream[streamIndexed].GetPropertyType(indexedProp);
                             var indexItem = new QueryPlanIndexItemForge(
-                                new[] {indexedProp}, new[] {indexedType}, new string[0], new Type[0], false, null, typePerStream[streamIndexed]);
+                                new[] {indexedProp},
+                                new[] {indexedType},
+                                new string[0],
+                                new Type[0],
+                                false,
+                                null,
+                                typePerStream[streamIndexed]);
                             CheckDuplicateOrAdd(indexItem, indexesSet);
                         }
 
@@ -88,7 +103,12 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanbuild
                                 var identNode = (ExprIdentNode) propIndexed;
                                 var type = identNode.Forge.EvaluationType;
                                 var indexItem = new QueryPlanIndexItemForge(
-                                    new[] {identNode.ResolvedPropertyName}, new[] {type}, new string[0], new Type[0], false, null,
+                                    new[] {identNode.ResolvedPropertyName},
+                                    new[] {type},
+                                    new string[0],
+                                    new Type[0],
+                                    false,
+                                    null,
                                     typePerStream[streamIndexed]);
                                 CheckDuplicateOrAdd(indexItem, indexesSet);
                             }
@@ -100,7 +120,10 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanbuild
                     // reduce to any unique index if applicable
                     var unique = false;
                     var reduced = QueryPlanIndexUniqueHelper.ReduceToUniqueIfPossible(
-                        hashIndexProps, hashCoercionTypeArr, hashKeyProps, indexedStreamsUniqueProps[streamIndexed]);
+                        hashIndexProps,
+                        hashCoercionTypeArr,
+                        hashKeyProps,
+                        indexedStreamsUniqueProps[streamIndexed]);
                     if (reduced != null) {
                         hashIndexProps = reduced.PropertyNames;
                         hashCoercionTypeArr = reduced.CoercionTypes;
@@ -110,8 +133,13 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanbuild
                     }
 
                     var proposed = new QueryPlanIndexItemForge(
-                        hashIndexProps, hashCoercionTypeArr,
-                        rangeIndexProps, rangeCoercionTypeArr, unique, null, typePerStream[streamIndexed]);
+                        hashIndexProps,
+                        hashCoercionTypeArr,
+                        rangeIndexProps,
+                        rangeCoercionTypeArr,
+                        unique,
+                        null,
+                        typePerStream[streamIndexed]);
                     CheckDuplicateOrAdd(proposed, indexesSet);
                 }
 
@@ -119,7 +147,13 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanbuild
                 if (indexesSet.IsEmpty()) {
                     indexesSet.Add(
                         new QueryPlanIndexItemForge(
-                            new string[0], new Type[0], new string[0], new Type[0], false, null, typePerStream[streamIndexed]));
+                            new string[0],
+                            new Type[0],
+                            new string[0],
+                            new Type[0],
+                            false,
+                            null,
+                            typePerStream[streamIndexed]));
                 }
 
                 indexSpecs[streamIndexed] = QueryPlanIndexForge.MakeIndex(indexesSet);
@@ -159,7 +193,9 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanbuild
                 foreach (var item in queryGraphValue.Items) {
                     if (item.Entry is QueryGraphValueEntryCustomForge) {
                         if (customIndexOps.IsEmpty()) {
-                            customIndexOps = new Dictionary<QueryGraphValueEntryCustomKeyForge, QueryGraphValueEntryCustomOperationForge>();
+                            customIndexOps =
+                                new Dictionary<QueryGraphValueEntryCustomKeyForge,
+                                    QueryGraphValueEntryCustomOperationForge>();
                         }
 
                         var custom = (QueryGraphValueEntryCustomForge) item.Entry;
@@ -172,7 +208,8 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanbuild
                 var indexPropertiesJoin = hashKeysAndIndexes.Indexed;
                 if (!keyPropertiesJoin.IsEmpty()) {
                     if (keyPropertiesJoin.Count != indexPropertiesJoin.Length) {
-                        throw new IllegalStateException("Invalid query key and index property collection for stream " + stream);
+                        throw new IllegalStateException(
+                            "Invalid query key and index property collection for stream " + stream);
                     }
 
                     for (var i = 0; i < keyPropertiesJoin.Count; i++) {
@@ -180,7 +217,9 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanbuild
                         var compareNode = keyDesc.KeyExpr;
 
                         var keyPropType = compareNode.Forge.EvaluationType.GetBoxedType();
-                        var indexedPropType = allStreamTypesZeroIndexed[0].GetPropertyType(indexPropertiesJoin[i]).GetBoxedType();
+                        var indexedPropType = allStreamTypesZeroIndexed[0]
+                            .GetPropertyType(indexPropertiesJoin[i])
+                            .GetBoxedType();
                         var coercionType = indexedPropType;
                         if (keyPropType != indexedPropType) {
                             coercionType = keyPropType.GetCompareToCoercionType(indexedPropType);
@@ -241,11 +280,20 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanbuild
                             }
 
                             var allowRangeReversal = relOpOther.IsBetweenPart && relOpThis.IsBetweenPart;
-                            var rangeIn = new QueryGraphValueEntryRangeInForge(opsDesc.Type, start, end, allowRangeReversal);
+                            var rangeIn = new QueryGraphValueEntryRangeInForge(
+                                opsDesc.Type,
+                                start,
+                                end,
+                                allowRangeReversal);
 
-                            var indexedPropType = allStreamTypesZeroIndexed[0].GetPropertyType(rangeIndexProp).GetBoxedType();
+                            var indexedPropType = allStreamTypesZeroIndexed[0]
+                                .GetPropertyType(rangeIndexProp)
+                                .GetBoxedType();
                             var coercionType = indexedPropType;
-                            var proposedType = CoercionUtil.GetCoercionTypeRangeIn(indexedPropType, rangeIn.ExprStart, rangeIn.ExprEnd);
+                            var proposedType = CoercionUtil.GetCoercionTypeRangeIn(
+                                indexedPropType,
+                                rangeIn.ExprStart,
+                                rangeIn.ExprEnd);
                             if (proposedType != null && proposedType != indexedPropType) {
                                 coercionType = proposedType;
                             }
@@ -261,9 +309,13 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanbuild
                     // an existing entry has not been found
                     if (rangeDesc.Type.IsRange) {
                         var rangeIn = (QueryGraphValueEntryRangeInForge) rangeDesc;
-                        var indexedPropType = allStreamTypesZeroIndexed[0].GetPropertyType(rangeIndexProp).GetBoxedType();
+                        var indexedPropType =
+                            allStreamTypesZeroIndexed[0].GetPropertyType(rangeIndexProp).GetBoxedType();
                         var coercionType = indexedPropType;
-                        var proposedType = CoercionUtil.GetCoercionTypeRangeIn(indexedPropType, rangeIn.ExprStart, rangeIn.ExprEnd);
+                        var proposedType = CoercionUtil.GetCoercionTypeRangeIn(
+                            indexedPropType,
+                            rangeIn.ExprStart,
+                            rangeIn.ExprEnd);
                         if (proposedType != null && proposedType != indexedPropType) {
                             coercionType = proposedType;
                         }
@@ -273,7 +325,8 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanbuild
                     else {
                         var relOp = (QueryGraphValueEntryRangeRelOpForge) rangeDesc;
                         var keyPropType = relOp.Expression.Forge.EvaluationType;
-                        var indexedPropType = allStreamTypesZeroIndexed[0].GetPropertyType(rangeIndexProp).GetBoxedType();
+                        var indexedPropType =
+                            allStreamTypesZeroIndexed[0].GetPropertyType(rangeIndexProp).GetBoxedType();
                         var coercionType = indexedPropType;
                         if (keyPropType != indexedPropType) {
                             coercionType = keyPropType.GetCompareToCoercionType(indexedPropType);
@@ -309,7 +362,8 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanbuild
                     if (!inkwMultis.IsEmpty()) {
                         QueryGraphValuePairInKWMultiIdx multi = inkwMultis[0];
                         inKeywordMultiIdxProp = new SubordPropInKeywordMultiIndex(
-                            ExprNodeUtilityQuery.GetIdentResolvedPropertyNames(multi.Indexed), multi.Indexed[0].Forge.EvaluationType,
+                            ExprNodeUtilityQuery.GetIdentResolvedPropertyNames(multi.Indexed),
+                            multi.Indexed[0].Forge.EvaluationType,
                             multi.Key.KeyExpr);
                     }
 
@@ -319,7 +373,12 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanbuild
                 }
             }
 
-            return new SubordPropPlan(joinProps, rangeProps, inKeywordSingleIdxProp, inKeywordMultiIdxProp, customIndexOps);
+            return new SubordPropPlan(
+                joinProps,
+                rangeProps,
+                inKeywordSingleIdxProp,
+                inKeywordMultiIdxProp,
+                customIndexOps);
         }
 
         private static void CheckDuplicateOrAdd(

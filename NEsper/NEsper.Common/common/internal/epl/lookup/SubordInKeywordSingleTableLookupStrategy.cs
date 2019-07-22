@@ -42,14 +42,20 @@ namespace com.espertech.esper.common.@internal.epl.lookup
                 context.InstrumentationProvider.QIndexSubordLookup(this, _index, null);
                 Array.Copy(eventsPerStream, 0, _events, 1, eventsPerStream.Length);
                 var resultActivated = InKeywordTableLookupUtil.SingleIndexLookup(
-                    _factory.evaluators, _events, context, _index);
+                    _factory.evaluators,
+                    _events,
+                    context,
+                    _index);
                 context.InstrumentationProvider.AIndexSubordLookup(resultActivated, null);
                 return resultActivated;
             }
 
             Array.Copy(eventsPerStream, 0, _events, 1, eventsPerStream.Length);
             return InKeywordTableLookupUtil.SingleIndexLookup(
-                _factory.evaluators, _events, context, _index);
+                _factory.evaluators,
+                _events,
+                context,
+                _index);
         }
 
         public LookupStrategyDesc StrategyDesc => _factory.LookupStrategyDesc;

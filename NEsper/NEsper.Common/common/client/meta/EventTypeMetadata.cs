@@ -9,6 +9,7 @@
 using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.compat;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.client.meta
@@ -125,7 +126,7 @@ namespace com.espertech.esper.common.client.meta
         public CodegenExpression ToExpressionWPublicId(CodegenExpression expressionEventTypeIdPublic)
         {
             return NewInstance<EventTypeMetadata>(
-                Constant(Name), 
+                Constant(Name),
                 Constant(ModuleName),
                 EnumValue(typeof(EventTypeTypeClass), TypeClass.GetName()),
                 EnumValue(typeof(EventTypeApplicationType), ApplicationType.GetName()),
@@ -133,7 +134,8 @@ namespace com.espertech.esper.common.client.meta
                 EnumValue(typeof(EventTypeBusModifier), BusModifier.GetName()),
                 Constant(IsPropertyAgnostic),
                 NewInstance<EventTypeIdPair>(
-                    expressionEventTypeIdPublic, Constant(EventTypeIdPair.ProtectedId)));
+                    expressionEventTypeIdPublic,
+                    Constant(EventTypeIdPair.ProtectedId)));
         }
 
         /// <summary>
@@ -147,20 +149,34 @@ namespace com.espertech.esper.common.client.meta
             long eventTypeIdProtected)
         {
             return new EventTypeMetadata(
-                Name, ModuleName, TypeClass, ApplicationType, AccessModifier, BusModifier, IsPropertyAgnostic,
+                Name,
+                ModuleName,
+                TypeClass,
+                ApplicationType,
+                AccessModifier,
+                BusModifier,
+                IsPropertyAgnostic,
                 new EventTypeIdPair(eventTypeIdPublic, eventTypeIdProtected));
         }
 
         public override string ToString()
         {
             return "EventTypeMetadata{" +
-                   "name='" + Name + '\'' +
-                   ", typeClass=" + TypeClass +
-                   ", applicationType=" + ApplicationType +
-                   ", accessModifier=" + AccessModifier +
-                   ", isPropertyAgnostic=" + IsPropertyAgnostic +
-                   ", eventTypeIdPublic=" + EventTypeIdPair.PublicId +
-                   ", eventTypeIdProtected=" + EventTypeIdPair.ProtectedId +
+                   "name='" +
+                   Name +
+                   '\'' +
+                   ", typeClass=" +
+                   TypeClass +
+                   ", applicationType=" +
+                   ApplicationType +
+                   ", accessModifier=" +
+                   AccessModifier +
+                   ", isPropertyAgnostic=" +
+                   IsPropertyAgnostic +
+                   ", eventTypeIdPublic=" +
+                   EventTypeIdPair.PublicId +
+                   ", eventTypeIdProtected=" +
+                   EventTypeIdPair.ProtectedId +
                    '}';
         }
     }

@@ -164,7 +164,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
 
                 env.SendEventBean(new SupportBean_S1(10));
                 env.SendEventBean(new SupportBean_S0(2));
-                Assert.AreEqual(2, env.Listener("s0").AssertOneGetNewAndReset().Get("id"));
+                Assert.AreEqual(2, env.Listener("s0").AssertOneGetNewAndReset().Get("Id"));
 
                 var listener = env.Listener("s0");
                 env.UndeployAll();
@@ -177,7 +177,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
 
                 env.SendEventBean(new SupportBean_S1(10));
                 env.SendEventBean(new SupportBean_S0(3));
-                Assert.AreEqual(3, env.Listener("s0").AssertOneGetNewAndReset().Get("id"));
+                Assert.AreEqual(3, env.Listener("s0").AssertOneGetNewAndReset().Get("Id"));
 
                 env.UndeployAll();
             }
@@ -194,7 +194,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
 
                 env.SendEventBean(new SupportBean_S1(10));
                 env.SendEventBean(new SupportBean_S0(2));
-                Assert.AreEqual(2, env.Listener("s0").AssertOneGetNewAndReset().Get("id"));
+                Assert.AreEqual(2, env.Listener("s0").AssertOneGetNewAndReset().Get("Id"));
 
                 env.UndeployAll();
             }
@@ -214,7 +214,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
 
                 env.SendEventBean(new SupportBean_S1(10, "X"));
                 env.SendEventBean(new SupportBean_S0(0));
-                Assert.AreEqual(0, env.Listener("s0").AssertOneGetNewAndReset().Get("id"));
+                Assert.AreEqual(0, env.Listener("s0").AssertOneGetNewAndReset().Get("Id"));
 
                 env.UndeployAll();
             }
@@ -339,7 +339,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
             public void Run(RegressionEnvironment env)
             {
                 var subquery = new EPStatementObjectModel();
-                subquery.SelectClause = SelectClause.Create().Add(Expressions.Prior(0, "id"));
+                subquery.SelectClause = SelectClause.Create().Add(Expressions.Prior(0, "Id"));
                 subquery.FromClause = FromClause.Create(
                     FilterStream.Create("SupportBean_S1").AddView("length", Expressions.Constant(1000)));
 
@@ -496,7 +496,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
             public void Run(RegressionEnvironment env)
             {
                 var stmtText = "@Name('s0') select (select Id from SupportBean_S1#lastevent) from SupportBean_S0";
-                TryAssertSingleRowUnfiltered(env, stmtText, "id");
+                TryAssertSingleRowUnfiltered(env, stmtText, "Id");
             }
         }
 

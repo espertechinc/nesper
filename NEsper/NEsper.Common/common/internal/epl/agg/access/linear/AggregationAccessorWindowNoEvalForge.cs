@@ -7,7 +7,9 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.@internal.epl.agg.core;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.agg.access.linear
@@ -27,13 +29,17 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
         public void GetValueCodegen(AggregationAccessorForgeGetCodegenContext context)
         {
             AggregationAccessorWindowNoEval.GetValueCodegen(
-                this, (AggregationStateLinearForge) context.AccessStateForge, context);
+                this,
+                (AggregationStateLinearForge) context.AccessStateForge,
+                context);
         }
 
         public void GetEnumerableEventsCodegen(AggregationAccessorForgeGetCodegenContext context)
         {
             AggregationAccessorWindowNoEval.GetEnumerableEventsCodegen(
-                this, (AggregationStateLinearForge) context.AccessStateForge, context);
+                this,
+                (AggregationStateLinearForge) context.AccessStateForge,
+                context);
         }
 
         public void GetEnumerableEventCodegen(AggregationAccessorForgeGetCodegenContext context)
@@ -44,7 +50,9 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
         public void GetEnumerableScalarCodegen(AggregationAccessorForgeGetCodegenContext context)
         {
             AggregationAccessorWindowNoEval.GetEnumerableScalarCodegen(
-                this, (AggregationStateLinearForge) context.AccessStateForge, context);
+                this,
+                (AggregationStateLinearForge) context.AccessStateForge,
+                context);
         }
     }
 } // end of namespace

@@ -46,7 +46,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             }
 
             return CompareAll(
-                forge.ForgeRenderable.IsNot, leftResult, eventsPerStream, isNewData, exprEvaluatorContext);
+                forge.ForgeRenderable.IsNot,
+                leftResult,
+                eventsPerStream,
+                isNewData,
+                exprEvaluatorContext);
         }
 
         private object CompareAll(

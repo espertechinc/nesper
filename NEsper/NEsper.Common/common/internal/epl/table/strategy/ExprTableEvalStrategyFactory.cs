@@ -52,7 +52,8 @@ namespace com.espertech.esper.common.@internal.epl.table.strategy
 
                 case ExprTableEvalStrategyEnum.UNGROUPED_AGG_ACCESSREAD:
                     return new ExprTableEvalStrategyUngroupedAggAccessRead(
-                        (TableAndLockProviderUngrouped) provider, this);
+                        (TableAndLockProviderUngrouped) provider,
+                        this);
 
                 case ExprTableEvalStrategyEnum.GROUPED_AGG_ACCESSREAD:
                     return new ExprTableEvalStrategyGroupedAggAccessRead((TableAndLockProviderGrouped) provider, this);

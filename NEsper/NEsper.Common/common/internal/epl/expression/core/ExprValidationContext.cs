@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.client.annotation;
 using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.compile.stage2;
@@ -32,7 +33,20 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
         public ExprValidationContext(
             StreamTypeService streamTypeService,
             ExprValidationContext ctx)
-            : this(streamTypeService, ctx.ViewResourceDelegate, ctx.contextDescriptor, ctx.IsDisablePropertyExpressionEventCollCache, ctx.IsAllowRollupFunctions, ctx.IsAllowBindingConsumption, ctx.IsResettingAggregations, ctx.intoTableName, ctx.IsFilterExpression, ctx.MemberNames, ctx.IsAggregationFutureNameAlreadySet, ctx.StatementRawInfo, ctx.StatementCompileTimeService)
+            : this(
+                streamTypeService,
+                ctx.ViewResourceDelegate,
+                ctx.contextDescriptor,
+                ctx.IsDisablePropertyExpressionEventCollCache,
+                ctx.IsAllowRollupFunctions,
+                ctx.IsAllowBindingConsumption,
+                ctx.IsResettingAggregations,
+                ctx.intoTableName,
+                ctx.IsFilterExpression,
+                ctx.MemberNames,
+                ctx.IsAggregationFutureNameAlreadySet,
+                ctx.StatementRawInfo,
+                ctx.StatementCompileTimeService)
         {
         }
 

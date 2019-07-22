@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
@@ -15,6 +16,7 @@ using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.context.module;
 using com.espertech.esper.common.@internal.epl.variable.compiletime;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 using static com.espertech.esper.common.@internal.context.util.StatementCPCacheService;
 
@@ -29,11 +31,16 @@ namespace com.espertech.esper.common.@internal.epl.variable.core
         {
             var symbols = new SAIFFInitializeSymbol();
             var variableInit = classScope.NamespaceScope.InitMethod
-                .MakeChildWithScope(typeof(Variable), generator, symbols, classScope).AddParam(
-                    typeof(EPStatementInitServices), EPStatementInitServicesConstants.REF.Ref);
-            variableInit.Block.MethodReturn(MakeResolveVariable(variableMetaData, EPStatementInitServicesConstants.REF));
+                .MakeChildWithScope(typeof(Variable), generator, symbols, classScope)
+                .AddParam(
+                    typeof(EPStatementInitServices),
+                    EPStatementInitServicesConstants.REF.Ref);
+            variableInit.Block.MethodReturn(
+                MakeResolveVariable(variableMetaData, EPStatementInitServicesConstants.REF));
             return classScope.NamespaceScope.AddFieldUnshared(
-                true, typeof(Variable), LocalMethod(variableInit, EPStatementInitServicesConstants.REF));
+                true,
+                typeof(Variable),
+                LocalMethod(variableInit, EPStatementInitServicesConstants.REF));
         }
 
         public static CodegenExpression MakeResolveVariable(
@@ -41,7 +48,8 @@ namespace com.espertech.esper.common.@internal.epl.variable.core
             CodegenExpression initSvc)
         {
             return StaticMethod(
-                typeof(VariableDeployTimeResolver), "resolveVariable",
+                typeof(VariableDeployTimeResolver),
+                "resolveVariable",
                 Constant(variable.VariableName),
                 Constant(variable.VariableVisibility),
                 Constant(variable.VariableModuleName),
@@ -89,7 +97,9 @@ namespace com.espertech.esper.common.@internal.epl.variable.core
 
             var deploymentId = ResolveDeploymentId(variableName, visibility, optionalModuleName, services);
             var reader = services.VariableManagementService.GetReader(
-                deploymentId, variableName, DEFAULT_AGENT_INSTANCE_ID);
+                deploymentId,
+                variableName,
+                DEFAULT_AGENT_INSTANCE_ID);
             if (reader == null) {
                 throw new EPException("Failed to resolve variable '" + variableName + "'");
             }

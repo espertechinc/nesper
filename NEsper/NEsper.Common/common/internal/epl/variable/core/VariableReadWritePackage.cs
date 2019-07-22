@@ -8,11 +8,13 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat.collections;
+
 using static com.espertech.esper.common.@internal.context.util.StatementCPCacheService;
 
 namespace com.espertech.esper.common.@internal.epl.variable.core
@@ -93,7 +95,9 @@ namespace com.espertech.esper.common.@internal.epl.variable.core
 
                         if (writers[count] != null) {
                             var reader = variableService.GetReader(
-                                variables[count].DeploymentId, variableMetaData.VariableName, agentInstanceId);
+                                variables[count].DeploymentId,
+                                variableMetaData.VariableName,
+                                agentInstanceId);
                             var current = (EventBean) reader.Value;
                             if (current == null) {
                                 value = null;
@@ -112,7 +116,8 @@ namespace com.espertech.esper.common.@internal.epl.variable.core
                         else if (variableMetaData.EventType != null) {
                             var eventBean =
                                 agentInstanceContext.EventBeanTypedEventFactory.AdapterForTypedBean(
-                                    value, variableMetaData.EventType);
+                                    value,
+                                    variableMetaData.EventType);
                             variableService.Write(variableNumber, agentInstanceId, eventBean);
                         }
                         else {
@@ -159,7 +164,9 @@ namespace com.espertech.esper.common.@internal.epl.variable.core
                 object value;
                 if (readersForGlobalVars[count] == null) {
                     var reader = variableManagementService.GetReader(
-                        variables[count].DeploymentId, assignment.VariableName, agentInstanceId);
+                        variables[count].DeploymentId,
+                        assignment.VariableName,
+                        agentInstanceId);
                     if (reader == null) {
                         continue;
                     }

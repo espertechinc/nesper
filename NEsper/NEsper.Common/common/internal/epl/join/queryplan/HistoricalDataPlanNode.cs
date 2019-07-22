@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.epl.expression.core;
@@ -82,7 +83,13 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplan
         {
             var viewable = (HistoricalEventViewable) streamViews[streamNum];
             return new HistoricalTableLookupStrategy(
-                viewable, indexingStrategy, lookupStrategy, numStreams, streamNum, rootStreamNum, outerJoinExprEval);
+                viewable,
+                indexingStrategy,
+                lookupStrategy,
+                numStreams,
+                streamNum,
+                rootStreamNum,
+                outerJoinExprEval);
         }
 
         public void AddIndexes(HashSet<TableLookupIndexReqKey> usedIndexes)

@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+
 using com.espertech.esper.collection;
 using com.espertech.esper.common.client;
 
@@ -149,8 +150,12 @@ namespace com.espertech.esper.common.@internal.@event.core
         {
             return
                 "WrapperEventBean " +
-                "[event=" + UnderlyingEvent + "] " +
-                "[properties=" + UnderlyingMap + "]";
+                "[event=" +
+                UnderlyingEvent +
+                "] " +
+                "[properties=" +
+                UnderlyingMap +
+                "]";
         }
     }
 } // End of namespace

@@ -7,12 +7,14 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.context.controller.condition;
 using com.espertech.esper.common.@internal.context.controller.keyed;
 using com.espertech.esper.compat.collections;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.compile.stage1.spec
@@ -42,26 +44,30 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
         {
             var method = parent.MakeChild(typeof(ContextControllerDetailKeyed), GetType(), classScope);
 
-            method.Block.DeclareVar(
-                typeof(ContextControllerDetailKeyedItem[]), "items",
+            method.Block.DeclareVar<ContextControllerDetailKeyedItem[]>(
+                "items",
                 NewArrayByLength(typeof(ContextControllerDetailKeyedItem), Constant(Items.Count)));
             for (var i = 0; i < Items.Count; i++) {
                 method.Block.AssignArrayElement(
-                    "items", Constant(i), Items[i].MakeCodegen(method, symbols, classScope));
+                    "items",
+                    Constant(i),
+                    Items[i].MakeCodegen(method, symbols, classScope));
             }
 
             method.Block
-                .DeclareVar(
-                    typeof(ContextControllerDetailKeyed), "detail", NewInstance(typeof(ContextControllerDetailKeyed)))
+                .DeclareVar<ContextControllerDetailKeyed>(
+                    "detail",
+                    NewInstance(typeof(ContextControllerDetailKeyed)))
                 .SetProperty(Ref("detail"), "Items", Ref("items"));
 
             if (OptionalInit != null && !OptionalInit.IsEmpty()) {
-                method.Block.DeclareVar(
-                    typeof(ContextConditionDescriptorFilter[]), "init",
+                method.Block.DeclareVar<ContextConditionDescriptorFilter[]>(
+                    "init",
                     NewArrayByLength(typeof(ContextConditionDescriptorFilter), Constant(OptionalInit.Count)));
                 for (var i = 0; i < OptionalInit.Count; i++) {
                     method.Block.AssignArrayElement(
-                        "init", Constant(i),
+                        "init",
+                        Constant(i),
                         Cast(
                             typeof(ContextConditionDescriptorFilter),
                             OptionalInit[i].Make(method, symbols, classScope)));
@@ -71,7 +77,10 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
             }
 
             if (OptionalTermination != null) {
-                method.Block.SetProperty(Ref("detail"), "OptionalTermination", OptionalTermination.Make(method, symbols, classScope));
+                method.Block.SetProperty(
+                    Ref("detail"),
+                    "OptionalTermination",
+                    OptionalTermination.Make(method, symbols, classScope));
             }
 
             method.Block.Expression(

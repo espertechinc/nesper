@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -21,6 +22,7 @@ using com.espertech.esper.common.@internal.epl.subselect;
 using com.espertech.esper.common.@internal.epl.table.compiletime;
 using com.espertech.esper.common.@internal.epl.table.core;
 using com.espertech.esper.common.@internal.epl.table.strategy;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.ontrigger
@@ -72,17 +74,22 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.ontri
             CodegenClassScope classScope)
         {
             method.Block
-                .SetProperty(saiff, "ResultSetProcessorFactoryProvider",
+                .SetProperty(
+                    saiff,
+                    "ResultSetProcessorFactoryProvider",
                     NewInstance(resultSetProcessorProviderClassName, symbols.GetAddInitSvc(method)))
                 .SetProperty(saiff, "InsertInto", Constant(insertInto))
                 .SetProperty(saiff, "AddToFront", Constant(addToFront))
                 .SetProperty(saiff, "SelectAndDelete", Constant(selectAndDelete))
                 .SetProperty(saiff, "Distinct", Constant(distinct))
-                .SetProperty(saiff, "OptionalInsertIntoTable",
+                .SetProperty(
+                    saiff,
+                    "OptionalInsertIntoTable",
                     optionalInsertIntoTable == null
                         ? ConstantNull()
                         : TableDeployTimeResolver.MakeResolveTable(
-                            optionalInsertIntoTable, symbols.GetAddInitSvc(method)));
+                            optionalInsertIntoTable,
+                            symbols.GetAddInitSvc(method)));
         }
     }
 } // end of namespace

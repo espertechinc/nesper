@@ -48,11 +48,13 @@ namespace com.espertech.esper.common.@internal.@event.arr
         public void SendEvent(object theEvent)
         {
             if (!theEvent.GetType().IsArray) {
-                throw new EPException("Unexpected event object of type " + theEvent.GetType().Name + ", expected Object[]");
+                throw new EPException(
+                    "Unexpected event object of type " + theEvent.GetType().Name + ", expected Object[]");
             }
 
             var arr = (object[]) theEvent;
-            EventBean objectArrayEvent = eventBeanTypedEventFactory.AdapterForTypedObjectArray(arr, objectArrayEventType);
+            EventBean objectArrayEvent =
+                eventBeanTypedEventFactory.AdapterForTypedObjectArray(arr, objectArrayEventType);
 
             if (threadingService.IsInboundThreading) {
                 threadingService.SubmitInbound(objectArrayEvent, runtimeEventSender);
@@ -65,11 +67,13 @@ namespace com.espertech.esper.common.@internal.@event.arr
         public void RouteEvent(object theEvent)
         {
             if (!theEvent.GetType().IsArray) {
-                throw new EPException("Unexpected event object of type " + theEvent.GetType().Name + ", expected Object[]");
+                throw new EPException(
+                    "Unexpected event object of type " + theEvent.GetType().Name + ", expected Object[]");
             }
 
             var arr = (object[]) theEvent;
-            EventBean objectArrayEvent = eventBeanTypedEventFactory.AdapterForTypedObjectArray(arr, objectArrayEventType);
+            EventBean objectArrayEvent =
+                eventBeanTypedEventFactory.AdapterForTypedObjectArray(arr, objectArrayEventType);
             runtimeEventSender.RouteEventBean(objectArrayEvent);
         }
     }

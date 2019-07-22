@@ -171,7 +171,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
         {
             var path = new RegressionPath();
             var baseModuleEPL = eventRepresentationEnum.GetAnnotationText() +
-                                " create schema OrderEvent as (orderId string, productId string, price double, quantity int, deletedFlag boolean)";
+                                " create schema OrderEvent as (orderId string, productId string, Price double, quantity int, deletedFlag boolean)";
             env.CompileDeployWBusPublicType(baseModuleEPL, path);
 
             var appModuleOne = eventRepresentationEnum.GetAnnotationText() +
@@ -184,9 +184,9 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                                "merge ProductWindow pw\n" +
                                "where pw.productId = oe.productId\n" +
                                "when matched\n" +
-                               "then update set totalPrice = totalPrice + oe.price\n" +
+                               "then update set totalPrice = totalPrice + oe.Price\n" +
                                "when not matched\n" +
-                               "then insert select productId, price as totalPrice;";
+                               "then insert select productId, Price as totalPrice;";
             env.CompileDeploy(appModuleOne, path);
 
             var appModuleTwo = eventRepresentationEnum.GetAnnotationText() +
@@ -200,7 +200,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                                "  when matched and oe.deletedFlag=true\n" +
                                "    then delete\n" +
                                "  when matched\n" +
-                               "    then update set pw.quantity = oe.quantity, pw.price = oe.price";
+                               "    then update set pw.quantity = oe.quantity, pw.Price = oe.Price";
 
             env.CompileDeploy(appModuleTwo, path);
 

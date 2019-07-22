@@ -358,7 +358,7 @@ namespace com.espertech.esper.regressionlib.suite.view
         {
             public void Run(RegressionEnvironment env)
             {
-                var text = "@Name('s0') select irstream * from SupportMarketDataBean#sort(1, price)";
+                var text = "@Name('s0') select irstream * from SupportMarketDataBean#sort(1, Price)";
                 env.CompileDeployAddListenerMileZero(text, "s0");
 
                 env.SendEventBean(MakeMarketDataEvent(10.5));

@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.Xml;
 using System.Xml.XPath;
+
 using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat.collections;
@@ -228,7 +229,8 @@ namespace com.espertech.esper.common.client.configuration.common
             if ((type != XPathResultType.Any) && (type != XPathResultType.NodeSet)) {
                 throw new ArgumentException(
                     "XPath property for fragments requires an XmlNode or XmlNodeset return value for property '" +
-                    name + "'");
+                    name +
+                    "'");
             }
 
             var desc = new XPathPropertyDesc(name, xpath, type, eventTypeName);

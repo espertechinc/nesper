@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.@internal.compile.stage1.spec;
 using com.espertech.esper.common.@internal.compile.stage2;
 using com.espertech.esper.common.@internal.compile.stage3;
@@ -33,19 +34,26 @@ namespace com.espertech.esper.common.@internal.epl.output.polled
             // check variable use
             VariableMetaData variableMetaData = null;
             if (outputLimitSpec.VariableName != null) {
-                variableMetaData = compileTimeServices.VariableCompileTimeResolver.Resolve(outputLimitSpec.VariableName);
+                variableMetaData =
+                    compileTimeServices.VariableCompileTimeResolver.Resolve(outputLimitSpec.VariableName);
                 if (variableMetaData == null) {
-                    throw new ArgumentException("Variable named '" + outputLimitSpec.VariableName + "' has not been declared");
+                    throw new ArgumentException(
+                        "Variable named '" + outputLimitSpec.VariableName + "' has not been declared");
                 }
             }
 
             if (outputLimitSpec.RateType == OutputLimitRateType.CRONTAB) {
-                return new OutputConditionPolledCrontabFactoryForge(outputLimitSpec.CrontabAtSchedule, statementRawInfo, compileTimeServices);
+                return new OutputConditionPolledCrontabFactoryForge(
+                    outputLimitSpec.CrontabAtSchedule,
+                    statementRawInfo,
+                    compileTimeServices);
             }
 
             if (outputLimitSpec.RateType == OutputLimitRateType.WHEN_EXPRESSION) {
                 return new OutputConditionPolledExpressionFactoryForge(
-                    outputLimitSpec.WhenExpressionNode, outputLimitSpec.ThenExpressions, compileTimeServices);
+                    outputLimitSpec.WhenExpressionNode,
+                    outputLimitSpec.ThenExpressions,
+                    compileTimeServices);
             }
 
             if (outputLimitSpec.RateType == OutputLimitRateType.EVENTS) {
@@ -58,7 +66,8 @@ namespace com.espertech.esper.common.@internal.epl.output.polled
             }
 
             if (variableMetaData != null && !variableMetaData.Type.IsNumeric()) {
-                throw new ArgumentException("Variable named '" + outputLimitSpec.VariableName + "' must be of numeric type");
+                throw new ArgumentException(
+                    "Variable named '" + outputLimitSpec.VariableName + "' must be of numeric type");
             }
 
             return new OutputConditionPolledTimeFactoryForge(outputLimitSpec.TimePeriodExpr);

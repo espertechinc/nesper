@@ -8,6 +8,7 @@
 
 using System;
 using System.Reflection;
+
 using com.espertech.esper.common.client.configuration;
 using com.espertech.esper.common.client.configuration.common;
 using com.espertech.esper.common.@internal.settings;
@@ -30,11 +31,14 @@ namespace com.espertech.esper.common.@internal.@event.avro
             if (avroSettings.IsEnableAvro) {
                 try {
                     avroHandler = TypeHelper.Instantiate<EventTypeAvroHandler>(
-                        handlerClass, importService.ClassForNameProvider);
+                        handlerClass,
+                        importService.ClassForNameProvider);
                 }
                 catch (Exception t) {
                     Log.Debug(
-                        "Avro provider {} not instantiated, not enabling Avro support: {}", handlerClass, t.Message);
+                        "Avro provider {} not instantiated, not enabling Avro support: {}",
+                        handlerClass,
+                        t.Message);
                 }
 
                 try {

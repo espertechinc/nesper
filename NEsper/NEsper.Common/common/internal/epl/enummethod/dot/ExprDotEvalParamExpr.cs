@@ -17,7 +17,9 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
             ExprNode body,
             ExprForge bodyForge)
             : base(
-                parameterNum, body, bodyForge)
+                parameterNum,
+                body,
+                bodyForge)
         {
         }
     }

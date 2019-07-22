@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using System.Xml;
 using System.Xml.Schema;
 using System.Xml.XPath;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
@@ -28,12 +29,22 @@ namespace com.espertech.esper.common.@internal.@event.xml
         private static readonly IDictionary<string, Type> TypeMap;
 
 
-        private static readonly XmlSchemaSimpleType _SchemaTypeString = XmlSchemaType.GetBuiltInSimpleType(XmlTypeCode.String);
-        private static readonly XmlSchemaSimpleType _SchemaTypeBoolean = XmlSchemaType.GetBuiltInSimpleType(XmlTypeCode.Boolean);
-        private static readonly XmlSchemaSimpleType _SchemaTypeInteger = XmlSchemaType.GetBuiltInSimpleType(XmlTypeCode.Int);
-        private static readonly XmlSchemaSimpleType _SchemaTypeDecimal = XmlSchemaType.GetBuiltInSimpleType(XmlTypeCode.Decimal);
+        private static readonly XmlSchemaSimpleType _SchemaTypeString =
+            XmlSchemaType.GetBuiltInSimpleType(XmlTypeCode.String);
+
+        private static readonly XmlSchemaSimpleType _SchemaTypeBoolean =
+            XmlSchemaType.GetBuiltInSimpleType(XmlTypeCode.Boolean);
+
+        private static readonly XmlSchemaSimpleType _SchemaTypeInteger =
+            XmlSchemaType.GetBuiltInSimpleType(XmlTypeCode.Int);
+
+        private static readonly XmlSchemaSimpleType _SchemaTypeDecimal =
+            XmlSchemaType.GetBuiltInSimpleType(XmlTypeCode.Decimal);
+
         private static readonly XmlSchemaSimpleType _SchemaTypeId = XmlSchemaType.GetBuiltInSimpleType(XmlTypeCode.Id);
-        private static readonly XmlSchemaSimpleType _SchemaTypeToken = XmlSchemaType.GetBuiltInSimpleType(XmlTypeCode.Token);
+
+        private static readonly XmlSchemaSimpleType _SchemaTypeToken =
+            XmlSchemaType.GetBuiltInSimpleType(XmlTypeCode.Token);
 
         static SchemaUtil()
         {
@@ -137,41 +148,59 @@ namespace com.espertech.esper.common.@internal.@event.xml
                     case "ID":
                     case "string":
                         return typeof(string);
+
                     case "bool":
                         return typeof(bool?);
+
                     case "nonPositiveInteger":
                         return typeof(int?);
+
                     case "nonNegativeInteger":
                         return typeof(int?);
+
                     case "negativeInteger":
                         return typeof(int?);
+
                     case "positiveInteger":
                         return typeof(int?);
+
                     case "unsignedLong":
                         return typeof(ulong?);
+
                     case "unsignedInt":
                         return typeof(uint?);
+
                     case "int":
                     case "integer":
                         return typeof(int?);
+
                     case "short":
                         return typeof(short?);
+
                     case "unsignedShort":
                         return typeof(ushort?);
+
                     case "byte":
                         return typeof(byte?);
+
                     case "unsignedByte":
                         return typeof(byte?);
+
                     case "long":
                         return typeof(long?);
+
                     case "decimal":
                         return typeof(double?);
+
                     case "double":
                         return typeof(double?);
+
                     case "float":
                         return typeof(float?);
+
                     case "anyURI":
                         return typeof(XmlNode);
+
                     case "anySimpleType":
                         return typeof(object);
                 }
@@ -280,6 +309,7 @@ namespace com.espertech.esper.common.@internal.@event.xml
                     case "ID":
                     case "string":
                         return XPathResultType.String;
+
                     case "bool":
                     case "boolean":
                         return XPathResultType.Boolean;
@@ -301,6 +331,7 @@ namespace com.espertech.esper.common.@internal.@event.xml
                     case "double":
                     case "float":
                         return XPathResultType.Number;
+
                     case "anyURI":
                         return XPathResultType.Any;
                 }

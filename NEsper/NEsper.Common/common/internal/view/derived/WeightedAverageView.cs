@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.view.core;
@@ -85,7 +86,8 @@ namespace com.espertech.esper.common.@internal.view.derived
                     oldDataValues.Put(ViewFieldEnum.WEIGHTED_AVERAGE__AVERAGE.GetName(), oldValue);
                     AddProperties(oldDataValues);
                     oldDataMap = agentInstanceContext.EventBeanTypedEventFactory.AdapterForTypedMap(
-                        oldDataValues, viewFactory.eventType);
+                        oldDataValues,
+                        viewFactory.eventType);
                 }
             }
 
@@ -94,9 +96,13 @@ namespace com.espertech.esper.common.@internal.view.derived
                 for (var i = 0; i < newData.Length; i++) {
                     eventsPerStream[0] = newData[i];
                     var pointnum = viewFactory.fieldNameXEvaluator.Evaluate(
-                        eventsPerStream, true, agentInstanceContext);
+                        eventsPerStream,
+                        true,
+                        agentInstanceContext);
                     var weightnum = viewFactory.fieldNameWeightEvaluator.Evaluate(
-                        eventsPerStream, true, agentInstanceContext);
+                        eventsPerStream,
+                        true,
+                        agentInstanceContext);
                     if (pointnum != null && weightnum != null) {
                         double point = pointnum.AsDouble();
                         double weight = weightnum.AsDouble();
@@ -130,9 +136,13 @@ namespace com.espertech.esper.common.@internal.view.derived
                 for (var i = 0; i < oldData.Length; i++) {
                     eventsPerStream[0] = oldData[i];
                     var pointnum = viewFactory.fieldNameXEvaluator.Evaluate(
-                        eventsPerStream, true, agentInstanceContext);
+                        eventsPerStream,
+                        true,
+                        agentInstanceContext);
                     var weightnum = viewFactory.fieldNameWeightEvaluator.Evaluate(
-                        eventsPerStream, true, agentInstanceContext);
+                        eventsPerStream,
+                        true,
+                        agentInstanceContext);
 
                     if (pointnum != null && weightnum != null) {
                         double point = pointnum.AsDouble();
@@ -157,7 +167,8 @@ namespace com.espertech.esper.common.@internal.view.derived
                 AddProperties(newDataMap);
                 EventBean newDataEvent =
                     agentInstanceContext.EventBeanTypedEventFactory.AdapterForTypedMap(
-                        newDataMap, viewFactory.eventType);
+                        newDataMap,
+                        viewFactory.eventType);
 
                 EventBean[] newEvents = {newDataEvent};
                 EventBean[] oldEvents;
@@ -206,7 +217,9 @@ namespace com.espertech.esper.common.@internal.view.derived
             var schemaMap = new LinkedHashMap<string, object>();
             schemaMap.Put(ViewFieldEnum.WEIGHTED_AVERAGE__AVERAGE.GetName(), typeof(double?));
             StatViewAdditionalPropsForge.AddCheckDupProperties(
-                schemaMap, additionalProps, ViewFieldEnum.WEIGHTED_AVERAGE__AVERAGE);
+                schemaMap,
+                additionalProps,
+                ViewFieldEnum.WEIGHTED_AVERAGE__AVERAGE);
             return DerivedViewTypeUtil.NewType("wavgview", schemaMap, env, streamNum);
         }
     }

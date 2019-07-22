@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.core;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -15,6 +16,7 @@ using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.serde;
 using com.espertech.esper.compat.function;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionRelational.
     CodegenRelational;
@@ -44,7 +46,13 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.minmax
             bool hasFilter,
             ExprNode optionalFilter)
             : base(
-                factory, col, rowCtor, membersColumnized, classScope, optionalDistinctValueType, hasFilter,
+                factory,
+                col,
+                rowCtor,
+                membersColumnized,
+                classScope,
+                optionalDistinctValueType,
+                hasFilter,
                 optionalFilter)
         {
             this.factory = factory;
@@ -158,7 +166,8 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.minmax
                 .IfCondition(
                     Relational(
                         ExprDotMethod(currentMinMax, "compareTo", valueComparableTyped),
-                        factory.Parent.MinMaxTypeEnum == MAX ? LT : GT, Constant(0)))
+                        factory.Parent.MinMaxTypeEnum == MAX ? LT : GT,
+                        Constant(0)))
                 .AssignRef(currentMinMax, valueComparableTyped);
         }
     }

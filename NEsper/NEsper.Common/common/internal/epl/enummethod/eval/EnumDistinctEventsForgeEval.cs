@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -16,8 +17,10 @@ using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
-using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionRelational.CodegenRelational;
+using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionRelational.
+    CodegenRelational;
 
 namespace com.espertech.esper.common.@internal.epl.enummethod.eval
 {
@@ -68,19 +71,23 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
 
             ExprForgeCodegenSymbol scope = new ExprForgeCodegenSymbol(false, null);
             CodegenMethod methodNode = codegenMethodScope.MakeChildWithScope(
-                    typeof(ICollection<object>), typeof(EnumDistinctEventsForgeEval), scope, codegenClassScope)
+                    typeof(ICollection<object>),
+                    typeof(EnumDistinctEventsForgeEval),
+                    scope,
+                    codegenClassScope)
                 .AddParam(EnumForgeCodegenNames.PARAMS);
 
             CodegenBlock block = methodNode.Block
                 .IfCondition(Relational(ExprDotMethod(EnumForgeCodegenNames.REF_ENUMCOLL, "size"), LE, Constant(1)))
                 .BlockReturn(EnumForgeCodegenNames.REF_ENUMCOLL)
-                .DeclareVar(
-                    typeof(IDictionary<object, object>), "distinct",
+                .DeclareVar<IDictionary<object, object>>(
+                    "distinct",
                     NewInstance(typeof(LinkedHashMap<object, object>)));
             block.ForEach(typeof(EventBean), "next", EnumForgeCodegenNames.REF_ENUMCOLL)
                 .AssignArrayElement(EnumForgeCodegenNames.REF_EPS, Constant(forge.streamNumLambda), @Ref("next"))
                 .DeclareVar(
-                    innerType, "comparable",
+                    innerType,
+                    "comparable",
                     forge.innerExpression.EvaluateCodegen(innerType, methodNode, scope, codegenClassScope))
                 .IfCondition(Not(ExprDotMethod(@Ref("distinct"), "containsKey", @Ref("comparable"))))
                 .Expression(ExprDotMethod(@Ref("distinct"), "put", @Ref("comparable"), @Ref("next")))

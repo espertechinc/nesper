@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -15,6 +16,7 @@ using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.datetime;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.datetime.calop
@@ -53,7 +55,9 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
             ExprEvaluatorContext context)
         {
             var dateTime = ApacheCommonsDateUtils.Modify(
-                dateTimeEx.DateTime.DateTime, field, code);
+                dateTimeEx.DateTime.DateTime,
+                field,
+                code);
             return DateTimeEx.GetInstance(dateTimeEx.TimeZone, dateTime);
         }
 
@@ -98,8 +102,11 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
             CodegenClassScope codegenClassScope)
         {
             return StaticMethod(
-                typeof(ApacheCommonsDateUtils), "Modify", dateTimeEx,
-                Constant(field), Constant(code));
+                typeof(ApacheCommonsDateUtils),
+                "Modify",
+                dateTimeEx,
+                Constant(field),
+                Constant(code));
         }
 
         public CodegenExpression CodegenDateTimeOffset(

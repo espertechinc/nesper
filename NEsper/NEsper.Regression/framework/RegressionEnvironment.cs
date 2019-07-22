@@ -221,10 +221,8 @@ namespace com.espertech.esper.regressionlib.framework
                     .Copy(orig);
             }
             catch (Exception t) {
-                Assert.Fail("Exception occurred during serialized copy", t);
+                throw new AssertionException("Exception occurred during serialized copy", t);
             }
-
-            throw new IllegalStateException("Failed to copy serializable");
         }
     }
 } // end of namespace

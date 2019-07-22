@@ -24,7 +24,7 @@ namespace com.espertech.esper.common.@internal.context.module
     {
         public static readonly CodegenExpressionRef REF = ModuleContextInitializeSymbol.REF_INITSVC;
 
-        public static readonly string GETVARIABLECOLLECTOR = "getVariableCollector";
-        public static readonly string GETEVENTTYPERESOLVER = EPStatementInitServicesConstants.GETEVENTTYPERESOLVER;
+        public static readonly string GETVARIABLECOLLECTOR = "VariableCollector";
+        public static readonly string GETEVENTTYPERESOLVER = EPStatementInitServicesConstants.EVENTTYPERESOLVER;
     }
 } // end of namespace

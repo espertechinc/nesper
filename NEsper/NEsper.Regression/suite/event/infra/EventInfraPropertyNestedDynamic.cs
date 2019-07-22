@@ -47,7 +47,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
                 .ResolveAvroSchema(env.Runtime.EventTypeService.GetEventTypePreconfigured(typeName));
             var itemSchema = schema.GetField("item").Schema;
             var itemDatum = new GenericRecord(itemSchema.AsRecordSchema());
-            itemDatum.Put("id", value);
+            itemDatum.Put("Id", value);
             var datum = new GenericRecord(schema.AsRecordSchema());
             datum.Put("item", itemDatum);
             env.SendEventAvro(datum, typeName);
@@ -91,7 +91,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
             Pair<object, object>[] mapTests = {
                 new Pair<object, object>(Collections.EmptyDataMap, NotExists()),
                 new Pair<object, object>(
-                    Collections.SingletonMap("item", Collections.SingletonMap("id", 101)),
+                    Collections.SingletonMap("item", Collections.SingletonMap("Id", 101)),
                     Exists(101)),
                 new Pair<object, object>(
                     Collections.SingletonMap("item", Collections.EmptyDataMap),

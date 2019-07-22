@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.type;
 using com.espertech.esper.common.@internal.util;
@@ -83,10 +84,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             Type typeOne = Boxing.GetBoxedType(ChildNodes[0].Forge.EvaluationType);
 
             // collections, array or map not supported
-            if ((typeOne.IsArray)
-                || (TypeHelper.IsImplementsInterface(typeOne, typeof(ICollection<object>)))
-                || (TypeHelper.IsImplementsInterface(typeOne, typeof(IDictionary<object, object>)))) {
-                throw new ExprValidationException("Collection or array comparison is not allowed for the IN, ANY, SOME or ALL keywords");
+            if ((typeOne.IsArray) ||
+                (TypeHelper.IsImplementsInterface(typeOne, typeof(ICollection<object>))) ||
+                (TypeHelper.IsImplementsInterface(typeOne, typeof(IDictionary<object, object>)))) {
+                throw new ExprValidationException(
+                    "Collection or array comparison is not allowed for the IN, ANY, SOME or ALL keywords");
             }
 
             IList<Type> comparedTypes = new List<Type>();
@@ -130,7 +132,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                 }
             }
 
-            RelationalOpEnum.Computer computer = relationalOpEnum.GetComputer(coercionType, coercionType, coercionType);
+            RelationalOpEnumComputer computer = relationalOpEnum.GetComputer(coercionType, coercionType, coercionType);
             forge = new ExprRelationalOpAllAnyNodeForge(this, computer, hasCollectionOrArray);
             return null;
         }
@@ -138,7 +140,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
         public override void ToPrecedenceFreeEPL(TextWriter writer)
         {
             this.ChildNodes[0].ToEPL(writer, Precedence);
-            writer.Write(relationalOpEnum.ExpressionText);
+            writer.Write(relationalOpEnum.GetExpressionText());
             if (isAll) {
                 writer.Write("all");
             }

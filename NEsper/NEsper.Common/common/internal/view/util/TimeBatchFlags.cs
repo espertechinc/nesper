@@ -62,8 +62,10 @@ namespace com.espertech.esper.common.@internal.view.util
                 else {
                     var keywordRange = FORCE_UPDATE_KEYWORD + "," + START_EAGER_KEYWORD;
                     throw new ViewParameterException(
-                        "Time-batch encountered an invalid keyword '" + keywordText +
-                        "', valid control keywords are: " + keywordRange);
+                        "Time-batch encountered an invalid keyword '" +
+                        keywordText +
+                        "', valid control keywords are: " +
+                        keywordRange);
                 }
             }
 

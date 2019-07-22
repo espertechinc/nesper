@@ -62,7 +62,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
             env.SendEventBean(new SupportBean());
             EPAssertionUtil.AssertPropsPerRow(
                 env.Listener("s0").GetAndResetLastNewData(),
-                "id".SplitCsv(),
+                "Id".SplitCsv(),
                 new[] {new object[] {"id1"}, new object[] {"id3"}});
 
             env.UndeployModuleContaining("s0");
@@ -127,7 +127,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
             var count = 0;
             foreach (var id in "id1,Id3".SplitCsv()) {
                 events[count++] = context.EventBeanService.AdapterForMap(
-                    Collections.SingletonDataMap("id", id),
+                    Collections.SingletonDataMap("Id", id),
                     "ItemEvent");
             }
 
@@ -812,7 +812,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
                 TryArrayNoArg(env);
 
                 var model = new EPStatementObjectModel();
-                model.SelectClause = SelectClause.Create("id", "TheString");
+                model.SelectClause = SelectClause.Create("Id", "TheString");
                 model.FromClause = FromClause.Create()
                     .Add(FilterStream.Create("SupportBean", "s1").AddView("length", Expressions.Constant(3)))
                     .Add(MethodInvocationStream.Create(typeof(SupportStaticMethodLib).Name, "fetchArrayNoArg"));
@@ -825,7 +825,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
 
             private static void TryArrayNoArg(RegressionEnvironment env)
             {
-                string[] fields = {"id", "TheString"};
+                string[] fields = {"Id", "TheString"};
 
                 SendBeanEvent(env, "E1");
                 EPAssertionUtil.AssertProps(
@@ -867,7 +867,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
                 TryArrayWithArg(env);
 
                 var model = new EPStatementObjectModel();
-                model.SelectClause = SelectClause.Create("id", "TheString")
+                model.SelectClause = SelectClause.Create("Id", "TheString")
                     .SetStreamSelector(StreamSelector.RSTREAM_ISTREAM_BOTH);
                 model.FromClause = FromClause.Create()
                     .Add(
@@ -888,7 +888,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
 
             private static void TryArrayWithArg(RegressionEnvironment env)
             {
-                string[] fields = {"id", "TheString"};
+                string[] fields = {"Id", "TheString"};
 
                 SendBeanEvent(env, "E1", -1);
                 Assert.IsFalse(env.Listener("s0").IsInvoked);
@@ -954,7 +954,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
                                     typeof(SupportStaticMethodLib).Name +
                                     ".fetchObjectNoArg()";
                 env.CompileDeploy(joinStatement).AddListener("s0");
-                string[] fields = {"id", "TheString"};
+                string[] fields = {"Id", "TheString"};
 
                 SendBeanEvent(env, "E1");
                 EPAssertionUtil.AssertProps(
@@ -985,7 +985,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
                                     ".fetchObject(TheString)";
                 env.CompileDeploy(joinStatement).AddListener("s0");
 
-                string[] fields = {"id", "TheString"};
+                string[] fields = {"Id", "TheString"};
 
                 SendBeanEvent(env, "E1");
                 EPAssertionUtil.AssertProps(

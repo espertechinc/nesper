@@ -21,7 +21,8 @@ namespace com.espertech.esper.common.@internal.epl.table.core
             Table table,
             AgentInstanceContext agentInstanceContext)
             : base(
-                table, agentInstanceContext)
+                table,
+                agentInstanceContext)
         {
         }
 

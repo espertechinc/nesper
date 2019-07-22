@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.@event.util;
@@ -80,14 +81,19 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
                 lock (this) {
                     if (!compatibleClasses.Contains(theEvent.GetType())) {
                         if (TypeHelper.IsSubclassOrImplementsInterface(
-                            theEvent.GetType(), beanEventType.UnderlyingType)) {
+                            theEvent.GetType(),
+                            beanEventType.UnderlyingType)) {
                             compatibleClasses.Add(theEvent.GetType());
                         }
                         else {
                             throw new EPException(
-                                "Event object of type " + theEvent.GetType().Name +
-                                " does not equal, extend or implement the type " + beanEventType.UnderlyingType.Name +
-                                " of event type '" + beanEventType.Name + "'");
+                                "Event object of type " +
+                                theEvent.GetType().Name +
+                                " does not equal, extend or implement the type " +
+                                beanEventType.UnderlyingType.Name +
+                                " of event type '" +
+                                beanEventType.Name +
+                                "'");
                         }
                     }
                 }

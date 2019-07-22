@@ -13,6 +13,7 @@ using com.espertech.esper.common.@internal.epl.agg.core;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.table.compiletime;
 using com.espertech.esper.common.@internal.epl.table.core;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.table.strategy
@@ -62,24 +63,41 @@ namespace com.espertech.esper.common.@internal.epl.table.strategy
         {
             CodegenMethod method = parent.MakeChild(typeof(ExprTableEvalStrategyFactory), this.GetType(), classScope);
             method.Block
-                .DeclareVar(
-                    typeof(ExprTableEvalStrategyFactory), "factory", NewInstance(typeof(ExprTableEvalStrategyFactory)))
+                .DeclareVar<ExprTableEvalStrategyFactory>(
+                    "factory",
+                    NewInstance(typeof(ExprTableEvalStrategyFactory)))
                 .SetProperty(Ref("factory"), "StrategyEnum", Constant(strategyEnum))
-                .SetProperty(Ref("factory"), "Table",
+                .SetProperty(
+                    Ref("factory"),
+                    "Table",
                     TableDeployTimeResolver.MakeResolveTable(tableMeta, symbols.GetAddInitSvc(method)))
-                .SetProperty(Ref("factory"), "GroupKeyEval",
+                .SetProperty(
+                    Ref("factory"),
+                    "GroupKeyEval",
                     optionalGroupKeys == null || optionalGroupKeys.Length == 0
                         ? ConstantNull()
                         : ExprNodeUtilityCodegen.CodegenEvaluatorMayMultiKeyWCoerce(
-                            optionalGroupKeys, tableMeta.KeyTypes, method, this.GetType(), classScope))
+                            optionalGroupKeys,
+                            tableMeta.KeyTypes,
+                            method,
+                            this.GetType(),
+                            classScope))
                 .SetProperty(Ref("factory"), "AggColumnNum", Constant(aggColumnNum))
                 .SetProperty(Ref("factory"), "PropertyIndex", Constant(propertyIndex))
-                .SetProperty(Ref("factory"), "OptionalEnumEval",
+                .SetProperty(
+                    Ref("factory"),
+                    "OptionalEnumEval",
                     optionalEnumEval == null
                         ? ConstantNull()
                         : ExprNodeUtilityCodegen.CodegenExprEnumEval(
-                            optionalEnumEval, method, symbols, classScope, this.GetType()))
-                .SetProperty(Ref("factory"), "AccessAggReader",
+                            optionalEnumEval,
+                            method,
+                            symbols,
+                            classScope,
+                            this.GetType()))
+                .SetProperty(
+                    Ref("factory"),
+                    "AccessAggReader",
                     accessAggStrategy == null
                         ? ConstantNull()
                         : accessAggStrategy.CodegenCreateReader(method, symbols, classScope))

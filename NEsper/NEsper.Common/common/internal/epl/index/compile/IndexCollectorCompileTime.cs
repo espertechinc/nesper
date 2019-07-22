@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.collection;
@@ -51,7 +52,9 @@ namespace com.espertech.esper.common.@internal.epl.index.compile
                 }
                 else {
                     if (indexKey.Visibility == NameAccessModifier.PUBLIC) {
-                        NamedWindowMetaData pathNamedWindow = pathNamedWindows.GetWithModule(indexKey.InfraName, indexKey.InfraModuleName);
+                        NamedWindowMetaData pathNamedWindow = pathNamedWindows.GetWithModule(
+                            indexKey.InfraName,
+                            indexKey.InfraModuleName);
                         if (pathNamedWindow != null) {
                             indexMetadata = pathNamedWindow.IndexMetadata;
                         }
@@ -69,7 +72,9 @@ namespace com.espertech.esper.common.@internal.epl.index.compile
                 }
                 else {
                     if (indexKey.Visibility == NameAccessModifier.PUBLIC) {
-                        TableMetaData pathTable = pathTables.GetWithModule(indexKey.InfraName, indexKey.InfraModuleName);
+                        TableMetaData pathTable = pathTables.GetWithModule(
+                            indexKey.InfraName,
+                            indexKey.InfraModuleName);
                         if (pathTable != null) {
                             indexMetadata = pathTable.IndexMetadata;
                         }
@@ -83,7 +88,12 @@ namespace com.espertech.esper.common.@internal.epl.index.compile
 
             try {
                 indexMetadata.AddIndexExplicit(
-                    false, indexDetail.IndexMultiKey, indexKey.IndexName, indexKey.InfraModuleName, indexDetail.QueryPlanIndexItem, "");
+                    false,
+                    indexDetail.IndexMultiKey,
+                    indexKey.IndexName,
+                    indexKey.InfraModuleName,
+                    indexDetail.QueryPlanIndexItem,
+                    "");
             }
             catch (ExprValidationException ex) {
                 throw new EPException(ex.Message, ex);

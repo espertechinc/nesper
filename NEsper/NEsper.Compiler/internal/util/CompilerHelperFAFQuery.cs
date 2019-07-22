@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+using System.Reflection;
 
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.core;
@@ -22,33 +23,41 @@ namespace com.espertech.esper.compiler.@internal.util
             FAFQueryMethodForge query,
             string classPostfix,
             string packageName,
-            IDictionary<string, byte[]> moduleBytes,
-            ModuleCompileTimeServices compileTimeServices)
+            ModuleCompileTimeServices compileTimeServices,
+            out Assembly assembly)
         {
-            string statementFieldsClassName = CodeGenerationIDGenerator.GenerateClassNameSimple(typeof(StatementFields), classPostfix);
-            CodegenNamespaceScope packageScope = new CodegenNamespaceScope(
-                packageName, statementFieldsClassName, compileTimeServices.IsInstrumented());
+            var statementFieldsClassName = CodeGenerationIDGenerator.GenerateClassNameSimple(
+                typeof(StatementFields), classPostfix);
+            var packageScope = new CodegenNamespaceScope(
+                packageName, 
+                statementFieldsClassName, 
+                compileTimeServices.IsInstrumented());
 
-            string queryMethodProviderClassName = CodeGenerationIDGenerator.GenerateClassNameSimple(typeof(FAFQueryMethodProvider), classPostfix);
-            IList<StmtClassForgable> forgablesQueryMethod = query.MakeForgables(queryMethodProviderClassName, classPostfix, packageScope);
+            var queryMethodProviderClassName = CodeGenerationIDGenerator.GenerateClassNameSimple(
+                typeof(FAFQueryMethodProvider), classPostfix);
+            var forgablesQueryMethod = query.MakeForgables(queryMethodProviderClassName, classPostfix, packageScope);
 
             IList<StmtClassForgable> forgables = new List<StmtClassForgable>(forgablesQueryMethod);
             forgables.Add(new StmtClassForgableStmtFields(statementFieldsClassName, packageScope, 0));
 
             // forge with statement-fields last
-            List<CodegenClass> classes = new List<CodegenClass>(forgables.Count);
-            foreach (StmtClassForgable forgable in forgables)
+            var classes = new List<CodegenClass>(forgables.Count);
+            foreach (var forgable in forgables)
             {
-                CodegenClass clazz = forgable.Forge(true);
+                var clazz = forgable.Forge(true);
                 classes.Add(clazz);
             }
 
+            // assign the assembly (required for completeness)
+            assembly = null;
+
             // compile with statement-field first
             classes.Sort((o1, o2) => o1.InterfaceImplemented == typeof(StatementFields) ? -1 : 0);
-            foreach (CodegenClass clazz in classes)
-            {
-                RoslynCompiler.Compile(clazz, moduleBytes, compileTimeServices.Configuration.Compiler.Logging.IsEnableCode);
-            }
+
+            var compiler = new RoslynCompiler()
+                .WithCodeLogging(compileTimeServices.Configuration.Compiler.Logging.IsEnableCode)
+                .WithCodegenClasses(classes);
+            assembly = compiler.Compile();
 
             return queryMethodProviderClassName;
         }

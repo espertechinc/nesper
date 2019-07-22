@@ -81,7 +81,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             var t1 = new Thread(writeRunnable.Run);
             t1.Name = typeof(InfraTableMTAccessReadMergeWriteInsertDeleteRowVisible).Name + "-write";
             var t2 = new Thread(readRunnable.Run);
-            t2.Name = typeof(InfraTableMTAccessReadMergeWriteInsertDeleteRowVisible).Name + "read";
+            t2.Name = typeof(InfraTableMTAccessReadMergeWriteInsertDeleteRowVisible).Name + "Read";
             t1.Start();
             t2.Start();
 

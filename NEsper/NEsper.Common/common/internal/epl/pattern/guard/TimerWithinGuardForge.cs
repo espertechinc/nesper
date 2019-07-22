@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.compile.stage3;
@@ -18,6 +19,7 @@ using com.espertech.esper.common.@internal.epl.pattern.core;
 using com.espertech.esper.common.@internal.schedule;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.pattern.guard
@@ -69,13 +71,18 @@ namespace com.espertech.esper.common.@internal.epl.pattern.guard
 
             var method = parent.MakeChild(typeof(TimerWithinGuardFactory), GetType(), classScope);
             var patternDelta = PatternDeltaComputeUtil.MakePatternDeltaAnonymous(
-                timeExpr, convertor, timeAbacus, method, classScope);
+                timeExpr,
+                convertor,
+                timeAbacus,
+                method,
+                classScope);
 
             method.Block
-                .DeclareVar(
-                    typeof(TimerWithinGuardFactory), "factory",
+                .DeclareVar<TimerWithinGuardFactory>(
+                    "factory",
                     ExprDotMethodChain(symbols.GetAddInitSvc(method))
-                        .Add(EPStatementInitServicesConstants.GETPATTERNFACTORYSERVICE).Add("guardTimerWithin"))
+                        .Add(EPStatementInitServicesConstants.GETPATTERNFACTORYSERVICE)
+                        .Add("guardTimerWithin"))
                 .SetProperty(Ref("factory"), "ScheduleCallbackId", Constant(scheduleCallbackId))
                 .SetProperty(Ref("factory"), "DeltaCompute", patternDelta)
                 .MethodReturn(Ref("factory"));

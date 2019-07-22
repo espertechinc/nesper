@@ -2817,6 +2817,14 @@ namespace com.espertech.esper.common.@internal.util
             Type resultType,
             int arrayDimensions)
         {
+            if (resultType == null) {
+                return null;
+            }
+
+            if (arrayDimensions == 0) {
+                return resultType;
+            }
+
             var lengths = new int[arrayDimensions];
             return Array.CreateInstance(resultType, lengths).GetType();
         }

@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+
 using com.espertech.esper.common.@internal.epl.@join.querygraph;
 using com.espertech.esper.compat.collections;
 
@@ -45,6 +46,7 @@ namespace com.espertech.esper.common.@internal.epl.lookupplan
 
         public SubordPropInKeywordMultiIndex InKeywordMultiIndex { get; }
 
-        public IDictionary<QueryGraphValueEntryCustomKeyForge, QueryGraphValueEntryCustomOperationForge> CustomIndexOps { get; }
+        public IDictionary<QueryGraphValueEntryCustomKeyForge, QueryGraphValueEntryCustomOperationForge>
+            CustomIndexOps { get; }
     }
 } // end of namespace

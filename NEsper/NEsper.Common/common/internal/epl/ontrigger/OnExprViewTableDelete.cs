@@ -34,7 +34,9 @@ namespace com.espertech.esper.common.@internal.epl.ontrigger
             EventBean[] matchingEvents)
         {
             agentInstanceContext.InstrumentationProvider.QInfraOnAction(
-                OnTriggerType.ON_DELETE, triggerEvents, matchingEvents);
+                OnTriggerType.ON_DELETE,
+                triggerEvents,
+                matchingEvents);
 
             if (matchingEvents != null && matchingEvents.Length > 0) {
                 foreach (var @event in matchingEvents) {
@@ -45,7 +47,11 @@ namespace com.espertech.esper.common.@internal.epl.ontrigger
                 var statementResultService = agentInstanceContext.StatementResultService;
                 if (statementResultService.IsMakeNatural || statementResultService.IsMakeSynthetic) {
                     var posted = OnExprViewTableUtil.ToPublic(
-                        matchingEvents, tableInstance.Table, triggerEvents, true, ExprEvaluatorContext);
+                        matchingEvents,
+                        tableInstance.Table,
+                        triggerEvents,
+                        true,
+                        ExprEvaluatorContext);
                     Child.Update(posted, null);
                 }
             }

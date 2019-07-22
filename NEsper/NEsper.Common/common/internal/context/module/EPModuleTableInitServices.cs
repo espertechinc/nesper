@@ -9,6 +9,7 @@
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.table.core;
 using com.espertech.esper.common.@internal.@event.path;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.context.module
@@ -22,8 +23,8 @@ namespace com.espertech.esper.common.@internal.context.module
 
     public static class EPModuleTableInitServicesConstants
     {
-        public static readonly string GETEVENTTYPERESOLVER = EPStatementInitServicesConstants.GETEVENTTYPERESOLVER;
-        public static readonly string GETTABLECOLLECTOR = "getTableCollector";
+        public static readonly string GETEVENTTYPERESOLVER = EPStatementInitServicesConstants.EVENTTYPERESOLVER;
+        public static readonly string GETTABLECOLLECTOR = "TableCollector";
         public static readonly CodegenExpressionRef REF = Ref("epModuleTableInitServices");
     }
 } // end of namespace

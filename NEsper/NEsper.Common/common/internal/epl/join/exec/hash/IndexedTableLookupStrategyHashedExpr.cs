@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.index.hash;
@@ -60,7 +61,9 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.hash
         public override string ToString()
         {
             return "IndexedTableLookupStrategySingleExpr evaluation" +
-                   " index=(" + index + ')';
+                   " index=(" +
+                   index +
+                   ')';
         }
 
         public LookupStrategyType LookupStrategyType {

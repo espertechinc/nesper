@@ -50,7 +50,9 @@ namespace com.espertech.esper.common.@internal.epl.pattern.observer
             if (isAllConstant) {
                 try {
                     spec = scheduleComputer.Compute(
-                        optionalConvertor, beginState, context.AgentInstanceContext,
+                        optionalConvertor,
+                        beginState,
+                        context.AgentInstanceContext,
                         context.AgentInstanceContext.ImportServiceRuntime.TimeZone,
                         context.AgentInstanceContext.ImportServiceRuntime.TimeAbacus);
                 }
@@ -60,7 +62,10 @@ namespace com.espertech.esper.common.@internal.epl.pattern.observer
             }
 
             return new TimerScheduleObserver(
-                ComputeSpecDynamic(beginState, context), beginState, observerEventEvaluator, isFilterChildNonQuitting);
+                ComputeSpecDynamic(beginState, context),
+                beginState,
+                observerEventEvaluator,
+                isFilterChildNonQuitting);
         }
 
         public bool IsNonRestarting => true;
@@ -75,7 +80,9 @@ namespace com.espertech.esper.common.@internal.epl.pattern.observer
 
             try {
                 return scheduleComputer.Compute(
-                    optionalConvertor, beginState, context.AgentInstanceContext,
+                    optionalConvertor,
+                    beginState,
+                    context.AgentInstanceContext,
                     context.StatementContext.ImportServiceRuntime.TimeZone,
                     context.StatementContext.ImportServiceRuntime.TimeAbacus);
             }

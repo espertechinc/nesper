@@ -54,11 +54,25 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
 
                 if (during) {
                     return IntervalComputerDuringAndIncludesMinMaxEval.ComputeIntervalDuring(
-                        leftStart, leftEnd, rightStart, rightEnd, minStart, maxStart, minEnd, maxEnd);
+                        leftStart,
+                        leftEnd,
+                        rightStart,
+                        rightEnd,
+                        minStart,
+                        maxStart,
+                        minEnd,
+                        maxEnd);
                 }
 
                 return IntervalComputerDuringAndIncludesMinMaxEval.ComputeIntervalIncludes(
-                    leftStart, leftEnd, rightStart, rightEnd, minStart, maxStart, minEnd, maxEnd);
+                    leftStart,
+                    leftEnd,
+                    rightStart,
+                    rightEnd,
+                    minStart,
+                    maxStart,
+                    minEnd,
+                    maxEnd);
             }
 
             public static CodegenExpression Codegen(
@@ -72,33 +86,52 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
                 CodegenClassScope codegenClassScope)
             {
                 var methodNode = codegenMethodScope.MakeChild(
-                        typeof(bool), typeof(IntervalComputerDuringMinMaxStartEndEval), codegenClassScope)
+                        typeof(bool),
+                        typeof(IntervalComputerDuringMinMaxStartEndEval),
+                        codegenClassScope)
                     .AddParam(IntervalForgeCodegenNames.PARAMS);
 
                 var block = methodNode.Block
-                    .DeclareVar(
-                        typeof(long), "minStart",
+                    .DeclareVar<long>(
+                        "minStart",
                         forge.minStartEval.Codegen(
-                            IntervalForgeCodegenNames.REF_RIGHTSTART, methodNode, exprSymbol, codegenClassScope))
-                    .DeclareVar(
-                        typeof(long), "maxStart",
+                            IntervalForgeCodegenNames.REF_RIGHTSTART,
+                            methodNode,
+                            exprSymbol,
+                            codegenClassScope))
+                    .DeclareVar<long>(
+                        "maxStart",
                         forge.maxStartEval.Codegen(
-                            IntervalForgeCodegenNames.REF_RIGHTSTART, methodNode, exprSymbol, codegenClassScope))
-                    .DeclareVar(
-                        typeof(long), "minEnd",
+                            IntervalForgeCodegenNames.REF_RIGHTSTART,
+                            methodNode,
+                            exprSymbol,
+                            codegenClassScope))
+                    .DeclareVar<long>(
+                        "minEnd",
                         forge.minEndEval.Codegen(
-                            IntervalForgeCodegenNames.REF_RIGHTEND, methodNode, exprSymbol, codegenClassScope))
-                    .DeclareVar(
-                        typeof(long), "maxEnd",
+                            IntervalForgeCodegenNames.REF_RIGHTEND,
+                            methodNode,
+                            exprSymbol,
+                            codegenClassScope))
+                    .DeclareVar<long>(
+                        "maxEnd",
                         forge.maxEndEval.Codegen(
-                            IntervalForgeCodegenNames.REF_RIGHTEND, methodNode, exprSymbol, codegenClassScope));
+                            IntervalForgeCodegenNames.REF_RIGHTEND,
+                            methodNode,
+                            exprSymbol,
+                            codegenClassScope));
                 block.MethodReturn(
                     CodegenExpressionBuilder.StaticMethod(
                         typeof(IntervalComputerDuringAndIncludesMinMaxEval),
                         forge.during ? "computeIntervalDuring" : "computeIntervalIncludes",
-                        IntervalForgeCodegenNames.REF_LEFTSTART, IntervalForgeCodegenNames.REF_LEFTEND,
-                        IntervalForgeCodegenNames.REF_RIGHTSTART, IntervalForgeCodegenNames.REF_RIGHTEND,
-                        CodegenExpressionBuilder.Ref("minStart"), CodegenExpressionBuilder.Ref("maxStart"), CodegenExpressionBuilder.Ref("minEnd"), CodegenExpressionBuilder.Ref("maxEnd")));
+                        IntervalForgeCodegenNames.REF_LEFTSTART,
+                        IntervalForgeCodegenNames.REF_LEFTEND,
+                        IntervalForgeCodegenNames.REF_RIGHTSTART,
+                        IntervalForgeCodegenNames.REF_RIGHTEND,
+                        CodegenExpressionBuilder.Ref("minStart"),
+                        CodegenExpressionBuilder.Ref("maxStart"),
+                        CodegenExpressionBuilder.Ref("minEnd"),
+                        CodegenExpressionBuilder.Ref("maxEnd")));
                 return CodegenExpressionBuilder.LocalMethod(methodNode, leftStart, leftEnd, rightStart, rightEnd);
             }
         }

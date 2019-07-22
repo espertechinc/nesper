@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.context.module;
 using com.espertech.esper.common.@internal.epl.expression.core;
@@ -32,7 +33,10 @@ namespace com.espertech.esper.common.@internal.view.firstlength
 
         public View MakeView(AgentInstanceViewFactoryChainContext agentInstanceViewFactoryContext)
         {
-            int size = ViewFactoryUtil.EvaluateSizeParam(ViewName, this.size, agentInstanceViewFactoryContext.AgentInstanceContext);
+            int size = ViewFactoryUtil.EvaluateSizeParam(
+                ViewName,
+                this.size,
+                agentInstanceViewFactoryContext.AgentInstanceContext);
             return new FirstLengthWindowView(agentInstanceViewFactoryContext, this, size);
         }
 

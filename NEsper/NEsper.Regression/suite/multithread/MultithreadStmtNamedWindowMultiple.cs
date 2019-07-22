@@ -58,7 +58,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
                 env.CompileDeploy(
                     "@Name('select_" +
                     i +
-                    "') on OrderEvent as s select sum(w.price) from MyWindow_" +
+                    "') on OrderEvent as s select sum(w.Price) from MyWindow_" +
                     i +
                     " w where w.sIde = s.sIde group by w.sIde",
                     path);

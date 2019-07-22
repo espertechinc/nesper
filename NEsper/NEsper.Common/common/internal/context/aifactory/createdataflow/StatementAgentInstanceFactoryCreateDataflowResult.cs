@@ -22,7 +22,8 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createdataflow
             AgentInstanceContext agentInstanceContext,
             DataflowDesc dataflow)
             : base(
-                finalView, stopCallback,
+                finalView,
+                stopCallback,
                 agentInstanceContext,
                 null,
                 Collections.GetEmptyMap<int, SubSelectFactoryResult>(),

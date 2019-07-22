@@ -714,11 +714,11 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
                 SendEventS0(env, 1);
-                Assert.AreEqual(1, env.Listener("s0").AssertOneGetNewAndReset().Get("id"));
+                Assert.AreEqual(1, env.Listener("s0").AssertOneGetNewAndReset().Get("Id"));
 
                 SendEventS1(env, 100);
                 SendEventS0(env, 2);
-                Assert.AreEqual(2, env.Listener("s0").AssertOneGetNewAndReset().Get("id"));
+                Assert.AreEqual(2, env.Listener("s0").AssertOneGetNewAndReset().Get("Id"));
 
                 env.UndeployAll();
             }
@@ -740,7 +740,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
                 Assert.IsFalse(env.Listener("s0").IsInvoked);
 
                 SendEventS0(env, 100);
-                Assert.AreEqual(100, env.Listener("s0").AssertOneGetNewAndReset().Get("id"));
+                Assert.AreEqual(100, env.Listener("s0").AssertOneGetNewAndReset().Get("Id"));
 
                 SendEventS0(env, 200);
                 Assert.IsFalse(env.Listener("s0").IsInvoked);
@@ -748,7 +748,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
                 SendEventS1(env, -1);
                 SendEventS1(env, -1);
                 SendEventS0(env, -1);
-                Assert.AreEqual(-1, env.Listener("s0").AssertOneGetNewAndReset().Get("id"));
+                Assert.AreEqual(-1, env.Listener("s0").AssertOneGetNewAndReset().Get("Id"));
 
                 env.UndeployAll();
             }

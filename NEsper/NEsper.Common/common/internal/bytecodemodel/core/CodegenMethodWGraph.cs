@@ -9,8 +9,10 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.compat.collections;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.core.CodeGenerationHelper;
 
 namespace com.espertech.esper.common.@internal.bytecodemodel.core
@@ -51,7 +53,6 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.core
 
         public void Render(
             StringBuilder builder,
-            IDictionary<Type, string> imports,
             bool isPublic,
             bool isInnerClass,
             CodegenIndent indent,
@@ -72,7 +73,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.core
             }
 
             if (Footprint.ReturnType != null) {
-                AppendClassName(builder, Footprint.ReturnType, null, imports);
+                AppendClassName(builder, Footprint.ReturnType);
             }
             else {
                 builder.Append(Footprint.ReturnTypeName);
@@ -83,7 +84,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.core
             var delimiter = "";
             foreach (var param in Footprint.Params) {
                 builder.Append(delimiter);
-                param.Render(builder, imports);
+                param.Render(builder);
                 delimiter = ",";
             }
 
@@ -93,13 +94,13 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.core
                 var delimiterThrown = "";
                 foreach (var ex in thrown) {
                     builder.Append(delimiterThrown);
-                    AppendClassName(builder, ex, null, imports);
+                    AppendClassName(builder, ex);
                     delimiterThrown = ",";
                 }
             }
 
             builder.Append("{\n");
-            Block.Render(builder, imports, isInnerClass, 2 + additionalIndent, indent);
+            Block.Render(builder, isInnerClass, 2 + additionalIndent, indent);
             indent.Indent(builder, 1 + additionalIndent);
             builder.Append("}\n");
         }

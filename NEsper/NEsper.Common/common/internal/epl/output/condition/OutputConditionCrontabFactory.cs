@@ -37,9 +37,13 @@ namespace com.espertech.esper.common.@internal.epl.output.condition
             OutputCallback outputCallback)
         {
             var scheduleSpec = ScheduleExpressionUtil.CrontabScheduleBuild(
-                scheduleSpecEvaluators, agentInstanceContext);
+                scheduleSpecEvaluators,
+                agentInstanceContext);
             return new OutputConditionCrontab(
-                outputCallback, agentInstanceContext, isStartConditionOnCreation, scheduleSpec);
+                outputCallback,
+                agentInstanceContext,
+                isStartConditionOnCreation,
+                scheduleSpec);
         }
     }
 } // end of namespace

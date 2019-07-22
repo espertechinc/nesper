@@ -50,7 +50,11 @@ namespace NEsper.Avro.Writer
             CodegenMethodScope parent,
             CodegenClassScope classScope)
         {
-            return CodegenExpressionBuilder.ExprDotMethod(und, "Put", CodegenExpressionBuilder.Constant(index), assigned);
+            return CodegenExpressionBuilder.ExprDotMethod(
+                und,
+                "Put",
+                CodegenExpressionBuilder.Constant(index),
+                assigned);
         }
     }
 } // end of namespace

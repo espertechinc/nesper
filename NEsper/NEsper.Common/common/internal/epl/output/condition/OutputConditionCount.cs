@@ -81,7 +81,8 @@ namespace com.espertech.esper.common.@internal.epl.output.condition
         public override string ToString()
         {
             return GetType().Name +
-                   " eventRate=" + eventRate;
+                   " eventRate=" +
+                   eventRate;
         }
 
         private bool IsSatisfied {

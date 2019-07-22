@@ -9,6 +9,7 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
+
 using com.espertech.esper.common.client.context;
 using com.espertech.esper.common.@internal.context.controller.core;
 using com.espertech.esper.common.@internal.context.module;
@@ -87,7 +88,10 @@ namespace com.espertech.esper.common.@internal.context.mgr
             var deployment = deployments.Get(deploymentIdCreateContext);
             if (deployment == null) {
                 Log.Warn(
-                    "Destroy for context '" + contextName + "' deployment-id '" + deploymentIdCreateContext +
+                    "Destroy for context '" +
+                    contextName +
+                    "' deployment-id '" +
+                    deploymentIdCreateContext +
                     "' failed to locate");
                 return;
             }
@@ -114,7 +118,10 @@ namespace com.espertech.esper.common.@internal.context.mgr
             var contextManager = GetContextManager(deploymentIdCreateContext, contextName);
             if (contextManager == null) {
                 throw new ArgumentException(
-                    "Cannot find context for name '" + contextName + "' deployment-id '" + deploymentIdCreateContext +
+                    "Cannot find context for name '" +
+                    contextName +
+                    "' deployment-id '" +
+                    deploymentIdCreateContext +
                     "'");
             }
 

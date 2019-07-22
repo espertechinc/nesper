@@ -14,7 +14,8 @@ namespace com.espertech.esper.common.@internal.epl.script.core
 {
     public class ExpressionScriptCompiledImpl : ExpressionScriptCompiled
     {
-        private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILog Log =
+            LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ExpressionScriptCompiledImpl"/> class.
@@ -27,8 +28,7 @@ namespace com.espertech.esper.common.@internal.epl.script.core
 
         public Func<ScriptArgs, Object> ScriptAction { get; private set; }
 
-        public Type KnownReturnType
-        {
+        public Type KnownReturnType {
             get { return null; }
         }
     }

@@ -35,8 +35,10 @@ namespace com.espertech.esper.common.@internal.epl.lookup
         public override string ToString()
         {
             return "LookupStrategyDesc{" +
-                   "lookupStrategy=" + LookupStrategy +
-                   ", expressionsTexts=" + (ExpressionsTexts == null ? null : ExpressionsTexts) +
+                   "lookupStrategy=" +
+                   LookupStrategy +
+                   ", expressionsTexts=" +
+                   (ExpressionsTexts == null ? null : ExpressionsTexts) +
                    '}';
         }
     }

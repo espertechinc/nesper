@@ -31,7 +31,9 @@ namespace com.espertech.esper.common.@internal.collection
             _limit = null;
         }
 
-        public ArrayEventEnumerator(EventBean[] events, int limit)
+        public ArrayEventEnumerator(
+            EventBean[] events,
+            int limit)
         {
             _events = events;
             _index = -1;

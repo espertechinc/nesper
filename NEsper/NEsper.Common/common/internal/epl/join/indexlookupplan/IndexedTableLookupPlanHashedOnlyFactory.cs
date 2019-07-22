@@ -30,7 +30,9 @@ namespace com.espertech.esper.common.@internal.epl.join.indexlookupplan
             TableLookupIndexReqKey[] indexNum,
             ExprEvaluator exprEvaluator)
             : base(
-                lookupStream, indexedStream, indexNum)
+                lookupStream,
+                indexedStream,
+                indexNum)
         {
             this.exprEvaluator = exprEvaluator;
             eventPropertyValueGetter = null;

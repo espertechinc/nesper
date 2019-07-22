@@ -9,8 +9,10 @@
 using System;
 using System.Globalization;
 using System.IO;
+
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.lookup;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.index.advanced.index.quadtree
@@ -48,7 +50,12 @@ namespace com.espertech.esper.common.@internal.epl.index.advanced.index.quadtree
         public CodegenExpression Make()
         {
             return NewInstance<AdvancedIndexConfigContextPartitionQuadTree>(
-                Constant(X), Constant(Y), Constant(Width), Constant(Height), Constant(LeafCapacity), Constant(MaxTreeHeight));
+                Constant(X),
+                Constant(Y),
+                Constant(Width),
+                Constant(Height),
+                Constant(LeafCapacity),
+                Constant(MaxTreeHeight));
         }
 
         public void ToConfiguration(TextWriter builder)

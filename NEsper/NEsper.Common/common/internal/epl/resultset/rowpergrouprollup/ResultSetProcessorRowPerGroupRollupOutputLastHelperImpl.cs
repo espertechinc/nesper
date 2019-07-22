@@ -8,6 +8,7 @@
 
 using System.Collections.Generic;
 using System.Linq;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.compat.collections;
@@ -66,13 +67,20 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                         if (processor.IsSelectRStream &&
                             !groupRepsOutputLastUnordRStream[level.LevelNumber].ContainsKey(groupKey)) {
                             processor.GenerateOutputBatchedMapUnsorted(
-                                false, groupKey, level, eventsPerStream, true, isGenerateSynthetic,
+                                false,
+                                groupKey,
+                                level,
+                                eventsPerStream,
+                                true,
+                                isGenerateSynthetic,
                                 groupRepsOutputLastUnordRStream[level.LevelNumber]);
                         }
                     }
 
                     processor.AggregationService.ApplyEnter(
-                        eventsPerStream, groupKeysPerLevel, processor.AgentInstanceContext);
+                        eventsPerStream,
+                        groupKeysPerLevel,
+                        processor.AgentInstanceContext);
                 }
             }
 
@@ -88,13 +96,20 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                         if (processor.IsSelectRStream &&
                             !groupRepsOutputLastUnordRStream[level.LevelNumber].ContainsKey(groupKey)) {
                             processor.GenerateOutputBatchedMapUnsorted(
-                                false, groupKey, level, eventsPerStream, false, isGenerateSynthetic,
+                                false,
+                                groupKey,
+                                level,
+                                eventsPerStream,
+                                false,
+                                isGenerateSynthetic,
                                 groupRepsOutputLastUnordRStream[level.LevelNumber]);
                         }
                     }
 
                     processor.AggregationService.ApplyLeave(
-                        eventsPerStream, groupKeysPerLevel, processor.AgentInstanceContext);
+                        eventsPerStream,
+                        groupKeysPerLevel,
+                        processor.AgentInstanceContext);
                 }
             }
         }
@@ -118,13 +133,20 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                         if (processor.IsSelectRStream &&
                             !groupRepsOutputLastUnordRStream[level.LevelNumber].ContainsKey(groupKey)) {
                             processor.GenerateOutputBatchedMapUnsorted(
-                                false, groupKey, level, aNewData, true, isGenerateSynthetic,
+                                false,
+                                groupKey,
+                                level,
+                                aNewData,
+                                true,
+                                isGenerateSynthetic,
                                 groupRepsOutputLastUnordRStream[level.LevelNumber]);
                         }
                     }
 
                     processor.AggregationService.ApplyEnter(
-                        aNewData, groupKeysPerLevel, processor.AgentInstanceContext);
+                        aNewData,
+                        groupKeysPerLevel,
+                        processor.AgentInstanceContext);
                 }
             }
 
@@ -140,13 +162,20 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                         if (processor.IsSelectRStream &&
                             !groupRepsOutputLastUnordRStream[level.LevelNumber].ContainsKey(groupKey)) {
                             processor.GenerateOutputBatchedMapUnsorted(
-                                false, groupKey, level, aOldData, false, isGenerateSynthetic,
+                                false,
+                                groupKey,
+                                level,
+                                aOldData,
+                                false,
+                                isGenerateSynthetic,
                                 groupRepsOutputLastUnordRStream[level.LevelNumber]);
                         }
                     }
 
                     processor.AggregationService.ApplyLeave(
-                        aOldData, groupKeysPerLevel, processor.AgentInstanceContext);
+                        aOldData,
+                        groupKeysPerLevel,
+                        processor.AgentInstanceContext);
                 }
             }
         }

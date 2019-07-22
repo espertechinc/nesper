@@ -8,11 +8,13 @@
 
 using System;
 using System.Text.RegularExpressions;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.expression.ops
@@ -62,20 +64,22 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
         {
             CodegenExpression mPattern = codegenClassScope.AddFieldUnshared<Regex>(true, forge.PatternInit);
             var methodNode = codegenMethodScope.MakeChild(
-                typeof(bool?), typeof(ExprRegexpNodeForgeConstEval), codegenClassScope);
+                typeof(bool?),
+                typeof(ExprRegexpNodeForgeConstEval),
+                codegenClassScope);
 
             if (!forge.IsNumericValue) {
                 methodNode.Block
-                    .DeclareVar(
-                        typeof(string), "value",
+                    .DeclareVar<string>(
+                        "value",
                         lhs.Forge.EvaluateCodegen(typeof(string), methodNode, exprSymbol, codegenClassScope))
                     .IfRefNullReturnNull("value")
                     .MethodReturn(GetRegexpCode(forge, mPattern, Ref("value")));
             }
             else {
                 methodNode.Block
-                    .DeclareVar(
-                        typeof(object), "value",
+                    .DeclareVar<object>(
+                        "value",
                         lhs.Forge.EvaluateCodegen(typeof(object), methodNode, exprSymbol, codegenClassScope))
                     .IfRefNullReturnNull("value")
                     .MethodReturn(GetRegexpCode(forge, mPattern, ExprDotMethod(Ref("value"), "toString")));

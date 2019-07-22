@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.util;
@@ -69,10 +70,14 @@ namespace com.espertech.esper.common.@internal.type
             {
                 var block = codegenMethodScope
                     .MakeChild(typeof(decimal?), typeof(DivideDecimalConvComputerBase), codegenClassScope)
-                    .AddParam(ltype, "d1").AddParam(rtype, "d2").Block
-                    .DeclareVar(typeof(decimal), "s1",
+                    .AddParam(ltype, "d1")
+                    .AddParam(rtype, "d2")
+                    .Block
+                    .DeclareVar<decimal>(
+                        "s1",
                         convOne.CoerceCodegen(CodegenExpressionBuilder.Ref("d1"), ltype))
-                    .DeclareVar(typeof(decimal), "s2", 
+                    .DeclareVar<decimal>(
+                        "s2",
                         convTwo.CoerceCodegen(CodegenExpressionBuilder.Ref("d2"), rtype));
                 var ifZeroDivisor =
                     block.IfCondition(
@@ -83,16 +88,23 @@ namespace com.espertech.esper.common.@internal.type
                     ifZeroDivisor.BlockReturn(CodegenExpressionBuilder.ConstantNull());
                 }
                 else {
-                    ifZeroDivisor.DeclareVar(
-                            typeof(double), "result",
+                    ifZeroDivisor.DeclareVar<double>(
+                            "result",
                             CodegenExpressionBuilder.Op(
-                                CodegenExpressionBuilder.Ref("s1"), "/",
+                                CodegenExpressionBuilder.Ref("s1"),
+                                "/",
                                 CodegenExpressionBuilder.Constant(0.0m)))
-                        .BlockReturn(CodegenExpressionBuilder.NewInstance(typeof(decimal?), CodegenExpressionBuilder.Ref("result")));
+                        .BlockReturn(
+                            CodegenExpressionBuilder.NewInstance(
+                                typeof(decimal?),
+                                CodegenExpressionBuilder.Ref("result")));
                 }
 
                 var method = block.MethodReturn(
-                    DoDivideCodegen(CodegenExpressionBuilder.Ref("s1"), CodegenExpressionBuilder.Ref("s2"), codegenClassScope));
+                    DoDivideCodegen(
+                        CodegenExpressionBuilder.Ref("s1"),
+                        CodegenExpressionBuilder.Ref("s2"),
+                        codegenClassScope));
                 return CodegenExpressionBuilder.LocalMethodBuild(method).Pass(left).Pass(right).Call();
             }
 

@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.compat;
@@ -45,7 +46,8 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.cache
             var copy = EventBeanUtility.CopyArray(eventsPerStream);
             var entry = new ExpressionResultCacheEntryEventBeanArrayAndCollBean(copy, result);
             exprDeclCacheCollection.Put(
-                node, new SoftReference<ExpressionResultCacheEntryEventBeanArrayAndCollBean>(entry));
+                node,
+                new SoftReference<ExpressionResultCacheEntryEventBeanArrayAndCollBean>(entry));
         }
     }
 } // end of namespace

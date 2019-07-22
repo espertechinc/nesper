@@ -7,9 +7,11 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.epl.agg.core;
 using com.espertech.esper.common.@internal.util;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.agg.access.linear
@@ -26,17 +28,24 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
         {
             var size = accessStateFactory.AggregatorLinear.SizeCodegen();
             var iterator = accessStateFactory.AggregatorLinear.IteratorCodegen(
-                context.ClassScope, context.Method, context.NamedMethods);
+                context.ClassScope,
+                context.Method,
+                context.NamedMethods);
 
-            context.Method.Block.IfCondition(EqualsIdentity(size, Constant(0))).BlockReturn(ConstantNull())
+            context.Method.Block.IfCondition(EqualsIdentity(size, Constant(0)))
+                .BlockReturn(ConstantNull())
                 .DeclareVar(
-                    TypeHelper.GetArrayType(forge.ComponentType), "array", NewArrayByLength(forge.ComponentType, size))
-                .DeclareVar(typeof(int), "count", Constant(0))
-                .DeclareVar(typeof(IEnumerator<EventBean>), "it", iterator)
+                    TypeHelper.GetArrayType(forge.ComponentType),
+                    "array",
+                    NewArrayByLength(forge.ComponentType, size))
+                .DeclareVar<int>("count", Constant(0))
+                .DeclareVar<IEnumerator<EventBean>>("it", iterator)
                 .WhileLoop(ExprDotMethod(Ref("it"), "hasNext"))
-                .DeclareVar(typeof(EventBean), "bean", Cast(typeof(EventBean), ExprDotMethod(Ref("it"), "next")))
+                .DeclareVar<EventBean>("bean", Cast(typeof(EventBean), ExprDotMethod(Ref("it"), "next")))
                 .AssignArrayElement(
-                    Ref("array"), Ref("count"), Cast(forge.ComponentType, ExprDotUnderlying(Ref("bean"))))
+                    Ref("array"),
+                    Ref("count"),
+                    Cast(forge.ComponentType, ExprDotUnderlying(Ref("bean"))))
                 .Increment("count")
                 .BlockEnd()
                 .MethodReturn(Ref("array"));
@@ -51,7 +60,9 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
                 .BlockReturn(ConstantNull())
                 .MethodReturn(
                     stateForge.AggregatorLinear.CollectionReadOnlyCodegen(
-                        context.Method, context.ClassScope, context.NamedMethods));
+                        context.Method,
+                        context.ClassScope,
+                        context.NamedMethods));
         }
 
         public static void GetEnumerableScalarCodegen(
@@ -59,15 +70,18 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
             AggregationStateLinearForge stateForge,
             AggregationAccessorForgeGetCodegenContext context)
         {
-            context.Method.Block.DeclareVar(typeof(int), "size", stateForge.AggregatorLinear.SizeCodegen())
-                .IfCondition(EqualsIdentity(Ref("size"), Constant(0))).BlockReturn(ConstantNull())
-                .DeclareVar(typeof(IList<EventBean>), "values", NewInstance<List<EventBean>>(Ref("size")))
-                .DeclareVar(
-                    typeof(IEnumerator<EventBean>), "it",
+            context.Method.Block.DeclareVar<int>("size", stateForge.AggregatorLinear.SizeCodegen())
+                .IfCondition(EqualsIdentity(Ref("size"), Constant(0)))
+                .BlockReturn(ConstantNull())
+                .DeclareVar<IList<EventBean>>("values", NewInstance<List<EventBean>>(Ref("size")))
+                .DeclareVar<IEnumerator<EventBean>>(
+                    "it",
                     stateForge.AggregatorLinear.IteratorCodegen(
-                        context.ClassScope, context.Method, context.NamedMethods))
+                        context.ClassScope,
+                        context.Method,
+                        context.NamedMethods))
                 .WhileLoop(ExprDotMethod(Ref("it"), "hasNext"))
-                .DeclareVar(typeof(EventBean), "bean", Cast(typeof(EventBean), ExprDotMethod(Ref("it"), "next")))
+                .DeclareVar<EventBean>("bean", Cast(typeof(EventBean), ExprDotMethod(Ref("it"), "next")))
                 .DeclareVar(forge.ComponentType, "value", Cast(forge.ComponentType, ExprDotUnderlying(Ref("bean"))))
                 .ExprDotMethod(Ref("values"), "add", Ref("value"))
                 .BlockEnd()

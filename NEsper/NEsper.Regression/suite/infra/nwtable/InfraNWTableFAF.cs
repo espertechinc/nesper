@@ -867,7 +867,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 
                 env.SendEventBean(new SupportBean("E1", 5));
                 env.SendEventBean(new SupportBean_A("E2"));
-                string[] fields = {"TheString", "IntPrimitive", "id"};
+                string[] fields = {"TheString", "IntPrimitive", "Id"};
 
                 var query = "select TheString, IntPrimitive, Id from MyInfra nw1, " +
                             "MySecondInfra nw2 where nw1.TheString = nw2.Id";

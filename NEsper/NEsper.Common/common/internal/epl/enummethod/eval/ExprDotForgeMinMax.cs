@@ -34,7 +34,12 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             StatementCompileTimeServices services)
         {
             return ExprDotNodeUtility.GetSingleLambdaParamEventType(
-                enumMethodUsedName, goesToNames, inputEventType, collectionComponentType, statementRawInfo, services);
+                enumMethodUsedName,
+                goesToNames,
+                inputEventType,
+                collectionComponentType,
+                statementRawInfo,
+                services);
         }
 
         public override EnumForge GetEnumForge(
@@ -50,8 +55,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
         {
             var max = this.EnumMethodEnum == EnumMethodEnum.MAX;
 
-            if (bodiesAndParameters.IsEmpty())
-            {
+            if (bodiesAndParameters.IsEmpty()) {
                 var returnTypeX = Boxing.GetBoxedType(collectionComponentType);
                 base.TypeInfo = EPTypeHelper.SingleValue(returnTypeX);
                 return new EnumMinMaxScalarForge(numStreamsIncoming, max, base.TypeInfo);
@@ -61,10 +65,11 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             var returnType = Boxing.GetBoxedType(first.BodyForge.EvaluationType);
             base.TypeInfo = EPTypeHelper.SingleValue(returnType);
 
-            if (inputEventType == null)
-            {
+            if (inputEventType == null) {
                 return new EnumMinMaxScalarLambdaForge(
-                    first.BodyForge, first.StreamCountIncoming, max,
+                    first.BodyForge,
+                    first.StreamCountIncoming,
+                    max,
                     (ObjectArrayEventType) first.GoesToTypes[0]);
             }
 

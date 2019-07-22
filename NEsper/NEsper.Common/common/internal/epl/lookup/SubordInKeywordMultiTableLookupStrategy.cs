@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.index.hash;
@@ -41,7 +42,10 @@ namespace com.espertech.esper.common.@internal.epl.lookup
                 context.InstrumentationProvider.QIndexSubordLookup(this, null, null);
                 Array.Copy(eventsPerStream, 0, _events, 1, eventsPerStream.Length);
                 ISet<EventBean> result = InKeywordTableLookupUtil.MultiIndexLookup(
-                    _factory.evaluator, _events, context, _indexes);
+                    _factory.evaluator,
+                    _events,
+                    context,
+                    _indexes);
                 context.InstrumentationProvider.AIndexSubordLookup(result, null);
                 return result;
             }

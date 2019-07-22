@@ -8,6 +8,7 @@
 
 using System;
 using System.Reflection;
+
 using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.context.module;
 using com.espertech.esper.common.@internal.context.util;
@@ -30,7 +31,9 @@ namespace com.espertech.esper.common.@internal.epl.historical.method.poll
         public MethodTargetStrategy Make(AgentInstanceContext agentInstanceContext)
         {
             var reader = agentInstanceContext.VariableManagementService.GetReader(
-                Variable.DeploymentId, Variable.MetaData.VariableName, agentInstanceContext.AgentInstanceId);
+                Variable.DeploymentId,
+                Variable.MetaData.VariableName,
+                agentInstanceContext.AgentInstanceId);
             return new MethodTargetStrategyVariable(this, reader);
         }
 
@@ -40,7 +43,9 @@ namespace com.espertech.esper.common.@internal.epl.historical.method.poll
             bool recovery)
         {
             method = MethodTargetStrategyStaticMethod.ResolveMethod(
-                Variable.MetaData.Type, MethodName, MethodParameters);
+                Variable.MetaData.Type,
+                MethodName,
+                MethodParameters);
             invokeType = MethodTargetStrategyStaticMethodInvokeTypeExtensions.GetInvokeType(method);
         }
     }

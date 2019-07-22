@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.@internal.epl.lookupplan;
 
 namespace com.espertech.esper.common.@internal.epl.lookupplansubord

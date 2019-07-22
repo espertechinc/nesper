@@ -9,6 +9,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+
 using com.espertech.esper.collection;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
@@ -20,6 +21,7 @@ using com.espertech.esper.common.@internal.epl.@join.hint;
 using com.espertech.esper.common.@internal.type;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.join.querygraph
@@ -196,7 +198,12 @@ namespace com.espertech.esper.common.@internal.epl.join.querygraph
                 }
 
                 var added = FillEquivalentNav(
-                    typesPerStream, queryGraph, lookupStream, strictKeyProps[i], indexedStream, indexProps[i]);
+                    typesPerStream,
+                    queryGraph,
+                    lookupStream,
+                    strictKeyProps[i],
+                    indexedStream,
+                    indexProps[i]);
                 if (added) {
                     addedEquivalency = true;
                 }
@@ -249,11 +256,19 @@ namespace com.espertech.esper.common.@internal.epl.join.querygraph
                 if (otherPropertyNum != -1) {
                     if (otherStrictKeyProps[otherPropertyNum] != null) {
                         ExprIdentNode identNodeLookup = new ExprIdentNodeImpl(
-                            typesPerStream[lookupStream], keyProp, lookupStream);
+                            typesPerStream[lookupStream],
+                            keyProp,
+                            lookupStream);
                         ExprIdentNode identNodeOther = new ExprIdentNodeImpl(
-                            typesPerStream[otherStream], otherStrictKeyProps[otherPropertyNum], otherStream);
+                            typesPerStream[otherStream],
+                            otherStrictKeyProps[otherPropertyNum],
+                            otherStream);
                         var added = queryGraph.AddStrictEquals(
-                            lookupStream, keyProp, identNodeLookup, otherStream, otherStrictKeyProps[otherPropertyNum],
+                            lookupStream,
+                            keyProp,
+                            identNodeLookup,
+                            otherStream,
+                            otherStrictKeyProps[otherPropertyNum],
                             identNodeOther);
                         if (added) {
                             addedEquivalency = true;
@@ -294,37 +309,66 @@ namespace com.espertech.esper.common.@internal.epl.join.querygraph
             // add as a range if the endpoints are from the same stream
             if (streamNumStart == streamNumEnd && streamNumStart != streamNumValue) {
                 InternalAddRange(
-                    streamNumStart, streamNumValue, rangeOp, propertyStartExpr, propertyEndExpr, propertyValueExpr);
+                    streamNumStart,
+                    streamNumValue,
+                    rangeOp,
+                    propertyStartExpr,
+                    propertyEndExpr,
+                    propertyValueExpr);
 
                 InternalAddRelOp(
-                    streamNumValue, streamNumStart, propertyValueExpr, QueryGraphRangeEnum.GREATER_OR_EQUAL,
-                    propertyEndExpr, false);
+                    streamNumValue,
+                    streamNumStart,
+                    propertyValueExpr,
+                    QueryGraphRangeEnum.GREATER_OR_EQUAL,
+                    propertyEndExpr,
+                    false);
                 InternalAddRelOp(
-                    streamNumValue, streamNumStart, propertyValueExpr, QueryGraphRangeEnum.LESS_OR_EQUAL,
-                    propertyStartExpr, false);
+                    streamNumValue,
+                    streamNumStart,
+                    propertyValueExpr,
+                    QueryGraphRangeEnum.LESS_OR_EQUAL,
+                    propertyStartExpr,
+                    false);
             }
             else {
                 // endpoints from a different stream, add individually
                 if (streamNumValue != streamNumStart) {
                     // read propertyValue >= propertyStart
                     InternalAddRelOp(
-                        streamNumStart, streamNumValue, propertyStartExpr, QueryGraphRangeEnum.GREATER_OR_EQUAL,
-                        propertyValueExpr, true);
+                        streamNumStart,
+                        streamNumValue,
+                        propertyStartExpr,
+                        QueryGraphRangeEnum.GREATER_OR_EQUAL,
+                        propertyValueExpr,
+                        true);
                     // read propertyStart <= propertyValue
                     InternalAddRelOp(
-                        streamNumValue, streamNumStart, propertyValueExpr, QueryGraphRangeEnum.LESS_OR_EQUAL,
-                        propertyStartExpr, true);
+                        streamNumValue,
+                        streamNumStart,
+                        propertyValueExpr,
+                        QueryGraphRangeEnum.LESS_OR_EQUAL,
+                        propertyStartExpr,
+                        true);
                 }
 
                 if (streamNumValue != streamNumEnd) {
                     // read propertyValue <= propertyEnd
                     InternalAddRelOp(
-                        streamNumEnd, streamNumValue, propertyEndExpr, QueryGraphRangeEnum.LESS_OR_EQUAL,
-                        propertyValueExpr, true);
+                        streamNumEnd,
+                        streamNumValue,
+                        propertyEndExpr,
+                        QueryGraphRangeEnum.LESS_OR_EQUAL,
+                        propertyValueExpr,
+                        true);
                     // read propertyEnd >= propertyValue
                     InternalAddRelOp(
-                        streamNumValue, streamNumEnd, propertyValueExpr, QueryGraphRangeEnum.GREATER_OR_EQUAL,
-                        propertyEndExpr, true);
+                        streamNumValue,
+                        streamNumEnd,
+                        propertyValueExpr,
+                        QueryGraphRangeEnum.GREATER_OR_EQUAL,
+                        propertyEndExpr,
+                        true);
                 }
             }
         }
@@ -338,11 +382,19 @@ namespace com.espertech.esper.common.@internal.epl.join.querygraph
         {
             Check(streamIdLeft, streamIdRight);
             InternalAddRelOp(
-                streamIdLeft, streamIdRight, propertyLeftExpr, QueryGraphRangeEnum.MapFrom(relationalOpEnum.Reversed()),
-                propertyRightExpr, false);
+                streamIdLeft,
+                streamIdRight,
+                propertyLeftExpr,
+                QueryGraphRangeEnum.MapFrom(relationalOpEnum.Reversed()),
+                propertyRightExpr,
+                false);
             InternalAddRelOp(
-                streamIdRight, streamIdLeft, propertyRightExpr, QueryGraphRangeEnum.MapFrom(relationalOpEnum),
-                propertyLeftExpr, false);
+                streamIdRight,
+                streamIdLeft,
+                propertyRightExpr,
+                QueryGraphRangeEnum.MapFrom(relationalOpEnum),
+                propertyLeftExpr,
+                false);
         }
 
         public void AddUnkeyedExpression(
@@ -458,14 +510,22 @@ namespace com.espertech.esper.common.@internal.epl.join.querygraph
                         }
 
                         InternalAddRelOp(
-                            i, indexedStream, exprNodeNoIdent, QueryGraphRangeEnum.MapFrom(relationalOpEnum),
-                            indexedProp, false);
+                            i,
+                            indexedStream,
+                            exprNodeNoIdent,
+                            QueryGraphRangeEnum.MapFrom(relationalOpEnum),
+                            indexedProp,
+                            false);
                     }
                 }
                 else {
                     InternalAddRelOp(
-                        SELF_STREAM, indexedStream, exprNodeNoIdent, QueryGraphRangeEnum.MapFrom(relationalOpEnum),
-                        indexedProp, false);
+                        SELF_STREAM,
+                        indexedStream,
+                        exprNodeNoIdent,
+                        QueryGraphRangeEnum.MapFrom(relationalOpEnum),
+                        indexedProp,
+                        false);
                 }
 
                 return;
@@ -473,8 +533,12 @@ namespace com.espertech.esper.common.@internal.epl.join.querygraph
 
             // add for a specific stream only
             InternalAddRelOp(
-                keyStreamNum.Value, indexedStream, exprNodeNoIdent, QueryGraphRangeEnum.MapFrom(relationalOpEnum),
-                indexedProp, false);
+                keyStreamNum.Value,
+                indexedStream,
+                exprNodeNoIdent,
+                QueryGraphRangeEnum.MapFrom(relationalOpEnum),
+                indexedProp,
+                false);
         }
 
         public void AddInSetSingleIndex(
@@ -571,8 +635,11 @@ namespace com.espertech.esper.common.@internal.epl.join.querygraph
                 return;
             }
 
-            if (optionalHint != null && optionalHint.Filter(
-                    streamKey, streamValue, ExcludePlanFilterOperatorType.RELOP)) {
+            if (optionalHint != null &&
+                optionalHint.Filter(
+                    streamKey,
+                    streamValue,
+                    ExcludePlanFilterOperatorType.RELOP)) {
                 return;
             }
 
@@ -592,8 +659,11 @@ namespace com.espertech.esper.common.@internal.epl.join.querygraph
                 return;
             }
 
-            if (optionalHint != null && optionalHint.Filter(
-                    streamKey, streamValue, ExcludePlanFilterOperatorType.RELOP)) {
+            if (optionalHint != null &&
+                optionalHint.Filter(
+                    streamKey,
+                    streamValue,
+                    ExcludePlanFilterOperatorType.RELOP)) {
                 return;
             }
 
@@ -612,9 +682,13 @@ namespace com.espertech.esper.common.@internal.epl.join.querygraph
                 return false;
             }
 
-            if (optionalHint != null && optionalHint.Filter(
-                    streamLookup, propertyIndexedNode.StreamId, ExcludePlanFilterOperatorType.EQUALS,
-                    propertyLookupNode, propertyIndexedNode)) {
+            if (optionalHint != null &&
+                optionalHint.Filter(
+                    streamLookup,
+                    propertyIndexedNode.StreamId,
+                    ExcludePlanFilterOperatorType.EQUALS,
+                    propertyLookupNode,
+                    propertyIndexedNode)) {
                 return false;
             }
 
@@ -632,8 +706,11 @@ namespace com.espertech.esper.common.@internal.epl.join.querygraph
                 return;
             }
 
-            if (optionalHint != null && optionalHint.Filter(
-                    keyExprStream, indexedStream, ExcludePlanFilterOperatorType.EQUALS)) {
+            if (optionalHint != null &&
+                optionalHint.Filter(
+                    keyExprStream,
+                    indexedStream,
+                    ExcludePlanFilterOperatorType.EQUALS)) {
                 return;
             }
 
@@ -651,8 +728,11 @@ namespace com.espertech.esper.common.@internal.epl.join.querygraph
                 return;
             }
 
-            if (optionalHint != null && optionalHint.Filter(
-                    streamKey, streamValue, ExcludePlanFilterOperatorType.EQUALS)) {
+            if (optionalHint != null &&
+                optionalHint.Filter(
+                    streamKey,
+                    streamValue,
+                    ExcludePlanFilterOperatorType.EQUALS)) {
                 return;
             }
 
@@ -670,8 +750,11 @@ namespace com.espertech.esper.common.@internal.epl.join.querygraph
                 return;
             }
 
-            if (optionalHint != null && optionalHint.Filter(
-                    streamKey, streamValue, ExcludePlanFilterOperatorType.INKW)) {
+            if (optionalHint != null &&
+                optionalHint.Filter(
+                    streamKey,
+                    streamValue,
+                    ExcludePlanFilterOperatorType.INKW)) {
                 return;
             }
 
@@ -689,8 +772,11 @@ namespace com.espertech.esper.common.@internal.epl.join.querygraph
                 return;
             }
 
-            if (optionalHint != null && optionalHint.Filter(
-                    streamKey, streamValue, ExcludePlanFilterOperatorType.INKW)) {
+            if (optionalHint != null &&
+                optionalHint.Filter(
+                    streamKey,
+                    streamValue,
+                    ExcludePlanFilterOperatorType.INKW)) {
                 return;
             }
 
@@ -718,8 +804,9 @@ namespace com.espertech.esper.common.@internal.epl.join.querygraph
             SAIFFInitializeSymbol symbols,
             CodegenClassScope classScope)
         {
-            method.Block.DeclareVar(
-                typeof(IDictionary<string, object>), "map", NewInstance(typeof(Dictionary<string, object>)));
+            method.Block.DeclareVar<IDictionary<string, object>>(
+                "map",
+                NewInstance(typeof(Dictionary<string, object>)));
             foreach (var entry in streamJoinMap) {
                 var streams = entry.Key.Streams;
                 if (streams.First != SELF_STREAM || streams.Second != 0) {
@@ -728,7 +815,8 @@ namespace com.espertech.esper.common.@internal.epl.join.querygraph
 
                 var key = entry.Key.Streams;
                 method.Block.ExprDotMethod(
-                    Ref("map"), "put",
+                    Ref("map"),
+                    "put",
                     NewInstance<UniformPair<int>>(Constant(key.First), Constant(key.Second)),
                     entry.Value.Make(method, symbols, classScope));
             }

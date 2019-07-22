@@ -7,12 +7,14 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Numerics;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.expression.time.abacus;
 using com.espertech.esper.common.@internal.epl.expression.time.adder;
 using com.espertech.esper.common.@internal.schedule;
 using com.espertech.esper.compat;
+
 using static com.espertech.esper.common.@internal.epl.expression.time.node.ExprTimePeriodForge;
 
 namespace com.espertech.esper.common.@internal.epl.expression.time.eval
@@ -73,7 +75,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.time.eval
             ExprEvaluatorContext context)
         {
             var timeDelta = Evaluate(eventsPerStream, isNewData, context);
-            return new TimePeriodDeltaResult(TimePeriodUtil.DeltaAddWReference(current, reference, timeDelta), reference);
+            return new TimePeriodDeltaResult(
+                TimePeriodUtil.DeltaAddWReference(current, reference, timeDelta),
+                reference);
         }
 
         public TimePeriodProvide GetNonVariableProvide(ExprEvaluatorContext context)

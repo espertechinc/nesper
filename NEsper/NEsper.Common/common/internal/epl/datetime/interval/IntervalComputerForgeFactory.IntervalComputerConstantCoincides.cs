@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -51,8 +52,14 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
                 CodegenClassScope codegenClassScope)
             {
                 return CodegenExpressionBuilder.StaticMethod(
-                    typeof(IntervalComputerConstantCoincides), "computeIntervalCoincides", leftStart, leftEnd,
-                    rightStart, rightEnd, CodegenExpressionBuilder.Constant(start), CodegenExpressionBuilder.Constant(end));
+                    typeof(IntervalComputerConstantCoincides),
+                    "computeIntervalCoincides",
+                    leftStart,
+                    leftEnd,
+                    rightStart,
+                    rightEnd,
+                    CodegenExpressionBuilder.Constant(start),
+                    CodegenExpressionBuilder.Constant(end));
             }
 
             public bool? Compute(

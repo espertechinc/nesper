@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+
 using com.espertech.esper.collection;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -21,6 +22,7 @@ using com.espertech.esper.common.@internal.epl.namedwindow.path;
 using com.espertech.esper.common.@internal.view.access;
 using com.espertech.esper.common.@internal.view.core;
 using com.espertech.esper.compat.collections;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.subselect
@@ -76,39 +78,66 @@ namespace com.espertech.esper.common.@internal.epl.subselect
             var groupKeyEval = ConstantNull();
             if (groupKeys != null) {
                 groupKeyEval = ExprNodeUtilityCodegen.CodegenEvaluatorMayMultiKeyWCoerce(
-                    ExprNodeUtilityQuery.GetForges(groupKeys), null, method, GetType(), classScope);
+                    ExprNodeUtilityQuery.GetForges(groupKeys),
+                    null,
+                    method,
+                    GetType(),
+                    classScope);
             }
 
             method.Block
-                .DeclareVar(
-                    typeof(SubSelectStrategyFactoryLocalViewPreloaded), "factory",
+                .DeclareVar<SubSelectStrategyFactoryLocalViewPreloaded>(
+                    "factory",
                     NewInstance(typeof(SubSelectStrategyFactoryLocalViewPreloaded)))
                 .SetProperty(Ref("factory"), "SubqueryNumber", Constant(subqueryNumber))
-                .SetProperty(Ref("factory"), "ViewFactories",
+                .SetProperty(
+                    Ref("factory"),
+                    "ViewFactories",
                     ViewFactoryForgeUtil.CodegenForgesWInit(ViewForges, 0, subqueryNumber, method, symbols, classScope))
                 .SetProperty(Ref("factory"), "ViewResourceDelegate", viewResourceDelegateDesc.ToExpression())
-                .SetProperty(Ref("factory"), "EventTableFactoryFactory",
+                .SetProperty(
+                    Ref("factory"),
+                    "EventTableFactoryFactory",
                     lookupStrategy.First.Make(method, symbols, classScope))
-                .SetProperty(Ref("factory"), "LookupStrategyFactory", lookupStrategy.Second.Make(method, symbols, classScope))
-                .SetProperty(Ref("factory"), "AggregationServiceFactory",
+                .SetProperty(
+                    Ref("factory"),
+                    "LookupStrategyFactory",
+                    lookupStrategy.Second.Make(method, symbols, classScope))
+                .SetProperty(
+                    Ref("factory"),
+                    "AggregationServiceFactory",
                     MakeAggregationService(subqueryNumber, aggregationServiceForgeDesc, classScope, method, symbols))
                 .SetProperty(Ref("factory"), "CorrelatedSubquery", Constant(correlatedSubquery))
                 .SetProperty(Ref("factory"), "GroupKeyEval", groupKeyEval)
-                .SetProperty(Ref("factory"), "FilterExprEval",
+                .SetProperty(
+                    Ref("factory"),
+                    "FilterExprEval",
                     filterExprNode == null
                         ? ConstantNull()
                         : ExprNodeUtilityCodegen.CodegenEvaluatorNoCoerce(
-                            filterExprNode.Forge, method, GetType(), classScope));
+                            filterExprNode.Forge,
+                            method,
+                            GetType(),
+                            classScope));
             if (namedWindow != null) {
-                method.Block.SetProperty(Ref("factory"), "NamedWindow",
+                method.Block.SetProperty(
+                    Ref("factory"),
+                    "NamedWindow",
                     NamedWindowDeployTimeResolver.MakeResolveNamedWindow(namedWindow, symbols.GetAddInitSvc(method)));
                 if (namedWindowFilterExpr != null) {
                     method.Block
-                        .SetProperty(Ref("factory"), "NamedWindowFilterQueryGraph",
+                        .SetProperty(
+                            Ref("factory"),
+                            "NamedWindowFilterQueryGraph",
                             namedWindowFilterQueryGraph.Make(method, symbols, classScope))
-                        .SetProperty(Ref("factory"), "NamedWindowFilterExpr",
+                        .SetProperty(
+                            Ref("factory"),
+                            "NamedWindowFilterExpr",
                             ExprNodeUtilityCodegen.CodegenEvaluator(
-                                namedWindowFilterExpr.Forge, method, GetType(), classScope));
+                                namedWindowFilterExpr.Forge,
+                                method,
+                                GetType(),
+                                classScope));
                 }
             }
 
@@ -137,8 +166,12 @@ namespace com.espertech.esper.common.@internal.epl.subselect
             var aggregationClassNames = new AggregationClassNames(
                 CodegenPackageScopeNames.ClassPostfixAggregationForSubquery(subqueryNumber));
             var aggResult = AggregationServiceFactoryCompiler.MakeInnerClassesAndInit(
-                false, aggregationServiceForgeDesc.AggregationServiceFactoryForge, parent, classScope,
-                classScope.OutermostClassName, aggregationClassNames);
+                false,
+                aggregationServiceForgeDesc.AggregationServiceFactoryForge,
+                parent,
+                classScope,
+                classScope.OutermostClassName,
+                aggregationClassNames);
             classScope.AddInnerClasses(aggResult.InnerClasses);
             return LocalMethod(aggResult.InitMethod, symbols.GetAddInitSvc(parent));
         }

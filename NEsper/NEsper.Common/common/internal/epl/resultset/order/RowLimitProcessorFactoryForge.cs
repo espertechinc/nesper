@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.compile.stage1.spec;
@@ -14,6 +15,7 @@ using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.variable.compiletime;
 using com.espertech.esper.common.@internal.epl.variable.core;
 using com.espertech.esper.common.@internal.util;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.resultset.order
@@ -43,7 +45,8 @@ namespace com.espertech.esper.common.@internal.epl.resultset.order
             if (rowLimitSpec.NumRowsVariable != null) {
                 numRowsVariableMetaData = variableCompileTimeResolver.Resolve(rowLimitSpec.NumRowsVariable);
                 if (numRowsVariableMetaData == null) {
-                    throw new ExprValidationException("Limit clause variable by name '" + rowLimitSpec.NumRowsVariable + "' has not been declared");
+                    throw new ExprValidationException(
+                        "Limit clause variable by name '" + rowLimitSpec.NumRowsVariable + "' has not been declared");
                 }
 
                 string message = VariableUtil.CheckVariableContextName(optionalContextName, numRowsVariableMetaData);
@@ -67,7 +70,9 @@ namespace com.espertech.esper.common.@internal.epl.resultset.order
                 offsetVariableMetaData = variableCompileTimeResolver.Resolve(rowLimitSpec.OptionalOffsetVariable);
                 if (offsetVariableMetaData == null) {
                     throw new ExprValidationException(
-                        "Limit clause variable by name '" + rowLimitSpec.OptionalOffsetVariable + "' has not been declared");
+                        "Limit clause variable by name '" +
+                        rowLimitSpec.OptionalOffsetVariable +
+                        "' has not been declared");
                 }
 
                 string message = VariableUtil.CheckVariableContextName(optionalContextName, offsetVariableMetaData);
@@ -82,7 +87,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.order
             else {
                 offsetVariableMetaData = null;
                 if (rowLimitSpec.OptionalOffset != null) {
-                    if (!rowLimitSpec.OptionalOffset.HasValue || rowLimitSpec.OptionalOffset.Value <= 0) {
+                    if (rowLimitSpec.OptionalOffset.Value <= 0) {
                         throw new ExprValidationException("Limit clause requires a positive offset");
                     }
 
@@ -100,17 +105,23 @@ namespace com.espertech.esper.common.@internal.epl.resultset.order
         {
             CodegenExpression numRowsVariable = ConstantNull();
             if (numRowsVariableMetaData != null) {
-                numRowsVariable = VariableDeployTimeResolver.MakeVariableField(numRowsVariableMetaData, classScope, this.GetType());
+                numRowsVariable = VariableDeployTimeResolver.MakeVariableField(
+                    numRowsVariableMetaData,
+                    classScope,
+                    this.GetType());
             }
 
             CodegenExpression offsetVariable = ConstantNull();
             if (offsetVariableMetaData != null) {
-                offsetVariable = VariableDeployTimeResolver.MakeVariableField(offsetVariableMetaData, classScope, this.GetType());
+                offsetVariable = VariableDeployTimeResolver.MakeVariableField(
+                    offsetVariableMetaData,
+                    classScope,
+                    this.GetType());
             }
 
             CodegenMethod method = parent.MakeChild(typeof(RowLimitProcessorFactory), this.GetType(), classScope);
             method.Block
-                .DeclareVar(typeof(RowLimitProcessorFactory), "factory", NewInstance(typeof(RowLimitProcessorFactory)))
+                .DeclareVar<RowLimitProcessorFactory>("factory", NewInstance(typeof(RowLimitProcessorFactory)))
                 .SetProperty(Ref("factory"), "NumRowsVariable", numRowsVariable)
                 .SetProperty(Ref("factory"), "OffsetVariable", offsetVariable)
                 .SetProperty(Ref("factory"), "CurrentRowLimit", Constant(currentRowLimit))

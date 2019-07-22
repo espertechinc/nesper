@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -17,6 +18,7 @@ using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.metrics.instrumentation;
 using com.espertech.esper.common.@internal.util;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.expression.ops
@@ -74,7 +76,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             CodegenClassScope codegenClassScope)
         {
             return ExprArrayNodeForgeEval.CodegenEvaluateGetROCollectionScalar(
-                this, codegenMethodScope, exprSymbol, codegenClassScope);
+                this,
+                codegenMethodScope,
+                exprSymbol,
+                codegenClassScope);
         }
 
         public EventType GetEventTypeCollection(
@@ -132,7 +137,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                 }
 
                 return new ExprArrayNodeForgeEval(
-                    this, ExprNodeUtilityQuery.GetEvaluatorsNoCompile(Parent.ChildNodes));
+                    this,
+                    ExprNodeUtilityQuery.GetEvaluatorsNoCompile(Parent.ChildNodes));
             }
         }
 
@@ -156,7 +162,13 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             CodegenClassScope codegenClassScope)
         {
             return new InstrumentationBuilderExpr(
-                GetType(), this, "ExprArray", requiredType, codegenMethodScope, exprSymbol, codegenClassScope).Build();
+                GetType(),
+                this,
+                "ExprArray",
+                requiredType,
+                codegenMethodScope,
+                exprSymbol,
+                codegenClassScope).Build();
         }
 
         public Type EvaluationType => Array.CreateInstance(ArrayReturnType, 0).GetType();
@@ -186,7 +198,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                 }
 
                 return new ExprArrayNodeForgeEval(
-                    this, ExprNodeUtilityQuery.GetEvaluatorsNoCompile(Parent.ChildNodes));
+                    this,
+                    ExprNodeUtilityQuery.GetEvaluatorsNoCompile(Parent.ChildNodes));
             }
         }
     }

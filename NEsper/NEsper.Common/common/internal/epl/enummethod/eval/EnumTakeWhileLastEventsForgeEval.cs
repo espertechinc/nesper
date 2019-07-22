@@ -9,6 +9,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -16,8 +17,10 @@ using com.espertech.esper.common.@internal.epl.enummethod.codegen;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.compat.collections;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
-using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionRelational.CodegenRelational;
+using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionRelational.
+    CodegenRelational;
 
 namespace com.espertech.esper.common.@internal.epl.enummethod.eval
 {
@@ -82,31 +85,58 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
         {
             ExprForgeCodegenSymbol scope = new ExprForgeCodegenSymbol(false, null);
             CodegenMethod methodNode = codegenMethodScope
-                .MakeChildWithScope(typeof(ICollection<object>), typeof(EnumTakeWhileLastEventsForgeEval), scope, codegenClassScope)
+                .MakeChildWithScope(
+                    typeof(ICollection<object>),
+                    typeof(EnumTakeWhileLastEventsForgeEval),
+                    scope,
+                    codegenClassScope)
                 .AddParam(EnumForgeCodegenNames.PARAMS);
-            CodegenExpression innerValue = forge.innerExpression.EvaluateCodegen(typeof(bool?), methodNode, scope, codegenClassScope);
+            CodegenExpression innerValue = forge.innerExpression.EvaluateCodegen(
+                typeof(bool?),
+                methodNode,
+                scope,
+                codegenClassScope);
             CodegenBlock block = methodNode.Block
                 .IfCondition(ExprDotMethod(EnumForgeCodegenNames.REF_ENUMCOLL, "isEmpty"))
                 .BlockReturn(EnumForgeCodegenNames.REF_ENUMCOLL);
 
-            CodegenBlock blockSingle = block.IfCondition(EqualsIdentity(ExprDotMethod(EnumForgeCodegenNames.REF_ENUMCOLL, "size"), Constant(1)))
-                .DeclareVar(
-                    typeof(EventBean), "item",
-                    Cast(typeof(EventBean), ExprDotMethodChain(EnumForgeCodegenNames.REF_ENUMCOLL).Add("iterator").Add("next")))
+            CodegenBlock blockSingle = block
+                .IfCondition(EqualsIdentity(ExprDotMethod(EnumForgeCodegenNames.REF_ENUMCOLL, "size"), Constant(1)))
+                .DeclareVar<EventBean>(
+                    "item",
+                    Cast(
+                        typeof(EventBean),
+                        ExprDotMethodChain(EnumForgeCodegenNames.REF_ENUMCOLL).Add("iterator").Add("next")))
                 .AssignArrayElement(EnumForgeCodegenNames.REF_EPS, Constant(forge.streamNumLambda), @Ref("item"));
             CodegenLegoBooleanExpression.CodegenReturnValueIfNotNullAndNotPass(
-                blockSingle, forge.innerExpression.EvaluationType, innerValue, StaticMethod(typeof(Collections), "emptyList"));
+                blockSingle,
+                forge.innerExpression.EvaluationType,
+                innerValue,
+                StaticMethod(typeof(Collections), "emptyList"));
             blockSingle.BlockReturn(StaticMethod(typeof(Collections), "singletonList", @Ref("item")));
 
-            block.DeclareVar(typeof(ArrayDeque<object>), "result", NewInstance(typeof(ArrayDeque<object>)))
-                .DeclareVar(
-                    typeof(EventBean[]), "all",
-                    StaticMethod(typeof(EnumTakeWhileLastEventsForgeEval), "takeWhileLastEventBeanToArray", EnumForgeCodegenNames.REF_ENUMCOLL));
+            block.DeclareVar<ArrayDeque<object>>("result", NewInstance(typeof(ArrayDeque<object>)))
+                .DeclareVar<EventBean[]>(
+                    "all",
+                    StaticMethod(
+                        typeof(EnumTakeWhileLastEventsForgeEval),
+                        "takeWhileLastEventBeanToArray",
+                        EnumForgeCodegenNames.REF_ENUMCOLL));
 
             CodegenBlock forEach = block.ForLoop(
-                    typeof(int), "i", Op(ArrayLength(@Ref("all")), "-", Constant(1)), Relational(@Ref("i"), GE, Constant(0)), Decrement("i"))
-                .AssignArrayElement(EnumForgeCodegenNames.REF_EPS, Constant(forge.streamNumLambda), ArrayAtIndex(@Ref("all"), @Ref("i")));
-            CodegenLegoBooleanExpression.CodegenBreakIfNotNullAndNotPass(forEach, forge.innerExpression.EvaluationType, innerValue);
+                    typeof(int),
+                    "i",
+                    Op(ArrayLength(@Ref("all")), "-", Constant(1)),
+                    Relational(@Ref("i"), GE, Constant(0)),
+                    Decrement("i"))
+                .AssignArrayElement(
+                    EnumForgeCodegenNames.REF_EPS,
+                    Constant(forge.streamNumLambda),
+                    ArrayAtIndex(@Ref("all"), @Ref("i")));
+            CodegenLegoBooleanExpression.CodegenBreakIfNotNullAndNotPass(
+                forEach,
+                forge.innerExpression.EvaluationType,
+                innerValue);
             forEach.Expression(ExprDotMethod(@Ref("result"), "addFirst", ArrayAtIndex(@Ref("all"), @Ref("i"))));
             block.MethodReturn(@Ref("result"));
             return LocalMethod(methodNode, args.Eps, args.Enumcoll, args.IsNewData, args.ExprCtx);

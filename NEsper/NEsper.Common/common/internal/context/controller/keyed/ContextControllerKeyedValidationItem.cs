@@ -9,6 +9,7 @@
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.@event.core;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.context.controller.keyed
@@ -35,7 +36,8 @@ namespace com.espertech.esper.common.@internal.context.controller.keyed
         public CodegenExpression Make(CodegenExpressionRef addInitSvc)
         {
             return NewInstance<ContextControllerKeyedValidationItem>(
-                EventTypeUtility.ResolveTypeCodegen(EventType, addInitSvc), Constant(PropertyNames));
+                EventTypeUtility.ResolveTypeCodegen(EventType, addInitSvc),
+                Constant(PropertyNames));
         }
     }
 } // end of namespace

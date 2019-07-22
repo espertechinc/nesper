@@ -53,27 +53,22 @@ namespace com.espertech.esper.common.@internal.context.controller.hash
             Serializer[] serializers)
         {
             byte[] bytes;
-            try
-            {
-                if (objectMayArray is object[])
-                {
+            try {
+                if (objectMayArray is object[]) {
                     bytes = SerializerFactory.Serialize(serializers, (object[]) objectMayArray);
                 }
-                else
-                {
+                else {
                     bytes = SerializerFactory.Serialize(serializers[0], objectMayArray);
                 }
             }
-            catch (IOException e)
-            {
+            catch (IOException e) {
                 Log.Error("Exception serializing parameters for computing consistent hash: " + e.Message, e);
                 bytes = new byte[0];
             }
 
             long value = ByteExtensions.GetCrc32(bytes);
             int result = (int) value;
-            if (result >= 0)
-            {
+            if (result >= 0) {
                 return result;
             }
 
@@ -86,15 +81,17 @@ namespace com.espertech.esper.common.@internal.context.controller.hash
             CodegenClassScope classScope)
         {
             CodegenExpressionField serializers = classScope.AddFieldUnshared(
-                true, typeof(Serializer[]),
+                true,
+                typeof(Serializer[]),
                 StaticMethod(
-                    typeof(SerializerFactory), "getSerializers",
+                    typeof(SerializerFactory),
+                    "getSerializers",
                     Constant(ExprNodeUtilityQuery.GetExprResultTypes(nodes))));
 
             CodegenMethod method = parent.MakeChild(typeof(object), this.GetType(), classScope)
                 .AddParam(typeof(EventBean), "eventBean");
             method.Block
-                .DeclareVar(typeof(EventBean[]), "events", NewArrayWithInit(typeof(EventBean), @Ref("eventBean")));
+                .DeclareVar<EventBean[]>("events", NewArrayWithInit(typeof(EventBean), @Ref("eventBean")));
 
             // method to return object-array from expressions
             ExprForgeCodegenSymbol exprSymbol = new ExprForgeCodegenSymbol(true, null);
@@ -102,24 +99,25 @@ namespace com.espertech.esper.common.@internal.context.controller.hash
                 .MakeChildWithScope(typeof(object), typeof(CodegenLegoMethodExpression), exprSymbol, classScope)
                 .AddParam(ExprForgeCodegenNames.PARAMS);
             CodegenExpression[] expressions = new CodegenExpression[nodes.Length];
-            for (int i = 0; i < nodes.Length; i++)
-            {
-                expressions[i] = nodes[i].Forge.EvaluateCodegen(
-                    nodes[i].Forge.EvaluationType, exprMethod, exprSymbol, classScope);
+            for (int i = 0; i < nodes.Length; i++) {
+                expressions[i] = nodes[i]
+                    .Forge.EvaluateCodegen(
+                        nodes[i].Forge.EvaluationType,
+                        exprMethod,
+                        exprSymbol,
+                        classScope);
             }
 
             exprSymbol.DerivedSymbolsCodegen(method, exprMethod.Block, classScope);
 
-            if (nodes.Length == 1)
-            {
+            if (nodes.Length == 1) {
                 exprMethod.Block.MethodReturn(expressions[0]);
             }
-            else
-            {
-                exprMethod.Block.DeclareVar(
-                    typeof(object[]), "values", NewArrayByLength(typeof(object), Constant(nodes.Length)));
-                for (int i = 0; i < nodes.Length; i++)
-                {
+            else {
+                exprMethod.Block.DeclareVar<object[]>(
+                    "values",
+                    NewArrayByLength(typeof(object), Constant(nodes.Length)));
+                for (int i = 0; i < nodes.Length; i++) {
                     CodegenExpression result = expressions[i];
                     exprMethod.Block.AssignArrayElement("values", Constant(i), result);
                 }
@@ -128,12 +126,16 @@ namespace com.espertech.esper.common.@internal.context.controller.hash
             }
 
             method.Block
-                .DeclareVar(
-                    typeof(object), "values", LocalMethod(exprMethod, @Ref("events"), ConstantTrue(), ConstantNull()))
+                .DeclareVar<object>(
+                    "values",
+                    LocalMethod(exprMethod, @Ref("events"), ConstantTrue(), ConstantNull()))
                 .MethodReturn(
                     StaticMethod(
-                        typeof(ContextControllerHashedGetterCRC32SerializedForge), "serializeAndCRC32Hash",
-                        @Ref("values"), Constant(granularity), serializers));
+                        typeof(ContextControllerHashedGetterCRC32SerializedForge),
+                        "serializeAndCRC32Hash",
+                        @Ref("values"),
+                        Constant(granularity),
+                        serializers));
 
             return LocalMethod(method, beanExpression);
         }

@@ -29,7 +29,7 @@ namespace com.espertech.esper.regressionlib.suite.view
         {
             var epl = "@Name('s0') select * from SupportMarketDataBean(Symbol='" +
                       SYMBOL +
-                      "')#time(3.0)#weighted_avg(price, Volume, Symbol, Feed)";
+                      "')#time(3.0)#weighted_avg(Price, Volume, Symbol, Feed)";
             env.CompileDeployAddListenerMileZero(epl, "s0");
 
             Assert.AreEqual(typeof(double?), env.Statement("s0").EventType.GetPropertyType("average"));

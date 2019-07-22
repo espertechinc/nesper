@@ -73,14 +73,12 @@ namespace NEsper.Avro.Getter
 
         public object GetAvroFragment(GenericRecord record)
         {
-            if (_fragmentEventType == null)
-            {
+            if (_fragmentEventType == null) {
                 return null;
             }
 
             var value = GetAvroFieldValue(record);
-            if (value == null)
-            {
+            if (value == null) {
                 return null;
             }
 
@@ -92,7 +90,10 @@ namespace NEsper.Avro.Getter
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            return UnderlyingGetCodegen(CodegenExpressionBuilder.CastUnderlying(typeof(GenericRecord), beanExpression), codegenMethodScope, codegenClassScope);
+            return UnderlyingGetCodegen(
+                CodegenExpressionBuilder.CastUnderlying(typeof(GenericRecord), beanExpression),
+                codegenMethodScope,
+                codegenClassScope);
         }
 
         public CodegenExpression EventBeanExistsCodegen(
@@ -108,7 +109,10 @@ namespace NEsper.Avro.Getter
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            return UnderlyingFragmentCodegen(CodegenExpressionBuilder.CastUnderlying(typeof(GenericRecord), beanExpression), codegenMethodScope, codegenClassScope);
+            return UnderlyingFragmentCodegen(
+                CodegenExpressionBuilder.CastUnderlying(typeof(GenericRecord), beanExpression),
+                codegenMethodScope,
+                codegenClassScope);
         }
 
         public CodegenExpression UnderlyingGetCodegen(
@@ -116,8 +120,17 @@ namespace NEsper.Avro.Getter
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            var values = CodegenExpressionBuilder.Cast(typeof(ICollection<object>), CodegenExpressionBuilder.ExprDotMethod(underlyingExpression, "get", CodegenExpressionBuilder.Constant(_key)));
-            return CodegenExpressionBuilder.StaticMethod(GetType(), "getAvroIndexedValue", values, CodegenExpressionBuilder.Constant(_index));
+            var values = CodegenExpressionBuilder.Cast(
+                typeof(ICollection<object>),
+                CodegenExpressionBuilder.ExprDotMethod(
+                    underlyingExpression,
+                    "get",
+                    CodegenExpressionBuilder.Constant(_key)));
+            return CodegenExpressionBuilder.StaticMethod(
+                GetType(),
+                "getAvroIndexedValue",
+                values,
+                CodegenExpressionBuilder.Constant(_index));
         }
 
         public CodegenExpression UnderlyingExistsCodegen(
@@ -133,12 +146,13 @@ namespace NEsper.Avro.Getter
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            if (_fragmentEventType == null)
-            {
+            if (_fragmentEventType == null) {
                 return CodegenExpressionBuilder.ConstantNull();
             }
 
-            return CodegenExpressionBuilder.LocalMethod(GetAvroFragmentCodegen(codegenMethodScope, codegenClassScope), underlyingExpression);
+            return CodegenExpressionBuilder.LocalMethod(
+                GetAvroFragmentCodegen(codegenMethodScope, codegenClassScope),
+                underlyingExpression);
         }
 
         /// <summary>
@@ -151,13 +165,11 @@ namespace NEsper.Avro.Getter
             ICollection<object> values,
             int index)
         {
-            if (values == null)
-            {
+            if (values == null) {
                 return null;
             }
 
-            if (values is IList<object>)
-            {
+            if (values is IList<object>) {
                 var list = (IList<object>) values;
                 return list.Count > index ? list[index] : null;
             }
@@ -171,10 +183,21 @@ namespace NEsper.Avro.Getter
         {
             var factory = codegenClassScope.AddOrGetFieldSharable(EventBeanTypedEventFactoryCodegenField.INSTANCE);
             var eventType = codegenClassScope.AddFieldUnshared(
-                true, typeof(EventType), EventTypeUtility.ResolveTypeCodegen(_fragmentEventType, EPStatementInitServicesConstants.REF));
-            return codegenMethodScope.MakeChild(typeof(object), GetType(), codegenClassScope).AddParam(typeof(GenericRecord), "record").Block
-                .DeclareVar(typeof(object), "value", UnderlyingGetCodegen(CodegenExpressionBuilder.Ref("record"), codegenMethodScope, codegenClassScope))
-                .MethodReturn(CodegenExpressionBuilder.ExprDotMethod(factory, "adapterForTypedAvro", CodegenExpressionBuilder.Ref("value"), eventType));
+                true,
+                typeof(EventType),
+                EventTypeUtility.ResolveTypeCodegen(_fragmentEventType, EPStatementInitServicesConstants.REF));
+            return codegenMethodScope.MakeChild(typeof(object), GetType(), codegenClassScope)
+                .AddParam(typeof(GenericRecord), "record")
+                .Block
+                .DeclareVar<object>(
+                    "value",
+                    UnderlyingGetCodegen(CodegenExpressionBuilder.Ref("record"), codegenMethodScope, codegenClassScope))
+                .MethodReturn(
+                    CodegenExpressionBuilder.ExprDotMethod(
+                        factory,
+                        "adapterForTypedAvro",
+                        CodegenExpressionBuilder.Ref("value"),
+                        eventType));
         }
     }
 } // end of namespace

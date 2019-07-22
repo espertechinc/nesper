@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.dataflow.annotations;
 using com.espertech.esper.common.client.dataflow.util;
@@ -18,6 +19,7 @@ using com.espertech.esper.common.@internal.epl.dataflow.util;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+
 using static com.espertech.esper.common.@internal.epl.dataflow.core.EPDataFlowServiceImpl;
 
 namespace com.espertech.esper.common.@internal.epl.dataflow.ops
@@ -36,12 +38,15 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.ops
             }
 
             if (filter == null) {
-                throw new ExprValidationException("Required parameter 'filter' providing the filter expression is not provided");
+                throw new ExprValidationException(
+                    "Required parameter 'filter' providing the filter expression is not provided");
             }
 
             if (context.OutputPorts.IsEmpty() || context.OutputPorts.Count > 2) {
                 throw new ArgumentException(
-                    "Filter operator requires one or two output stream(s) but produces " + context.OutputPorts.Count + " streams");
+                    "Filter operator requires one or two output stream(s) but produces " +
+                    context.OutputPorts.Count +
+                    " streams");
             }
 
             eventType = context.InputPorts[0].TypeDesc.EventType;
@@ -62,7 +67,13 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.ops
             SAIFFInitializeSymbol symbols,
             CodegenClassScope classScope)
         {
-            return new SAIFFInitializeBuilder(OP_PACKAGE_NAME + ".filter.FilterFactory", this.GetType(), "filter", parent, symbols, classScope)
+            return new SAIFFInitializeBuilder(
+                    OP_PACKAGE_NAME + ".filter.FilterFactory",
+                    this.GetType(),
+                    "filter",
+                    parent,
+                    symbols,
+                    classScope)
                 .Exprnode("filter", filter)
                 .Eventtype("eventType", eventType)
                 .Constant("singleOutputPort", singleOutputPort)

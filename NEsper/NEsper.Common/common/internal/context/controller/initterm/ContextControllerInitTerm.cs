@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.context;
 using com.espertech.esper.common.@internal.collection;
@@ -71,13 +72,19 @@ namespace com.espertech.esper.common.@internal.context.controller.initterm
             if (selector is ContextPartitionSelectorFiltered) {
                 ContextPartitionSelectorFiltered filter = (ContextPartitionSelectorFiltered) selector;
                 VisitPartitions(
-                    path, (
+                    path,
+                    (
                         partitionKey,
                         subpathOrCPIds) => {
                         ContextPartitionIdentifierInitiatedTerminated identifier =
                             ContextControllerInitTermUtil.KeyToIdentifier(subpathOrCPIds, partitionKey, this);
                         if (filter.Filter(identifier)) {
-                            realization.ContextPartitionRecursiveVisit(path, subpathOrCPIds, this, visitor, selectorPerLevel);
+                            realization.ContextPartitionRecursiveVisit(
+                                path,
+                                subpathOrCPIds,
+                                this,
+                                visitor,
+                                selectorPerLevel);
                         }
                     });
                 return;
@@ -85,10 +92,16 @@ namespace com.espertech.esper.common.@internal.context.controller.initterm
 
             if (selector is ContextPartitionSelectorAll) {
                 VisitPartitions(
-                    path, (
+                    path,
+                    (
                         partitionKey,
                         subpathOrCPIds) => {
-                        realization.ContextPartitionRecursiveVisit(path, subpathOrCPIds, this, visitor, selectorPerLevel);
+                        realization.ContextPartitionRecursiveVisit(
+                            path,
+                            subpathOrCPIds,
+                            this,
+                            visitor,
+                            selectorPerLevel);
                     });
                 return;
             }
@@ -96,11 +109,17 @@ namespace com.espertech.esper.common.@internal.context.controller.initterm
             if (selector is ContextPartitionSelectorById) {
                 ContextPartitionSelectorById byId = (ContextPartitionSelectorById) selector;
                 VisitPartitions(
-                    path, (
+                    path,
+                    (
                         hash,
                         subpathOrCPId) => {
                         if (byId.ContextPartitionIds.Contains(subpathOrCPId)) {
-                            realization.ContextPartitionRecursiveVisit(path, subpathOrCPId, this, visitor, selectorPerLevel);
+                            realization.ContextPartitionRecursiveVisit(
+                                path,
+                                subpathOrCPId,
+                                this,
+                                visitor,
+                                selectorPerLevel);
                         }
                     });
                 return;

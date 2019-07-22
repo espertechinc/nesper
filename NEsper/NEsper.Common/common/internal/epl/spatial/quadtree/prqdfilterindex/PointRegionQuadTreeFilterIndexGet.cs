@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+
 using com.espertech.esper.common.@internal.epl.spatial.quadtree.core;
 using com.espertech.esper.common.@internal.epl.spatial.quadtree.pointregion;
 
@@ -57,10 +58,13 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.prqdfilterin
             switch (q) {
                 case QuadrantEnum.NW:
                     return Get(x, y, branch.Nw);
+
                 case QuadrantEnum.NE:
                     return Get(x, y, branch.Ne);
+
                 case QuadrantEnum.SW:
                     return Get(x, y, branch.Sw);
+
                 default:
                     return Get(x, y, branch.Se);
             }

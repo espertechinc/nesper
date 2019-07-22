@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.context.module;
 using com.espertech.esper.common.@internal.view.core;
@@ -64,7 +65,8 @@ namespace com.espertech.esper.common.@internal.view.intersect
                 batchViewLocalState = new FastThreadLocal<IntersectBatchViewLocalState>(
                     () =>
                         new IntersectBatchViewLocalState(
-                            new EventBean[intersecteds.Length][], new EventBean[intersecteds.Length][]));
+                            new EventBean[intersecteds.Length][],
+                            new EventBean[intersecteds.Length][]));
             }
             else if (hasAsymetric) {
                 asymetricViewLocalState = new FastThreadLocal<IntersectAsymetricViewLocalState>(

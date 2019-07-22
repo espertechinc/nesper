@@ -8,11 +8,13 @@
 
 using System;
 using System.IO;
+
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.expression.ops
@@ -57,14 +59,16 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
         public override ExprNode Validate(ExprValidationContext validationContext)
         {
             if ((this.ChildNodes.Length != 2) && (this.ChildNodes.Length != 3)) {
-                throw new ExprValidationException("The 'like' operator requires 2 (no escape) or 3 (with escape) child expressions");
+                throw new ExprValidationException(
+                    "The 'like' operator requires 2 (no escape) or 3 (with escape) child expressions");
             }
 
             // check eval child node - can be String or numeric
             Type evalChildType = ChildNodes[0].Forge.EvaluationType;
             bool isNumericValue = TypeHelper.IsNumeric(evalChildType);
             if ((evalChildType != typeof(string)) && (!isNumericValue)) {
-                throw new ExprValidationException("The 'like' operator requires a String or numeric type left-hand expression");
+                throw new ExprValidationException(
+                    "The 'like' operator requires a String or numeric type left-hand expression");
             }
 
             // check pattern child node
@@ -79,7 +83,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             bool isConstantEscape = true;
             if (this.ChildNodes.Length == 3) {
                 if (this.ChildNodes[2].Forge.EvaluationType != typeof(string)) {
-                    throw new ExprValidationException("The 'like' operator escape parameter requires a character-type value");
+                    throw new ExprValidationException(
+                        "The 'like' operator escape parameter requires a character-type value");
                 }
 
                 isConstantEscape = ChildNodes[2].Forge.ForgeConstantType.IsCompileTimeConstant;
@@ -102,7 +107,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                 }
 
                 LikeUtil likeUtil = new LikeUtil(patternVal, escapeCharacter, false);
-                CodegenExpression likeUtilInit = NewInstance<LikeUtil>(Constant(patternVal), Constant(escapeCharacter), ConstantFalse());
+                CodegenExpression likeUtilInit = NewInstance<LikeUtil>(
+                    Constant(patternVal),
+                    Constant(escapeCharacter),
+                    ConstantFalse());
                 forge = new ExprLikeNodeForgeConst(this, isNumericValue, likeUtil, likeUtilInit);
             }
             else {

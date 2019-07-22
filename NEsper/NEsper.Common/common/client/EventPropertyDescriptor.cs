@@ -187,7 +187,8 @@ namespace com.espertech.esper.common.client
                 : that.PropertyComponentType != null) return false;
             if (!Equals(PropertyComponentType, that.PropertyComponentType)) return false;
             if (!Equals(PropertyName, that.PropertyName)) return false;
-            if (PropertyType != null ? !Equals(PropertyType, that.PropertyType) : that.PropertyType != null) return false;
+            if (PropertyType != null ? !Equals(PropertyType, that.PropertyType) : that.PropertyType != null)
+                return false;
 
             return true;
         }
@@ -200,14 +201,22 @@ namespace com.espertech.esper.common.client
         /// </returns>
         public override string ToString()
         {
-            return "name " + PropertyName +
-                   " propertyType " + PropertyType +
-                   " propertyComponentType " + PropertyComponentType +
-                   " isRequiresIndex " + IsRequiresIndex +
-                   " isRequiresMapkey " + IsRequiresMapKey +
-                   " isIndexed " + IsIndexed +
-                   " isMapped " + IsMapped +
-                   " isFragment " + IsFragment;
+            return "name " +
+                   PropertyName +
+                   " propertyType " +
+                   PropertyType +
+                   " propertyComponentType " +
+                   PropertyComponentType +
+                   " isRequiresIndex " +
+                   IsRequiresIndex +
+                   " isRequiresMapkey " +
+                   IsRequiresMapKey +
+                   " isIndexed " +
+                   IsIndexed +
+                   " isMapped " +
+                   IsMapped +
+                   " isFragment " +
+                   IsFragment;
         }
     }
 }

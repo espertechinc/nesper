@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -16,6 +17,7 @@ using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.enummethod.eval
@@ -57,24 +59,31 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
         {
             ExprForgeCodegenSymbol scope = new ExprForgeCodegenSymbol(false, null);
             CodegenMethod methodNode = codegenMethodScope
-                .MakeChildWithScope(typeof(ICollection<object>), typeof(EnumIntersectForgeEval), scope, codegenClassScope)
+                .MakeChildWithScope(
+                    typeof(ICollection<object>),
+                    typeof(EnumIntersectForgeEval),
+                    scope,
+                    codegenClassScope)
                 .AddParam(EnumForgeCodegenNames.PARAMS);
 
             CodegenBlock block = methodNode.Block;
             if (forge.scalar) {
-                block.DeclareVar(
-                    typeof(ICollection<object>), "other",
+                block.DeclareVar<ICollection<object>>(
+                    "other",
                     forge.evaluatorForge.EvaluateGetROCollectionScalarCodegen(methodNode, scope, codegenClassScope));
             }
             else {
-                block.DeclareVar(
-                    typeof(ICollection<object>), "other",
+                block.DeclareVar<ICollection<object>>(
+                    "other",
                     forge.evaluatorForge.EvaluateGetROCollectionEventsCodegen(methodNode, scope, codegenClassScope));
             }
 
             block.MethodReturn(
                 StaticMethod(
-                    typeof(EnumIntersectForgeEval), "enumIntersectForgeEvalSet", @Ref("other"), EnumForgeCodegenNames.REF_ENUMCOLL,
+                    typeof(EnumIntersectForgeEval),
+                    "enumIntersectForgeEvalSet",
+                    @Ref("other"),
+                    EnumForgeCodegenNames.REF_ENUMCOLL,
                     Constant(forge.scalar)));
             return LocalMethod(methodNode, args.Eps, args.Enumcoll, args.IsNewData, args.ExprCtx);
         }

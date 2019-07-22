@@ -11,6 +11,7 @@ using System.Reflection;
 using System.Text;
 using System.Xml;
 using System.Xml.XPath;
+
 using com.espertech.esper.collection;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.@event.core;
@@ -114,11 +115,19 @@ namespace com.espertech.esper.common.@internal.@event.xml
                     var isLast = i == indexLast;
                     var propertyNested = nestedProperty.Properties[i];
                     pair = MakeProperty(
-                        parentComplexElement, propertyNested, ctx, isLast, isDynamic, defaultNamespacePrefix);
+                        parentComplexElement,
+                        propertyNested,
+                        ctx,
+                        isLast,
+                        isDynamic,
+                        defaultNamespacePrefix);
                     if (pair == null) {
                         throw new PropertyAccessException(
-                            "Failed to locate property '" + propertyName + "' nested property part '" +
-                            property.PropertyNameAtomic + "' in schema");
+                            "Failed to locate property '" +
+                            propertyName +
+                            "' nested property part '" +
+                            property.PropertyNameAtomic +
+                            "' in schema");
                     }
 
                     var text = propertyNested.PropertyNameAtomic;
@@ -139,8 +148,12 @@ namespace com.espertech.esper.common.@internal.@event.xml
             // Compile assembled XPath expression
             if (Log.IsDebugEnabled) {
                 Log.Debug(
-                    "Compiling XPath expression '" + xPath + "' for property '" + propertyName +
-                    "' using namespace context :" + ctx);
+                    "Compiling XPath expression '" +
+                    xPath +
+                    "' for property '" +
+                    propertyName +
+                    "' using namespace context :" +
+                    ctx);
             }
 
             XPathExpression expr;
@@ -148,8 +161,11 @@ namespace com.espertech.esper.common.@internal.@event.xml
                 expr = XPathExpression.Compile(xPath, ctx);
             }
             catch (XPathException e) {
-                var detail = "Error constructing XPath expression from property expression '" + propertyName +
-                             "' expression '" + xPath + "'";
+                var detail = "Error constructing XPath expression from property expression '" +
+                             propertyName +
+                             "' expression '" +
+                             xPath +
+                             "'";
                 if (e.Message != null) {
                     throw new EPException(detail + " :" + e.Message, e);
                 }
@@ -170,7 +186,14 @@ namespace com.espertech.esper.common.@internal.@event.xml
                 fragmentFactory = new FragmentFactoryDOMGetter(eventBeanTypedEventFactory, xmlEventType, propertyName);
             }
 
-            return new XPathPropertyGetter(xmlEventType, propertyName, xPath, expr, pair.Second, resultType, fragmentFactory);
+            return new XPathPropertyGetter(
+                xmlEventType,
+                propertyName,
+                xPath,
+                expr,
+                pair.Second,
+                resultType,
+                fragmentFactory);
         }
 
         private static Pair<string, XPathResultType> MakeProperty(
@@ -185,7 +208,12 @@ namespace com.espertech.esper.common.@internal.@event.xml
             var obj = SchemaUtil.FindPropertyMapping(parent, text);
             if (obj is SchemaElementSimple || obj is SchemaElementComplex) {
                 return MakeElementProperty(
-                    (SchemaElement) obj, property, ctx, isLast, isDynamic, defaultNamespacePrefix);
+                    (SchemaElement) obj,
+                    property,
+                    ctx,
+                    isLast,
+                    isDynamic,
+                    defaultNamespacePrefix);
             }
 
             if (obj != null) {
@@ -275,25 +303,29 @@ namespace com.espertech.esper.common.@internal.@event.xml
             if (IsAnyMappedProperty(property)) {
                 if (!isDynamic && !schemaElement.IsArray) {
                     throw new PropertyAccessException(
-                        "Element " + property.PropertyNameAtomic +
+                        "Element " +
+                        property.PropertyNameAtomic +
                         " is not a collection, cannot be used as mapped property");
                 }
 
                 var key = GetMappedPropertyKey(property);
                 return new Pair<string, XPathResultType>(
-                    '/' + prefix + property.PropertyNameAtomic + "[@id='" + key + "']", type);
+                    '/' + prefix + property.PropertyNameAtomic + "[@id='" + key + "']",
+                    type);
             }
 
             if (!isDynamic && !schemaElement.IsArray) {
                 throw new PropertyAccessException(
-                    "Element " + property.PropertyNameAtomic +
+                    "Element " +
+                    property.PropertyNameAtomic +
                     " is not a collection, cannot be used as mapped property");
             }
 
             var index = GetIndexedPropertyIndex(property);
             var xPathPosition = index + 1;
             return new Pair<string, XPathResultType>(
-                '/' + prefix + property.PropertyNameAtomic + "[position() = " + xPathPosition + ']', type);
+                '/' + prefix + property.PropertyNameAtomic + "[position() = " + xPathPosition + ']',
+                type);
         }
 
         private static bool IsAnySimpleProperty(Property property)

@@ -9,12 +9,14 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.metrics.instrumentation
@@ -55,7 +57,10 @@ namespace com.espertech.esper.common.@internal.metrics.instrumentation
         {
             if (!codegenClassScope.IsInstrumented) {
                 return forge.EvaluateCodegenUninstrumented(
-                    requiredType, codegenMethodScope, exprSymbol, codegenClassScope);
+                    requiredType,
+                    codegenMethodScope,
+                    exprSymbol,
+                    codegenClassScope);
             }
 
             Type evaluationType = forge.EvaluationType;
@@ -80,7 +85,10 @@ namespace com.espertech.esper.common.@internal.metrics.instrumentation
 
             CodegenMethod method = codegenMethodScope.MakeChild(evaluationType, generator, codegenClassScope);
             CodegenExpression expr = forge.EvaluateCodegenUninstrumented(
-                evaluationType, method, exprSymbol, codegenClassScope);
+                evaluationType,
+                method,
+                exprSymbol,
+                codegenClassScope);
             method.Block
                 .IfCondition(PublicConstValue(InstrumentationConstants.RUNTIME_HELPER_CLASS, "ENABLED"))
                 .Expression(

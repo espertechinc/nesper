@@ -8,6 +8,7 @@
 
 using System;
 using System.Reflection;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -18,6 +19,7 @@ using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.settings;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat.logging;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.@event.bean.manufacturer
@@ -82,18 +84,22 @@ namespace com.espertech.esper.common.@internal.@event.bean.manufacturer
 
             var factory = codegenClassScope.AddOrGetFieldSharable(EventBeanTypedEventFactoryCodegenField.INSTANCE);
             var beanType = codegenClassScope.AddFieldUnshared(
-                true, typeof(EventType), EventTypeUtility.ResolveTypeCodegen(beanEventType, EPStatementInitServicesConstants.REF));
+                true,
+                typeof(EventType),
+                EventTypeUtility.ResolveTypeCodegen(beanEventType, EPStatementInitServicesConstants.REF));
 
             var manufacturer = NewAnonymousClass(init.Block, typeof(EventBeanManufacturer));
 
-            var makeUndMethod = CodegenMethod.MakeParentNode(typeof(object), GetType(), codegenClassScope).AddParam(typeof(object[]), "properties");
-            manufacturer.AddMethod("makeUnderlying", makeUndMethod);
+            var makeUndMethod = CodegenMethod.MakeParentNode(typeof(object), GetType(), codegenClassScope)
+                .AddParam(typeof(object[]), "properties");
+            manufacturer.AddMethod("MakeUnderlying", makeUndMethod);
             MakeUnderlyingCodegen(makeUndMethod, codegenClassScope);
 
-            var makeMethod = CodegenMethod.MakeParentNode(typeof(EventBean), GetType(), codegenClassScope).AddParam(typeof(object[]), "properties");
-            manufacturer.AddMethod("make", makeMethod);
+            var makeMethod = CodegenMethod.MakeParentNode(typeof(EventBean), GetType(), codegenClassScope)
+                .AddParam(typeof(object[]), "properties");
+            manufacturer.AddMethod("Make", makeMethod);
             makeMethod.Block
-                .DeclareVar(typeof(object), "und", LocalMethod(makeUndMethod, Ref("properties")))
+                .DeclareVar<object>("und", LocalMethod(makeUndMethod, Ref("properties")))
                 .MethodReturn(ExprDotMethod(factory, "adapterForTypedBean", Ref("und"), beanType));
 
             return codegenClassScope.AddFieldUnshared(true, typeof(EventBeanManufacturer), manufacturer);
@@ -104,8 +110,11 @@ namespace com.espertech.esper.common.@internal.@event.bean.manufacturer
             CodegenClassScope codegenClassScope)
         {
             method.Block
-                .DeclareVar(beanEventType.UnderlyingType, "und", Cast(beanEventType.UnderlyingType, beanInstantiator.Make(method, codegenClassScope)))
-                .DeclareVar(typeof(object), "value", ConstantNull());
+                .DeclareVar(
+                    beanEventType.UnderlyingType,
+                    "und",
+                    Cast(beanEventType.UnderlyingType, beanInstantiator.Make(method, codegenClassScope)))
+                .DeclareVar<object>("value", ConstantNull());
 
             for (var i = 0; i < writeMethodsReflection.Length; i++) {
                 method.Block.AssignRef("value", ArrayAtIndex(Ref("properties"), Constant(i)));

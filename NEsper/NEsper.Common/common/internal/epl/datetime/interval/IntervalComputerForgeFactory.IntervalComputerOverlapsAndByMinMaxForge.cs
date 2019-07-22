@@ -34,7 +34,9 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
             public IntervalComputerEval MakeComputerEval()
             {
                 return new IntervalComputerOverlapsAndByMinMaxEval(
-                    overlaps, minEval.MakeEvaluator(), maxEval.MakeEvaluator());
+                    overlaps,
+                    minEval.MakeEvaluator(),
+                    maxEval.MakeEvaluator());
             }
 
             public CodegenExpression Codegen(
@@ -47,7 +49,14 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
                 CodegenClassScope codegenClassScope)
             {
                 return IntervalComputerOverlapsAndByMinMaxEval.Codegen(
-                    this, leftStart, leftEnd, rightStart, rightEnd, codegenMethodScope, exprSymbol, codegenClassScope);
+                    this,
+                    leftStart,
+                    leftEnd,
+                    rightStart,
+                    rightEnd,
+                    codegenMethodScope,
+                    exprSymbol,
+                    codegenClassScope);
             }
         }
     }

@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.@internal.epl.join.querygraph;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;

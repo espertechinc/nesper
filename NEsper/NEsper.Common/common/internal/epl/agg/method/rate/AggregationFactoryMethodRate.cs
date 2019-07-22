@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.core;
@@ -55,7 +56,10 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.rate
 
         public override AggregationPortableValidation AggregationPortableValidation =>
             new AggregationPortableValidationRate(
-                parent.IsDistinct, parent.OptionalFilter != null, typeof(int), intervalTime);
+                parent.IsDistinct,
+                parent.OptionalFilter != null,
+                typeof(int),
+                intervalTime);
 
         public override void InitMethodForge(
             int col,
@@ -65,11 +69,25 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.rate
         {
             if (isEver) {
                 aggregator = new AggregatorRateEver(
-                    this, col, rowCtor, membersColumnized, classScope, null, false, parent.OptionalFilter);
+                    this,
+                    col,
+                    rowCtor,
+                    membersColumnized,
+                    classScope,
+                    null,
+                    false,
+                    parent.OptionalFilter);
             }
             else {
                 aggregator = new AggregatorRate(
-                    this, col, rowCtor, membersColumnized, classScope, null, false, parent.OptionalFilter);
+                    this,
+                    col,
+                    rowCtor,
+                    membersColumnized,
+                    classScope,
+                    null,
+                    false,
+                    parent.OptionalFilter);
             }
         }
 

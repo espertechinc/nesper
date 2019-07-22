@@ -7,11 +7,13 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.metrics.instrumentation;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.expression.ops
@@ -42,7 +44,13 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             CodegenClassScope codegenClassScope)
         {
             return new InstrumentationBuilderExpr(
-                GetType(), this, "ExprRegexp", requiredType, codegenMethodScope, exprSymbol, codegenClassScope).Build();
+                GetType(),
+                this,
+                "ExprRegexp",
+                requiredType,
+                codegenMethodScope,
+                exprSymbol,
+                codegenClassScope).Build();
         }
 
         public override CodegenExpression EvaluateCodegenUninstrumented(
@@ -52,7 +60,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             CodegenClassScope codegenClassScope)
         {
             var methodNode = ExprRegexpNodeForgeNonconstEval.Codegen(
-                this, ForgeRenderable.ChildNodes[0], ForgeRenderable.ChildNodes[1], codegenMethodScope, exprSymbol,
+                this,
+                ForgeRenderable.ChildNodes[0],
+                ForgeRenderable.ChildNodes[1],
+                codegenMethodScope,
+                exprSymbol,
                 codegenClassScope);
             return LocalMethod(methodNode);
         }

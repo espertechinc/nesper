@@ -30,8 +30,7 @@ namespace com.espertech.esper.common.@internal.view.expression
     {
         public static string GetFieldName(this ExpressionViewOAFieldEnum value)
         {
-            switch (value)
-            {
+            switch (value) {
                 case ExpressionViewOAFieldEnum.CURRENT_COUNT:
                     return "current_count";
 

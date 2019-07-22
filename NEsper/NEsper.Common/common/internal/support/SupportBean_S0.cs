@@ -90,11 +90,20 @@ namespace com.espertech.esper.common.@internal.support
         public override string ToString()
         {
             return "SupportBean_S0{" +
-                   "id=" + Id +
-                   ", p00='" + P00 + '\'' +
-                   ", p01='" + P01 + '\'' +
-                   ", p02='" + P02 + '\'' +
-                   ", p03='" + P03 + '\'' +
+                   "id=" +
+                   Id +
+                   ", p00='" +
+                   P00 +
+                   '\'' +
+                   ", p01='" +
+                   P01 +
+                   '\'' +
+                   ", p02='" +
+                   P02 +
+                   '\'' +
+                   ", p03='" +
+                   P03 +
+                   '\'' +
                    '}';
         }
 

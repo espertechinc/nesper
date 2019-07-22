@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.collection
@@ -40,7 +41,9 @@ namespace com.espertech.esper.common.@internal.collection
             if (_keys.Length == 0)
                 return 0;
             return System.Linq.Enumerable.Aggregate(
-                _keys, 0, (
+                _keys,
+                0,
+                (
                         a,
                         b) => a ^ b.GetHashCode());
         }

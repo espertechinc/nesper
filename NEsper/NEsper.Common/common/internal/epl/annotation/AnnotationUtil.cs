@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+
 using com.espertech.esper.collection;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.annotation;
@@ -25,6 +26,7 @@ using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.annotation
@@ -86,14 +88,18 @@ namespace com.espertech.esper.common.@internal.epl.annotation
                 annotations = CompileAnnotations(annotationSpec, importService);
             }
             catch (AnnotationException e) {
-                throw new StatementSpecCompileException("Failed to process statement annotations: " + e.Message, e, compilable.ToEPL());
+                throw new StatementSpecCompileException(
+                    "Failed to process statement annotations: " + e.Message,
+                    e,
+                    compilable.ToEPL());
             }
             catch (EPException) {
                 throw;
             }
             catch (Exception ex) {
-                var message = "Unexpected exception compiling annotations in statement, please consult the log file and report the exception: " +
-                              ex.Message;
+                var message =
+                    "Unexpected exception compiling annotations in statement, please consult the log file and report the exception: " +
+                    ex.Message;
                 Log.Error(message, ex);
                 throw new StatementSpecCompileException(message, ex, compilable.ToEPL());
             }
@@ -108,9 +114,15 @@ namespace com.espertech.esper.common.@internal.epl.annotation
             CodegenClassScope classScope)
         {
             var method = parent.MakeChild(arrayType, typeof(AnnotationUtil), classScope);
-            method.Block.DeclareVar(arrayType, "annotations", NewArrayByLength(arrayType.GetElementType(), Constant(annotations.Length)));
+            method.Block.DeclareVar(
+                arrayType,
+                "annotations",
+                NewArrayByLength(arrayType.GetElementType(), Constant(annotations.Length)));
             for (var i = 0; i < annotations.Length; i++) {
-                method.Block.AssignArrayElement("annotations", Constant(i), MakeAnnotation(annotations[i], parent, classScope));
+                method.Block.AssignArrayElement(
+                    "annotations",
+                    Constant(i),
+                    MakeAnnotation(annotations[i], parent, classScope));
             }
 
             method.Block.MethodReturn(Ref("annotations"));
@@ -192,7 +204,11 @@ namespace com.espertech.esper.common.@internal.epl.annotation
                 var required = new List<string>(requiredAttributes);
                 required.Sort();
                 throw new AnnotationException(
-                    "Annotation '" + annotationClass.GetSimpleName() + "' requires a value for attribute '" + required[0] + "'");
+                    "Annotation '" +
+                    annotationClass.GetSimpleName() +
+                    "' requires a value for attribute '" +
+                    required[0] +
+                    "'");
             }
 
             if (providedValues.Count > 0) {
@@ -200,11 +216,19 @@ namespace com.espertech.esper.common.@internal.epl.annotation
                 provided.Sort();
                 if (allAttributes.Contains(provided[0])) {
                     throw new AnnotationException(
-                        "Annotation '" + annotationClass.GetSimpleName() + "' has duplicate attribute values for attribute '" + provided[0] + "'");
+                        "Annotation '" +
+                        annotationClass.GetSimpleName() +
+                        "' has duplicate attribute values for attribute '" +
+                        provided[0] +
+                        "'");
                 }
 
                 throw new AnnotationException(
-                    "Annotation '" + annotationClass.GetSimpleName() + "' does not have an attribute '" + provided[0] + "'");
+                    "Annotation '" +
+                    annotationClass.GetSimpleName() +
+                    "' does not have an attribute '" +
+                    provided[0] +
+                    "'");
             }
 
             // return handler
@@ -221,7 +245,11 @@ namespace com.espertech.esper.common.@internal.epl.annotation
             if (value == null) {
                 if (annotationAttribute.DefaultValue == null) {
                     throw new AnnotationException(
-                        "Annotation '" + annotationClass.GetSimpleName() + "' requires a value for attribute '" + annotationAttribute.Name + "'");
+                        "Annotation '" +
+                        annotationClass.GetSimpleName() +
+                        "' requires a value for attribute '" +
+                        annotationAttribute.Name +
+                        "'");
                 }
 
                 return annotationAttribute.DefaultValue;
@@ -251,9 +279,15 @@ namespace com.espertech.esper.common.@internal.epl.annotation
                         }
 
                         throw new AnnotationException(
-                            "Annotation '" + annotationClass.GetSimpleName() + "' requires an enum-value '" +
-                            annotationAttribute.AnnotationType.Name + "' for attribute '" + annotationAttribute.Name +
-                            "' but received '" + value + "' which is not one of the enum choices");
+                            "Annotation '" +
+                            annotationClass.GetSimpleName() +
+                            "' requires an enum-value '" +
+                            annotationAttribute.AnnotationType.Name +
+                            "' for attribute '" +
+                            annotationAttribute.Name +
+                            "' but received '" +
+                            value +
+                            "' which is not one of the enum choices");
                     }
 
                     // cast as required
@@ -261,10 +295,16 @@ namespace com.espertech.esper.common.@internal.epl.annotation
                     var finalValue = caster.Cast(value);
                     if (finalValue == null) {
                         throw new AnnotationException(
-                            "Annotation '" + annotationClass.GetSimpleName() + "' requires a " +
-                            annotationAttribute.AnnotationType.GetSimpleName() + "-typed value for attribute '" + annotationAttribute.Name +
+                            "Annotation '" +
+                            annotationClass.GetSimpleName() +
+                            "' requires a " +
+                            annotationAttribute.AnnotationType.GetSimpleName() +
+                            "-typed value for attribute '" +
+                            annotationAttribute.Name +
                             "' but received " +
-                            "a " + value.GetType().GetSimpleName() + "-typed value");
+                            "a " +
+                            value.GetType().GetSimpleName() +
+                            "-typed value");
                     }
 
                     return finalValue;
@@ -273,10 +313,16 @@ namespace com.espertech.esper.common.@internal.epl.annotation
                 // nested annotation
                 if (!(value is AnnotationDesc)) {
                     throw new AnnotationException(
-                        "Annotation '" + annotationClass.GetSimpleName() + "' requires a " +
-                        annotationAttribute.AnnotationType.GetSimpleName() + "-typed value for attribute '" + annotationAttribute.Name +
+                        "Annotation '" +
+                        annotationClass.GetSimpleName() +
+                        "' requires a " +
+                        annotationAttribute.AnnotationType.GetSimpleName() +
+                        "-typed value for attribute '" +
+                        annotationAttribute.Name +
                         "' but received " +
-                        "a " + value.GetType().GetSimpleName() + "-typed value");
+                        "a " +
+                        value.GetType().GetSimpleName() +
+                        "-typed value");
                 }
 
                 return CreateProxy((AnnotationDesc) value, importService);
@@ -284,10 +330,16 @@ namespace com.espertech.esper.common.@internal.epl.annotation
 
             if (!(value is Array valueAsArray)) {
                 throw new AnnotationException(
-                    "Annotation '" + annotationClass.GetSimpleName() + "' requires a " +
-                    annotationAttribute.AnnotationType.GetSimpleName() + "-typed value for attribute '" + annotationAttribute.Name +
+                    "Annotation '" +
+                    annotationClass.GetSimpleName() +
+                    "' requires a " +
+                    annotationAttribute.AnnotationType.GetSimpleName() +
+                    "-typed value for attribute '" +
+                    annotationAttribute.Name +
                     "' but received " +
-                    "a " + value.GetType().GetSimpleName() + "-typed value");
+                    "a " +
+                    value.GetType().GetSimpleName() +
+                    "-typed value");
             }
 
             var componentType = annotationAttribute.AnnotationType.GetElementType();
@@ -297,24 +349,38 @@ namespace com.espertech.esper.common.@internal.epl.annotation
                 var arrayValue = valueAsArray.GetValue(i);
                 if (arrayValue == null) {
                     throw new AnnotationException(
-                        "Annotation '" + annotationClass.GetSimpleName() + "' requires a " +
-                        "non-null value for array elements for attribute '" + annotationAttribute.Name + "'");
+                        "Annotation '" +
+                        annotationClass.GetSimpleName() +
+                        "' requires a " +
+                        "non-null value for array elements for attribute '" +
+                        annotationAttribute.Name +
+                        "'");
                 }
 
                 object finalValue;
                 if (arrayValue is AnnotationDesc) {
                     var inner = CreateProxy((AnnotationDesc) arrayValue, importService);
                     if (inner.GetType() != componentType) {
-                        throw MakeArrayMismatchException(annotationClass, componentType, annotationAttribute.Name, inner.GetType());
+                        throw MakeArrayMismatchException(
+                            annotationClass,
+                            componentType,
+                            annotationAttribute.Name,
+                            inner.GetType());
                     }
 
                     finalValue = inner;
                 }
                 else {
-                    var caster = SimpleTypeCasterFactory.GetCaster(arrayValue.GetType(), annotationAttribute.AnnotationType.GetElementType());
+                    var caster = SimpleTypeCasterFactory.GetCaster(
+                        arrayValue.GetType(),
+                        annotationAttribute.AnnotationType.GetElementType());
                     finalValue = caster.Cast(arrayValue);
                     if (finalValue == null) {
-                        throw MakeArrayMismatchException(annotationClass, componentType, annotationAttribute.Name, arrayValue.GetType());
+                        throw MakeArrayMismatchException(
+                            annotationClass,
+                            componentType,
+                            annotationAttribute.Name,
+                            arrayValue.GetType());
                     }
                 }
 
@@ -326,12 +392,10 @@ namespace com.espertech.esper.common.@internal.epl.annotation
 
         public static object GetDefaultValue(Type t)
         {
-            if (t.IsValueType && Nullable.GetUnderlyingType(t) == null)
-            {
+            if (t.IsValueType && Nullable.GetUnderlyingType(t) == null) {
                 return Activator.CreateInstance(t);
             }
-            else
-            {
+            else {
                 return null;
             }
         }
@@ -349,7 +413,6 @@ namespace com.espertech.esper.common.@internal.epl.annotation
             foreach (var clazzProperty in clazzProperties
                 .Where(c => c.DeclaringType != typeof(Attribute))
                 .Where(c => c.CanRead)) {
-
                 var annotationAttribute = new AnnotationAttribute(
                     clazzProperty.Name,
                     clazzProperty.PropertyType,
@@ -386,7 +449,10 @@ namespace com.espertech.esper.common.@internal.epl.annotation
             }
 #endif
 
-            props.Sort((o1, o2) => o1.Name.CompareTo(o2.Name));
+            props.Sort(
+                (
+                    o1,
+                    o2) => o1.Name.CompareTo(o2.Name));
             return props;
         }
 
@@ -445,17 +511,20 @@ namespace com.espertech.esper.common.@internal.epl.annotation
             IList<AnnotationDesc> annotationsSameName)
         {
             if (annotationsSameName.Count > 1) {
-                throw new ExprValidationException(msgPrefix + " multiple annotations provided named '" + annotationsSameName[0].Name + "'");
+                throw new ExprValidationException(
+                    msgPrefix + " multiple annotations provided named '" + annotationsSameName[0].Name + "'");
             }
 
             var annotation = annotationsSameName[0];
             var value = GetValue(annotation);
             if (value == null) {
-                throw new ExprValidationException(msgPrefix + " no value provided for annotation '" + annotation.Name + "', expected a value");
+                throw new ExprValidationException(
+                    msgPrefix + " no value provided for annotation '" + annotation.Name + "', expected a value");
             }
 
             if (!(value is string)) {
-                throw new ExprValidationException(msgPrefix + " string value expected for annotation '" + annotation.Name + "'");
+                throw new ExprValidationException(
+                    msgPrefix + " string value expected for annotation '" + annotation.Name + "'");
             }
 
             return (string) value;
@@ -468,9 +537,16 @@ namespace com.espertech.esper.common.@internal.epl.annotation
             Type unexpected)
         {
             return new AnnotationException(
-                "Annotation '" + annotationClass.GetSimpleName() + "' requires a " +
-                componentType.GetSimpleName() + "-typed value for array elements for attribute '" + attributeName + "' but received " +
-                "a " + unexpected.GetSimpleName() + "-typed value");
+                "Annotation '" +
+                annotationClass.GetSimpleName() +
+                "' requires a " +
+                componentType.GetSimpleName() +
+                "-typed value for array elements for attribute '" +
+                attributeName +
+                "' but received " +
+                "a " +
+                unexpected.GetSimpleName() +
+                "-typed value");
         }
 
         private static CodegenExpression MakeAnnotation(
@@ -563,13 +639,17 @@ namespace com.espertech.esper.common.@internal.epl.annotation
 
             if (annotation.GetType().Namespace == RootNamespace) {
                 throw new IllegalStateException(
-                    "Unrecognized annotation residing in the '" + RootNamespace + " namespace having type" + annotation.GetType().Name);
+                    "Unrecognized annotation residing in the '" +
+                    RootNamespace +
+                    " namespace having type" +
+                    annotation.GetType().Name);
             }
 
             // application-provided annotation
             if (annotation is CustomAttribute) {
                 return ((CustomAttribute) annotation).MakeCodegenExpression(
-                    parent, codegenClassScope);
+                    parent,
+                    codegenClassScope);
             }
 
             throw new IllegalStateException(
@@ -592,7 +672,8 @@ namespace com.espertech.esper.common.@internal.epl.annotation
                     continue;
                 }
 
-                var annotationValue = CodegenMethod.MakeParentNode(method.ReturnType, typeof(AnnotationUtil), codegenClassScope);
+                var annotationValue =
+ CodegenMethod.MakeParentNode(method.ReturnType, typeof(AnnotationUtil), codegenClassScope);
                 var value = innerProxy.Attributes.Get(method.Name);
                 clazz.AddMethod(method.Name, annotationValue);
 
@@ -604,13 +685,15 @@ namespace com.espertech.esper.common.@internal.epl.annotation
                     valueExpression = Clazz((Type) value);
                 }
                 else if (method.ReturnType.IsArray && method.ReturnType.GetElementType().IsAttribute()) {
-                    valueExpression = LocalMethod(MakeAnnotations(method.ReturnType, (Attribute[]) value, methodNode, codegenClassScope));
+                    valueExpression =
+ LocalMethod(MakeAnnotations(method.ReturnType, (Attribute[]) value, methodNode, codegenClassScope));
                 }
                 else if (!method.ReturnType.IsAttribute()) {
                     valueExpression = Constant(value);
                 }
                 else {
-                    valueExpression = Cast(method.ReturnType, MakeAnnotation((Attribute) value, methodNode, codegenClassScope));
+                    valueExpression =
+ Cast(method.ReturnType, MakeAnnotation((Attribute) value, methodNode, codegenClassScope));
                 }
 
                 annotationValue.Block.MethodReturn(valueExpression);

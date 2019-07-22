@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.compat;
@@ -16,8 +17,9 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.cache
 {
     public class ExpressionResultCacheForDeclaredExprLastValueSingle : ExpressionResultCacheForDeclaredExprLastValue
     {
-        private readonly Dictionary<object, SoftReference<ExpressionResultCacheEntryEventBeanArrayAndObj>> exprDeclCacheObject =
-            new Dictionary<object, SoftReference<ExpressionResultCacheEntryEventBeanArrayAndObj>>();
+        private readonly Dictionary<object, SoftReference<ExpressionResultCacheEntryEventBeanArrayAndObj>>
+            exprDeclCacheObject =
+                new Dictionary<object, SoftReference<ExpressionResultCacheEntryEventBeanArrayAndObj>>();
 
         public bool CacheEnabled()
         {

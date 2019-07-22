@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -16,6 +17,7 @@ using com.espertech.esper.common.@internal.epl.resultset.select.core;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
@@ -52,8 +54,15 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
             CodegenClassScope codegenClassScope)
         {
             return ProcessCodegen(
-                resultEventTypeExpr, eventBeanFactory, codegenMethodScope, exprSymbol, codegenClassScope, context.ExprForges,
-                resultEventType.PropertyNames, remapped, wideners);
+                resultEventTypeExpr,
+                eventBeanFactory,
+                codegenMethodScope,
+                exprSymbol,
+                codegenClassScope,
+                context.ExprForges,
+                resultEventType.PropertyNames,
+                remapped,
+                wideners);
         }
 
         public static CodegenMethod ProcessCodegen(
@@ -68,13 +77,16 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
             TypeWidenerSPI[] optionalWideners)
         {
             CodegenMethod methodNode = codegenMethodScope.MakeChild(
-                typeof(EventBean), typeof(SelectEvalInsertNoWildcardObjectArrayRemapWWiden), codegenClassScope);
+                typeof(EventBean),
+                typeof(SelectEvalInsertNoWildcardObjectArrayRemapWWiden),
+                codegenClassScope);
             CodegenBlock block = methodNode.Block
-                .DeclareVar(typeof(object[]), "result", NewArrayByLength(typeof(object), Constant(propertyNames.Length)));
+                .DeclareVar<object[]>("result", NewArrayByLength(typeof(object), Constant(propertyNames.Length)));
             for (int i = 0; i < forges.Length; i++) {
                 CodegenExpression value;
                 if (optionalWideners != null && optionalWideners[i] != null) {
-                    value = forges[i].EvaluateCodegen(forges[i].EvaluationType, methodNode, exprSymbol, codegenClassScope);
+                    value = forges[i]
+                        .EvaluateCodegen(forges[i].EvaluationType, methodNode, exprSymbol, codegenClassScope);
                     value = optionalWideners[i].WidenCodegen(value, codegenMethodScope, codegenClassScope);
                 }
                 else {
@@ -84,7 +96,8 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
                 block.AssignArrayElement(@Ref("result"), Constant(remapped[i]), value);
             }
 
-            block.MethodReturn(ExprDotMethod(eventBeanFactory, "adapterForTypedObjectArray", @Ref("result"), resultEventType));
+            block.MethodReturn(
+                ExprDotMethod(eventBeanFactory, "adapterForTypedObjectArray", @Ref("result"), resultEventType));
             return methodNode;
         }
     }

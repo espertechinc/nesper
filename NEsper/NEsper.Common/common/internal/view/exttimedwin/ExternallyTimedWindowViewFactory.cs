@@ -49,7 +49,10 @@ namespace com.espertech.esper.common.@internal.view.exttimedwin
                 agentInstanceViewFactoryContext.StatementContext.ViewServicePreviousFactory
                     .GetOptPreviousExprRandomAccess(agentInstanceViewFactoryContext);
             return new ExternallyTimedWindowView(
-                this, randomAccess, agentInstanceViewFactoryContext, timePeriodProvide);
+                this,
+                randomAccess,
+                agentInstanceViewFactoryContext,
+                timePeriodProvide);
         }
 
         public EventType EventType {

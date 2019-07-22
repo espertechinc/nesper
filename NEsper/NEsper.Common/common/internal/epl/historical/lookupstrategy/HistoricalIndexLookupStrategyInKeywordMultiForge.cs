@@ -7,12 +7,14 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.historical.lookupstrategy
@@ -40,13 +42,20 @@ namespace com.espertech.esper.common.@internal.epl.historical.lookupstrategy
             SAIFFInitializeSymbol symbols,
             CodegenClassScope classScope)
         {
-            CodegenMethod method = parent.MakeChild(typeof(HistoricalIndexLookupStrategyInKeywordMulti), this.GetType(), classScope);
+            CodegenMethod method = parent.MakeChild(
+                typeof(HistoricalIndexLookupStrategyInKeywordMulti),
+                this.GetType(),
+                classScope);
 
             method.Block
-                .DeclareVar(
-                    typeof(HistoricalIndexLookupStrategyInKeywordMulti), "strat", NewInstance(typeof(HistoricalIndexLookupStrategyInKeywordMulti)))
+                .DeclareVar<HistoricalIndexLookupStrategyInKeywordMulti>(
+                    "strat",
+                    NewInstance(typeof(HistoricalIndexLookupStrategyInKeywordMulti)))
                 .SetProperty(Ref("strat"), "LookupStream", Constant(lookupStream))
-                .SetProperty(Ref("strat"), "Evaluator", ExprNodeUtilityCodegen.CodegenEvaluator(evaluator.Forge, method, this.GetType(), classScope))
+                .SetProperty(
+                    Ref("strat"),
+                    "Evaluator",
+                    ExprNodeUtilityCodegen.CodegenEvaluator(evaluator.Forge, method, this.GetType(), classScope))
                 .MethodReturn(@Ref("strat"));
             return LocalMethod(method);
         }

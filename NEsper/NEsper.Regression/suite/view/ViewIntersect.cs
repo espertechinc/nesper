@@ -1049,7 +1049,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 string[] fields = {"TheString"};
 
                 var text =
-                    "@Name('s0') select irstream a.p00||b.p10 as TheString from pattern [every a=SupportBean_S0 => b=SupportBean_S1]#unique(a.Id)#unique(b.Id) retain-intersection";
+                    "@Name('s0') select irstream a.p00||b.p10 as TheString from pattern [every a=SupportBean_S0 -> b=SupportBean_S1]#unique(a.Id)#unique(b.Id) retain-intersection";
                 env.CompileDeploy(text).AddListener("s0");
 
                 env.SendEventBean(new SupportBean_S0(1, "E1"));
@@ -1556,7 +1556,7 @@ namespace com.espertech.esper.regressionlib.suite.view
             public void Run(RegressionEnvironment env)
             {
                 var text =
-                    "@Name('s0') select irstream Symbol, price from SupportMarketDataBean#length(1)#unique(Symbol)";
+                    "@Name('s0') select irstream Symbol, Price from SupportMarketDataBean#length(1)#unique(Symbol)";
                 env.CompileDeployAddListenerMileZero(text, "s0");
                 env.SendEventBean(MakeMarketDataEvent("S1", 100));
                 env.Listener("s0")
@@ -1589,7 +1589,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 var symbolMsft = "MSFT.O";
                 var symbolC = "C.N";
 
-                var epl = "@Name('s0') select * from SupportMarketDataBean#unique(Symbol)#sort(3, price desc)";
+                var epl = "@Name('s0') select * from SupportMarketDataBean#unique(Symbol)#sort(3, Price desc)";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
                 var beans = new object[10];
@@ -1677,7 +1677,7 @@ namespace com.espertech.esper.regressionlib.suite.view
             {
                 env.AdvanceTime(0);
 
-                var epl = "@Name('s0') select irstream * from SupportMarketDataBean#time(3.0)#unique(Symbol, price)";
+                var epl = "@Name('s0') select irstream * from SupportMarketDataBean#time(3.0)#unique(Symbol, Price)";
                 env.CompileDeploy(epl).AddListener("s0");
                 string[] fields = {"Symbol", "Price", "Volume"};
 

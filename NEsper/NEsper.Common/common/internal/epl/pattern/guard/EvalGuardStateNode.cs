@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.epl.pattern.core;
 using com.espertech.esper.common.@internal.filterspec;
@@ -56,14 +57,17 @@ namespace com.espertech.esper.common.@internal.epl.pattern.guard
         {
             var agentInstanceContext = evalGuardNode.Context.AgentInstanceContext;
             agentInstanceContext.InstrumentationProvider.QPatternGuardEvaluateTrue(
-                evalGuardNode.factoryNode, matchEvent);
+                evalGuardNode.factoryNode,
+                matchEvent);
 
             var haveQuitted = activeChildNode == null;
 
             // If one of the children quits, remove the child
             if (isQuitted) {
                 agentInstanceContext.AuditProvider.PatternInstance(
-                    false, evalGuardNode.factoryNode, agentInstanceContext);
+                    false,
+                    evalGuardNode.factoryNode,
+                    agentInstanceContext);
                 activeChildNode = null;
 
                 // Stop guard, since associated subexpression is gone
@@ -74,7 +78,11 @@ namespace com.espertech.esper.common.@internal.epl.pattern.guard
                 var guardPass = guard.Inspect(matchEvent);
                 if (guardPass) {
                     agentInstanceContext.AuditProvider.PatternTrue(
-                        evalGuardNode.FactoryNode, this, matchEvent, isQuitted, agentInstanceContext);
+                        evalGuardNode.FactoryNode,
+                        this,
+                        matchEvent,
+                        isQuitted,
+                        agentInstanceContext);
                     ParentEvaluator.EvaluateTrue(matchEvent, this, isQuitted, optionalTriggeringEvent);
                 }
             }
@@ -185,8 +193,10 @@ namespace com.espertech.esper.common.@internal.epl.pattern.guard
 
         public override string ToString()
         {
-            return "EvaluationWitinStateNode activeChildNode=" + activeChildNode +
-                   " guard=" + guard;
+            return "EvaluationWitinStateNode activeChildNode=" +
+                   activeChildNode +
+                   " guard=" +
+                   guard;
         }
     }
 } // end of namespace

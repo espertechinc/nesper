@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.epl.expression.core;
 
@@ -32,7 +33,10 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
             ExprEvaluatorContext context)
         {
             return ProcEvaluate.Invoke(
-                reference, eventsPerStream, isNewData, context);
+                reference,
+                eventsPerStream,
+                isNewData,
+                context);
         }
     }
 }

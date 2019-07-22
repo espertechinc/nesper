@@ -22,10 +22,21 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
         protected internal static readonly CodegenExpressionRef REF_RIGHTSTART = @Ref("rightStart");
         protected internal static readonly CodegenExpressionRef REF_RIGHTEND = @Ref("rightEnd");
 
-        protected internal static readonly CodegenNamedParam FP_LEFTSTART = new CodegenNamedParam(typeof(long), REF_LEFTSTART);
-        protected internal static readonly CodegenNamedParam FP_LEFTEND = new CodegenNamedParam(typeof(long), REF_LEFTEND);
-        protected internal static readonly CodegenNamedParam FP_RIGHTSTART = new CodegenNamedParam(typeof(long), REF_RIGHTSTART);
-        protected internal static readonly CodegenNamedParam FP_RIGHTEND = new CodegenNamedParam(typeof(long), REF_RIGHTEND);
+        protected internal static readonly CodegenNamedParam FP_LEFTSTART = new CodegenNamedParam(
+            typeof(long),
+            REF_LEFTSTART);
+
+        protected internal static readonly CodegenNamedParam FP_LEFTEND = new CodegenNamedParam(
+            typeof(long),
+            REF_LEFTEND);
+
+        protected internal static readonly CodegenNamedParam FP_RIGHTSTART = new CodegenNamedParam(
+            typeof(long),
+            REF_RIGHTSTART);
+
+        protected internal static readonly CodegenNamedParam FP_RIGHTEND = new CodegenNamedParam(
+            typeof(long),
+            REF_RIGHTEND);
 
         protected internal static readonly IList<CodegenNamedParam> PARAMS = new List<CodegenNamedParam>() {
             FP_LEFTSTART,

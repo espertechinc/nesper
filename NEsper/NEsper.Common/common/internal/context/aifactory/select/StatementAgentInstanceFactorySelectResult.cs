@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+
 using com.espertech.esper.common.@internal.context.activator;
 using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.context.util;
@@ -41,8 +42,15 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
             Viewable[] eventStreamViewables,
             ViewableActivationResult[] viewableActivationResults)
             : base(
-                finalView, stopCallback, agentInstanceContext, optionalAggegationService, subselectStrategies,
-                priorStrategies, previousGetterStrategies, regexExprPreviousEvalStrategy, tableAccessStrategies,
+                finalView,
+                stopCallback,
+                agentInstanceContext,
+                optionalAggegationService,
+                subselectStrategies,
+                priorStrategies,
+                previousGetterStrategies,
+                regexExprPreviousEvalStrategy,
+                tableAccessStrategies,
                 preloadList)
         {
             TopViews = topViews;

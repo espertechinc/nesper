@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+
 using com.espertech.esper.common.@internal.epl.spatial.quadtree.core;
 using com.espertech.esper.common.@internal.epl.spatial.quadtree.mxcif;
 
@@ -63,15 +64,19 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxcifrowinde
                 case QuadrantAppliesEnum.NW:
                     branch.Nw = RemoveFromNode(x, y, width, height, value, branch.Nw, tree);
                     break;
+
                 case QuadrantAppliesEnum.NE:
                     branch.Ne = RemoveFromNode(x, y, width, height, value, branch.Ne, tree);
                     break;
+
                 case QuadrantAppliesEnum.SW:
                     branch.Sw = RemoveFromNode(x, y, width, height, value, branch.Sw, tree);
                     break;
+
                 case QuadrantAppliesEnum.SE:
                     branch.Se = RemoveFromNode(x, y, width, height, value, branch.Se, tree);
                     break;
+
                 case QuadrantAppliesEnum.SOME:
                     var removed = RemoveFromPoints(x, y, width, height, value, branch.Data);
                     if (removed) {

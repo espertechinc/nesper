@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -15,6 +16,7 @@ using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 using static com.espertech.esper.common.@internal.epl.expression.codegen.ExprForgeCodegenNames;
 
@@ -50,13 +52,15 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
         {
             var method = parent.MakeChild(typeof(bool?), this.GetType(), classScope);
             var left = symbols.GetAddLeftResult(method);
-            method.Block.DeclareVar(typeof(bool), "hasNullRow", ConstantFalse());
+            method.Block.DeclareVar<bool>("hasNullRow", ConstantFalse());
             var @foreach = method.Block.ForEach(typeof(EventBean), "theEvent", symbols.GetAddMatchingEvents(method));
             {
                 @foreach.AssignArrayElement(NAME_EPS, Constant(0), @Ref("theEvent"));
                 if (filterEval != null) {
                     CodegenLegoBooleanExpression.CodegenContinueIfNotNullAndNotPass(
-                        @foreach, filterEval.EvaluationType, filterEval.EvaluateCodegen(typeof(bool?), method, symbols, classScope));
+                        @foreach,
+                        filterEval.EvaluationType,
+                        filterEval.EvaluateCodegen(typeof(bool?), method, symbols, classScope));
                 }
 
                 @foreach.IfRefNullReturnNull(left);
@@ -64,17 +68,23 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                 Type valueRightType;
                 if (selectEval != null) {
                     valueRightType = Boxing.GetBoxedType(selectEval.EvaluationType);
-                    @foreach.DeclareVar(valueRightType, "valueRight", selectEval.EvaluateCodegen(valueRightType, method, symbols, classScope));
+                    @foreach.DeclareVar(
+                        valueRightType,
+                        "valueRight",
+                        selectEval.EvaluateCodegen(valueRightType, method, symbols, classScope));
                 }
                 else {
                     valueRightType = typeof(object);
-                    @foreach.DeclareVar(valueRightType, "valueRight", ExprDotUnderlying(ArrayAtIndex(symbols.GetAddEPS(method), Constant(0))));
+                    @foreach.DeclareVar(
+                        valueRightType,
+                        "valueRight",
+                        ExprDotUnderlying(ArrayAtIndex(symbols.GetAddEPS(method), Constant(0))));
                 }
 
                 var ifRight = @foreach.IfCondition(NotEqualsNull(@Ref("valueRight")));
                 {
                     if (coercer == null) {
-                        ifRight.DeclareVar(typeof(bool), "eq", ExprDotMethod(left, "equals", @Ref("valueRight")));
+                        ifRight.DeclareVar<bool>("eq", ExprDotMethod(left, "equals", @Ref("valueRight")));
                         if (isAll) {
                             ifRight.IfCondition(NotOptional(!isNot, @Ref("eq"))).BlockReturn(ConstantFalse());
                         }
@@ -83,9 +93,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                         }
                     }
                     else {
-                        ifRight.DeclareVar(typeof(object), "left", coercer.CoerceCodegen(left, symbols.LeftResultType))
-                            .DeclareVar(typeof(object), "right", coercer.CoerceCodegen(@Ref("valueRight"), valueRightType))
-                            .DeclareVar(typeof(bool), "eq", ExprDotMethod(@Ref("left"), "equals", @Ref("right")));
+                        ifRight.DeclareVar<object>("left", coercer.CoerceCodegen(left, symbols.LeftResultType))
+                            .DeclareVar<object>("right", coercer.CoerceCodegen(@Ref("valueRight"), valueRightType))
+                            .DeclareVar<bool>("eq", ExprDotMethod(@Ref("left"), "equals", @Ref("right")));
                         if (isAll) {
                             ifRight.IfCondition(NotOptional(!isNot, @Ref("eq"))).BlockReturn(ConstantFalse());
                         }

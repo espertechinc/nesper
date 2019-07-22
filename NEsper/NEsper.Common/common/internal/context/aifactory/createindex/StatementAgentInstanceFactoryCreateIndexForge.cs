@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -20,6 +21,7 @@ using com.espertech.esper.common.@internal.epl.table.core;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.context.aifactory.createindex
@@ -57,21 +59,34 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createindex
             SAIFFInitializeSymbol symbols,
             CodegenClassScope classScope)
         {
-            CodegenMethod method = parent.MakeChild(typeof(StatementAgentInstanceFactoryCreateIndex), this.GetType(), classScope);
+            CodegenMethod method = parent.MakeChild(
+                typeof(StatementAgentInstanceFactoryCreateIndex),
+                this.GetType(),
+                classScope);
             CodegenExpressionRef saiff = @Ref("saiff");
             method.Block
-                .DeclareVar(
-                    typeof(StatementAgentInstanceFactoryCreateIndex), saiff.Ref, NewInstance(typeof(StatementAgentInstanceFactoryCreateIndex)))
-                .SetProperty(saiff, "EventType", EventTypeUtility.ResolveTypeCodegen(eventType, symbols.GetAddInitSvc(method)))
+                .DeclareVar<StatementAgentInstanceFactoryCreateIndex>(
+                    saiff.Ref,
+                    NewInstance(typeof(StatementAgentInstanceFactoryCreateIndex)))
+                .SetProperty(
+                    saiff,
+                    "EventType",
+                    EventTypeUtility.ResolveTypeCodegen(eventType, symbols.GetAddInitSvc(method)))
                 .SetProperty(saiff, "IndexName", Constant(indexName))
                 .SetProperty(saiff, "IndexModuleName", Constant(indexModuleName))
                 .SetProperty(saiff, "IndexMultiKey", imk.Make(method, classScope))
                 .SetProperty(saiff, "ExplicitIndexDesc", explicitIndexDesc.Make(method, classScope));
             if (namedWindow != null) {
-                method.Block.SetProperty(saiff, "NamedWindow", NamedWindowDeployTimeResolver.MakeResolveNamedWindow(namedWindow, symbols.GetAddInitSvc(method)));
+                method.Block.SetProperty(
+                    saiff,
+                    "NamedWindow",
+                    NamedWindowDeployTimeResolver.MakeResolveNamedWindow(namedWindow, symbols.GetAddInitSvc(method)));
             }
             else {
-                method.Block.SetProperty(saiff, "Table", TableDeployTimeResolver.MakeResolveTable(table, symbols.GetAddInitSvc(method)));
+                method.Block.SetProperty(
+                    saiff,
+                    "Table",
+                    TableDeployTimeResolver.MakeResolveTable(table, symbols.GetAddInitSvc(method)));
             }
 
             method.Block.MethodReturn(saiff);

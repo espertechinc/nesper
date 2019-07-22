@@ -122,7 +122,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
                 for (var i = 0; i < 10000; i++) {
                     var index = 5000 + i % 1000;
                     env.SendEventBean(new SupportBean_S0(index, Convert.ToString(index)));
-                    Assert.AreEqual(index, env.Listener("s0").AssertOneGetNewAndReset().Get("id"));
+                    Assert.AreEqual(index, env.Listener("s0").AssertOneGetNewAndReset().Get("Id"));
                 }
 
                 var endTime = PerformanceObserver.MilliTime;

@@ -9,6 +9,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.core.CodeGenerationHelper;
 
 namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
@@ -31,16 +32,15 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
 
         public void Render(
             StringBuilder builder,
-            IDictionary<Type, string> imports,
             bool isInnerClass)
         {
             if (_not) {
                 builder.Append("!(");
             }
 
-            _lhs.Render(builder, imports, isInnerClass);
-            builder.Append(" ").Append("instanceof ");
-            AppendClassName(builder, _clazz, null, imports);
+            _lhs.Render(builder, isInnerClass);
+            builder.Append(" ").Append("is ");
+            AppendClassName(builder, _clazz);
             if (_not) {
                 builder.Append(")");
             }

@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.@internal.@event.avro;
 
 namespace com.espertech.esper.common.client.util
@@ -45,12 +46,13 @@ namespace com.espertech.esper.common.client.util
         /// <returns>default underlying type class name</returns>
         public static string GetUnderlyingClassName(this EventUnderlyingType underlyingType)
         {
-            switch (underlyingType)
-            {
+            switch (underlyingType) {
                 case EventUnderlyingType.OBJECTARRAY:
                     return OA_TYPE_NAME;
+
                 case EventUnderlyingType.MAP:
                     return MAP_TYPE_NAME;
+
                 case EventUnderlyingType.AVRO:
                     return AVRO_TYPE_NAME;
             }

@@ -39,11 +39,15 @@ namespace com.espertech.esper.common.@internal.context.activator
             FilterValueSetParam[][] addendum = null;
             if (agentInstanceContext.AgentInstanceFilterProxy != null) {
                 addendum = agentInstanceContext.AgentInstanceFilterProxy.GetAddendumFilters(
-                    FilterSpec, agentInstanceContext);
+                    FilterSpec,
+                    agentInstanceContext);
             }
 
             var filterValues = FilterSpec.GetValueSet(
-                null, addendum, agentInstanceContext, agentInstanceContext.StatementContextFilterEvalEnv);
+                null,
+                addendum,
+                agentInstanceContext,
+                agentInstanceContext.StatementContextFilterEvalEnv);
 
             EventStream theStream;
             if (!agentInstanceContext.AuditProvider.Activated() &&
@@ -56,10 +60,18 @@ namespace com.espertech.esper.common.@internal.context.activator
                 var streamNum = StreamNumFromClause ?? -1;
                 theStream = CanIterate
                     ? new ZeroDepthStreamIterableWAudit(
-                        FilterSpec.ResultEventType, agentInstanceContext, FilterSpec, streamNum, isSubselect,
+                        FilterSpec.ResultEventType,
+                        agentInstanceContext,
+                        FilterSpec,
+                        streamNum,
+                        isSubselect,
                         SubselectNumber)
                     : (EventStream) new ZeroDepthStreamNoIterateWAudit(
-                        FilterSpec.ResultEventType, agentInstanceContext, FilterSpec, streamNum, isSubselect,
+                        FilterSpec.ResultEventType,
+                        agentInstanceContext,
+                        FilterSpec,
+                        streamNum,
+                        isSubselect,
                         SubselectNumber);
             }
 
@@ -92,9 +104,12 @@ namespace com.espertech.esper.common.@internal.context.activator
             }
 
             var filterHandle = new EPStatementHandleCallbackFilter(
-                agentInstanceContext.EpStatementAgentInstanceHandle, filterCallback);
+                agentInstanceContext.EpStatementAgentInstanceHandle,
+                filterCallback);
             agentInstanceContext.StatementContext.StatementContextRuntimeServices.FilterService.Add(
-                FilterSpec.FilterForEventType, filterValues, filterHandle);
+                FilterSpec.FilterForEventType,
+                filterValues,
+                filterHandle);
             var filterStopCallback = new ViewableActivatorFilterStopCallback(Container, filterHandle, FilterSpec);
             return new ViewableActivationResult(theStream, filterStopCallback, null, false, false, null, null);
         }

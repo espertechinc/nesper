@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.@internal.context.module;
 using com.espertech.esper.common.@internal.epl.namedwindow.path;
 using com.espertech.esper.compat;
@@ -17,7 +18,8 @@ namespace com.espertech.esper.common.@internal.epl.namedwindow.core
 {
     public class NamedWindowManagementServiceImpl : NamedWindowManagementService
     {
-        private readonly IDictionary<string, NamedWindowDeployment> deployments = new Dictionary<string, NamedWindowDeployment>();
+        private readonly IDictionary<string, NamedWindowDeployment> deployments =
+            new Dictionary<string, NamedWindowDeployment>();
 
         public void AddNamedWindow(
             string windowName,

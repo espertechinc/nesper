@@ -9,6 +9,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.annotation;
 using com.espertech.esper.common.client.hook.vdw;
@@ -37,7 +38,9 @@ namespace com.espertech.esper.common.@internal.epl.namedwindow.core
         private readonly AgentInstanceContext _agentInstanceContext;
 
         // handles as copy-on-write
-        private volatile IDictionary<EPStatementAgentInstanceHandle, IList<NamedWindowConsumerView>> _consumersInContext;
+        private volatile IDictionary<EPStatementAgentInstanceHandle, IList<NamedWindowConsumerView>>
+            _consumersInContext;
+
         private long _numberOfEvents;
 
         public NamedWindowTailViewInstance(
@@ -143,16 +146,24 @@ namespace com.espertech.esper.common.@internal.epl.namedwindow.core
             var audit = AuditEnum.STREAM.GetAudit(consumerDesc.AgentInstanceContext.StatementContext.Annotations) !=
                         null;
             var consumerView = new NamedWindowConsumerView(
-                consumerDesc.NamedWindowConsumerId, consumerDesc.FilterEvaluator, consumerDesc.OptPropertyEvaluator,
-                TailView.EventType, consumerCallback, consumerDesc.AgentInstanceContext, audit);
+                consumerDesc.NamedWindowConsumerId,
+                consumerDesc.FilterEvaluator,
+                consumerDesc.OptPropertyEvaluator,
+                TailView.EventType,
+                consumerCallback,
+                consumerDesc.AgentInstanceContext,
+                audit);
 
             // indicate to virtual data window that a consumer was added
             var virtualDWView = _rootViewInstance.VirtualDataWindow;
             if (virtualDWView != null) {
                 virtualDWView.VirtualDataWindow.HandleEvent(
                     new VirtualDataWindowEventConsumerAdd(
-                        TailView.EventType.Name, consumerView, consumerDesc.AgentInstanceContext.StatementName,
-                        consumerDesc.AgentInstanceContext.AgentInstanceId, consumerDesc.FilterEvaluator,
+                        TailView.EventType.Name,
+                        consumerView,
+                        consumerDesc.AgentInstanceContext.StatementName,
+                        consumerDesc.AgentInstanceContext.AgentInstanceId,
+                        consumerDesc.FilterEvaluator,
                         AgentInstanceContext));
             }
 
@@ -240,7 +251,10 @@ namespace com.espertech.esper.common.@internal.epl.namedwindow.core
             AgentInstanceContext.EpStatementAgentInstanceHandle.StatementAgentInstanceLock.AcquireReadLock();
             try {
                 var events = SnapshotNoLockWithFilter(
-                    filterQueryGraph, annotations, optionalWhereClause, AgentInstanceContext);
+                    filterQueryGraph,
+                    annotations,
+                    optionalWhereClause,
+                    AgentInstanceContext);
                 if (events.IsEmpty()) {
                     return CollectionUtil.EVENTBEANARRAY_EMPTY;
                 }
@@ -328,7 +342,10 @@ namespace com.espertech.esper.common.@internal.epl.namedwindow.core
 
                 var deque = new ArrayDeque<EventBean>(Math.Min(indexedResult.Count, 16));
                 ExprNodeUtilityEvaluate.ApplyFilterExpressionIterable(
-                    indexedResult.GetEnumerator(), filterExpr, exprEvaluatorContext, deque);
+                    indexedResult.GetEnumerator(),
+                    filterExpr,
+                    exprEvaluatorContext,
+                    deque);
                 return deque;
             }
 

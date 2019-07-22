@@ -28,7 +28,8 @@ using NEsper.Avro.Writer;
 
 namespace NEsper.Avro.Core
 {
-    public class AvroEventType : AvroSchemaEventType, EventTypeSPI
+    public class AvroEventType : AvroSchemaEventType,
+        EventTypeSPI
     {
         private readonly Schema _avroSchema;
         private readonly IDictionary<string, PropertySetDescriptorItem> _propertyItems;
@@ -43,14 +44,15 @@ namespace NEsper.Avro.Core
         private Dictionary<string, EventPropertyGetterSPI> _propertyGetterCache;
         private IDictionary<string, EventPropertyGetter> _propertyGetterCodegeneratedCache;
 
-        public AvroEventType(EventTypeMetadata metadata,
-                             Schema avroSchema,
-                             string startTimestampPropertyName,
-                             string endTimestampPropertyName,
-                             EventType[] optionalSuperTypes,
-                             ISet<EventType> deepSupertypes,
-                             EventBeanTypedEventFactory eventBeanTypedEventFactory,
-                             EventTypeAvroHandler eventTypeAvroHandler)
+        public AvroEventType(
+            EventTypeMetadata metadata,
+            Schema avroSchema,
+            string startTimestampPropertyName,
+            string endTimestampPropertyName,
+            EventType[] optionalSuperTypes,
+            ISet<EventType> deepSupertypes,
+            EventBeanTypedEventFactory eventBeanTypedEventFactory,
+            EventTypeAvroHandler eventTypeAvroHandler)
         {
             Metadata = metadata;
             _avroSchema = avroSchema;
@@ -62,12 +64,18 @@ namespace NEsper.Avro.Core
 
             Init();
 
-            var desc = EventTypeUtility.ValidatedDetermineTimestampProps(this, startTimestampPropertyName, endTimestampPropertyName, optionalSuperTypes);
+            var desc = EventTypeUtility.ValidatedDetermineTimestampProps(
+                this,
+                startTimestampPropertyName,
+                endTimestampPropertyName,
+                optionalSuperTypes);
             StartTimestampPropertyName = desc.Start;
             EndTimestampPropertyName = desc.End;
         }
 
-        public void SetMetadataId(long publicId, long protectedId)
+        public void SetMetadataId(
+            long publicId,
+            long protectedId)
         {
             Metadata = Metadata.WithIds(publicId, protectedId);
         }
@@ -77,8 +85,7 @@ namespace NEsper.Avro.Core
         public Type GetPropertyType(string propertyName)
         {
             var item = _propertyItems.Get(StringValue.UnescapeDot(propertyName));
-            if (item != null)
-            {
+            if (item != null) {
                 return item.SimplePropertyType;
             }
 
@@ -89,42 +96,58 @@ namespace NEsper.Avro.Core
         public bool IsProperty(string propertyExpression)
         {
             var propertyType = GetPropertyType(propertyExpression);
-            if (propertyType != null)
-            {
+            if (propertyType != null) {
                 return true;
             }
-            if (_propertyGetterCache == null)
-            {
+
+            if (_propertyGetterCache == null) {
                 _propertyGetterCache = new Dictionary<string, EventPropertyGetterSPI>();
             }
-            return AvroPropertyUtil.GetGetter(_avroSchema, Metadata.ModuleName, _propertyGetterCache, _propertyItems, propertyExpression, false, _eventBeanTypedEventFactory, _eventTypeAvroHandler, _fragmentTypeCache) != null;
+
+            return AvroPropertyUtil.GetGetter(
+                       _avroSchema,
+                       Metadata.ModuleName,
+                       _propertyGetterCache,
+                       _propertyItems,
+                       propertyExpression,
+                       false,
+                       _eventBeanTypedEventFactory,
+                       _eventTypeAvroHandler,
+                       _fragmentTypeCache) !=
+                   null;
         }
 
         public EventPropertyGetterSPI GetGetterSPI(string propertyExpression)
         {
-            if (_propertyGetterCache == null)
-            {
+            if (_propertyGetterCache == null) {
                 _propertyGetterCache = new Dictionary<string, EventPropertyGetterSPI>();
             }
-            return AvroPropertyUtil.GetGetter(_avroSchema, Metadata.ModuleName, _propertyGetterCache, _propertyItems, propertyExpression, true, _eventBeanTypedEventFactory, _eventTypeAvroHandler, _fragmentTypeCache);
+
+            return AvroPropertyUtil.GetGetter(
+                _avroSchema,
+                Metadata.ModuleName,
+                _propertyGetterCache,
+                _propertyItems,
+                propertyExpression,
+                true,
+                _eventBeanTypedEventFactory,
+                _eventTypeAvroHandler,
+                _fragmentTypeCache);
         }
 
         public EventPropertyGetter GetGetter(string propertyName)
         {
-            if (_propertyGetterCodegeneratedCache == null)
-            {
+            if (_propertyGetterCodegeneratedCache == null) {
                 _propertyGetterCodegeneratedCache = new Dictionary<string, EventPropertyGetter>();
             }
 
             var getter = _propertyGetterCodegeneratedCache.Get(propertyName);
-            if (getter != null)
-            {
+            if (getter != null) {
                 return getter;
             }
 
             var getterSPI = GetGetterSPI(propertyName);
-            if (getterSPI == null)
-            {
+            if (getterSPI == null) {
                 return null;
             }
 
@@ -134,7 +157,14 @@ namespace NEsper.Avro.Core
 
         public FragmentEventType GetFragmentType(string propertyExpression)
         {
-            return AvroFragmentTypeUtil.GetFragmentType(_avroSchema, propertyExpression, Metadata.ModuleName, _propertyItems, _eventBeanTypedEventFactory, _eventTypeAvroHandler, _fragmentTypeCache);
+            return AvroFragmentTypeUtil.GetFragmentType(
+                _avroSchema,
+                propertyExpression,
+                Metadata.ModuleName,
+                _propertyItems,
+                _eventBeanTypedEventFactory,
+                _eventTypeAvroHandler,
+                _fragmentTypeCache);
         }
 
         public string[] PropertyNames => _propertyNames;
@@ -163,10 +193,10 @@ namespace NEsper.Avro.Core
         public EventPropertyGetterMappedSPI GetGetterMappedSPI(string mappedPropertyName)
         {
             var desc = _propertyItems.Get(mappedPropertyName);
-            if (desc == null || !desc.PropertyDescriptor.IsMapped)
-            {
+            if (desc == null || !desc.PropertyDescriptor.IsMapped) {
                 return null;
             }
+
             var field = _avroSchema.GetField(mappedPropertyName);
             return new AvroEventBeanGetterMappedRuntimeKeyed(field);
         }
@@ -179,10 +209,10 @@ namespace NEsper.Avro.Core
         public EventPropertyGetterIndexedSPI GetGetterIndexedSPI(string indexedPropertyName)
         {
             var desc = _propertyItems.Get(indexedPropertyName);
-            if (desc == null || !desc.PropertyDescriptor.IsIndexed)
-            {
+            if (desc == null || !desc.PropertyDescriptor.IsIndexed) {
                 return null;
             }
+
             var field = _avroSchema.GetField(indexedPropertyName);
             return new AvroEventBeanGetterIndexedRuntimeKeyed(field);
         }
@@ -201,21 +231,18 @@ namespace NEsper.Avro.Core
         public AvroEventBeanPropertyWriter GetWriterInternal(string propertyName)
         {
             var desc = _propertyItems.Get(propertyName);
-            if (desc != null)
-            {
+            if (desc != null) {
                 var pos = _avroSchema.GetField(propertyName);
                 return new AvroEventBeanPropertyWriter(pos);
             }
 
             var property = PropertyParser.ParseAndWalkLaxToSimple(propertyName);
-            if (property is MappedProperty mapProp)
-            {
+            if (property is MappedProperty mapProp) {
                 var pos = _avroSchema.GetField(mapProp.PropertyNameAtomic);
                 return new AvroEventBeanPropertyWriterMapProp(pos, mapProp.Key);
             }
 
-            if (property is IndexedProperty indexedProp)
-            {
+            if (property is IndexedProperty indexedProp) {
                 var pos = _avroSchema.GetField(indexedProp.PropertyNameAtomic);
                 return new AvroEventBeanPropertyWriterIndexedProp(pos, indexedProp.Index);
             }
@@ -227,35 +254,47 @@ namespace NEsper.Avro.Core
 
         public EventPropertyDescriptor GetWritableProperty(string propertyName)
         {
-            foreach (var desc in _propertyDescriptors)
-            {
-                if (desc.PropertyName.Equals(propertyName))
-                {
+            foreach (var desc in _propertyDescriptors) {
+                if (desc.PropertyName.Equals(propertyName)) {
                     return desc;
                 }
             }
 
             var property = PropertyParser.ParseAndWalkLaxToSimple(propertyName);
-            if (property is MappedProperty mapProp)
-            {
+            if (property is MappedProperty mapProp) {
                 EventPropertyWriter writer = GetWriter(propertyName);
-                if (writer == null)
-                {
+                if (writer == null) {
                     return null;
                 }
 
-                return new EventPropertyDescriptor(mapProp.PropertyNameAtomic, typeof(object), null, false, true, false, true, false);
+                return new EventPropertyDescriptor(
+                    mapProp.PropertyNameAtomic,
+                    typeof(object),
+                    null,
+                    false,
+                    true,
+                    false,
+                    true,
+                    false);
             }
-            if (property is IndexedProperty indexedProp)
-            {
+
+            if (property is IndexedProperty indexedProp) {
                 EventPropertyWriter writer = GetWriter(propertyName);
-                if (writer == null)
-                {
+                if (writer == null) {
                     return null;
                 }
 
-                return new EventPropertyDescriptor(indexedProp.PropertyNameAtomic, typeof(object), null, true, false, true, false, false);
+                return new EventPropertyDescriptor(
+                    indexedProp.PropertyNameAtomic,
+                    typeof(object),
+                    null,
+                    true,
+                    false,
+                    true,
+                    false,
+                    false);
             }
+
             return null;
         }
 
@@ -270,29 +309,26 @@ namespace NEsper.Avro.Core
             var writers = new AvroEventBeanPropertyWriter[properties.Length];
             IList<Field> indexes = new List<Field>();
 
-            for (var i = 0; i < properties.Length; i++)
-            {
+            for (var i = 0; i < properties.Length; i++) {
                 var writer = GetWriterInternal(properties[i]);
-                if (_propertyItems.ContainsKey(properties[i]))
-                {
+                if (_propertyItems.ContainsKey(properties[i])) {
                     writers[i] = writer;
                     indexes.Add(_avroSchema.GetField(properties[i]));
                 }
-                else
-                {
+                else {
                     writers[i] = GetWriterInternal(properties[i]);
-                    if (writers[i] == null)
-                    {
+                    if (writers[i] == null) {
                         return null;
                     }
+
                     allSimpleProps = false;
                 }
             }
 
-            if (allSimpleProps)
-            {
+            if (allSimpleProps) {
                 return new AvroEventBeanWriterSimpleProps(indexes.ToArray());
             }
+
             return new AvroEventBeanWriterPerProp(writers);
         }
 
@@ -300,22 +336,29 @@ namespace NEsper.Avro.Core
 
         public ExprValidationException EqualsCompareType(EventType other)
         {
-            if (!other.Name.Equals(Name))
-            {
-                return new ExprValidationException("Expected event type '" + Name +
-                        "' but received event type '" + other.Metadata.Name + "'");
+            if (!other.Name.Equals(Name)) {
+                return new ExprValidationException(
+                    "Expected event type '" +
+                    Name +
+                    "' but received event type '" +
+                    other.Metadata.Name +
+                    "'");
             }
 
-            if (Metadata.ApplicationType != other.Metadata.ApplicationType)
-            {
-                return new ExprValidationException("Expected for event type '" + Name +
-                        "' of type " + Metadata.ApplicationType +
-                        " but received event type '" + other.Metadata.Name + "' of type " + other.Metadata.ApplicationType);
+            if (Metadata.ApplicationType != other.Metadata.ApplicationType) {
+                return new ExprValidationException(
+                    "Expected for event type '" +
+                    Name +
+                    "' of type " +
+                    Metadata.ApplicationType +
+                    " but received event type '" +
+                    other.Metadata.Name +
+                    "' of type " +
+                    other.Metadata.ApplicationType);
             }
 
             var otherAvro = (AvroEventType) other;
-            if (!otherAvro._avroSchema.Equals(_avroSchema))
-            {
+            if (!otherAvro._avroSchema.Equals(_avroSchema)) {
                 return new ExprValidationException("Avro schema does not match for type '" + other.Name + "'");
             }
 
@@ -334,8 +377,7 @@ namespace NEsper.Avro.Core
             _propertyDescriptors = new EventPropertyDescriptor[_propertyNames.Length];
             var fieldNum = 0;
 
-            foreach (var field in avroFields)
-            {
+            foreach (var field in avroFields) {
                 _propertyNames[fieldNum] = field.Name;
 
                 var propertyType = AvroTypeUtil.PropertyType(field.Schema);
@@ -344,12 +386,10 @@ namespace NEsper.Avro.Core
                 var mapped = false;
                 FragmentEventType fragmentEventType = null;
 
-                if (field.Schema.Tag == global::Avro.Schema.Type.Array)
-                {
+                if (field.Schema.Tag == global::Avro.Schema.Type.Array) {
                     componentType = AvroTypeUtil.PropertyType(field.Schema.AsArraySchema().ItemSchema);
                     indexed = true;
-                    if (field.Schema.AsArraySchema().ItemSchema.Tag == global::Avro.Schema.Type.Record)
-                    {
+                    if (field.Schema.AsArraySchema().ItemSchema.Tag == global::Avro.Schema.Type.Record) {
                         fragmentEventType = AvroFragmentTypeUtil.GetFragmentEventTypeForField(
                             field.Schema,
                             Metadata.ModuleName,
@@ -358,13 +398,11 @@ namespace NEsper.Avro.Core
                             _fragmentTypeCache);
                     }
                 }
-                else if (field.Schema.Tag == global::Avro.Schema.Type.Map)
-                {
+                else if (field.Schema.Tag == global::Avro.Schema.Type.Map) {
                     mapped = true;
                     componentType = AvroTypeUtil.PropertyType(field.Schema.AsMapSchema().ValueSchema);
                 }
-                else
-                {
+                else {
                     fragmentEventType = AvroFragmentTypeUtil.GetFragmentEventTypeForField(
                         field.Schema,
                         Metadata.ModuleName,
@@ -373,9 +411,21 @@ namespace NEsper.Avro.Core
                         _fragmentTypeCache);
                 }
 
-                var getter = new AvroEventBeanGetterSimple(field, fragmentEventType?.FragmentType, _eventBeanTypedEventFactory, propertyType);
+                var getter = new AvroEventBeanGetterSimple(
+                    field,
+                    fragmentEventType?.FragmentType,
+                    _eventBeanTypedEventFactory,
+                    propertyType);
 
-                var descriptor = new EventPropertyDescriptor(field.Name, propertyType, componentType, false, false, indexed, mapped, fragmentEventType != null);
+                var descriptor = new EventPropertyDescriptor(
+                    field.Name,
+                    propertyType,
+                    componentType,
+                    false,
+                    false,
+                    indexed,
+                    mapped,
+                    fragmentEventType != null);
                 var item = new PropertySetDescriptorItem(descriptor, propertyType, getter, fragmentEventType);
                 _propertyItems.Put(field.Name, item);
                 _propertyDescriptors[fieldNum] = descriptor;

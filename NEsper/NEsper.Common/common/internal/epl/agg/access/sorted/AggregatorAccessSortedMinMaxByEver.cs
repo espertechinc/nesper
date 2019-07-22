@@ -18,9 +18,12 @@ using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.serde;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.function;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
-using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionRelational.CodegenRelational;
-using static com.espertech.esper.common.@internal.bytecodemodel.util.CodegenFieldSharableComparator.CodegenSharableSerdeName;
+using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionRelational.
+    CodegenRelational;
+using static com.espertech.esper.common.@internal.bytecodemodel.util.CodegenFieldSharableComparator.
+    CodegenSharableSerdeName;
 using static com.espertech.esper.common.@internal.epl.agg.method.core.AggregatorCodegenUtil;
 using static com.espertech.esper.common.@internal.epl.expression.codegen.ExprForgeCodegenNames;
 using static com.espertech.esper.common.@internal.serde.CodegenSharableSerdeClassArrayTyped.CodegenSharableSerdeName;
@@ -67,7 +70,9 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
 
             comparator = classScope.AddOrGetFieldSharable(
                 new CodegenFieldSharableComparator(
-                    COMPARATOROBJECTARRAYNONHASHABLE, forge.Spec.CriteriaTypes, forge.Spec.IsSortUsingCollator,
+                    COMPARATOROBJECTARRAYNONHASHABLE,
+                    forge.Spec.CriteriaTypes,
+                    forge.Spec.IsSortUsingCollator,
                     forge.Spec.SortDescending));
         }
 
@@ -89,9 +94,14 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
             CodegenClassScope classScope)
         {
             method.Block
-                .ExprDotMethod(currentMinMaxSerde, "write", RowDotRef(row, currentMinMax), output, unitKey, writer)
+                .ExprDotMethod(currentMinMaxSerde, "Write", RowDotRef(row, currentMinMax), output, unitKey, writer)
                 .ExprDotMethod(
-                    currentMinMaxBeanSerde, "write", RowDotRef(row, currentMinMaxBean), output, unitKey, writer);
+                    currentMinMaxBeanSerde,
+                    "Write",
+                    RowDotRef(row, currentMinMaxBean),
+                    output,
+                    unitKey,
+                    writer);
         }
 
         public override void ReadCodegen(
@@ -105,10 +115,10 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
             method.Block
                 .AssignRef(
                     RowDotRef(row, currentMinMax),
-                    Cast(typeof(object), ExprDotMethod(currentMinMaxSerde, "read", input, unitKey)))
+                    Cast(typeof(object), ExprDotMethod(currentMinMaxSerde, "Read", input, unitKey)))
                 .AssignRef(
                     RowDotRef(row, currentMinMaxBean),
-                    Cast(typeof(EventBean), ExprDotMethod(currentMinMaxBeanSerde, "read", input, unitKey)));
+                    Cast(typeof(EventBean), ExprDotMethod(currentMinMaxBeanSerde, "Read", input, unitKey)));
         }
 
         public CodegenExpression GetFirstValueCodegen(
@@ -160,9 +170,10 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
         {
             CodegenExpression eps = symbols.GetAddEPS(method);
             CodegenExpression ctx = symbols.GetAddExprEvalCtx(method);
-            method.Block.DeclareVar(typeof(EventBean), "theEvent", ArrayAtIndex(eps, Constant(forge.Spec.StreamNum)))
-                .IfCondition(EqualsNull(Ref("theEvent"))).BlockReturnNoValue()
-                .LocalMethod(AddEventCodegen(method, namedMethods, classScope), Ref("theEvent"), eps, ctx);
+            method.Block.DeclareVar<EventBean>("theEvent", ArrayAtIndex(eps, Constant(forge.Spec.StreamNum)))
+                .IfCondition(EqualsNull(Ref("theEvent")))
+                .BlockReturnNoValue()
+                .InstanceMethod(AddEventCodegen(method, namedMethods, classScope), Ref("theEvent"), eps, ctx);
         }
 
         internal override void ApplyLeaveFiltered(
@@ -180,19 +191,26 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
             CodegenClassScope classScope)
         {
             var comparable = GetComparableWObjectArrayKeyCodegen(
-                forge.Spec.Criteria, currentMinMaxBean, namedMethods, classScope);
+                forge.Spec.Criteria,
+                currentMinMaxBean,
+                namedMethods,
+                classScope);
 
             var methodNode = parent.MakeChild(typeof(void), GetType(), classScope)
-                .AddParam(typeof(EventBean), "theEvent").AddParam(typeof(EventBean[]), NAME_EPS).AddParam(
-                    typeof(ExprEvaluatorContext), NAME_EXPREVALCONTEXT);
-            methodNode.Block.DeclareVar(
-                    typeof(object), "comparable", LocalMethod(comparable, REF_EPS, ConstantTrue(), REF_EXPREVALCONTEXT))
+                .AddParam(typeof(EventBean), "theEvent")
+                .AddParam(typeof(EventBean[]), NAME_EPS)
+                .AddParam(
+                    typeof(ExprEvaluatorContext),
+                    NAME_EXPREVALCONTEXT);
+            methodNode.Block.DeclareVar<object>(
+                    "comparable",
+                    LocalMethod(comparable, REF_EPS, ConstantTrue(), REF_EXPREVALCONTEXT))
                 .IfCondition(EqualsNull(currentMinMax))
                 .AssignRef(currentMinMax, Ref("comparable"))
                 .AssignRef(currentMinMaxBean, Ref("theEvent"))
                 .IfElse()
-                .DeclareVar(
-                    typeof(int), "compareResult",
+                .DeclareVar<int>(
+                    "compareResult",
                     ExprDotMethod(comparator, "compare", currentMinMax, Ref("comparable")))
                 .IfCondition(Relational(Ref("compareResult"), forge.Spec.IsMax ? LT : GT, Constant(0)))
                 .AssignRef(currentMinMax, Ref("comparable"))
@@ -212,20 +230,27 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
                     method.Block.MethodReturn(
                         LocalMethod(
                             CodegenLegoMethodExpression.CodegenExpression(criteria[0].Forge, method, classScope),
-                            REF_EPS, REF_ISNEWDATA, REF_EXPREVALCONTEXT));
+                            REF_EPS,
+                            REF_ISNEWDATA,
+                            REF_EXPREVALCONTEXT));
                 }
                 else {
                     var exprSymbol = new ExprForgeCodegenSymbol(true, null);
                     var expressions = new CodegenExpression[criteria.Length];
                     for (var i = 0; i < criteria.Length; i++) {
-                        expressions[i] = criteria[i].Forge.EvaluateCodegen(
-                            typeof(object), method, exprSymbol, classScope);
+                        expressions[i] = criteria[i]
+                            .Forge.EvaluateCodegen(
+                                typeof(object),
+                                method,
+                                exprSymbol,
+                                classScope);
                     }
 
                     exprSymbol.DerivedSymbolsCodegen(method, method.Block, classScope);
 
-                    method.Block.DeclareVar(
-                        typeof(object[]), "result", NewArrayByLength(typeof(object), Constant(criteria.Length)));
+                    method.Block.DeclareVar<object[]>(
+                        "result",
+                        NewArrayByLength(typeof(object), Constant(criteria.Length)));
                     for (var i = 0; i < criteria.Length; i++) {
                         method.Block.AssignArrayElement(Ref("result"), Constant(i), expressions[i]);
                     }
@@ -234,10 +259,18 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
                 }
             };
             return namedMethods.AddMethod(
-                typeof(object), methodName,
+                typeof(object),
+                methodName,
                 CodegenNamedParam.From(
-                    typeof(EventBean[]), NAME_EPS, typeof(bool), NAME_ISNEWDATA, typeof(ExprEvaluatorContext),
-                    NAME_EXPREVALCONTEXT), typeof(AggregatorAccessSortedImpl), classScope, code);
+                    typeof(EventBean[]),
+                    NAME_EPS,
+                    typeof(bool),
+                    NAME_ISNEWDATA,
+                    typeof(ExprEvaluatorContext),
+                    NAME_EXPREVALCONTEXT),
+                typeof(AggregatorAccessSortedImpl),
+                classScope,
+                code);
         }
 
         public static CodegenExpression CodegenGetAccessTableState(

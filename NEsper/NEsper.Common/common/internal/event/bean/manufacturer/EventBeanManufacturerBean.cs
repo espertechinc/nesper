@@ -8,6 +8,7 @@
 
 using System;
 using System.Reflection;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.@event.bean.core;
 using com.espertech.esper.common.@internal.@event.bean.instantiator;
@@ -86,8 +87,11 @@ namespace com.espertech.esper.common.@internal.@event.bean.manufacturer
                     }
                     catch (Exception e) {
                         var message = "Unexpected exception encountered invoking setter-method '" +
-                                      writeMethodsReflection[i] + "' on class '" +
-                                      beanEventType.UnderlyingType.Name + "' : " + e.Message;
+                                      writeMethodsReflection[i] +
+                                      "' on class '" +
+                                      beanEventType.UnderlyingType.Name +
+                                      "' : " +
+                                      e.Message;
                         Log.Error(message, e);
                     }
                 }
@@ -121,8 +125,12 @@ namespace com.espertech.esper.common.@internal.@event.bean.manufacturer
             Exception ex,
             string methodName)
         {
-            var message = "Unexpected exception encountered invoking setter-method '" + methodName + "' on class '" +
-                          beanEventType.UnderlyingType.Name + "' : " + ex.Message;
+            var message = "Unexpected exception encountered invoking setter-method '" +
+                          methodName +
+                          "' on class '" +
+                          beanEventType.UnderlyingType.Name +
+                          "' : " +
+                          ex.Message;
             Log.Error(message, ex);
         }
 
@@ -130,8 +138,12 @@ namespace com.espertech.esper.common.@internal.@event.bean.manufacturer
             MemberAccessException ex,
             string methodName)
         {
-            var message = "Unexpected exception encountered invoking setter-method '" + methodName + "' on class '" +
-                          beanEventType.UnderlyingType.Name + "' : " + ex.Message;
+            var message = "Unexpected exception encountered invoking setter-method '" +
+                          methodName +
+                          "' on class '" +
+                          beanEventType.UnderlyingType.Name +
+                          "' : " +
+                          ex.Message;
             Log.Error(message, ex);
         }
     }

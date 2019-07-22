@@ -58,7 +58,11 @@ namespace com.espertech.esper.common.@internal.epl.index.advanced.index.service
                     for (var i = 0; i < IndexProperties.Length; i++) {
                         indexedExpr[i] = services.CompilerServices.CompileExpression(IndexExpressionTexts[i], services);
                         indexedExpr[i] = EPLValidationUtil.ValidateSimpleGetSubtree(
-                            ExprNodeOrigin.CREATEINDEXCOLUMN, indexedExpr[i], eventTypeIndexed, false, statementRawInfo,
+                            ExprNodeOrigin.CREATEINDEXCOLUMN,
+                            indexedExpr[i],
+                            eventTypeIndexed,
+                            false,
+                            statementRawInfo,
                             services);
                     }
                 }
@@ -78,7 +82,10 @@ namespace com.espertech.esper.common.@internal.epl.index.advanced.index.service
             }
 
             return new EventAdvancedIndexProvisionCompileTime(
-                desc, parameters, Factory.Forge, Factory.ToConfigStatement(indexedExpr));
+                desc,
+                parameters,
+                Factory.Forge,
+                Factory.ToConfigStatement(indexedExpr));
         }
     }
 } // end of namespace

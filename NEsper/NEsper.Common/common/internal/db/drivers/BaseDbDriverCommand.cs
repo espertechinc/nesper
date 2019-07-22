@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
 using System.Text;
+
 using com.espertech.esper.common.client.configuration.common;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.historical.database.core;
@@ -24,7 +25,6 @@ namespace com.espertech.esper.common.@internal.db.drivers
     /// Companion to the BaseDbDriver that provides command support in
     /// accordance to ADO.NET and the DbDriverCommand.
     /// </summary>
-
     public class BaseDbDriverCommand : DbDriverCommand
     {
         private const string SAMPLE_WHERECLAUSE_PLACEHOLDER = "$ESPER-SAMPLE-WHERE";
@@ -89,7 +89,7 @@ namespace com.espertech.esper.common.@internal.db.drivers
         /// <param name="dbCommandTimeout">The db command timeout.</param>
         /// <param name="metadataSettings">The metadata settings.</param>
         protected internal BaseDbDriverCommand(
-            BaseDbDriver driver, 
+            BaseDbDriver driver,
             IEnumerable<PlaceholderParser.Fragment> fragments,
             IEnumerable<string> inputParameters,
             string dbCommandText,
@@ -133,16 +133,15 @@ namespace com.espertech.esper.common.@internal.db.drivers
         }
 
         #region IDisposable Members
+
         /// <summary>
         /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
         /// </summary>
         public void Dispose()
         {
-            lock (_allocLock)
-            {
+            lock (_allocLock) {
                 // Clean up the command
-                if (_theCommand != null)
-                {
+                if (_theCommand != null) {
                     _theCommand.Dispose();
                     _theCommand = null;
                 }
@@ -158,7 +157,9 @@ namespace com.espertech.esper.common.@internal.db.drivers
 
         #endregion
 
-        private DbCommand CreateCommand(DbConnection dbConnection, bool honorTimeout)
+        private DbCommand CreateCommand(
+            DbConnection dbConnection,
+            bool honorTimeout)
         {
             DbCommand myCommand;
             // Create the command
@@ -171,8 +172,7 @@ namespace com.espertech.esper.common.@internal.db.drivers
 
             // Bind the parameters
             myCommand.Parameters.Clear();
-            foreach (var parameterName in _inputParameters)
-            {
+            foreach (var parameterName in _inputParameters) {
                 var myParam = myCommand.CreateParameter();
                 myParam.IsNullable = true;
                 myParam.ParameterName = parameterName;
@@ -188,10 +188,8 @@ namespace com.espertech.esper.common.@internal.db.drivers
         /// </summary>
         protected virtual void AllocateCommand()
         {
-            lock( _allocLock )
-            {
-                if (_theCommand == null)
-                {
+            lock (_allocLock) {
+                if (_theCommand == null) {
                     // Create the connection
                     _theConnection = _driver.CreateConnectionInternal();
                     // Create the command
@@ -204,10 +202,8 @@ namespace com.espertech.esper.common.@internal.db.drivers
         /// Gets the actual database command.
         /// </summary>
         /// <value>The command.</value>
-        public virtual DbCommand Command
-        {
-            get
-            {
+        public virtual DbCommand Command {
+            get {
                 AllocateCommand();
                 return _theCommand;
             }
@@ -222,16 +218,12 @@ namespace com.espertech.esper.common.@internal.db.drivers
         {
             var eventPropertyParams = new List<string>();
             var builtinParams = new List<string>();
-            foreach (var fragment in parseFragements)
-            {
-                if (fragment.IsParameter)
-                {
-                    if (fragment.Value == SAMPLE_WHERECLAUSE_PLACEHOLDER)
-                    {
+            foreach (var fragment in parseFragements) {
+                if (fragment.IsParameter) {
+                    if (fragment.Value == SAMPLE_WHERECLAUSE_PLACEHOLDER) {
                         builtinParams.Add(fragment.Value);
                     }
-                    else
-                    {
+                    else {
                         eventPropertyParams.Add(fragment.Value);
                     }
                 }
@@ -252,22 +244,16 @@ namespace com.espertech.esper.common.@internal.db.drivers
         /// Gets the pseudo text.
         /// </summary>
         /// <value>The pseudo text.</value>
-        public virtual string PseudoText
-        {
-            get
-            {
+        public virtual string PseudoText {
+            get {
                 var builder = new StringBuilder();
-                foreach (var fragment in Fragments)
-                {
-                    if (fragment.IsParameter)
-                    {
-                        if (fragment.Value != SAMPLE_WHERECLAUSE_PLACEHOLDER)
-                        {
+                foreach (var fragment in Fragments) {
+                    if (fragment.IsParameter) {
+                        if (fragment.Value != SAMPLE_WHERECLAUSE_PLACEHOLDER) {
                             builder.Append('?');
                         }
                     }
-                    else
-                    {
+                    else {
                         builder.Append(fragment.Value);
                     }
                 }
@@ -317,12 +303,9 @@ namespace com.espertech.esper.common.@internal.db.drivers
         /// Gets the output parameters.
         /// </summary>
         /// <value>The output parameters.</value>
-        public virtual IDictionary<string, DBOutputTypeDesc> OutputParameters
-        {
-            get
-            {
-                if (_outputParameters == null)
-                {
+        public virtual IDictionary<string, DBOutputTypeDesc> OutputParameters {
+            get {
+                if (_outputParameters == null) {
                     CreateOutputParameters();
                 }
 
@@ -335,13 +318,10 @@ namespace com.espertech.esper.common.@internal.db.drivers
         /// <summary>
         /// Creates and sets the output parameters
         /// </summary>
-
         protected virtual void CreateOutputParameters()
         {
-            try
-            {
-                if (Log.IsInfoEnabled)
-                {
+            try {
+                if (Log.IsInfoEnabled) {
                     Log.Info(".OutputParameters - dbCommandText = '" + _dbCommandText + "'");
                 }
 
@@ -356,26 +336,24 @@ namespace com.espertech.esper.common.@internal.db.drivers
 
                 var dbConnection = _driver.CreateConnectionInternal();
 
-                using (var dbCommand = CreateCommand(dbConnection, false))
-                {
-                    try
-                    {
-                        using (IDataReader reader = dbCommand.ExecuteReader(CommandBehavior.SchemaOnly))
-                        {
+                using (var dbCommand = CreateCommand(dbConnection, false)) {
+                    try {
+                        using (IDataReader reader = dbCommand.ExecuteReader(CommandBehavior.SchemaOnly)) {
                             // Get the schema table
                             schemaTable = reader.GetSchemaTable();
                         }
                     }
-                    catch (DbException ex)
-                    {
-                        var text = "Error in statement '" + _dbCommandText +
-                                      "', failed to obtain result metadata, consider turning off metadata interrogation via configuration";
+                    catch (DbException ex) {
+                        var text = "Error in statement '" +
+                                   _dbCommandText +
+                                   "', failed to obtain result metadata, consider turning off metadata interrogation via configuration";
                         Log.Error(text, ex);
-                        throw new ExprValidationException(text + ", please check the statement, reason: " + ex.Message, ex);
+                        throw new ExprValidationException(
+                            text + ", please check the statement, reason: " + ex.Message,
+                            ex);
                     }
 
-                    if (Log.IsDebugEnabled)
-                    {
+                    if (Log.IsDebugEnabled) {
                         Log.Debug(".OutputParameters value = " + _outputParameters);
                     }
                 }
@@ -383,8 +361,7 @@ namespace com.espertech.esper.common.@internal.db.drivers
                 // Analyze the schemaTable
                 _outputParameters = CompileSchemaTable(schemaTable, _metadataSettings);
             }
-            catch (DbException ex)
-            {
+            catch (DbException ex) {
                 var text = "Error preparing statement '" + _dbCommandText + '\'';
                 Log.Error(text, ex);
                 throw new ExprValidationException(text + ", reason: " + ex.Message, ex);
@@ -397,16 +374,15 @@ namespace com.espertech.esper.common.@internal.db.drivers
         /// </summary>
         /// <param name="schemaDataRow">The schema data row.</param>
         /// <returns></returns>
-        protected virtual Type GetColumnType( DataRow schemaDataRow )
+        protected virtual Type GetColumnType(DataRow schemaDataRow)
         {
-            var columnType = (Type)schemaDataRow["DataType"];
-            var columnSize = (int)schemaDataRow["ColumnSize"];
+            var columnType = (Type) schemaDataRow["DataType"];
+            var columnSize = (int) schemaDataRow["ColumnSize"];
 
             // Some providers (read MySQL) provide bools as an integer
             // with a size of 1.  We should probably convert these to bool
             // to make client integration easier.
-            if ((columnType == typeof(sbyte)) && (columnSize == 1))
-            {
+            if ((columnType == typeof(sbyte)) && (columnSize == 1)) {
                 columnType = typeof(bool);
             }
 
@@ -419,7 +395,7 @@ namespace com.espertech.esper.common.@internal.db.drivers
         /// </summary>
         /// <param name="schemaDataRow">The schema data row.</param>
         /// <returns></returns>
-        protected virtual string GetColumnSqlType( DataRow schemaDataRow )
+        protected virtual string GetColumnSqlType(DataRow schemaDataRow)
         {
             var dataType = (Type) schemaDataRow["DataType"];
             return dataType.FullName;
@@ -441,9 +417,8 @@ namespace com.espertech.esper.common.@internal.db.drivers
             ColumnSettings columnSettings)
         {
             IDictionary<string, DBOutputTypeDesc> outputProperties = new Dictionary<string, DBOutputTypeDesc>();
-            foreach (DataRow dataRow in schemaTable.Rows) 
-            {
-                var columnName = (string)dataRow["ColumnName"];
+            foreach (DataRow dataRow in schemaTable.Rows) {
+                var columnName = (string) dataRow["ColumnName"];
                 var columnType = GetColumnType(dataRow);
                 var sqlTypeName = GetColumnSqlType(dataRow);
                 //var canBeNull = (Boolean)dataRow["AllowDBNull"];
@@ -453,11 +428,11 @@ namespace com.espertech.esper.common.@internal.db.drivers
 
                 // Address column case management
                 var caseEnum = columnSettings.ColumnCaseConversionEnum;
-                switch (caseEnum)
-                {
+                switch (caseEnum) {
                     case ColumnChangeCaseEnum.LOWERCASE:
                         columnName = columnName.ToLower();
                         break;
+
                     case ColumnChangeCaseEnum.UPPERCASE:
                         columnName = columnName.ToUpper();
                         break;
@@ -488,13 +463,13 @@ namespace com.espertech.esper.common.@internal.db.drivers
 
         #endregion
 
-        private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILog Log =
+            LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
     }
 
     /// <summary>
     /// Creates database command objects
     /// </summary>
     /// <returns></returns>
-
     public delegate IDbCommand DbCommandFactory();
 }

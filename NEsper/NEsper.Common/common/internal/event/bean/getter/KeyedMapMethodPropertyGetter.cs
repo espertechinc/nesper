@@ -9,6 +9,7 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -18,6 +19,7 @@ using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.@event.util;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat.collections;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.@event.bean.getter
@@ -29,8 +31,8 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
         BeanEventPropertyGetter,
         EventPropertyGetterAndMapped
     {
-        private readonly object key;
-        private readonly MethodInfo method;
+        private readonly object _key;
+        private readonly MethodInfo _method;
 
         public KeyedMapMethodPropertyGetter(
             MethodInfo method,
@@ -38,15 +40,18 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
             EventBeanTypedEventFactory eventBeanTypedEventFactory,
             BeanEventTypeFactory beanEventTypeFactory)
             : base(
-                eventBeanTypedEventFactory, beanEventTypeFactory, TypeHelper.GetGenericReturnTypeMap(method, false), null)
+                eventBeanTypedEventFactory,
+                beanEventTypeFactory,
+                TypeHelper.GetGenericReturnTypeMap(method, false),
+                null)
         {
-            this.key = key;
-            this.method = method;
+            _key = key;
+            _method = method;
         }
 
         public object GetBeanProp(object @object)
         {
-            return GetBeanPropInternal(@object, key);
+            return GetBeanPropInternal(@object, _key);
         }
 
         public bool IsBeanExistsProperty(object @object)
@@ -65,9 +70,9 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
             return true; // Property exists as the property is not dynamic (unchecked)
         }
 
-        public override Type BeanPropType => TypeHelper.GetGenericReturnTypeMap(method, false);
+        public override Type BeanPropType => TypeHelper.GetGenericReturnTypeMap(_method, false);
 
-        public override Type TargetType => method.DeclaringType;
+        public override Type TargetType => _method.DeclaringType;
 
         public override CodegenExpression EventBeanGetCodegen(
             CodegenExpression beanExpression,
@@ -75,7 +80,9 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
             CodegenClassScope codegenClassScope)
         {
             return UnderlyingGetCodegen(
-                CastUnderlying(TargetType, beanExpression), codegenMethodScope, codegenClassScope);
+                CastUnderlying(TargetType, beanExpression),
+                codegenMethodScope,
+                codegenClassScope);
         }
 
         public override CodegenExpression EventBeanExistsCodegen(
@@ -92,8 +99,9 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
             CodegenClassScope codegenClassScope)
         {
             return LocalMethod(
-                GetBeanPropInternalCodegen(codegenMethodScope, BeanPropType, TargetType, method, codegenClassScope),
-                underlyingExpression, Constant(key));
+                GetBeanPropInternalCodegen(codegenMethodScope, BeanPropType, TargetType, _method, codegenClassScope),
+                underlyingExpression,
+                Constant(_key));
         }
 
         public override CodegenExpression UnderlyingExistsCodegen(
@@ -118,8 +126,9 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
             CodegenExpression key)
         {
             return LocalMethod(
-                GetBeanPropInternalCodegen(codegenMethodScope, BeanPropType, TargetType, method, codegenClassScope),
-                CastUnderlying(TargetType, beanExpression), key);
+                GetBeanPropInternalCodegen(codegenMethodScope, BeanPropType, TargetType, _method, codegenClassScope),
+                CastUnderlying(TargetType, beanExpression),
+                key);
         }
 
         public object GetBeanPropInternal(
@@ -127,7 +136,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
             object key)
         {
             try {
-                var result = method.Invoke(@object, null);
+                var result = _method.Invoke(@object, null);
                 if (!(result is IDictionary<object, object>)) {
                     return null;
                 }
@@ -136,7 +145,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
                 return resultMap.Get(key);
             }
             catch (InvalidCastException e) {
-                throw PropertyUtility.GetMismatchException(method, @object, e);
+                throw PropertyUtility.GetMismatchException(_method, @object, e);
             }
         }
 
@@ -148,7 +157,9 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
             CodegenClassScope codegenClassScope)
         {
             return codegenMethodScope.MakeChild(beanPropType, typeof(KeyedMapMethodPropertyGetter), codegenClassScope)
-                .AddParam(targetType, "object").AddParam(typeof(object), "key").Block
+                .AddParam(targetType, "object")
+                .AddParam(typeof(object), "key")
+                .Block
                 .DeclareVar(method.ReturnType, "result", ExprDotMethod(Ref("object"), method.Name))
                 .IfRefNotTypeReturnConst("result", typeof(IDictionary<object, object>), null)
                 .MethodReturn(
@@ -160,8 +171,10 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
         public override string ToString()
         {
             return "KeyedMapMethodPropertyGetter " +
-                   " method=" + method +
-                   " key=" + key;
+                   " method=" +
+                   _method +
+                   " key=" +
+                   _key;
         }
     }
 } // end of namespace

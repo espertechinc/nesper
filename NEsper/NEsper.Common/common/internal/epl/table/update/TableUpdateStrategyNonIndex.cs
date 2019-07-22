@@ -34,14 +34,12 @@ namespace com.espertech.esper.common.@internal.epl.table.update
             ExprEvaluatorContext exprEvaluatorContext)
         {
             // update (no-copy unless original values required)
-            foreach (EventBean @event in eventsUnsafeIter)
-            {
+            foreach (EventBean @event in eventsUnsafeIter) {
                 eventsPerStream[0] = @event;
                 ObjectArrayBackedEventBean updatedEvent = (ObjectArrayBackedEventBean) @event;
 
                 // if "initial.property" is part of the assignment expressions, provide initial value event
-                if (updateHelper.IsRequiresStream2InitialValueEvent)
-                {
+                if (updateHelper.IsRequiresStream2InitialValueEvent) {
                     object[] prev = new object[updatedEvent.Properties.Length];
                     Array.Copy(updatedEvent.Properties, 0, prev, 0, prev.Length);
                     eventsPerStream[2] = new ObjectArrayEventBean(prev, updatedEvent.EventType);

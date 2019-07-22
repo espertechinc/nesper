@@ -51,9 +51,18 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
                 CodegenClassScope codegenClassScope)
             {
                 return CodegenExpressionBuilder.And(
-                    CodegenExpressionBuilder.Relational(leftStart, CodegenExpressionRelational.CodegenRelational.LT, rightStart),
-                    CodegenExpressionBuilder.Relational(rightStart, CodegenExpressionRelational.CodegenRelational.LT, leftEnd),
-                    CodegenExpressionBuilder.Relational(leftEnd, CodegenExpressionRelational.CodegenRelational.LT, rightEnd));
+                    CodegenExpressionBuilder.Relational(
+                        leftStart,
+                        CodegenExpressionRelational.CodegenRelational.LT,
+                        rightStart),
+                    CodegenExpressionBuilder.Relational(
+                        rightStart,
+                        CodegenExpressionRelational.CodegenRelational.LT,
+                        leftEnd),
+                    CodegenExpressionBuilder.Relational(
+                        leftEnd,
+                        CodegenExpressionRelational.CodegenRelational.LT,
+                        rightEnd));
             }
         }
     }

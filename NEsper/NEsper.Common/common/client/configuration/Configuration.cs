@@ -12,6 +12,7 @@ using System.Net;
 using System.Reflection;
 using System.Threading;
 using System.Xml;
+
 using com.espertech.esper.common.client.configuration.common;
 using com.espertech.esper.common.client.configuration.compiler;
 using com.espertech.esper.common.client.configuration.runtime;
@@ -35,8 +36,7 @@ namespace com.espertech.esper.common.client.configuration
     {
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-        [NonSerialized]
-        private IContainer _container;
+        [NonSerialized] private IContainer _container;
 
         /// <summary>
         /// Default name of the configuration file.
@@ -176,13 +176,14 @@ namespace com.espertech.esper.common.client.configuration
         internal Stream GetResourceAsStream(String resource)
         {
             var stripped = resource.StartsWith("/", StringComparison.CurrentCultureIgnoreCase)
-                ? resource.Substring(1) : resource;
+                ? resource.Substring(1)
+                : resource;
             var stream = ResourceManager.GetResourceAsStream(resource) ??
-                            ResourceManager.GetResourceAsStream(stripped);
-            if (stream == null)
-            {
+                         ResourceManager.GetResourceAsStream(stripped);
+            if (stream == null) {
                 throw new EPException(resource + " not found");
             }
+
             return stream;
         }
 

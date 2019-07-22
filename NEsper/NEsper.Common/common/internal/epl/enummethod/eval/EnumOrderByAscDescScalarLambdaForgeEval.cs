@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -20,6 +21,7 @@ using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.enummethod.eval
@@ -84,35 +86,46 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             CodegenClassScope codegenClassScope)
         {
             CodegenExpressionField resultTypeMember = codegenClassScope.AddFieldUnshared(
-                true, typeof(ObjectArrayEventType),
-                Cast(typeof(ObjectArrayEventType), EventTypeUtility.ResolveTypeCodegen(forge.resultEventType, EPStatementInitServicesConstants.REF)));
+                true,
+                typeof(ObjectArrayEventType),
+                Cast(
+                    typeof(ObjectArrayEventType),
+                    EventTypeUtility.ResolveTypeCodegen(forge.resultEventType, EPStatementInitServicesConstants.REF)));
             Type innerBoxedType = Boxing.GetBoxedType(forge.innerExpression.EvaluationType);
 
             ExprForgeCodegenSymbol scope = new ExprForgeCodegenSymbol(false, null);
             CodegenMethod methodNode = codegenMethodScope.MakeChildWithScope(
-                    typeof(ICollection<object>), typeof(EnumOrderByAscDescScalarLambdaForgeEval), scope, codegenClassScope)
+                    typeof(ICollection<object>),
+                    typeof(EnumOrderByAscDescScalarLambdaForgeEval),
+                    scope,
+                    codegenClassScope)
                 .AddParam(EnumForgeCodegenNames.PARAMS);
 
             CodegenBlock block = methodNode.Block
-                .DeclareVar(typeof(OrderedDictionary<object, object>), "sort", NewInstance(typeof(OrderedDictionary<object, object>)))
-                .DeclareVar(typeof(bool), "hasColl", ConstantFalse())
-                .DeclareVar(
-                    typeof(ObjectArrayEventBean), "resultEvent",
+                .DeclareVar<OrderedDictionary<object, object>>(
+                    "sort",
+                    NewInstance(typeof(OrderedDictionary<object, object>)))
+                .DeclareVar<bool>("hasColl", ConstantFalse())
+                .DeclareVar<ObjectArrayEventBean>(
+                    "resultEvent",
                     NewInstance<ObjectArrayEventBean>(NewArrayByLength(typeof(object), Constant(1)), resultTypeMember))
                 .AssignArrayElement(EnumForgeCodegenNames.REF_EPS, Constant(forge.streamNumLambda), @Ref("resultEvent"))
-                .DeclareVar(typeof(object[]), "props", ExprDotMethod(@Ref("resultEvent"), "getProperties"));
+                .DeclareVar<object[]>("props", ExprDotMethod(@Ref("resultEvent"), "getProperties"));
 
             block.ForEach(typeof(object), "next", EnumForgeCodegenNames.REF_ENUMCOLL)
                 .AssignArrayElement("props", Constant(0), @Ref("next"))
-                .DeclareVar(innerBoxedType, "value", forge.innerExpression.EvaluateCodegen(innerBoxedType, methodNode, scope, codegenClassScope))
-                .DeclareVar(typeof(object), "entry", ExprDotMethod(@Ref("sort"), "get", @Ref("value")))
+                .DeclareVar(
+                    innerBoxedType,
+                    "value",
+                    forge.innerExpression.EvaluateCodegen(innerBoxedType, methodNode, scope, codegenClassScope))
+                .DeclareVar<object>("entry", ExprDotMethod(@Ref("sort"), "get", @Ref("value")))
                 .IfCondition(EqualsNull(@Ref("entry")))
                 .Expression(ExprDotMethod(@Ref("sort"), "put", @Ref("value"), @Ref("next")))
                 .BlockContinue()
                 .IfCondition(InstanceOf(@Ref("entry"), typeof(ICollection<object>)))
                 .ExprDotMethod(Cast(typeof(ICollection<object>), @Ref("entry")), "add", @Ref("next"))
                 .BlockContinue()
-                .DeclareVar(typeof(Deque<object>), "coll", NewInstance<ArrayDeque<object>>(Constant(2)))
+                .DeclareVar<Deque<object>>("coll", NewInstance<ArrayDeque<object>>(Constant(2)))
                 .ExprDotMethod(@Ref("coll"), "add", @Ref("entry"))
                 .ExprDotMethod(@Ref("coll"), "add", @Ref("next"))
                 .ExprDotMethod(@Ref("sort"), "put", @Ref("value"), @Ref("coll"))
@@ -120,7 +133,11 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                 .BlockEnd();
             block.MethodReturn(
                 StaticMethod(
-                    typeof(EnumOrderByAscDescEventsForgeEval), "enumOrderBySortEval", @Ref("sort"), @Ref("hasColl"), Constant(forge.descending)));
+                    typeof(EnumOrderByAscDescEventsForgeEval),
+                    "enumOrderBySortEval",
+                    @Ref("sort"),
+                    @Ref("hasColl"),
+                    Constant(forge.descending)));
             return LocalMethod(methodNode, args.Eps, args.Enumcoll, args.IsNewData, args.ExprCtx);
         }
     }

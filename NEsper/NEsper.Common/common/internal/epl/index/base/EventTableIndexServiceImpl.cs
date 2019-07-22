@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.epl.index.advanced.index.service;
@@ -80,7 +81,13 @@ namespace com.espertech.esper.common.@internal.epl.index.@base
             bool isFireAndForget)
         {
             return new PropertyCompositeEventTableFactory(
-                indexedStreamNum, indexProps, indexCoercionTypes, indexGetter, rangeProps, rangeCoercionTypes, rangeGetters);
+                indexedStreamNum,
+                indexProps,
+                indexCoercionTypes,
+                indexGetter,
+                rangeProps,
+                rangeCoercionTypes,
+                rangeGetters);
         }
 
         public EventTableFactory CreateInArray(
@@ -103,7 +110,12 @@ namespace com.espertech.esper.common.@internal.epl.index.@base
             bool unique,
             EventAdvancedIndexProvisionRuntime advancedIndexProvisionDesc)
         {
-            return new EventTableFactoryCustomIndex(indexName, indexedStreamNum, eventType, unique, advancedIndexProvisionDesc);
+            return new EventTableFactoryCustomIndex(
+                indexName,
+                indexedStreamNum,
+                eventType,
+                unique,
+                advancedIndexProvisionDesc);
         }
     }
 } // end of namespace

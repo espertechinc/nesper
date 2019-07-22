@@ -8,12 +8,14 @@
 
 using System.Collections.Generic;
 using System.Xml;
+
 using com.espertech.esper.collection;
 using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.type;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+
 using static com.espertech.esper.common.@internal.util.DOMUtil;
 
 namespace com.espertech.esper.common.client.configuration.runtime
@@ -40,36 +42,47 @@ namespace com.espertech.esper.common.client.configuration.runtime
                     case "plugin-loader":
                         HandlePluginLoaders(runtime, element);
                         break;
+
                     case "threading":
                         HandleThreading(runtime, element);
                         break;
+
                     case "logging":
                         HandleLogging(runtime, element);
                         break;
+
                     case "variables":
                         HandleVariables(runtime, element);
                         break;
+
                     case "time-source":
                         HandleTimeSource(runtime, element);
                         break;
+
                     case "metrics-reporting":
                         HandleMetricsReporting(runtime, element);
                         break;
+
                     case "exceptionHandling":
                         HandleExceptionHandling(runtime, element);
                         break;
+
                     case "conditionHandling":
                         HandleConditionHandling(runtime, element);
                         break;
+
                     case "patterns":
                         HandlePatterns(runtime, element);
                         break;
+
                     case "match-recognize":
                         HandleMatchRecognize(runtime, element);
                         break;
+
                     case "expression":
                         HandleExpression(runtime, element);
                         break;
+
                     case "execution":
                         HandleExecution(runtime, element);
                         break;
@@ -164,7 +177,8 @@ namespace com.espertech.esper.common.client.configuration.runtime
             runtime.ExceptionHandling.AddClasses(GetHandlerFactories(element));
             var enableUndeployRethrowStr = GetOptionalAttribute(element, "undeploy-rethrow-policy");
             if (enableUndeployRethrowStr != null) {
-                runtime.ExceptionHandling.UndeployRethrowPolicy = EnumHelper.Parse<UndeployRethrowPolicy>(enableUndeployRethrowStr);
+                runtime.ExceptionHandling.UndeployRethrowPolicy =
+                    EnumHelper.Parse<UndeployRethrowPolicy>(enableUndeployRethrowStr);
             }
         }
 
@@ -244,9 +258,11 @@ namespace com.espertech.esper.common.client.configuration.runtime
                         case "NANO":
                             timeSourceType = TimeSourceType.NANO;
                             break;
+
                         case "MILLI":
                             timeSourceType = TimeSourceType.MILLI;
                             break;
+
                         default:
                             throw new ConfigurationException(
                                 "Value attribute for time-source element invalid, " +
@@ -287,12 +303,14 @@ namespace com.espertech.esper.common.client.configuration.runtime
                         runtime.Logging.IsEnableExecutionDebug = value;
                         break;
                     }
+
                     case "timer-debug": {
                         var valueText = GetRequiredAttribute(subElement, "enabled");
                         var value = bool.Parse(valueText);
                         runtime.Logging.IsEnableTimerDebug = value;
                         break;
                     }
+
                     case "audit":
                         runtime.Logging.AuditPattern = GetOptionalAttribute(subElement, "pattern");
                         break;
@@ -328,6 +346,7 @@ namespace com.espertech.esper.common.client.configuration.runtime
 
                         break;
                     }
+
                     case "insert-into-dispatch": {
                         var preserveOrderText = GetRequiredAttribute(subElement, "preserve-order");
                         var preserveOrder = bool.Parse(preserveOrderText);
@@ -346,6 +365,7 @@ namespace com.espertech.esper.common.client.configuration.runtime
 
                         break;
                     }
+
                     case "named-window-consumer-dispatch": {
                         var preserveOrderText = GetRequiredAttribute(subElement, "preserve-order");
                         var preserveOrder = bool.Parse(preserveOrderText);
@@ -364,6 +384,7 @@ namespace com.espertech.esper.common.client.configuration.runtime
 
                         break;
                     }
+
                     case "internal-timer": {
                         var enabledText = GetRequiredAttribute(subElement, "enabled");
                         var enabled = bool.Parse(enabledText);
@@ -373,6 +394,7 @@ namespace com.espertech.esper.common.client.configuration.runtime
                         runtime.Threading.InternalTimerMsecResolution = msecResolution;
                         break;
                     }
+
                     case "threadpool-inbound": {
                         var result = ParseThreadPoolConfig(subElement);
                         runtime.Threading.IsThreadPoolInbound = result.IsEnabled;
@@ -380,6 +402,7 @@ namespace com.espertech.esper.common.client.configuration.runtime
                         runtime.Threading.ThreadPoolInboundCapacity = result.Capacity;
                         break;
                     }
+
                     case "threadpool-outbound": {
                         var result = ParseThreadPoolConfig(subElement);
                         runtime.Threading.IsThreadPoolOutbound = result.IsEnabled;
@@ -387,6 +410,7 @@ namespace com.espertech.esper.common.client.configuration.runtime
                         runtime.Threading.ThreadPoolOutboundCapacity = result.Capacity;
                         break;
                     }
+
                     case "threadpool-timerexec": {
                         var result = ParseThreadPoolConfig(subElement);
                         runtime.Threading.IsThreadPoolTimerExec = result.IsEnabled;
@@ -394,6 +418,7 @@ namespace com.espertech.esper.common.client.configuration.runtime
                         runtime.Threading.ThreadPoolTimerExecCapacity = result.Capacity;
                         break;
                     }
+
                     case "threadpool-routeexec": {
                         var result = ParseThreadPoolConfig(subElement);
                         runtime.Threading.IsThreadPoolRouteExec = result.IsEnabled;
@@ -423,11 +448,13 @@ namespace com.espertech.esper.common.client.configuration.runtime
                         properties.Put(name, value);
                         break;
                     }
+
                     case "config-xml": {
                         var nodeIter = DOMElementEnumerator.Create(subElement.ChildNodes);
                         if (!nodeIter.MoveNext()) {
                             throw new ConfigurationException(
-                                "Error handling config-xml for plug-in loader '" + loaderName +
+                                "Error handling config-xml for plug-in loader '" +
+                                loaderName +
                                 "', no child node found under initializer element, expecting an element node");
                         }
 
@@ -470,16 +497,19 @@ namespace com.espertech.esper.common.client.configuration.runtime
                         groupDef.Patterns.Add(new Pair<StringPatternSet, bool>(new StringPatternSetRegex(text), true));
                         break;
                     }
+
                     case "exclude-regex": {
                         var text = subElement.ChildNodes.Item(0).InnerText;
                         groupDef.Patterns.Add(new Pair<StringPatternSet, bool>(new StringPatternSetRegex(text), false));
                         break;
                     }
+
                     case "include-like": {
                         var text = subElement.ChildNodes.Item(0).InnerText;
                         groupDef.Patterns.Add(new Pair<StringPatternSet, bool>(new StringPatternSetLike(text), true));
                         break;
                     }
+
                     case "exclude-like": {
                         var text = subElement.ChildNodes.Item(0).InnerText;
                         groupDef.Patterns.Add(new Pair<StringPatternSet, bool>(new StringPatternSetLike(text), false));

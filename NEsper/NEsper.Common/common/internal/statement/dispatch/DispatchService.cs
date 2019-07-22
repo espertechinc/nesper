@@ -44,15 +44,12 @@ namespace com.espertech.esper.common.@internal.statement.dispatch
 
         private static void DispatchFromQueue(ArrayDeque<Dispatchable> dispatchQueue)
         {
-            while (true)
-            {
+            while (true) {
                 var next = dispatchQueue.Poll();
-                if (next != null)
-                {
+                if (next != null) {
                     next.Execute();
                 }
-                else
-                {
+                else {
                     break;
                 }
             }

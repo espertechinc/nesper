@@ -63,30 +63,43 @@ namespace com.espertech.esper.common.client.hook.vdw
             switch (enumValue) {
                 case VirtualDataWindowLookupOp.EQUALS:
                     return ("=");
+
                 case VirtualDataWindowLookupOp.LESS:
                     return ("<");
+
                 case VirtualDataWindowLookupOp.LESS_OR_EQUAL:
                     return ("<=");
+
                 case VirtualDataWindowLookupOp.GREATER_OR_EQUAL:
                     return (">=");
+
                 case VirtualDataWindowLookupOp.GREATER:
                     return (">");
+
                 case VirtualDataWindowLookupOp.RANGE_OPEN:
                     return ("(,)");
+
                 case VirtualDataWindowLookupOp.RANGE_CLOSED:
                     return ("[,]");
+
                 case VirtualDataWindowLookupOp.RANGE_HALF_OPEN:
                     return ("[,)");
+
                 case VirtualDataWindowLookupOp.RANGE_HALF_CLOSED:
                     return ("(,]");
+
                 case VirtualDataWindowLookupOp.NOT_RANGE_OPEN:
                     return ("-(,)");
+
                 case VirtualDataWindowLookupOp.NOT_RANGE_CLOSED:
                     return ("-[,]");
+
                 case VirtualDataWindowLookupOp.NOT_RANGE_HALF_OPEN:
                     return ("-[,)");
+
                 case VirtualDataWindowLookupOp.NOT_RANGE_HALF_CLOSED:
                     return ("-(,]");
+
                 default:
                     throw new ArgumentException("invalid value", nameof(enumValue));
             }
@@ -101,30 +114,43 @@ namespace com.espertech.esper.common.client.hook.vdw
             switch (stringOp) {
                 case ("="):
                     return VirtualDataWindowLookupOp.EQUALS;
+
                 case ("<"):
                     return VirtualDataWindowLookupOp.LESS;
+
                 case ("<="):
                     return VirtualDataWindowLookupOp.LESS_OR_EQUAL;
+
                 case (">="):
                     return VirtualDataWindowLookupOp.GREATER_OR_EQUAL;
+
                 case (">"):
                     return VirtualDataWindowLookupOp.GREATER;
+
                 case ("(,)"):
                     return VirtualDataWindowLookupOp.RANGE_OPEN;
+
                 case ("[,]"):
                     return VirtualDataWindowLookupOp.RANGE_CLOSED;
+
                 case ("[,)"):
                     return VirtualDataWindowLookupOp.RANGE_HALF_OPEN;
+
                 case ("(,]"):
                     return VirtualDataWindowLookupOp.RANGE_HALF_CLOSED;
+
                 case ("-(,)"):
                     return VirtualDataWindowLookupOp.NOT_RANGE_OPEN;
+
                 case ("-[,]"):
                     return VirtualDataWindowLookupOp.NOT_RANGE_CLOSED;
+
                 case ("-[,)"):
                     return VirtualDataWindowLookupOp.NOT_RANGE_HALF_OPEN;
+
                 case ("-(,]"):
                     return VirtualDataWindowLookupOp.NOT_RANGE_HALF_CLOSED;
+
                 default:
                     throw new ArgumentException("invalid value", "stringOp");
             }

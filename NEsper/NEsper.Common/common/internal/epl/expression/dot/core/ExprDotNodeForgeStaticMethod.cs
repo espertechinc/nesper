@@ -8,6 +8,7 @@
 
 using System;
 using System.Reflection;
+
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.enummethod.dot;
@@ -101,7 +102,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
             CodegenClassScope codegenClassScope)
         {
             return ExprDotNodeForgeStaticMethodEval.CodegenExprEval(
-                this, codegenMethodScope, exprSymbol, codegenClassScope);
+                this,
+                codegenMethodScope,
+                exprSymbol,
+                codegenClassScope);
         }
 
         public override CodegenExpression EvaluateCodegen(
@@ -111,7 +115,13 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
             CodegenClassScope codegenClassScope)
         {
             return new InstrumentationBuilderExpr(
-                GetType(), this, "ExprDot", requiredType, codegenMethodScope, exprSymbol, codegenClassScope).Build();
+                GetType(),
+                this,
+                "ExprDot",
+                requiredType,
+                codegenMethodScope,
+                exprSymbol,
+                codegenClassScope).Build();
         }
 
         public CodegenExpression EventBeanGetCodegen(
@@ -120,7 +130,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
             CodegenClassScope codegenClassScope)
         {
             return ExprDotNodeForgeStaticMethodEval.CodegenGet(
-                beanExpression, this, codegenMethodScope, codegenClassScope);
+                beanExpression,
+                this,
+                codegenMethodScope,
+                codegenClassScope);
         }
     }
 } // end of namespace

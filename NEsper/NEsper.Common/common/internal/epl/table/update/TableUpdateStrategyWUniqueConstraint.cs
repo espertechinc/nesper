@@ -41,14 +41,12 @@ namespace com.espertech.esper.common.@internal.epl.table.update
             // and those same indexes are being changed now
             var events = new EventBean[eventsUnsafeIter.Count];
             var count = 0;
-            foreach (var @event in eventsUnsafeIter)
-            {
+            foreach (var @event in eventsUnsafeIter) {
                 events[count++] = @event;
             }
 
             // remove from affected indexes
-            foreach (var affectedIndexName in _affectedIndexNames)
-            {
+            foreach (var affectedIndexName in _affectedIndexNames) {
                 var index = instance.GetIndex(affectedIndexName);
                 index.Remove(events, exprEvaluatorContext);
             }
@@ -57,8 +55,7 @@ namespace com.espertech.esper.common.@internal.epl.table.update
             var previousData = new object[events.Length][];
 
             // copy and then update
-            for (var i = 0; i < events.Length; i++)
-            {
+            for (var i = 0; i < events.Length; i++) {
                 eventsPerStream[0] = events[i];
 
                 // copy non-aggregated value references
@@ -68,8 +65,7 @@ namespace com.espertech.esper.common.@internal.epl.table.update
                 previousData[i] = prev;
 
                 // if "initial.property" is part of the assignment expressions, provide initial value event
-                if (_updateHelper.IsRequiresStream2InitialValueEvent)
-                {
+                if (_updateHelper.IsRequiresStream2InitialValueEvent) {
                     eventsPerStream[2] = new ObjectArrayEventBean(prev, updatedEvent.EventType);
                 }
 
@@ -80,34 +76,28 @@ namespace com.espertech.esper.common.@internal.epl.table.update
             }
 
             // add to affected indexes
-            try
-            {
-                foreach (var affectedIndexName in _affectedIndexNames)
-                {
+            try {
+                foreach (var affectedIndexName in _affectedIndexNames) {
                     var index = instance.GetIndex(affectedIndexName);
                     index.Add(events, exprEvaluatorContext);
                 }
             }
-            catch (EPException)
-            {
+            catch (EPException) {
                 // rollback
                 // remove updated events
-                foreach (var affectedIndexName in _affectedIndexNames)
-                {
+                foreach (var affectedIndexName in _affectedIndexNames) {
                     var index = instance.GetIndex(affectedIndexName);
                     index.Remove(events, exprEvaluatorContext);
                 }
 
                 // rollback change to events
-                for (var i = 0; i < events.Length; i++)
-                {
+                for (var i = 0; i < events.Length; i++) {
                     var oa = (ObjectArrayBackedEventBean) events[i];
                     oa.PropertyValues = previousData[i];
                 }
 
                 // add old events
-                foreach (var affectedIndexName in _affectedIndexNames)
-                {
+                foreach (var affectedIndexName in _affectedIndexNames) {
                     var index = instance.GetIndex(affectedIndexName);
                     index.Add(events, exprEvaluatorContext);
                 }

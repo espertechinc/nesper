@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.epl.pattern.core;
 using com.espertech.esper.compat;
@@ -16,7 +17,8 @@ namespace com.espertech.esper.common.@internal.epl.pattern.pool
 {
     public class PatternSubexpressionPoolRuntimeSvcNoOp : PatternSubexpressionPoolRuntimeSvc
     {
-        public readonly static PatternSubexpressionPoolRuntimeSvcNoOp INSTANCE = new PatternSubexpressionPoolRuntimeSvcNoOp();
+        public readonly static PatternSubexpressionPoolRuntimeSvcNoOp INSTANCE =
+            new PatternSubexpressionPoolRuntimeSvcNoOp();
 
         private PatternSubexpressionPoolRuntimeSvcNoOp()
         {

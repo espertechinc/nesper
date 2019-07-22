@@ -25,7 +25,8 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupby
         public CodegenExpressionField Make(CodegenClassScope classScope)
         {
             return classScope.AddFieldUnshared(
-                true, typeof(AggSvcGroupByReclaimAgedEvalFuncFactoryConst),
+                true,
+                typeof(AggSvcGroupByReclaimAgedEvalFuncFactoryConst),
                 NewInstance<AggSvcGroupByReclaimAgedEvalFuncFactoryConst>(Constant(valueDouble)));
         }
     }

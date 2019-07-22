@@ -8,6 +8,7 @@
 
 using System;
 using System.IO;
+
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.type;
 using com.espertech.esper.common.@internal.util;
@@ -121,7 +122,12 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             }
 
             var arithTypeEnumComputer = MathArithType.GetComputer(
-                MathArithTypeEnum, resultType, lhsType, rhsType, isIntegerDivision, isDivisionByZeroReturnsNull,
+                MathArithTypeEnum,
+                resultType,
+                lhsType,
+                rhsType,
+                isIntegerDivision,
+                isDivisionByZeroReturnsNull,
                 validationContext.ImportService.DefaultMathContext);
             forge = new ExprMathNodeForge(this, arithTypeEnumComputer, resultType);
             return null;

@@ -7,9 +7,11 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.compat.collections;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.@event.arr
@@ -41,8 +43,12 @@ namespace com.espertech.esper.common.@internal.@event.arr
             CodegenClassScope classScope)
         {
             return StaticMethod(
-                typeof(ObjectArrayEventBeanPropertyWriterMapProp), "objectArrayWriteMapProp", assigned, und,
-                Constant(index), Constant(key));
+                typeof(ObjectArrayEventBeanPropertyWriterMapProp),
+                "objectArrayWriteMapProp",
+                assigned,
+                und,
+                Constant(index),
+                Constant(key));
         }
 
         /// <summary>

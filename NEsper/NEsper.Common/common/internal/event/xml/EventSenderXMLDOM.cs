@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Xml;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.@event.util;
@@ -72,7 +73,8 @@ namespace com.espertech.esper.common.@internal.@event.xml
             }
             else {
                 throw new EPException(
-                    "Unexpected event object type '" + node.GetType().Name +
+                    "Unexpected event object type '" +
+                    node.GetType().Name +
                     "' encountered, please supply a XmlDocument or XmlElement node");
             }
 
@@ -80,8 +82,11 @@ namespace com.espertech.esper.common.@internal.@event.xml
                 var getNodeName = namedNode.Name;
                 if (getNodeName != baseXMLEventType.RootElementName) {
                     throw new EPException(
-                        "Unexpected root element name '" + getNodeName +
-                        "' encountered, expected a root element name of '" + baseXMLEventType.RootElementName + "'");
+                        "Unexpected root element name '" +
+                        getNodeName +
+                        "' encountered, expected a root element name of '" +
+                        baseXMLEventType.RootElementName +
+                        "'");
                 }
             }
 

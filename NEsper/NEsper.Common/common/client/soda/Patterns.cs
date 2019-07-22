@@ -290,7 +290,8 @@ namespace com.espertech.esper.common.client.soda
             return new PatternGuardExpr(
                 GuardEnum.WHILE_GUARD.GetNamespace(),
                 GuardEnum.WHILE_GUARD.GetName(),
-                new[] {expression}, guarded);
+                new[] {expression},
+                guarded);
         }
 
         /// <summary>Timer-within-max guard expression. </summary>
@@ -304,7 +305,8 @@ namespace com.espertech.esper.common.client.soda
             PatternExpr guarded)
         {
             return new PatternGuardExpr(
-                "timer", "withinmax",
+                "timer",
+                "withinmax",
                 new Expression[] {Expressions.Constant(seconds), Expressions.Constant(max)},
                 guarded);
         }

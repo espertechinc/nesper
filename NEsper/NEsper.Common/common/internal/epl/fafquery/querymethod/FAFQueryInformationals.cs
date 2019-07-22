@@ -8,10 +8,12 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat.collections;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.fafquery.querymethod
@@ -66,7 +68,9 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.querymethod
             CodegenMethodScope parent,
             CodegenClassScope classScope)
         {
-            return NewInstance<FAFQueryInformationals>(Constant(SubstitutionParamsTypes), MakeNames(parent, classScope));
+            return NewInstance<FAFQueryInformationals>(
+                Constant(SubstitutionParamsTypes),
+                MakeNames(parent, classScope));
         }
 
         private CodegenExpression MakeNames(
@@ -78,9 +82,11 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.querymethod
             }
 
             var method = parent.MakeChild(typeof(IDictionary<object, object>), GetType(), classScope);
-            method.Block.DeclareVar(
-                typeof(IDictionary<object, object>), "names",
-                NewInstance(typeof(Dictionary<object, object>), Constant(CollectionUtil.CapacityHashMap(SubstitutionParamsNames.Count))));
+            method.Block.DeclareVar<IDictionary<object, object>>(
+                "names",
+                NewInstance(
+                    typeof(Dictionary<object, object>),
+                    Constant(CollectionUtil.CapacityHashMap(SubstitutionParamsNames.Count))));
             foreach (var entry in SubstitutionParamsNames) {
                 method.Block.ExprDotMethod(Ref("names"), "put", Constant(entry.Key), Constant(entry.Value));
             }

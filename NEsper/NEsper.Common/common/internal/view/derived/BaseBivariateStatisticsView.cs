@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.epl.expression.core;
@@ -108,7 +109,10 @@ namespace com.espertech.esper.common.@internal.view.derived
             if (lastNewEvent == null) {
                 if (child != null) {
                     oldValues = PopulateMap(
-                        _statisticsBean, agentInstanceContext.EventBeanTypedEventFactory, eventType, additionalProps,
+                        _statisticsBean,
+                        agentInstanceContext.EventBeanTypedEventFactory,
+                        eventType,
+                        additionalProps,
                         _lastValuesEventNew);
                 }
             }
@@ -133,8 +137,11 @@ namespace com.espertech.esper.common.@internal.view.derived
                     }
 
                     for (var val = 0; val < additionalEvals.Length; val++) {
-                        _lastValuesEventNew[val] = additionalEvals[val].Evaluate(
-                            eventsPerStream, true, agentInstanceContext);
+                        _lastValuesEventNew[val] = additionalEvals[val]
+                            .Evaluate(
+                                eventsPerStream,
+                                true,
+                                agentInstanceContext);
                     }
                 }
             }
@@ -156,7 +163,10 @@ namespace com.espertech.esper.common.@internal.view.derived
             // If there are child view, fireStatementStopped update method
             if (child != null) {
                 var newDataMap = PopulateMap(
-                    _statisticsBean, agentInstanceContext.EventBeanTypedEventFactory, eventType, additionalProps,
+                    _statisticsBean,
+                    agentInstanceContext.EventBeanTypedEventFactory,
+                    eventType,
+                    additionalProps,
                     _lastValuesEventNew);
                 EventBean[] newEvents = {newDataMap};
                 EventBean[] oldEvents;
@@ -182,7 +192,9 @@ namespace com.espertech.esper.common.@internal.view.derived
             EventBean value = PopulateMap(
                 _statisticsBean,
                 agentInstanceContext.EventBeanTypedEventFactory,
-                eventType, additionalProps, _lastValuesEventNew);
+                eventType,
+                additionalProps,
+                _lastValuesEventNew);
             if (value != null) {
                 yield return value;
             }

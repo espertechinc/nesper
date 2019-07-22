@@ -240,7 +240,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             env.CompileDeploy("@Name('s2') select * from EndEvent", path).AddListener("s2", listeners[2]);
 
             var orderItemType = env.Runtime.EventTypeService.GetEventType(env.DeploymentId("split"), "OrderItem");
-            Assert.AreEqual("[amount, itemId, price, productId, orderId]", orderItemType.PropertyNames.RenderAny());
+            Assert.AreEqual("[amount, itemId, Price, productId, orderId]", orderItemType.PropertyNames.RenderAny());
 
             env.SendEventBean(OrderBeanFactory.MakeEventOne());
             AssertFromClauseWContained(

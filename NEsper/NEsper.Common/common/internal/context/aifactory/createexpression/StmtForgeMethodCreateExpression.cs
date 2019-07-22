@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.meta;
 using com.espertech.esper.common.client.util;
@@ -57,7 +58,8 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createexpressio
                 expressionName = spec.Script.Name;
                 var numParameters = spec.Script.ParameterNames.Length;
                 CheckAlreadyDeclared(expressionName, services, numParameters);
-                var visibility = services.ModuleVisibilityRules.GetAccessModifierScript(@base, expressionName, numParameters);
+                var visibility =
+                    services.ModuleVisibilityRules.GetAccessModifierScript(@base, expressionName, numParameters);
                 var item = spec.Script;
                 item.ModuleName = @base.ModuleName;
                 item.Visibility = visibility;
@@ -67,16 +69,30 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createexpressio
             // define output event type
             var statementEventTypeName = services.EventTypeNameGeneratorStatement.AnonymousTypeName;
             var statementTypeMetadata = new EventTypeMetadata(
-                statementEventTypeName, @base.ModuleName, EventTypeTypeClass.STATEMENTOUT, EventTypeApplicationType.MAP, NameAccessModifier.TRANSIENT,
-                EventTypeBusModifier.NONBUS, false, EventTypeIdPair.Unassigned());
+                statementEventTypeName,
+                @base.ModuleName,
+                EventTypeTypeClass.STATEMENTOUT,
+                EventTypeApplicationType.MAP,
+                NameAccessModifier.TRANSIENT,
+                EventTypeBusModifier.NONBUS,
+                false,
+                EventTypeIdPair.Unassigned());
             EventType statementEventType = BaseNestableEventUtil.MakeMapTypeCompileTime(
-                statementTypeMetadata, new EmptyDictionary<string, object>(), null, null, null, null, services.BeanEventTypeFactoryPrivate,
+                statementTypeMetadata,
+                new EmptyDictionary<string, object>(),
+                null,
+                null,
+                null,
+                null,
+                services.BeanEventTypeFactoryPrivate,
                 services.EventTypeCompileTimeResolver);
             services.EventTypeCompileTimeRegistry.NewType(statementEventType);
 
             var packageScope = new CodegenNamespaceScope(packageName, null, services.IsInstrumented);
 
-            var aiFactoryProviderClassName = CodeGenerationIDGenerator.GenerateClassNameSimple(typeof(StatementAIFactoryProvider), classPostfix);
+            var aiFactoryProviderClassName = CodeGenerationIDGenerator.GenerateClassNameSimple(
+                typeof(StatementAIFactoryProvider),
+                classPostfix);
             var forge =
                 new StatementAgentInstanceFactoryCreateExpressionForge(statementEventType, expressionName);
             var aiFactoryForgable =
@@ -88,10 +104,17 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createexpressio
                 new EmptyList<FilterSpecCompiled>(),
                 new EmptyList<ScheduleHandleCallbackProvider>(),
                 new EmptyList<NamedWindowConsumerStreamSpec>(),
-                false, selectSubscriberDescriptor, packageScope, services);
-            var statementProviderClassName = CodeGenerationIDGenerator.GenerateClassNameSimple(typeof(StatementProvider), classPostfix);
+                false,
+                selectSubscriberDescriptor,
+                packageScope,
+                services);
+            var statementProviderClassName =
+                CodeGenerationIDGenerator.GenerateClassNameSimple(typeof(StatementProvider), classPostfix);
             var stmtProvider = new StmtClassForgableStmtProvider(
-                aiFactoryProviderClassName, statementProviderClassName, informationals, packageScope);
+                aiFactoryProviderClassName,
+                statementProviderClassName,
+                informationals,
+                packageScope);
 
             IList<StmtClassForgable> forgables = new List<StmtClassForgable>();
             forgables.Add(aiFactoryForgable);
@@ -115,7 +138,9 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createexpressio
 
             if (services.ScriptCompileTimeResolver.Resolve(expressionName, numParameters) != null) {
                 throw new ExprValidationException(
-                    "Script '" + expressionName + "' that takes the same number of parameters has already been declared");
+                    "Script '" +
+                    expressionName +
+                    "' that takes the same number of parameters has already been declared");
             }
         }
     }

@@ -7,10 +7,12 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.expression.core
@@ -44,11 +46,12 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             CodegenClassScope codegenClassScope)
         {
             var methodNode = codegenMethodScope.MakeChild(
-                requiredType == typeof(object) ? typeof(object) : underlyingType, typeof(ExprEvaluatorWildcard),
+                requiredType == typeof(object) ? typeof(object) : underlyingType,
+                typeof(ExprEvaluatorWildcard),
                 codegenClassScope);
             var refEPS = exprSymbol.GetAddEPS(methodNode);
             methodNode.Block
-                .DeclareVar(typeof(EventBean), "event", ArrayAtIndex(refEPS, Constant(0)))
+                .DeclareVar<EventBean>("event", ArrayAtIndex(refEPS, Constant(0)))
                 .IfRefNullReturnNull("event");
             if (requiredType == typeof(object)) {
                 methodNode.Block.MethodReturn(ExprDotMethod(Ref("event"), "getUnderlying"));

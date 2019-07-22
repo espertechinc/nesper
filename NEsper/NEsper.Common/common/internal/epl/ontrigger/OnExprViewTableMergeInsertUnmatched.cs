@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.compile.stage1.spec;
 using com.espertech.esper.common.@internal.context.util;
@@ -50,7 +51,9 @@ namespace com.espertech.esper.common.@internal.epl.ontrigger
             EventBean[] oldData)
         {
             agentInstanceContext.InstrumentationProvider.QInfraOnAction(
-                OnTriggerType.ON_MERGE, newData, CollectionUtil.EVENTBEANARRAY_EMPTY);
+                OnTriggerType.ON_MERGE,
+                newData,
+                CollectionUtil.EVENTBEANARRAY_EMPTY);
 
             if (newData == null) {
                 agentInstanceContext.InstrumentationProvider.AInfraOnAction();
@@ -69,7 +72,12 @@ namespace com.espertech.esper.common.@internal.epl.ontrigger
             foreach (var trigger in newData) {
                 eventsPerStream[1] = trigger;
                 parent.OnMergeHelper.InsertUnmatched.Apply(
-                    null, eventsPerStream, tableInstance, changeHandlerAdded, null, agentInstanceContext);
+                    null,
+                    eventsPerStream,
+                    tableInstance,
+                    changeHandlerAdded,
+                    null,
+                    agentInstanceContext);
 
                 // The on-delete listeners receive the events deleted, but only if there is interest
                 if (postResultsToListeners) {

@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.core;
@@ -14,6 +15,7 @@ using com.espertech.esper.common.@internal.epl.expression.time.abacus;
 using com.espertech.esper.common.@internal.epl.expression.time.adder;
 using com.espertech.esper.common.@internal.epl.expression.time.node;
 using com.espertech.esper.common.@internal.settings;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.expression.time.eval
@@ -30,7 +32,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.time.eval
         }
 
         public TimePeriodCompute Evaluator => new TimePeriodComputeNCGivenTPCalForgeEval(
-            timePeriodForge.Evaluators, timePeriodForge.Adders, timePeriodForge.TimeAbacus, TimeZoneInfo.Local, indexMicroseconds);
+            timePeriodForge.Evaluators,
+            timePeriodForge.Adders,
+            timePeriodForge.TimeAbacus,
+            TimeZoneInfo.Local,
+            indexMicroseconds);
 
         public CodegenExpression MakeEvaluator(
             CodegenMethodScope parent,
@@ -38,11 +44,22 @@ namespace com.espertech.esper.common.@internal.epl.expression.time.eval
         {
             var method = parent.MakeChild(typeof(TimePeriodComputeNCGivenTPCalForgeEval), GetType(), classScope);
             method.Block
-                .DeclareVar(typeof(TimePeriodComputeNCGivenTPCalForgeEval), "eval", NewInstance(typeof(TimePeriodComputeNCGivenTPCalForgeEval)))
-                .SetProperty(Ref("eval"), "Adders", TimePeriodAdderUtil.MakeArray(timePeriodForge.Adders, parent, classScope))
-                .SetProperty(Ref("eval"), "Evaluators", ExprNodeUtilityCodegen.CodegenEvaluators(timePeriodForge.Forges, method, GetType(), classScope))
+                .DeclareVar<TimePeriodComputeNCGivenTPCalForgeEval>(
+                    "eval",
+                    NewInstance(typeof(TimePeriodComputeNCGivenTPCalForgeEval)))
+                .SetProperty(
+                    Ref("eval"),
+                    "Adders",
+                    TimePeriodAdderUtil.MakeArray(timePeriodForge.Adders, parent, classScope))
+                .SetProperty(
+                    Ref("eval"),
+                    "Evaluators",
+                    ExprNodeUtilityCodegen.CodegenEvaluators(timePeriodForge.Forges, method, GetType(), classScope))
                 .SetProperty(Ref("eval"), "TimeAbacus", classScope.AddOrGetFieldSharable(TimeAbacusField.INSTANCE))
-                .SetProperty(Ref("eval"), "TimeZone", classScope.AddOrGetFieldSharable(RuntimeSettingsTimeZoneField.INSTANCE))
+                .SetProperty(
+                    Ref("eval"),
+                    "TimeZone",
+                    classScope.AddOrGetFieldSharable(RuntimeSettingsTimeZoneField.INSTANCE))
                 .SetProperty(Ref("eval"), "IndexMicroseconds", Constant(indexMicroseconds))
                 .MethodReturn(Ref("eval"));
             return LocalMethod(method);

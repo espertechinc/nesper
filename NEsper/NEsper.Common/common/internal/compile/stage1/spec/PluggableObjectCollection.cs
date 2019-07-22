@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.collection;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.configuration;
@@ -84,8 +85,11 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
                 foreach (string name in entry.Value.Keys) {
                     if (namespaceMap.ContainsKey(name)) {
                         throw new ConfigurationException(
-                            "Duplicate object detected in namespace '" + entry.Key +
-                            "' by name '" + name + "'");
+                            "Duplicate object detected in namespace '" +
+                            entry.Key +
+                            "' by name '" +
+                            name +
+                            "'");
                     }
                 }
 
@@ -133,7 +137,8 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
             }
 
             namespaceMap.Put(
-                name, new Pair<Type, PluggableObjectEntry>(clazz, new PluggableObjectEntry(type, configuration)));
+                name,
+                new Pair<Type, PluggableObjectEntry>(clazz, new PluggableObjectEntry(type, configuration)));
         }
 
         private void InitViews(
@@ -146,7 +151,11 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
 
             foreach (var entry in configurationPlugInViews) {
                 HandleAddPluggableObject(
-                    entry.ForgeClassName, entry.Namespace, entry.Name, PluggableObjectType.VIEW, null,
+                    entry.ForgeClassName,
+                    entry.Namespace,
+                    entry.Name,
+                    PluggableObjectType.VIEW,
+                    null,
                     importService);
             }
         }
@@ -161,7 +170,11 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
 
             foreach (var entry in configurationPlugInVirtualDataWindows) {
                 HandleAddPluggableObject(
-                    entry.ForgeClassName, entry.Namespace, entry.Name, PluggableObjectType.VIRTUALDW, entry.Config,
+                    entry.ForgeClassName,
+                    entry.Namespace,
+                    entry.Name,
+                    PluggableObjectType.VIRTUALDW,
+                    entry.Config,
                     importService);
             }
         }
@@ -234,7 +247,12 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
                 }
 
                 HandleAddPluggableObject(
-                    entry.ForgeClassName, entry.Namespace, entry.Name, typeEnum, null, importService);
+                    entry.ForgeClassName,
+                    entry.Namespace,
+                    entry.Name,
+                    typeEnum,
+                    null,
+                    importService);
             }
         }
     }

@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -14,6 +15,7 @@ using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.type;
 using com.espertech.esper.compat;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 using static com.espertech.esper.common.@internal.epl.expression.codegen.ExprForgeCodegenNames;
 
@@ -28,10 +30,14 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
             ExprForge valueEval,
             ExprForge selectEval,
             bool resultWhenNoMatchingEvents,
-            RelationalOpEnum.Computer computer,
+            RelationalOpEnumComputer computer,
             ExprForge filterOrHavingEval)
             : base(
-                subselect, valueEval, selectEval, resultWhenNoMatchingEvents, computer)
+                subselect,
+                valueEval,
+                selectEval,
+                resultWhenNoMatchingEvents,
+                computer)
         {
             this.filterOrHavingEval = filterOrHavingEval;
         }
@@ -43,15 +49,18 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
         {
             var method = parent.MakeChild(typeof(bool?), GetType(), classScope);
             method.Block
-                .DeclareVar(typeof(bool), "hasRows", ConstantFalse())
-                .DeclareVar(typeof(bool), "hasNullRow", ConstantFalse());
+                .DeclareVar<bool>("hasRows", ConstantFalse())
+                .DeclareVar<bool>("hasNullRow", ConstantFalse());
             var @foreach = method.Block.ForEach(
-                typeof(EventBean), "subselectEvent", symbols.GetAddMatchingEvents(method));
+                typeof(EventBean),
+                "subselectEvent",
+                symbols.GetAddMatchingEvents(method));
             {
                 @foreach.AssignArrayElement(NAME_EPS, Constant(0), Ref("subselectEvent"));
                 if (filterOrHavingEval != null) {
                     CodegenLegoBooleanExpression.CodegenContinueIfNotNullAndNotPass(
-                        @foreach, filterOrHavingEval.EvaluationType,
+                        @foreach,
+                        filterOrHavingEval.EvaluationType,
                         filterOrHavingEval.EvaluateCodegen(typeof(bool?), method, symbols, classScope));
                 }
 
@@ -61,13 +70,15 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                 if (selectEval != null) {
                     valueRightType = selectEval.EvaluationType.GetBoxedType();
                     @foreach.DeclareVar(
-                        valueRightType, "valueRight",
+                        valueRightType,
+                        "valueRight",
                         selectEval.EvaluateCodegen(valueRightType, method, symbols, classScope));
                 }
                 else {
                     valueRightType = typeof(object);
                     @foreach.DeclareVar(
-                        valueRightType, "valueRight",
+                        valueRightType,
+                        "valueRight",
                         ExprDotUnderlying(ArrayAtIndex(symbols.GetAddEPS(method), Constant(0))));
                 }
 
@@ -78,7 +89,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                     .IfCondition(
                         Not(
                             computer.Codegen(
-                                symbols.GetAddLeftResult(method), symbols.LeftResultType, Ref("valueRight"),
+                                symbols.GetAddLeftResult(method),
+                                symbols.LeftResultType,
+                                Ref("valueRight"),
                                 valueRightType)))
                     .BlockReturn(ConstantFalse());
             }

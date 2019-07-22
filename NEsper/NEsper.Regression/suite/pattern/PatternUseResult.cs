@@ -173,8 +173,8 @@ namespace com.espertech.esper.regressionlib.suite.pattern
             public void Run(RegressionEnvironment env)
             {
                 // UEJ-229-28464 bug fix for type reuse for dissimilar types
-                var epl = "create objectarray schema TypeOne(Symbol string, price double);\n" +
-                          "create objectarray schema TypeTwo(Symbol string, market string, price double);\n" +
+                var epl = "create objectarray schema TypeOne(Symbol string, Price double);\n" +
+                          "create objectarray schema TypeTwo(Symbol string, market string, Price double);\n" +
                           "\n" +
                           "@Name('Out2') select a[0].Symbol from pattern [ [2] a=TypeOne ]\n;" +
                           "@Name('Out3') select a[0].market from pattern [ [2] a=TypeTwo ];";

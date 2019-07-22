@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client.annotation;
 using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.epl.expression.agg.@base;
@@ -55,7 +56,8 @@ namespace com.espertech.esper.common.@internal.compile.stage2
             }
 
             // determine max-width
-            int filterServiceMaxFilterWidth = args.compileTimeServices.Configuration.Compiler.Execution.FilterServiceMaxFilterWidth;
+            int filterServiceMaxFilterWidth =
+                args.compileTimeServices.Configuration.Compiler.Execution.FilterServiceMaxFilterWidth;
             var hint = HintEnum.MAX_FILTER_WIDTH.GetHint(args.statementRawInfo.Annotations);
             if (hint != null) {
                 string hintValue = HintEnum.MAX_FILTER_WIDTH.GetHintAssignedValue(hint);
@@ -126,8 +128,7 @@ namespace com.espertech.esper.common.@internal.compile.stage2
             IList<FilterSpecParamForge>[] result = new IList<FilterSpecParamForge>[sizeFactorized];
             IEnumerable<object[]> permutations = CombinationEnumeration.FromZeroBasedRanges(sizePerOr);
             int count = 0;
-            foreach (var permutation in permutations)
-            { 
+            foreach (var permutation in permutations) {
                 result[count] = ComputePermutation(expressionsWithoutOr, permutation, orNodesMaps, args);
                 count++;
             }
@@ -177,8 +178,12 @@ namespace com.espertech.esper.common.@internal.compile.stage2
             // Make filter parameter for each expression node, if it can be optimized
             foreach (ExprNode constituent in constituents) {
                 FilterSpecParamForge param = FilterSpecCompilerMakeParamUtil.MakeFilterParam(
-                    constituent, args.arrayEventTypes, args.statementRawInfo.StatementName);
-                filterParamExprMap.Put(constituent, param); // accepts null values as the expression may not be optimized
+                    constituent,
+                    args.arrayEventTypes,
+                    args.statementRawInfo.StatementName);
+                filterParamExprMap.Put(
+                    constituent,
+                    param); // accepts null values as the expression may not be optimized
             }
 
             // Consolidate entries as possible, i.e. (a != 5 and a != 6) is (a not in (5,6))
@@ -225,15 +230,21 @@ namespace com.espertech.esper.common.@internal.compile.stage2
             bool hasSubselectFilterStream = DetermineSubselectFilterStream(exprNode);
             bool hasTableAccess = DetermineTableAccessFilterStream(exprNode);
 
-            ExprNodeVariableVisitor visitor = new ExprNodeVariableVisitor(args.compileTimeServices.VariableCompileTimeResolver);
+            ExprNodeVariableVisitor visitor =
+                new ExprNodeVariableVisitor(args.compileTimeServices.VariableCompileTimeResolver);
             exprNode.Accept(visitor);
             bool hasVariable = visitor.IsVariables;
 
             ExprFilterSpecLookupableForge lookupable = new ExprFilterSpecLookupableForge(
-                PROPERTY_NAME_BOOLEAN_EXPRESSION, null, exprNode.Forge.EvaluationType, false);
+                PROPERTY_NAME_BOOLEAN_EXPRESSION,
+                null,
+                exprNode.Forge.EvaluationType,
+                false);
 
             return new FilterSpecParamExprNodeForge(
-                lookupable, FilterOperator.BOOLEAN_EXPRESSION, exprNode,
+                lookupable,
+                FilterOperator.BOOLEAN_EXPRESSION,
+                exprNode,
                 args.taggedEventTypes,
                 args.arrayEventTypes,
                 args.streamTypeService,
@@ -249,8 +260,13 @@ namespace com.espertech.esper.common.@internal.compile.stage2
         {
             ExprAndNode andNode = ExprNodeUtilityMake.ConnectExpressionsByLogicalAnd(remainingExprNodes);
             ExprValidationContext validationContext =
-                new ExprValidationContextBuilder(args.streamTypeService, args.statementRawInfo, args.compileTimeServices)
-                    .WithAllowBindingConsumption(true).WithContextDescriptor(args.contextDescriptor).Build();
+                new ExprValidationContextBuilder(
+                        args.streamTypeService,
+                        args.statementRawInfo,
+                        args.compileTimeServices)
+                    .WithAllowBindingConsumption(true)
+                    .WithContextDescriptor(args.contextDescriptor)
+                    .Build();
             andNode.Validate(validationContext);
             return andNode;
         }

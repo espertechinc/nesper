@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.configuration.common;
 using com.espertech.esper.common.client.meta;
@@ -63,8 +64,13 @@ namespace com.espertech.esper.common.@internal.@event.path
             string endTimestampPropertyName)
         {
             var eventType = eventTypeFactory.CreateMap(
-                metadata, properties, superTypes, startTimestampPropertyName, endTimestampPropertyName,
-                beanEventTypeFactory, eventTypeNameResolver);
+                metadata,
+                properties,
+                superTypes,
+                startTimestampPropertyName,
+                endTimestampPropertyName,
+                beanEventTypeFactory,
+                eventTypeNameResolver);
             HandleRegister(eventType);
         }
 
@@ -76,8 +82,13 @@ namespace com.espertech.esper.common.@internal.@event.path
             string endTimestampPropertyName)
         {
             var eventType = eventTypeFactory.CreateObjectArray(
-                metadata, properties, superTypes, startTimestampPropertyName, endTimestampPropertyName,
-                beanEventTypeFactory, eventTypeNameResolver);
+                metadata,
+                properties,
+                superTypes,
+                startTimestampPropertyName,
+                endTimestampPropertyName,
+                beanEventTypeFactory,
+                eventTypeNameResolver);
             HandleRegister(eventType);
         }
 
@@ -87,7 +98,11 @@ namespace com.espertech.esper.common.@internal.@event.path
             LinkedHashMap<string, object> properties)
         {
             var eventType = eventTypeFactory.CreateWrapper(
-                metadata, underlying, properties, beanEventTypeFactory, eventTypeNameResolver);
+                metadata,
+                underlying,
+                properties,
+                beanEventTypeFactory,
+                eventTypeNameResolver);
             HandleRegister(eventType);
         }
 
@@ -100,7 +115,14 @@ namespace com.espertech.esper.common.@internal.@event.path
             ISet<EventType> deepSuperTypes)
         {
             var stem = beanEventTypeStemService.GetCreateStem(clazz, null);
-            var eventType = eventTypeFactory.CreateBeanType(stem, metadata, beanEventTypeFactory, superTypes, deepSuperTypes, startTimestampName, endTimestampName);
+            var eventType = eventTypeFactory.CreateBeanType(
+                stem,
+                metadata,
+                beanEventTypeFactory,
+                superTypes,
+                deepSuperTypes,
+                startTimestampName,
+                endTimestampName);
             HandleRegister(eventType);
         }
 
@@ -122,12 +144,17 @@ namespace com.espertech.esper.common.@internal.@event.path
 
             var prop = PropertyParser.ParseAndWalkLaxToSimple(representsFragmentOfProperty);
             var schemaModelRoot = SchemaUtil.FindRootElement(
-                schemaType.SchemaModel, schemaType.ConfigurationEventTypeXMLDOM.RootElementNamespace,
+                schemaType.SchemaModel,
+                schemaType.ConfigurationEventTypeXMLDOM.RootElementNamespace,
                 schemaType.RootElementName);
             var item = prop.GetPropertyTypeSchema(schemaModelRoot);
             var complex = (SchemaElementComplex) item;
             var eventType = xmlFragmentEventTypeFactory.GetCreateXMLDOMType(
-                representsOriginalTypeName, metadata.Name, metadata.ModuleName, complex, representsFragmentOfProperty);
+                representsOriginalTypeName,
+                metadata.Name,
+                metadata.ModuleName,
+                complex,
+                representsFragmentOfProperty);
             HandleRegister(eventType);
         }
 
@@ -136,7 +163,9 @@ namespace com.espertech.esper.common.@internal.@event.path
             string schemaJson)
         {
             EventType eventType = eventTypeAvroHandler.NewEventTypeFromJson(
-                metadata, eventBeanTypedEventFactory, schemaJson);
+                metadata,
+                eventBeanTypedEventFactory,
+                schemaJson);
             HandleRegister(eventType);
         }
 
@@ -146,7 +175,8 @@ namespace com.espertech.esper.common.@internal.@event.path
             bool any)
         {
             var spec = new VariantSpec(
-                variants, any ? TypeVariance.ANY : TypeVariance.PREDEFINED);
+                variants,
+                any ? TypeVariance.ANY : TypeVariance.PREDEFINED);
             EventType eventType = eventTypeFactory.CreateVariant(metadata, spec);
             HandleRegister(eventType);
         }

@@ -6,12 +6,10 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.collection;
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.output.view
 {
@@ -19,15 +17,15 @@ namespace com.espertech.esper.common.@internal.epl.output.view
     {
         int NumChangesetRows { get; }
 
+        IList<UniformPair<ISet<MultiKey<EventBean>>>> JoinEventsSet { get; }
+
+        IList<UniformPair<EventBean[]>> ViewEventsSet { get; }
+
         void AddView(UniformPair<EventBean[]> events);
 
         void AddJoin(UniformPair<ISet<MultiKey<EventBean>>> events);
 
         void Clear();
-
-        IList<UniformPair<ISet<MultiKey<EventBean>>>> JoinEventsSet { get; }
-
-        IList<UniformPair<EventBean[]>> ViewEventsSet { get; }
 
         void Destroy();
     }

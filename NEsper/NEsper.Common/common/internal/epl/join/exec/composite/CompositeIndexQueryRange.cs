@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.join.querygraph;
@@ -36,11 +37,24 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.composite
 
                 if (!rangeProp.Type.IsRangeInverted()) {
                     strategy = new CompositeAccessStrategyRangeNormal(
-                        isNWOnTrigger, lookupStream, numStreams, start, includeStart, end, includeEnd, rangeIn.IsAllowRangeReversal);
+                        isNWOnTrigger,
+                        lookupStream,
+                        numStreams,
+                        start,
+                        includeStart,
+                        end,
+                        includeEnd,
+                        rangeIn.IsAllowRangeReversal);
                 }
                 else {
                     strategy = new CompositeAccessStrategyRangeInverted(
-                        isNWOnTrigger, lookupStream, numStreams, start, includeStart, end, includeEnd);
+                        isNWOnTrigger,
+                        lookupStream,
+                        numStreams,
+                        start,
+                        includeStart,
+                        end,
+                        includeEnd);
                 }
             }
             else {

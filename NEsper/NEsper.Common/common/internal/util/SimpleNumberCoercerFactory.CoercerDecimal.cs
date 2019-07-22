@@ -8,6 +8,7 @@
 
 using System;
 using System.Numerics;
+
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.compat;
@@ -45,8 +46,14 @@ namespace com.espertech.esper.common.@internal.util
                 CodegenClassScope codegenClassScope)
             {
                 return CodegenCoerceMayNull(
-                    typeof(decimal), typeof(decimal?), "AsDecimal", param, valueTypeMustNumeric, codegenMethodScope,
-                    typeof(CoercerDecimal), codegenClassScope);
+                    typeof(decimal),
+                    typeof(decimal?),
+                    "AsDecimal",
+                    param,
+                    valueTypeMustNumeric,
+                    codegenMethodScope,
+                    typeof(CoercerDecimal),
+                    codegenClassScope);
             }
 
             public static CodegenExpression CodegenDecimal(
@@ -67,8 +74,14 @@ namespace com.espertech.esper.common.@internal.util
                 }
 
                 return CodegenCoerceMayNull(
-                    typeof(decimal), typeof(decimal?), "AsDecimal", value, valueType, codegenMethodScope,
-                    typeof(CoercerDecimal), codegenClassScope);
+                    typeof(decimal),
+                    typeof(decimal?),
+                    "AsDecimal",
+                    value,
+                    valueType,
+                    codegenMethodScope,
+                    typeof(CoercerDecimal),
+                    codegenClassScope);
             }
         }
     }

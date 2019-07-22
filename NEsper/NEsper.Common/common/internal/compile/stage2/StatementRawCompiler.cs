@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.annotation;
 using com.espertech.esper.common.@internal.compile.stage1;
@@ -107,10 +108,16 @@ namespace com.espertech.esper.common.@internal.compile.stage2
                 StatementSpecRawWalkerSubselectAndDeclaredDot.WalkSubselectAndDeclaredDotExpr(spec, visitor);
 
                 var expressionCopier = new ExpressionCopier(
-                    spec, statementRawInfo.OptionalContextDescriptor, compileTimeServices, visitor);
+                    spec,
+                    statementRawInfo.OptionalContextDescriptor,
+                    compileTimeServices,
+                    visitor);
                 groupByRollupExpressions = GroupByExpressionHelper.GetGroupByRollupExpressions(
                     spec.GroupByExpressions,
-                    spec.SelectClauseSpec, spec.HavingClause, spec.OrderByList, expressionCopier);
+                    spec.SelectClauseSpec,
+                    spec.HavingClause,
+                    spec.OrderByList,
+                    expressionCopier);
             }
             catch (ExprValidationException ex) {
                 throw new StatementSpecCompileException(ex.Message, ex, compilable.ToEPL());
@@ -118,12 +125,14 @@ namespace com.espertech.esper.common.@internal.compile.stage2
 
             if (isSubquery && !visitor.Subselects.IsEmpty()) {
                 throw new StatementSpecCompileException(
-                    "Invalid nested subquery, subquery-within-subquery is not supported", compilable.ToEPL());
+                    "Invalid nested subquery, subquery-within-subquery is not supported",
+                    compilable.ToEPL());
             }
 
             if (isOnDemandQuery && !visitor.Subselects.IsEmpty()) {
                 throw new StatementSpecCompileException(
-                    "Subqueries are not a supported feature of on-demand queries", compilable.ToEPL());
+                    "Subqueries are not a supported feature of on-demand queries",
+                    compilable.ToEPL());
             }
 
             foreach (var subselectNode in visitor.Subselects) {
@@ -137,10 +146,15 @@ namespace com.espertech.esper.common.@internal.compile.stage2
             foreach (var subselect in subselectNodes) {
                 StatementSpecRaw raw = subselect.StatementSpecRaw;
                 var compiled = Compile(
-                    raw, compilable, true, isOnDemandQuery, annotations,
+                    raw,
+                    compilable,
+                    true,
+                    isOnDemandQuery,
+                    annotations,
                     Collections.GetEmptyList<ExprSubselectNode>(),
                     Collections.GetEmptyList<ExprTableAccessNode>(),
-                    statementRawInfo, compileTimeServices);
+                    statementRawInfo,
+                    compileTimeServices);
                 subselect.SetStatementSpecCompiled(compiled, subselectNumber);
                 subselectNumber++;
             }
@@ -159,8 +173,15 @@ namespace com.espertech.esper.common.@internal.compile.stage2
                 foreach (var rawSpec in spec.StreamSpecs) {
                     streamNum++;
                     var compiled = StreamSpecCompiler.Compile(
-                        rawSpec, eventTypeReferences, spec.InsertIntoDesc != null, spec.StreamSpecs.Count > 1, false,
-                        spec.OnTriggerDesc != null, rawSpec.OptionalStreamName, streamNum, statementRawInfo,
+                        rawSpec,
+                        eventTypeReferences,
+                        spec.InsertIntoDesc != null,
+                        spec.StreamSpecs.Count > 1,
+                        false,
+                        spec.OnTriggerDesc != null,
+                        rawSpec.OptionalStreamName,
+                        streamNum,
+                        statementRawInfo,
                         compileTimeServices);
                     compiledStreams.Add(compiled);
                 }
@@ -169,7 +190,8 @@ namespace com.espertech.esper.common.@internal.compile.stage2
                 if (ex.Message == null) {
                     throw new StatementSpecCompileException(
                         "Unexpected exception compiling statement, please consult the log file and report the exception",
-                        ex, compilable.ToEPL());
+                        ex,
+                        compilable.ToEPL());
                 }
 
                 throw new StatementSpecCompileException(ex.Message, ex, compilable.ToEPL());
@@ -181,12 +203,20 @@ namespace com.espertech.esper.common.@internal.compile.stage2
                 var text = "Unexpected error compiling statement";
                 Log.Error(text, ex);
                 throw new StatementSpecCompileException(
-                    text + ": " + ex.GetType().Name + ":" + ex.Message, ex, compilable.ToEPL());
+                    text + ": " + ex.GetType().Name + ":" + ex.Message,
+                    ex,
+                    compilable.ToEPL());
             }
 
             return new StatementSpecCompiled(
-                spec, compiledStreams.ToArray(), selectClauseCompiled, annotations, groupByRollupExpressions,
-                subselectNodes, visitor.DeclaredExpressions, tableAccessNodes);
+                spec,
+                compiledStreams.ToArray(),
+                selectClauseCompiled,
+                annotations,
+                groupByRollupExpressions,
+                subselectNodes,
+                visitor.DeclaredExpressions,
+                tableAccessNodes);
         }
 
         public static SelectClauseSpecCompiled CompileSelectClause(SelectClauseSpecRaw spec)
@@ -197,7 +227,9 @@ namespace com.espertech.esper.common.@internal.compile.stage2
                     var rawExpr = (SelectClauseExprRawSpec) raw;
                     selectElements.Add(
                         new SelectClauseExprCompiledSpec(
-                            rawExpr.SelectExpression, rawExpr.OptionalAsName, rawExpr.OptionalAsName,
+                            rawExpr.SelectExpression,
+                            rawExpr.OptionalAsName,
+                            rawExpr.OptionalAsName,
                             rawExpr.IsEvents));
                 }
                 else if (raw is SelectClauseStreamRawSpec) {

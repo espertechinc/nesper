@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.compile.stage1.spec;
@@ -34,7 +35,9 @@ namespace com.espertech.esper.common.@internal.epl.ontrigger
             AgentInstanceContext agentInstanceContext,
             InfraOnMergeViewFactory parent)
             : base(
-                lookupStrategy, rootView, agentInstanceContext)
+                lookupStrategy,
+                rootView,
+                agentInstanceContext)
         {
             this.parent = parent;
         }
@@ -102,7 +105,11 @@ namespace com.espertech.esper.common.@internal.epl.ontrigger
                             }
 
                             action.ApplyNamedWindow(
-                                matchingEvent, eventsPerStream, newData, oldData, agentInstanceContext);
+                                matchingEvent,
+                                eventsPerStream,
+                                newData,
+                                oldData,
+                                agentInstanceContext);
                             instrumentationCommon.AInfraMergeWhenThenItem(true, true);
                             break; // apply no other actions
                         }
@@ -129,7 +136,9 @@ namespace com.espertech.esper.common.@internal.epl.ontrigger
                 var metricHandle = rootView.AgentInstanceContext.StatementContext.EpStatementHandle.MetricsHandle;
                 if (metricHandle.IsEnabled && !newData.IsEmpty()) {
                     agentInstanceContext.MetricReportingService.AccountTime(
-                        metricHandle, default(PerformanceMetrics), newData.ToArray().Length);
+                        metricHandle,
+                        default(PerformanceMetrics),
+                        newData.ToArray().Length);
                 }
 
                 var statementResultService = agentInstanceContext.StatementResultService;

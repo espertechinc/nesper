@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -18,6 +19,7 @@ using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.common.@internal.view.core;
 using com.espertech.esper.common.@internal.view.util;
 using com.espertech.esper.compat;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 using static com.espertech.esper.common.@internal.epl.expression.core.ExprNodeUtilityCodegen;
 
@@ -53,7 +55,12 @@ namespace com.espertech.esper.common.@internal.view.exttimedbatch
         {
             var windowName = ViewName;
             var validated = ViewForgeSupport.Validate(
-                windowName, parentEventType, viewParameters, true, viewForgeEnv, streamNumber);
+                windowName,
+                parentEventType,
+                viewParameters,
+                true,
+                viewForgeEnv,
+                streamNumber);
             if (viewParameters.Count < 2 || viewParameters.Count > 3) {
                 throw new ViewParameterException(ViewParamMessage);
             }
@@ -67,12 +74,20 @@ namespace com.espertech.esper.common.@internal.view.exttimedbatch
             ViewForgeSupport.AssertReturnsNonConstant(windowName, validated[0], 0);
 
             timePeriodComputeForge = ViewFactoryTimePeriodHelper.ValidateAndEvaluateTimeDeltaFactory(
-                ViewName, viewParameters[1], ViewParamMessage, 1, viewForgeEnv, streamNumber);
+                ViewName,
+                viewParameters[1],
+                ViewParamMessage,
+                1,
+                viewForgeEnv,
+                streamNumber);
 
             // validate optional parameters
             if (validated.Length == 3) {
                 var constant = ViewForgeSupport.ValidateAndEvaluate(
-                    windowName, validated[2], viewForgeEnv, streamNumber);
+                    windowName,
+                    validated[2],
+                    viewForgeEnv,
+                    streamNumber);
                 if (!constant.IsNumber() || constant.IsFloatingPointNumber()) {
                     throw new ViewParameterException(
                         "Externally-timed batch view requires a Long-typed reference point in msec as a third parameter");
@@ -101,10 +116,12 @@ namespace com.espertech.esper.common.@internal.view.exttimedbatch
             CodegenClassScope classScope)
         {
             method.Block
-                .DeclareVar(typeof(TimePeriodCompute), "eval", timePeriodComputeForge.MakeEvaluator(method, classScope))
+                .DeclareVar<TimePeriodCompute>("eval", timePeriodComputeForge.MakeEvaluator(method, classScope))
                 .SetProperty(factory, "TimePeriodCompute", Ref("eval"))
                 .SetProperty(factory, "OptionalReferencePoint", Constant(optionalReferencePoint))
-                .SetProperty(factory, "TimestampEval",
+                .SetProperty(
+                    factory,
+                    "TimestampEval",
                     CodegenEvaluator(timestampExpression.Forge, method, GetType(), classScope));
         }
     }

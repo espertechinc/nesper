@@ -8,10 +8,12 @@
 
 using System;
 using System.IO;
+
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.util;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 using static com.espertech.esper.common.@internal.epl.expression.core.ExprNodeUtilityQuery;
 
@@ -52,7 +54,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
         {
             var arrayType = TypeHelper.GetArrayType(varargClass);
             var methodNode = codegenMethodScope.MakeChild(
-                arrayType, typeof(ExprNodeVarargOnlyArrayForge), codegenClassScope);
+                arrayType,
+                typeof(ExprNodeVarargOnlyArrayForge),
+                codegenClassScope);
 
             var block = methodNode.Block
                 .DeclareVar(arrayType, "array", NewArrayByLength(varargClass, Constant(forges.Length)));
@@ -68,8 +72,12 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                         assignment = optionalCoercers[i].CoerceCodegen(expression, evalType);
                     }
                     else {
-                        assignment = optionalCoercers[i].CoerceCodegenMayNullBoxed(
-                            expression, evalType, methodNode, codegenClassScope);
+                        assignment = optionalCoercers[i]
+                            .CoerceCodegenMayNullBoxed(
+                                expression,
+                                evalType,
+                                methodNode,
+                                codegenClassScope);
                     }
                 }
 

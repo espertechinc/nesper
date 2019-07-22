@@ -15,8 +15,7 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.processor
     {
         public static FireAndForgetProcessorForge ValidateResolveProcessor(StreamSpecCompiled streamSpec)
         {
-            if (streamSpec is NamedWindowConsumerStreamSpec)
-            {
+            if (streamSpec is NamedWindowConsumerStreamSpec) {
                 NamedWindowMetaData nwdetail = ((NamedWindowConsumerStreamSpec) streamSpec).NamedWindow;
                 return new FireAndForgetProcessorNamedWindowForge(nwdetail);
             }

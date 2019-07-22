@@ -310,7 +310,10 @@ namespace com.espertech.esper.common.client.soda
         public static OutputLimitClause CreateAfter(TimePeriodExpression afterTimePeriodExpression)
         {
             return new OutputLimitClause(
-                OutputLimitSelector.DEFAULT, OutputLimitUnit.AFTER, afterTimePeriodExpression, null);
+                OutputLimitSelector.DEFAULT,
+                OutputLimitUnit.AFTER,
+                afterTimePeriodExpression,
+                null);
         }
 
         /// <summary>

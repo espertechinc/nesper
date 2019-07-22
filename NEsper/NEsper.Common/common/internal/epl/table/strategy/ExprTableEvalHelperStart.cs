@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.compat.collections;
 
@@ -23,7 +24,8 @@ namespace com.espertech.esper.common.@internal.epl.table.strategy
             }
 
             var writesToTables = agentInstanceContext.StatementContext.StatementInformationals.IsWritesToTables;
-            IDictionary<int, ExprTableEvalStrategy> evals = new Dictionary<int, ExprTableEvalStrategy>(tableAccesses.Count);
+            IDictionary<int, ExprTableEvalStrategy> evals =
+                new Dictionary<int, ExprTableEvalStrategy>(tableAccesses.Count);
             foreach (var entry in tableAccesses) {
                 var table = entry.Value.Table;
                 var provider = table.GetStateProvider(agentInstanceContext.AgentInstanceId, writesToTables);

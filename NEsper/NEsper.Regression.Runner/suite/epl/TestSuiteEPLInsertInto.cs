@@ -244,7 +244,7 @@ namespace com.espertech.esper.regressionrun.suite.epl
 
             IDictionary<string, object> complexMapMetadata = MakeMap(new object[][]{
                 new object[] {"nested", MakeMap(new object[][] {
-                    new object[]{"nestedValue", typeof(string)}
+                    new object[]{"NestedValue", typeof(string)}
                 })}
             });
             configuration.Common.AddEventType("ComplexMap", complexMapMetadata);

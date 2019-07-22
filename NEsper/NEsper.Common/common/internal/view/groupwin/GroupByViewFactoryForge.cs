@@ -9,6 +9,7 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.annotation;
 using com.espertech.esper.common.client.meta;
@@ -24,6 +25,7 @@ using com.espertech.esper.common.@internal.view.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 using static com.espertech.esper.common.@internal.epl.expression.core.ExprNodeUtilityCodegen;
 using static com.espertech.esper.common.@internal.view.core.ViewFactoryForgeUtil;
@@ -88,7 +90,10 @@ namespace com.espertech.esper.common.@internal.view.groupwin
                 }
                 catch (Exception) {
                     throw new ViewParameterException(
-                        "Required hint value for hint '" + HintEnum.RECLAIM_GROUP_AGED + "' value '" + hintValueMaxAge +
+                        "Required hint value for hint '" +
+                        HintEnum.RECLAIM_GROUP_AGED +
+                        "' value '" +
+                        hintValueMaxAge +
                         "' could not be parsed as a double value");
                 }
 
@@ -106,8 +111,11 @@ namespace com.espertech.esper.common.@internal.view.groupwin
                     }
                     catch (Exception) {
                         throw new ViewParameterException(
-                            "Required hint value for hint '" + HintEnum.RECLAIM_GROUP_FREQ + "' value '" +
-                            hintValueFrequency + "' could not be parsed as a double value");
+                            "Required hint value for hint '" +
+                            HintEnum.RECLAIM_GROUP_FREQ +
+                            "' value '" +
+                            hintValueFrequency +
+                            "' could not be parsed as a double value");
                     }
                 }
 
@@ -117,7 +125,9 @@ namespace com.espertech.esper.common.@internal.view.groupwin
 
                 if (Log.IsDebugEnabled) {
                     Log.Debug(
-                        "Using reclaim-aged strategy for group-window age " + reclaimMaxAge + " frequency " +
+                        "Using reclaim-aged strategy for group-window age " +
+                        reclaimMaxAge +
+                        " frequency " +
                         reclaimFrequency);
                 }
             }
@@ -129,7 +139,12 @@ namespace com.espertech.esper.common.@internal.view.groupwin
             ViewForgeEnv viewForgeEnv)
         {
             criteriaExpressions = ViewForgeSupport.Validate(
-                ViewName, parentEventType, viewParameters, false, viewForgeEnv, streamNumber);
+                ViewName,
+                parentEventType,
+                viewParameters,
+                false,
+                viewForgeEnv,
+                streamNumber);
 
             if (criteriaExpressions.Length == 0) {
                 var errorMessage =
@@ -174,11 +189,21 @@ namespace com.espertech.esper.common.@internal.view.groupwin
                 .SetProperty(factory, "ReclaimMaxAge", Constant(reclaimMaxAge))
                 .SetProperty(factory, "ReclaimFrequency", Constant(reclaimFrequency))
                 .SetProperty(factory, "PropertyNames", Constant(propertyNames))
-                .SetProperty(factory, "CriteriaEvals", CodegenEvaluators(criteriaExpressions, method, GetType(), classScope))
-                .SetProperty(factory, "CriteriaTypes", Constant(ExprNodeUtilityQuery.GetExprResultTypes(criteriaExpressions)))
-                .SetProperty(factory, "Groupeds",
+                .SetProperty(
+                    factory,
+                    "CriteriaEvals",
+                    CodegenEvaluators(criteriaExpressions, method, GetType(), classScope))
+                .SetProperty(
+                    factory,
+                    "CriteriaTypes",
+                    Constant(ExprNodeUtilityQuery.GetExprResultTypes(criteriaExpressions)))
+                .SetProperty(
+                    factory,
+                    "Groupeds",
                     LocalMethod(MakeViewFactories(groupeds, GetType(), method, classScope, symbols)))
-                .SetProperty(factory, "EventType",
+                .SetProperty(
+                    factory,
+                    "EventType",
                     EventTypeUtility.ResolveTypeCodegen(eventType, EPStatementInitServicesConstants.REF))
                 .SetProperty(factory, "AddingProperties", Constant(addingProperties));
         }
@@ -240,12 +265,21 @@ namespace com.espertech.esper.common.@internal.view.groupwin
             var outputEventTypeName =
                 viewForgeEnv.StatementCompileTimeServices.EventTypeNameGeneratorStatement.GetViewGroup(streamNum);
             var metadata = new EventTypeMetadata(
-                outputEventTypeName, viewForgeEnv.ModuleName, EventTypeTypeClass.VIEWDERIVED,
-                EventTypeApplicationType.WRAPPER, NameAccessModifier.TRANSIENT, EventTypeBusModifier.NONBUS, false,
+                outputEventTypeName,
+                viewForgeEnv.ModuleName,
+                EventTypeTypeClass.VIEWDERIVED,
+                EventTypeApplicationType.WRAPPER,
+                NameAccessModifier.TRANSIENT,
+                EventTypeBusModifier.NONBUS,
+                false,
                 EventTypeIdPair.Unassigned());
             EventType eventType = WrapperEventTypeUtil.MakeWrapper(
-                metadata, groupedEventType, additionalProps, EventBeanTypedEventFactoryCompileTime.INSTANCE,
-                viewForgeEnv.BeanEventTypeFactoryProtected, viewForgeEnv.EventTypeCompileTimeResolver);
+                metadata,
+                groupedEventType,
+                additionalProps,
+                EventBeanTypedEventFactoryCompileTime.INSTANCE,
+                viewForgeEnv.BeanEventTypeFactoryProtected,
+                viewForgeEnv.EventTypeCompileTimeResolver);
             viewForgeEnv.EventTypeModuleCompileTimeRegistry.NewType(eventType);
             return eventType;
         }

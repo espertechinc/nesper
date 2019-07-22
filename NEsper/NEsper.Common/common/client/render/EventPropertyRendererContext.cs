@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Text;
+
 using com.espertech.esper.common.@internal.@event.render;
 
 namespace com.espertech.esper.common.client.render

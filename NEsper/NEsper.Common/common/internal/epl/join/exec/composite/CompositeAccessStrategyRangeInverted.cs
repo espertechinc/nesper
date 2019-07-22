@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.compat.collections;
@@ -59,7 +60,12 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.composite
             var submapOne = index.Head(comparableStart, !includeStart);
             var submapTwo = index.Tail(comparableEnd, !includeEnd);
             return CompositeIndexQueryRange.Handle(
-                theEvent, submapOne, submapTwo, result, next, postProcessor);
+                theEvent,
+                submapOne,
+                submapTwo,
+                result,
+                next,
+                postProcessor);
         }
 
         public ICollection<EventBean> Lookup(

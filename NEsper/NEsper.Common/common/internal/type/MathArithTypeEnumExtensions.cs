@@ -18,8 +18,7 @@ namespace com.espertech.esper.common.@internal.type
         /// <returns>text for enum</returns>
         public static string GetExpressionText(this MathArithTypeEnum value)
         {
-            switch (value)
-            {
+            switch (value) {
                 case MathArithTypeEnum.ADD:
                     return "+";
 
@@ -46,8 +45,7 @@ namespace com.espertech.esper.common.@internal.type
         /// <returns>math enum</returns>
         public static MathArithTypeEnum ParseOperator(string @operator)
         {
-            switch (@operator)
-            {
+            switch (@operator) {
                 case "+":
                     return MathArithTypeEnum.ADD;
 

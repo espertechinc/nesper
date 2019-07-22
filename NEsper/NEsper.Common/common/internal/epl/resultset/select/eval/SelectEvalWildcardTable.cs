@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -16,6 +17,7 @@ using com.espertech.esper.common.@internal.epl.table.compiletime;
 using com.espertech.esper.common.@internal.epl.table.core;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
@@ -40,15 +42,20 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            CodegenExpressionField eventToPublic = TableDeployTimeResolver.MakeTableEventToPublicField(table, codegenClassScope, this.GetType());
-            CodegenMethod methodNode = codegenMethodScope.MakeChild(typeof(EventBean), this.GetType(), codegenClassScope);
+            CodegenExpressionField eventToPublic =
+                TableDeployTimeResolver.MakeTableEventToPublicField(table, codegenClassScope, this.GetType());
+            CodegenMethod methodNode = codegenMethodScope.MakeChild(
+                typeof(EventBean),
+                this.GetType(),
+                codegenClassScope);
             CodegenExpressionRef refEPS = exprSymbol.GetAddEPS(methodNode);
             CodegenExpression refIsNewData = exprSymbol.GetAddIsNewData(methodNode);
             CodegenExpressionRef refExprEvalCtx = exprSymbol.GetAddExprEvalCtx(methodNode);
             methodNode.Block
-                .DeclareVar(typeof(EventBean), "event", ArrayAtIndex(refEPS, Constant(0)))
+                .DeclareVar<EventBean>("event", ArrayAtIndex(refEPS, Constant(0)))
                 .IfRefNullReturnNull("event")
-                .MethodReturn(ExprDotMethod(eventToPublic, "convert", @Ref("event"), refEPS, refIsNewData, refExprEvalCtx));
+                .MethodReturn(
+                    ExprDotMethod(eventToPublic, "convert", @Ref("event"), refEPS, refIsNewData, refExprEvalCtx));
             return methodNode;
         }
 

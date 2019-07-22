@@ -7,10 +7,12 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.epl.expression.subquery;
 using com.espertech.esper.common.@internal.epl.subselect;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.context.aifactory.update
@@ -35,11 +37,13 @@ namespace com.espertech.esper.common.@internal.context.aifactory.update
         {
             var method = parent.MakeChild(typeof(StatementAgentInstanceFactoryUpdate), GetType(), classScope);
             method.Block
-                .DeclareVar(
-                    typeof(StatementAgentInstanceFactoryUpdate), "saiff",
+                .DeclareVar<StatementAgentInstanceFactoryUpdate>(
+                    "saiff",
                     NewInstance(typeof(StatementAgentInstanceFactoryUpdate)))
                 .SetProperty(Ref("saiff"), "Desc", forge.Make(method, symbols, classScope))
-                .SetProperty(Ref("saiff"), "Subselects",
+                .SetProperty(
+                    Ref("saiff"),
+                    "Subselects",
                     SubSelectFactoryForge.CodegenInitMap(subselects, GetType(), method, symbols, classScope))
                 .Expression(ExprDotMethodChain(symbols.GetAddInitSvc(method)).Add("addReadyCallback", Ref("saiff")))
                 .MethodReturn(Ref("saiff"));

@@ -12,6 +12,7 @@ using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.context.module;
 using com.espertech.esper.common.@internal.@event.bean.core;
 using com.espertech.esper.common.@internal.@event.core;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.@event.arr
@@ -78,7 +79,9 @@ namespace com.espertech.esper.common.@internal.@event.arr
             CodegenClassScope codegenClassScope)
         {
             return UnderlyingGetCodegen(
-                CastUnderlying(typeof(object[]), beanExpression), codegenMethodScope, codegenClassScope);
+                CastUnderlying(typeof(object[]), beanExpression),
+                codegenMethodScope,
+                codegenClassScope);
         }
 
         public CodegenExpression EventBeanExistsCodegen(
@@ -99,7 +102,9 @@ namespace com.espertech.esper.common.@internal.@event.arr
             }
 
             return UnderlyingFragmentCodegen(
-                CastUnderlying(typeof(object[]), beanExpression), codegenMethodScope, codegenClassScope);
+                CastUnderlying(typeof(object[]), beanExpression),
+                codegenMethodScope,
+                codegenClassScope);
         }
 
         public CodegenExpression UnderlyingGetCodegen(
@@ -130,13 +135,17 @@ namespace com.espertech.esper.common.@internal.@event.arr
             var svc = codegenClassScope.NamespaceScope.AddOrGetFieldSharable(
                 EventBeanTypedEventFactoryCodegenField.INSTANCE);
             var type = codegenClassScope.NamespaceScope.AddFieldUnshared(
-                true, typeof(BeanEventType),
+                true,
+                typeof(BeanEventType),
                 Cast(
                     typeof(BeanEventType),
                     EventTypeUtility.ResolveTypeCodegen(eventType, EPStatementInitServicesConstants.REF)));
             return StaticMethod(
-                typeof(BaseNestableEventUtil), "getBNFragmentPojo",
-                UnderlyingGetCodegen(underlyingExpression, codegenMethodScope, codegenClassScope), type, svc);
+                typeof(BaseNestableEventUtil),
+                "getBNFragmentPojo",
+                UnderlyingGetCodegen(underlyingExpression, codegenMethodScope, codegenClassScope),
+                type,
+                svc);
         }
     }
 } // end of namespace

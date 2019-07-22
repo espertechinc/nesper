@@ -32,10 +32,13 @@ namespace com.espertech.esper.common.client.soda
             switch (enumValue) {
                 case StreamSelector.RSTREAM_ONLY:
                     return "rstream";
+
                 case StreamSelector.ISTREAM_ONLY:
                     return "istream";
+
                 case StreamSelector.RSTREAM_ISTREAM_BOTH:
                     return "irstream";
+
                 default:
                     throw new ArgumentException("invalid value for enum value", nameof(enumValue));
             }

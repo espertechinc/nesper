@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -16,6 +17,7 @@ using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.common.@internal.view.core;
 using com.espertech.esper.common.@internal.view.util;
+
 using static com.espertech.esper.common.@internal.epl.expression.core.ExprNodeUtilityCodegen;
 
 namespace com.espertech.esper.common.@internal.view.derived
@@ -52,7 +54,12 @@ namespace com.espertech.esper.common.@internal.view.derived
             ViewForgeEnv viewForgeEnv)
         {
             var validated = ViewForgeSupport.Validate(
-                ViewName, parentEventType, viewParameters, true, viewForgeEnv, streamNumber);
+                ViewName,
+                parentEventType,
+                viewParameters,
+                true,
+                viewForgeEnv,
+                streamNumber);
 
             if (validated.Length < 2) {
                 throw new ViewParameterException(ViewParamMessage);
@@ -85,14 +92,20 @@ namespace com.espertech.esper.common.@internal.view.derived
             CodegenClassScope classScope)
         {
             if (additionalProps != null) {
-                method.Block.SetProperty(factory, "AdditionalProps",
+                method.Block.SetProperty(
+                    factory,
+                    "AdditionalProps",
                     additionalProps.Codegen(method, classScope));
             }
 
             method.Block
-                .SetProperty(factory, "FieldNameXEvaluator",
+                .SetProperty(
+                    factory,
+                    "FieldNameXEvaluator",
                     CodegenEvaluator(fieldNameX.Forge, method, GetType(), classScope))
-                .SetProperty(factory, "FieldNameWeightEvaluator",
+                .SetProperty(
+                    factory,
+                    "FieldNameWeightEvaluator",
                     CodegenEvaluator(fieldNameWeight.Forge, method, GetType(), classScope));
         }
     }

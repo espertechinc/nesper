@@ -8,6 +8,7 @@
 
 using System.IO;
 using System.Linq;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
@@ -21,6 +22,7 @@ using com.espertech.esper.common.@internal.epl.expression.variable;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 using static com.espertech.esper.common.@internal.epl.expression.codegen.ExprForgeCodegenNames;
 
@@ -403,7 +405,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.time.node
             if ((HasMonth || HasYear) && returnType.GetBoxedType() != typeof(int?)) {
                 throw new ExprValidationException(
                     "Time period expressions with month or year component require integer values, received a " +
-                    returnType.GetSimpleName() + " value");
+                    returnType.GetSimpleName() +
+                    " value");
             }
 
             return expression is ExprVariableNode;

@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+
 using com.espertech.esper.common.@internal.epl.spatial.quadtree.core;
 using com.espertech.esper.common.@internal.epl.spatial.quadtree.mxcif;
 using com.espertech.esper.compat.collections;
@@ -80,8 +81,14 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxcifrowinde
             ICollection<object> result)
         {
             if (!BoundingBox.IntersectsBoxIncludingEnd(
-                x, y, x + width, y + height,
-                rectangle.X, rectangle.Y, rectangle.W, rectangle.H)) {
+                x,
+                y,
+                x + width,
+                y + height,
+                rectangle.X,
+                rectangle.Y,
+                rectangle.W,
+                rectangle.H)) {
                 return result;
             }
 

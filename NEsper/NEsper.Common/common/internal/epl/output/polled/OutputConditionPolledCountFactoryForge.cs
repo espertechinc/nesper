@@ -7,12 +7,14 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.variable.compiletime;
 using com.espertech.esper.common.@internal.epl.variable.core;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.output.polled
@@ -35,7 +37,8 @@ namespace com.espertech.esper.common.@internal.epl.output.polled
             this.variableMetaData = variableMetaData;
 
             if ((eventRate < 1) && (variableMetaData == null)) {
-                throw new ArgumentException("Limiting output by event count requires an event count of at least 1 or a variable name");
+                throw new ArgumentException(
+                    "Limiting output by event count requires an event count of at least 1 or a variable name");
             }
         }
 
@@ -46,12 +49,20 @@ namespace com.espertech.esper.common.@internal.epl.output.polled
             // resolve variable at init-time via field
             CodegenExpression variableExpression = ConstantNull();
             if (variableMetaData != null) {
-                variableExpression = VariableDeployTimeResolver.MakeVariableField(variableMetaData, classScope, this.GetType());
+                variableExpression = VariableDeployTimeResolver.MakeVariableField(
+                    variableMetaData,
+                    classScope,
+                    this.GetType());
             }
 
-            CodegenMethod method = parent.MakeChild(typeof(OutputConditionPolledCountFactory), this.GetType(), classScope);
+            CodegenMethod method = parent.MakeChild(
+                typeof(OutputConditionPolledCountFactory),
+                this.GetType(),
+                classScope);
             method.Block
-                .DeclareVar(typeof(OutputConditionPolledCountFactory), "factory", NewInstance(typeof(OutputConditionPolledCountFactory)))
+                .DeclareVar<OutputConditionPolledCountFactory>(
+                    "factory",
+                    NewInstance(typeof(OutputConditionPolledCountFactory)))
                 .SetProperty(Ref("factory"), "EventRate", Constant(eventRate))
                 .SetProperty(Ref("factory"), "Variable", variableExpression)
                 .MethodReturn(@Ref("factory"));

@@ -7,12 +7,14 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Linq;
+
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.context.controller.condition;
 using com.espertech.esper.common.@internal.epl.pattern.core;
 using com.espertech.esper.common.@internal.util;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.compile.stage1.spec
@@ -46,12 +48,18 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
         {
             var method = parent.MakeChild(typeof(ContextConditionDescriptorPattern), GetType(), classScope);
             method.Block
-                .DeclareVar(
-                    typeof(ContextConditionDescriptorPattern), "condition",
+                .DeclareVar<ContextConditionDescriptorPattern>(
+                    "condition",
                     NewInstance(typeof(ContextConditionDescriptorPattern)))
-                .SetProperty(Ref("condition"), "Pattern", LocalMethod(PatternCompiled.Root.MakeCodegen(method, symbols, classScope)))
+                .SetProperty(
+                    Ref("condition"),
+                    "Pattern",
+                    LocalMethod(PatternCompiled.Root.MakeCodegen(method, symbols, classScope)))
                 .SetProperty(Ref("condition"), "PatternContext", PatternContext.Make(method, symbols, classScope))
-                .SetProperty(Ref("condition"), "TaggedEvents", Constant(PatternCompiled.TaggedEventTypes.Keys.ToArray()))
+                .SetProperty(
+                    Ref("condition"),
+                    "TaggedEvents",
+                    Constant(PatternCompiled.TaggedEventTypes.Keys.ToArray()))
                 .SetProperty(Ref("condition"), "ArrayEvents", Constant(PatternCompiled.ArrayEventTypes.Keys.ToArray()))
                 .SetProperty(Ref("condition"), "Inclusive", Constant(IsInclusive))
                 .SetProperty(Ref("condition"), "Immediate", Constant(IsImmediate))

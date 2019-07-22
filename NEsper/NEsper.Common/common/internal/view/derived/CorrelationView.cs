@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.epl.expression.core;
@@ -32,7 +33,12 @@ namespace com.espertech.esper.common.@internal.view.derived
             EventType eventType,
             StatViewAdditionalPropsEval additionalProps)
             : base(
-                viewFactory, agentInstanceContext, xExpressionEval, yExpressionEval, eventType, additionalProps)
+                viewFactory,
+                agentInstanceContext,
+                xExpressionEval,
+                yExpressionEval,
+                eventType,
+                additionalProps)
         {
         }
 
@@ -81,7 +87,8 @@ namespace com.espertech.esper.common.@internal.view.derived
             var eventTypeMap = new LinkedHashMap<string, object>();
             eventTypeMap.Put(ViewFieldEnum.CORRELATION__CORRELATION.GetName(), typeof(double?));
             StatViewAdditionalPropsForge.AddCheckDupProperties(
-                eventTypeMap, additionalProps,
+                eventTypeMap,
+                additionalProps,
                 ViewFieldEnum.CORRELATION__CORRELATION);
             return DerivedViewTypeUtil.NewType("correlview", eventTypeMap, viewForgeEnv, streamNum);
         }

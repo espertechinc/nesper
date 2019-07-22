@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.compat.collections;
@@ -45,7 +46,12 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.composite
             }
 
             return CompositeIndexQueryRange.Handle(
-                theEvent, index.Head(comparable), null, result, next, postProcessor);
+                theEvent,
+                index.Head(comparable),
+                null,
+                result,
+                next,
+                postProcessor);
         }
 
         public ICollection<EventBean> Lookup(
@@ -68,7 +74,12 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.composite
             }
 
             return CompositeIndexQueryRange.Handle(
-                eventsPerStream, index.Head(comparable), null, result, next, postProcessor);
+                eventsPerStream,
+                index.Head(comparable),
+                null,
+                result,
+                next,
+                postProcessor);
         }
     }
 } // end of namespace

@@ -58,11 +58,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.declared.compileti
 
         public ExprForge InnerForge { get; }
 
-        public IDictionary<string, object> RowProperties
-        {
+        public IDictionary<string, object> RowProperties {
             get {
-                if (InnerForge is ExprTypableReturnForge)
-                {
+                if (InnerForge is ExprTypableReturnForge) {
                     return ((ExprTypableReturnForge) InnerForge).RowProperties;
                 }
 
@@ -112,18 +110,22 @@ namespace com.espertech.esper.common.@internal.epl.expression.declared.compileti
             CodegenClassScope codegenClassScope)
         {
             var methodNode = codegenMethodScope.MakeChild(
-                typeof(ICollection<object>), typeof(ExprDeclaredForgeBase), codegenClassScope);
+                typeof(ICollection<object>),
+                typeof(ExprDeclaredForgeBase),
+                codegenClassScope);
             var refEPS = exprSymbol.GetAddEPS(methodNode);
             var refIsNewData = exprSymbol.GetAddIsNewData(methodNode);
             var refExprEvalCtx = exprSymbol.GetAddExprEvalCtx(methodNode);
             methodNode.Block
-                .DeclareVar(
-                    typeof(EventBean[]), "rewritten",
+                .DeclareVar<EventBean[]>(
+                    "rewritten",
                     CodegenEventsPerStreamRewritten(refEPS, methodNode, codegenClassScope))
                 .MethodReturn(
                     LocalMethod(
-                        EvaluateGetROCollectionEventsCodegenRewritten(methodNode, codegenClassScope), Ref("rewritten"),
-                        refIsNewData, refExprEvalCtx));
+                        EvaluateGetROCollectionEventsCodegenRewritten(methodNode, codegenClassScope),
+                        Ref("rewritten"),
+                        refIsNewData,
+                        refExprEvalCtx));
             return LocalMethod(methodNode);
         }
 
@@ -133,26 +135,28 @@ namespace com.espertech.esper.common.@internal.epl.expression.declared.compileti
             CodegenClassScope codegenClassScope)
         {
             var methodNode = codegenMethodScope.MakeChild(
-                typeof(ICollection<object>), typeof(ExprDeclaredForgeBase), codegenClassScope);
+                typeof(ICollection<object>),
+                typeof(ExprDeclaredForgeBase),
+                codegenClassScope);
             var refEPS = exprSymbol.GetAddEPS(methodNode);
             var refIsNewData = exprSymbol.GetAddIsNewData(methodNode);
             var refExprEvalCtx = exprSymbol.GetAddExprEvalCtx(methodNode);
             methodNode.Block
-                .DeclareVar(
-                    typeof(EventBean[]), "rewritten",
+                .DeclareVar<EventBean[]>(
+                    "rewritten",
                     CodegenEventsPerStreamRewritten(refEPS, methodNode, codegenClassScope))
                 .MethodReturn(
                     LocalMethod(
-                        EvaluateGetROCollectionScalarCodegenRewritten(methodNode, codegenClassScope), Ref("rewritten"),
-                        refIsNewData, refExprEvalCtx));
+                        EvaluateGetROCollectionScalarCodegenRewritten(methodNode, codegenClassScope),
+                        Ref("rewritten"),
+                        refIsNewData,
+                        refExprEvalCtx));
             return LocalMethod(methodNode);
         }
 
-        public Type ComponentTypeCollection
-        {
+        public Type ComponentTypeCollection {
             get {
-                if (InnerForge is ExprEnumerationForge)
-                {
+                if (InnerForge is ExprEnumerationForge) {
                     return ((ExprEnumerationForge) InnerForge).ComponentTypeCollection;
                 }
 
@@ -164,10 +168,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.declared.compileti
             StatementRawInfo statementRawInfo,
             StatementCompileTimeServices compileTimeServices)
         {
-            if (InnerForge is ExprEnumerationForge)
-            {
+            if (InnerForge is ExprEnumerationForge) {
                 return ((ExprEnumerationForge) InnerForge).GetEventTypeCollection(
-                    statementRawInfo, compileTimeServices);
+                    statementRawInfo,
+                    compileTimeServices);
             }
 
             return null;
@@ -177,8 +181,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.declared.compileti
             StatementRawInfo statementRawInfo,
             StatementCompileTimeServices compileTimeServices)
         {
-            if (InnerForge is ExprEnumerationForge)
-            {
+            if (InnerForge is ExprEnumerationForge) {
                 return ((ExprEnumerationForge) InnerForge).GetEventTypeSingle(statementRawInfo, compileTimeServices);
             }
 
@@ -191,7 +194,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.declared.compileti
             CodegenClassScope codegenClassScope)
         {
             return ((ExprEnumerationForge) InnerForge).EvaluateGetEventBeanCodegen(
-                codegenMethodScope, exprSymbol, codegenClassScope);
+                codegenMethodScope,
+                exprSymbol,
+                codegenClassScope);
         }
 
         public ExprEvaluator ExprEvaluator => this;
@@ -204,22 +209,28 @@ namespace com.espertech.esper.common.@internal.epl.expression.declared.compileti
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            if (!audit)
-            {
+            if (!audit) {
                 return EvaluateCodegenNoAudit(requiredType, codegenMethodScope, exprSymbol, codegenClassScope);
             }
 
             var evaluationType = requiredType == typeof(object) ? typeof(object) : InnerForge.EvaluationType;
             var methodNode = codegenMethodScope.MakeChild(
-                evaluationType, typeof(ExprDeclaredForgeBase), codegenClassScope);
+                evaluationType,
+                typeof(ExprDeclaredForgeBase),
+                codegenClassScope);
             methodNode.Block
                 .DeclareVar(
-                    evaluationType, "result",
+                    evaluationType,
+                    "result",
                     EvaluateCodegenNoAudit(requiredType, methodNode, exprSymbol, codegenClassScope))
                 .Expression(
-                    ExprDotMethodChain(exprSymbol.GetAddExprEvalCtx(methodNode)).Add("getAuditProvider").Add(
-                        "exprdef", Constant(parent.Prototype.Name), Ref("result"),
-                        exprSymbol.GetAddExprEvalCtx(methodNode)))
+                    ExprDotMethodChain(exprSymbol.GetAddExprEvalCtx(methodNode))
+                        .Add("getAuditProvider")
+                        .Add(
+                            "exprdef",
+                            Constant(parent.Prototype.Name),
+                            Ref("result"),
+                            exprSymbol.GetAddExprEvalCtx(methodNode)))
                 .MethodReturn(Ref("result"));
             return LocalMethod(methodNode);
         }
@@ -233,9 +244,15 @@ namespace com.espertech.esper.common.@internal.epl.expression.declared.compileti
             CodegenClassScope codegenClassScope)
         {
             return new InstrumentationBuilderExpr(
-                    GetType(), this, "ExprDeclared", requiredType, codegenMethodScope, exprSymbol,
+                    GetType(),
+                    this,
+                    "ExprDeclared",
+                    requiredType,
+                    codegenMethodScope,
+                    exprSymbol,
                     codegenClassScope)
-                .Qparams(GetInstrumentationQParams(parent, codegenClassScope)).Build();
+                .Qparams(GetInstrumentationQParams(parent, codegenClassScope))
+                .Build();
         }
 
         public abstract EventBean[] GetEventsPerStreamRewritten(EventBean[] eventsPerStream);
@@ -245,11 +262,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.declared.compileti
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope);
 
-        public bool? IsMultirow
-        {
+        public bool? IsMultirow {
             get {
-                if (InnerForge is ExprTypableReturnForge)
-                {
+                if (InnerForge is ExprTypableReturnForge) {
                     return ((ExprTypableReturnForge) InnerForge).IsMultirow;
                 }
 
@@ -272,7 +287,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.declared.compileti
             CodegenClassScope codegenClassScope)
         {
             return ((ExprTypableReturnForge) InnerForge).EvaluateTypableSingleCodegen(
-                codegenMethodScope, exprSymbol, codegenClassScope);
+                codegenMethodScope,
+                exprSymbol,
+                codegenClassScope);
         }
 
         public object[][] EvaluateTypableMulti(
@@ -290,7 +307,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.declared.compileti
             CodegenClassScope codegenClassScope)
         {
             return ((ExprTypableReturnForge) InnerForge).EvaluateTypableMultiCodegen(
-                codegenMethodScope, exprSymbol, codegenClassScope);
+                codegenMethodScope,
+                exprSymbol,
+                codegenClassScope);
         }
 
         public object Evaluate(
@@ -308,8 +327,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.declared.compileti
             CodegenClassScope codegenClassScope)
         {
             string expressionText = null;
-            if (codegenClassScope.IsInstrumented)
-            {
+            if (codegenClassScope.IsInstrumented) {
                 expressionText = ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(parent.ExpressionBodyCopy);
             }
 
@@ -328,18 +346,22 @@ namespace com.espertech.esper.common.@internal.epl.expression.declared.compileti
         {
             var evaluationType = requiredType == typeof(object) ? typeof(object) : InnerForge.EvaluationType;
             var methodNode = codegenMethodScope.MakeChild(
-                evaluationType, typeof(ExprDeclaredForgeBase), codegenClassScope);
+                evaluationType,
+                typeof(ExprDeclaredForgeBase),
+                codegenClassScope);
             var refEPS = exprSymbol.GetAddEPS(methodNode);
             var refIsNewData = exprSymbol.GetAddIsNewData(methodNode);
             var refExprEvalCtx = exprSymbol.GetAddExprEvalCtx(methodNode);
             methodNode.Block
-                .DeclareVar(
-                    typeof(EventBean[]), "rewritten",
+                .DeclareVar<EventBean[]>(
+                    "rewritten",
                     CodegenEventsPerStreamRewritten(refEPS, methodNode, codegenClassScope))
                 .MethodReturn(
                     LocalMethod(
-                        EvaluateCodegenRewritten(requiredType, methodNode, codegenClassScope), Ref("rewritten"),
-                        refIsNewData, refExprEvalCtx));
+                        EvaluateCodegenRewritten(requiredType, methodNode, codegenClassScope),
+                        Ref("rewritten"),
+                        refIsNewData,
+                        refExprEvalCtx));
             return LocalMethod(methodNode);
         }
 
@@ -360,36 +382,41 @@ namespace com.espertech.esper.common.@internal.epl.expression.declared.compileti
 
             // generate code for the inner value so we know its symbols and derived symbols
             var innerValue = InnerForge.EvaluateCodegen(
-                requiredType, methodNode, scope, codegenClassScope);
+                requiredType,
+                methodNode,
+                scope,
+                codegenClassScope);
 
             // produce derived symbols
             var block = methodNode.Block;
             scope.DerivedSymbolsCodegen(methodNode, block, codegenClassScope);
 
-            if (isCache)
-            {
+            if (isCache) {
                 var eval = ExprDotMethod(Ref("entry"), "getResult");
-                if (evaluationType != typeof(object))
-                {
+                if (evaluationType != typeof(object)) {
                     eval = Cast(InnerForge.EvaluationType.GetBoxedType(), eval);
                 }
 
-                block.DeclareVar(
-                        typeof(ExpressionResultCacheForDeclaredExprLastValue), "cache",
-                        ExprDotMethodChain(refExprEvalCtx).Add("getExpressionResultCacheService")
+                block.DeclareVar<ExpressionResultCacheForDeclaredExprLastValue>(
+                        "cache",
+                        ExprDotMethodChain(refExprEvalCtx)
+                            .Add("getExpressionResultCacheService")
                             .Add("getAllocateDeclaredExprLastValue"))
-                    .DeclareVar(
-                        typeof(ExpressionResultCacheEntryEventBeanArrayAndObj), "entry",
+                    .DeclareVar<ExpressionResultCacheEntryEventBeanArrayAndObj>(
+                        "entry",
                         ExprDotMethod(Ref("cache"), "getDeclaredExpressionLastValue", nodeObject, refEPS))
                     .IfCondition(NotEqualsNull(Ref("entry")))
                     .BlockReturn(eval)
                     .DeclareVar(evaluationType, "result", innerValue)
                     .Expression(
                         ExprDotMethod(
-                            Ref("cache"), "saveDeclaredExpressionLastValue", nodeObject, refEPS, Ref("result")));
+                            Ref("cache"),
+                            "saveDeclaredExpressionLastValue",
+                            nodeObject,
+                            refEPS,
+                            Ref("result")));
             }
-            else
-            {
+            else {
                 block.DeclareVar(evaluationType, "result", innerValue);
             }
 
@@ -406,7 +433,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.declared.compileti
             var scope = new ExprForgeCodegenSymbol(true, null);
             var methodNode = codegenMethodScope
                 .MakeChildWithScope(
-                    typeof(ICollection<object>), typeof(ExprDeclaredForgeBase), scope, codegenClassScope)
+                    typeof(ICollection<object>),
+                    typeof(ExprDeclaredForgeBase),
+                    scope,
+                    codegenClassScope)
                 .AddParam(ExprForgeCodegenNames.PARAMS);
             CodegenExpression refEPS = scope.GetAddEPS(methodNode);
             CodegenExpression refExprEvalCtx = scope.GetAddExprEvalCtx(methodNode);
@@ -414,30 +444,35 @@ namespace com.espertech.esper.common.@internal.epl.expression.declared.compileti
             // generate code for the inner value so we know its symbols and derived symbols
             var innerValue =
                 ((ExprEnumerationForge) InnerForge).EvaluateGetROCollectionEventsCodegen(
-                    methodNode, scope, codegenClassScope);
+                    methodNode,
+                    scope,
+                    codegenClassScope);
 
             var block = methodNode.Block;
             scope.DerivedSymbolsCodegen(methodNode, block, codegenClassScope);
 
-            if (isCache)
-            {
-                block.DeclareVar(
-                        typeof(ExpressionResultCacheForDeclaredExprLastColl), "cache",
-                        ExprDotMethodChain(refExprEvalCtx).Add("getExpressionResultCacheService")
+            if (isCache) {
+                block.DeclareVar<ExpressionResultCacheForDeclaredExprLastColl>(
+                        "cache",
+                        ExprDotMethodChain(refExprEvalCtx)
+                            .Add("getExpressionResultCacheService")
                             .Add("getAllocateDeclaredExprLastColl"))
-                    .DeclareVar(
-                        typeof(ExpressionResultCacheEntryEventBeanArrayAndCollBean), "entry",
+                    .DeclareVar<ExpressionResultCacheEntryEventBeanArrayAndCollBean>(
+                        "entry",
                         ExprDotMethod(Ref("cache"), "getDeclaredExpressionLastColl", nodeObject, refEPS))
                     .IfCondition(NotEqualsNull(Ref("entry")))
                     .BlockReturn(ExprDotMethod(Ref("entry"), "getResult"))
-                    .DeclareVar(typeof(ICollection<object>), "result", innerValue)
+                    .DeclareVar<ICollection<object>>("result", innerValue)
                     .Expression(
                         ExprDotMethod(
-                            Ref("cache"), "saveDeclaredExpressionLastColl", nodeObject, refEPS, Ref("result")));
+                            Ref("cache"),
+                            "saveDeclaredExpressionLastColl",
+                            nodeObject,
+                            refEPS,
+                            Ref("result")));
             }
-            else
-            {
-                block.DeclareVar(typeof(ICollection<object>), "result", innerValue);
+            else {
+                block.DeclareVar<ICollection<object>>("result", innerValue);
             }
 
             block.MethodReturn(Ref("result"));
@@ -452,7 +487,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.declared.compileti
             var scope = new ExprForgeCodegenSymbol(true, null);
             var methodNode = codegenMethodScope
                 .MakeChildWithScope(
-                    typeof(ICollection<object>), typeof(ExprDeclaredForgeBase), scope, codegenClassScope)
+                    typeof(ICollection<object>),
+                    typeof(ExprDeclaredForgeBase),
+                    scope,
+                    codegenClassScope)
                 .AddParam(ExprForgeCodegenNames.PARAMS);
             CodegenExpression refEPS = scope.GetAddEPS(methodNode);
             CodegenExpression refExprEvalCtx = scope.GetAddExprEvalCtx(methodNode);
@@ -460,33 +498,37 @@ namespace com.espertech.esper.common.@internal.epl.expression.declared.compileti
             // generate code for the inner value so we know its symbols and derived symbols
             var innerValue =
                 ((ExprEnumerationForge) InnerForge).EvaluateGetROCollectionScalarCodegen(
-                    methodNode, scope, codegenClassScope);
+                    methodNode,
+                    scope,
+                    codegenClassScope);
 
             // produce derived symbols
             var block = methodNode.Block;
             scope.DerivedSymbolsCodegen(methodNode, block, codegenClassScope);
 
-            if (isCache)
-            {
+            if (isCache) {
                 block
-                    .DeclareVar(
-                        typeof(ExpressionResultCacheForDeclaredExprLastColl), "cache",
+                    .DeclareVar<ExpressionResultCacheForDeclaredExprLastColl>(
+                        "cache",
                         ExprDotMethodChain(refExprEvalCtx)
                             .Add("getExpressionResultCacheService")
                             .Add("getAllocateDeclaredExprLastColl"))
-                    .DeclareVar(
-                        typeof(ExpressionResultCacheEntryEventBeanArrayAndCollBean), "entry",
+                    .DeclareVar<ExpressionResultCacheEntryEventBeanArrayAndCollBean>(
+                        "entry",
                         ExprDotMethod(Ref("cache"), "getDeclaredExpressionLastColl", nodeObject, refEPS))
                     .IfCondition(NotEqualsNull(Ref("entry")))
                     .BlockReturn(ExprDotMethod(Ref("entry"), "getResult"))
-                    .DeclareVar(typeof(ICollection<object>), "result", innerValue)
+                    .DeclareVar<ICollection<object>>("result", innerValue)
                     .Expression(
                         ExprDotMethod(
-                            Ref("cache"), "saveDeclaredExpressionLastColl", nodeObject, refEPS, Ref("result")));
+                            Ref("cache"),
+                            "saveDeclaredExpressionLastColl",
+                            nodeObject,
+                            refEPS,
+                            Ref("result")));
             }
-            else
-            {
-                block.DeclareVar(typeof(ICollection<object>), "result", innerValue);
+            else {
+                block.DeclareVar<ICollection<object>>("result", innerValue);
             }
 
             block.MethodReturn(Ref("result"));
@@ -495,16 +537,14 @@ namespace com.espertech.esper.common.@internal.epl.expression.declared.compileti
 
         private void InitInnerEvaluator()
         {
-            if (innerEvaluatorLazy == null)
-            {
+            if (innerEvaluatorLazy == null) {
                 innerEvaluatorLazy = InnerForge.ExprEvaluator;
             }
         }
 
         private void InitInnerEvaluatorLambda()
         {
-            if (InnerForge is ExprEnumerationForge && innerEvaluatorLambdaLazy == null)
-            {
+            if (InnerForge is ExprEnumerationForge && innerEvaluatorLambdaLazy == null) {
                 innerEvaluatorLambdaLazy = ((ExprEnumerationForge) InnerForge).ExprEvaluatorEnumeration;
             }
         }
@@ -517,7 +557,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.declared.compileti
         private CodegenExpressionField GetNodeObject(CodegenClassScope codegenClassScope)
         {
             return ExpressionDeployTimeResolver.MakeRuntimeCacheKeyField(
-                parent.PrototypeWVisibility, codegenClassScope, GetType());
+                parent.PrototypeWVisibility,
+                codegenClassScope,
+                GetType());
         }
     }
 } // end of namespace

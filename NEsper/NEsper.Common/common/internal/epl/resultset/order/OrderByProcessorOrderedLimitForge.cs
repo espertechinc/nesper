@@ -7,9 +7,11 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.core;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 using static com.espertech.esper.common.@internal.epl.resultset.codegen.ResultSetProcessorCodegenNames;
 using static com.espertech.esper.common.@internal.epl.resultset.order.OrderByProcessorCodegenNames;
@@ -36,10 +38,14 @@ namespace com.espertech.esper.common.@internal.epl.resultset.order
             CodegenClassScope classScope)
         {
             CodegenExpressionField rowLimitFactory = classScope.AddFieldUnshared(
-                true, typeof(RowLimitProcessorFactory), rowLimitProcessorFactoryForge.Make(classScope.NamespaceScope.InitMethod, classScope));
-            method.Block.DeclareVar(
-                    typeof(RowLimitProcessor), REF_ROWLIMITPROCESSOR.Ref, ExprDotMethod(rowLimitFactory, "instantiate", REF_AGENTINSTANCECONTEXT))
-                .MethodReturn(CodegenExpressionBuilder.NewInstance(CLASSNAME_ORDERBYPROCESSOR, @Ref("o"), REF_ROWLIMITPROCESSOR));
+                true,
+                typeof(RowLimitProcessorFactory),
+                rowLimitProcessorFactoryForge.Make(classScope.NamespaceScope.InitMethod, classScope));
+            method.Block.DeclareVar<RowLimitProcessor>(
+                    REF_ROWLIMITPROCESSOR.Ref,
+                    ExprDotMethod(rowLimitFactory, "Instantiate", REF_AGENTINSTANCECONTEXT))
+                .MethodReturn(
+                    CodegenExpressionBuilder.NewInstance(CLASSNAME_ORDERBYPROCESSOR, @Ref("o"), REF_ROWLIMITPROCESSOR));
         }
 
         public void CtorCodegen(

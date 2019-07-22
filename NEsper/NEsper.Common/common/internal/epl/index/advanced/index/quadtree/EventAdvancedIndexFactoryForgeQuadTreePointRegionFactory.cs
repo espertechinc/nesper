@@ -13,7 +13,8 @@ using com.espertech.esper.common.@internal.epl.spatial.quadtree.pointregion;
 
 namespace com.espertech.esper.common.@internal.epl.index.advanced.index.quadtree
 {
-    public class EventAdvancedIndexFactoryForgeQuadTreePointRegionFactory : EventAdvancedIndexFactoryForgeQuadTreeFactory
+    public class EventAdvancedIndexFactoryForgeQuadTreePointRegionFactory :
+        EventAdvancedIndexFactoryForgeQuadTreeFactory
     {
         public static readonly EventAdvancedIndexFactoryForgeQuadTreePointRegionFactory INSTANCE =
             new EventAdvancedIndexFactoryForgeQuadTreePointRegionFactory();
@@ -22,7 +23,8 @@ namespace com.espertech.esper.common.@internal.epl.index.advanced.index.quadtree
         {
         }
 
-        public override EventAdvancedIndexFactoryForge Forge => EventAdvancedIndexFactoryForgeQuadTreePointRegionForge.INSTANCE;
+        public override EventAdvancedIndexFactoryForge Forge =>
+            EventAdvancedIndexFactoryForgeQuadTreePointRegionForge.INSTANCE;
 
         public override EventTable Make(
             EventAdvancedIndexConfigStatement configStatement,
@@ -31,8 +33,16 @@ namespace com.espertech.esper.common.@internal.epl.index.advanced.index.quadtree
         {
             var qt = (AdvancedIndexConfigContextPartitionQuadTree) configCP;
             var quadTree = PointRegionQuadTreeFactory<object>.Make(
-                qt.X, qt.Y, qt.Width, qt.Height, qt.LeafCapacity, qt.MaxTreeHeight);
-            return new EventTableQuadTreePointRegionImpl(organization, (AdvancedIndexConfigStatementPointRegionQuadtree) configStatement, quadTree);
+                qt.X,
+                qt.Y,
+                qt.Width,
+                qt.Height,
+                qt.LeafCapacity,
+                qt.MaxTreeHeight);
+            return new EventTableQuadTreePointRegionImpl(
+                organization,
+                (AdvancedIndexConfigStatementPointRegionQuadtree) configStatement,
+                quadTree);
         }
 
         public override EventAdvancedIndexConfigStatementForge ToConfigStatement(ExprNode[] indexedExpr)

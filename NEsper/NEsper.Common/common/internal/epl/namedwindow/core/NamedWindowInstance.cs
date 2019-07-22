@@ -21,8 +21,15 @@ namespace com.espertech.esper.common.@internal.epl.namedwindow.core
             NamedWindow processor,
             AgentInstanceContext agentInstanceContext)
         {
-            RootViewInstance = new NamedWindowRootViewInstance(processor.RootView, agentInstanceContext, processor.EventTableIndexMetadata);
-            TailViewInstance = new NamedWindowTailViewInstance(RootViewInstance, processor.TailView, processor, agentInstanceContext);
+            RootViewInstance = new NamedWindowRootViewInstance(
+                processor.RootView,
+                agentInstanceContext,
+                processor.EventTableIndexMetadata);
+            TailViewInstance = new NamedWindowTailViewInstance(
+                RootViewInstance,
+                processor.TailView,
+                processor,
+                agentInstanceContext);
             RootViewInstance.DataWindowContents = TailViewInstance; // for iteration used for delete without index
         }
 

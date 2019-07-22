@@ -10,6 +10,7 @@ using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.core;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.expression.declared.compiletime
@@ -51,11 +52,20 @@ namespace com.espertech.esper.common.@internal.epl.expression.declared.compileti
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            CodegenBlock block = codegenMethodScope.MakeChild(typeof(EventBean[]), typeof(ExprDeclaredForgeRewrite), codegenClassScope)
-                .AddParam(typeof(EventBean[]), "eps").Block
-                .DeclareVar(typeof(EventBean[]), "events", NewArrayByLength(typeof(EventBean), Constant(streamAssignments.Length)));
+            CodegenBlock block = codegenMethodScope.MakeChild(
+                    typeof(EventBean[]),
+                    typeof(ExprDeclaredForgeRewrite),
+                    codegenClassScope)
+                .AddParam(typeof(EventBean[]), "eps")
+                .Block
+                .DeclareVar<EventBean[]>(
+                    "events",
+                    NewArrayByLength(typeof(EventBean), Constant(streamAssignments.Length)));
             for (int i = 0; i < streamAssignments.Length; i++) {
-                block.AssignArrayElement("events", Constant(i), ArrayAtIndex(@Ref("eps"), Constant(streamAssignments[i])));
+                block.AssignArrayElement(
+                    "events",
+                    Constant(i),
+                    ArrayAtIndex(@Ref("eps"), Constant(streamAssignments[i])));
             }
 
             return LocalMethodBuild(block.MethodReturn(@Ref("events"))).Pass(eventsPerStream).Call();

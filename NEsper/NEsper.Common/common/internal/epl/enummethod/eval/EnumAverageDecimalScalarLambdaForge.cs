@@ -41,7 +41,10 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             CodegenClassScope codegenClassScope)
         {
             return EnumAverageDecimalScalarLambdaForgeEval.Codegen(
-                this, premade, codegenMethodScope, codegenClassScope);
+                this,
+                premade,
+                codegenMethodScope,
+                codegenClassScope);
         }
     }
 } // end of namespace

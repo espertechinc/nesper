@@ -8,6 +8,7 @@
 
 using System;
 using System.Xml;
+
 using com.espertech.esper.common.client.configuration;
 
 namespace com.espertech.esper.common.@internal.util

@@ -12,6 +12,7 @@ using com.espertech.esper.common.@internal.compile.stage2;
 using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.context.module;
 using com.espertech.esper.common.@internal.filterspec;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.context.activator
@@ -47,11 +48,12 @@ namespace com.espertech.esper.common.@internal.context.activator
             var method = parent.MakeChild(typeof(ViewableActivatorFilter), GetType(), classScope);
 
             var makeFilter = filterSpecCompiled.MakeCodegen(method, symbols, classScope);
-            method.Block.DeclareVar(typeof(FilterSpecActivatable), "filterSpecCompiled", LocalMethod(makeFilter))
-                .DeclareVar(
-                    typeof(ViewableActivatorFilter), "activator",
+            method.Block.DeclareVar<FilterSpecActivatable>("filterSpecCompiled", LocalMethod(makeFilter))
+                .DeclareVar<ViewableActivatorFilter>(
+                    "activator",
                     ExprDotMethodChain(symbols.GetAddInitSvc(method))
-                        .Add(EPStatementInitServicesConstants.GETVIEWABLEACTIVATORFACTORY).Add("createFilter"))
+                        .Add(EPStatementInitServicesConstants.GETVIEWABLEACTIVATORFACTORY)
+                        .Add("createFilter"))
                 .SetProperty(Ref("activator"), "FilterSpec", Ref("filterSpecCompiled"))
                 .SetProperty(Ref("activator"), "CanIterate", Constant(canIterate))
                 .SetProperty(Ref("activator"), "StreamNumFromClause", Constant(streamNumFromClause))

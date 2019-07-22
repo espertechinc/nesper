@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+
 using com.espertech.esper.common.@internal.epl.spatial.quadtree.pointregion;
 using com.espertech.esper.common.@internal.epl.spatial.quadtree.prqdrowindex;
 using com.espertech.esper.compat.function;

@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.core;
@@ -57,14 +58,21 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.ontri
 
             // validate expressions and plan subselects
             var validationResult = OnTriggerPlanValidator.ValidateOnTriggerPlan(
-                infraEventType, planDesc.OnTriggerDesc, planDesc.StreamSpec, planDesc.ActivatorResult,
-                planDesc.SubselectActivation, @base, services);
+                infraEventType,
+                planDesc.OnTriggerDesc,
+                planDesc.StreamSpec,
+                planDesc.ActivatorResult,
+                planDesc.SubselectActivation,
+                @base,
+                services);
 
             var validatedJoin = validationResult.ValidatedJoin;
             var activatorResultEventType = planDesc.ActivatorResult.ActivatorResultEventType;
 
             var pair = IndexHintPair.GetIndexHintPair(
-                planDesc.OnTriggerDesc, @base.StatementSpec.StreamSpecs[0].OptionalStreamName, @base.StatementRawInfo,
+                planDesc.OnTriggerDesc,
+                @base.StatementSpec.StreamSpecs[0].OptionalStreamName,
+                @base.StatementRawInfo,
                 services);
             var indexHint = pair.IndexHint;
             var excludePlanHint = pair.ExcludePlanHint;
@@ -77,17 +85,31 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.ontri
             // query plan
             var onlyUseExistingIndexes = table != null;
             SubordinateWMatchExprQueryPlanForge queryPlan = SubordinateQueryPlanner.PlanOnExpression(
-                validatedJoin, activatorResultEventType, indexHint, enabledSubqueryIndexShare, -1, excludePlanHint,
+                validatedJoin,
+                activatorResultEventType,
+                indexHint,
+                enabledSubqueryIndexShare,
+                -1,
+                excludePlanHint,
                 isVirtualWindow,
-                indexMetadata, infraEventType, optionalUniqueKeySet, onlyUseExistingIndexes, @base.StatementRawInfo,
+                indexMetadata,
+                infraEventType,
+                optionalUniqueKeySet,
+                onlyUseExistingIndexes,
+                @base.StatementRawInfo,
                 services);
 
             // indicate index dependencies
             if (queryPlan.Indexes != null && infraVisibility == NameAccessModifier.PUBLIC) {
                 foreach (var index in queryPlan.Indexes) {
                     services.ModuleDependenciesCompileTime.AddPathIndex(
-                        namedWindow != null, infraName, infraModuleName, index.IndexName, index.IndexModuleName,
-                        services.NamedWindowCompileTimeRegistry, services.TableCompileTimeRegistry);
+                        namedWindow != null,
+                        infraName,
+                        infraModuleName,
+                        index.IndexName,
+                        index.IndexModuleName,
+                        services.NamedWindowCompileTimeRegistry,
+                        services.TableCompileTimeRegistry);
                 }
             }
 
@@ -99,7 +121,8 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.ontri
             IList<StmtClassForgable> forgables = new List<StmtClassForgable>(2);
             StatementAgentInstanceFactoryOnTriggerInfraBaseForge forge;
             var classNameRSP = CodeGenerationIDGenerator.GenerateClassNameSimple(
-                typeof(ResultSetProcessorFactoryProvider), classPostfix);
+                typeof(ResultSetProcessorFactoryProvider),
+                classPostfix);
             ResultSetProcessorDesc resultSetProcessor;
 
             if (onTriggerType == OnTriggerType.ON_SELECT) {
@@ -121,43 +144,96 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.ontri
                 var selectAndDelete = planDesc.OnTriggerDesc.IsDeleteAndSelect;
                 var distinct = @base.StatementSpec.SelectClauseCompiled.IsDistinct;
                 forge = new StatementAgentInstanceFactoryOnTriggerInfraSelectForge(
-                    activator, outputEventType, subselectForges, tableAccessForges, namedWindow, table, queryPlan,
-                    classNameRSP, insertInto, addToFront, optionalInsertIntoTable, selectAndDelete, distinct);
+                    activator,
+                    outputEventType,
+                    subselectForges,
+                    tableAccessForges,
+                    namedWindow,
+                    table,
+                    queryPlan,
+                    classNameRSP,
+                    insertInto,
+                    addToFront,
+                    optionalInsertIntoTable,
+                    selectAndDelete,
+                    distinct);
             }
             else {
                 var defaultSelectAllSpec = new StatementSpecCompiled();
                 defaultSelectAllSpec.SelectClauseCompiled.WithSelectExprList(new SelectClauseElementWildcard());
                 defaultSelectAllSpec.Raw.SelectStreamDirEnum = SelectClauseStreamSelectorEnum.RSTREAM_ISTREAM_BOTH;
                 StreamTypeService typeService = new StreamTypeServiceImpl(
-                    new[] {resultEventType}, new[] {infraName}, new[] {false}, false, false);
+                    new[] {resultEventType},
+                    new[] {infraName},
+                    new[] {false},
+                    false,
+                    false);
                 resultSetProcessor = ResultSetProcessorFactoryFactory.GetProcessorPrototype(
                     new ResultSetSpec(defaultSelectAllSpec),
-                    typeService, null, new bool[1], false, @base.ContextPropertyRegistry, false, false,
-                    @base.StatementRawInfo, services);
+                    typeService,
+                    null,
+                    new bool[1],
+                    false,
+                    @base.ContextPropertyRegistry,
+                    false,
+                    false,
+                    @base.StatementRawInfo,
+                    services);
 
                 if (onTriggerType == OnTriggerType.ON_DELETE) {
                     forge = new StatementAgentInstanceFactoryOnTriggerInfraDeleteForge(
-                        activator, resultEventType, subselectForges, tableAccessForges, classNameRSP, namedWindow,
-                        table, queryPlan);
+                        activator,
+                        resultEventType,
+                        subselectForges,
+                        tableAccessForges,
+                        classNameRSP,
+                        namedWindow,
+                        table,
+                        queryPlan);
                 }
                 else if (onTriggerType == OnTriggerType.ON_UPDATE) {
                     var updateDesc = (OnTriggerWindowUpdateDesc) planDesc.OnTriggerDesc;
                     EventBeanUpdateHelperForge updateHelper = EventBeanUpdateHelperForgeFactory.Make(
-                        infraName, (EventTypeSPI) infraEventType, updateDesc.Assignments,
-                        validationResult.ZeroStreamAliasName, activatorResultEventType, namedWindow != null,
-                        @base.StatementName, services.EventTypeAvroHandler);
+                        infraName,
+                        (EventTypeSPI) infraEventType,
+                        updateDesc.Assignments,
+                        validationResult.ZeroStreamAliasName,
+                        activatorResultEventType,
+                        namedWindow != null,
+                        @base.StatementName,
+                        services.EventTypeAvroHandler);
                     forge = new StatementAgentInstanceFactoryOnTriggerInfraUpdateForge(
-                        activator, resultEventType, subselectForges, tableAccessForges, classNameRSP, namedWindow,
-                        table, queryPlan, updateHelper);
+                        activator,
+                        resultEventType,
+                        subselectForges,
+                        tableAccessForges,
+                        classNameRSP,
+                        namedWindow,
+                        table,
+                        queryPlan,
+                        updateHelper);
                 }
                 else if (onTriggerType == OnTriggerType.ON_MERGE) {
                     var onMergeTriggerDesc = (OnTriggerMergeDesc) planDesc.OnTriggerDesc;
                     var onMergeHelper = new InfraOnMergeHelperForge(
-                        onMergeTriggerDesc, activatorResultEventType, planDesc.StreamSpec.OptionalStreamName, infraName,
-                        (EventTypeSPI) infraEventType, @base.StatementRawInfo, services, table);
+                        onMergeTriggerDesc,
+                        activatorResultEventType,
+                        planDesc.StreamSpec.OptionalStreamName,
+                        infraName,
+                        (EventTypeSPI) infraEventType,
+                        @base.StatementRawInfo,
+                        services,
+                        table);
                     forge = new StatementAgentInstanceFactoryOnTriggerInfraMergeForge(
-                        activator, resultEventType, subselectForges, tableAccessForges, classNameRSP, namedWindow,
-                        table, queryPlan, onMergeHelper);
+                        activator,
+                        resultEventType,
+                        subselectForges,
+                        tableAccessForges,
+                        classNameRSP,
+                        namedWindow,
+                        table,
+                        queryPlan,
+                        onMergeHelper);
                 }
                 else {
                     throw new IllegalStateException("Unrecognized trigger type " + onTriggerType);
@@ -165,12 +241,19 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.ontri
             }
 
             forgables.Add(
-                new StmtClassForgableRSPFactoryProvider(classNameRSP, resultSetProcessor, namespaceScope, @base.StatementRawInfo));
+                new StmtClassForgableRSPFactoryProvider(
+                    classNameRSP,
+                    resultSetProcessor,
+                    namespaceScope,
+                    @base.StatementRawInfo));
 
             var queryPlanLogging = services.Configuration.Common.Logging.IsEnableQueryPlan;
             SubordinateQueryPlannerUtil.QueryPlanLogOnExpr(
-                queryPlanLogging, QUERY_PLAN_LOG,
-                queryPlan, @base.StatementSpec.Annotations, services.ImportServiceCompileTime);
+                queryPlanLogging,
+                QUERY_PLAN_LOG,
+                queryPlan,
+                @base.StatementSpec.Annotations,
+                services.ImportServiceCompileTime);
 
             var onTrigger = new StmtClassForgableAIFactoryProviderOnTrigger(className, namespaceScope, forge);
             return new OnTriggerPlan(onTrigger, forgables, resultSetProcessor.SelectSubscriberDescriptor);
@@ -184,8 +267,11 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.ontri
             if (onExprContextName == null) {
                 if (desiredContextName != null) {
                     throw new ExprValidationException(
-                        "Cannot create on-trigger expression: " + title + " was declared with context '" +
-                        desiredContextName + "', please declare the same context name");
+                        "Cannot create on-trigger expression: " +
+                        title +
+                        " was declared with context '" +
+                        desiredContextName +
+                        "', please declare the same context name");
                 }
 
                 return;
@@ -193,8 +279,11 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.ontri
 
             if (!onExprContextName.Equals(desiredContextName)) {
                 throw new ExprValidationException(
-                    "Cannot create on-trigger expression: " + title + " was declared with context '" +
-                    desiredContextName + "', please use the same context instead");
+                    "Cannot create on-trigger expression: " +
+                    title +
+                    " was declared with context '" +
+                    desiredContextName +
+                    "', please use the same context instead");
             }
         }
     }

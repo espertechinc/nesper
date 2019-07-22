@@ -43,7 +43,10 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
                 CodegenClassScope codegenClassScope)
             {
                 return CodegenExpressionBuilder.StaticMethod(
-                    typeof(IntervalComputerConstantAfter), "computeIntervalAfter", leftStart, rightEnd,
+                    typeof(IntervalComputerConstantAfter),
+                    "computeIntervalAfter",
+                    leftStart,
+                    rightEnd,
                     CodegenExpressionBuilder.Constant(start),
                     CodegenExpressionBuilder.Constant(end));
             }

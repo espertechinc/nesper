@@ -31,15 +31,13 @@ namespace com.espertech.esper.common.@internal.epl.script.compiletime
 
         public void NewScript(ExpressionScriptProvided detail)
         {
-            if (!detail.Visibility.IsModuleProvidedAccessModifier())
-            {
+            if (!detail.Visibility.IsModuleProvidedAccessModifier()) {
                 throw new IllegalStateException("Invalid visibility for contexts");
             }
 
             var key = new NameAndParamNum(detail.Name, detail.ParameterNames.Length);
             var existing = Scripts.Get(key);
-            if (existing != null)
-            {
+            if (existing != null) {
                 throw new IllegalStateException("Duplicate script has been encountered for name '" + key + "'");
             }
 

@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.bytecodemodel.name;
@@ -16,6 +17,7 @@ using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.type;
 using com.espertech.esper.compat;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.expression.subquery
@@ -29,10 +31,14 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
             ExprForge valueEval,
             ExprForge selectEval,
             bool resultWhenNoMatchingEvents,
-            RelationalOpEnum.Computer computer,
+            RelationalOpEnumComputer computer,
             ExprForge havingEval)
             : base(
-                subselect, valueEval, selectEval, resultWhenNoMatchingEvents, computer)
+                subselect,
+                valueEval,
+                selectEval,
+                resultWhenNoMatchingEvents,
+                computer)
         {
             this.havingEval = havingEval;
         }
@@ -43,30 +49,37 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
             CodegenClassScope classScope)
         {
             CodegenExpression aggService = classScope.NamespaceScope.AddOrGetFieldWellKnown(
-                new CodegenFieldNameSubqueryAgg(subselect.SubselectNumber), typeof(AggregationResultFuture));
+                new CodegenFieldNameSubqueryAgg(subselect.SubselectNumber),
+                typeof(AggregationResultFuture));
 
             var method = parent.MakeChild(subselect.EvaluationType, GetType(), classScope);
             var evalCtx = symbols.GetAddExprEvalCtx(method);
             var left = symbols.GetAddLeftResult(method);
 
             method.Block
-                .DeclareVar(typeof(int), "cpid", ExprDotMethod(evalCtx, "getAgentInstanceId"))
-                .DeclareVar(
-                    typeof(AggregationService), "aggregationService",
+                .DeclareVar<int>("cpid", ExprDotMethod(evalCtx, "getAgentInstanceId"))
+                .DeclareVar<AggregationService>(
+                    "aggregationService",
                     ExprDotMethod(aggService, "getContextPartitionAggregationService", Ref("cpid")))
-                .DeclareVar(
-                    typeof(ICollection<object>), "groupKeys",
+                .DeclareVar<ICollection<object>>(
+                    "groupKeys",
                     ExprDotMethod(Ref("aggregationService"), "getGroupKeys", evalCtx))
-                .DeclareVar(typeof(bool), "hasRows", ConstantFalse())
-                .DeclareVar(typeof(bool), "hasNullRow", ConstantFalse());
+                .DeclareVar<bool>("hasRows", ConstantFalse())
+                .DeclareVar<bool>("hasNullRow", ConstantFalse());
 
             var forEach = method.Block.ForEach(typeof(object), "groupKey", Ref("groupKeys"));
             {
-                forEach.ExprDotMethod(Ref("aggregationService"), "SetCurrentAccess", Ref("groupKey"), Ref("cpid"), ConstantNull());
+                forEach.ExprDotMethod(
+                    Ref("aggregationService"),
+                    "SetCurrentAccess",
+                    Ref("groupKey"),
+                    Ref("cpid"),
+                    ConstantNull());
 
                 if (havingEval != null) {
                     CodegenLegoBooleanExpression.CodegenContinueIfNullOrNotPass(
-                        forEach, havingEval.EvaluationType,
+                        forEach,
+                        havingEval.EvaluationType,
                         havingEval.EvaluateCodegen(havingEval.EvaluationType, method, symbols, classScope));
                 }
 
@@ -76,13 +89,15 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                 if (selectEval != null) {
                     valueRightType = selectEval.EvaluationType.GetBoxedType();
                     forEach.DeclareVar(
-                        valueRightType, "valueRight",
+                        valueRightType,
+                        "valueRight",
                         selectEval.EvaluateCodegen(valueRightType, method, symbols, classScope));
                 }
                 else {
                     valueRightType = typeof(object);
                     forEach.DeclareVar(
-                        valueRightType, "valueRight",
+                        valueRightType,
+                        "valueRight",
                         ExprDotUnderlying(ArrayAtIndex(symbols.GetAddEPS(method), Constant(0))));
                 }
 
@@ -95,9 +110,12 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
             }
 
             method.Block
-                .IfCondition(Not(Ref("hasRows"))).BlockReturn(ConstantTrue())
-                .IfCondition(EqualsNull(symbols.GetAddLeftResult(method))).BlockReturn(ConstantNull())
-                .IfCondition(Ref("hasNullRow")).BlockReturn(ConstantNull())
+                .IfCondition(Not(Ref("hasRows")))
+                .BlockReturn(ConstantTrue())
+                .IfCondition(EqualsNull(symbols.GetAddLeftResult(method)))
+                .BlockReturn(ConstantNull())
+                .IfCondition(Ref("hasNullRow"))
+                .BlockReturn(ConstantNull())
                 .MethodReturn(ConstantTrue());
 
             return LocalMethod(method);

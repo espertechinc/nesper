@@ -51,7 +51,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
             var coll = env.Listener("s0").AssertOneGetNewAndReset().Get("c0").Unwrap<IDictionary<string, object>>();
             EPAssertionUtil.AssertPropsPerRow(
                 coll.ToArray(),
-                "id".SplitCsv(),
+                "Id".SplitCsv(),
                 new[] {new object[] {"id1"}, new object[] {"id3"}});
 
             env.UndeployAll();
@@ -82,7 +82,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
             var events = new EventBean[split.Length];
             for (var i = 0; i < split.Length; i++) {
                 events[i] = context.EventBeanService.AdapterForMap(
-                    Collections.SingletonDataMap("id", split[i]),
+                    Collections.SingletonDataMap("Id", split[i]),
                     "MyItem");
             }
 

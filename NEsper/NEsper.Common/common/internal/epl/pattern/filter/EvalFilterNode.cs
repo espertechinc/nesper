@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Reflection;
+
 using com.espertech.esper.common.@internal.epl.pattern.core;
 using com.espertech.esper.common.@internal.filterspec;
 using com.espertech.esper.compat.logging;
@@ -31,7 +32,8 @@ namespace com.espertech.esper.common.@internal.epl.pattern.filter
             FilterValueSetParam[][] addendum = null;
             if (context.AgentInstanceContext.AgentInstanceFilterProxy != null) {
                 addendum = context.AgentInstanceContext.AgentInstanceFilterProxy.GetAddendumFilters(
-                    factoryNode.FilterSpec, context.AgentInstanceContext);
+                    factoryNode.FilterSpec,
+                    context.AgentInstanceContext);
             }
 
             var contextPathAddendum = context.GetFilterAddendumForContextPath(factoryNode.FilterSpec);

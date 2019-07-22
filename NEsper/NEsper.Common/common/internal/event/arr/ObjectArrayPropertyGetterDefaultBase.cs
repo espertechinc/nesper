@@ -10,6 +10,7 @@ using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.@event.core;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.@event.arr
@@ -72,7 +73,9 @@ namespace com.espertech.esper.common.@internal.@event.arr
             CodegenClassScope codegenClassScope)
         {
             return UnderlyingGetCodegen(
-                CastUnderlying(typeof(object[]), beanExpression), codegenMethodScope, codegenClassScope);
+                CastUnderlying(typeof(object[]), beanExpression),
+                codegenMethodScope,
+                codegenClassScope);
         }
 
         public CodegenExpression EventBeanExistsCodegen(
@@ -89,7 +92,9 @@ namespace com.espertech.esper.common.@internal.@event.arr
             CodegenClassScope codegenClassScope)
         {
             return UnderlyingFragmentCodegen(
-                CastUnderlying(typeof(object[]), beanExpression), codegenMethodScope, codegenClassScope);
+                CastUnderlying(typeof(object[]), beanExpression),
+                codegenMethodScope,
+                codegenClassScope);
         }
 
         public CodegenExpression UnderlyingGetCodegen(
@@ -118,7 +123,8 @@ namespace com.espertech.esper.common.@internal.@event.arr
             }
 
             return LocalMethod(
-                GetFragmentCodegen(underlyingExpression, codegenMethodScope, codegenClassScope), underlyingExpression);
+                GetFragmentCodegen(underlyingExpression, codegenMethodScope, codegenClassScope),
+                underlyingExpression);
         }
 
         internal abstract object HandleCreateFragment(object value);
@@ -133,9 +139,11 @@ namespace com.espertech.esper.common.@internal.@event.arr
             CodegenClassScope codegenClassScope)
         {
             return codegenMethodScope.MakeChild(typeof(object), GetType(), codegenClassScope)
-                .AddParam(typeof(object[]), "oa").Block
-                .DeclareVar(
-                    typeof(object), "value", UnderlyingGetCodegen(Ref("oa"), codegenMethodScope, codegenClassScope))
+                .AddParam(typeof(object[]), "oa")
+                .Block
+                .DeclareVar<object>(
+                    "value",
+                    UnderlyingGetCodegen(Ref("oa"), codegenMethodScope, codegenClassScope))
                 .MethodReturn(HandleCreateFragmentCodegen(Ref("value"), codegenClassScope));
         }
     }

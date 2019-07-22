@@ -9,6 +9,7 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+
 using com.espertech.esper.collection;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.variable;
@@ -20,6 +21,7 @@ using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.compat.threading.locks;
+
 using static com.espertech.esper.common.@internal.context.util.StatementCPCacheService;
 
 namespace com.espertech.esper.common.@internal.epl.variable.core
@@ -275,7 +277,8 @@ namespace com.espertech.esper.common.@internal.epl.variable.core
 
             if (variable.MetaData.EventType != null && initialState != null && !(initialState is EventBean)) {
                 initialState = eventBeanTypedEventFactory.AdapterForTypedBean(
-                    initialState, variable.MetaData.EventType);
+                    initialState,
+                    variable.MetaData.EventType);
             }
 
             if (OptionalStateHandler != null && !variable.MetaData.IsConstant) {
@@ -298,8 +301,14 @@ namespace com.espertech.esper.common.@internal.epl.variable.core
             // create new holder for versions
             var timestamp = timeProvider.Time;
             var valuePerVersion = new VersionedValueList<object>(
-                variableName, currentVersionNumber, initialState, timestamp, millisecondLifetimeOldVersions,
-                ReadWriteLock.ReadLock, HIGH_WATERMARK_VERSIONS, false);
+                variableName,
+                currentVersionNumber,
+                initialState,
+                timestamp,
+                millisecondLifetimeOldVersions,
+                ReadWriteLock.ReadLock,
+                HIGH_WATERMARK_VERSIONS,
+                false);
             IDictionary<int, VariableReader> cps = variableVersionsPerCP[variable.VariableNumber];
             var reader = new VariableReader(variable, versionThreadLocal, valuePerVersion);
             cps.Put(agentInstanceId, reader);
@@ -465,12 +474,18 @@ namespace com.espertech.esper.common.@internal.epl.variable.core
 
             if (variable.MetaData.EventType != null) {
                 if (!TypeHelper.IsSubclassOrImplementsInterface(
-                    newValue.GetType(), variable.MetaData.EventType.UnderlyingType)) {
+                    newValue.GetType(),
+                    variable.MetaData.EventType.UnderlyingType)) {
                     throw new VariableValueException(
-                        "Variable '" + variableName
-                                     + "' of declared event type '" + variable.MetaData.EventType.Name +
-                                     "' underlying type '" + variable.MetaData.EventType.UnderlyingType.Name +
-                                     "' cannot be assigned a value of type '" + valueType.Name + "'");
+                        "Variable '" +
+                        variableName +
+                        "' of declared event type '" +
+                        variable.MetaData.EventType.Name +
+                        "' underlying type '" +
+                        variable.MetaData.EventType.UnderlyingType.Name +
+                        "' cannot be assigned a value of type '" +
+                        valueType.Name +
+                        "'");
                 }
 
                 var eventBean = eventBeanTypedEventFactory.AdapterForTypedBean(newValue, variable.MetaData.EventType);
@@ -562,7 +577,8 @@ namespace com.espertech.esper.common.@internal.epl.variable.core
                     }
                     catch (Exception t) {
                         throw new EPException(
-                            "Failed to determine serde for variable '" + metaData.VariableName + "': " + t.Message, t);
+                            "Failed to determine serde for variable '" + metaData.VariableName + "': " + t.Message,
+                            t);
                     }
                 }
 
@@ -572,8 +588,11 @@ namespace com.espertech.esper.common.@internal.epl.variable.core
                     var variableX = deploymentEntry.GetVariable(metaData.VariableName);
                     if (variableX != null) {
                         throw new ArgumentException(
-                            "Variable already exists by name '" + metaData.VariableName + "' and deployment '" +
-                            deploymentId + "'");
+                            "Variable already exists by name '" +
+                            metaData.VariableName +
+                            "' and deployment '" +
+                            deploymentId +
+                            "'");
                     }
                 }
                 else {
@@ -661,8 +680,14 @@ namespace com.espertech.esper.common.@internal.epl.variable.core
                     var versionsOld = entry.Value.VersionsLow;
                     var currentValue = versionsOld.CurrentAndPriorValue.CurrentVersion.Value;
                     var versionsNew = new VersionedValueList<object>(
-                        name, 1, currentValue, timestamp, millisecondLifetimeOldVersions, ReadWriteLock.ReadLock,
-                        HIGH_WATERMARK_VERSIONS, false);
+                        name,
+                        1,
+                        currentValue,
+                        timestamp,
+                        millisecondLifetimeOldVersions,
+                        ReadWriteLock.ReadLock,
+                        HIGH_WATERMARK_VERSIONS,
+                        false);
 
                     // Tell the reader to use the high collection for old requests
                     entry.Value.VersionsHigh = versionsOld;

@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.context.util;
@@ -88,7 +89,13 @@ namespace com.espertech.esper.common.@internal.epl.ontrigger
 
                 bool applies = action.IsApplies(eventsPerStream, agentInstanceContext);
                 if (applies) {
-                    action.Apply(matchingEvent, eventsPerStream, stateInstance, changeHandlerAdded, changeHandlerRemoved, agentInstanceContext);
+                    action.Apply(
+                        matchingEvent,
+                        eventsPerStream,
+                        stateInstance,
+                        changeHandlerAdded,
+                        changeHandlerRemoved,
+                        agentInstanceContext);
                 }
 
                 instrumentationCommon.AInfraMergeWhenThenActionItem(applies);

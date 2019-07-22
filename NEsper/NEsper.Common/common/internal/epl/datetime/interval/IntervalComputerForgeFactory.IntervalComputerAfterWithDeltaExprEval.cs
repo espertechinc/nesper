@@ -42,11 +42,17 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
                 long rangeEndDelta = finish.Evaluate(rightStart, eventsPerStream, newData, context);
                 if (rangeStartDelta > rangeEndDelta) {
                     return IntervalComputerConstantAfter.ComputeIntervalAfter(
-                        leftStart, rightEnd, rangeEndDelta, rangeStartDelta);
+                        leftStart,
+                        rightEnd,
+                        rangeEndDelta,
+                        rangeStartDelta);
                 }
 
                 return IntervalComputerConstantAfter.ComputeIntervalAfter(
-                    leftStart, rightEnd, rangeStartDelta, rangeEndDelta);
+                    leftStart,
+                    rightEnd,
+                    rangeStartDelta,
+                    rangeEndDelta);
             }
 
             public static CodegenExpression Codegen(
@@ -64,25 +70,41 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
                     .AddParam(IntervalForgeCodegenNames.PARAMS);
 
                 var block = methodNode.Block
-                    .DeclareVar(
-                        typeof(long), "rangeStartDelta",
+                    .DeclareVar<long>(
+                        "rangeStartDelta",
                         forge.start.Codegen(
-                            IntervalForgeCodegenNames.REF_RIGHTSTART, methodNode, exprSymbol, codegenClassScope))
-                    .DeclareVar(
-                        typeof(long), "rangeEndDelta",
+                            IntervalForgeCodegenNames.REF_RIGHTSTART,
+                            methodNode,
+                            exprSymbol,
+                            codegenClassScope))
+                    .DeclareVar<long>(
+                        "rangeEndDelta",
                         forge.finish.Codegen(
-                            IntervalForgeCodegenNames.REF_RIGHTSTART, methodNode, exprSymbol, codegenClassScope));
-                block.IfCondition(CodegenExpressionBuilder.Relational(CodegenExpressionBuilder.Ref("rangeStartDelta"), CodegenExpressionRelational.CodegenRelational.GT, CodegenExpressionBuilder.Ref("rangeEndDelta")))
+                            IntervalForgeCodegenNames.REF_RIGHTSTART,
+                            methodNode,
+                            exprSymbol,
+                            codegenClassScope));
+                block.IfCondition(
+                        CodegenExpressionBuilder.Relational(
+                            CodegenExpressionBuilder.Ref("rangeStartDelta"),
+                            CodegenExpressionRelational.CodegenRelational.GT,
+                            CodegenExpressionBuilder.Ref("rangeEndDelta")))
                     .BlockReturn(
                         CodegenExpressionBuilder.StaticMethod(
-                            typeof(IntervalComputerConstantAfter), "computeIntervalAfter",
-                            IntervalForgeCodegenNames.REF_LEFTSTART, IntervalForgeCodegenNames.REF_RIGHTEND,
-                            CodegenExpressionBuilder.Ref("rangeEndDelta"), CodegenExpressionBuilder.Ref("rangeStartDelta")));
+                            typeof(IntervalComputerConstantAfter),
+                            "computeIntervalAfter",
+                            IntervalForgeCodegenNames.REF_LEFTSTART,
+                            IntervalForgeCodegenNames.REF_RIGHTEND,
+                            CodegenExpressionBuilder.Ref("rangeEndDelta"),
+                            CodegenExpressionBuilder.Ref("rangeStartDelta")));
                 block.MethodReturn(
                     CodegenExpressionBuilder.StaticMethod(
-                        typeof(IntervalComputerConstantAfter), "computeIntervalAfter",
-                        IntervalForgeCodegenNames.REF_LEFTSTART, IntervalForgeCodegenNames.REF_RIGHTEND,
-                        CodegenExpressionBuilder.Ref("rangeStartDelta"), CodegenExpressionBuilder.Ref("rangeEndDelta")));
+                        typeof(IntervalComputerConstantAfter),
+                        "computeIntervalAfter",
+                        IntervalForgeCodegenNames.REF_LEFTSTART,
+                        IntervalForgeCodegenNames.REF_RIGHTEND,
+                        CodegenExpressionBuilder.Ref("rangeStartDelta"),
+                        CodegenExpressionBuilder.Ref("rangeEndDelta")));
                 return CodegenExpressionBuilder.LocalMethod(methodNode, leftStart, leftEnd, rightStart, rightEnd);
             }
         }

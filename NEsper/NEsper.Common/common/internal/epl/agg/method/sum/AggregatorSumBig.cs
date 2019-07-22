@@ -8,12 +8,14 @@
 
 using System;
 using System.Numerics;
+
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.core;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.agg.core;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.serde;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 using static com.espertech.esper.common.@internal.epl.agg.method.core.AggregatorCodegenUtil;
 
@@ -35,7 +37,14 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.sum
             ExprNode optionalFilter,
             Type sumType)
             : base(
-                factory, col, rowCtor, membersColumnized, classScope, optionalDistinctValueType, hasFilter, optionalFilter,
+                factory,
+                col,
+                rowCtor,
+                membersColumnized,
+                classScope,
+                optionalDistinctValueType,
+                hasFilter,
+                optionalFilter,
                 sumType)
         {
             if (sumType != typeof(BigInteger) && sumType != typeof(decimal?)) {
@@ -64,7 +73,8 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.sum
             CodegenMethod method)
         {
             method.Block.AssignRef(
-                sum, ExprDotMethod(sum, "subtract", valueType == sumType ? value : Cast(sumType, value)));
+                sum,
+                ExprDotMethod(sum, "subtract", valueType == sumType ? value : Cast(sumType, value)));
         }
 
         protected override void ApplyTableEnterSum(
@@ -93,11 +103,17 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.sum
         {
             if (sumType == typeof(BigInteger)) {
                 method.Block.StaticMethod(
-                    typeof(DIOSerdeBigInteger), "writeBigInt", RowDotRef(row, sum), output);
+                    typeof(DIOSerdeBigInteger),
+                    "writeBigInt",
+                    RowDotRef(row, sum),
+                    output);
             }
             else {
                 method.Block.StaticMethod(
-                    typeof(DIOSerdeBigInteger), "writeBigDec", RowDotRef(row, sum), output);
+                    typeof(DIOSerdeBigInteger),
+                    "writeBigDec",
+                    RowDotRef(row, sum),
+                    output);
             }
         }
 
@@ -109,11 +125,13 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.sum
         {
             if (sumType == typeof(BigInteger)) {
                 method.Block.AssignRef(
-                    RowDotRef(row, sum), StaticMethod(typeof(DIOSerdeBigInteger), "readBigInt", input));
+                    RowDotRef(row, sum),
+                    StaticMethod(typeof(DIOSerdeBigInteger), "readBigInt", input));
             }
             else {
                 method.Block.AssignRef(
-                    RowDotRef(row, sum), StaticMethod(typeof(DIOSerdeBigInteger), "readBigDec", input));
+                    RowDotRef(row, sum),
+                    StaticMethod(typeof(DIOSerdeBigInteger), "readBigDec", input));
             }
         }
     }

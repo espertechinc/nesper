@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.compat;
 
 namespace com.espertech.esper.common.client.configuration.runtime
@@ -43,8 +44,13 @@ namespace com.espertech.esper.common.client.configuration.runtime
 
         public override string ToString()
         {
-            return "ConfigurationPluginLoader name '" + LoaderName + "' class '" + ClassName + " ' properties '" +
-                   ConfigProperties + "'";
+            return "ConfigurationPluginLoader name '" +
+                   LoaderName +
+                   "' class '" +
+                   ClassName +
+                   " ' properties '" +
+                   ConfigProperties +
+                   "'";
         }
     }
 } // end of namespace

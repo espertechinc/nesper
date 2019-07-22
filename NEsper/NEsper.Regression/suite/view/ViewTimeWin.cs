@@ -494,7 +494,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 env.AdvanceTime(0);
 
                 // Every event generates a new row, this time we sum the price by symbol and output volume
-                var epl = "@Name('s0') select Symbol, Volume, sum(price) as mySum from SupportMarketDataBean#time(30)";
+                var epl = "@Name('s0') select Symbol, Volume, sum(Price) as mySum from SupportMarketDataBean#time(30)";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
                 AssertSelectResultType(env.Statement("s0"));
@@ -527,7 +527,7 @@ namespace com.espertech.esper.regressionlib.suite.view
             public void Run(RegressionEnvironment env)
             {
                 // Every event generates a new row, this time we sum the price by symbol and output volume
-                var epl = "@Name('s0') select Symbol, Volume, sum(price) as mySum " +
+                var epl = "@Name('s0') select Symbol, Volume, sum(Price) as mySum " +
                           "from SupportMarketDataBean#time(30) group by Symbol";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
@@ -543,7 +543,7 @@ namespace com.espertech.esper.regressionlib.suite.view
             {
                 // Every event generates a new row, this time we sum the price by symbol and output volume
                 var epl =
-                    "@Name('s0') select Symbol, Volume, sum(price) as mySum from SupportMarketDataBean(Symbol = 'IBM')#time(30)";
+                    "@Name('s0') select Symbol, Volume, sum(Price) as mySum from SupportMarketDataBean(Symbol = 'IBM')#time(30)";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
                 TrySingleAssertion(env);

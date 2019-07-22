@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.client.hook.aggmultifunc;
 using com.espertech.esper.common.@internal.epl.agg.access.core;
 using com.espertech.esper.common.@internal.epl.agg.core;
@@ -60,7 +61,8 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.countminsketch
             string statementName)
         {
             return new AggregationAgentCountMinSketchForge(
-                AddOrFrequencyEvaluator, Parent.OptionalFilter == null ? null : Parent.OptionalFilter.Forge);
+                AddOrFrequencyEvaluator,
+                Parent.OptionalFilter == null ? null : Parent.OptionalFilter.Forge);
         }
     }
 } // end of namespace

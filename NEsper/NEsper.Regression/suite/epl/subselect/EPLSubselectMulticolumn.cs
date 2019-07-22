@@ -73,7 +73,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
         {
             public void Run(RegressionEnvironment env)
             {
-                string[] fields = {"id", "s1totals.v1", "s1totals.v2"};
+                string[] fields = {"Id", "s1totals.v1", "s1totals.v2"};
                 var text =
                     "@Name('s0') select Id, (select count(*) as v1, sum(Id) as v2 from SupportBean_S1#length(3)) as s1totals " +
                     "from SupportBean_S0 s0";

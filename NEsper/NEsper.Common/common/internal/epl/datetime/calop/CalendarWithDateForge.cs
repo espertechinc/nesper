@@ -31,7 +31,9 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
         }
 
         public CalendarOp EvalOp => new CalendarWithDateForgeOp(
-            year.ExprEvaluator, month.ExprEvaluator, day.ExprEvaluator);
+            year.ExprEvaluator,
+            month.ExprEvaluator,
+            day.ExprEvaluator);
 
         public CodegenExpression CodegenDateTimeEx(
             CodegenExpression dateTimeEx,
@@ -40,7 +42,11 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
             CodegenClassScope codegenClassScope)
         {
             return CalendarWithDateForgeOp.CodegenCalendar(
-                this, dateTimeEx, codegenMethodScope, exprSymbol, codegenClassScope);
+                this,
+                dateTimeEx,
+                codegenMethodScope,
+                exprSymbol,
+                codegenClassScope);
         }
 
         public CodegenExpression CodegenDateTimeOffset(
@@ -49,7 +55,12 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            return CalendarWithDateForgeOp.CodegenDateTimeOffset(this, dateTimeOffset, codegenMethodScope, exprSymbol, codegenClassScope);
+            return CalendarWithDateForgeOp.CodegenDateTimeOffset(
+                this,
+                dateTimeOffset,
+                codegenMethodScope,
+                exprSymbol,
+                codegenClassScope);
         }
 
         public CodegenExpression CodegenDateTime(
@@ -58,7 +69,12 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            return CalendarWithDateForgeOp.CodegenDateTime(this, dateTime, codegenMethodScope, exprSymbol, codegenClassScope);
+            return CalendarWithDateForgeOp.CodegenDateTime(
+                this,
+                dateTime,
+                codegenMethodScope,
+                exprSymbol,
+                codegenClassScope);
         }
     }
 } // end of namespace

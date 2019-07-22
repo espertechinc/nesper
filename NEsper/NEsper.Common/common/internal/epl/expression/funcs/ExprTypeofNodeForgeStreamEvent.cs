@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -14,6 +15,7 @@ using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.@event.variant;
 using com.espertech.esper.common.@internal.metrics.instrumentation;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.expression.funcs
@@ -65,16 +67,20 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
             CodegenClassScope codegenClassScope)
         {
             var methodNode = codegenMethodScope.MakeChild(
-                typeof(string), typeof(ExprTypeofNodeForgeStreamEvent), codegenClassScope);
+                typeof(string),
+                typeof(ExprTypeofNodeForgeStreamEvent),
+                codegenClassScope);
 
             var refEPS = exprSymbol.GetAddEPS(methodNode);
             methodNode.Block
-                .DeclareVar(typeof(EventBean), "event", ArrayAtIndex(refEPS, Constant(streamNum)))
+                .DeclareVar<EventBean>("event", ArrayAtIndex(refEPS, Constant(streamNum)))
                 .IfRefNullReturnNull("event")
                 .IfCondition(InstanceOf(Ref("event"), typeof(VariantEvent)))
                 .BlockReturn(
-                    ExprDotMethodChain(Cast(typeof(VariantEvent), Ref("event"))).Add("getUnderlyingEventBean")
-                        .Add("getEventType").Add("getName"))
+                    ExprDotMethodChain(Cast(typeof(VariantEvent), Ref("event")))
+                        .Add("getUnderlyingEventBean")
+                        .Add("getEventType")
+                        .Add("getName"))
                 .MethodReturn(ExprDotMethodChain(Ref("event")).Add("getEventType").Add("getName"));
             return LocalMethod(methodNode);
         }
@@ -86,7 +92,13 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
             CodegenClassScope codegenClassScope)
         {
             return new InstrumentationBuilderExpr(
-                GetType(), this, "ExprTypeof", requiredType, codegenMethodScope, exprSymbol, codegenClassScope).Build();
+                GetType(),
+                this,
+                "ExprTypeof",
+                requiredType,
+                codegenMethodScope,
+                exprSymbol,
+                codegenClassScope).Build();
         }
     }
 } // end of namespace

@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+
 using com.espertech.esper.common.@internal.epl.datetime.eval;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.expression.time.abacus;
@@ -26,7 +27,12 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
             TableCompileTimeResolver tableCompileTimeResolver)
         {
             return new IntervalForgeImpl(
-                method, methodNameUsed, streamTypeService, parameters, timeAbacus, tableCompileTimeResolver);
+                method,
+                methodNameUsed,
+                streamTypeService,
+                parameters,
+                timeAbacus,
+                tableCompileTimeResolver);
         }
     }
 } // end of namespace

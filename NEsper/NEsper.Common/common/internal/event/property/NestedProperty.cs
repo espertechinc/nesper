@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.@event.arr;
 using com.espertech.esper.common.@internal.@event.bean.core;
@@ -78,13 +79,14 @@ namespace com.espertech.esper.common.@internal.@event.property
                 var property = properties[ii];
                 lastProperty = property;
                 EventPropertyGetter getter = property.GetGetter(
-                    eventType, eventBeanTypedEventFactory, beanEventTypeFactory);
+                    eventType,
+                    eventBeanTypedEventFactory,
+                    beanEventTypeFactory);
                 if (getter == null) {
                     return null;
                 }
 
-                if (ii < (propertiesCount - 1))
-                {
+                if (ii < (propertiesCount - 1)) {
                     var clazz = property.GetPropertyType(eventType, beanEventTypeFactory);
                     if (clazz == null) {
                         // if the property is not valid, return null
@@ -108,7 +110,10 @@ namespace com.espertech.esper.common.@internal.@event.property
 
             var finalPropertyType = lastProperty.GetPropertyTypeGeneric(eventType, beanEventTypeFactory);
             return new NestedPropertyGetter(
-                getters, eventBeanTypedEventFactory, finalPropertyType.GenericType, finalPropertyType.Generic,
+                getters,
+                eventBeanTypedEventFactory,
+                finalPropertyType.GenericType,
+                finalPropertyType.Generic,
                 beanEventTypeFactory);
         }
 
@@ -165,8 +170,7 @@ namespace com.espertech.esper.common.@internal.@event.property
                     return null;
                 }
 
-                if (ii < (propertiesCount - 1))
-                {
+                if (ii < (propertiesCount - 1)) {
                     // Map cannot be used to further nest as the type cannot be determined
                     if (result.GenericType == typeof(IDictionary<string, object>)) {
                         return null;
@@ -219,13 +223,15 @@ namespace com.espertech.esper.common.@internal.@event.property
             for (var ii = 0; ii < propertiesCount; ii++) {
                 var property = properties[ii];
                 var getter = property.GetGetterDOM(
-                    complexElement, eventBeanTypedEventFactory, eventType, propertyExpression);
+                    complexElement,
+                    eventBeanTypedEventFactory,
+                    eventType,
+                    propertyExpression);
                 if (getter == null) {
                     return null;
                 }
 
-                if (ii < (propertiesCount - 1))
-                {
+                if (ii < (propertiesCount - 1)) {
                     var childSchemaItem = property.GetPropertyTypeSchema(complexElement);
                     if (childSchemaItem == null) {
                         // if the property is not valid, return null
@@ -249,7 +255,8 @@ namespace com.espertech.esper.common.@internal.@event.property
             }
 
             return new DOMNestedPropertyGetter(
-                getters, new FragmentFactoryDOMGetter(eventBeanTypedEventFactory, eventType, propertyExpression));
+                getters,
+                new FragmentFactoryDOMGetter(eventBeanTypedEventFactory, eventType, propertyExpression));
         }
 
         public SchemaItem GetPropertyTypeSchema(SchemaElementComplex parentComplexProperty)
@@ -263,8 +270,7 @@ namespace com.espertech.esper.common.@internal.@event.property
                 var property = properties[ii];
                 lastProperty = property;
 
-                if (ii < (propertiesCount - 1))
-                {
+                if (ii < (propertiesCount - 1)) {
                     var childSchemaItem = property.GetPropertyTypeSchema(complexElement);
                     if (childSchemaItem == null) {
                         // if the property is not valid, return null
@@ -324,8 +330,7 @@ namespace com.espertech.esper.common.@internal.@event.property
                     return null;
                 }
 
-                if (ii >= (propertiesCount - 1))
-                {
+                if (ii >= (propertiesCount - 1)) {
                     if (nestedType is Type) {
                         return (Type) nestedType;
                     }
@@ -383,8 +388,10 @@ namespace com.espertech.esper.common.@internal.@event.property
                 }
 
                 if (!(nestedType is IDictionary<string, object>)) {
-                    var message = "Nestable map type configuration encountered an unexpected value type of '"
-                                  + nestedType.GetType() + "' for property '" + propertyName +
+                    var message = "Nestable map type configuration encountered an unexpected value type of '" +
+                                  nestedType.GetType() +
+                                  "' for property '" +
+                                  propertyName +
                                   "', expected Type or Map<string, object> as value type";
                     throw new PropertyAccessException(message);
                 }
@@ -413,7 +420,9 @@ namespace com.espertech.esper.common.@internal.@event.property
 
                 // manufacture a getter for getting the item out of the map
                 EventPropertyGetterSPI getter = property.GetGetterMap(
-                    currentDictionary, eventBeanTypedEventFactory, beanEventTypeFactory);
+                    currentDictionary,
+                    eventBeanTypedEventFactory,
+                    beanEventTypeFactory);
                 if (getter == null) {
                     return null;
                 }

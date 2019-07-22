@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Text;
+
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
@@ -33,8 +34,7 @@ namespace com.espertech.esper.common.client.scopetest
             string message,
             bool condition)
         {
-            if (condition)
-            {
+            if (condition) {
                 Fail(message);
             }
         }
@@ -53,8 +53,7 @@ namespace com.espertech.esper.common.client.scopetest
             string message,
             bool condition)
         {
-            if (!condition)
-            {
+            if (!condition) {
                 Fail(message);
             }
         }
@@ -68,29 +67,21 @@ namespace com.espertech.esper.common.client.scopetest
                 .Invoke(expected);
             var magicActual = magicMarker.GetCollectionFactory(actual.GetType())
                 .Invoke(actual);
-            if (magicExpected.Count == magicActual.Count)
-            {
-                using (var magicExpectedEnum = magicExpected.GetEnumerator())
-                {
-                    using (var magicActualEnum = magicActual.GetEnumerator())
-                    {
-                        while (true)
-                        {
+            if (magicExpected.Count == magicActual.Count) {
+                using (var magicExpectedEnum = magicExpected.GetEnumerator()) {
+                    using (var magicActualEnum = magicActual.GetEnumerator()) {
+                        while (true) {
                             var mvExpected = magicExpectedEnum.MoveNext();
                             var mvActual = magicActualEnum.MoveNext();
-                            if (mvExpected && mvActual)
-                            {
-                                if (!Equals(magicExpectedEnum.Current, magicActualEnum.Current))
-                                {
+                            if (mvExpected && mvActual) {
+                                if (!Equals(magicExpectedEnum.Current, magicActualEnum.Current)) {
                                     break;
                                 }
                             }
-                            else if (!mvExpected && !mvActual)
-                            {
+                            else if (!mvExpected && !mvActual) {
                                 return true;
                             }
-                            else
-                            {
+                            else {
                                 throw new IllegalStateException("collection has been modified");
                             }
                         }
@@ -110,22 +101,17 @@ namespace com.espertech.esper.common.client.scopetest
             object expected,
             object actual)
         {
-            if (expected == null && actual == null)
-            {
+            if (expected == null && actual == null) {
                 return;
             }
 
-            if (expected != null && expected.Equals(actual))
-            {
+            if (expected != null && expected.Equals(actual)) {
                 return;
             }
 
-            if (expected != null && actual != null)
-            {
-                if (expected.GetType().IsGenericCollection() && actual.GetType().IsGenericCollection())
-                {
-                    if (AreCollectionsEqual(expected, actual))
-                    {
+            if (expected != null && actual != null) {
+                if (expected.GetType().IsGenericCollection() && actual.GetType().IsGenericCollection()) {
+                    if (AreCollectionsEqual(expected, actual)) {
                         return;
                     }
                 }
@@ -159,8 +145,7 @@ namespace com.espertech.esper.common.client.scopetest
             object expected,
             object actual)
         {
-            if (expected == actual)
-            {
+            if (expected == actual) {
                 return;
             }
 
@@ -174,8 +159,7 @@ namespace com.espertech.esper.common.client.scopetest
             object expected,
             object actual)
         {
-            if (expected == actual)
-            {
+            if (expected == actual) {
                 return;
             }
 
@@ -256,15 +240,13 @@ namespace com.espertech.esper.common.client.scopetest
             bool isSame)
         {
             var buf = new StringBuilder();
-            if (!string.IsNullOrEmpty(message))
-            {
+            if (!string.IsNullOrEmpty(message)) {
                 buf.Append(message);
                 buf.Append(' ');
             }
 
             buf.Append("expected");
-            if (isSame)
-            {
+            if (isSame) {
                 buf.Append(" same");
             }
 

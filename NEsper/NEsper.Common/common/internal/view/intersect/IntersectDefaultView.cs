@@ -8,6 +8,7 @@
 
 using System.Collections.Generic;
 using System.Linq;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.util;
@@ -112,7 +113,9 @@ namespace com.espertech.esper.common.@internal.view.intersect
                             for (var j = 0; j < views.Length; j++) {
                                 if (i != j) {
                                     agentInstanceContext.InstrumentationProvider.QViewIndicate(
-                                        factory, null, viewOldData);
+                                        factory,
+                                        null,
+                                        viewOldData);
                                     views[j].Update(null, viewOldData);
                                     agentInstanceContext.InstrumentationProvider.AViewIndicate();
                                 }

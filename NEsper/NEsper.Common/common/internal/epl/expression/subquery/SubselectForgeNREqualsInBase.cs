@@ -27,7 +27,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
             bool isNotIn,
             SimpleNumberCoercer coercer)
             : base(
-                subselect, valueEval, selectEval, resultWhenNoMatchingEvents)
+                subselect,
+                valueEval,
+                selectEval,
+                resultWhenNoMatchingEvents)
         {
             this.isNotIn = isNotIn;
             this.coercer = coercer;

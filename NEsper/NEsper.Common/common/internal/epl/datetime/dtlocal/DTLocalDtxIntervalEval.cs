@@ -13,6 +13,7 @@ using com.espertech.esper.common.@internal.epl.datetime.interval;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.compat;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
@@ -46,7 +47,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
                 .AddParam(typeof(DateTimeEx), "target");
 
             methodNode.Block
-                .DeclareVar(typeof(long), "time", ExprDotMethod(Ref("target"), "getTimeInMillis"))
+                .DeclareVar<long>("time", ExprDotMethod(Ref("target"), "getTimeInMillis"))
                 .MethodReturn(
                     forge.intervalForge.Codegen(Ref("time"), Ref("time"), methodNode, exprSymbol, codegenClassScope));
             return LocalMethod(methodNode, inner);
@@ -74,12 +75,16 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
         {
             var methodNode = codegenMethodScope
                 .MakeChild(typeof(bool?), typeof(DTLocalDtxIntervalEval), codegenClassScope)
-                .AddParam(typeof(DateTimeEx), "start").AddParam(typeof(DateTimeEx), "end");
+                .AddParam(typeof(DateTimeEx), "start")
+                .AddParam(typeof(DateTimeEx), "end");
 
             methodNode.Block.MethodReturn(
                 forge.intervalForge.Codegen(
-                    ExprDotMethod(Ref("start"), "getTimeInMillis"), ExprDotMethod(Ref("end"), "getTimeInMillis"),
-                    methodNode, exprSymbol, codegenClassScope));
+                    ExprDotMethod(Ref("start"), "getTimeInMillis"),
+                    ExprDotMethod(Ref("end"), "getTimeInMillis"),
+                    methodNode,
+                    exprSymbol,
+                    codegenClassScope));
             return LocalMethod(methodNode, start, end);
         }
     }

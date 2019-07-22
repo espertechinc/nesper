@@ -57,7 +57,8 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.core
                 return that.filterExprNode == null;
             }
 
-            return that.filterExprNode != null && ExprNodeUtilityCompare.DeepEquals(filterExprNode, that.filterExprNode, false);
+            return that.filterExprNode != null &&
+                   ExprNodeUtilityCompare.DeepEquals(filterExprNode, that.filterExprNode, false);
         }
 
         public override int GetHashCode()

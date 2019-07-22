@@ -6,7 +6,9 @@ namespace NEsper.Avro.Extensions
 {
     public class TypeBuilder
     {
-        public static JObject Record(string name, JArray fields)
+        public static JObject Record(
+            string name,
+            JArray fields)
         {
             var schemaReducer = new SchemaReducer();
             var jsonDefinition = new JObject(
@@ -19,15 +21,16 @@ namespace NEsper.Avro.Extensions
             return jsonDefinition;
         }
 
-        public static JObject Record(string name, params JObject[] fields)
+        public static JObject Record(
+            string name,
+            params JObject[] fields)
         {
             var jsonDefinition = new JObject(
                 new JProperty("type", "record"),
                 new JProperty("name", name));
 
             var jsonFields = new JArray();
-            foreach (var field in fields)
-            {
+            foreach (var field in fields) {
                 jsonFields.Add(field);
             }
 
@@ -63,21 +66,27 @@ namespace NEsper.Avro.Extensions
                 new JProperty("values", valueType));
         }
 
-        public static JObject Field(string name, string type)
+        public static JObject Field(
+            string name,
+            string type)
         {
             return new JObject(
                 new JProperty("name", name),
                 new JProperty("type", type));
         }
 
-        public static JObject Field(string name, JToken type)
+        public static JObject Field(
+            string name,
+            JToken type)
         {
             return new JObject(
                 new JProperty("name", name),
                 new JProperty("type", type));
         }
 
-        public static JObject Field(string name, Schema type)
+        public static JObject Field(
+            string name,
+            Schema type)
         {
             var typeJson = type.ToJsonObject();
             return new JObject(
@@ -91,23 +100,25 @@ namespace NEsper.Avro.Extensions
             return unionArray;
         }
 
-        public static JArray Union(JToken token, Schema schema)
+        public static JArray Union(
+            JToken token,
+            Schema schema)
         {
             var unionArray = new JArray(token, schema.ToJsonObject());
             return unionArray;
         }
 
-        public static JToken Primitive(string typeName, params JProperty[] properties)
+        public static JToken Primitive(
+            string typeName,
+            params JProperty[] properties)
         {
-            if (properties.Length == 0)
-            {
+            if (properties.Length == 0) {
                 return new JValue(typeName);
             }
 
             var typeInstance = new JObject(
                 new JProperty("type", typeName));
-            foreach (var property in properties)
-            {
+            foreach (var property in properties) {
                 typeInstance.Add(property);
             }
 
@@ -154,12 +165,16 @@ namespace NEsper.Avro.Extensions
             return Primitive("boolean", properties);
         }
 
-        public static JProperty Property(string propertyName, string propertyValue)
+        public static JProperty Property(
+            string propertyName,
+            string propertyValue)
         {
             return new JProperty(propertyName, propertyValue);
         }
 
-        public static JObject Required(string name, string type)
+        public static JObject Required(
+            string name,
+            string type)
         {
             return new JObject(
                 new JProperty("name", name),
@@ -198,7 +213,10 @@ namespace NEsper.Avro.Extensions
 
         public static readonly JValue NULL_VALUE = new JValue("null");
 
-        public static JObject Optional(string name, string type, JValue defaultValue)
+        public static JObject Optional(
+            string name,
+            string type,
+            JValue defaultValue)
         {
             return new JObject(
                 new JProperty("name", name),
@@ -206,32 +224,45 @@ namespace NEsper.Avro.Extensions
                 new JProperty("default", defaultValue ?? NULL_VALUE));
         }
 
-        public static JObject OptionalInt(string name, JValue defaultValue = null)
+        public static JObject OptionalInt(
+            string name,
+            JValue defaultValue = null)
         {
             return Optional(name, "int", defaultValue);
         }
 
-        public static JObject OptionalLong(string name, JValue defaultValue = null)
+        public static JObject OptionalLong(
+            string name,
+            JValue defaultValue = null)
         {
             return Optional(name, "long", defaultValue);
         }
 
-        public static JObject OptionalFloat(string name, JValue defaultValue = null)
+        public static JObject OptionalFloat(
+            string name,
+            JValue defaultValue = null)
         {
             return Optional(name, "float", defaultValue);
         }
 
-        public static JObject OptionalDouble(string name, JValue defaultValue = null)
+        public static JObject OptionalDouble(
+            string name,
+            JValue defaultValue = null)
         {
             return Optional(name, "double", defaultValue);
         }
 
-        public static JObject OptionalString(string name, JValue defaultValue = null)
+        public static JObject OptionalString(
+            string name,
+            JValue defaultValue = null)
         {
             return Optional(name, "string", defaultValue);
         }
 
-        public static JObject TypeWithProperty(string typeName, string propertyKey, string propertyValue)
+        public static JObject TypeWithProperty(
+            string typeName,
+            string propertyKey,
+            string propertyValue)
         {
             return new JObject(
                 new JProperty("type", typeName),

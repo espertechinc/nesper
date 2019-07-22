@@ -8,6 +8,7 @@
 
 using System.Collections.Generic;
 using System.Reflection;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.context.util;
@@ -27,7 +28,7 @@ namespace com.espertech.esper.common.@internal.epl.output.view
     public class OutputProcessViewConditionLastAllUnord : OutputProcessViewBaseWAfter
     {
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-        private readonly OutputProcessViewConditionFactory parent;
+        private readonly OutputProcessViewConditionFactory _parent;
 
         public OutputProcessViewConditionLastAllUnord(
             ResultSetProcessor resultSetProcessor,
@@ -37,10 +38,13 @@ namespace com.espertech.esper.common.@internal.epl.output.view
             OutputProcessViewConditionFactory parent,
             AgentInstanceContext agentInstanceContext)
             : base(
-                agentInstanceContext, resultSetProcessor, afterConditionTime, afterConditionNumberOfEvents,
+                agentInstanceContext,
+                resultSetProcessor,
+                afterConditionTime,
+                afterConditionNumberOfEvents,
                 afterConditionSatisfied)
         {
-            this.parent = parent;
+            _parent = parent;
 
             var outputCallback = GetCallbackToLocal(parent.StreamCount);
             OptionalOutputCondition =
@@ -62,8 +66,10 @@ namespace com.espertech.esper.common.@internal.epl.output.view
             if (ExecutionPathDebugLog.IsDebugEnabled && Log.IsDebugEnabled) {
                 Log.Debug(
                     ".update Received update, " +
-                    "  newData.length==" + (newData == null ? 0 : newData.Length) +
-                    "  oldData.length==" + (oldData == null ? 0 : oldData.Length));
+                    "  newData.length==" +
+                    (newData == null ? 0 : newData.Length) +
+                    "  oldData.length==" +
+                    (oldData == null ? 0 : oldData.Length));
             }
 
             var isGenerateSynthetic = agentInstanceContext.StatementResultService.IsMakeSynthetic;
@@ -99,8 +105,10 @@ namespace com.espertech.esper.common.@internal.epl.output.view
             if (ExecutionPathDebugLog.IsDebugEnabled && Log.IsDebugEnabled) {
                 Log.Debug(
                     ".process Received update, " +
-                    "  newData.length==" + (newEvents == null ? 0 : newEvents.Count) +
-                    "  oldData.length==" + (oldEvents == null ? 0 : oldEvents.Count));
+                    "  newData.length==" +
+                    (newEvents == null ? 0 : newEvents.Count) +
+                    "  oldData.length==" +
+                    (oldEvents == null ? 0 : oldEvents.Count));
             }
 
             var isGenerateSynthetic = agentInstanceContext.StatementResultService.IsMakeSynthetic;
@@ -195,12 +203,15 @@ namespace com.espertech.esper.common.@internal.epl.output.view
         public override IEnumerator<EventBean> GetEnumerator()
         {
             return OutputStrategyUtil.GetIterator(
-                joinExecutionStrategy, resultSetProcessor, parentView, parent.IsDistinct);
+                joinExecutionStrategy,
+                resultSetProcessor,
+                parentView,
+                _parent.IsDistinct);
         }
 
         public override void Terminated()
         {
-            if (parent.IsTerminable) {
+            if (_parent.IsTerminable) {
                 OptionalOutputCondition.Terminated();
             }
         }
@@ -216,9 +227,9 @@ namespace com.espertech.esper.common.@internal.epl.output.view
             bool forceUpdate,
             UniformPair<EventBean[]> newOldEvents)
         {
-            if (parent.IsDistinct && newOldEvents != null) {
-                newOldEvents.First = EventBeanUtility.GetDistinctByProp(newOldEvents.First, parent.EventBeanReader);
-                newOldEvents.Second = EventBeanUtility.GetDistinctByProp(newOldEvents.Second, parent.EventBeanReader);
+            if (_parent.IsDistinct && newOldEvents != null) {
+                newOldEvents.First = EventBeanUtility.GetDistinctByProp(newOldEvents.First, _parent.EventBeanReader);
+                newOldEvents.Second = EventBeanUtility.GetDistinctByProp(newOldEvents.Second, _parent.EventBeanReader);
             }
 
             if (doOutput) {

@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
@@ -84,26 +85,41 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createindex
             }
 
             EPLValidationUtil.ValidateContextName(
-                namedWindow == null, infraName, infraContextName, @base.StatementSpec.Raw.OptionalContextName, true);
+                namedWindow == null,
+                infraName,
+                infraContextName,
+                @base.StatementSpec.Raw.OptionalContextName,
+                true);
 
             // validate index
             var explicitIndexDesc = EventTableIndexUtil.ValidateCompileExplicitIndex(
-                spec.IndexName, spec.IsUnique, spec.Columns, indexedEventType, @base.StatementRawInfo, services);
+                spec.IndexName,
+                spec.IsUnique,
+                spec.Columns,
+                indexedEventType,
+                @base.StatementRawInfo,
+                services);
             var advancedIndexDesc = explicitIndexDesc.AdvancedIndexProvisionDesc == null
                 ? null
                 : explicitIndexDesc.AdvancedIndexProvisionDesc.IndexDesc.AdvancedIndexDescRuntime;
             var imk = new IndexMultiKey(
-                spec.IsUnique, explicitIndexDesc.HashPropsAsList, explicitIndexDesc.BtreePropsAsList,
+                spec.IsUnique,
+                explicitIndexDesc.HashPropsAsList,
+                explicitIndexDesc.BtreePropsAsList,
                 advancedIndexDesc);
 
             // add index as a new index to module-init
             var indexKey = new IndexCompileTimeKey(
-                infraModuleName, infraName, infraVisibility, namedWindow != null, spec.IndexName, @base.ModuleName);
+                infraModuleName,
+                infraName,
+                infraVisibility,
+                namedWindow != null,
+                spec.IndexName,
+                @base.ModuleName);
             services.IndexCompileTimeRegistry.NewIndex(indexKey, new IndexDetailForge(imk, explicitIndexDesc));
 
             // add index current named window information
-            if (namedWindow != null)
-            {
+            if (namedWindow != null) {
                 namedWindow.AddIndex(spec.IndexName, @base.ModuleName, imk, explicitIndexDesc.ToRuntime());
             }
             else {
@@ -113,11 +129,20 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createindex
             var packageScope = new CodegenNamespaceScope(packageName, null, services.IsInstrumented);
 
             var aiFactoryProviderClassName = CodeGenerationIDGenerator.GenerateClassNameSimple(
-                typeof(StatementAIFactoryProvider), classPostfix);
+                typeof(StatementAIFactoryProvider),
+                classPostfix);
             var forge = new StatementAgentInstanceFactoryCreateIndexForge(
-                indexedEventType, spec.IndexName, @base.ModuleName, explicitIndexDesc, imk, namedWindow, table);
+                indexedEventType,
+                spec.IndexName,
+                @base.ModuleName,
+                explicitIndexDesc,
+                imk,
+                namedWindow,
+                table);
             var aiFactoryForgable = new StmtClassForgableAIFactoryProviderCreateIndex(
-                aiFactoryProviderClassName, packageScope, forge);
+                aiFactoryProviderClassName,
+                packageScope,
+                forge);
 
             var selectSubscriberDescriptor = new SelectSubscriberDescriptor();
             var informationals = StatementInformationalsUtil.GetInformationals(
@@ -126,11 +151,16 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createindex
                 new EmptyList<ScheduleHandleCallbackProvider>(),
                 new EmptyList<NamedWindowConsumerStreamSpec>(),
                 true,
-                selectSubscriberDescriptor, packageScope, services);
+                selectSubscriberDescriptor,
+                packageScope,
+                services);
             var statementProviderClassName =
                 CodeGenerationIDGenerator.GenerateClassNameSimple(typeof(StatementProvider), classPostfix);
             var stmtProvider = new StmtClassForgableStmtProvider(
-                aiFactoryProviderClassName, statementProviderClassName, informationals, packageScope);
+                aiFactoryProviderClassName,
+                statementProviderClassName,
+                informationals,
+                packageScope);
 
             IList<StmtClassForgable> forgables = new List<StmtClassForgable>();
             forgables.Add(aiFactoryForgable);

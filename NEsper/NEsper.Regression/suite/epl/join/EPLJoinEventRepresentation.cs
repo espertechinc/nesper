@@ -41,7 +41,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
             int p00)
         {
             IDictionary<string, object> theEvent = new Dictionary<string, object>();
-            theEvent.Put("id", id);
+            theEvent.Put("Id", id);
             theEvent.Put("p00", p00);
             env.SendEventMap(theEvent, name);
         }
@@ -55,7 +55,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
         {
             if (rep.IsMapEvent()) {
                 IDictionary<string, object> theEvent = new Dictionary<string, object>();
-                theEvent.Put("id", id);
+                theEvent.Put("Id", id);
                 theEvent.Put("p00", p00);
                 env.SendEventMap(theEvent, name);
             }
@@ -66,7 +66,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                 var theEvent = new GenericRecord(
                     SupportAvroUtil.GetAvroSchema(env.Runtime.EventTypeService.GetEventTypePreconfigured(name))
                         .AsRecordSchema());
-                theEvent.Put("id", id);
+                theEvent.Put("Id", id);
                 theEvent.Put("p00", p00);
                 env.SendEventAvro(theEvent, name);
             }

@@ -373,10 +373,10 @@ namespace com.espertech.esper.regressionlib.suite.context
 
                 // test multiple pattern with multiple events
                 var contextExprMulti =
-                    "create context CtxPerId initiated by pattern [every a=SupportBean_S0 => b=SupportBean_S1]@Inclusive terminated after 10 sec ";
+                    "create context CtxPerId initiated by pattern [every a=SupportBean_S0 -> b=SupportBean_S1]@Inclusive terminated after 10 sec ";
                 env.CompileDeploy(contextExprMulti, path);
                 var streamExprMulti =
-                    "@Name('s0') context CtxPerId select * from pattern [every a=SupportBean_S0 => b=SupportBean_S1]";
+                    "@Name('s0') context CtxPerId select * from pattern [every a=SupportBean_S0 -> b=SupportBean_S1]";
                 env.CompileDeploy(streamExprMulti, path).AddListener("s0");
 
                 env.Milestone(8);
@@ -792,7 +792,7 @@ namespace com.espertech.esper.regressionlib.suite.context
             public void Run(RegressionEnvironment env)
             {
                 SendTimeEvent(env, "2002-05-1T8:00:00.000");
-                var fields = "id".SplitCsv();
+                var fields = "Id".SplitCsv();
 
                 var eplContext = "@Name('CTX') create context CtxInitiated " +
                                  "initiated by SupportBean sb " +

@@ -7,11 +7,13 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.compat.collections;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.@event.map
@@ -71,7 +73,10 @@ namespace com.espertech.esper.common.@internal.@event.map
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            return UnderlyingGetCodegen(CastUnderlying(typeof(IDictionary<object, object>), beanExpression), codegenMethodScope, codegenClassScope);
+            return UnderlyingGetCodegen(
+                CastUnderlying(typeof(IDictionary<object, object>), beanExpression),
+                codegenMethodScope,
+                codegenClassScope);
         }
 
         public CodegenExpression EventBeanExistsCodegen(
@@ -88,7 +93,9 @@ namespace com.espertech.esper.common.@internal.@event.map
             CodegenClassScope codegenClassScope)
         {
             return UnderlyingFragmentCodegen(
-                CastUnderlying(typeof(IDictionary<object, object>), beanExpression), codegenMethodScope, codegenClassScope);
+                CastUnderlying(typeof(IDictionary<object, object>), beanExpression),
+                codegenMethodScope,
+                codegenClassScope);
         }
 
         public CodegenExpression UnderlyingGetCodegen(
@@ -120,9 +127,17 @@ namespace com.espertech.esper.common.@internal.@event.map
             CodegenClassScope codegenClassScope)
         {
             return codegenMethodScope.MakeChild(typeof(object), GetType(), codegenClassScope)
-                .AddParam(typeof(IDictionary<object, object>), "map").Block
-                .DeclareVar(typeof(EventBean[]), "wrapper", Cast(typeof(EventBean[]), ExprDotMethod(Ref("map"), "get", Constant(propertyName))))
-                .MethodReturn(StaticMethod(typeof(BaseNestableEventUtil), "getBNArrayPropertyUnderlying", Ref("wrapper"), Constant(index)));
+                .AddParam(typeof(IDictionary<object, object>), "map")
+                .Block
+                .DeclareVar<EventBean[]>(
+                    "wrapper",
+                    Cast(typeof(EventBean[]), ExprDotMethod(Ref("map"), "get", Constant(propertyName))))
+                .MethodReturn(
+                    StaticMethod(
+                        typeof(BaseNestableEventUtil),
+                        "getBNArrayPropertyUnderlying",
+                        Ref("wrapper"),
+                        Constant(index)));
         }
 
         private CodegenMethod GetFragmentCodegen(
@@ -130,9 +145,17 @@ namespace com.espertech.esper.common.@internal.@event.map
             CodegenClassScope codegenClassScope)
         {
             return codegenMethodScope.MakeChild(typeof(object), GetType(), codegenClassScope)
-                .AddParam(typeof(IDictionary<object, object>), "map").Block
-                .DeclareVar(typeof(EventBean[]), "wrapper", Cast(typeof(EventBean[]), ExprDotMethod(Ref("map"), "get", Constant(propertyName))))
-                .MethodReturn(StaticMethod(typeof(BaseNestableEventUtil), "getBNArrayPropertyBean", Ref("wrapper"), Constant(index)));
+                .AddParam(typeof(IDictionary<object, object>), "map")
+                .Block
+                .DeclareVar<EventBean[]>(
+                    "wrapper",
+                    Cast(typeof(EventBean[]), ExprDotMethod(Ref("map"), "get", Constant(propertyName))))
+                .MethodReturn(
+                    StaticMethod(
+                        typeof(BaseNestableEventUtil),
+                        "getBNArrayPropertyBean",
+                        Ref("wrapper"),
+                        Constant(index)));
         }
     }
 } // end of namespace

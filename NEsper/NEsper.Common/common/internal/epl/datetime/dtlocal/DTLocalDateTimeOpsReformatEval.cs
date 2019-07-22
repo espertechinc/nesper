@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -15,6 +16,7 @@ using com.espertech.esper.common.@internal.epl.datetime.calop;
 using com.espertech.esper.common.@internal.epl.datetime.reformatop;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 using static com.espertech.esper.common.@internal.epl.datetime.dtlocal.DTLocalUtil;
 
@@ -48,12 +50,19 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
             CodegenClassScope codegenClassScope)
         {
             CodegenMethod methodNode = codegenMethodScope.MakeChild(
-                    forge.reformatForge.ReturnType, typeof(DTLocalDateTimeOpsReformatEval), codegenClassScope)
+                    forge.reformatForge.ReturnType,
+                    typeof(DTLocalDateTimeOpsReformatEval),
+                    codegenClassScope)
                 .AddParam(typeof(DateTime), "dateTime");
 
             CodegenBlock block = methodNode.Block;
             DTLocalUtil.EvaluateCalOpsZDTCodegen(
-                block, "dateTime", forge.calendarForges, methodNode, exprSymbol, codegenClassScope);
+                block,
+                "dateTime",
+                forge.calendarForges,
+                methodNode,
+                exprSymbol,
+                codegenClassScope);
             block.MethodReturn(
                 forge.reformatForge.CodegenDateTime(@Ref("dateTime"), methodNode, exprSymbol, codegenClassScope));
             return LocalMethod(methodNode, inner);

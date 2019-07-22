@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.client.soda;
 
 namespace com.espertech.esper.common.client.module
@@ -49,7 +50,8 @@ namespace com.espertech.esper.common.client.module
         /// <param name="lineNumber">The line number.</param>
         /// <param name="charPosStart">The character position start.</param>
         /// <param name="charPosEnd">The character position end.</param>
-        public ModuleItem(EPStatementObjectModel model,
+        public ModuleItem(
+            EPStatementObjectModel model,
             bool isCommentOnly,
             int lineNumber,
             int charPosStart,

@@ -159,10 +159,10 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "create objectarray schema StockTick(Id string, price int);\n" +
-                          "insert into TicksLarge select window(*).where(e => e.price > 100) @eventbean as ticksLargePrice\n" +
+                var epl = "create objectarray schema StockTick(Id string, Price int);\n" +
+                          "insert into TicksLarge select window(*).where(e => e.Price > 100) @eventbean as ticksLargePrice\n" +
                           "from StockTick#time(10) having count(*) > 2;\n" +
-                          "@Name('s0') select ticksLargePrice.where(e => e.price < 200) as ticksLargeLess200 from TicksLarge;\n";
+                          "@Name('s0') select ticksLargePrice.where(e => e.Price < 200) as ticksLargeLess200 from TicksLarge;\n";
                 env.CompileDeployWBusPublicType(epl, new RegressionPath()).AddListener("s0");
 
                 env.SendEventObjectArray(new object[] {"E1", 90}, "StockTick");
@@ -262,7 +262,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
             public void Run(RegressionEnvironment env)
             {
                 var epl =
-                    "@Name('s0') select * from pattern [ ([2]a=SupportBean_ST0) => b=SupportBean(IntPrimitive > a.max(i => p00))]";
+                    "@Name('s0') select * from pattern [ ([2]a=SupportBean_ST0) -> b=SupportBean(IntPrimitive > a.max(i => p00))]";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 env.SendEventBean(new SupportBean_ST0("E1", 10));
@@ -592,7 +592,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
                 env.UndeployAll();
 
                 // test subselect multivalue return
-                string[] fields = {"id", "p00"};
+                string[] fields = {"Id", "p00"};
                 var eplSubselectMultivalue =
                     "@Name('s0') select (select Id, p00 from SupportBean_ST0#keepall).take(10) as c0 from SupportBean";
                 env.CompileDeploy(eplSubselectMultivalue).AddListener("s0");
@@ -752,7 +752,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
                 var path = new RegressionPath();
                 env.CompileDeployWBusPublicType("create schema MySchema (books BookDesc[])", path);
 
-                env.CompileDeploy("@Name('s0') select books.max(i => i.price) as mymax from MySchema", path);
+                env.CompileDeploy("@Name('s0') select books.max(i => i.Price) as mymax from MySchema", path);
                 env.AddListener("s0");
 
                 var @event = Collections.SingletonDataMap(

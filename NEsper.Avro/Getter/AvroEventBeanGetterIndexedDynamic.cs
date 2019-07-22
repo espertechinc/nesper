@@ -68,7 +68,10 @@ namespace NEsper.Avro.Getter
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            return UnderlyingGetCodegen(CodegenExpressionBuilder.CastUnderlying(typeof(GenericRecord), beanExpression), codegenMethodScope, codegenClassScope);
+            return UnderlyingGetCodegen(
+                CodegenExpressionBuilder.CastUnderlying(typeof(GenericRecord), beanExpression),
+                codegenMethodScope,
+                codegenClassScope);
         }
 
         public CodegenExpression EventBeanExistsCodegen(
@@ -76,7 +79,10 @@ namespace NEsper.Avro.Getter
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            return UnderlyingExistsCodegen(CodegenExpressionBuilder.CastUnderlying(typeof(GenericRecord), beanExpression), codegenMethodScope, codegenClassScope);
+            return UnderlyingExistsCodegen(
+                CodegenExpressionBuilder.CastUnderlying(typeof(GenericRecord), beanExpression),
+                codegenMethodScope,
+                codegenClassScope);
         }
 
         public CodegenExpression EventBeanFragmentCodegen(
@@ -92,7 +98,12 @@ namespace NEsper.Avro.Getter
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            return CodegenExpressionBuilder.StaticMethod(GetType(), "getAvroFieldValue", underlyingExpression, CodegenExpressionBuilder.Constant(_propertyName), CodegenExpressionBuilder.Constant(_index));
+            return CodegenExpressionBuilder.StaticMethod(
+                GetType(),
+                "getAvroFieldValue",
+                underlyingExpression,
+                CodegenExpressionBuilder.Constant(_propertyName),
+                CodegenExpressionBuilder.Constant(_index));
         }
 
         public CodegenExpression UnderlyingExistsCodegen(
@@ -100,7 +111,11 @@ namespace NEsper.Avro.Getter
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            return CodegenExpressionBuilder.StaticMethod(GetType(), "isAvroFieldExists", underlyingExpression, CodegenExpressionBuilder.Constant(_propertyName));
+            return CodegenExpressionBuilder.StaticMethod(
+                GetType(),
+                "isAvroFieldExists",
+                underlyingExpression,
+                CodegenExpressionBuilder.Constant(_propertyName));
         }
 
         public CodegenExpression UnderlyingFragmentCodegen(
@@ -124,8 +139,7 @@ namespace NEsper.Avro.Getter
             int index)
         {
             var value = record.Get(propertyName);
-            if (value == null || !(value is ICollection<object>))
-            {
+            if (value == null || !(value is ICollection<object>)) {
                 return null;
             }
 
@@ -143,8 +157,7 @@ namespace NEsper.Avro.Getter
             string propertyName)
         {
             var field = record.Schema.GetField(propertyName);
-            if (field == null)
-            {
+            if (field == null) {
                 return false;
             }
 

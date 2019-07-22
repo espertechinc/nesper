@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+
 using com.espertech.esper.common.@internal.epl.dataflow.runnables;
 
 namespace com.espertech.esper.common.client.dataflow.core

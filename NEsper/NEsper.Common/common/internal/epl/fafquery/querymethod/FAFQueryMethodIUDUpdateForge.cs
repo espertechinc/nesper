@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -24,6 +25,7 @@ using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.statement.helper;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.fafquery.querymethod
@@ -59,20 +61,27 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.querymethod
                     processor.EventTypeRspInputEvents
                 },
                 new string[] {aliasName, "", INITIAL_VALUE_STREAM_NAME},
-                new bool[] {true, true, true}, true, false);
+                new bool[] {true, true, true},
+                true,
+                false);
             assignmentTypeService.IsStreamZeroUnambigous = true;
-            ExprValidationContext validationContext = new ExprValidationContextBuilder(assignmentTypeService, statementRawInfo, services)
-                .WithAllowBindingConsumption(true).Build();
+            ExprValidationContext validationContext =
+                new ExprValidationContextBuilder(assignmentTypeService, statementRawInfo, services)
+                    .WithAllowBindingConsumption(true)
+                    .Build();
 
             // validate update expressions
             FireAndForgetSpecUpdate updateSpec = (FireAndForgetSpecUpdate) spec.Raw.FireAndForgetSpec;
             try {
                 foreach (OnTriggerSetAssignment assignment in updateSpec.Assignments) {
                     ExprNode validated = ExprNodeUtilityValidate.GetValidatedSubtree(
-                        ExprNodeOrigin.UPDATEASSIGN, assignment.Expression, validationContext);
+                        ExprNodeOrigin.UPDATEASSIGN,
+                        assignment.Expression,
+                        validationContext);
                     assignment.Expression = validated;
                     EPStatementStartMethodHelperValidate.ValidateNoAggregations(
-                        validated, "Aggregation functions may not be used within an update-clause");
+                        validated,
+                        "Aggregation functions may not be used within an update-clause");
                 }
             }
             catch (ExprValidationException e) {
@@ -85,8 +94,13 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.querymethod
                 bool copyOnWrite = processor is FireAndForgetProcessorNamedWindowForge;
                 updateHelper = EventBeanUpdateHelperForgeFactory.Make(
                     processor.NamedWindowOrTableName,
-                    (EventTypeSPI) processor.EventTypeRspInputEvents, updateSpec.Assignments, aliasName, null, copyOnWrite,
-                    statementRawInfo.StatementName, services.EventTypeAvroHandler);
+                    (EventTypeSPI) processor.EventTypeRspInputEvents,
+                    updateSpec.Assignments,
+                    aliasName,
+                    null,
+                    copyOnWrite,
+                    statementRawInfo.StatementName,
+                    services.EventTypeAvroHandler);
             }
             catch (ExprValidationException e) {
                 throw new EPException(e.Message, e);
@@ -104,18 +118,26 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.querymethod
             SAIFFInitializeSymbol symbols,
             CodegenClassScope classScope)
         {
-            method.Block.SetProperty(queryMethod, "OptionalWhereClause",
+            method.Block.SetProperty(
+                queryMethod,
+                "OptionalWhereClause",
                 whereClause == null
                     ? ConstantNull()
                     : ExprNodeUtilityCodegen.CodegenEvaluator(whereClause.Forge, method, this.GetType(), classScope));
             if (processor is FireAndForgetProcessorNamedWindowForge) {
-                method.Block.SetProperty(queryMethod, "UpdateHelperNamedWindow", updateHelper.MakeWCopy(method, classScope));
+                method.Block.SetProperty(
+                    queryMethod,
+                    "UpdateHelperNamedWindow",
+                    updateHelper.MakeWCopy(method, classScope));
             }
             else {
                 FireAndForgetProcessorTableForge table = (FireAndForgetProcessorTableForge) processor;
                 method.Block
                     .SetProperty(queryMethod, "UpdateHelperTable", updateHelper.MakeNoCopy(method, classScope))
-                    .SetProperty(queryMethod, "Table", TableDeployTimeResolver.MakeResolveTable(table.Table, symbols.GetAddInitSvc(method)));
+                    .SetProperty(
+                        queryMethod,
+                        "Table",
+                        TableDeployTimeResolver.MakeResolveTable(table.Table, symbols.GetAddInitSvc(method)));
             }
         }
     }

@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -19,6 +20,7 @@ using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
@@ -57,17 +59,32 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
             CodegenClassScope codegenClassScope)
         {
             CodegenExpressionField memberUndType = codegenClassScope.AddFieldUnshared(
-                true, typeof(EventType), EventTypeUtility.ResolveTypeCodegen(eventType.UnderlyingEventType, EPStatementInitServicesConstants.REF));
-            CodegenMethod methodNode = codegenMethodScope.MakeChild(typeof(EventBean), this.GetType(), codegenClassScope);
+                true,
+                typeof(EventType),
+                EventTypeUtility.ResolveTypeCodegen(
+                    eventType.UnderlyingEventType,
+                    EPStatementInitServicesConstants.REF));
+            CodegenMethod methodNode = codegenMethodScope.MakeChild(
+                typeof(EventBean),
+                this.GetType(),
+                codegenClassScope);
             CodegenExpressionRef refEPS = exprSymbol.GetAddEPS(methodNode);
             methodNode.Block
-                .DeclareVar(typeof(EventBean), "theEvent", ArrayAtIndex(refEPS, Constant(streamNumber)))
-                .DeclareVar(
-                    typeof(EventBean), "recast",
-                    ExprDotMethod(eventBeanFactory, "adapterForTypedBean", ExprDotUnderlying(@Ref("theEvent")), memberUndType))
+                .DeclareVar<EventBean>("theEvent", ArrayAtIndex(refEPS, Constant(streamNumber)))
+                .DeclareVar<EventBean>(
+                    "recast",
+                    ExprDotMethod(
+                        eventBeanFactory,
+                        "adapterForTypedBean",
+                        ExprDotUnderlying(@Ref("theEvent")),
+                        memberUndType))
                 .MethodReturn(
                     ExprDotMethod(
-                        eventBeanFactory, "adapterForTypedWrapper", @Ref("recast"), StaticMethod(typeof(Collections), "emptyMap"), resultEventType));
+                        eventBeanFactory,
+                        "adapterForTypedWrapper",
+                        @Ref("recast"),
+                        StaticMethod(typeof(Collections), "emptyMap"),
+                        resultEventType));
             return methodNode;
         }
     }

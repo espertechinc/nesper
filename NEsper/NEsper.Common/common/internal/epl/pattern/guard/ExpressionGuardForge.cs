@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.compile.stage3;
@@ -16,6 +17,7 @@ using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.pattern.core;
 using com.espertech.esper.common.@internal.schedule;
 using com.espertech.esper.compat;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.pattern.guard
@@ -58,12 +60,15 @@ namespace com.espertech.esper.common.@internal.epl.pattern.guard
         {
             var method = parent.MakeChild(typeof(ExpressionGuardFactory), GetType(), classScope);
             method.Block
-                .DeclareVar(
-                    typeof(ExpressionGuardFactory), "factory",
+                .DeclareVar<ExpressionGuardFactory>(
+                    "factory",
                     ExprDotMethodChain(symbols.GetAddInitSvc(method))
-                        .Add(EPStatementInitServicesConstants.GETPATTERNFACTORYSERVICE).Add("guardWhile"))
+                        .Add(EPStatementInitServicesConstants.GETPATTERNFACTORYSERVICE)
+                        .Add("guardWhile"))
                 .SetProperty(Ref("factory"), "Convertor", convertor.MakeAnonymous(method, classScope))
-                .SetProperty(Ref("factory"), "Expression",
+                .SetProperty(
+                    Ref("factory"),
+                    "Expression",
                     ExprNodeUtilityCodegen.CodegenEvaluator(expression.Forge, method, GetType(), classScope))
                 .MethodReturn(Ref("factory"));
             return LocalMethod(method);

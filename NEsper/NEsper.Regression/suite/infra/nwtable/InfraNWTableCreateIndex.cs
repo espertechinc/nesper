@@ -811,7 +811,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 env.CompileDeploy(
                     "create index Idx1 on MyInfraMRAK(key hash, keyLong hash, rangeStartLong btree, rangeEndLong btree)",
                     path);
-                var fields = "id".SplitCsv();
+                var fields = "Id".SplitCsv();
 
                 var query1 =
                     "select * from MyInfraMRAK where rangeStartLong > 1 and rangeEndLong > 2 and keyLong=1 and key='K1' order by Id asc";

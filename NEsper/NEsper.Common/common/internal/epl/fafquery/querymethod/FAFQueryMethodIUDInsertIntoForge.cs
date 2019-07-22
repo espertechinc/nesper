@@ -8,6 +8,7 @@
 
 using System;
 using System.Linq;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -49,13 +50,15 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.querymethod
             StatementCompileTimeServices services)
         {
             var selectNoWildcard = InfraOnMergeHelperForge.CompileSelectNoWildcard(
-                UuidGenerator.Generate(), Arrays.AsList(spec.SelectClauseCompiled.SelectExprList));
+                UuidGenerator.Generate(),
+                Arrays.AsList(spec.SelectClauseCompiled.SelectExprList));
 
             StreamTypeService streamTypeService = new StreamTypeServiceImpl(true);
 
             // assign names
             var validationContext = new ExprValidationContextBuilder(streamTypeService, statementRawInfo, services)
-                .WithAllowBindingConsumption(true).Build();
+                .WithAllowBindingConsumption(true)
+                .Build();
 
             // determine whether column names are provided
             // if the "values" keyword was used, allow sequential automatic name assignment
@@ -73,7 +76,9 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.querymethod
                 if (compiled is SelectClauseExprCompiledSpec) {
                     var expr = (SelectClauseExprCompiledSpec) compiled;
                     var validatedExpression = ExprNodeUtilityValidate.GetValidatedSubtree(
-                        ExprNodeOrigin.SELECT, expr.SelectExpression, validationContext);
+                        ExprNodeOrigin.SELECT,
+                        expr.SelectExpression,
+                        validationContext);
                     expr.SelectExpression = validatedExpression;
                     if (expr.AssignedName == null) {
                         if (expr.ProvidedName == null) {
@@ -81,7 +86,8 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.querymethod
                                 expr.AssignedName = assignedSequentialNames[count];
                             }
                             else {
-                                expr.AssignedName = ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(expr.SelectExpression);
+                                expr.AssignedName =
+                                    ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(expr.SelectExpression);
                             }
                         }
                         else {
@@ -93,10 +99,17 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.querymethod
 
             EventType optionalInsertIntoEventType = processor.EventTypeRspInputEvents;
             var args = new SelectProcessorArgs(
-                selectNoWildcard.ToArray(), null,
-                false, optionalInsertIntoEventType, null, streamTypeService,
+                selectNoWildcard.ToArray(),
+                null,
+                false,
+                optionalInsertIntoEventType,
+                null,
+                streamTypeService,
                 statementRawInfo.OptionalContextDescriptor,
-                true, spec.Annotations, statementRawInfo, services);
+                true,
+                spec.Annotations,
+                statementRawInfo,
+                services);
             insertHelper = SelectExprProcessorFactory.GetProcessor(args, spec.Raw.InsertIntoDesc, false).Forge;
         }
 
@@ -111,7 +124,11 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.querymethod
             SAIFFInitializeSymbol symbols,
             CodegenClassScope classScope)
         {
-            var anonymousSelect = SelectExprProcessorUtil.MakeAnonymous(insertHelper, method, symbols.GetAddInitSvc(method), classScope);
+            var anonymousSelect = SelectExprProcessorUtil.MakeAnonymous(
+                insertHelper,
+                method,
+                symbols.GetAddInitSvc(method),
+                classScope);
             method.Block.SetProperty(queryMethod, "InsertHelper", anonymousSelect);
         }
 
@@ -128,7 +145,8 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.querymethod
                 raw.MatchRecognizeSpec != null ||
                 raw.OrderByList != null && !raw.OrderByList.IsEmpty() ||
                 raw.RowLimitSpec != null) {
-                throw new ExprValidationException("Insert-into fire-and-forget query can only consist of an insert-into clause and a select-clause");
+                throw new ExprValidationException(
+                    "Insert-into fire-and-forget query can only consist of an insert-into clause and a select-clause");
             }
 
             var infraName = statementSpec.Raw.InsertIntoDesc.EventTypeName;
@@ -141,10 +159,20 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.querymethod
             StreamSpecCompiled stream;
             if (namedWindow != null) {
                 stream = new NamedWindowConsumerStreamSpec(
-                    namedWindow, null, new ViewSpec[0], Collections.GetEmptyList<ExprNode>(), StreamSpecOptions.DEFAULT, null);
+                    namedWindow,
+                    null,
+                    new ViewSpec[0],
+                    Collections.GetEmptyList<ExprNode>(),
+                    StreamSpecOptions.DEFAULT,
+                    null);
             }
             else {
-                stream = new TableQueryStreamSpec(null, new ViewSpec[0], StreamSpecOptions.DEFAULT, table, Collections.GetEmptyList<ExprNode>());
+                stream = new TableQueryStreamSpec(
+                    null,
+                    new ViewSpec[0],
+                    StreamSpecOptions.DEFAULT,
+                    table,
+                    Collections.GetEmptyList<ExprNode>());
             }
 
             return new StatementSpecCompiled(statementSpec, new[] {stream});

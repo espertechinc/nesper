@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
@@ -49,7 +50,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
             visitor.VisitMethod(MethodName);
         }
 
-        public ExprDotEval DotEvaluator => new ExprDotMethodForgeDuckEval(this, ExprNodeUtilityQuery.GetEvaluatorsNoCompile(Parameters));
+        public ExprDotEval DotEvaluator => new ExprDotMethodForgeDuckEval(
+            this,
+            ExprNodeUtilityQuery.GetEvaluatorsNoCompile(Parameters));
 
         public CodegenExpression Codegen(
             CodegenExpression inner,
@@ -58,7 +61,13 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            return ExprDotMethodForgeDuckEval.Codegen(this, inner, innerType, codegenMethodScope, exprSymbol, codegenClassScope);
+            return ExprDotMethodForgeDuckEval.Codegen(
+                this,
+                inner,
+                innerType,
+                codegenMethodScope,
+                exprSymbol,
+                codegenClassScope);
         }
     }
 } // end of namespace

@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client.hook.condition;
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.util;
@@ -70,7 +71,7 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.state
             if (newMax > maxPoolCountConfigured && maxPoolCountConfigured >= 0) {
                 IDictionary<DeploymentIdNamePair, long> counts = GetCounts();
                 agentInstanceContext.StatementContext.ExceptionHandlingService.HandleCondition(
-                    new ConditionMatchRecognizeStatesMax(maxPoolCountConfigured, counts), 
+                    new ConditionMatchRecognizeStatesMax(maxPoolCountConfigured, counts),
                     agentInstanceContext.StatementContext);
 
                 if (preventStart) {

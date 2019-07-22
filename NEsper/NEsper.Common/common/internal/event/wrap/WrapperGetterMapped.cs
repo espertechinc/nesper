@@ -10,6 +10,7 @@ using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.@event.core;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.@event.wrap
@@ -47,11 +48,18 @@ namespace com.espertech.esper.common.@internal.@event.wrap
             CodegenExpression key)
         {
             var method = codegenMethodScope.MakeChild(typeof(object), typeof(WrapperGetterMapped), codegenClassScope)
-                .AddParam(typeof(EventBean), "event").AddParam(typeof(string), "key").Block
-                .DeclareVar(typeof(DecoratingEventBean), "wrapper", Cast(typeof(DecoratingEventBean), Ref("event")))
-                .DeclareVar(typeof(EventBean), "wrapped", ExprDotMethod(Ref("wrapper"), "getUnderlyingEvent"))
+                .AddParam(typeof(EventBean), "event")
+                .AddParam(typeof(string), "key")
+                .Block
+                .DeclareVar<DecoratingEventBean>("wrapper", Cast(typeof(DecoratingEventBean), Ref("event")))
+                .DeclareVar<EventBean>("wrapped", ExprDotMethod(Ref("wrapper"), "getUnderlyingEvent"))
                 .IfRefNullReturnNull("wrapped")
-                .MethodReturn(undMapped.EventBeanGetMappedCodegen(codegenMethodScope, codegenClassScope, Ref("wrapped"), Ref("key")));
+                .MethodReturn(
+                    undMapped.EventBeanGetMappedCodegen(
+                        codegenMethodScope,
+                        codegenClassScope,
+                        Ref("wrapped"),
+                        Ref("key")));
             return LocalMethodBuild(method).Pass(beanExpression).Pass(key).Call();
         }
     }

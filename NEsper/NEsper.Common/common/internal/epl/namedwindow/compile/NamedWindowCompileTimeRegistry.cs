@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.epl.namedwindow.path;
@@ -18,7 +19,8 @@ namespace com.espertech.esper.common.@internal.epl.namedwindow.compile
 {
     public class NamedWindowCompileTimeRegistry : CompileTimeRegistry
     {
-        public IDictionary<string, NamedWindowMetaData> NamedWindows { get; } = new Dictionary<string, NamedWindowMetaData>();
+        public IDictionary<string, NamedWindowMetaData> NamedWindows { get; } =
+            new Dictionary<string, NamedWindowMetaData>();
 
         public void NewNamedWindow(NamedWindowMetaData detail)
         {

@@ -9,6 +9,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.context.aifactory.core;
@@ -20,6 +21,7 @@ using com.espertech.esper.common.@internal.filterspec;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.function;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.compile.stage2
@@ -246,18 +248,23 @@ namespace com.espertech.esper.common.@internal.compile.stage2
                 ? ConstantNull()
                 : OptionalPropertyEvaluator.Make(method, symbols, classScope);
             method.Block
-                .DeclareVar(
-                    typeof(EventType), "eventType",
+                .DeclareVar<EventType>(
+                    "eventType",
                     EventTypeUtility.ResolveTypeCodegen(FilterForEventType, EPStatementInitServicesConstants.REF))
-                .DeclareVar(
-                    typeof(FilterSpecParam[][]), "params",
+                .DeclareVar<FilterSpecParam[][]>(
+                    "params",
                     LocalMethod(
                         FilterSpecParamForge.MakeParamArrayArrayCodegen(Parameters, classScope, method),
-                        Ref("eventType"), symbols.GetAddInitSvc(method)))
-                .DeclareVar(
-                    typeof(FilterSpecActivatable), "activatable", NewInstance<FilterSpecActivatable>(
+                        Ref("eventType"),
+                        symbols.GetAddInitSvc(method)))
+                .DeclareVar<FilterSpecActivatable>(
+                    "activatable",
+                    NewInstance<FilterSpecActivatable>(
                         SAIFFInitializeSymbolWEventType.REF_EVENTTYPE,
-                        Constant(FilterForEventType.Name), Ref("params"), propertyEval, Constant(filterCallbackId)))
+                        Constant(FilterForEventType.Name),
+                        Ref("params"),
+                        propertyEval,
+                        Constant(filterCallbackId)))
                 .Expression(
                     ExprDotMethodChain(symbols.GetAddInitSvc(method))
                         .Add(EPStatementInitServicesConstants.GETFILTERSPECACTIVATABLEREGISTRY)

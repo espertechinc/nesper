@@ -7,10 +7,12 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.lookup;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.index.advanced.index.quadtree
@@ -34,12 +36,14 @@ namespace com.espertech.esper.common.@internal.epl.index.advanced.index.quadtree
             CodegenClassScope classScope)
         {
             var method = parent.MakeChild(
-                typeof(AdvancedIndexConfigStatementPointRegionQuadtree), GetType(), classScope);
+                typeof(AdvancedIndexConfigStatementPointRegionQuadtree),
+                GetType(),
+                classScope);
             Func<ExprForge, CodegenExpression> expr = forge =>
                 ExprNodeUtilityCodegen.CodegenEvaluator(forge, method, GetType(), classScope);
             method.Block
-                .DeclareVar(
-                    typeof(AdvancedIndexConfigStatementPointRegionQuadtree), "factory",
+                .DeclareVar<AdvancedIndexConfigStatementPointRegionQuadtree>(
+                    "factory",
                     NewInstance(typeof(AdvancedIndexConfigStatementPointRegionQuadtree)))
                 .SetProperty(Ref("factory"), "_XEval", expr.Invoke(XEval))
                 .SetProperty(Ref("factory"), "_YEval", expr.Invoke(YEval))

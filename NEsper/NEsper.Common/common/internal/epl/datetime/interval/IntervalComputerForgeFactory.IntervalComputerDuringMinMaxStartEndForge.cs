@@ -36,7 +36,10 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
             public IntervalComputerEval MakeComputerEval()
             {
                 return new IntervalComputerDuringMinMaxStartEndEval(
-                    during, minStartEval.MakeEvaluator(), maxStartEval.MakeEvaluator(), minEndEval.MakeEvaluator(),
+                    during,
+                    minStartEval.MakeEvaluator(),
+                    maxStartEval.MakeEvaluator(),
+                    minEndEval.MakeEvaluator(),
                     maxEndEval.MakeEvaluator());
             }
 
@@ -50,7 +53,14 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
                 CodegenClassScope codegenClassScope)
             {
                 return IntervalComputerDuringMinMaxStartEndEval.Codegen(
-                    this, leftStart, leftEnd, rightStart, rightEnd, codegenMethodScope, exprSymbol, codegenClassScope);
+                    this,
+                    leftStart,
+                    leftEnd,
+                    rightStart,
+                    rightEnd,
+                    codegenMethodScope,
+                    exprSymbol,
+                    codegenClassScope);
             }
         }
     }

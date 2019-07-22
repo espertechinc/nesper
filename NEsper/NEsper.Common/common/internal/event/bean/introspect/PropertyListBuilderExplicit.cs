@@ -9,6 +9,7 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
+
 using com.espertech.esper.common.client.configuration;
 using com.espertech.esper.common.client.configuration.common;
 using com.espertech.esper.common.@internal.@event.bean.core;
@@ -93,9 +94,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.introspect
                 }
 
                 var parameterType = parameterTypes[0];
-                if (parameterType != typeof(int)
-                    && parameterType != typeof(int?)
-                    && parameterType != typeof(string)) {
+                if (parameterType != typeof(int) && parameterType != typeof(int?) && parameterType != typeof(string)) {
                     continue;
                 }
 
@@ -106,7 +105,9 @@ namespace com.espertech.esper.common.@internal.@event.bean.introspect
             if (method == null) {
                 throw new ConfigurationException(
                     "Configured method named '" +
-                    methodDesc.AccessorMethodName + "' not found for class " + clazz.Name);
+                    methodDesc.AccessorMethodName +
+                    "' not found for class " +
+                    clazz.Name);
             }
 
             return MakeMethodDesc(method, methodDesc.Name);
@@ -120,7 +121,9 @@ namespace com.espertech.esper.common.@internal.@event.bean.introspect
             if (field == null) {
                 throw new ConfigurationException(
                     "Configured field named '" +
-                    fieldDesc.AccessorFieldName + "' not found for class " + clazz.GetCleanName());
+                    fieldDesc.AccessorFieldName +
+                    "' not found for class " +
+                    clazz.GetCleanName());
             }
 
             return MakeFieldDesc(field, fieldDesc.Name);

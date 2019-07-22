@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.hook.aggmultifunc;
 using com.espertech.esper.common.@internal.epl.agg.core;
@@ -39,7 +40,10 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
             ExprEvaluatorContext exprEvaluatorContext)
         {
             var linear = (IList<EventBean>) row.GetCollectionOfEvents(
-                aggColNum, eventsPerStream, isNewData, exprEvaluatorContext);
+                aggColNum,
+                eventsPerStream,
+                isNewData,
+                exprEvaluatorContext);
             if (linear == null) {
                 return null;
             }
@@ -83,7 +87,10 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
             ExprEvaluatorContext exprEvaluatorContext)
         {
             var linear = (IList<EventBean>) row.GetCollectionOfEvents(
-                aggColNum, eventsPerStream, isNewData, exprEvaluatorContext);
+                aggColNum,
+                eventsPerStream,
+                isNewData,
+                exprEvaluatorContext);
             if (linear == null || linear.IsEmpty()) {
                 return null;
             }

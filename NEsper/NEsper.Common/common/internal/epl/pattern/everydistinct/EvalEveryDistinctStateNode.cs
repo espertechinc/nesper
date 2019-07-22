@@ -8,6 +8,7 @@
 
 using System.Collections.Generic;
 using System.Reflection;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.epl.pattern.core;
 using com.espertech.esper.common.@internal.epl.pattern.every;
@@ -89,11 +90,14 @@ namespace com.espertech.esper.common.@internal.epl.pattern.everydistinct
         {
             var agentInstanceContext = everyDistinctNode.Context.AgentInstanceContext;
             agentInstanceContext.InstrumentationProvider.QPatternEveryDistinctEvaluateTrue(
-                everyDistinctNode.factoryNode, matchEvent);
+                everyDistinctNode.factoryNode,
+                matchEvent);
 
             // determine if this evaluation has been seen before from the same node
             var matchEventKey = PatternExpressionUtil.GetKeys(
-                matchEvent, everyDistinctNode.FactoryNode.Convertor, everyDistinctNode.FactoryNode.DistinctExpression,
+                matchEvent,
+                everyDistinctNode.FactoryNode.Convertor,
+                everyDistinctNode.FactoryNode.DistinctExpression,
                 everyDistinctNode.Context.AgentInstanceContext);
             var haveSeenThis = false;
             var keysFromNode = spawnedNodes.Get(fromNode);
@@ -139,12 +143,19 @@ namespace com.espertech.esper.common.@internal.epl.pattern.everydistinct
 
             if (!haveSeenThis) {
                 agentInstanceContext.AuditProvider.PatternTrue(
-                    everyDistinctNode.FactoryNode, this, matchEvent, false, agentInstanceContext);
+                    everyDistinctNode.FactoryNode,
+                    this,
+                    matchEvent,
+                    false,
+                    agentInstanceContext);
                 ParentEvaluator.EvaluateTrue(matchEvent, this, false, optionalTriggeringEvent);
             }
 
             agentInstanceContext.InstrumentationProvider.APatternEveryDistinctEvaluateTrue(
-                keysFromNode, null, matchEventKey, haveSeenThis);
+                keysFromNode,
+                null,
+                matchEventKey,
+                haveSeenThis);
         }
 
         public bool IsFilterChildNonQuitting => true;
@@ -155,7 +166,9 @@ namespace com.espertech.esper.common.@internal.epl.pattern.everydistinct
                 Quit();
                 var agentInstanceContext = everyDistinctNode.Context.AgentInstanceContext;
                 agentInstanceContext.AuditProvider.PatternFalse(
-                    everyDistinctNode.FactoryNode, this, agentInstanceContext);
+                    everyDistinctNode.FactoryNode,
+                    this,
+                    agentInstanceContext);
                 ParentEvaluator.EvaluateFalse(this, true);
             }
             else {
@@ -167,9 +180,12 @@ namespace com.espertech.esper.common.@internal.epl.pattern.everydistinct
         {
             var agentInstanceContext = everyDistinctNode.Context.AgentInstanceContext;
             agentInstanceContext.InstrumentationProvider.QPatternEveryDistinctStart(
-                everyDistinctNode.factoryNode, beginState);
+                everyDistinctNode.factoryNode,
+                beginState);
             agentInstanceContext.AuditProvider.PatternInstance(
-                true, everyDistinctNode.factoryNode, agentInstanceContext);
+                true,
+                everyDistinctNode.factoryNode,
+                agentInstanceContext);
 
             this.beginState = beginState.ShallowCopy();
             var childState = everyDistinctNode.ChildNode.NewState(this);
@@ -202,7 +218,9 @@ namespace com.espertech.esper.common.@internal.epl.pattern.everydistinct
             var agentInstanceContext = everyDistinctNode.Context.AgentInstanceContext;
             agentInstanceContext.InstrumentationProvider.QPatternEveryDistinctQuit(everyDistinctNode.factoryNode);
             agentInstanceContext.AuditProvider.PatternInstance(
-                false, everyDistinctNode.factoryNode, agentInstanceContext);
+                false,
+                everyDistinctNode.factoryNode,
+                agentInstanceContext);
 
             // Stop all child nodes
             foreach (var child in spawnedNodes.Keys) {
@@ -214,7 +232,11 @@ namespace com.espertech.esper.common.@internal.epl.pattern.everydistinct
 
         public override void Accept(EvalStateNodeVisitor visitor)
         {
-            visitor.VisitEveryDistinct(everyDistinctNode.FactoryNode, this, beginState, spawnedNodes.Values.Unwrap<object>());
+            visitor.VisitEveryDistinct(
+                everyDistinctNode.FactoryNode,
+                this,
+                beginState,
+                spawnedNodes.Values.Unwrap<object>());
             foreach (var spawnedNode in spawnedNodes.Keys) {
                 spawnedNode.Accept(visitor);
             }

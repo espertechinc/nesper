@@ -52,7 +52,10 @@ namespace com.espertech.esper.common.@internal.view.exttimedbatch
                 agentInstanceViewFactoryContext.StatementContext.ViewServicePreviousFactory
                     .GetOptPreviousExprRelativeAccess(agentInstanceViewFactoryContext);
             return new ExternallyTimedBatchView(
-                this, viewUpdatedCollection, agentInstanceViewFactoryContext, timePeriodProvide);
+                this,
+                viewUpdatedCollection,
+                agentInstanceViewFactoryContext,
+                timePeriodProvide);
         }
 
         public EventType EventType {

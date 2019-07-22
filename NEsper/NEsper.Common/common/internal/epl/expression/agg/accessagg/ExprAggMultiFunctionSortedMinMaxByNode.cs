@@ -9,6 +9,7 @@
 using System;
 using System.IO;
 using System.Linq;
+
 using com.espertech.esper.collection;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.util;
@@ -25,6 +26,7 @@ using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.table.compiletime;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat.collections;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.expression.agg.accessagg
@@ -51,7 +53,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.accessagg
         }
 
         public ExprNodeRenderable EnumForgeRenderable => ForgeRenderableLocal;
-        
+
         private Pair<ExprNode[], bool[]> CriteriaExpressions {
             get {
                 // determine ordering ascending/descending and build criteria expression without "asc" marker
@@ -122,8 +124,12 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.accessagg
         {
             var future = GetAggFuture(codegenClassScope);
             return ExprDotMethod(
-                future, "getCollectionOfEvents", Constant(column), exprSymbol.GetAddEPS(parent),
-                exprSymbol.GetAddIsNewData(parent), exprSymbol.GetAddExprEvalCtx(parent));
+                future,
+                "getCollectionOfEvents",
+                Constant(column),
+                exprSymbol.GetAddEPS(parent),
+                exprSymbol.GetAddIsNewData(parent),
+                exprSymbol.GetAddExprEvalCtx(parent));
         }
 
         public CodegenExpression EvaluateGetROCollectionScalarCodegen(
@@ -165,8 +171,12 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.accessagg
         {
             var future = GetAggFuture(codegenClassScope);
             return ExprDotMethod(
-                future, "getEventBean", Constant(column), exprSymbol.GetAddEPS(parent),
-                exprSymbol.GetAddIsNewData(parent), exprSymbol.GetAddExprEvalCtx(parent));
+                future,
+                "getEventBean",
+                Constant(column),
+                exprSymbol.GetAddEPS(parent),
+                exprSymbol.GetAddIsNewData(parent),
+                exprSymbol.GetAddExprEvalCtx(parent));
         }
 
         public ExprEnumerationEval ExprEvaluatorEnumeration => throw ExprNodeUtilityMake.MakeUnsupportedCompileTime();
@@ -208,8 +218,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.accessagg
             var streamNum = streams.First();
 
             // validate that there is a remove stream, use "ever" if not
-            if (!ever && ExprAggMultiFunctionLinearAccessNode.GetIstreamOnly(
-                    validationContext.StreamTypeService, streamNum)) {
+            if (!ever &&
+                ExprAggMultiFunctionLinearAccessNode.GetIstreamOnly(
+                    validationContext.StreamTypeService,
+                    streamNum)) {
                 if (sortedwin) {
                     throw new ExprValidationException(
                         ErrorPrefix + " requires that a data window is declared for the stream");
@@ -253,18 +265,35 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.accessagg
             }
 
             var stateKey = new AggregationStateKeyWStream(
-                streamNum, containedType, type, criteriaExpressions.First, optionalFilter);
+                streamNum,
+                containedType,
+                type,
+                criteriaExpressions.First,
+                optionalFilter);
 
             var optionalFilterForge = optionalFilter == null ? null : optionalFilter.Forge;
             var streamEventType = validationContext.StreamTypeService.EventTypes[streamNum];
             var criteriaTypes = ExprNodeUtilityQuery.GetExprResultTypes(criteriaExpressions.First);
             var sortedDesc = new
                 SortedAggregationStateDesc(
-                    IsMax, validationContext.ImportService, criteriaExpressions.First, criteriaTypes,
-                    criteriaExpressions.Second, ever, streamNum, this, optionalFilterForge, streamEventType);
+                    IsMax,
+                    validationContext.ImportService,
+                    criteriaExpressions.First,
+                    criteriaTypes,
+                    criteriaExpressions.Second,
+                    ever,
+                    streamNum,
+                    this,
+                    optionalFilterForge,
+                    streamEventType);
 
             return new AggregationForgeFactoryAccessSorted(
-                this, accessor, accessorResultType, containedType, stateKey, sortedDesc,
+                this,
+                accessor,
+                accessorResultType,
+                containedType,
+                stateKey,
+                sortedDesc,
                 AggregationAgentDefault.INSTANCE);
         }
 
@@ -274,7 +303,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.accessagg
             if (positionalParams.Length == 0 ||
                 positionalParams.Length == 1 && positionalParams[0] is ExprWildcard) {
                 ExprAggMultiFunctionUtil.ValidateWildcardStreamNumbers(
-                    validationContext.StreamTypeService, AggregationFunctionName);
+                    validationContext.StreamTypeService,
+                    AggregationFunctionName);
                 streamNum = 0;
             }
             else if (positionalParams.Length == 1 && positionalParams[0] is ExprStreamUnderlyingNode) {
@@ -300,10 +330,19 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.accessagg
             }
 
             AggregationAgentForge agent = AggregationAgentForgeFactory.Make(
-                streamNum, optionalFilter, validationContext.ImportService,
-                validationContext.StreamTypeService.IsOnDemandStreams, validationContext.StatementName);
+                streamNum,
+                optionalFilter,
+                validationContext.ImportService,
+                validationContext.StreamTypeService.IsOnDemandStreams,
+                validationContext.StatementName);
             return new AggregationForgeFactoryAccessSorted(
-                this, accessor, accessorResultType, containedType, null, null, agent);
+                this,
+                accessor,
+                accessorResultType,
+                containedType,
+                null,
+                null,
+                agent);
         }
 
         private AggregationForgeFactoryAccessSorted HandleCreateTable(ExprValidationContext validationContext)
@@ -336,10 +375,24 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.accessagg
 
             var criteriaTypes = ExprNodeUtilityQuery.GetExprResultTypes(criteriaExpressions.First);
             var stateDesc = new SortedAggregationStateDesc(
-                IsMax, validationContext.ImportService, criteriaExpressions.First,
-                criteriaTypes, criteriaExpressions.Second, ever, 0, this, null, containedType);
+                IsMax,
+                validationContext.ImportService,
+                criteriaExpressions.First,
+                criteriaTypes,
+                criteriaExpressions.Second,
+                ever,
+                0,
+                this,
+                null,
+                containedType);
             return new AggregationForgeFactoryAccessSorted(
-                this, accessor, accessorResultType, containedType, null, stateDesc, null);
+                this,
+                accessor,
+                accessorResultType,
+                containedType,
+                null,
+                stateDesc,
+                null);
         }
 
         public override void ToPrecedenceFreeEPL(TextWriter writer)
@@ -355,7 +408,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.accessagg
             }
 
             var other = (ExprAggMultiFunctionSortedMinMaxByNode) node;
-            return IsMax == other.IsMax && containedType == other.containedType && sortedwin == other.sortedwin &&
+            return IsMax == other.IsMax &&
+                   containedType == other.containedType &&
+                   sortedwin == other.sortedwin &&
                    ever == other.ever;
         }
     }

@@ -12,6 +12,7 @@ using com.espertech.esper.common.@internal.epl.index.@base;
 using com.espertech.esper.common.@internal.epl.join.exec.util;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat.collections;
+
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -165,7 +166,8 @@ namespace com.espertech.esper.common.@internal.epl.index.sorted
             return result;
         }
 
-        protected internal static ICollection<EventBean> NormalizeCollection(IDictionary<object, ISet<EventBean>> submap)
+        protected internal static ICollection<EventBean> NormalizeCollection(
+            IDictionary<object, ISet<EventBean>> submap)
         {
             if (submap.Count == 0) {
                 return null;
@@ -234,7 +236,8 @@ namespace com.espertech.esper.common.@internal.epl.index.sorted
         public string ToQueryPlan()
         {
             return this.GetType().GetSimpleName() +
-                   " streamNum=" + factory.Organization.StreamNum;
+                   " streamNum=" +
+                   factory.Organization.StreamNum;
         }
 
         public EventTableOrganization Organization {

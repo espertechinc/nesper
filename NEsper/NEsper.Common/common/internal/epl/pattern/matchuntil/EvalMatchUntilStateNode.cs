@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.epl.pattern.core;
@@ -69,7 +70,10 @@ namespace com.espertech.esper.common.@internal.epl.pattern.matchuntil
             if (quit) {
                 Quit();
                 AgentInstanceContext agentInstanceContext = evalMatchUntilNode.Context.AgentInstanceContext;
-                agentInstanceContext.AuditProvider.PatternFalse(evalMatchUntilNode.FactoryNode, this, agentInstanceContext);
+                agentInstanceContext.AuditProvider.PatternFalse(
+                    evalMatchUntilNode.FactoryNode,
+                    this,
+                    agentInstanceContext);
                 ParentEvaluator.EvaluateFalse(this, true);
             }
             else {
@@ -85,8 +89,13 @@ namespace com.espertech.esper.common.@internal.epl.pattern.matchuntil
         public override void Start(MatchedEventMap beginState)
         {
             AgentInstanceContext agentInstanceContext = evalMatchUntilNode.Context.AgentInstanceContext;
-            agentInstanceContext.InstrumentationProvider.QPatternMatchUntilStart(evalMatchUntilNode.factoryNode, beginState);
-            agentInstanceContext.AuditProvider.PatternInstance(true, evalMatchUntilNode.factoryNode, agentInstanceContext);
+            agentInstanceContext.InstrumentationProvider.QPatternMatchUntilStart(
+                evalMatchUntilNode.factoryNode,
+                beginState);
+            agentInstanceContext.AuditProvider.PatternInstance(
+                true,
+                evalMatchUntilNode.factoryNode,
+                agentInstanceContext);
 
             this.beginState = beginState;
 
@@ -103,7 +112,9 @@ namespace com.espertech.esper.common.@internal.epl.pattern.matchuntil
             stateUntil?.Start(beginState);
 
             EvalMatchUntilStateBounds bounds = EvalMatchUntilStateBounds.InitBounds(
-                evalMatchUntilNode.FactoryNode, beginState, evalMatchUntilNode.Context);
+                evalMatchUntilNode.FactoryNode,
+                beginState,
+                evalMatchUntilNode.Context);
             lowerbounds = bounds.Lowerbounds;
             upperbounds = bounds.Upperbounds;
 
@@ -120,7 +131,9 @@ namespace com.espertech.esper.common.@internal.epl.pattern.matchuntil
         {
             AgentInstanceContext agentInstanceContext = evalMatchUntilNode.Context.AgentInstanceContext;
             agentInstanceContext.InstrumentationProvider.QPatternMatchUntilEvaluateTrue(
-                evalMatchUntilNode.factoryNode, matchEvent, fromNode == stateUntil);
+                evalMatchUntilNode.factoryNode,
+                matchEvent,
+                fromNode == stateUntil);
 
             bool isMatcher = false;
             if (fromNode == stateMatcher) {
@@ -159,9 +172,20 @@ namespace com.espertech.esper.common.@internal.epl.pattern.matchuntil
             if (isMatcher) {
                 if ((IsTightlyBound) && (numMatches == lowerbounds)) {
                     QuitInternal();
-                    MatchedEventMap consolidated = Consolidate(matchEvent, matchedEventArrays, evalMatchUntilNode.FactoryNode.TagsArrayed);
-                    agentInstanceContext.AuditProvider.PatternTrue(evalMatchUntilNode.FactoryNode, this, consolidated, true, agentInstanceContext);
-                    agentInstanceContext.AuditProvider.PatternInstance(false, evalMatchUntilNode.factoryNode, agentInstanceContext);
+                    MatchedEventMap consolidated = Consolidate(
+                        matchEvent,
+                        matchedEventArrays,
+                        evalMatchUntilNode.FactoryNode.TagsArrayed);
+                    agentInstanceContext.AuditProvider.PatternTrue(
+                        evalMatchUntilNode.FactoryNode,
+                        this,
+                        consolidated,
+                        true,
+                        agentInstanceContext);
+                    agentInstanceContext.AuditProvider.PatternInstance(
+                        false,
+                        evalMatchUntilNode.factoryNode,
+                        agentInstanceContext);
                     ParentEvaluator.EvaluateTrue(consolidated, this, true, optionalTriggeringEvent);
                 }
                 else {
@@ -189,21 +213,39 @@ namespace com.espertech.esper.common.@internal.epl.pattern.matchuntil
                 QuitInternal();
 
                 // consolidate multiple matched events into a single event
-                MatchedEventMap consolidated = Consolidate(matchEvent, matchedEventArrays, evalMatchUntilNode.FactoryNode.TagsArrayed);
+                MatchedEventMap consolidated = Consolidate(
+                    matchEvent,
+                    matchedEventArrays,
+                    evalMatchUntilNode.FactoryNode.TagsArrayed);
 
                 if ((lowerbounds != null) && (numMatches < lowerbounds)) {
-                    agentInstanceContext.AuditProvider.PatternFalse(evalMatchUntilNode.FactoryNode, this, agentInstanceContext);
-                    agentInstanceContext.AuditProvider.PatternInstance(false, evalMatchUntilNode.factoryNode, agentInstanceContext);
+                    agentInstanceContext.AuditProvider.PatternFalse(
+                        evalMatchUntilNode.FactoryNode,
+                        this,
+                        agentInstanceContext);
+                    agentInstanceContext.AuditProvider.PatternInstance(
+                        false,
+                        evalMatchUntilNode.factoryNode,
+                        agentInstanceContext);
                     ParentEvaluator.EvaluateFalse(this, true);
                 }
                 else {
-                    agentInstanceContext.AuditProvider.PatternTrue(evalMatchUntilNode.FactoryNode, this, consolidated, true, agentInstanceContext);
-                    agentInstanceContext.AuditProvider.PatternInstance(false, evalMatchUntilNode.factoryNode, agentInstanceContext);
+                    agentInstanceContext.AuditProvider.PatternTrue(
+                        evalMatchUntilNode.FactoryNode,
+                        this,
+                        consolidated,
+                        true,
+                        agentInstanceContext);
+                    agentInstanceContext.AuditProvider.PatternInstance(
+                        false,
+                        evalMatchUntilNode.factoryNode,
+                        agentInstanceContext);
                     ParentEvaluator.EvaluateTrue(consolidated, this, true, optionalTriggeringEvent);
                 }
             }
 
-            agentInstanceContext.InstrumentationProvider.APatternMatchUntilEvaluateTrue(stateMatcher == null && stateUntil == null);
+            agentInstanceContext.InstrumentationProvider.APatternMatchUntilEvaluateTrue(
+                stateMatcher == null && stateUntil == null);
         }
 
         public static MatchedEventMap Consolidate(
@@ -232,7 +274,9 @@ namespace com.espertech.esper.common.@internal.epl.pattern.matchuntil
             bool restartable)
         {
             AgentInstanceContext agentInstanceContext = evalMatchUntilNode.Context.AgentInstanceContext;
-            agentInstanceContext.InstrumentationProvider.QPatternMatchUntilEvalFalse(evalMatchUntilNode.factoryNode, fromNode == stateUntil);
+            agentInstanceContext.InstrumentationProvider.QPatternMatchUntilEvalFalse(
+                evalMatchUntilNode.factoryNode,
+                fromNode == stateUntil);
 
             bool isMatcher = fromNode == stateMatcher;
 
@@ -246,7 +290,10 @@ namespace com.espertech.esper.common.@internal.epl.pattern.matchuntil
             }
 
             agentInstanceContext.AuditProvider.PatternFalse(evalMatchUntilNode.FactoryNode, this, agentInstanceContext);
-            agentInstanceContext.AuditProvider.PatternInstance(false, evalMatchUntilNode.factoryNode, agentInstanceContext);
+            agentInstanceContext.AuditProvider.PatternInstance(
+                false,
+                evalMatchUntilNode.factoryNode,
+                agentInstanceContext);
             ParentEvaluator.EvaluateFalse(this, true);
             agentInstanceContext.InstrumentationProvider.APatternMatchUntilEvalFalse();
         }
@@ -259,7 +306,10 @@ namespace com.espertech.esper.common.@internal.epl.pattern.matchuntil
 
             AgentInstanceContext agentInstanceContext = evalMatchUntilNode.Context.AgentInstanceContext;
             agentInstanceContext.InstrumentationProvider.QPatternMatchUntilQuit(evalMatchUntilNode.factoryNode);
-            agentInstanceContext.AuditProvider.PatternInstance(false, evalMatchUntilNode.factoryNode, agentInstanceContext);
+            agentInstanceContext.AuditProvider.PatternInstance(
+                false,
+                evalMatchUntilNode.factoryNode,
+                agentInstanceContext);
 
             QuitInternal();
 

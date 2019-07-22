@@ -11,6 +11,7 @@ using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.context.module;
 using com.espertech.esper.common.@internal.@event.core;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.@event.arr
@@ -77,7 +78,9 @@ namespace com.espertech.esper.common.@internal.@event.arr
         {
             var fragmentUnderlying = Get(obj);
             return BaseNestableEventUtil.GetBNFragmentNonPojo(
-                fragmentUnderlying, fragmentType, eventBeanTypedEventFactory);
+                fragmentUnderlying,
+                fragmentType,
+                eventBeanTypedEventFactory);
         }
 
         public CodegenExpression EventBeanGetCodegen(
@@ -86,7 +89,9 @@ namespace com.espertech.esper.common.@internal.@event.arr
             CodegenClassScope codegenClassScope)
         {
             return UnderlyingGetCodegen(
-                CastUnderlying(typeof(object[]), beanExpression), codegenMethodScope, codegenClassScope);
+                CastUnderlying(typeof(object[]), beanExpression),
+                codegenMethodScope,
+                codegenClassScope);
         }
 
         public CodegenExpression EventBeanExistsCodegen(
@@ -103,7 +108,9 @@ namespace com.espertech.esper.common.@internal.@event.arr
             CodegenClassScope codegenClassScope)
         {
             return UnderlyingFragmentCodegen(
-                CastUnderlying(typeof(object[]), beanExpression), codegenMethodScope, codegenClassScope);
+                CastUnderlying(typeof(object[]), beanExpression),
+                codegenMethodScope,
+                codegenClassScope);
         }
 
         public CodegenExpression UnderlyingGetCodegen(
@@ -112,8 +119,10 @@ namespace com.espertech.esper.common.@internal.@event.arr
             CodegenClassScope codegenClassScope)
         {
             return StaticMethod(
-                typeof(BaseNestableEventUtil), "getBNArrayValueAtIndexWithNullCheck",
-                ArrayAtIndex(underlyingExpression, Constant(propertyIndex)), Constant(index));
+                typeof(BaseNestableEventUtil),
+                "getBNArrayValueAtIndexWithNullCheck",
+                ArrayAtIndex(underlyingExpression, Constant(propertyIndex)),
+                Constant(index));
         }
 
         public CodegenExpression UnderlyingExistsCodegen(
@@ -131,11 +140,15 @@ namespace com.espertech.esper.common.@internal.@event.arr
         {
             var mSvc = codegenClassScope.AddOrGetFieldSharable(EventBeanTypedEventFactoryCodegenField.INSTANCE);
             var mType = codegenClassScope.AddFieldUnshared(
-                true, typeof(EventType),
+                true,
+                typeof(EventType),
                 EventTypeUtility.ResolveTypeCodegen(fragmentType, EPStatementInitServicesConstants.REF));
             return StaticMethod(
-                typeof(BaseNestableEventUtil), "getBNFragmentNonPojo",
-                UnderlyingGetCodegen(underlyingExpression, codegenMethodScope, codegenClassScope), mType, mSvc);
+                typeof(BaseNestableEventUtil),
+                "getBNFragmentNonPojo",
+                UnderlyingGetCodegen(underlyingExpression, codegenMethodScope, codegenClassScope),
+                mType,
+                mSvc);
         }
 
         public CodegenExpression EventBeanGetIndexedCodegen(
@@ -145,8 +158,10 @@ namespace com.espertech.esper.common.@internal.@event.arr
             CodegenExpression key)
         {
             return StaticMethod(
-                typeof(BaseNestableEventUtil), "getBNArrayValueAtIndexWithNullCheck",
-                ArrayAtIndex(CastUnderlying(typeof(object[]), beanExpression), Constant(propertyIndex)), key);
+                typeof(BaseNestableEventUtil),
+                "getBNArrayValueAtIndexWithNullCheck",
+                ArrayAtIndex(CastUnderlying(typeof(object[]), beanExpression), Constant(propertyIndex)),
+                key);
         }
 
         private object GetObjectArrayInternal(

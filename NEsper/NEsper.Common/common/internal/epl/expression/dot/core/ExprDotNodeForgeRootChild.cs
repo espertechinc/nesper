@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -19,6 +20,7 @@ using com.espertech.esper.common.@internal.epl.@join.analyze;
 using com.espertech.esper.common.@internal.metrics.instrumentation;
 using com.espertech.esper.common.@internal.rettype;
 using com.espertech.esper.compat.collections;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.expression.dot.core
@@ -50,15 +52,18 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
             if (rootLambdaEvaluator != null) {
                 if (typeInfo is EventMultiValuedEPType) {
                     innerForge = new InnerDotEnumerableEventCollectionForge(
-                        rootLambdaEvaluator, ((EventMultiValuedEPType) typeInfo).Component);
+                        rootLambdaEvaluator,
+                        ((EventMultiValuedEPType) typeInfo).Component);
                 }
                 else if (typeInfo is EventEPType) {
                     innerForge = new InnerDotEnumerableEventBeanForge(
-                        rootLambdaEvaluator, ((EventEPType) typeInfo).EventType);
+                        rootLambdaEvaluator,
+                        ((EventEPType) typeInfo).EventType);
                 }
                 else {
                     innerForge = new InnerDotEnumerableScalarCollectionForge(
-                        rootLambdaEvaluator, ((ClassMultiValuedEPType) typeInfo).Component);
+                        rootLambdaEvaluator,
+                        ((ClassMultiValuedEPType) typeInfo).Component);
                 }
             }
             else {
@@ -90,12 +95,15 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
 
         public override ExprEvaluator ExprEvaluator =>
             new ExprDotNodeForgeRootChildEval(
-                this, innerForge.InnerEvaluator, ExprDotNodeUtility.GetEvaluators(forgesIteratorEventBean),
+                this,
+                innerForge.InnerEvaluator,
+                ExprDotNodeUtility.GetEvaluators(forgesIteratorEventBean),
                 ExprDotNodeUtility.GetEvaluators(forgesUnpacking));
 
         public override ExprForgeConstantType ForgeConstantType => ExprForgeConstantType.NONCONST;
 
-        public override Type EvaluationType => forgesUnpacking[forgesUnpacking.Length - 1].TypeInfo.GetNormalizedClass();
+        public override Type EvaluationType =>
+            forgesUnpacking[forgesUnpacking.Length - 1].TypeInfo.GetNormalizedClass();
 
         public ExprDotNodeImpl Parent { get; }
 
@@ -113,7 +121,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
             CodegenClassScope codegenClassScope)
         {
             return ExprDotNodeForgeRootChildEval.CodegenEvaluateGetROCollectionEvents(
-                this, codegenMethodScope, exprSymbol, codegenClassScope);
+                this,
+                codegenMethodScope,
+                exprSymbol,
+                codegenClassScope);
         }
 
         public CodegenExpression EvaluateGetROCollectionScalarCodegen(
@@ -122,7 +133,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
             CodegenClassScope codegenClassScope)
         {
             return ExprDotNodeForgeRootChildEval.CodegenEvaluateGetROCollectionScalar(
-                this, codegenMethodScope, exprSymbol, codegenClassScope);
+                this,
+                codegenMethodScope,
+                exprSymbol,
+                codegenClassScope);
         }
 
         public CodegenExpression EvaluateGetEventBeanCodegen(
@@ -162,7 +176,13 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
             CodegenClassScope codegenClassScope)
         {
             return new InstrumentationBuilderExpr(
-                    GetType(), this, "ExprDot", requiredType, codegenMethodScope, exprSymbol, codegenClassScope)
+                    GetType(),
+                    this,
+                    "ExprDot",
+                    requiredType,
+                    codegenMethodScope,
+                    exprSymbol,
+                    codegenClassScope)
                 .Build();
         }
 

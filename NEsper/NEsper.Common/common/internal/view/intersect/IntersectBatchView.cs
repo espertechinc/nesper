@@ -8,6 +8,7 @@
 
 using System.Collections.Generic;
 using System.Linq;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.@event.core;
@@ -143,7 +144,9 @@ namespace com.espertech.esper.common.@internal.view.intersect
                 EventBean[] newDataNonRemoved;
                 if (factory.IsAsymetric) {
                     newDataNonRemoved = EventBeanUtility.GetNewDataNonRemoved(
-                        newData, localState.RemovedEvents, localState.NewEventsPerView);
+                        newData,
+                        localState.RemovedEvents,
+                        localState.NewEventsPerView);
                 }
                 else {
                     newDataNonRemoved = EventBeanUtility.GetNewDataNonRemoved(newData, localState.RemovedEvents);

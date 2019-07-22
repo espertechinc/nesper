@@ -497,7 +497,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
                 var stmtText = "@Name('s0') insert into Cutoff " +
                                "select Symbol, (String.valueOf(count(*)) || 'x1000.0') as msg " +
                                "from SupportMarketDataBean#groupwin(Symbol)#length(1) " +
-                               "where price - Volume >= 1000.0 group by Symbol having count(*) = 1";
+                               "where Price - Volume >= 1000.0 group by Symbol having count(*) = 1";
                 env.CompileDeploy(stmtText).AddListener("s0");
                 Assert.IsFalse(env.Statement("s0").GetEnumerator().MoveNext());
 
@@ -526,7 +526,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             public void Run(RegressionEnvironment env)
             {
                 string[] fields = {"Symbol", "Price", "sumVol"};
-                var stmtText = "@Name('s0') select Symbol, price, sum(Volume) as sumVol " +
+                var stmtText = "@Name('s0') select Symbol, Price, sum(Volume) as sumVol " +
                                "from SupportMarketDataBean#length(5) " +
                                "group by Symbol " +
                                "order by Symbol";
@@ -595,7 +595,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             public void Run(RegressionEnvironment env)
             {
                 string[] fields = {"Symbol", "Price", "sumVol"};
-                var stmtText = "@Name('s0') select Symbol, price, sum(Volume) as sumVol " +
+                var stmtText = "@Name('s0') select Symbol, Price, sum(Volume) as sumVol " +
                                "from SupportMarketDataBean#length(5) " +
                                "group by Symbol";
 
@@ -662,7 +662,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             public void Run(RegressionEnvironment env)
             {
                 string[] fields = {"Symbol", "Price", "sumVol"};
-                var stmtText = "@Name('s0') select Symbol, price, sum(Volume) as sumVol " +
+                var stmtText = "@Name('s0') select Symbol, Price, sum(Volume) as sumVol " +
                                "from SupportMarketDataBean#length(5) " +
                                "group by Symbol having sum(Volume) > 20";
 

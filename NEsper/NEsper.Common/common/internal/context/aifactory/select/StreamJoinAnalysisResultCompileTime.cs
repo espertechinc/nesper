@@ -9,6 +9,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+
 using com.espertech.esper.common.client.annotation;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -22,6 +23,7 @@ using com.espertech.esper.common.@internal.epl.virtualdw;
 using com.espertech.esper.common.@internal.view.core;
 using com.espertech.esper.common.@internal.view.groupwin;
 using com.espertech.esper.compat.collections;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.context.aifactory.select
@@ -167,8 +169,9 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
         {
             var method = parent.MakeChild(typeof(StreamJoinAnalysisResultRuntime), GetType(), classScope);
             method.Block
-                .DeclareVar(
-                    typeof(StreamJoinAnalysisResultRuntime), "ar", NewInstance(typeof(StreamJoinAnalysisResultRuntime)))
+                .DeclareVar<StreamJoinAnalysisResultRuntime>(
+                    "ar",
+                    NewInstance(typeof(StreamJoinAnalysisResultRuntime)))
                 .SetProperty(Ref("ar"), "PureSelfJoin", Constant(IsPureSelfJoin))
                 .SetProperty(Ref("ar"), "Unidirectional", Constant(UnidirectionalInd))
                 .SetProperty(Ref("ar"), "UnidirectionalNonDriving", Constant(unidirectionalNonDriving))
@@ -206,7 +209,8 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
                 init[i] = NamedWindowsPerStream[i] == null
                     ? ConstantNull()
                     : NamedWindowDeployTimeResolver.MakeResolveNamedWindow(
-                        NamedWindowsPerStream[i], symbols.GetAddInitSvc(method));
+                        NamedWindowsPerStream[i],
+                        symbols.GetAddInitSvc(method));
             }
 
             return NewArrayWithInit(typeof(NamedWindow), init);

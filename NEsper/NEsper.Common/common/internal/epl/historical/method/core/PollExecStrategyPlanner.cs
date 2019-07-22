@@ -8,6 +8,7 @@
 
 using System;
 using System.Reflection;
+
 using com.espertech.esper.collection;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.collection;
@@ -41,48 +42,74 @@ namespace com.espertech.esper.common.@internal.epl.historical.method.core
                 }
 
                 if (metadata.EventTypeEventBeanArray != null) {
-                    conversion = new MethodConversionStrategyForge(eventType, typeof(MethodConversionStrategyEventBeans));
+                    conversion = new MethodConversionStrategyForge(
+                        eventType,
+                        typeof(MethodConversionStrategyEventBeans));
                 }
                 else if (metadata.OptionalMapType != null) {
                     if (targetMethod.ReturnType.IsArray) {
-                        conversion = new MethodConversionStrategyForge(eventType, typeof(MethodConversionStrategyArrayMap));
+                        conversion = new MethodConversionStrategyForge(
+                            eventType,
+                            typeof(MethodConversionStrategyArrayMap));
                     }
                     else if (metadata.IsCollection) {
-                        conversion = new MethodConversionStrategyForge(eventType, typeof(MethodConversionStrategyCollectionMap));
+                        conversion = new MethodConversionStrategyForge(
+                            eventType,
+                            typeof(MethodConversionStrategyCollectionMap));
                     }
                     else if (metadata.IsIterator) {
-                        conversion = new MethodConversionStrategyForge(eventType, typeof(MethodConversionStrategyIteratorMap));
+                        conversion = new MethodConversionStrategyForge(
+                            eventType,
+                            typeof(MethodConversionStrategyIteratorMap));
                     }
                     else {
-                        conversion = new MethodConversionStrategyForge(eventType, typeof(MethodConversionStrategyPlainMap));
+                        conversion = new MethodConversionStrategyForge(
+                            eventType,
+                            typeof(MethodConversionStrategyPlainMap));
                     }
                 }
                 else if (metadata.OptionalOaType != null) {
                     if (targetMethod.ReturnType == typeof(object[][])) {
-                        conversion = new MethodConversionStrategyForge(eventType, typeof(MethodConversionStrategyArrayOA));
+                        conversion = new MethodConversionStrategyForge(
+                            eventType,
+                            typeof(MethodConversionStrategyArrayOA));
                     }
                     else if (metadata.IsCollection) {
-                        conversion = new MethodConversionStrategyForge(eventType, typeof(MethodConversionStrategyCollectionOA));
+                        conversion = new MethodConversionStrategyForge(
+                            eventType,
+                            typeof(MethodConversionStrategyCollectionOA));
                     }
                     else if (metadata.IsIterator) {
-                        conversion = new MethodConversionStrategyForge(eventType, typeof(MethodConversionStrategyIteratorOA));
+                        conversion = new MethodConversionStrategyForge(
+                            eventType,
+                            typeof(MethodConversionStrategyIteratorOA));
                     }
                     else {
-                        conversion = new MethodConversionStrategyForge(eventType, typeof(MethodConversionStrategyPlainOA));
+                        conversion = new MethodConversionStrategyForge(
+                            eventType,
+                            typeof(MethodConversionStrategyPlainOA));
                     }
                 }
                 else {
                     if (targetMethod.ReturnType.IsArray) {
-                        conversion = new MethodConversionStrategyForge(eventType, typeof(MethodConversionStrategyArrayPONO));
+                        conversion = new MethodConversionStrategyForge(
+                            eventType,
+                            typeof(MethodConversionStrategyArrayPONO));
                     }
                     else if (metadata.IsCollection) {
-                        conversion = new MethodConversionStrategyForge(eventType, typeof(MethodConversionStrategyCollectionPONO));
+                        conversion = new MethodConversionStrategyForge(
+                            eventType,
+                            typeof(MethodConversionStrategyCollectionPONO));
                     }
                     else if (metadata.IsIterator) {
-                        conversion = new MethodConversionStrategyForge(eventType, typeof(MethodConversionStrategyIteratorPONO));
+                        conversion = new MethodConversionStrategyForge(
+                            eventType,
+                            typeof(MethodConversionStrategyIteratorPONO));
                     }
                     else {
-                        conversion = new MethodConversionStrategyForge(eventType, typeof(MethodConversionStrategyPlainPONO));
+                        conversion = new MethodConversionStrategyForge(
+                            eventType,
+                            typeof(MethodConversionStrategyPlainPONO));
                     }
                 }
             }

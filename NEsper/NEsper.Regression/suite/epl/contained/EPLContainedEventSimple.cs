@@ -59,7 +59,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.contained
 
                 env.CompileDeploy("@Name('nw') create window MyWindow#lastevent as BookDesc", path);
                 env.CompileDeploy(
-                    "insert into MyWindow select * from BookStream bs where not exists (select * from MyWindow mw where mw.price > bs.price)",
+                    "insert into MyWindow select * from BookStream bs where not exists (select * from MyWindow mw where mw.Price > bs.Price)",
                     path);
 
                 env.SendEventBean(MakeEventOne());

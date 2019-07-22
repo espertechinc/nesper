@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -17,6 +18,7 @@ using com.espertech.esper.common.@internal.epl.expression.time.eval;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.common.@internal.view.core;
 using com.espertech.esper.common.@internal.view.util;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.view.exttimedwin
@@ -52,7 +54,12 @@ namespace com.espertech.esper.common.@internal.view.exttimedwin
             ViewForgeEnv viewForgeEnv)
         {
             var validated = ViewForgeSupport.Validate(
-                ViewName, parentEventType, viewParameters, true, viewForgeEnv, streamNumber);
+                ViewName,
+                parentEventType,
+                viewParameters,
+                true,
+                viewForgeEnv,
+                streamNumber);
             if (viewParameters.Count != 2) {
                 throw new ViewParameterException(ViewParamMessage);
             }
@@ -65,7 +72,12 @@ namespace com.espertech.esper.common.@internal.view.exttimedwin
             ViewForgeSupport.AssertReturnsNonConstant(ViewName, validated[0], 0);
 
             timePeriodComputeForge = ViewFactoryTimePeriodHelper.ValidateAndEvaluateTimeDeltaFactory(
-                ViewName, viewParameters[1], ViewParamMessage, 1, viewForgeEnv, streamNumber);
+                ViewName,
+                viewParameters[1],
+                ViewParamMessage,
+                1,
+                viewForgeEnv,
+                streamNumber);
             eventType = parentEventType;
         }
 
@@ -86,9 +98,12 @@ namespace com.espertech.esper.common.@internal.view.exttimedwin
             CodegenClassScope classScope)
         {
             method.Block
-                .DeclareVar(typeof(TimePeriodCompute), "eval", timePeriodComputeForge.MakeEvaluator(method, classScope))
+                .DeclareVar<TimePeriodCompute>("eval", timePeriodComputeForge.MakeEvaluator(method, classScope))
                 .SetProperty(factory, "TimePeriodCompute", Ref("eval"))
-                .SetProperty(factory, "TimestampEval", ExprNodeUtilityCodegen
+                .SetProperty(
+                    factory,
+                    "TimestampEval",
+                    ExprNodeUtilityCodegen
                         .CodegenEvaluator(timestampExpression.Forge, method, GetType(), classScope));
         }
     }

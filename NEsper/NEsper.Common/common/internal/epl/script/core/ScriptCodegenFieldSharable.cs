@@ -40,26 +40,24 @@ namespace com.espertech.esper.common.@internal.epl.script.core
         public CodegenExpression InitCtorScoped()
         {
             return StaticMethod(
-                typeof(ScriptEvaluatorCompilerRuntime), "compileScriptEval",
+                typeof(ScriptEvaluatorCompilerRuntime),
+                "compileScriptEval",
                 _scriptDescriptor.Make(_classScope.NamespaceScope.InitMethod, _classScope));
         }
 
         public override bool Equals(object o)
         {
-            if (this == o)
-            {
+            if (this == o) {
                 return true;
             }
 
-            if (o == null || GetType() != o.GetType())
-            {
+            if (o == null || GetType() != o.GetType()) {
                 return false;
             }
 
             ScriptCodegenFieldSharable that = (ScriptCodegenFieldSharable) o;
 
-            if (_parameterNumber != that._parameterNumber)
-            {
+            if (_parameterNumber != that._parameterNumber) {
                 return false;
             }
 

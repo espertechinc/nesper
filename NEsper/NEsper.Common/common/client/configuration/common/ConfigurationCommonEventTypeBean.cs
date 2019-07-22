@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client.util;
 
 namespace com.espertech.esper.common.client.configuration.common

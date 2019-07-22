@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.core;
@@ -17,6 +18,7 @@ using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.agg.access.linear
@@ -32,15 +34,27 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
         {
             AggregationStateLinearForge stateForge = (AggregationStateLinearForge) context.AccessStateForge;
             CodegenMethod getBeanFirstLastIndex = GetBeanFirstLastIndexCodegen(
-                forge, context.Column, context.ClassScope, stateForge, context.Method, context.NamedMethods);
-            context.Method.Block.DeclareVar(typeof(EventBean), "bean", LocalMethod(getBeanFirstLastIndex))
+                forge,
+                context.Column,
+                context.ClassScope,
+                stateForge,
+                context.Method,
+                context.NamedMethods);
+            context.Method.Block.DeclareVar<EventBean>("bean", LocalMethod(getBeanFirstLastIndex))
                 .IfRefNullReturnNull("bean")
-                .DeclareVar(typeof(EventBean[]), "eventsPerStreamBuf", NewArrayByLength(typeof(EventBean), Constant(forge.StreamNum + 1)))
+                .DeclareVar<EventBean[]>(
+                    "eventsPerStreamBuf",
+                    NewArrayByLength(typeof(EventBean), Constant(forge.StreamNum + 1)))
                 .AssignArrayElement("eventsPerStreamBuf", Constant(forge.StreamNum), @Ref("bean"))
                 .MethodReturn(
                     LocalMethod(
-                        CodegenLegoMethodExpression.CodegenExpression(forge.ChildNode, context.Method, context.ClassScope),
-                        @Ref("eventsPerStreamBuf"), ConstantTrue(), ConstantNull()));
+                        CodegenLegoMethodExpression.CodegenExpression(
+                            forge.ChildNode,
+                            context.Method,
+                            context.ClassScope),
+                        @Ref("eventsPerStreamBuf"),
+                        ConstantTrue(),
+                        ConstantNull()));
         }
 
         public static void GetEnumerableEventsCodegen(
@@ -49,8 +63,13 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
         {
             AggregationStateLinearForge stateForge = (AggregationStateLinearForge) context.AccessStateForge;
             CodegenMethod getBeanFirstLastIndex = GetBeanFirstLastIndexCodegen(
-                forge, context.Column, context.ClassScope, stateForge, context.Method, context.NamedMethods);
-            context.Method.Block.DeclareVar(typeof(EventBean), "bean", LocalMethod(getBeanFirstLastIndex))
+                forge,
+                context.Column,
+                context.ClassScope,
+                stateForge,
+                context.Method,
+                context.NamedMethods);
+            context.Method.Block.DeclareVar<EventBean>("bean", LocalMethod(getBeanFirstLastIndex))
                 .IfRefNullReturnNull("bean")
                 .MethodReturn(StaticMethod(typeof(Collections), "singletonList", @Ref("bean")));
         }
@@ -61,16 +80,28 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
         {
             AggregationStateLinearForge stateForge = (AggregationStateLinearForge) context.AccessStateForge;
             CodegenMethod getBeanFirstLastIndex = GetBeanFirstLastIndexCodegen(
-                forge, context.Column, context.ClassScope, stateForge, context.Method, context.NamedMethods);
-            context.Method.Block.DeclareVar(typeof(EventBean), "bean", LocalMethod(getBeanFirstLastIndex))
+                forge,
+                context.Column,
+                context.ClassScope,
+                stateForge,
+                context.Method,
+                context.NamedMethods);
+            context.Method.Block.DeclareVar<EventBean>("bean", LocalMethod(getBeanFirstLastIndex))
                 .IfRefNullReturnNull("bean")
-                .DeclareVar(typeof(EventBean[]), "eventsPerStreamBuf", NewArrayByLength(typeof(EventBean), Constant(forge.StreamNum + 1)))
+                .DeclareVar<EventBean[]>(
+                    "eventsPerStreamBuf",
+                    NewArrayByLength(typeof(EventBean), Constant(forge.StreamNum + 1)))
                 .AssignArrayElement("eventsPerStreamBuf", Constant(forge.StreamNum), @Ref("bean"))
-                .DeclareVar(
-                    typeof(object), "value",
+                .DeclareVar<object>(
+                    "value",
                     LocalMethod(
-                        CodegenLegoMethodExpression.CodegenExpression(forge.ChildNode, context.Method, context.ClassScope),
-                        @Ref("eventsPerStreamBuf"), ConstantTrue(), ConstantNull()))
+                        CodegenLegoMethodExpression.CodegenExpression(
+                            forge.ChildNode,
+                            context.Method,
+                            context.ClassScope),
+                        @Ref("eventsPerStreamBuf"),
+                        ConstantTrue(),
+                        ConstantNull()))
                 .IfRefNullReturnNull("value")
                 .MethodReturn(StaticMethod(typeof(Collections), "singletonList", @Ref("value")));
         }
@@ -81,7 +112,12 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
         {
             AggregationStateLinearForge stateForge = (AggregationStateLinearForge) context.AccessStateForge;
             CodegenMethod getBeanFirstLastIndex = GetBeanFirstLastIndexCodegen(
-                forge, context.Column, context.ClassScope, stateForge, context.Method, context.NamedMethods);
+                forge,
+                context.Column,
+                context.ClassScope,
+                stateForge,
+                context.Method,
+                context.NamedMethods);
             context.Method.Block.MethodReturn(LocalMethod(getBeanFirstLastIndex));
         }
 
@@ -93,22 +129,30 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
             CodegenMethod parent,
             CodegenNamedMethods namedMethods)
         {
-            CodegenMethod method = parent.MakeChild(typeof(EventBean), typeof(AggregationAccessorFirstLastIndexWEval), classScope);
+            CodegenMethod method = parent.MakeChild(
+                typeof(EventBean),
+                typeof(AggregationAccessorFirstLastIndexWEval),
+                classScope);
             if (forge.Constant == -1) {
                 Type evalType = forge.IndexNode.EvaluationType;
                 method.Block.DeclareVar(
-                    evalType, "indexResult",
+                    evalType,
+                    "indexResult",
                     LocalMethod(
-                        CodegenLegoMethodExpression.CodegenExpression(forge.IndexNode, method, classScope), ConstantNull(), ConstantTrue(),
+                        CodegenLegoMethodExpression.CodegenExpression(forge.IndexNode, method, classScope),
+                        ConstantNull(),
+                        ConstantTrue(),
                         ConstantNull()));
                 if (!evalType.IsPrimitive) {
                     method.Block.IfRefNullReturnNull("indexResult");
                 }
 
-                method.Block.DeclareVar(typeof(int), "index", SimpleNumberCoercerFactory.CoercerInt.CodegenInt(@Ref("indexResult"), evalType));
+                method.Block.DeclareVar<int>(
+                    "index",
+                    SimpleNumberCoercerFactory.CoercerInt.CodegenInt(@Ref("indexResult"), evalType));
             }
             else {
-                method.Block.DeclareVar(typeof(int), "index", Constant(forge.Constant));
+                method.Block.DeclareVar<int>("index", Constant(forge.Constant));
             }
 
             CodegenExpression value = forge.IsFirst

@@ -28,7 +28,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
             SupportStaticMethodInvocations.GetInvocationSizeReset();
 
             // The LRU cache caches per same keys
-            string[] fields = {"id", "p00", "TheString"};
+            string[] fields = {"Id", "p00", "TheString"};
             SendBeanEvent(env, "E1", 1);
             EPAssertionUtil.AssertProps(
                 env.Listener("s0").AssertOneGetNewAndReset(),

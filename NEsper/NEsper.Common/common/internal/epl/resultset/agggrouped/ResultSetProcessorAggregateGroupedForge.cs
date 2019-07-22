@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.core;
@@ -21,6 +22,7 @@ using com.espertech.esper.common.@internal.epl.resultset.grouped;
 using com.espertech.esper.common.@internal.epl.resultset.rowforall;
 using com.espertech.esper.common.@internal.epl.resultset.@select.core;
 using com.espertech.esper.compat.collections;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 using static com.espertech.esper.common.@internal.epl.resultset.codegen.ResultSetProcessorCodegenNames;
 
@@ -43,7 +45,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
             OutputLimitSpec outputLimitSpec,
             bool isSorting,
             bool isHistoricalOnly,
-            ResultSetProcessorOutputConditionType outputConditionType,
+            ResultSetProcessorOutputConditionType? outputConditionType,
             OutputConditionPolledFactoryForge optionalOutputFirstConditionFactory,
             EventType[] eventTypes)
         {
@@ -69,7 +71,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
 
         public OutputConditionPolledFactoryForge OptionalOutputFirstConditionFactory { get; }
 
-        public ResultSetProcessorOutputConditionType OutputConditionType { get; }
+        public ResultSetProcessorOutputConditionType? OutputConditionType { get; }
 
         public int NumStreams => EventTypes.Length;
 
@@ -103,28 +105,52 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
             IList<CodegenTypedParam> factoryMembers)
         {
             instance.Methods.AddMethod(
-                typeof(SelectExprProcessor), "getSelectExprProcessor", Collections.GetEmptyList<CodegenNamedParam>(), GetType(), classScope,
+                typeof(SelectExprProcessor),
+                "getSelectExprProcessor",
+                Collections.GetEmptyList<CodegenNamedParam>(),
+                GetType(),
+                classScope,
                 methodNode => methodNode.Block.MethodReturn(REF_SELECTEXPRPROCESSOR));
             instance.Methods.AddMethod(
-                typeof(AggregationService), "getAggregationService", Collections.GetEmptyList<CodegenNamedParam>(), GetType(), classScope,
+                typeof(AggregationService),
+                "getAggregationService",
+                Collections.GetEmptyList<CodegenNamedParam>(),
+                GetType(),
+                classScope,
                 methodNode => methodNode.Block.MethodReturn(REF_AGGREGATIONSVC));
             instance.Methods.AddMethod(
-                typeof(AgentInstanceContext), "getAgentInstanceContext", Collections.GetEmptyList<CodegenNamedParam>(), GetType(), classScope,
+                typeof(AgentInstanceContext),
+                "getAgentInstanceContext",
+                Collections.GetEmptyList<CodegenNamedParam>(),
+                GetType(),
+                classScope,
                 methodNode => methodNode.Block.MethodReturn(REF_AGENTINSTANCECONTEXT));
             instance.Methods.AddMethod(
-                typeof(bool), "hasHavingClause", Collections.GetEmptyList<CodegenNamedParam>(), GetType(), classScope,
+                typeof(bool),
+                "hasHavingClause",
+                Collections.GetEmptyList<CodegenNamedParam>(),
+                GetType(),
+                classScope,
                 methodNode => methodNode.Block.MethodReturn(Constant(OptionalHavingNode != null)));
             instance.Methods.AddMethod(
-                typeof(bool), "isSelectRStream", Collections.GetEmptyList<CodegenNamedParam>(), typeof(ResultSetProcessorRowForAll),
-                classScope, methodNode => methodNode.Block.MethodReturn(Constant(IsSelectRStream)));
+                typeof(bool),
+                "isSelectRStream",
+                Collections.GetEmptyList<CodegenNamedParam>(),
+                typeof(ResultSetProcessorRowForAll),
+                classScope,
+                methodNode => methodNode.Block.MethodReturn(Constant(IsSelectRStream)));
             ResultSetProcessorUtil.EvaluateHavingClauseCodegen(OptionalHavingNode, classScope, instance);
             ResultSetProcessorAggregateGroupedImpl.RemovedAggregationGroupKeyCodegen(classScope, instance);
 
             ResultSetProcessorGroupedUtil.GenerateGroupKeySingleCodegen(GroupKeyNodeExpressions, classScope, instance);
             ResultSetProcessorGroupedUtil.GenerateGroupKeyArrayViewCodegen(
-                GroupKeyNodeExpressions, classScope, instance);
+                GroupKeyNodeExpressions,
+                classScope,
+                instance);
             ResultSetProcessorGroupedUtil.GenerateGroupKeyArrayJoinCodegen(
-                GroupKeyNodeExpressions, classScope, instance);
+                GroupKeyNodeExpressions,
+                classScope,
+                instance);
 
             ResultSetProcessorAggregateGroupedImpl.GenerateOutputBatchedSingleCodegen(this, classScope, instance);
             ResultSetProcessorAggregateGroupedImpl.GenerateOutputBatchedViewUnkeyedCodegen(this, classScope, instance);
@@ -219,7 +245,10 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
             CodegenInstanceAux instance)
         {
             ResultSetProcessorAggregateGroupedImpl.ProcessOutputLimitedLastAllNonBufferedViewCodegen(
-                this, classScope, method, instance);
+                this,
+                classScope,
+                method,
+                instance);
         }
 
         public void ProcessOutputLimitedLastAllNonBufferedJoinCodegen(
@@ -228,7 +257,10 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
             CodegenInstanceAux instance)
         {
             ResultSetProcessorAggregateGroupedImpl.ProcessOutputLimitedLastAllNonBufferedJoinCodegen(
-                this, classScope, method, instance);
+                this,
+                classScope,
+                method,
+                instance);
         }
 
         public void AcceptHelperVisitorCodegen(

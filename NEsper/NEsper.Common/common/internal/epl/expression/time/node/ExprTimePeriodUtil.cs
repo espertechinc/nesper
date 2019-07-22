@@ -25,7 +25,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.time.node
             string validateMsgValue,
             object timeInSeconds)
         {
-            return validateMsgName + " " + validateMsgValue + " requires a size of at least 1 msec but received " +
+            return validateMsgName +
+                   " " +
+                   validateMsgValue +
+                   " requires a size of at least 1 msec but received " +
                    timeInSeconds;
         }
 

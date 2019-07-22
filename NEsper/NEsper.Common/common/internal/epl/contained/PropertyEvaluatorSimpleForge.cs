@@ -12,6 +12,7 @@ using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.@event.core;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.contained
@@ -55,15 +56,19 @@ namespace com.espertech.esper.common.@internal.epl.contained
         {
             var method = parent.MakeChild(typeof(PropertyEvaluatorSimple), GetType(), classScope);
             method.Block
-                .DeclareVar(typeof(PropertyEvaluatorSimple), "pe", NewInstance(typeof(PropertyEvaluatorSimple)))
-                .SetProperty(Ref("pe"), "Filter",
+                .DeclareVar<PropertyEvaluatorSimple>("pe", NewInstance(typeof(PropertyEvaluatorSimple)))
+                .SetProperty(
+                    Ref("pe"),
+                    "Filter",
                     Filter == null
                         ? ConstantNull()
                         : ExprNodeUtilityCodegen.CodegenEvaluator(Filter, method, GetType(), classScope))
                 .SetProperty(Ref("pe"), "ContainedEventEval", containedEventEval.Make(method, symbols, classScope))
                 .SetProperty(Ref("pe"), "FragmentIsIndexed", Constant(fragmentEventType.IsIndexed))
                 .SetProperty(Ref("pe"), "ExpressionText", Constant(ExpressionText))
-                .SetProperty(Ref("pe"), "EventType",
+                .SetProperty(
+                    Ref("pe"),
+                    "EventType",
                     EventTypeUtility.ResolveTypeCodegen(fragmentEventType.FragmentType, symbols.GetAddInitSvc(method)))
                 .MethodReturn(Ref("pe"));
             return LocalMethod(method);

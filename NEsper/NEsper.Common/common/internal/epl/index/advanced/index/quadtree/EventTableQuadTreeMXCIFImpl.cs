@@ -9,12 +9,14 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.index.@base;
 using com.espertech.esper.common.@internal.epl.spatial.quadtree.core;
 using com.espertech.esper.common.@internal.epl.spatial.quadtree.mxcif;
 using com.espertech.esper.common.@internal.epl.spatial.quadtree.mxcifrowindex;
+
 using static com.espertech.esper.common.@internal.epl.index.advanced.index.quadtree.AdvancedIndexQuadTreeConstants;
 using static com.espertech.esper.common.@internal.epl.index.advanced.index.service.AdvancedIndexEvaluationHelper;
 
@@ -82,14 +84,48 @@ namespace com.espertech.esper.common.@internal.epl.index.advanced.index.quadtree
             ExprEvaluatorContext exprEvaluatorContext)
         {
             eventsPerStream[0] = @event;
-            double x = EvalDoubleColumn(config.XEval, organization.IndexName, COL_X, eventsPerStream, true, exprEvaluatorContext);
-            double y = EvalDoubleColumn(config.YEval, organization.IndexName, COL_Y, eventsPerStream, true, exprEvaluatorContext);
-            double width = EvalDoubleColumn(config.WidthEval, organization.IndexName, COL_WIDTH, eventsPerStream, true, exprEvaluatorContext);
-            double height = EvalDoubleColumn(config.HeightEval, organization.IndexName, COL_HEIGHT, eventsPerStream, true, exprEvaluatorContext);
-            bool added = MXCIFQuadTreeRowIndexAdd.Add(x, y, width, height, @event, quadTree, organization.IsUnique, organization.IndexName);
+            double x = EvalDoubleColumn(
+                config.XEval,
+                organization.IndexName,
+                COL_X,
+                eventsPerStream,
+                true,
+                exprEvaluatorContext);
+            double y = EvalDoubleColumn(
+                config.YEval,
+                organization.IndexName,
+                COL_Y,
+                eventsPerStream,
+                true,
+                exprEvaluatorContext);
+            double width = EvalDoubleColumn(
+                config.WidthEval,
+                organization.IndexName,
+                COL_WIDTH,
+                eventsPerStream,
+                true,
+                exprEvaluatorContext);
+            double height = EvalDoubleColumn(
+                config.HeightEval,
+                organization.IndexName,
+                COL_HEIGHT,
+                eventsPerStream,
+                true,
+                exprEvaluatorContext);
+            bool added = MXCIFQuadTreeRowIndexAdd.Add(
+                x,
+                y,
+                width,
+                height,
+                @event,
+                quadTree,
+                organization.IsUnique,
+                organization.IndexName);
             if (!added) {
                 throw InvalidColumnValue(
-                    organization.IndexName, "(x,y,width,height)", "(" + x + "," + y + "," + width + "," + height + ")",
+                    organization.IndexName,
+                    "(x,y,width,height)",
+                    "(" + x + "," + y + "," + width + "," + height + ")",
                     "a value intersecting index bounding box (range-end-inclusive) " + quadTree.Root.Bb);
             }
         }
@@ -99,10 +135,34 @@ namespace com.espertech.esper.common.@internal.epl.index.advanced.index.quadtree
             ExprEvaluatorContext exprEvaluatorContext)
         {
             eventsPerStream[0] = @event;
-            double x = EvalDoubleColumn(config.XEval, organization.IndexName, COL_X, eventsPerStream, false, exprEvaluatorContext);
-            double y = EvalDoubleColumn(config.YEval, organization.IndexName, COL_Y, eventsPerStream, false, exprEvaluatorContext);
-            double width = EvalDoubleColumn(config.WidthEval, organization.IndexName, COL_WIDTH, eventsPerStream, false, exprEvaluatorContext);
-            double height = EvalDoubleColumn(config.HeightEval, organization.IndexName, COL_HEIGHT, eventsPerStream, false, exprEvaluatorContext);
+            double x = EvalDoubleColumn(
+                config.XEval,
+                organization.IndexName,
+                COL_X,
+                eventsPerStream,
+                false,
+                exprEvaluatorContext);
+            double y = EvalDoubleColumn(
+                config.YEval,
+                organization.IndexName,
+                COL_Y,
+                eventsPerStream,
+                false,
+                exprEvaluatorContext);
+            double width = EvalDoubleColumn(
+                config.WidthEval,
+                organization.IndexName,
+                COL_WIDTH,
+                eventsPerStream,
+                false,
+                exprEvaluatorContext);
+            double height = EvalDoubleColumn(
+                config.HeightEval,
+                organization.IndexName,
+                COL_HEIGHT,
+                eventsPerStream,
+                false,
+                exprEvaluatorContext);
             MXCIFQuadTreeRowIndexRemove.Remove(x, y, width, height, @event, quadTree);
         }
 

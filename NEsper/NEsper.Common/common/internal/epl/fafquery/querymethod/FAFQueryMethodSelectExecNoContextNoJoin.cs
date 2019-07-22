@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.context;
 using com.espertech.esper.common.@internal.context.mgr;
@@ -16,6 +17,7 @@ using com.espertech.esper.common.@internal.epl.fafquery.processor;
 using com.espertech.esper.common.@internal.epl.resultset.core;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+
 using static com.espertech.esper.common.@internal.epl.fafquery.querymethod.FAFQueryMethodSelectExecUtil;
 
 namespace com.espertech.esper.common.@internal.epl.fafquery.querymethod
@@ -49,7 +51,10 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.querymethod
 
             // get RSP
             ResultSetProcessor resultSetProcessor = ProcessorWithAssign(
-                select.ResultSetProcessorFactoryProvider, agentInstanceContext, assignerSetter, select.TableAccesses);
+                select.ResultSetProcessorFactoryProvider,
+                agentInstanceContext,
+                assignerSetter,
+                select.TableAccesses);
 
             if (select.WhereClause != null) {
                 events = Filtered(events, select.WhereClause, agentInstanceContext);

@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
@@ -16,7 +17,8 @@ namespace com.espertech.esper.common.@internal.context.controller.initterm
 {
     public class ContextControllerInitTermDistinctSvcNested : ContextControllerInitTermDistinctSvc
     {
-        private readonly IDictionary<IntSeqKey, ISet<object>> distinctContexts = new Dictionary<IntSeqKey, ISet<object>>();
+        private readonly IDictionary<IntSeqKey, ISet<object>> distinctContexts =
+            new Dictionary<IntSeqKey, ISet<object>>();
 
         public ContextControllerInitTermDistinctSvcNested()
         {

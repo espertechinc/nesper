@@ -12,6 +12,7 @@ using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.@event.core;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.contained
@@ -36,15 +37,17 @@ namespace com.espertech.esper.common.@internal.epl.contained
         {
             var method = parent.MakeChild(typeof(ContainedEventEvalExprNode), GetType(), classScope);
             method.Block
-                .DeclareVar(
-                    typeof(ExprEvaluator), "eval",
+                .DeclareVar<ExprEvaluator>(
+                    "eval",
                     ExprNodeUtilityCodegen.CodegenEvaluator(evaluator, method, GetType(), classScope))
-                .DeclareVar(
-                    typeof(EventType), "type",
+                .DeclareVar<EventType>(
+                    "type",
                     EventTypeUtility.ResolveTypeCodegen(eventType, symbols.GetAddInitSvc(method)))
                 .MethodReturn(
                     NewInstance<ContainedEventEvalExprNode>(
-                        Ref("eval"), Ref("type"), symbols.GetAddInitSvc(method)));
+                        Ref("eval"),
+                        Ref("type"),
+                        symbols.GetAddInitSvc(method)));
             return LocalMethod(method);
         }
     }

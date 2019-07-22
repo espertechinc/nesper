@@ -48,7 +48,11 @@ namespace com.espertech.esper.common.@internal.collection
 
             var o = (IntSeqKeyMany) other;
             var array = o.Array;
-            return One == array[0] && Two == array[1] && Three == array[2] && Four == array[3] && Five == array[4] &&
+            return One == array[0] &&
+                   Two == array[1] &&
+                   Three == array[2] &&
+                   Four == array[3] &&
+                   Five == array[4] &&
                    Six == array[5];
         }
 
@@ -86,13 +90,22 @@ namespace com.espertech.esper.common.@internal.collection
         public static IntSeqKeySix Read(DataInput input)
         {
             return new IntSeqKeySix(
-                input.ReadInt(), input.ReadInt(), input.ReadInt(), input.ReadInt(), input.ReadInt(), input.ReadInt());
+                input.ReadInt(),
+                input.ReadInt(),
+                input.ReadInt(),
+                input.ReadInt(),
+                input.ReadInt(),
+                input.ReadInt());
         }
 
         protected bool Equals(IntSeqKeySix other)
         {
-            return One == other.One && Two == other.Two && Three == other.Three && Four == other.Four &&
-                   Five == other.Five && Six == other.Six;
+            return One == other.One &&
+                   Two == other.Two &&
+                   Three == other.Three &&
+                   Four == other.Four &&
+                   Five == other.Five &&
+                   Six == other.Six;
         }
 
         public override bool Equals(object obj)

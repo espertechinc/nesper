@@ -7,12 +7,14 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.epl.script.core;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.historical.method.poll
@@ -33,7 +35,7 @@ namespace com.espertech.esper.common.@internal.epl.historical.method.poll
         {
             CodegenMethod method = parent.MakeChild(typeof(MethodTargetStrategyScript), this.GetType(), classScope);
             method.Block
-                .DeclareVar(typeof(MethodTargetStrategyScript), "target", NewInstance(typeof(MethodTargetStrategyScript)))
+                .DeclareVar<MethodTargetStrategyScript>("target", NewInstance(typeof(MethodTargetStrategyScript)))
                 .SetProperty(Ref("target"), "ScriptEvaluator", script.GetField(classScope))
                 .Expression(ExprDotMethodChain(symbols.GetAddInitSvc(method)).Add("addReadyCallback", @Ref("target")))
                 .MethodReturn(@Ref("target"));

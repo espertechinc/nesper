@@ -33,7 +33,10 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
         }
 
         public CalendarOp EvalOp => new CalendarWithTimeForgeOp(
-            hour.ExprEvaluator, min.ExprEvaluator, sec.ExprEvaluator, msec.ExprEvaluator);
+            hour.ExprEvaluator,
+            min.ExprEvaluator,
+            sec.ExprEvaluator,
+            msec.ExprEvaluator);
 
         public CodegenExpression CodegenDateTimeEx(
             CodegenExpression dateTimeEx,
@@ -42,7 +45,11 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
             CodegenClassScope codegenClassScope)
         {
             return CalendarWithTimeForgeOp.CodegenCalendar(
-                this, dateTimeEx, codegenMethodScope, exprSymbol, codegenClassScope);
+                this,
+                dateTimeEx,
+                codegenMethodScope,
+                exprSymbol,
+                codegenClassScope);
         }
 
         public CodegenExpression CodegenDateTimeOffset(
@@ -51,7 +58,12 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            return CalendarWithTimeForgeOp.CodegenDateTimeOffset(this, dateTimeOffset, codegenMethodScope, exprSymbol, codegenClassScope);
+            return CalendarWithTimeForgeOp.CodegenDateTimeOffset(
+                this,
+                dateTimeOffset,
+                codegenMethodScope,
+                exprSymbol,
+                codegenClassScope);
         }
 
         public CodegenExpression CodegenDateTime(
@@ -60,7 +72,12 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            return CalendarWithTimeForgeOp.CodegenDateTime(this, dateTime, codegenMethodScope, exprSymbol, codegenClassScope);
+            return CalendarWithTimeForgeOp.CodegenDateTime(
+                this,
+                dateTime,
+                codegenMethodScope,
+                exprSymbol,
+                codegenClassScope);
         }
     }
 } // end of namespace

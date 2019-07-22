@@ -10,6 +10,7 @@ using com.espertech.esper.common.@internal.epl.agg.core;
 using com.espertech.esper.common.@internal.epl.agg.method.firstlastever;
 using com.espertech.esper.common.@internal.epl.expression.agg.@base;
 using com.espertech.esper.common.@internal.epl.expression.core;
+
 using System;
 
 namespace com.espertech.esper.common.@internal.epl.expression.agg.method

@@ -7,12 +7,14 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.core;
 using com.espertech.esper.common.@internal.bytecodemodel.util;
 using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.context.module;
 using com.espertech.esper.compat.collections;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.compile.stage3
@@ -47,7 +49,8 @@ namespace com.espertech.esper.common.@internal.compile.stage3
             IList<CodegenTypedParam> members = new List<CodegenTypedParam>();
             members.Add(new CodegenTypedParam(typeof(StatementInformationalsRuntime), MEMBERNAME_INFORMATION));
             members.Add(
-                new CodegenTypedParam(typeof(StatementAIFactoryProvider), MEMBERNAME_FACTORY_PROVIDER).WithFinal(false));
+                new CodegenTypedParam(typeof(StatementAIFactoryProvider), MEMBERNAME_FACTORY_PROVIDER)
+                    .WithFinal(false));
 
             // ctor
             var ctor = new CodegenCtor(GetType(), includeDebugSymbols, Collections.GetEmptyList<CodegenTypedParam>());
@@ -57,14 +60,18 @@ namespace com.espertech.esper.common.@internal.compile.stage3
             var initializeMethod = MakeInitialize(classScope);
             var getStatementAIFactoryProviderMethod = MakeGetStatementAIFactoryProvider(classScope);
             var getStatementInformationalsMethod = CodegenMethod.MakeParentNode(
-                    typeof(StatementInformationalsRuntime), typeof(StmtClassForgableStmtProvider),
-                    CodegenSymbolProviderEmpty.INSTANCE, classScope)
+                    typeof(StatementInformationalsRuntime),
+                    typeof(StmtClassForgableStmtProvider),
+                    CodegenSymbolProviderEmpty.INSTANCE,
+                    classScope)
                 .Block.MethodReturn(Ref(MEMBERNAME_INFORMATION));
 
             CodegenStackGenerator.RecursiveBuildStack(getStatementInformationalsMethod, "getInformationals", methods);
             CodegenStackGenerator.RecursiveBuildStack(initializeMethod, "initialize", methods);
             CodegenStackGenerator.RecursiveBuildStack(
-                getStatementAIFactoryProviderMethod, "getStatementAIFactoryProvider", methods);
+                getStatementAIFactoryProviderMethod,
+                "getStatementAIFactoryProvider",
+                methods);
             CodegenStackGenerator.RecursiveBuildStack(ctor, "ctor", methods);
 
             return new CodegenClass(
@@ -85,18 +92,23 @@ namespace com.espertech.esper.common.@internal.compile.stage3
         private CodegenMethod MakeInitialize(CodegenClassScope classScope)
         {
             var method = CodegenMethod
-                .MakeParentNode(typeof(void), typeof(StmtClassForgableStmtProvider), classScope).AddParam(
-                    typeof(EPStatementInitServices), SAIFFInitializeSymbol.REF_STMTINITSVC.Ref);
+                .MakeParentNode(typeof(void), typeof(StmtClassForgableStmtProvider), classScope)
+                .AddParam(
+                    typeof(EPStatementInitServices),
+                    SAIFFInitializeSymbol.REF_STMTINITSVC.Ref);
             method.Block.AssignRef(
-                MEMBERNAME_FACTORY_PROVIDER, NewInstance(statementAIFactoryClassName, SAIFFInitializeSymbol.REF_STMTINITSVC));
+                MEMBERNAME_FACTORY_PROVIDER,
+                NewInstance(statementAIFactoryClassName, SAIFFInitializeSymbol.REF_STMTINITSVC));
             return method;
         }
 
         private static CodegenMethod MakeGetStatementAIFactoryProvider(CodegenClassScope classScope)
         {
             var method = CodegenMethod.MakeParentNode(
-                typeof(StatementAIFactoryProvider), typeof(StmtClassForgableStmtProvider),
-                CodegenSymbolProviderEmpty.INSTANCE, classScope);
+                typeof(StatementAIFactoryProvider),
+                typeof(StmtClassForgableStmtProvider),
+                CodegenSymbolProviderEmpty.INSTANCE,
+                classScope);
             method.Block.MethodReturn(Ref(MEMBERNAME_FACTORY_PROVIDER));
             return method;
         }

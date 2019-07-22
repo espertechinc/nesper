@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.compile.stage1.spec;
 using com.espertech.esper.common.@internal.epl.expression.subquery;
@@ -124,7 +125,8 @@ namespace com.espertech.esper.common.@internal.compile.stage2
                         set.Add(type);
                     }
                     else if (streamSpec is PatternStreamSpecCompiled) {
-                        var evalNodeAnalysisResult = EvalNodeUtil.RecursiveAnalyzeChildNodes(((PatternStreamSpecCompiled) streamSpec).Root);
+                        var evalNodeAnalysisResult =
+                            EvalNodeUtil.RecursiveAnalyzeChildNodes(((PatternStreamSpecCompiled) streamSpec).Root);
                         var filterNodes = evalNodeAnalysisResult.FilterNodes;
                         foreach (var filterNode in filterNodes) {
                             if (set == null) {

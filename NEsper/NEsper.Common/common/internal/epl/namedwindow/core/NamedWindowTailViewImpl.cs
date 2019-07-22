@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.annotation;
 using com.espertech.esper.common.@internal.context.module;
@@ -25,7 +26,8 @@ namespace com.espertech.esper.common.@internal.epl.namedwindow.core
     /// </summary>
     public class NamedWindowTailViewImpl : NamedWindowTailViewBase
     {
-        private volatile IDictionary<EPStatementAgentInstanceHandle, IList<NamedWindowConsumerView>> consumersNonContext; // handles as copy-on-write
+        private volatile IDictionary<EPStatementAgentInstanceHandle, IList<NamedWindowConsumerView>>
+            consumersNonContext; // handles as copy-on-write
 
         public NamedWindowTailViewImpl(
             EventType eventType,
@@ -54,10 +56,16 @@ namespace com.espertech.esper.common.@internal.epl.namedwindow.core
             };
 
             // Construct consumer view, allow a callback to this view to remove the consumer
-            bool audit = AuditEnum.STREAM.GetAudit(consumerDesc.AgentInstanceContext.StatementContext.Annotations) != null;
+            bool audit = AuditEnum.STREAM.GetAudit(consumerDesc.AgentInstanceContext.StatementContext.Annotations) !=
+                         null;
             NamedWindowConsumerView consumerView = new NamedWindowConsumerView(
-                consumerDesc.NamedWindowConsumerId, consumerDesc.FilterEvaluator, consumerDesc.OptPropertyEvaluator, eventType, consumerCallback,
-                consumerDesc.AgentInstanceContext, audit);
+                consumerDesc.NamedWindowConsumerId,
+                consumerDesc.FilterEvaluator,
+                consumerDesc.OptPropertyEvaluator,
+                eventType,
+                consumerCallback,
+                consumerDesc.AgentInstanceContext,
+                audit);
 
             // Keep a list of consumer views per statement to accomodate joins and subqueries
             IList<NamedWindowConsumerView> viewsPerStatements =
@@ -83,7 +91,8 @@ namespace com.espertech.esper.common.@internal.epl.namedwindow.core
         {
             EPStatementAgentInstanceHandle handleRemoved = null;
             // Find the consumer view
-            foreach (KeyValuePair<EPStatementAgentInstanceHandle, IList<NamedWindowConsumerView>> entry in consumersNonContext) {
+            foreach (KeyValuePair<EPStatementAgentInstanceHandle, IList<NamedWindowConsumerView>> entry in
+                consumersNonContext) {
                 bool foundAndRemoved = entry.Value.Remove(namedWindowConsumerView);
                 // Remove the consumer view
                 if (foundAndRemoved && (entry.Value.Count == 0)) {
@@ -123,7 +132,9 @@ namespace com.espertech.esper.common.@internal.epl.namedwindow.core
                 eventType.Name,
                 threadingConfig.IsNamedWindowConsumerDispatchPreserveOrder,
                 threadingConfig.NamedWindowConsumerDispatchTimeout,
-                threadingConfig.NamedWindowConsumerDispatchLocking, timeSourceService, true);
+                threadingConfig.NamedWindowConsumerDispatchLocking,
+                timeSourceService,
+                true);
         }
     }
 } // end of namespace

@@ -7,11 +7,13 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.@event.core;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.historical.indexingstrategy
@@ -50,11 +52,16 @@ namespace com.espertech.esper.common.@internal.epl.historical.indexingstrategy
             var propertyGetter = ((EventTypeSPI) eventType).GetGetterSPI(propertyName);
             var propertyType = eventType.GetPropertyType(propertyName);
             var valueGetter = EventTypeUtility.CodegenGetterWCoerce(
-                propertyGetter, propertyType, valueType, method, GetType(), classScope);
+                propertyGetter,
+                propertyType,
+                valueType,
+                method,
+                GetType(),
+                classScope);
 
             method.Block
-                .DeclareVar(
-                    typeof(PollResultIndexingStrategySorted), "strat",
+                .DeclareVar<PollResultIndexingStrategySorted>(
+                    "strat",
                     NewInstance(typeof(PollResultIndexingStrategySorted)))
                 .SetProperty(Ref("strat"), "StreamNum", Constant(streamNum))
                 .SetProperty(Ref("strat"), "PropertyName", Constant(propertyName))

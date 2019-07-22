@@ -66,8 +66,7 @@ namespace com.espertech.esper.common.@internal.filterspec
             var getterSPI = ((EventTypeSPI) _eventType).GetGetterSPI(ResultEventProperty);
             var method = parent.MakeChild(typeof(object), GetType(), classScope).AddParam(GET_FILTER_VALUE_FP);
             method.Block
-                .DeclareVar(
-                    typeof(EventBean[]),
+                .DeclareVar<EventBean[]>(
                     "events",
                     Cast(
                         typeof(EventBean[]),
@@ -75,7 +74,7 @@ namespace com.espertech.esper.common.@internal.filterspec
                             Ref("matchedEvents"),
                             "getMatchingEventAsObjectByTag",
                             CodegenExpressionBuilder.Constant(ResultEventAsName))))
-                .DeclareVar(typeof(object), "value", ConstantNull())
+                .DeclareVar<object>("value", ConstantNull())
                 .IfRefNotNull("events")
                 .AssignRef(
                     "value",

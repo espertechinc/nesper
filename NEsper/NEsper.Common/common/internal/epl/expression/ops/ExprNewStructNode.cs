@@ -9,6 +9,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
@@ -64,7 +65,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                 isAllConstants = isAllConstants && ChildNodes[i].Forge.ForgeConstantType.IsCompileTimeConstant;
                 if (eventType.ContainsKey(ColumnNames[i])) {
                     throw new ExprValidationException(
-                        "Failed to validate new-keyword property names, property '" + ColumnNames[i] +
+                        "Failed to validate new-keyword property names, property '" +
+                        ColumnNames[i] +
                         "' has already been declared");
                 }
 

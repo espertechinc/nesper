@@ -23,7 +23,7 @@ namespace com.espertech.esper.common.@internal.view.core
                 BuiltinViews.AddObject(
                     viewEnum.GetNamespace(),
                     viewEnum.GetViewName(),
-                    viewEnum.GetFactoryClass(), 
+                    viewEnum.GetFactoryClass(),
                     PluggableObjectType.VIEW);
             }
         }

@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -28,7 +29,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
                 ExprEvaluatorContext exprEvaluatorContext)
             {
                 return StringToDateTimeOffsetWStaticFormatComputer.StringToDateTimeOffsetWStaticFormatParse(
-                    input.ToString(), DateTimeFormat.ISO_DATE_TIME);
+                    input.ToString(),
+                    DateTimeFormat.ISO_DATE_TIME);
             }
 
             public bool IsConstantForConstInput => true;
@@ -44,8 +46,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
                 CodegenClassScope codegenClassScope)
             {
                 return CodegenExpressionBuilder.StaticMethod(
-                    typeof(StringToDateTimeOffsetWStaticFormatComputer), "stringToLocalDateTimeWStaticFormatParse",
-                    input, CodegenExpressionBuilder.PublicConstValue(typeof(DateTimeFormat), "ISO_DATE_TIME"));
+                    typeof(StringToDateTimeOffsetWStaticFormatComputer),
+                    "stringToLocalDateTimeWStaticFormatParse",
+                    input,
+                    CodegenExpressionBuilder.PublicConstValue(typeof(DateTimeFormat), "ISO_DATE_TIME"));
             }
         }
     }

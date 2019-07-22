@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.core;
@@ -14,6 +15,7 @@ using com.espertech.esper.common.@internal.epl.expression.time.node;
 using com.espertech.esper.common.@internal.schedule;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.pattern.observer
@@ -38,17 +40,35 @@ namespace com.espertech.esper.common.@internal.epl.pattern.observer
             CodegenMethodScope parent,
             CodegenClassScope classScope)
         {
-            CodegenMethod method = parent.MakeChild(typeof(TimerScheduleSpecComputeFromExpr), this.GetType(), classScope);
+            CodegenMethod method = parent.MakeChild(
+                typeof(TimerScheduleSpecComputeFromExpr),
+                this.GetType(),
+                classScope);
             method.Block
-                .DeclareVar(typeof(TimerScheduleSpecComputeFromExpr), "compute", NewInstance(typeof(TimerScheduleSpecComputeFromExpr)))
-                .SetProperty(Ref("compute"), "Date",
-                    dateNode == null ? ConstantNull() : ExprNodeUtilityCodegen.CodegenEvaluator(dateNode.Forge, method, this.GetType(), classScope))
-                .SetProperty(Ref("compute"), "Repetitions",
+                .DeclareVar<TimerScheduleSpecComputeFromExpr>(
+                    "compute",
+                    NewInstance(typeof(TimerScheduleSpecComputeFromExpr)))
+                .SetProperty(
+                    Ref("compute"),
+                    "Date",
+                    dateNode == null
+                        ? ConstantNull()
+                        : ExprNodeUtilityCodegen.CodegenEvaluator(dateNode.Forge, method, this.GetType(), classScope))
+                .SetProperty(
+                    Ref("compute"),
+                    "Repetitions",
                     repetitionsNode == null
                         ? ConstantNull()
-                        : ExprNodeUtilityCodegen.CodegenEvaluator(repetitionsNode.Forge, method, this.GetType(), classScope));
+                        : ExprNodeUtilityCodegen.CodegenEvaluator(
+                            repetitionsNode.Forge,
+                            method,
+                            this.GetType(),
+                            classScope));
             if (periodNode != null) {
-                method.Block.SetProperty(Ref("compute"), "TimePeriod", periodNode.MakeTimePeriodAnonymous(method, classScope));
+                method.Block.SetProperty(
+                    Ref("compute"),
+                    "TimePeriod",
+                    periodNode.MakeTimePeriodAnonymous(method, classScope));
             }
 
             method.Block.MethodReturn(@Ref("compute"));
@@ -61,7 +81,10 @@ namespace com.espertech.esper.common.@internal.epl.pattern.observer
                 dateNode == null ? null : dateNode.Forge.ExprEvaluator,
                 repetitionsNode == null ? null : repetitionsNode.Forge.ExprEvaluator,
                 periodNode == null ? null : periodNode.TimePeriodEval,
-                null, null, null, validationContext.ImportService.TimeAbacus);
+                null,
+                null,
+                null,
+                validationContext.ImportService.TimeAbacus);
         }
     }
 } // end of namespace

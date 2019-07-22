@@ -7,12 +7,14 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.time.eval;
 using com.espertech.esper.common.@internal.epl.expression.time.node;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.output.polled
@@ -32,7 +34,9 @@ namespace com.espertech.esper.common.@internal.epl.output.polled
         {
             CodegenMethod method = parent.MakeChild(typeof(OutputConditionPolledFactory), this.GetType(), classScope);
             method.Block
-                .DeclareVar(typeof(TimePeriodCompute), "delta", timePeriod.TimePeriodComputeForge.MakeEvaluator(method, classScope))
+                .DeclareVar<TimePeriodCompute>(
+                    "delta",
+                    timePeriod.TimePeriodComputeForge.MakeEvaluator(method, classScope))
                 .MethodReturn(NewInstance<OutputConditionPolledTimeFactory>(@Ref("delta")));
             return LocalMethod(method);
         }

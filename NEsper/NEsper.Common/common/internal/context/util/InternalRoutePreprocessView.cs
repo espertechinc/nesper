@@ -9,6 +9,7 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.util;
@@ -51,8 +52,10 @@ namespace com.espertech.esper.common.@internal.context.util
             if (ExecutionPathDebugLog.IsDebugEnabled && Log.IsDebugEnabled) {
                 Log.Debug(
                     ".Update Received Update, " +
-                    "  newData.Length==" + (newData == null ? 0 : newData.Length) +
-                    "  oldData.Length==" + (oldData == null ? 0 : oldData.Length));
+                    "  newData.Length==" +
+                    (newData == null ? 0 : newData.Length) +
+                    "  oldData.Length==" +
+                    (oldData == null ? 0 : oldData.Length));
             }
         }
 

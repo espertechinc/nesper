@@ -628,7 +628,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
         {
             public void Run(RegressionEnvironment env)
             {
-                string[] fields = {"id", "mycount"};
+                string[] fields = {"Id", "mycount"};
                 var text =
                     "@Name('s0') select Id, (select count(*) from SupportBean_S1#length(3) s1 where s1.p10 = s0.p00) as mycount from SupportBean_S0 s0";
                 env.CompileDeploy(text).AddListener("s0");
@@ -874,7 +874,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
             public void Run(RegressionEnvironment env)
             {
                 var epl = "@Name('s0') select * from SupportMarketDataBean " +
-                          "where price > (select max(price) from SupportMarketDataBean(Symbol='GOOG')#lastevent) ";
+                          "where Price > (select max(Price) from SupportMarketDataBean(Symbol='GOOG')#lastevent) ";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
                 SendEventMD(env, "GOOG", 1);

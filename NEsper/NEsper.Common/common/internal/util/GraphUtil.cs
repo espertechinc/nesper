@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+
 using com.espertech.esper.collection;
 using com.espertech.esper.compat.collections;
 
@@ -74,7 +75,8 @@ namespace com.espertech.esper.common.@internal.util
         {
             var circularDependency = GetFirstCircularDependency(graph);
             if (circularDependency != null) {
-                throw new GraphCircularDependencyException("Circular dependency detected between " + circularDependency.RenderAny());
+                throw new GraphCircularDependencyException(
+                    "Circular dependency detected between " + circularDependency.RenderAny());
             }
 
             var reversedGraph = new Dictionary<string, ICollection<string>>();

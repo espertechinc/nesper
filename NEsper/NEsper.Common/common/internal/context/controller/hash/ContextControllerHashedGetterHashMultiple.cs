@@ -8,6 +8,7 @@
 
 using System.Collections.Generic;
 using System.Reflection;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -15,6 +16,7 @@ using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.compat.logging;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.context.controller.hash
@@ -41,8 +43,9 @@ namespace com.espertech.esper.common.@internal.context.controller.hash
         {
             var method = parent.MakeChild(typeof(object), GetType(), classScope)
                 .AddParam(typeof(EventBean), "eventBean");
-            method.Block.DeclareVar(
-                typeof(EventBean[]), "events", NewArrayWithInit(typeof(EventBean), Ref("eventBean")));
+            method.Block.DeclareVar<EventBean[]>(
+                "events",
+                NewArrayWithInit(typeof(EventBean), Ref("eventBean")));
 
             // method to evaluate expressions and compute hash
             var exprSymbol = new ExprForgeCodegenSymbol(true, true);
@@ -58,11 +61,11 @@ namespace com.espertech.esper.common.@internal.context.controller.hash
             exprSymbol.DerivedSymbolsCodegen(method, exprMethod.Block, classScope);
 
             var hashCode = Ref("hashCode");
-            exprMethod.Block.DeclareVar(typeof(int), hashCode.Ref, Constant(0));
+            exprMethod.Block.DeclareVar<int>(hashCode.Ref, Constant(0));
             for (var i = 0; i < nodes.Length; i++) {
                 var result = Ref("result" + i);
                 exprMethod.Block
-                    .DeclareVar(typeof(object), result.Ref, expressions[i])
+                    .DeclareVar<object>(result.Ref, expressions[i])
                     .IfRefNotNull(result.Ref)
                     .AssignRef(hashCode, Op(Op(Constant(31), "*", hashCode), "+", ExprDotMethod(result, "hashCode")))
                     .BlockEnd();

@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 using static com.espertech.esper.common.@internal.epl.resultset.order.OrderByProcessorCodegenNames;
 using static com.espertech.esper.common.@internal.epl.resultset.order.OrderByProcessorOrderedLimitForge;
@@ -38,8 +39,10 @@ namespace com.espertech.esper.common.@internal.epl.resultset.order
         {
             method.Block.MethodReturn(
                 ExprDotMethod(
-                    REF_ROWLIMITPROCESSOR, "determineApplyLimit2Events",
-                    REF_ORDERFIRSTEVENT, REF_ORDERSECONDEVENT));
+                    REF_ROWLIMITPROCESSOR,
+                    "determineApplyLimit2Events",
+                    REF_ORDERFIRSTEVENT,
+                    REF_ORDERSECONDEVENT));
         }
 
         protected internal static void SortWOrderKeysCodegen(CodegenMethod method)

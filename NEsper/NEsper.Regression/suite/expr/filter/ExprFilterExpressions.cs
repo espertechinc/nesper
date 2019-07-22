@@ -1213,7 +1213,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                 string text;
                 var milestone = new AtomicLong();
 
-                text = "select * from pattern [a=SupportBean => b=" +
+                text = "select * from pattern [a=SupportBean -> b=" +
                        typeof(SupportBean).Name +
                        "(IntBoxed = a.IntBoxed and DoubleBoxed = a.DoubleBoxed)]";
                 TryPattern(
@@ -1226,7 +1226,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                     new double?[] {2d, 3d, 2d, 1d, 5d, 6d, 8d},
                     new[] {false, false, true, false, false, true, false});
 
-                text = "select * from pattern [a=SupportBean => b=" +
+                text = "select * from pattern [a=SupportBean -> b=" +
                        typeof(SupportBean).Name +
                        "(IntBoxed is a.IntBoxed and DoubleBoxed = a.DoubleBoxed)]";
                 TryPattern(
@@ -1239,7 +1239,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                     new double?[] {2d, 3d, 2d, 1d, 5d, 6d, 8d},
                     new[] {true, false, true, false, false, true, false});
 
-                text = "select * from pattern [a=SupportBean => b=" +
+                text = "select * from pattern [a=SupportBean -> b=" +
                        typeof(SupportBean).Name +
                        "(a.DoubleBoxed = DoubleBoxed)]";
                 TryPattern(
@@ -1252,7 +1252,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                     new double?[] {2d, 3d},
                     new[] {true, false});
 
-                text = "select * from pattern [a=SupportBean => b=" +
+                text = "select * from pattern [a=SupportBean -> b=" +
                        typeof(SupportBean).Name +
                        "(a.DoubleBoxed = b.DoubleBoxed)]";
                 TryPattern(
@@ -1265,7 +1265,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                     new double?[] {2d, 3d},
                     new[] {true, false});
 
-                text = "select * from pattern [a=SupportBean => b=" +
+                text = "select * from pattern [a=SupportBean -> b=" +
                        typeof(SupportBean).Name +
                        "(a.DoubleBoxed != DoubleBoxed)]";
                 TryPattern(
@@ -1278,7 +1278,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                     new double?[] {2d, 3d},
                     new[] {false, true});
 
-                text = "select * from pattern [a=SupportBean => b=" +
+                text = "select * from pattern [a=SupportBean -> b=" +
                        typeof(SupportBean).Name +
                        "(a.DoubleBoxed != b.DoubleBoxed)]";
                 TryPattern(
@@ -1291,7 +1291,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                     new double?[] {2d, 3d},
                     new[] {false, true});
 
-                text = "select * from pattern [a=SupportBean => b=" +
+                text = "select * from pattern [a=SupportBean -> b=" +
                        typeof(SupportBean).Name +
                        "(DoubleBoxed in [a.DoubleBoxed:a.IntBoxed])]";
                 TryPattern(
@@ -1304,7 +1304,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                     new double?[] {0d, 1d, 2d, 9d, 10d, 11d},
                     new[] {false, true, true, true, true, false});
 
-                text = "select * from pattern [a=SupportBean => b=" +
+                text = "select * from pattern [a=SupportBean -> b=" +
                        typeof(SupportBean).Name +
                        "(DoubleBoxed in (a.DoubleBoxed:a.IntBoxed])]";
                 TryPattern(
@@ -1317,7 +1317,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                     new double?[] {0d, 1d, 2d, 9d, 10d, 11d},
                     new[] {false, false, true, true, true, false});
 
-                text = "select * from pattern [a=SupportBean => b=" +
+                text = "select * from pattern [a=SupportBean -> b=" +
                        typeof(SupportBean).Name +
                        "(b.DoubleBoxed in (a.DoubleBoxed:a.IntBoxed))]";
                 TryPattern(
@@ -1330,7 +1330,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                     new double?[] {0d, 1d, 2d, 9d, 10d, 11d},
                     new[] {false, false, true, true, false, false});
 
-                text = "select * from pattern [a=SupportBean => b=" +
+                text = "select * from pattern [a=SupportBean -> b=" +
                        typeof(SupportBean).Name +
                        "(DoubleBoxed in [a.DoubleBoxed:a.IntBoxed))]";
                 TryPattern(
@@ -1343,7 +1343,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                     new double?[] {0d, 1d, 2d, 9d, 10d, 11d},
                     new[] {false, true, true, true, false, false});
 
-                text = "select * from pattern [a=SupportBean => b=" +
+                text = "select * from pattern [a=SupportBean -> b=" +
                        typeof(SupportBean).Name +
                        "(DoubleBoxed not in [a.DoubleBoxed:a.IntBoxed])]";
                 TryPattern(
@@ -1356,7 +1356,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                     new double?[] {0d, 1d, 2d, 9d, 10d, 11d},
                     new[] {true, false, false, false, false, true});
 
-                text = "select * from pattern [a=SupportBean => b=" +
+                text = "select * from pattern [a=SupportBean -> b=" +
                        typeof(SupportBean).Name +
                        "(DoubleBoxed not in (a.DoubleBoxed:a.IntBoxed])]";
                 TryPattern(
@@ -1369,7 +1369,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                     new double?[] {0d, 1d, 2d, 9d, 10d, 11d},
                     new[] {true, true, false, false, false, true});
 
-                text = "select * from pattern [a=SupportBean => b=" +
+                text = "select * from pattern [a=SupportBean -> b=" +
                        typeof(SupportBean).Name +
                        "(b.DoubleBoxed not in (a.DoubleBoxed:a.IntBoxed))]";
                 TryPattern(
@@ -1382,7 +1382,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                     new double?[] {0d, 1d, 2d, 9d, 10d, 11d},
                     new[] {true, true, false, false, true, true});
 
-                text = "select * from pattern [a=SupportBean => b=" +
+                text = "select * from pattern [a=SupportBean -> b=" +
                        typeof(SupportBean).Name +
                        "(DoubleBoxed not in [a.DoubleBoxed:a.IntBoxed))]";
                 TryPattern(
@@ -1395,7 +1395,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                     new double?[] {0d, 1d, 2d, 9d, 10d, 11d},
                     new[] {true, false, false, false, true, true});
 
-                text = "select * from pattern [a=SupportBean => b=" +
+                text = "select * from pattern [a=SupportBean -> b=" +
                        typeof(SupportBean).Name +
                        "(DoubleBoxed not in (a.DoubleBoxed, a.IntBoxed, 9))]";
                 TryPattern(
@@ -1408,7 +1408,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                     new double?[] {0d, 1d, 2d, 9d, 10d, 11d},
                     new[] {true, false, true, false, false, true});
 
-                text = "select * from pattern [a=SupportBean => b=" +
+                text = "select * from pattern [a=SupportBean -> b=" +
                        typeof(SupportBean).Name +
                        "(DoubleBoxed in (a.DoubleBoxed, a.IntBoxed, 9))]";
                 TryPattern(
@@ -1421,7 +1421,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                     new double?[] {0d, 1d, 2d, 9d, 10d, 11d},
                     new[] {false, true, false, true, true, false});
 
-                text = "select * from pattern [a=SupportBean => b=" +
+                text = "select * from pattern [a=SupportBean -> b=" +
                        typeof(SupportBean).Name +
                        "(b.DoubleBoxed in (DoubleBoxed, a.IntBoxed, 9))]";
                 TryPattern(
@@ -1434,7 +1434,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                     new double?[] {0d, 1d, 2d, 9d, 10d, 11d},
                     new[] {true, true, true, true, true, true});
 
-                text = "select * from pattern [a=SupportBean => b=" +
+                text = "select * from pattern [a=SupportBean -> b=" +
                        typeof(SupportBean).Name +
                        "(DoubleBoxed not in (DoubleBoxed, a.IntBoxed, 9))]";
                 TryPattern(
@@ -1447,7 +1447,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                     new double?[] {0d, 1d, 2d, 9d, 10d, 11d},
                     new[] {false, false, false, false, false, false});
 
-                text = "select * from pattern [a=SupportBean => b=" +
+                text = "select * from pattern [a=SupportBean -> b=" +
                        typeof(SupportBean).Name +
                        "(DoubleBoxed = " +
                        typeof(SupportStaticMethodLib).FullName +
@@ -1462,7 +1462,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                     new double?[] {9d, 10d, 11d},
                     new[] {true, false, false});
 
-                text = "select * from pattern [a=SupportBean => b=" +
+                text = "select * from pattern [a=SupportBean -> b=" +
                        typeof(SupportBean).Name +
                        "(DoubleBoxed = " +
                        typeof(SupportStaticMethodLib).FullName +
@@ -1750,7 +1750,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
 
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
-                    "select * from pattern [a=SupportBean => b=" +
+                    "select * from pattern [a=SupportBean -> b=" +
                     typeof(SupportBean).Name +
                     "(DoubleBoxed not in (DoubleBoxed, x.IntBoxed, 9))]",
                     "Failed to valIdate filter expression 'DoubleBoxed not in (DoubleBoxed,x.i...(45 chars)': Failed to find a stream named 'x' (dId you mean 'b'?) [");
@@ -1758,7 +1758,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
                     "select * from pattern [a=SupportBean" +
-                    " => b=SupportBean(cluedo.IntPrimitive=a.IntPrimitive)" +
+                    " -> b=SupportBean(cluedo.IntPrimitive=a.IntPrimitive)" +
                     " => c=SupportBean" +
                     "]",
                     "Failed to valIdate filter expression 'cluedo.IntPrimitive=a.IntPrimitive': Failed to resolve property 'cluedo.IntPrimitive' to a stream or nested property in a stream [");

@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -17,6 +18,7 @@ using com.espertech.esper.common.@internal.epl.resultset.@select.core;
 using com.espertech.esper.common.@internal.epl.table.compiletime;
 using com.espertech.esper.common.@internal.epl.table.core;
 using com.espertech.esper.common.@internal.@event.core;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
@@ -73,9 +75,11 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
                 .MakeChild(typeof(EventBean), typeof(SelectEvalStreamWUnderlying), codegenClassScope)
                 .AddParam(typeof(IDictionary<object, object>), "props");
             var wrapperUndType = codegenClassScope.AddFieldUnshared(
-                true, typeof(EventType),
+                true,
+                typeof(EventType),
                 EventTypeUtility.ResolveTypeCodegen(
-                    wrapperEventType.UnderlyingEventType, EPStatementInitServicesConstants.REF));
+                    wrapperEventType.UnderlyingEventType,
+                    EPStatementInitServicesConstants.REF));
 
             var refEPS = exprSymbol.GetAddEPS(methodNode);
             var refIsNewData = exprSymbol.GetAddIsNewData(methodNode);
@@ -83,8 +87,8 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
 
             var block = methodNode.Block;
             if (singleStreamWrapper) {
-                block.DeclareVar(
-                        typeof(DecoratingEventBean), "wrapper",
+                block.DeclareVar<DecoratingEventBean>(
+                        "wrapper",
                         Cast(typeof(DecoratingEventBean), ArrayAtIndex(refEPS, Constant(0))))
                     .IfRefNotNull("wrapper")
                     .ExprDotMethod(props, "putAll", ExprDotMethod(Ref("wrapper"), "getDecoratingProperties"))
@@ -93,17 +97,22 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
 
             if (underlyingIsFragmentEvent) {
                 var fragment = ((EventTypeSPI) eventTypes[underlyingStreamNumber])
-                    .GetGetterSPI(unnamedStreams[0].StreamSelected.StreamName).EventBeanFragmentCodegen(
-                        Ref("eventBean"), methodNode, codegenClassScope);
-                block.DeclareVar(typeof(EventBean), "eventBean", ArrayAtIndex(refEPS, Constant(underlyingStreamNumber)))
-                    .DeclareVar(typeof(EventBean), "theEvent", Cast(typeof(EventBean), fragment));
+                    .GetGetterSPI(unnamedStreams[0].StreamSelected.StreamName)
+                    .EventBeanFragmentCodegen(
+                        Ref("eventBean"),
+                        methodNode,
+                        codegenClassScope);
+                block.DeclareVar<EventBean>("eventBean", ArrayAtIndex(refEPS, Constant(underlyingStreamNumber)))
+                    .DeclareVar<EventBean>("theEvent", Cast(typeof(EventBean), fragment));
             }
             else if (underlyingPropertyEventGetter != null) {
-                block.DeclareVar(typeof(EventBean), "theEvent", ConstantNull())
-                    .DeclareVar(
-                        typeof(object), "value",
+                block.DeclareVar<EventBean>("theEvent", ConstantNull())
+                    .DeclareVar<object>(
+                        "value",
                         underlyingPropertyEventGetter.EventBeanGetCodegen(
-                            ArrayAtIndex(refEPS, Constant(underlyingStreamNumber)), methodNode, codegenClassScope))
+                            ArrayAtIndex(refEPS, Constant(underlyingStreamNumber)),
+                            methodNode,
+                            codegenClassScope))
                     .IfRefNotNull("value")
                     .AssignRef(
                         "theEvent",
@@ -111,9 +120,9 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
                     .BlockEnd();
             }
             else if (underlyingExprForge != null) {
-                block.DeclareVar(typeof(EventBean), "theEvent", ConstantNull())
-                    .DeclareVar(
-                        typeof(object), "value",
+                block.DeclareVar<EventBean>("theEvent", ConstantNull())
+                    .DeclareVar<object>(
+                        "value",
                         underlyingExprForge.EvaluateCodegen(typeof(object), methodNode, exprSymbol, codegenClassScope))
                     .IfRefNotNull("value")
                     .AssignRef(
@@ -122,22 +131,33 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
                     .BlockEnd();
             }
             else {
-                block.DeclareVar(typeof(EventBean), "theEvent", ArrayAtIndex(refEPS, Constant(underlyingStreamNumber)));
+                block.DeclareVar<EventBean>("theEvent", ArrayAtIndex(refEPS, Constant(underlyingStreamNumber)));
                 if (tableMetadata != null) {
                     var eventToPublic = TableDeployTimeResolver.MakeTableEventToPublicField(
-                        tableMetadata, codegenClassScope, GetType());
+                        tableMetadata,
+                        codegenClassScope,
+                        GetType());
                     block.IfRefNotNull("theEvent")
                         .AssignRef(
                             "theEvent",
                             ExprDotMethod(
-                                eventToPublic, "convert", Ref("theEvent"), refEPS, refIsNewData, refExprEvalCtx))
+                                eventToPublic,
+                                "convert",
+                                Ref("theEvent"),
+                                refEPS,
+                                refIsNewData,
+                                refExprEvalCtx))
                         .BlockEnd();
                 }
             }
 
             block.MethodReturn(
                 ExprDotMethod(
-                    eventBeanFactory, "adapterForTypedWrapper", Ref("theEvent"), Ref("props"), resultEventType));
+                    eventBeanFactory,
+                    "adapterForTypedWrapper",
+                    Ref("theEvent"),
+                    Ref("props"),
+                    resultEventType));
             return LocalMethod(methodNode, props);
         }
     }

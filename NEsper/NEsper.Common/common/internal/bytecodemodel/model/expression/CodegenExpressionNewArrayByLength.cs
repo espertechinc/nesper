@@ -9,7 +9,9 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+
 using com.espertech.esper.common.@internal.bytecodemodel.core;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.util.CodegenClassUtil;
 
 namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
@@ -29,15 +31,14 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
 
         public void Render(
             StringBuilder builder,
-            IDictionary<Type, string> imports,
             bool isInnerClass)
         {
             int numDimensions = GetNumberOfDimensions(component);
             Type outermostType = GetComponentTypeOutermost(component);
             builder.Append("new ");
-            CodeGenerationHelper.AppendClassName(builder, outermostType, null, imports);
+            CodeGenerationHelper.AppendClassName(builder, outermostType);
             builder.Append("[");
-            expression.Render(builder, imports, isInnerClass);
+            expression.Render(builder, isInnerClass);
             builder.Append("]");
             for (int i = 0; i < numDimensions; i++) {
                 builder.Append("[]");

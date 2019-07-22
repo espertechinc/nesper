@@ -8,11 +8,13 @@
 
 using System;
 using System.Reflection;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.compat.logging;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.@event.bean.core
@@ -81,8 +83,12 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
 
         private void Handle(Exception e)
         {
-            var message = "Unexpected exception encountered invoking setter-method '" + writerMethod + "' on class '" +
-                          clazz.Name + "' : " + e.Message;
+            var message = "Unexpected exception encountered invoking setter-method '" +
+                          writerMethod +
+                          "' on class '" +
+                          clazz.Name +
+                          "' : " +
+                          e.Message;
             Log.Error(message, e);
         }
     }

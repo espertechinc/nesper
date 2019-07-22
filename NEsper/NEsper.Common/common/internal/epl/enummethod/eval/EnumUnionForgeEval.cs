@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -16,6 +17,7 @@ using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.enummethod.eval
@@ -37,8 +39,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             ICollection<T> other,
             ICollection<object> enumcoll)
         {
-            if (other == null || other.IsEmpty())
-            {
+            if (other == null || other.IsEmpty()) {
                 return enumcoll;
             }
 
@@ -79,22 +80,25 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
 
             CodegenBlock block = methodNode.Block;
             if (forge.scalar) {
-                block.DeclareVar(
-                    typeof(ICollection<object>), "other",
+                block.DeclareVar<ICollection<object>>(
+                    "other",
                     forge.evaluatorForge.EvaluateGetROCollectionScalarCodegen(methodNode, scope, codegenClassScope));
             }
             else {
-                block.DeclareVar(
-                    typeof(ICollection<object>), "other",
+                block.DeclareVar<ICollection<object>>(
+                    "other",
                     forge.evaluatorForge.EvaluateGetROCollectionEventsCodegen(methodNode, scope, codegenClassScope));
             }
 
             block.IfCondition(Or(EqualsNull(@Ref("other")), ExprDotMethod(@Ref("other"), "isEmpty")))
                 .BlockReturn(EnumForgeCodegenNames.REF_ENUMCOLL);
-            block.DeclareVar(
-                    typeof(List<object>), "result",
+            block.DeclareVar<List<object>>(
+                    "result",
                     NewInstance<List<object>>(
-                        Op(ExprDotMethod(EnumForgeCodegenNames.REF_ENUMCOLL, "size"), "+", ExprDotMethod(@Ref("other"), "size"))))
+                        Op(
+                            ExprDotMethod(EnumForgeCodegenNames.REF_ENUMCOLL, "size"),
+                            "+",
+                            ExprDotMethod(@Ref("other"), "size"))))
                 .Expression(ExprDotMethod(@Ref("result"), "addAll", EnumForgeCodegenNames.REF_ENUMCOLL))
                 .Expression(ExprDotMethod(@Ref("result"), "addAll", @Ref("other")))
                 .MethodReturn(@Ref("result"));

@@ -8,6 +8,7 @@
 
 using System.Collections.Generic;
 using System.Linq;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.context.util;
@@ -87,7 +88,11 @@ namespace com.espertech.esper.common.@internal.view.exttimedbatch
                     }
                     else {
                         var delta = timePeriodProvide.DeltaAddWReference(
-                            oldestTimestamp.Value, referenceTimestamp.Value, null, true, agentInstanceContext);
+                            oldestTimestamp.Value,
+                            referenceTimestamp.Value,
+                            null,
+                            true,
+                            agentInstanceContext);
                         referenceTimestamp = delta.LastReference;
                         if (timestamp - oldestTimestamp >= delta.Delta) {
                             if (batchNewData == null) {

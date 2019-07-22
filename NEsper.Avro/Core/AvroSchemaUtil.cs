@@ -27,18 +27,53 @@ namespace NEsper.Avro.Core
 {
     public class AvroSchemaUtil
     {
-        private static readonly Action<JArray, string> REQ_BOOLEAN = (t, name) => Required(t, name, "boolean");
-        private static readonly Action<JArray, string> OPT_BOOLEAN = (t, name) => Optional(t, name, "boolean");
-        private static readonly Action<JArray, string> REQ_INT = (t, name) => Required(t, name, "int");
-        private static readonly Action<JArray, string> OPT_INT = (t, name) => Optional(t, name, "int");
-        private static readonly Action<JArray, string> REQ_DOUBLE = (t, name) => Required(t, name, "double");
-        private static readonly Action<JArray, string> OPT_DOUBLE = (t, name) => Optional(t, name, "double");
-        private static readonly Action<JArray, string> REQ_FLOAT = (t, name) => Required(t, name, "float");
-        private static readonly Action<JArray, string> OPT_FLOAT = (t, name) => Optional(t, name, "float");
-        private static readonly Action<JArray, string> REQ_LONG = (t, name) => Required(t, name, "long");
-        private static readonly Action<JArray, string> OPT_LONG = (t, name) => Optional(t, name, "long");
-        private static readonly Action<JArray, string> REQ_STRING = (t, name) => Required(t, name, "string");
-        private static readonly Action<JArray, string> OPT_STRING = (t, name) => Optional(t, name, "string");
+        private static readonly Action<JArray, string> REQ_BOOLEAN = (
+            t,
+            name) => Required(t, name, "boolean");
+
+        private static readonly Action<JArray, string> OPT_BOOLEAN = (
+            t,
+            name) => Optional(t, name, "boolean");
+
+        private static readonly Action<JArray, string> REQ_INT = (
+            t,
+            name) => Required(t, name, "int");
+
+        private static readonly Action<JArray, string> OPT_INT = (
+            t,
+            name) => Optional(t, name, "int");
+
+        private static readonly Action<JArray, string> REQ_DOUBLE = (
+            t,
+            name) => Required(t, name, "double");
+
+        private static readonly Action<JArray, string> OPT_DOUBLE = (
+            t,
+            name) => Optional(t, name, "double");
+
+        private static readonly Action<JArray, string> REQ_FLOAT = (
+            t,
+            name) => Required(t, name, "float");
+
+        private static readonly Action<JArray, string> OPT_FLOAT = (
+            t,
+            name) => Optional(t, name, "float");
+
+        private static readonly Action<JArray, string> REQ_LONG = (
+            t,
+            name) => Required(t, name, "long");
+
+        private static readonly Action<JArray, string> OPT_LONG = (
+            t,
+            name) => Optional(t, name, "long");
+
+        private static readonly Action<JArray, string> REQ_STRING = (
+            t,
+            name) => Required(t, name, "string");
+
+        private static readonly Action<JArray, string> OPT_STRING = (
+            t,
+            name) => Optional(t, name, "string");
 
         private static readonly JObject ARRAY_OF_REQ_BOOLEAN = TypeBuilder.Array("boolean");
         private static readonly JObject ARRAY_OF_OPT_BOOLEAN = TypeBuilder.Array(new JArray("null", "boolean"));
@@ -67,13 +102,19 @@ namespace NEsper.Avro.Core
         }
 
 
-        internal static JArray Required(JArray array, string name, string type)
+        internal static JArray Required(
+            JArray array,
+            string name,
+            string type)
         {
             array.Add(TypeBuilder.Field(name, type));
             return array;
         }
 
-        internal static JArray Optional(JArray array, string name, string type)
+        internal static JArray Optional(
+            JArray array,
+            string name,
+            string type)
         {
             array.Add(TypeBuilder.Optional(name, type, null));
             return array;
@@ -81,40 +122,34 @@ namespace NEsper.Avro.Core
 
         internal static string ToSchemaStringSafe(Schema schema)
         {
-            try
-            {
+            try {
                 return schema.ToString();
             }
-            catch (Exception t)
-            {
+            catch (Exception t) {
                 return "[Invalid schema: " + t.GetType().FullName + ": " + t.Message + "]";
             }
         }
 
         public static Schema FindUnionRecordSchemaSingle(Schema schema)
         {
-            if (schema.Tag != Schema.Type.Union)
-            {
+            if (schema.Tag != Schema.Type.Union) {
                 return null;
             }
 
             Schema found = null;
 
             UnionSchema unionSchema = (UnionSchema) schema;
-            foreach (Schema member in unionSchema.Schemas)
-            {
-                if (member.Tag == Schema.Type.Record)
-                {
-                    if (found == null)
-                    {
+            foreach (Schema member in unionSchema.Schemas) {
+                if (member.Tag == Schema.Type.Record) {
+                    if (found == null) {
                         found = member;
                     }
-                    else
-                    {
+                    else {
                         return null;
                     }
                 }
             }
+
             return found;
         }
 
@@ -128,149 +163,139 @@ namespace NEsper.Avro.Core
             string statementName,
             TypeRepresentationMapper optionalMapper)
         {
-            if (propertyName.Contains("."))
-            {
+            if (propertyName.Contains(".")) {
                 throw new EPException(
-                    "Invalid property name as Avro does not allow dot '.' in field names (property '" + propertyName +
+                    "Invalid property name as Avro does not allow dot '.' in field names (property '" +
+                    propertyName +
                     "')");
             }
 
             Schema schema = GetAnnotationSchema(propertyName, annotations);
-            if (schema != null)
-            {
+            if (schema != null) {
                 assembler.Add(TypeBuilder.Field(propertyName, schema));
                 // assembler.Name(propertyName).Type(schema).NoDefault();
                 return;
             }
 
-            if (optionalMapper != null && propertyType is Type)
-            {
+            if (optionalMapper != null && propertyType is Type) {
                 var result = (Schema) optionalMapper.Map(
                     new TypeRepresentationMapperContext((Type) propertyType, propertyName, statementName));
-                if (result != null)
-                {
+                if (result != null) {
                     assembler.Add(TypeBuilder.Field(propertyName, result));
                     // assembler.Name(propertyName).Type(result).NoDefault();
                     return;
                 }
             }
 
-            if (propertyType == null)
-            {
+            if (propertyType == null) {
                 assembler.Add(TypeBuilder.Field(propertyName, TypeBuilder.NullType()));
                 // assembler.Name(propertyName).Type("null");
             }
-            else if (propertyType is string)
-            {
+            else if (propertyType is string) {
                 string propertyTypeName = propertyType.ToString();
                 bool isArray = EventTypeUtility.IsPropertyArray(propertyTypeName);
-                if (isArray)
-                {
+                if (isArray) {
                     propertyTypeName = EventTypeUtility.GetPropertyRemoveArray(propertyTypeName);
                 }
 
                 // Add EventType itself as a property
                 EventType eventType = eventTypeNameResolver.GetTypeByName(propertyTypeName);
-                if (!(eventType is AvroEventType))
-                {
+                if (!(eventType is AvroEventType)) {
                     throw new EPException(
-                        "Type definition encountered an unexpected property type name '"
-                        + propertyType + "' for property '" + propertyName +
+                        "Type definition encountered an unexpected property type name '" +
+                        propertyType +
+                        "' for property '" +
+                        propertyName +
                         "', expected the name of a previously-declared Avro type");
                 }
+
                 schema = ((AvroEventType) eventType).SchemaAvro;
 
-                if (!isArray)
-                {
+                if (!isArray) {
                     assembler.Add(TypeBuilder.Field(propertyName, schema));
                 }
-                else
-                {
+                else {
                     assembler.Add(TypeBuilder.Field(propertyName, TypeBuilder.Array(schema)));
                 }
             }
-            else if (propertyType is EventType)
-            {
+            else if (propertyType is EventType) {
                 var eventType = (EventType) propertyType;
                 CheckCompatibleType(eventType);
-                if (eventType is AvroEventType)
-                {
+                if (eventType is AvroEventType) {
                     schema = ((AvroEventType) eventType).SchemaAvro;
                     assembler.Add(TypeBuilder.Field(propertyName, schema));
                 }
-                else if (eventType is MapEventType)
-                {
+                else if (eventType is MapEventType) {
                     var mapEventType = (MapEventType) eventType;
                     var nestedSchema = AssembleNestedSchema(
-                        mapEventType, avroSettings, annotations, eventTypeNameResolver, statementName, optionalMapper);
+                        mapEventType,
+                        avroSettings,
+                        annotations,
+                        eventTypeNameResolver,
+                        statementName,
+                        optionalMapper);
                     assembler.Add(TypeBuilder.Field(propertyName, nestedSchema));
                 }
-                else
-                {
+                else {
                     throw new IllegalStateException("Unrecognized event type " + eventType);
                 }
             }
-            else if (propertyType is EventType[])
-            {
+            else if (propertyType is EventType[]) {
                 EventType eventType = ((EventType[]) propertyType)[0];
                 CheckCompatibleType(eventType);
-                if (eventType is AvroEventType)
-                {
+                if (eventType is AvroEventType) {
                     schema = ((AvroEventType) eventType).SchemaAvro;
                     assembler.Add(TypeBuilder.Field(propertyName, TypeBuilder.Array(schema)));
                 }
-                else if (eventType is MapEventType)
-                {
+                else if (eventType is MapEventType) {
                     var mapEventType = (MapEventType) eventType;
                     var nestedSchema = AssembleNestedSchema(
-                        mapEventType, avroSettings, annotations, eventTypeNameResolver, statementName, optionalMapper);
+                        mapEventType,
+                        avroSettings,
+                        annotations,
+                        eventTypeNameResolver,
+                        statementName,
+                        optionalMapper);
 
                     assembler.Add(TypeBuilder.Field(propertyName, TypeBuilder.Array(nestedSchema)));
                 }
-                else
-                {
+                else {
                     throw new IllegalStateException("Unrecognized event type " + eventType);
                 }
             }
-            else if (propertyType is Type)
-            {
+            else if (propertyType is Type) {
                 var propertyClass = (Type) propertyType;
                 var propertyClassBoxed = propertyClass.GetBoxedType();
                 bool nullable = propertyClass == propertyClassBoxed;
                 bool preferNonNull = avroSettings.IsEnableSchemaDefaultNonNull;
-                if (propertyClassBoxed == typeof(bool?))
-                {
+                if (propertyClassBoxed == typeof(bool?)) {
                     AssemblePrimitive(nullable, REQ_BOOLEAN, OPT_BOOLEAN, assembler, propertyName, preferNonNull);
                 }
-                else if (propertyClassBoxed == typeof(int?) || propertyClassBoxed == typeof(byte?))
-                {
+                else if (propertyClassBoxed == typeof(int?) || propertyClassBoxed == typeof(byte?)) {
                     AssemblePrimitive(nullable, REQ_INT, OPT_INT, assembler, propertyName, preferNonNull);
                 }
-                else if (propertyClassBoxed == typeof(long?))
-                {
+                else if (propertyClassBoxed == typeof(long?)) {
                     AssemblePrimitive(nullable, REQ_LONG, OPT_LONG, assembler, propertyName, preferNonNull);
                 }
-                else if (propertyClassBoxed == typeof(float?))
-                {
+                else if (propertyClassBoxed == typeof(float?)) {
                     AssemblePrimitive(nullable, REQ_FLOAT, OPT_FLOAT, assembler, propertyName, preferNonNull);
                 }
-                else if (propertyClassBoxed == typeof(double?))
-                {
+                else if (propertyClassBoxed == typeof(double?)) {
                     AssemblePrimitive(nullable, REQ_DOUBLE, OPT_DOUBLE, assembler, propertyName, preferNonNull);
                 }
-                else if (propertyClass == typeof(string))
-                {
-                    if (avroSettings.IsEnableNativeString)
-                    {
-                        if (preferNonNull)
-                        {
+                else if (propertyClass == typeof(string)) {
+                    if (avroSettings.IsEnableNativeString) {
+                        if (preferNonNull) {
                             assembler.Add(
-                                TypeBuilder.Field(propertyName,
-                                    TypeBuilder.Primitive("string",
-                                        TypeBuilder.Property(AvroConstant.PROP_STRING_KEY, AvroConstant.PROP_STRING_VALUE))));
+                                TypeBuilder.Field(
+                                    propertyName,
+                                    TypeBuilder.Primitive(
+                                        "string",
+                                        TypeBuilder.Property(
+                                            AvroConstant.PROP_STRING_KEY,
+                                            AvroConstant.PROP_STRING_VALUE))));
                         }
-                        else
-                        {
+                        else {
                             assembler.Add(
                                 TypeBuilder.Field(
                                     propertyName,
@@ -278,127 +303,153 @@ namespace NEsper.Avro.Core
                                         TypeBuilder.NullType(),
                                         TypeBuilder.StringType(
                                             TypeBuilder.Property(
-                                                AvroConstant.PROP_STRING_KEY, AvroConstant.PROP_STRING_VALUE)))));
+                                                AvroConstant.PROP_STRING_KEY,
+                                                AvroConstant.PROP_STRING_VALUE)))));
                         }
                     }
-                    else
-                    {
+                    else {
                         AssemblePrimitive(nullable, REQ_STRING, OPT_STRING, assembler, propertyName, preferNonNull);
                     }
                 }
-                else if (propertyClass == typeof(byte[]))
-                {
-                    if (preferNonNull)
-                    {
+                else if (propertyClass == typeof(byte[])) {
+                    if (preferNonNull) {
                         assembler.Add(TypeBuilder.RequiredBytes(propertyName));
                     }
-                    else
-                    {
-                        assembler.Add(TypeBuilder.Field(propertyName, TypeBuilder.Union(
-                            TypeBuilder.NullType(), TypeBuilder.BytesType())));
+                    else {
+                        assembler.Add(
+                            TypeBuilder.Field(
+                                propertyName,
+                                TypeBuilder.Union(
+                                    TypeBuilder.NullType(),
+                                    TypeBuilder.BytesType())));
                     }
                 }
-                else if (propertyClass.IsArray)
-                {
+                else if (propertyClass.IsArray) {
                     var componentType = propertyClass.GetElementType();
                     var componentTypeBoxed = componentType.GetBoxedType();
                     var nullableElements = componentType == componentTypeBoxed;
 
-                    if (componentTypeBoxed == typeof(bool?))
-                    {
+                    if (componentTypeBoxed == typeof(bool?)) {
                         AssembleArray(
-                            nullableElements, ARRAY_OF_REQ_BOOLEAN, ARRAY_OF_OPT_BOOLEAN, assembler, propertyName, preferNonNull);
+                            nullableElements,
+                            ARRAY_OF_REQ_BOOLEAN,
+                            ARRAY_OF_OPT_BOOLEAN,
+                            assembler,
+                            propertyName,
+                            preferNonNull);
                     }
-                    else if (componentTypeBoxed == typeof(int?))
-                    {
+                    else if (componentTypeBoxed == typeof(int?)) {
                         AssembleArray(
-                            nullableElements, ARRAY_OF_REQ_INT, ARRAY_OF_OPT_INT, assembler, propertyName, preferNonNull);
+                            nullableElements,
+                            ARRAY_OF_REQ_INT,
+                            ARRAY_OF_OPT_INT,
+                            assembler,
+                            propertyName,
+                            preferNonNull);
                     }
-                    else if (componentTypeBoxed == typeof(long?))
-                    {
+                    else if (componentTypeBoxed == typeof(long?)) {
                         AssembleArray(
-                            nullableElements, ARRAY_OF_REQ_LONG, ARRAY_OF_OPT_LONG, assembler, propertyName, preferNonNull);
+                            nullableElements,
+                            ARRAY_OF_REQ_LONG,
+                            ARRAY_OF_OPT_LONG,
+                            assembler,
+                            propertyName,
+                            preferNonNull);
                     }
-                    else if (componentTypeBoxed == typeof(float?))
-                    {
+                    else if (componentTypeBoxed == typeof(float?)) {
                         AssembleArray(
-                            nullableElements, ARRAY_OF_REQ_FLOAT, ARRAY_OF_OPT_FLOAT, assembler, propertyName, preferNonNull);
+                            nullableElements,
+                            ARRAY_OF_REQ_FLOAT,
+                            ARRAY_OF_OPT_FLOAT,
+                            assembler,
+                            propertyName,
+                            preferNonNull);
                     }
-                    else if (componentTypeBoxed == typeof(double?))
-                    {
+                    else if (componentTypeBoxed == typeof(double?)) {
                         AssembleArray(
-                            nullableElements, ARRAY_OF_REQ_DOUBLE, ARRAY_OF_OPT_DOUBLE, assembler, propertyName, preferNonNull);
+                            nullableElements,
+                            ARRAY_OF_REQ_DOUBLE,
+                            ARRAY_OF_OPT_DOUBLE,
+                            assembler,
+                            propertyName,
+                            preferNonNull);
                     }
-                    else if (componentTypeBoxed == typeof(byte?))
-                    {
+                    else if (componentTypeBoxed == typeof(byte?)) {
                         AssembleArray(
-                            nullableElements, ARRAY_OF_REQ_INT, ARRAY_OF_OPT_INT, assembler, propertyName, preferNonNull);
+                            nullableElements,
+                            ARRAY_OF_REQ_INT,
+                            ARRAY_OF_OPT_INT,
+                            assembler,
+                            propertyName,
+                            preferNonNull);
                     }
-                    else if (propertyClass == typeof(string[]))
-                    {
+                    else if (propertyClass == typeof(string[])) {
                         JObject array;
-                        if (avroSettings.IsEnableNativeString)
-                        {
-                            array = TypeBuilder.Array(TypeBuilder.StringType(TypeBuilder.Property(
-                                AvroConstant.PROP_STRING_KEY, AvroConstant.PROP_STRING_VALUE)));
+                        if (avroSettings.IsEnableNativeString) {
+                            array = TypeBuilder.Array(
+                                TypeBuilder.StringType(
+                                    TypeBuilder.Property(
+                                        AvroConstant.PROP_STRING_KEY,
+                                        AvroConstant.PROP_STRING_VALUE)));
                         }
-                        else
-                        {
+                        else {
                             array = TypeBuilder.Array(TypeBuilder.StringType());
                         }
 
-                        if (preferNonNull)
-                        {
+                        if (preferNonNull) {
                             assembler.Add(TypeBuilder.Field(propertyName, array));
                         }
-                        else
-                        {
-                            assembler.Add(TypeBuilder.Field(propertyName, TypeBuilder.Union(
-                                TypeBuilder.NullType(), array)));
+                        else {
+                            assembler.Add(
+                                TypeBuilder.Field(
+                                    propertyName,
+                                    TypeBuilder.Union(
+                                        TypeBuilder.NullType(),
+                                        array)));
                         }
                     }
-                    else if (propertyClass.CanUnwrap<object>())
-                    {
+                    else if (propertyClass.CanUnwrap<object>()) {
                     }
-                    else
-                    {
+                    else {
                         throw MakeEPException(propertyName, propertyType);
                     }
                 }
-                else if (propertyClass.IsGenericDictionary())
-                {
+                else if (propertyClass.IsGenericDictionary()) {
                     JToken value;
-                    if (avroSettings.IsEnableNativeString)
-                    {
+                    if (avroSettings.IsEnableNativeString) {
                         value = TypeBuilder.StringType(
                             TypeBuilder.Property(AvroConstant.PROP_STRING_KEY, AvroConstant.PROP_STRING_VALUE));
                     }
-                    else
-                    {
+                    else {
                         value = TypeBuilder.StringType();
                     }
 
-                    if (preferNonNull)
-                    {
+                    if (preferNonNull) {
                         assembler.Add(TypeBuilder.Field(propertyName, TypeBuilder.Map(value)));
                     }
-                    else
-                    {
-                        assembler.Add(TypeBuilder.Field(propertyName, TypeBuilder.Union(
-                            TypeBuilder.NullType(), TypeBuilder.Map(value))));
+                    else {
+                        assembler.Add(
+                            TypeBuilder.Field(
+                                propertyName,
+                                TypeBuilder.Union(
+                                    TypeBuilder.NullType(),
+                                    TypeBuilder.Map(value))));
                     }
                 }
-                else if (propertyClass.IsGenericCollection())
-                {
-                    AssembleFieldForCollection(propertyName, propertyType, assembler, avroSettings, propertyClass, preferNonNull);
+                else if (propertyClass.IsGenericCollection()) {
+                    AssembleFieldForCollection(
+                        propertyName,
+                        propertyType,
+                        assembler,
+                        avroSettings,
+                        propertyClass,
+                        preferNonNull);
                 }
-                else
-                {
+                else {
                     throw MakeEPException(propertyName, propertyType);
                 }
             }
-            else
-            {
+            else {
                 throw MakeEPException(propertyName, propertyType);
             }
         }
@@ -415,61 +466,86 @@ namespace NEsper.Avro.Core
             var componentTypeBoxed = componentType.GetBoxedType();
             var nullableElements = componentType == componentTypeBoxed;
 
-            if (componentTypeBoxed == typeof(bool?))
-            {
+            if (componentTypeBoxed == typeof(bool?)) {
                 AssembleArray(
-                    nullableElements, ARRAY_OF_REQ_BOOLEAN, ARRAY_OF_OPT_BOOLEAN, assembler, propertyName, preferNonNull);
+                    nullableElements,
+                    ARRAY_OF_REQ_BOOLEAN,
+                    ARRAY_OF_OPT_BOOLEAN,
+                    assembler,
+                    propertyName,
+                    preferNonNull);
             }
-            else if (componentTypeBoxed == typeof(int?))
-            {
+            else if (componentTypeBoxed == typeof(int?)) {
                 AssembleArray(
-                    nullableElements, ARRAY_OF_REQ_INT, ARRAY_OF_OPT_INT, assembler, propertyName, preferNonNull);
+                    nullableElements,
+                    ARRAY_OF_REQ_INT,
+                    ARRAY_OF_OPT_INT,
+                    assembler,
+                    propertyName,
+                    preferNonNull);
             }
-            else if (componentTypeBoxed == typeof(long?))
-            {
+            else if (componentTypeBoxed == typeof(long?)) {
                 AssembleArray(
-                    nullableElements, ARRAY_OF_REQ_LONG, ARRAY_OF_OPT_LONG, assembler, propertyName, preferNonNull);
+                    nullableElements,
+                    ARRAY_OF_REQ_LONG,
+                    ARRAY_OF_OPT_LONG,
+                    assembler,
+                    propertyName,
+                    preferNonNull);
             }
-            else if (componentTypeBoxed == typeof(float?))
-            {
+            else if (componentTypeBoxed == typeof(float?)) {
                 AssembleArray(
-                    nullableElements, ARRAY_OF_REQ_FLOAT, ARRAY_OF_OPT_FLOAT, assembler, propertyName, preferNonNull);
+                    nullableElements,
+                    ARRAY_OF_REQ_FLOAT,
+                    ARRAY_OF_OPT_FLOAT,
+                    assembler,
+                    propertyName,
+                    preferNonNull);
             }
-            else if (componentTypeBoxed == typeof(double?))
-            {
+            else if (componentTypeBoxed == typeof(double?)) {
                 AssembleArray(
-                    nullableElements, ARRAY_OF_REQ_DOUBLE, ARRAY_OF_OPT_DOUBLE, assembler, propertyName, preferNonNull);
+                    nullableElements,
+                    ARRAY_OF_REQ_DOUBLE,
+                    ARRAY_OF_OPT_DOUBLE,
+                    assembler,
+                    propertyName,
+                    preferNonNull);
             }
-            else if (componentTypeBoxed == typeof(byte?))
-            {
+            else if (componentTypeBoxed == typeof(byte?)) {
                 AssembleArray(
-                    nullableElements, ARRAY_OF_REQ_INT, ARRAY_OF_OPT_INT, assembler, propertyName, preferNonNull);
+                    nullableElements,
+                    ARRAY_OF_REQ_INT,
+                    ARRAY_OF_OPT_INT,
+                    assembler,
+                    propertyName,
+                    preferNonNull);
             }
-            else if (propertyClass == typeof(string[]))
-            {
+            else if (propertyClass == typeof(string[])) {
                 JObject array;
-                if (avroSettings.IsEnableNativeString)
-                {
-                    array = TypeBuilder.Array(TypeBuilder.StringType(TypeBuilder.Property(
-                        AvroConstant.PROP_STRING_KEY, AvroConstant.PROP_STRING_VALUE)));
+                if (avroSettings.IsEnableNativeString) {
+                    array = TypeBuilder.Array(
+                        TypeBuilder.StringType(
+                            TypeBuilder.Property(
+                                AvroConstant.PROP_STRING_KEY,
+                                AvroConstant.PROP_STRING_VALUE)));
                 }
-                else
-                {
+                else {
                     array = TypeBuilder.Array(TypeBuilder.StringType());
                 }
 
-                if (preferNonNull)
-                {
+                if (preferNonNull) {
                     assembler.Add(TypeBuilder.Field(propertyName, array));
                 }
-                else
-                {
-                    assembler.Add(TypeBuilder.Field(propertyName, TypeBuilder.Union(
-                        TypeBuilder.NullType(), array)));
+                else {
+                    assembler.Add(
+                        TypeBuilder.Field(
+                            propertyName,
+                            TypeBuilder.Union(
+                                TypeBuilder.NullType(),
+                                array)));
                 }
             }
-            else
-            {
+            else {
                 throw MakeEPException(propertyName, propertyType);
             }
         }
@@ -484,51 +560,55 @@ namespace NEsper.Avro.Core
         {
             var fields = new JArray();
 
-            foreach (var prop in mapEventType.Types)
-            {
+            foreach (var prop in mapEventType.Types) {
                 AssembleField(
-                    prop.Key, prop.Value, fields, annotations, avroSettings, eventTypeNameResolver, statementName,
+                    prop.Key,
+                    prop.Value,
+                    fields,
+                    annotations,
+                    avroSettings,
+                    eventTypeNameResolver,
+                    statementName,
                     optionalMapper);
             }
 
             return SchemaBuilder.Record(mapEventType.Name, fields);
         }
 
-        private static Schema GetAnnotationSchema(string propertyName, Attribute[] annotations)
+        private static Schema GetAnnotationSchema(
+            string propertyName,
+            Attribute[] annotations)
         {
-            if (annotations == null)
-            {
+            if (annotations == null) {
                 return null;
             }
-            foreach (Attribute annotation in annotations)
-            {
-                if (annotation is AvroSchemaFieldAttribute)
-                {
+
+            foreach (Attribute annotation in annotations) {
+                if (annotation is AvroSchemaFieldAttribute) {
                     var avroSchemaField = (AvroSchemaFieldAttribute) annotation;
-                    if (avroSchemaField.Name == propertyName)
-                    {
+                    if (avroSchemaField.Name == propertyName) {
                         string schema = avroSchemaField.Schema;
-                        try
-                        {
+                        try {
                             return Schema.Parse(schema);
                         }
-                        catch (Exception ex)
-                        {
+                        catch (Exception ex) {
                             throw new EPException(
-                                "Failed to parse Avro schema for property '" + propertyName + "': " + ex.Message, ex);
+                                "Failed to parse Avro schema for property '" + propertyName + "': " + ex.Message,
+                                ex);
                         }
                     }
                 }
             }
+
             return null;
         }
 
         private static void CheckCompatibleType(EventType eventType)
         {
-            if (!(eventType is AvroEventType) && !(eventType is MapEventType))
-            {
+            if (!(eventType is AvroEventType) && !(eventType is MapEventType)) {
                 throw new EPException(
-                    "Property type cannot be an event type with an underlying of type '" + eventType.UnderlyingType.Name +
+                    "Property type cannot be an event type with an underlying of type '" +
+                    eventType.UnderlyingType.Name +
                     "'");
             }
         }
@@ -541,18 +621,14 @@ namespace NEsper.Avro.Core
             string propertyName,
             bool preferNonNull)
         {
-            if (preferNonNull)
-            {
+            if (preferNonNull) {
                 reqAssemble.Invoke(assembler, propertyName);
             }
-            else
-            {
-                if (nullable)
-                {
+            else {
+                if (nullable) {
                     optAssemble.Invoke(assembler, propertyName);
                 }
-                else
-                {
+                else {
                     reqAssemble.Invoke(assembler, propertyName);
                 }
             }
@@ -566,27 +642,21 @@ namespace NEsper.Avro.Core
             string propertyName,
             bool preferNonNull)
         {
-            if (preferNonNull)
-            {
-                if (!nullableElements)
-                {
+            if (preferNonNull) {
+                if (!nullableElements) {
                     fields.Add(TypeBuilder.Field(propertyName, arrayOfReq));
                 }
-                else
-                {
+                else {
                     fields.Add(TypeBuilder.Field(propertyName, arrayOfOpt));
                 }
             }
-            else
-            {
-                if (!nullableElements)
-                {
+            else {
+                if (!nullableElements) {
                     // Schema union = SchemaBuilder.Union().NullType().And().Type(arrayOfReq).EndUnion();
                     // assembler.Name(propertyName).Type(union).NoDefault();
                     fields.Add(TypeBuilder.Union(TypeBuilder.NullType(), arrayOfReq));
                 }
-                else
-                {
+                else {
                     // Schema union = SchemaBuilder.Union().NullType().And().Type(arrayOfOpt).EndUnion();
                     // assembler.Name(propertyName).Type(union).NoDefault();
                     fields.Add(TypeBuilder.Union(TypeBuilder.NullType(), arrayOfOpt));
@@ -594,11 +664,16 @@ namespace NEsper.Avro.Core
             }
         }
 
-        private static EPException MakeEPException(string propertyName, object propertyType)
+        private static EPException MakeEPException(
+            string propertyName,
+            object propertyType)
         {
             return
                 new EPException(
-                    "Property '" + propertyName + "' type '" + propertyType +
+                    "Property '" +
+                    propertyName +
+                    "' type '" +
+                    propertyType +
                     "' does not have a mapping to an Avro type");
         }
     }

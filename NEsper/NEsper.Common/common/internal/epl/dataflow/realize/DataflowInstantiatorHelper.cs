@@ -8,6 +8,7 @@
 
 using System.Collections.Generic;
 using System.Reflection;
+
 using com.espertech.esper.common.client.dataflow.annotations;
 using com.espertech.esper.common.client.dataflow.core;
 using com.espertech.esper.common.@internal.context.aifactory.createdataflow;
@@ -53,15 +54,28 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.realize
                 var producingOp = operators.Get(producerOpNum);
                 var numOutputStreams = operatorMetadata.Get(producerOpNum).NumOutputPorts;
                 var targets = GetOperatorConsumersPerStream(
-                    numOutputStreams, producerOpNum, operators, operatorMetadata, bindings);
+                    numOutputStreams,
+                    producerOpNum,
+                    operators,
+                    operatorMetadata,
+                    bindings);
 
                 var runtimeContext = GenerateRuntimeContext(
-                    agentInstanceContext, dataflow, options.DataFlowInstanceId, producerOpNum, operatorPrettyPrint,
-                    dataFlowSignalManager, targets, options);
+                    agentInstanceContext,
+                    dataflow,
+                    options.DataFlowInstanceId,
+                    producerOpNum,
+                    operatorPrettyPrint,
+                    dataFlowSignalManager,
+                    targets,
+                    options);
 
                 if (options.IsOperatorStatistics) {
                     runtimeContext = new EPDataFlowEmitterWrapperWStatistics(
-                        runtimeContext, producerOpNum, statisticsProvider, options.IsCpuStatistics);
+                        runtimeContext,
+                        producerOpNum,
+                        statisticsProvider,
+                        options.IsCpuStatistics);
                 }
 
                 TypeHelper.SetFieldForAnnotation(producingOp, typeof(DataFlowContextAttribute), runtimeContext);
@@ -94,7 +108,8 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.realize
                     }
 
                     dataFlowSignalManager.AddSignalListener(
-                        producerOpNum, new ProxyDataFlowSignalListener {
+                        producerOpNum,
+                        new ProxyDataFlowSignalListener {
                             ProcProcessSignal = signal => context.SubmitSignal(signal)
                         });
                 }
@@ -150,7 +165,9 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.realize
             if (consumingSignalBindingDesc.BindingType is LogicalChannelBindingTypePassAlongWStream) {
                 var streamInfo = (LogicalChannelBindingTypePassAlongWStream) consumingSignalBindingDesc.BindingType;
                 return new SignalHandlerDefaultWInvokeStream(
-                    target, consumingSignalBindingDesc.Method, streamInfo.StreamNum);
+                    target,
+                    consumingSignalBindingDesc.Method,
+                    streamInfo.StreamNum);
             }
 
             throw new IllegalStateException("Unrecognized signal binding: " + consumingSignalBindingDesc.BindingType);
@@ -168,32 +185,53 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.realize
             ImportService importService)
         {
             var signalHandler = GetSignalHandler(
-                producerOpNum, target.Target, target.Binding.ConsumingSignalBindingDesc, importService);
+                producerOpNum,
+                target.Target,
+                target.Binding.ConsumingSignalBindingDesc,
+                importService);
 
             var receivingOpNum = target.Binding.LogicalChannel.ConsumingOpNum;
             var receivingOpPretty = target.Binding.LogicalChannel.ConsumingOpPrettyPrint;
             var receivingOpName = target.Binding.LogicalChannel.ConsumingOpName;
             var exceptionHandler = new EPDataFlowEmitterExceptionHandler(
-                agentInstanceContext, dataflowName, instanceId, receivingOpName, receivingOpNum, receivingOpPretty,
+                agentInstanceContext,
+                dataflowName,
+                instanceId,
+                receivingOpName,
+                receivingOpNum,
+                receivingOpPretty,
                 optionalExceptionHandler);
 
             var bindingType = target.Binding.ConsumingBindingDesc.BindingType;
             if (bindingType is LogicalChannelBindingTypePassAlong) {
                 return new EPDataFlowEmitter1Stream1TargetPassAlong(
-                    producerOpNum, dataFlowSignalManager, signalHandler, exceptionHandler, target,
+                    producerOpNum,
+                    dataFlowSignalManager,
+                    signalHandler,
+                    exceptionHandler,
+                    target,
                     importService);
             }
 
             if (bindingType is LogicalChannelBindingTypePassAlongWStream) {
                 var type = (LogicalChannelBindingTypePassAlongWStream) bindingType;
                 return new EPDataFlowEmitter1Stream1TargetPassAlongWStream(
-                    producerOpNum, dataFlowSignalManager, signalHandler, exceptionHandler, target, type.StreamNum,
+                    producerOpNum,
+                    dataFlowSignalManager,
+                    signalHandler,
+                    exceptionHandler,
+                    target,
+                    type.StreamNum,
                     importService);
             }
 
             if (bindingType is LogicalChannelBindingTypeUnwind) {
                 return new EPDataFlowEmitter1Stream1TargetUnwind(
-                    producerOpNum, dataFlowSignalManager, signalHandler, exceptionHandler, target,
+                    producerOpNum,
+                    dataFlowSignalManager,
+                    signalHandler,
+                    exceptionHandler,
+                    target,
                     importService);
             }
 
@@ -226,15 +264,29 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.realize
                 if (targets.Count == 1) {
                     var target = targets[0];
                     return GetSubmitHandler(
-                        agentInstanceContext, dataflow.DataflowName, instanceId, producerOpNum, operatorPrettyPrint,
-                        dataFlowSignalManager, target, options.ExceptionHandler, classpathImportService);
+                        agentInstanceContext,
+                        dataflow.DataflowName,
+                        instanceId,
+                        producerOpNum,
+                        operatorPrettyPrint,
+                        dataFlowSignalManager,
+                        target,
+                        options.ExceptionHandler,
+                        classpathImportService);
                 }
 
                 var handlers = new SubmitHandler[targets.Count];
                 for (var i = 0; i < handlers.Length; i++) {
                     handlers[i] = GetSubmitHandler(
-                        agentInstanceContext, dataflowName, instanceId, producerOpNum, operatorPrettyPrint,
-                        dataFlowSignalManager, targets[i], options.ExceptionHandler, classpathImportService);
+                        agentInstanceContext,
+                        dataflowName,
+                        instanceId,
+                        producerOpNum,
+                        operatorPrettyPrint,
+                        dataFlowSignalManager,
+                        targets[i],
+                        options.ExceptionHandler,
+                        classpathImportService);
                 }
 
                 return new EPDataFlowEmitter1StreamNTarget(producerOpNum, dataFlowSignalManager, handlers);
@@ -247,8 +299,14 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.realize
                 handlersPerStream[streamNum] = handlers;
                 for (var i = 0; i < handlers.Length; i++) {
                     handlers[i] = GetSubmitHandler(
-                        agentInstanceContext, dataflowName, instanceId, producerOpNum, operatorPrettyPrint,
-                        dataFlowSignalManager, targetsPerStream[streamNum][i], options.ExceptionHandler,
+                        agentInstanceContext,
+                        dataflowName,
+                        instanceId,
+                        producerOpNum,
+                        operatorPrettyPrint,
+                        dataFlowSignalManager,
+                        targetsPerStream[streamNum][i],
+                        options.ExceptionHandler,
                         classpathImportService);
                 }
             }

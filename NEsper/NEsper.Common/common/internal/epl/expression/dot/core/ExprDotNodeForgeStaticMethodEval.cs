@@ -66,7 +66,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
                     _forge.OptionalStatementName,
                     _forge.StaticMethod,
                     _forge.ClassOrPropertyName,
-                    args, e, _forge.IsRethrowExceptions);
+                    args,
+                    e,
+                    _forge.IsRethrowExceptions);
             }
 
             return null;
@@ -106,7 +108,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
             var returnType = forge.StaticMethod.ReturnType;
 
             var methodNode = codegenMethodScope.MakeChild(
-                forge.EvaluationType, typeof(ExprDotNodeForgeStaticMethodEval), codegenClassScope);
+                forge.EvaluationType,
+                typeof(ExprDotNodeForgeStaticMethodEval),
+                codegenClassScope);
 
             var block = methodNode.Block;
 
@@ -123,13 +127,20 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
 
             // generate args
             var args = AllArgumentExpressions(
-                forge.ChildForges, forge.StaticMethod, methodNode, exprSymbol, codegenClassScope);
+                forge.ChildForges,
+                forge.StaticMethod,
+                methodNode,
+                exprSymbol,
+                codegenClassScope);
             AppendArgExpressions(args, methodNode.Block);
 
             // try block
             var tryBlock = block.TryCatch();
             var invoke = CodegenInvokeExpression(
-                forge.TargetObject, forge.StaticMethod, args, codegenClassScope);
+                forge.TargetObject,
+                forge.StaticMethod,
+                args,
+                codegenClassScope);
             if (returnType == typeof(void)) {
                 tryBlock.Expression(invoke);
                 if (forge.IsConstantParameters) {
@@ -150,7 +161,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
 
                     tryBlock.Apply(
                         InstrumentationCode.Instblock(
-                            codegenClassScope, "qExprDotChain", typeInformation, Ref("result"), Constant(0)));
+                            codegenClassScope,
+                            "qExprDotChain",
+                            typeInformation,
+                            Ref("result"),
+                            Constant(0)));
                     if (forge.IsConstantParameters) {
                         tryBlock.AssignRef(cachedResultMember, Ref("result"));
                         tryBlock.AssignRef(isCachedMember, ConstantTrue());
@@ -176,13 +191,22 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
 
                     tryBlock.Apply(
                             InstrumentationCode.Instblock(
-                                codegenClassScope, "qExprDotChain", typeInformation, Ref("result"),
+                                codegenClassScope,
+                                "qExprDotChain",
+                                typeInformation,
+                                Ref("result"),
                                 Constant(forge.ChainForges.Length)))
                         .DeclareVar(
-                            forge.EvaluationType, "chain",
+                            forge.EvaluationType,
+                            "chain",
                             ExprDotNodeUtility.EvaluateChainCodegen(
-                                methodNode, exprSymbol, codegenClassScope, Ref("result"), returnType,
-                                forge.ChainForges, forge.ResultWrapLambda));
+                                methodNode,
+                                exprSymbol,
+                                codegenClassScope,
+                                Ref("result"),
+                                returnType,
+                                forge.ChainForges,
+                                forge.ResultWrapLambda));
                     if (forge.IsConstantParameters) {
                         tryBlock.AssignRef(cachedResultMember, Ref("chain"));
                         tryBlock.AssignRef(isCachedMember, ConstantTrue());
@@ -195,8 +219,12 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
 
             // exception handling
             AppendCatch(
-                tryBlock, forge.StaticMethod, forge.OptionalStatementName, forge.ClassOrPropertyName,
-                forge.IsRethrowExceptions, args);
+                tryBlock,
+                forge.StaticMethod,
+                forge.OptionalStatementName,
+                forge.ClassOrPropertyName,
+                forge.IsRethrowExceptions,
+                args);
 
             // end method
             if (returnType == typeof(void)) {
@@ -217,30 +245,47 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
         {
             var exprSymbol = new ExprForgeCodegenSymbol(true, null);
             var methodNode = codegenMethodScope.MakeChildWithScope(
-                    forge.EvaluationType, typeof(ExprDotNodeForgeStaticMethodEval), exprSymbol, codegenClassScope)
+                    forge.EvaluationType,
+                    typeof(ExprDotNodeForgeStaticMethodEval),
+                    exprSymbol,
+                    codegenClassScope)
                 .AddParam(ExprForgeCodegenNames.PARAMS);
 
             var args = AllArgumentExpressions(
-                forge.ChildForges, forge.StaticMethod, methodNode, exprSymbol, codegenClassScope);
+                forge.ChildForges,
+                forge.StaticMethod,
+                methodNode,
+                exprSymbol,
+                codegenClassScope);
             exprSymbol.DerivedSymbolsCodegen(methodNode, methodNode.Block, codegenClassScope);
             AppendArgExpressions(args, methodNode.Block);
 
             // try block
             var tryBlock = methodNode.Block.TryCatch();
             var invoke = CodegenInvokeExpression(
-                forge.TargetObject, forge.StaticMethod, args, codegenClassScope);
+                forge.TargetObject,
+                forge.StaticMethod,
+                args,
+                codegenClassScope);
             tryBlock.BlockReturn(invoke);
 
             // exception handling
             AppendCatch(
-                tryBlock, forge.StaticMethod, forge.OptionalStatementName, forge.ClassOrPropertyName,
-                forge.IsRethrowExceptions, args);
+                tryBlock,
+                forge.StaticMethod,
+                forge.OptionalStatementName,
+                forge.ClassOrPropertyName,
+                forge.IsRethrowExceptions,
+                args);
 
             // end method
             methodNode.Block.MethodReturn(ConstantNull());
 
             return LocalMethod(
-                methodNode, NewArrayWithInit(typeof(EventBean), beanExpression), ConstantTrue(), ConstantNull());
+                methodNode,
+                NewArrayWithInit(typeof(EventBean), beanExpression),
+                ConstantTrue(),
+                ConstantNull());
         }
 
         /// <summary>
@@ -264,7 +309,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
                 ? ((TargetException) thrown).InnerException
                 : thrown;
             var message = TypeHelper.GetMessageInvocationTarget(
-                optionalStatementName, method, classOrPropertyName, args, indication);
+                optionalStatementName,
+                method,
+                classOrPropertyName,
+                args,
+                indication);
             Log.Error(message, indication);
             if (rethrow) {
                 throw new EPException(message, indication);

@@ -116,19 +116,19 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 testCase.Add("B3");
                 testCaseList.AddTest(testCase);
 
-                testCase = new EventExpressionCase("timer:interval(3.999 second) => b=SupportBean_B");
+                testCase = new EventExpressionCase("timer:interval(3.999 second) -> b=SupportBean_B");
                 testCase.Add("B2", "b", events.GetEvent("B2"));
                 testCaseList.AddTest(testCase);
 
-                testCase = new EventExpressionCase("timer:interval(4 sec) => b=SupportBean_B");
+                testCase = new EventExpressionCase("timer:interval(4 sec) -> b=SupportBean_B");
                 testCase.Add("B2", "b", events.GetEvent("B2"));
                 testCaseList.AddTest(testCase);
 
-                testCase = new EventExpressionCase("timer:interval(4.001 sec) => b=SupportBean_B");
+                testCase = new EventExpressionCase("timer:interval(4.001 sec) -> b=SupportBean_B");
                 testCase.Add("B3", "b", events.GetEvent("B3"));
                 testCaseList.AddTest(testCase);
 
-                testCase = new EventExpressionCase("timer:interval(0) => b=SupportBean_B");
+                testCase = new EventExpressionCase("timer:interval(0) -> b=SupportBean_B");
                 testCase.Add("B1", "b", events.GetEvent("B1"));
                 testCaseList.AddTest(testCase);
 
@@ -314,12 +314,12 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 SendTimer(11999, env);
                 Assert.IsFalse(env.Listener("s0").IsInvoked);
                 SendTimer(12000, env);
-                Assert.AreEqual("E2", env.Listener("s0").AssertOneGetNewAndReset().Get("id"));
+                Assert.AreEqual("E2", env.Listener("s0").AssertOneGetNewAndReset().Get("Id"));
 
                 SendTimer(12999, env);
                 Assert.IsFalse(env.Listener("s0").IsInvoked);
                 SendTimer(13000, env);
-                Assert.AreEqual("E1", env.Listener("s0").AssertOneGetNewAndReset().Get("id"));
+                Assert.AreEqual("E1", env.Listener("s0").AssertOneGetNewAndReset().Get("Id"));
 
                 env.UndeployAll();
             }

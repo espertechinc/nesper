@@ -11,6 +11,7 @@ using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.epl.agg.core;
 using com.espertech.esper.common.@internal.rettype;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.table.compiletime
@@ -54,17 +55,22 @@ namespace com.espertech.esper.common.@internal.epl.table.compiletime
             CodegenClassScope classScope)
         {
             var method = parent.MakeChild(typeof(TableMetadataColumnAggregation), GetType(), classScope);
-            method.Block.DeclareVar(
-                typeof(TableMetadataColumnAggregation), "col", NewInstance(typeof(TableMetadataColumnAggregation)));
+            method.Block.DeclareVar<TableMetadataColumnAggregation>(
+                "col",
+                NewInstance(typeof(TableMetadataColumnAggregation)));
 
             base.MakeSettersInline(Ref("col"), method.Block);
             method.Block
                 .SetProperty(Ref("col"), "Column", Constant(Column))
-                .SetProperty(Ref("col"), "AggregationPortableValidation",
+                .SetProperty(
+                    Ref("col"),
+                    "AggregationPortableValidation",
                     AggregationPortableValidation.Make(method, symbols, classScope))
                 .SetProperty(Ref("col"), "AggregationExpression", Constant(AggregationExpression))
                 .SetProperty(Ref("col"), "MethodAgg", Constant(IsMethodAgg))
-                .SetProperty(Ref("col"), "OptionalEnumerationType",
+                .SetProperty(
+                    Ref("col"),
+                    "OptionalEnumerationType",
                     OptionalEnumerationType == null
                         ? ConstantNull()
                         : OptionalEnumerationType.Codegen(method, classScope, symbols.GetAddInitSvc(method)))

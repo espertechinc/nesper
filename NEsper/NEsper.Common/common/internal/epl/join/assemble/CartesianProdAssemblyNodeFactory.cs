@@ -10,6 +10,7 @@ using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.util;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.join.assemble
@@ -35,7 +36,8 @@ namespace com.espertech.esper.common.@internal.epl.join.assemble
             int numStreams,
             bool allSubStreamsOptional)
             : base(
-                streamNum, numStreams)
+                streamNum,
+                numStreams)
         {
             childStreamIndex = new int[numStreams];
             this.allSubStreamsOptional = allSubStreamsOptional;
@@ -63,7 +65,8 @@ namespace com.espertech.esper.common.@internal.epl.join.assemble
             CodegenClassScope classScope)
         {
             return NewInstance<CartesianProdAssemblyNodeFactory>(
-                Constant(streamNum), Constant(numStreams),
+                Constant(streamNum),
+                Constant(numStreams),
                 Constant(allSubStreamsOptional));
         }
     }

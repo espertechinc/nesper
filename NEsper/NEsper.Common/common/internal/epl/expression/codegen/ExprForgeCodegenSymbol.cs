@@ -8,11 +8,13 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.compat.collections;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.expression.codegen
@@ -129,17 +131,21 @@ namespace com.espertech.esper.common.@internal.epl.expression.codegen
 
                 if (!underlying.Value.IsOptionalEvent) {
                     processBlock.DeclareVar(
-                        underlyingType, name, Cast(underlyingType, ExprDotUnderlying(arrayAtIndex)));
+                        underlyingType,
+                        name,
+                        Cast(underlyingType, ExprDotUnderlying(arrayAtIndex)));
                 }
                 else {
                     var methodNode = parent.MakeChild(underlyingType, typeof(ExprForgeCodegenSymbol), codegenClassScope)
                         .AddParam(typeof(EventBean[]), ExprForgeCodegenNames.NAME_EPS);
                     methodNode.Block
-                        .DeclareVar(typeof(EventBean), "event", arrayAtIndex)
+                        .DeclareVar<EventBean>("event", arrayAtIndex)
                         .IfRefNullReturnNull("event")
                         .MethodReturn(Cast(underlyingType, ExprDotUnderlying(Ref("event"))));
                     processBlock.DeclareVar(
-                        underlyingType, name, LocalMethod(methodNode, ExprForgeCodegenNames.REF_EPS));
+                        underlyingType,
+                        name,
+                        LocalMethod(methodNode, ExprForgeCodegenNames.REF_EPS));
                 }
             }
         }

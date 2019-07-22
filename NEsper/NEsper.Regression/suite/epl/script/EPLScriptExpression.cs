@@ -80,7 +80,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.script
                 .Get("c0");
             EPAssertionUtil.AssertPropsPerRow(
                 coll.ToArray(),
-                "id".SplitCsv(),
+                "Id".SplitCsv(),
                 new[] {new object[] {"id1"}, new object[] {"id3"}});
 
             env.UndeployModuleContaining("s0");

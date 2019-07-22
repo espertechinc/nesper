@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -15,6 +16,7 @@ using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.epl.index.@base;
 using com.espertech.esper.common.@internal.epl.@join.queryplan;
 using com.espertech.esper.common.@internal.@event.core;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.index.sorted
@@ -58,7 +60,12 @@ namespace com.espertech.esper.common.@internal.epl.index.sorted
             var propertyType = eventType.GetPropertyType(indexedProp);
             var getterSPI = ((EventTypeSPI) eventType).GetGetterSPI(indexedProp);
             var getter = EventTypeUtility.CodegenGetterWCoerce(
-                getterSPI, propertyType, coercionDesc.CoercionTypes[0], method, GetType(), classScope);
+                getterSPI,
+                propertyType,
+                coercionDesc.CoercionTypes[0],
+                method,
+                GetType(),
+                classScope);
             @params.Add(getter);
             return @params;
         }
@@ -66,8 +73,10 @@ namespace com.espertech.esper.common.@internal.epl.index.sorted
         public override string ToQueryPlan()
         {
             return GetType().Name +
-                   " streamNum=" + indexedStreamNum +
-                   " propertyName=" + indexedProp;
+                   " streamNum=" +
+                   indexedStreamNum +
+                   " propertyName=" +
+                   indexedProp;
         }
     }
 } // end of namespace

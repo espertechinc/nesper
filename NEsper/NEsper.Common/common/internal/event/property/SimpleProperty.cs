@@ -9,6 +9,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.@event.arr;
 using com.espertech.esper.common.@internal.@event.bean.core;
@@ -117,8 +118,11 @@ namespace com.espertech.esper.common.@internal.@event.property
                 return TypeHelper.GetArrayType(eventType[0].UnderlyingType);
             }
 
-            var message = "Nestable map type configuration encountered an unexpected value type of '"
-                          + def.GetType() + "' for property '" + PropertyNameAtomic + "', expected Map or Class";
+            var message = "Nestable map type configuration encountered an unexpected value type of '" +
+                          def.GetType() +
+                          "' for property '" +
+                          PropertyNameAtomic +
+                          "', expected Map or Class";
             throw new PropertyAccessException(message);
         }
 
@@ -166,7 +170,9 @@ namespace com.espertech.esper.common.@internal.@event.property
 
             foreach (SchemaElementComplex complex in complexProperty.ComplexElements) {
                 var complexFragmentFactory = new FragmentFactoryDOMGetter(
-                    eventBeanTypedEventFactory, xmlEventType, propertyExpression);
+                    eventBeanTypedEventFactory,
+                    xmlEventType,
+                    propertyExpression);
                 if (complex.Name.Equals(PropertyNameAtomic)) {
                     return new DOMComplexElementGetter(PropertyNameAtomic, complexFragmentFactory, complex.IsArray);
                 }

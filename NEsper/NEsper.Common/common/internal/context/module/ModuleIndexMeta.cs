@@ -8,8 +8,10 @@
 
 using System.Collections.Generic;
 using System.Linq;
+
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.compat.collections;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.context.module
@@ -60,8 +62,11 @@ namespace com.espertech.esper.common.@internal.context.module
         private CodegenExpression Make()
         {
             return NewInstance<ModuleIndexMeta>(
-                Constant(IsNamedWindow), Constant(InfraName), Constant(InfraModuleName),
-                Constant(IndexName), Constant(IndexModuleName));
+                Constant(IsNamedWindow),
+                Constant(InfraName),
+                Constant(InfraModuleName),
+                Constant(IndexName),
+                Constant(IndexModuleName));
         }
 
         public static ModuleIndexMeta[] ToArray(ISet<ModuleIndexMeta> moduleIndexes)

@@ -9,6 +9,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -17,6 +18,7 @@ using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.@join.querygraph;
 using com.espertech.esper.compat.collections;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.join.queryplan
@@ -92,7 +94,13 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplan
             @params.Add(Constant(indexedStream));
             @params.Add(
                 CodegenMakeableUtil.MakeArray(
-                    "reqIdxKeys", typeof(TableLookupIndexReqKey), IndexNum, GetType(), method, symbols, classScope));
+                    "reqIdxKeys",
+                    typeof(TableLookupIndexReqKey),
+                    IndexNum,
+                    GetType(),
+                    method,
+                    symbols,
+                    classScope));
             @params.AddAll(AdditionalParams(method, symbols, classScope));
             method.Block
                 .DeclareVar(TypeOfPlanFactory(), "plan", NewInstance(TypeOfPlanFactory(), @params.ToArray()));
@@ -104,10 +112,17 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplan
                 var ranges = keyDesc.Ranges.ToArray();
                 var rangeResults = QueryGraphValueEntryRangeForge.GetRangeResultTypes(ranges);
                 method.Block
-                    .SetProperty(Ref("plan"), "VirtualDWHashEvals",
+                    .SetProperty(
+                        Ref("plan"),
+                        "VirtualDWHashEvals",
                         ExprNodeUtilityCodegen.CodegenEvaluators(hashes, method, GetType(), classScope))
-                    .SetProperty(Ref("plan"), "VirtualDWHashTypes", Constant(ExprNodeUtilityQuery.GetExprResultTypes(hashes)))
-                    .SetProperty(Ref("plan"), "VirtualDWRangeEvals",
+                    .SetProperty(
+                        Ref("plan"),
+                        "VirtualDWHashTypes",
+                        Constant(ExprNodeUtilityQuery.GetExprResultTypes(hashes)))
+                    .SetProperty(
+                        Ref("plan"),
+                        "VirtualDWRangeEvals",
                         QueryGraphValueEntryRangeForge.MakeArray(ranges, method, symbols, classScope))
                     .SetProperty(Ref("plan"), "VirtualDWRangeTypes", Constant(rangeResults));
             }
@@ -125,9 +140,12 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplan
 
         public override string ToString()
         {
-            return "lookupStream=" + lookupStream +
-                   " indexedStream=" + indexedStream +
-                   " indexNum=" + IndexNum.RenderAny();
+            return "lookupStream=" +
+                   lookupStream +
+                   " indexedStream=" +
+                   indexedStream +
+                   " indexNum=" +
+                   IndexNum.RenderAny();
         }
     }
 } // end of namespace

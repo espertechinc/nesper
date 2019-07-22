@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Threading;
+
 using com.espertech.esper.collection;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.dataflow.core;
@@ -76,7 +77,11 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.core
             get => _state;
             set {
                 _agentInstanceContext.AuditProvider.DataflowTransition(
-                    _dataflowDesc.DataflowName, InstanceId, _state, value, _agentInstanceContext);
+                    _dataflowDesc.DataflowName,
+                    InstanceId,
+                    _state,
+                    value,
+                    _agentInstanceContext);
                 _state = value;
             }
         }
@@ -91,7 +96,8 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.core
 
                 if (_sourceRunnables.Count != 1) {
                     throw new UnsupportedOperationException(
-                        "The data flow '" + dataFlowName +
+                        "The data flow '" +
+                        dataFlowName +
                         "' has zero or multiple sources and requires the use of the start method instead");
                 }
 
@@ -107,13 +113,15 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.core
                     CallOperatorClose();
                     State = EPDataFlowState.CANCELLED;
                     throw new EPDataFlowCancellationException(
-                        "Data flow '" + dataFlowName + "' execution was cancelled", dataFlowName);
+                        "Data flow '" + dataFlowName + "' execution was cancelled",
+                        dataFlowName);
                 }
                 catch (Exception t) {
                     CallOperatorClose();
                     State = EPDataFlowState.COMPLETE;
                     throw new EPDataFlowExecutionException(
-                        "Exception encountered running data flow '" + dataFlowName + "': " + t.Message, t,
+                        "Exception encountered running data flow '" + dataFlowName + "': " + t.Message,
+                        t,
                         dataFlowName);
                 }
 
@@ -185,7 +193,8 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.core
             var dataFlowName = _dataflowDesc.DataflowName;
             if (_state == EPDataFlowState.INSTANTIATED) {
                 throw new IllegalStateException(
-                    "Data flow '" + dataFlowName +
+                    "Data flow '" +
+                    dataFlowName +
                     "' instance has not been executed, please use join after start or run");
             }
 
@@ -296,7 +305,10 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.core
                     catch (Exception ex) {
                         throw new EPDataFlowExecutionException(
                             "Exception encountered opening data flow 'FlowOne' in operator " +
-                            operatorStatePair.First.GetType().GetSimpleName() + ": " + ex.Message, ex,
+                            operatorStatePair.First.GetType().GetSimpleName() +
+                            ": " +
+                            ex.Message,
+                            ex,
                             _dataflowDesc.DataflowName);
                     }
                 }
@@ -318,8 +330,11 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.core
                         }
                         catch (Exception ex) {
                             Log.Error(
-                                "Exception encountered closing data flow '" + _dataflowDesc.DataflowName + "': " +
-                                ex.Message, ex);
+                                "Exception encountered closing data flow '" +
+                                _dataflowDesc.DataflowName +
+                                "': " +
+                                ex.Message,
+                                ex);
                         }
 
                         operatorStatePair.Second = true;
@@ -332,7 +347,8 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.core
         {
             if (_state == EPDataFlowState.COMPLETE) {
                 throw new IllegalStateException(
-                    "Data flow '" + _dataflowDesc.DataflowName +
+                    "Data flow '" +
+                    _dataflowDesc.DataflowName +
                     "' instance has already completed, please use instantiate to run the data flow again");
             }
         }
@@ -349,7 +365,8 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.core
         {
             if (_state == EPDataFlowState.CANCELLED) {
                 throw new IllegalStateException(
-                    "Data flow '" + _dataflowDesc.DataflowName +
+                    "Data flow '" +
+                    _dataflowDesc.DataflowName +
                     "' instance has been cancelled and cannot be run or started");
             }
         }

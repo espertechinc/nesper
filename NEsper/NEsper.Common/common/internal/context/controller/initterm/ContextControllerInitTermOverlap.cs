@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.context.controller.condition;
@@ -62,13 +63,22 @@ namespace com.espertech.esper.common.@internal.context.controller.initterm
             initTermSvc.MgmtCreate(path, parentPartitionKeys);
 
             ContextControllerConditionNonHA startCondition = ContextControllerConditionFactory.GetEndpoint(
-                path, parentPartitionKeys, factory.initTermSpec.StartCondition, this, this, true);
+                path,
+                parentPartitionKeys,
+                factory.initTermSpec.StartCondition,
+                this,
+                this,
+                true);
             bool isTriggeringEventMatchesFilter = startCondition.Activate(optionalTriggeringEvent, null);
             initTermSvc.MgmtUpdSetStartCondition(path, startCondition);
 
             if (isTriggeringEventMatchesFilter || startCondition.IsImmediate) {
                 InstantiateAndActivateEndCondition(
-                    path, optionalTriggeringEvent, optionalTriggeringPattern, optionalTriggeringPattern, startCondition);
+                    path,
+                    optionalTriggeringEvent,
+                    optionalTriggeringPattern,
+                    optionalTriggeringPattern,
+                    startCondition);
             }
         }
 
@@ -101,11 +111,19 @@ namespace com.espertech.esper.common.@internal.context.controller.initterm
             bool endConditionNotification = originCondition.Descriptor != factory.InitTermSpec.StartCondition;
             if (endConditionNotification) {
                 RangeNotificationEnd(
-                    conditionPath, originCondition, optionalTriggeringEvent, optionalTriggeringPattern, optionalTriggeringEventPattern);
+                    conditionPath,
+                    originCondition,
+                    optionalTriggeringEvent,
+                    optionalTriggeringPattern,
+                    optionalTriggeringEventPattern);
             }
             else {
                 RangeNotificationStart(
-                    conditionPath, originCondition, optionalTriggeringEvent, optionalTriggeringPattern, optionalTriggeringEventPattern);
+                    conditionPath,
+                    originCondition,
+                    optionalTriggeringEvent,
+                    optionalTriggeringPattern,
+                    optionalTriggeringEventPattern);
             }
         }
 
@@ -133,7 +151,11 @@ namespace com.espertech.esper.common.@internal.context.controller.initterm
             }
 
             IList<AgentInstance> agentInstances = InstantiateAndActivateEndCondition(
-                controllerPath, optionalTriggeringEvent, optionalTriggeringPattern, optionalTriggeringPattern, startCondition);
+                controllerPath,
+                optionalTriggeringEvent,
+                optionalTriggeringPattern,
+                optionalTriggeringPattern,
+                startCondition);
             InstallFilterFaultHandler(agentInstances, controllerPath);
         }
 
@@ -158,7 +180,12 @@ namespace com.espertech.esper.common.@internal.context.controller.initterm
             }
 
             realization.ContextPartitionTerminate(
-                conditionPath.RemoveFromEnd(), instance.SubpathIdOrCPId, this, optionalTriggeringPattern, false, null);
+                conditionPath.RemoveFromEnd(),
+                instance.SubpathIdOrCPId,
+                this,
+                optionalTriggeringPattern,
+                false,
+                null);
         }
 
         private bool AddDistinctKey(
@@ -186,7 +213,10 @@ namespace com.espertech.esper.common.@internal.context.controller.initterm
         public object GetDistinctKey(EventBean eventBean)
         {
             eventsPerStreamDistinct[0] = eventBean;
-            return factory.InitTermSpec.DistinctEval.Evaluate(eventsPerStreamDistinct, true, realization.AgentInstanceContextCreate);
+            return factory.InitTermSpec.DistinctEval.Evaluate(
+                eventsPerStreamDistinct,
+                true,
+                realization.AgentInstanceContextCreate);
         }
 
         private void InstallFilterFaultHandler(
@@ -249,7 +279,10 @@ namespace com.espertech.esper.common.@internal.context.controller.initterm
 
                     // not found: evaluate against context
                     AgentInstanceUtil.EvaluateEventForStatement(
-                        theEvent, null, Collections.SingletonList(new AgentInstance(null, aiCreate, null)), aiCreate);
+                        theEvent,
+                        null,
+                        Collections.SingletonList(new AgentInstance(null, aiCreate, null)),
+                        aiCreate);
 
                     return true; // we handled the event
                 }

@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.@internal.context.module;
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.epl.expression.core;
@@ -36,7 +37,10 @@ namespace com.espertech.esper.common.@internal.epl.namedwindow.core
             rootView = new NamedWindowRootView(metadata);
             eventTableIndexMetadataRepo = metadata.IndexMetadata;
             tailView = services.NamedWindowFactoryService.CreateNamedWindowTailView(
-                metadata.EventType, metadata.IsChildBatching, services, metadata.ContextName);
+                metadata.EventType,
+                metadata.IsChildBatching,
+                services,
+                metadata.ContextName);
         }
 
         public string Name {
@@ -57,10 +61,12 @@ namespace com.espertech.esper.common.@internal.epl.namedwindow.core
         {
             // handle same-context consumer
             if (rootView.ContextName != null) {
-                ContextRuntimeDescriptor contextDescriptor = consumerDesc.AgentInstanceContext.StatementContext.ContextRuntimeDescriptor;
+                ContextRuntimeDescriptor contextDescriptor =
+                    consumerDesc.AgentInstanceContext.StatementContext.ContextRuntimeDescriptor;
                 if (contextDescriptor != null && rootView.ContextName.Equals(contextDescriptor.ContextName)) {
                     StatementResourceHolder holder =
-                        statementContext.StatementResourceService.GetPartitioned(consumerDesc.AgentInstanceContext.AgentInstanceId);
+                        statementContext.StatementResourceService.GetPartitioned(
+                            consumerDesc.AgentInstanceContext.AgentInstanceId);
                     return holder.NamedWindowInstance.TailViewInstance.AddConsumer(consumerDesc, isSubselect);
                 }
                 else {
@@ -70,8 +76,11 @@ namespace com.espertech.esper.common.@internal.epl.namedwindow.core
             }
 
             // handle no context associated
-            StatementResourceService statementResourceService = statementContext.StatementCPCacheService.StatementResourceService;
-            return statementResourceService.ResourcesUnpartitioned.NamedWindowInstance.TailViewInstance.AddConsumer(consumerDesc, isSubselect);
+            StatementResourceService statementResourceService =
+                statementContext.StatementCPCacheService.StatementResourceService;
+            return statementResourceService.ResourcesUnpartitioned.NamedWindowInstance.TailViewInstance.AddConsumer(
+                consumerDesc,
+                isSubselect);
         }
 
         public NamedWindowInstance GetNamedWindowInstance(AgentInstanceContext agentInstanceContext)
@@ -84,7 +93,8 @@ namespace com.espertech.esper.common.@internal.epl.namedwindow.core
                 return null;
             }
 
-            if (this.rootView.ContextName.Equals(agentInstanceContext.StatementContext.ContextRuntimeDescriptor.ContextName)) {
+            if (this.rootView.ContextName.Equals(
+                agentInstanceContext.StatementContext.ContextRuntimeDescriptor.ContextName)) {
                 return GetNamedWindowInstance(agentInstanceContext.AgentInstanceId);
             }
 
@@ -102,7 +112,8 @@ namespace com.espertech.esper.common.@internal.epl.namedwindow.core
 
         public NamedWindowInstance GetNamedWindowInstance(int agentInstanceId)
         {
-            StatementResourceService statementResourceService = statementContext.StatementCPCacheService.StatementResourceService;
+            StatementResourceService statementResourceService =
+                statementContext.StatementCPCacheService.StatementResourceService;
             StatementResourceHolder holder = statementResourceService.GetPartitioned(agentInstanceId);
             return holder == null ? null : holder.NamedWindowInstance;
         }
@@ -113,7 +124,8 @@ namespace com.espertech.esper.common.@internal.epl.namedwindow.core
 
         public void RemoveAllInstanceIndexes(IndexMultiKey index)
         {
-            StatementResourceService statementResourceService = statementContext.StatementCPCacheService.StatementResourceService;
+            StatementResourceService statementResourceService =
+                statementContext.StatementCPCacheService.StatementResourceService;
             if (rootView.ContextName == null) {
                 StatementResourceHolder holder = statementResourceService.Unpartitioned;
                 if (holder != null && holder.NamedWindowInstance != null) {
@@ -121,7 +133,8 @@ namespace com.espertech.esper.common.@internal.epl.namedwindow.core
                 }
             }
             else {
-                foreach (KeyValuePair<int, StatementResourceHolder> entry in statementResourceService.ResourcesPartitioned) {
+                foreach (KeyValuePair<int, StatementResourceHolder> entry in statementResourceService
+                    .ResourcesPartitioned) {
                     if (entry.Value.NamedWindowInstance != null) {
                         entry.Value.NamedWindowInstance.RemoveIndex(index);
                     }
@@ -149,7 +162,13 @@ namespace com.espertech.esper.common.@internal.epl.namedwindow.core
             QueryPlanIndexItem explicitIndexDesc,
             IndexMultiKey imk)
         {
-            eventTableIndexMetadataRepo.AddIndexExplicit(false, imk, explicitIndexName, explicitIndexModuleName, explicitIndexDesc, deloymentId);
+            eventTableIndexMetadataRepo.AddIndexExplicit(
+                false,
+                imk,
+                explicitIndexName,
+                explicitIndexModuleName,
+                explicitIndexDesc,
+                deloymentId);
         }
 
         public StatementContext StatementContext {

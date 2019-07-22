@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.@internal.context.activator;
 using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.context.airegistry;
@@ -77,7 +78,11 @@ namespace com.espertech.esper.common.@internal.epl.subselect
         }
 
         public AIRegistryRequirementSubquery RegistryRequirements {
-            get => new AIRegistryRequirementSubquery(hasAggregation, hasPrior, hasPrevious, strategyFactory.LookupStrategyDesc);
+            get => new AIRegistryRequirementSubquery(
+                hasAggregation,
+                hasPrior,
+                hasPrevious,
+                strategyFactory.LookupStrategyDesc);
         }
     }
 } // end of namespace

@@ -10,6 +10,7 @@ using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.epl.expression.core;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.join.querygraph
@@ -35,12 +36,17 @@ namespace com.espertech.esper.common.@internal.epl.join.querygraph
         {
             var method = parent.MakeChild(typeof(QueryGraphValueEntryCustomKey), GetType(), classScope);
             method.Block
-                .DeclareVar(
-                    typeof(QueryGraphValueEntryCustomKey), "key", NewInstance(typeof(QueryGraphValueEntryCustomKey)))
+                .DeclareVar<QueryGraphValueEntryCustomKey>(
+                    "key",
+                    NewInstance(typeof(QueryGraphValueEntryCustomKey)))
                 .SetProperty(Ref("key"), "OperationName", Constant(OperationName))
-                .SetProperty(Ref("key"), "ExprNodes",
+                .SetProperty(
+                    Ref("key"),
+                    "ExprNodes",
                     ExprNodeUtilityCodegen.CodegenEvaluators(ExprNodes, method, GetType(), classScope))
-                .SetProperty(Ref("key"), "Expressions",
+                .SetProperty(
+                    Ref("key"),
+                    "Expressions",
                     Constant(ExprNodeUtilityPrint.ToExpressionStringsMinPrecedence(ExprNodes)))
                 .MethodReturn(Ref("key"));
             return LocalMethod(method);

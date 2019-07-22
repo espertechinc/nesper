@@ -40,7 +40,9 @@ namespace com.espertech.esper.common.@internal.view.length
         public View MakeView(AgentInstanceViewFactoryChainContext agentInstanceViewFactoryContext)
         {
             var sizeValue = ViewFactoryUtil.EvaluateSizeParam(
-                ViewName, size, agentInstanceViewFactoryContext.AgentInstanceContext);
+                ViewName,
+                size,
+                agentInstanceViewFactoryContext.AgentInstanceContext);
             var randomAccess =
                 agentInstanceViewFactoryContext.StatementContext.ViewServicePreviousFactory
                     .GetOptPreviousExprRandomAccess(agentInstanceViewFactoryContext);

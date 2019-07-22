@@ -62,16 +62,22 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
             switch (value) {
                 case RowRecogNFATypeEnum.SINGLE:
                     return false;
+
                 case RowRecogNFATypeEnum.ZERO_TO_MANY:
                     return true;
+
                 case RowRecogNFATypeEnum.ONE_TO_MANY:
                     return true;
+
                 case RowRecogNFATypeEnum.ONE_OPTIONAL:
                     return false;
+
                 case RowRecogNFATypeEnum.ZERO_TO_MANY_RELUCTANT:
                     return true;
+
                 case RowRecogNFATypeEnum.ONE_TO_MANY_RELUCTANT:
                     return true;
+
                 case RowRecogNFATypeEnum.ONE_OPTIONAL_RELUCTANT:
                     return false;
             }
@@ -88,16 +94,22 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
             switch (value) {
                 case RowRecogNFATypeEnum.SINGLE:
                     return false;
+
                 case RowRecogNFATypeEnum.ZERO_TO_MANY:
                     return true;
+
                 case RowRecogNFATypeEnum.ONE_TO_MANY:
                     return false;
+
                 case RowRecogNFATypeEnum.ONE_OPTIONAL:
                     return true;
+
                 case RowRecogNFATypeEnum.ZERO_TO_MANY_RELUCTANT:
                     return true;
+
                 case RowRecogNFATypeEnum.ONE_TO_MANY_RELUCTANT:
                     return false;
+
                 case RowRecogNFATypeEnum.ONE_OPTIONAL_RELUCTANT:
                     return true;
             }
@@ -114,16 +126,22 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
             switch (value) {
                 case RowRecogNFATypeEnum.SINGLE:
                     return null;
+
                 case RowRecogNFATypeEnum.ZERO_TO_MANY:
                     return true;
+
                 case RowRecogNFATypeEnum.ONE_TO_MANY:
                     return true;
+
                 case RowRecogNFATypeEnum.ONE_OPTIONAL:
                     return true;
+
                 case RowRecogNFATypeEnum.ZERO_TO_MANY_RELUCTANT:
                     return false;
+
                 case RowRecogNFATypeEnum.ONE_TO_MANY_RELUCTANT:
                     return false;
+
                 case RowRecogNFATypeEnum.ONE_OPTIONAL_RELUCTANT:
                     return false;
             }
@@ -140,16 +158,22 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
             switch (value) {
                 case RowRecogNFATypeEnum.SINGLE:
                     return "";
+
                 case RowRecogNFATypeEnum.ZERO_TO_MANY:
                     return "*";
+
                 case RowRecogNFATypeEnum.ONE_TO_MANY:
                     return "+";
+
                 case RowRecogNFATypeEnum.ONE_OPTIONAL:
                     return "?";
+
                 case RowRecogNFATypeEnum.ZERO_TO_MANY_RELUCTANT:
                     return "*?";
+
                 case RowRecogNFATypeEnum.ONE_TO_MANY_RELUCTANT:
                     return "+?";
+
                 case RowRecogNFATypeEnum.ONE_OPTIONAL_RELUCTANT:
                     return "??";
             }
@@ -170,7 +194,8 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
             bool reluctant = false;
             if (reluctantQuestion != null) {
                 if (!reluctantQuestion.Equals("?")) {
-                    throw new ArgumentException("Invalid code for pattern type: " + code + " reluctant '" + reluctantQuestion + "'");
+                    throw new ArgumentException(
+                        "Invalid code for pattern type: " + code + " reluctant '" + reluctantQuestion + "'");
                 }
 
                 reluctant = true;
@@ -179,10 +204,13 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
             switch (code) {
                 case null:
                     return RowRecogNFATypeEnum.SINGLE;
+
                 case "*":
                     return reluctant ? RowRecogNFATypeEnum.ZERO_TO_MANY_RELUCTANT : RowRecogNFATypeEnum.ZERO_TO_MANY;
+
                 case "+":
                     return reluctant ? RowRecogNFATypeEnum.ONE_TO_MANY_RELUCTANT : RowRecogNFATypeEnum.ONE_TO_MANY;
+
                 case "?":
                     return reluctant ? RowRecogNFATypeEnum.ONE_OPTIONAL_RELUCTANT : RowRecogNFATypeEnum.ONE_OPTIONAL;
             }

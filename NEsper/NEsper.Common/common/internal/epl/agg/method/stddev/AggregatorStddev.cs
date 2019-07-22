@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.core;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -16,6 +17,7 @@ using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat.function;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionRelational.
     CodegenRelational;
@@ -42,7 +44,13 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.stddev
             bool hasFilter,
             ExprNode optionalFilter)
             : base(
-                factory, col, rowCtor, membersColumnized, classScope, optionalDistinctValueType, hasFilter,
+                factory,
+                col,
+                rowCtor,
+                membersColumnized,
+                classScope,
+                optionalDistinctValueType,
+                hasFilter,
                 optionalFilter)
         {
             mean = membersColumnized.AddMember(col, typeof(double), "mean");
@@ -59,7 +67,8 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.stddev
             CodegenClassScope classScope)
         {
             ApplyEvalEnterNonNull(
-                method, SimpleNumberCoercerFactory.CoercerDouble.CodegenDouble(value, valueType));
+                method,
+                SimpleNumberCoercerFactory.CoercerDouble.CodegenDouble(value, valueType));
         }
 
         protected override void ApplyEvalLeaveNonNull(
@@ -71,7 +80,8 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.stddev
             CodegenClassScope classScope)
         {
             ApplyEvalLeaveNonNull(
-                method, SimpleNumberCoercerFactory.CoercerDouble.CodegenDouble(value, valueType));
+                method,
+                SimpleNumberCoercerFactory.CoercerDouble.CodegenDouble(value, valueType));
         }
 
         protected override void ApplyTableEnterNonNull(
@@ -139,14 +149,14 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.stddev
             CodegenMethod method,
             CodegenExpression doubleExpression)
         {
-            method.Block.DeclareVar(typeof(double), "p", doubleExpression)
+            method.Block.DeclareVar<double>("p", doubleExpression)
                 .IfCondition(EqualsIdentity(cnt, Constant(0)))
                 .AssignRef(mean, Ref("p"))
                 .AssignRef(qn, Constant(0))
                 .AssignRef(cnt, Constant(1))
                 .IfElse()
                 .Increment(cnt)
-                .DeclareVar(typeof(double), "oldmean", mean)
+                .DeclareVar<double>("oldmean", mean)
                 .AssignCompound(mean, "+", Op(Op(Ref("p"), "-", mean), "/", cnt))
                 .AssignCompound(qn, "+", Op(Op(Ref("p"), "-", Ref("oldmean")), "*", Op(Ref("p"), "-", mean)));
         }
@@ -155,12 +165,12 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.stddev
             CodegenMethod method,
             CodegenExpression doubleExpression)
         {
-            method.Block.DeclareVar(typeof(double), "p", doubleExpression)
+            method.Block.DeclareVar<double>("p", doubleExpression)
                 .IfCondition(Relational(cnt, LE, Constant(1)))
                 .Apply(GetClear())
                 .IfElse()
                 .Decrement(cnt)
-                .DeclareVar(typeof(double), "oldmean", mean)
+                .DeclareVar<double>("oldmean", mean)
                 .AssignCompound(mean, "-", Op(Op(Ref("p"), "-", mean), "/", cnt))
                 .AssignCompound(qn, "-", Op(Op(Ref("p"), "-", Ref("oldmean")), "*", Op(Ref("p"), "-", mean)));
         }

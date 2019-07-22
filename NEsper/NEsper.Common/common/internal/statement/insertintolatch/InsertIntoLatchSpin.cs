@@ -8,6 +8,7 @@
 
 using System.Reflection;
 using System.Threading;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.compat.logging;
 
@@ -81,7 +82,9 @@ namespace com.espertech.esper.common.@internal.statement.insertintolatch
                     var spinDelta = _factory.TimeSourceService.TimeMillis - spinStartTime;
                     if (spinDelta > _msecTimeout) {
                         Log.Info(
-                            "Spin wait timeout exceeded in insert-into dispatch at " + _msecTimeout + "ms for " +
+                            "Spin wait timeout exceeded in insert-into dispatch at " +
+                            _msecTimeout +
+                            "ms for " +
                             _factory.Name +
                             ", consider disabling insert-into between-statement latching for better performance");
                         break;

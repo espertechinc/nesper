@@ -14,6 +14,7 @@ using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.context.controller.core;
 using com.espertech.esper.common.@internal.context.module;
 using com.espertech.esper.compat.collections;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.context.controller.hash
@@ -46,9 +47,10 @@ namespace com.espertech.esper.common.@internal.context.controller.hash
         {
             CodegenMethod method = parent.MakeChild(typeof(ContextControllerHashFactory), this.GetType(), classScope);
             method.Block
-                .DeclareVar(
-                    typeof(ContextControllerHashFactory), "factory",
-                    ExprDotMethodChain(symbols.GetAddInitSvc(method)).Add(EPStatementInitServicesConstants.GETCONTEXTSERVICEFACTORY)
+                .DeclareVar<ContextControllerHashFactory>(
+                    "factory",
+                    ExprDotMethodChain(symbols.GetAddInitSvc(method))
+                        .Add(EPStatementInitServicesConstants.GETCONTEXTSERVICEFACTORY)
                         .Add("hashFactory"))
                 .SetProperty(Ref("factory"), "HashSpec", detail.MakeCodegen(method, symbols, classScope))
                 .MethodReturn(@Ref("factory"));
@@ -57,7 +59,8 @@ namespace com.espertech.esper.common.@internal.context.controller.hash
 
         public override ContextControllerPortableInfo ValidationInfo {
             get {
-                ContextControllerHashValidationItem[] items = new ContextControllerHashValidationItem[detail.Items.Count];
+                ContextControllerHashValidationItem[] items =
+                    new ContextControllerHashValidationItem[detail.Items.Count];
                 for (int i = 0; i < detail.Items.Count; i++) {
                     ContextSpecHashItem props = detail.Items[i];
                     items[i] = new ContextControllerHashValidationItem(props.FilterSpecCompiled.FilterForEventType);

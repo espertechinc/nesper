@@ -104,7 +104,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.contained
                 env.CompileDeploy("insert into OrderWindowNWS select * from OrderBean", path);
 
                 var stmtText =
-                    "@Name('s0') select *, (select sum(price) from OrderWindowNWS[books]) as totalPrice from SupportBean";
+                    "@Name('s0') select *, (select sum(Price) from OrderWindowNWS[books]) as totalPrice from SupportBean";
                 env.CompileDeploy(stmtText, path).AddListener("s0");
 
                 env.SendEventBean(OrderBeanFactory.MakeEventOne());

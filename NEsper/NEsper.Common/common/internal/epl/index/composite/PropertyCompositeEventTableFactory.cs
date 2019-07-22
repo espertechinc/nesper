@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.epl.index.@base;
@@ -82,8 +83,12 @@ namespace com.espertech.esper.common.@internal.epl.index.composite
         public CompositeIndexEnterRemove Chain { get; }
 
         internal EventTableOrganization Organization => new EventTableOrganization(
-            null, false, OptKeyCoercedTypes != null || OptRangeCoercedTypes != null, StreamNum,
-            CombinedPropertyLists(OptionalKeyedProps, RangeProps), EventTableOrganizationType.COMPOSITE);
+            null,
+            false,
+            OptKeyCoercedTypes != null || OptRangeCoercedTypes != null,
+            StreamNum,
+            CombinedPropertyLists(OptionalKeyedProps, RangeProps),
+            EventTableOrganizationType.COMPOSITE);
 
         public EventTable[] MakeEventTables(
             AgentInstanceContext agentInstanceContext,
@@ -97,9 +102,12 @@ namespace com.espertech.esper.common.@internal.epl.index.composite
         public string ToQueryPlan()
         {
             return GetType().Name +
-                   " streamNum=" + StreamNum +
-                   " keys=" + CompatExtensions.RenderAny(OptionalKeyedProps) +
-                   " ranges=" + CompatExtensions.RenderAny(RangeProps);
+                   " streamNum=" +
+                   StreamNum +
+                   " keys=" +
+                   CompatExtensions.RenderAny(OptionalKeyedProps) +
+                   " ranges=" +
+                   CompatExtensions.RenderAny(RangeProps);
         }
 
         private string[] CombinedPropertyLists(

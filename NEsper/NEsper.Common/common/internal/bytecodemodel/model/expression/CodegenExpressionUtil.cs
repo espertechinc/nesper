@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-using System.Collections.Generic;
 using System.Numerics;
 using System.Text;
 
@@ -19,8 +18,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
     {
         public static void RenderConstant(
             StringBuilder builder,
-            object constant,
-            IDictionary<Type, string> imports)
+            object constant)
         {
             if (constant is string) {
                 builder.Append('"');
@@ -50,11 +48,17 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
             else if (constant == null) {
                 builder.Append("null");
             }
-            else if (constant is long?) {
+            else if (constant is long) {
                 builder.Append(constant).Append("L");
             }
             else if (constant is float) {
                 builder.Append(constant).Append("F");
+            }
+            else if (constant is double) {
+                builder.Append(constant).Append("d");
+            }
+            else if (constant is decimal) {
+                builder.Append(constant).Append("m");
             }
             else if (constant is short) {
                 builder.Append("(short) ").Append(constant);
@@ -65,17 +69,17 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
             else if (constant is Array asArray) {
                 if (asArray.Length == 0) {
                     builder.Append("new ");
-                    AppendClassName(builder, constant.GetType().GetElementType(), null, imports);
+                    AppendClassName(builder, constant.GetType().GetElementType());
                     builder.Append("[]{}");
                 }
                 else {
                     builder.Append("new ");
-                    AppendClassName(builder, constant.GetType().GetElementType(), null, imports);
+                    AppendClassName(builder, constant.GetType().GetElementType());
                     builder.Append("[] {");
                     var delimiter = "";
                     for (var i = 0; i < asArray.Length; i++) {
                         builder.Append(delimiter);
-                        RenderConstant(builder, asArray.GetValue(i), imports);
+                        RenderConstant(builder, asArray.GetValue(i));
                         delimiter = ",";
                     }
 
@@ -83,17 +87,14 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
                 }
             }
             else if (constant.GetType().IsEnum) {
-                AppendClassName(builder, constant.GetType(), null, imports);
+                AppendClassName(builder, constant.GetType());
                 builder.Append(".").Append(constant);
             }
             else if (constant is Type) {
-                CodegenExpressionClass.RenderClass((Type) constant, builder, imports);
+                CodegenExpressionClass.RenderClass((Type) constant, builder);
             }
             else if (constant is BigInteger) {
-                RenderBigInteger((BigInteger) constant, builder, imports);
-            }
-            else if (constant is decimal) {
-                builder.Append(constant).Append("m");
+                RenderBigInteger((BigInteger) constant, builder);
             }
             else {
                 builder.Append(constant);
@@ -102,11 +103,13 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
 
         private static void RenderBigInteger(
             BigInteger constant,
-            StringBuilder builder,
-            IDictionary<Type, string> imports)
+            StringBuilder builder)
         {
-            builder.Append("new System.Numerics.BigInteger(");
-            RenderConstant(builder, constant.ToByteArray(), imports);
+            builder
+                .Append("new ")
+                .Append(typeof(BigInteger).FullName)
+                .Append("(");
+            RenderConstant(builder, constant.ToByteArray());
             builder.Append(")");
         }
 

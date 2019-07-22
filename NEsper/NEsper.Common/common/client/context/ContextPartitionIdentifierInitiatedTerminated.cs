@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.client.context
@@ -72,9 +73,12 @@ namespace com.espertech.esper.common.client.context
         public override string ToString()
         {
             return "ContextPartitionIdentifierInitiatedTerminated{" +
-                   "properties=" + Properties +
-                   ", startTime=" + StartTime +
-                   ", endTime=" + EndTime +
+                   "properties=" +
+                   Properties +
+                   ", startTime=" +
+                   StartTime +
+                   ", endTime=" +
+                   EndTime +
                    '}';
         }
 

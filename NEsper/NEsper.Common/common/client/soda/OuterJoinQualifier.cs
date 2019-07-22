@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.@internal.type;
 
 namespace com.espertech.esper.common.client.soda
@@ -113,7 +114,9 @@ namespace com.espertech.esper.common.client.soda
             string propertyRight)
         {
             return new OuterJoinQualifier(
-                type, new PropertyValueExpression(propertyLeft), new PropertyValueExpression(propertyRight));
+                type,
+                new PropertyValueExpression(propertyLeft),
+                new PropertyValueExpression(propertyRight));
         }
 
         /// <summary>
@@ -128,7 +131,8 @@ namespace com.espertech.esper.common.client.soda
         {
             additionalProperties.Add(
                 new PropertyValueExpressionPair(
-                    new PropertyValueExpression(propertyLeft), new PropertyValueExpression(propertyRight)));
+                    new PropertyValueExpression(propertyLeft),
+                    new PropertyValueExpression(propertyRight)));
             return this;
         }
     }

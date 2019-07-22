@@ -31,9 +31,9 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
 
                 var text = "@Name('s" +
                            i +
-                           "') select Symbol, min(price) " +
+                           "') select Symbol, min(Price) " +
                            "from SupportMarketDataBean(Id='${Id}')#time(${secondsWindowSpan})\n" +
-                           "having price >= min(price) * ${percent}";
+                           "having Price >= min(Price) * ${percent}";
 
                 text = text.Replace("${Id}", Convert.ToString(id));
                 text = text.Replace("${secondsWindowSpan}", Convert.ToString(secondsWindowSpan));

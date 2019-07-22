@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.context.activator;
 using com.espertech.esper.common.@internal.context.aifactory.core;
@@ -101,7 +102,10 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.core
 
                 // start subselects
                 subselectActivations = SubSelectHelperStart.StartSubselects(
-                    subselects, agentInstanceContext, stopCallbacks, isRecoveringResilient);
+                    subselects,
+                    agentInstanceContext,
+                    stopCallbacks,
+                    isRecoveringResilient);
 
                 // start table-access
                 tableAccessEvals = ExprTableEvalHelperStart.StartTableAccess(tableAccesses, agentInstanceContext);
@@ -117,8 +121,18 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.core
 
             var stopCallback = AgentInstanceUtil.FinalizeSafeStopCallbacks(stopCallbacks);
             var onTriggerResult = new StatementAgentInstanceFactoryOnTriggerResult(
-                view, stopCallback, agentInstanceContext, aggregationService,
-                subselectActivations, null, null, null, tableAccessEvals, null, null, activationResult);
+                view,
+                stopCallback,
+                agentInstanceContext,
+                aggregationService,
+                subselectActivations,
+                null,
+                null,
+                null,
+                tableAccessEvals,
+                null,
+                null,
+                activationResult);
             return onTriggerResult;
         }
 
@@ -126,7 +140,11 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.core
             get {
                 var subqueries = AIRegistryRequirements.GetSubqueryRequirements(subselects);
                 return new AIRegistryRequirements(
-                    null, null, subqueries, tableAccesses == null ? 0 : tableAccesses.Count, false);
+                    null,
+                    null,
+                    subqueries,
+                    tableAccesses == null ? 0 : tableAccesses.Count,
+                    false);
             }
         }
     }

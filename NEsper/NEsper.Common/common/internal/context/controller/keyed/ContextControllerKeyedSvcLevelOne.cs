@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+
 using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.context.controller.condition;
 using com.espertech.esper.common.@internal.context.controller.core;
@@ -18,7 +19,9 @@ namespace com.espertech.esper.common.@internal.context.controller.keyed
     public class ContextControllerKeyedSvcLevelOne : ContextControllerKeyedSvc
     {
         private static readonly object[] EMPTY_PARTITION_KEYS = new object[0];
-        private readonly IDictionary<object, ContextControllerKeyedSvcEntry> keys = new Dictionary<object, ContextControllerKeyedSvcEntry>();
+
+        private readonly IDictionary<object, ContextControllerKeyedSvcEntry> keys =
+            new Dictionary<object, ContextControllerKeyedSvcEntry>();
 
         private int currentSubpathId;
         private ContextControllerFilterEntry[] filterEntries;

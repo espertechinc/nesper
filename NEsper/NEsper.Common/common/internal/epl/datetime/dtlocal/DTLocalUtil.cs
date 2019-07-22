@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -16,6 +17,7 @@ using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
@@ -53,7 +55,8 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
             CodegenClassScope codegenClassScope)
         {
             foreach (CalendarForge calendarForge in calendarForges) {
-                block.Expression(calendarForge.CodegenDateTimeEx(dtx, codegenMethodScope, exprSymbol, codegenClassScope));
+                block.Expression(
+                    calendarForge.CodegenDateTimeEx(dtx, codegenMethodScope, exprSymbol, codegenClassScope));
             }
         }
 
@@ -81,7 +84,12 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
         {
             foreach (CalendarForge calendarForge in calendarForges) {
                 block.AssignRef(
-                    resultVariable, calendarForge.CodegenDateTimeOffset(@Ref(resultVariable), codegenMethodScope, exprSymbol, codegenClassScope));
+                    resultVariable,
+                    calendarForge.CodegenDateTimeOffset(
+                        @Ref(resultVariable),
+                        codegenMethodScope,
+                        exprSymbol,
+                        codegenClassScope));
             }
         }
 
@@ -109,7 +117,12 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
         {
             foreach (CalendarForge calendarForge in calendarForges) {
                 block.AssignRef(
-                    resultVariable, calendarForge.CodegenDateTime(@Ref(resultVariable), codegenMethodScope, exprSymbol, codegenClassScope));
+                    resultVariable,
+                    calendarForge.CodegenDateTime(
+                        @Ref(resultVariable),
+                        codegenMethodScope,
+                        exprSymbol,
+                        codegenClassScope));
             }
         }
     }

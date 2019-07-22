@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.meta;
 using com.espertech.esper.common.client.util;
@@ -38,11 +39,23 @@ namespace com.espertech.esper.common.@internal.epl.join.hint
             properties.Put("exprs", typeof(string[]));
             string eventTypeName = EventTypeNameUtil.GetAnonymousTypeNameExcludePlanHint();
             EventTypeMetadata eventTypeMetadata = new EventTypeMetadata(
-                eventTypeName, null, EventTypeTypeClass.EXCLUDEPLANHINTDERIVED,
-                EventTypeApplicationType.OBJECTARR, NameAccessModifier.TRANSIENT, EventTypeBusModifier.NONBUS, false, EventTypeIdPair.Unassigned());
+                eventTypeName,
+                null,
+                EventTypeTypeClass.EXCLUDEPLANHINTDERIVED,
+                EventTypeApplicationType.OBJECTARR,
+                NameAccessModifier.TRANSIENT,
+                EventTypeBusModifier.NONBUS,
+                false,
+                EventTypeIdPair.Unassigned());
             OAEXPRESSIONTYPE = BaseNestableEventUtil.MakeOATypeCompileTime(
-                eventTypeMetadata, properties, null, null, null, null,
-                new BeanEventTypeFactoryDisallow(EventBeanTypedEventFactoryCompileTime.INSTANCE), null);
+                eventTypeMetadata,
+                properties,
+                null,
+                null,
+                null,
+                null,
+                new BeanEventTypeFactoryDisallow(EventBeanTypedEventFactoryCompileTime.INSTANCE),
+                null);
         }
 
         public static EventBean ToEvent(
@@ -68,7 +81,13 @@ namespace com.espertech.esper.common.@internal.epl.join.hint
             StatementCompileTimeServices services)
         {
             ExprNode expr = services.CompilerServices.CompileExpression(hint, services);
-            ExprNode validated = EPLValidationUtil.ValidateSimpleGetSubtree(ExprNodeOrigin.HINT, expr, OAEXPRESSIONTYPE, false, rawInfo, services);
+            ExprNode validated = EPLValidationUtil.ValidateSimpleGetSubtree(
+                ExprNodeOrigin.HINT,
+                expr,
+                OAEXPRESSIONTYPE,
+                false,
+                rawInfo,
+                services);
             return validated.Forge;
         }
     }

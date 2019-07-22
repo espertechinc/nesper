@@ -43,6 +43,7 @@ namespace com.espertech.esper.common.@internal.collection
                 case State.CONSUMING:
                     _consumerState = State.CONSUMED;
                     return false;
+
                 default:
                     _consumerState = State.CONSUMING;
                     return true;
@@ -60,12 +61,13 @@ namespace com.espertech.esper.common.@internal.collection
 
         public EventBean Current {
             get {
-                switch (_consumerState)
-                {
+                switch (_consumerState) {
                     case State.CONSUMED:
                         throw new InvalidOperationException();
+
                     case State.CONSUMING:
                         return _event;
+
                     default:
                         throw new IllegalStateException("enumerator has not been advanced");
                 }

@@ -11,6 +11,7 @@ using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.epl.lookup;
 using com.espertech.esper.common.@internal.epl.lookupplansubord;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.lookupsubord
@@ -31,10 +32,12 @@ namespace com.espertech.esper.common.@internal.epl.lookupsubord
             CodegenClassScope classScope)
         {
             var method = parent.MakeChild(
-                typeof(SubordWMatchExprLookupStrategyIndexedUnfilteredFactory), GetType(), classScope);
+                typeof(SubordWMatchExprLookupStrategyIndexedUnfilteredFactory),
+                GetType(),
+                classScope);
             method.Block
-                .DeclareVar(
-                    typeof(SubordTableLookupStrategyFactory), "lookup",
+                .DeclareVar<SubordTableLookupStrategyFactory>(
+                    "lookup",
                     OptionalInnerStrategy.Make(method, symbols, classScope))
                 .MethodReturn(
                     NewInstance<SubordWMatchExprLookupStrategyIndexedUnfilteredFactory>(Ref("lookup")));

@@ -793,11 +793,11 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 var milestone = new AtomicLong();
 
                 var expression =
-                    "@Name('s0') select * from pattern [every-distinct(a.IntPrimitive + b.IntPrimitive) (a=SupportBean(TheString like 'A%') => b=SupportBean(TheString like 'B%'))]";
+                    "@Name('s0') select * from pattern [every-distinct(a.IntPrimitive + b.IntPrimitive) (a=SupportBean(TheString like 'A%') -> b=SupportBean(TheString like 'B%'))]";
                 RunEveryDistinctOverFollowedBy(env, expression, milestone);
 
                 expression =
-                    "@Name('s0') select * from pattern [every-distinct(a.IntPrimitive + b.IntPrimitive, 1 hour) (a=SupportBean(TheString like 'A%') => b=SupportBean(TheString like 'B%'))]";
+                    "@Name('s0') select * from pattern [every-distinct(a.IntPrimitive + b.IntPrimitive, 1 hour) (a=SupportBean(TheString like 'A%') -> b=SupportBean(TheString like 'B%'))]";
                 RunEveryDistinctOverFollowedBy(env, expression, milestone);
             }
 
@@ -857,11 +857,11 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 var milestone = new AtomicLong();
 
                 var expression =
-                    "@Name('s0') select * from pattern [(every-distinct(a.IntPrimitive) a=SupportBean(TheString like 'A%')) => b=SupportBean(IntPrimitive=a.IntPrimitive)]";
+                    "@Name('s0') select * from pattern [(every-distinct(a.IntPrimitive) a=SupportBean(TheString like 'A%')) -> b=SupportBean(IntPrimitive=a.IntPrimitive)]";
                 RunEveryDistinctWithinFollowedBy(env, expression, milestone);
 
                 expression =
-                    "@Name('s0') select * from pattern [(every-distinct(a.IntPrimitive, 2 hours 1 minute) a=SupportBean(TheString like 'A%')) => b=SupportBean(IntPrimitive=a.IntPrimitive)]";
+                    "@Name('s0') select * from pattern [(every-distinct(a.IntPrimitive, 2 hours 1 minute) a=SupportBean(TheString like 'A%')) -> b=SupportBean(IntPrimitive=a.IntPrimitive)]";
                 RunEveryDistinctWithinFollowedBy(env, expression, milestone);
             }
 

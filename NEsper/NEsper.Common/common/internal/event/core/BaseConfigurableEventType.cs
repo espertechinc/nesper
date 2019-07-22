@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.collection;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.meta;
@@ -140,7 +141,10 @@ namespace com.espertech.esper.common.@internal.@event.core
                 var existingType = EventTypeResolver.GetTypeByName(pair.First.OptionalFragmentTypeName);
                 if (!(existingType is BaseConfigurableEventType)) {
                     Log.Warn(
-                        "Type configured for fragment event property '" + property + "' by name '" + pair.First +
+                        "Type configured for fragment event property '" +
+                        property +
+                        "' by name '" +
+                        pair.First +
                         "' could not be found");
                     return null;
                 }

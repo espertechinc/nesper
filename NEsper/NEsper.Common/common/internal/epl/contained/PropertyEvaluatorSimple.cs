@@ -8,6 +8,7 @@
 
 using System;
 using System.Reflection;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.filterspec;
@@ -61,7 +62,10 @@ namespace com.espertech.esper.common.@internal.epl.contained
                 }
 
                 return ExprNodeUtilityEvaluate.ApplyFilterExpression(
-                    Filter, theEvent, (EventBean[]) result, exprEvaluatorContext);
+                    Filter,
+                    theEvent,
+                    (EventBean[]) result,
+                    exprEvaluatorContext);
             }
             catch (EPException) {
                 throw;
@@ -71,7 +75,10 @@ namespace com.espertech.esper.common.@internal.epl.contained
                     "Unexpected error evaluating property expression for event of type '" +
                     theEvent.EventType.Name +
                     "' and property '" +
-                    ExpressionText + "': " + ex.Message, ex);
+                    ExpressionText +
+                    "': " +
+                    ex.Message,
+                    ex);
             }
 
             return null;

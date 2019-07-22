@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.@internal.epl.agg.core;
 using com.espertech.esper.common.@internal.view.core;
 using com.espertech.esper.compat;

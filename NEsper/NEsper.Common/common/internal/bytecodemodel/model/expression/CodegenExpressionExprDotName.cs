@@ -27,15 +27,14 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
 
         public void Render(
             StringBuilder builder,
-            IDictionary<Type, string> imports,
             bool isInnerClass)
         {
             if (_lhs is CodegenExpressionRef) {
-                _lhs.Render(builder, imports, isInnerClass);
+                _lhs.Render(builder, isInnerClass);
             }
             else {
                 builder.Append("(");
-                _lhs.Render(builder, imports, isInnerClass);
+                _lhs.Render(builder, isInnerClass);
                 builder.Append(")");
             }
 

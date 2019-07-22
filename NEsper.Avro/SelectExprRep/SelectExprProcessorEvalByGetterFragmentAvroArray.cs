@@ -44,22 +44,19 @@ namespace NEsper.Avro.SelectExprRep
             ExprEvaluatorContext exprEvaluatorContext)
         {
             EventBean @event = eventsPerStream[_streamNum];
-            if (@event == null)
-            {
+            if (@event == null) {
                 return null;
             }
 
             object result = _getter.Get(@event);
-            if (result != null && result.GetType().IsArray)
-            {
+            if (result != null && result.GetType().IsArray) {
                 return Arrays.AsList((object[]) result);
             }
 
             return null;
         }
 
-        public ExprEvaluator ExprEvaluator
-        {
+        public ExprEvaluator ExprEvaluator {
             get => this;
         }
 
@@ -69,31 +66,43 @@ namespace NEsper.Avro.SelectExprRep
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            CodegenMethod methodNode = codegenMethodScope.MakeChild(typeof(ICollection<object>), GetType(), codegenClassScope);
+            CodegenMethod methodNode = codegenMethodScope.MakeChild(
+                typeof(ICollection<object>),
+                GetType(),
+                codegenClassScope);
             CodegenExpressionRef refEPS = exprSymbol.GetAddEPS(methodNode);
 
             methodNode.Block
-                .DeclareVar(typeof(EventBean), "event", CodegenExpressionBuilder.ArrayAtIndex(refEPS, CodegenExpressionBuilder.Constant(_streamNum)))
+                .DeclareVar<EventBean>(
+                    "event",
+                    CodegenExpressionBuilder.ArrayAtIndex(refEPS, CodegenExpressionBuilder.Constant(_streamNum)))
                 .IfRefNullReturnNull("event")
-                .DeclareVar(
-                    typeof(object[]), "result", CodegenExpressionBuilder.Cast(typeof(object[]), _getter.EventBeanGetCodegen(CodegenExpressionBuilder.Ref("event"), methodNode, codegenClassScope)))
+                .DeclareVar<object[]>(
+                    "result",
+                    CodegenExpressionBuilder.Cast(
+                        typeof(object[]),
+                        _getter.EventBeanGetCodegen(
+                            CodegenExpressionBuilder.Ref("event"),
+                            methodNode,
+                            codegenClassScope)))
                 .IfRefNullReturnNull("result")
-                .MethodReturn(CodegenExpressionBuilder.StaticMethod(typeof(CompatExtensions), "AsList", CodegenExpressionBuilder.Ref("result")));
+                .MethodReturn(
+                    CodegenExpressionBuilder.StaticMethod(
+                        typeof(CompatExtensions),
+                        "AsList",
+                        CodegenExpressionBuilder.Ref("result")));
             return CodegenExpressionBuilder.LocalMethod(methodNode);
         }
 
-        public Type EvaluationType
-        {
+        public Type EvaluationType {
             get => _returnType;
         }
 
-        public ExprForgeConstantType ForgeConstantType
-        {
+        public ExprForgeConstantType ForgeConstantType {
             get => ExprForgeConstantType.NONCONST;
         }
 
-        public ExprNodeRenderable ForgeRenderable
-        {
+        public ExprNodeRenderable ForgeRenderable {
             get => this;
         }
 

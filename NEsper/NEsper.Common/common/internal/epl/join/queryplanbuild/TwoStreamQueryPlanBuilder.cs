@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.context.aifactory.select;
 using com.espertech.esper.common.@internal.epl.join.querygraph;
@@ -40,18 +41,33 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanbuild
             string[][][] uniqueIndexProps = streamJoinAnalysisResult.UniqueKeys;
             TableMetaData[] tablesPerStream = streamJoinAnalysisResult.TablesPerStream;
 
-            QueryPlanIndexForge[] indexSpecs = QueryPlanIndexBuilder.BuildIndexSpec(queryGraph, typesPerStream, uniqueIndexProps);
+            QueryPlanIndexForge[] indexSpecs = QueryPlanIndexBuilder.BuildIndexSpec(
+                queryGraph,
+                typesPerStream,
+                uniqueIndexProps);
 
             QueryPlanNodeForge[] execNodeSpecs = new QueryPlanNodeForge[2];
             TableLookupPlanForge[] lookupPlans = new TableLookupPlanForge[2];
 
             // plan lookup from 1 to zero
             lookupPlans[1] = NStreamQueryPlanBuilder.CreateLookupPlan(
-                queryGraph, 1, 0, streamJoinAnalysisResult.IsVirtualDW(0), indexSpecs[0], typesPerStream, tablesPerStream[0]);
+                queryGraph,
+                1,
+                0,
+                streamJoinAnalysisResult.IsVirtualDW(0),
+                indexSpecs[0],
+                typesPerStream,
+                tablesPerStream[0]);
 
             // plan lookup from zero to 1
             lookupPlans[0] = NStreamQueryPlanBuilder.CreateLookupPlan(
-                queryGraph, 0, 1, streamJoinAnalysisResult.IsVirtualDW(1), indexSpecs[1], typesPerStream, tablesPerStream[1]);
+                queryGraph,
+                0,
+                1,
+                streamJoinAnalysisResult.IsVirtualDW(1),
+                indexSpecs[1],
+                typesPerStream,
+                tablesPerStream[1]);
             execNodeSpecs[0] = new TableLookupNodeForge(lookupPlans[0]);
             execNodeSpecs[1] = new TableLookupNodeForge(lookupPlans[1]);
 

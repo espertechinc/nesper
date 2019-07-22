@@ -52,8 +52,14 @@ namespace com.espertech.esper.common.@internal.context.airegistry
             ExprEvaluatorContext exprEvaluatorContext,
             int streamNum)
         {
-            return services.Array[exprEvaluatorContext.AgentInstanceId].GetSubstituteEvent(
-                originalEvent, isNewData, constantIndexNumber, relativeIndex, exprEvaluatorContext, streamNum);
+            return services.Array[exprEvaluatorContext.AgentInstanceId]
+                .GetSubstituteEvent(
+                    originalEvent,
+                    isNewData,
+                    constantIndexNumber,
+                    relativeIndex,
+                    exprEvaluatorContext,
+                    streamNum);
         }
     }
 } // end of namespace

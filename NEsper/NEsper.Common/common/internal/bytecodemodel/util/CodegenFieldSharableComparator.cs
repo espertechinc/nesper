@@ -7,9 +7,11 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.core;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.bytecodemodel.util
@@ -40,9 +42,11 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.util
 
         public CodegenExpression InitCtorScoped()
         {
-            return StaticMethod(typeof(ExprNodeUtilityMake), name.MethodName,
-                Constant(types), 
-                Constant(isSortUsingCollator), 
+            return StaticMethod(
+                typeof(ExprNodeUtilityMake),
+                name.MethodName,
+                Constant(types),
+                Constant(isSortUsingCollator),
                 Constant(descending));
         }
 

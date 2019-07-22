@@ -6,33 +6,31 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.context.util;
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.output.view
 {
     public class OutputProcessViewAfterStateImpl : OutputProcessViewAfterState
     {
-        private readonly long? afterConditionTime;
-        private readonly int? afterConditionNumberOfEvents;
-        protected bool isAfterConditionSatisfied;
-        private int afterConditionEventsFound;
+        private readonly int? _afterConditionNumberOfEvents;
+        private readonly long? _afterConditionTime;
+        private int _afterConditionEventsFound;
+        private bool _isAfterConditionSatisfied;
 
         public OutputProcessViewAfterStateImpl(
             long? afterConditionTime,
             int? afterConditionNumberOfEvents)
         {
-            this.afterConditionTime = afterConditionTime;
-            this.afterConditionNumberOfEvents = afterConditionNumberOfEvents;
+            _afterConditionTime = afterConditionTime;
+            _afterConditionNumberOfEvents = afterConditionNumberOfEvents;
         }
 
         /// <summary>
-        /// Returns true if the after-condition is satisfied.
+        ///     Returns true if the after-condition is satisfied.
         /// </summary>
         /// <param name="newEvents">is the view new events</param>
         /// <returns>indicator for output condition</returns>
@@ -40,11 +38,12 @@ namespace com.espertech.esper.common.@internal.epl.output.view
             EventBean[] newEvents,
             StatementContext statementContext)
         {
-            return isAfterConditionSatisfied || CheckAfterCondition(newEvents == null ? 0 : newEvents.Length, statementContext);
+            return _isAfterConditionSatisfied ||
+                   CheckAfterCondition(newEvents == null ? 0 : newEvents.Length, statementContext);
         }
 
         /// <summary>
-        /// Returns true if the after-condition is satisfied.
+        ///     Returns true if the after-condition is satisfied.
         /// </summary>
         /// <param name="newEvents">is the join new events</param>
         /// <returns>indicator for output condition</returns>
@@ -52,11 +51,12 @@ namespace com.espertech.esper.common.@internal.epl.output.view
             ISet<MultiKey<EventBean>> newEvents,
             StatementContext statementContext)
         {
-            return isAfterConditionSatisfied || CheckAfterCondition(newEvents == null ? 0 : newEvents.Count, statementContext);
+            return _isAfterConditionSatisfied ||
+                   CheckAfterCondition(newEvents == null ? 0 : newEvents.Count, statementContext);
         }
 
         /// <summary>
-        /// Returns true if the after-condition is satisfied.
+        ///     Returns true if the after-condition is satisfied.
         /// </summary>
         /// <param name="newOldEvents">is the new and old events pair</param>
         /// <returns>indicator for output condition</returns>
@@ -64,8 +64,10 @@ namespace com.espertech.esper.common.@internal.epl.output.view
             UniformPair<EventBean[]> newOldEvents,
             StatementContext statementContext)
         {
-            return isAfterConditionSatisfied || CheckAfterCondition(
-                       newOldEvents == null ? 0 : (newOldEvents.First == null ? 0 : newOldEvents.First.Length), statementContext);
+            return _isAfterConditionSatisfied ||
+                   CheckAfterCondition(
+                       newOldEvents == null ? 0 : newOldEvents.First == null ? 0 : newOldEvents.First.Length,
+                       statementContext);
         }
 
         public void Destroy()
@@ -77,28 +79,28 @@ namespace com.espertech.esper.common.@internal.epl.output.view
             int numOutputEvents,
             StatementContext statementContext)
         {
-            if (afterConditionTime != null) {
-                long time = statementContext.TimeProvider.Time;
-                if (time < afterConditionTime) {
+            if (_afterConditionTime != null) {
+                var time = statementContext.TimeProvider.Time;
+                if (time < _afterConditionTime) {
                     return false;
                 }
 
-                isAfterConditionSatisfied = true;
+                _isAfterConditionSatisfied = true;
                 return true;
             }
-            else if (afterConditionNumberOfEvents != null) {
-                afterConditionEventsFound += numOutputEvents;
-                if (afterConditionEventsFound <= afterConditionNumberOfEvents) {
+
+            if (_afterConditionNumberOfEvents != null) {
+                _afterConditionEventsFound += numOutputEvents;
+                if (_afterConditionEventsFound <= _afterConditionNumberOfEvents) {
                     return false;
                 }
 
-                isAfterConditionSatisfied = true;
+                _isAfterConditionSatisfied = true;
                 return true;
             }
-            else {
-                isAfterConditionSatisfied = true;
-                return true;
-            }
+
+            _isAfterConditionSatisfied = true;
+            return true;
         }
     }
 } // end of namespace

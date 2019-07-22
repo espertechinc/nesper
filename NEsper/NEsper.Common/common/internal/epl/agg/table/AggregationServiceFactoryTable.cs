@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.client.hook.aggmultifunc;
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.epl.agg.core;
@@ -60,20 +61,36 @@ namespace com.espertech.esper.common.@internal.epl.agg.table
             TableInstance tableInstance = table.GetTableInstance(agentInstanceContext.AgentInstanceId);
             if (!table.MetaData.IsKeyed) {
                 TableInstanceUngrouped tableInstanceUngrouped = (TableInstanceUngrouped) tableInstance;
-                return new AggSvcGroupAllWTableImpl(tableInstanceUngrouped, methodPairs, accessAgents, accessColumnsZeroOffset);
+                return new AggSvcGroupAllWTableImpl(
+                    tableInstanceUngrouped,
+                    methodPairs,
+                    accessAgents,
+                    accessColumnsZeroOffset);
             }
 
             TableInstanceGrouped tableInstanceGrouped = (TableInstanceGrouped) tableInstance;
             if (groupByRollupDesc == null) {
-                return new AggSvcGroupByWTableImpl(tableInstanceGrouped, methodPairs, accessAgents, accessColumnsZeroOffset);
+                return new AggSvcGroupByWTableImpl(
+                    tableInstanceGrouped,
+                    methodPairs,
+                    accessAgents,
+                    accessColumnsZeroOffset);
             }
 
             if (table.MetaData.KeyTypes.Length > 1) {
                 return new AggSvcGroupByWTableRollupMultiKeyImpl(
-                    tableInstanceGrouped, methodPairs, accessAgents, accessColumnsZeroOffset, groupByRollupDesc);
+                    tableInstanceGrouped,
+                    methodPairs,
+                    accessAgents,
+                    accessColumnsZeroOffset,
+                    groupByRollupDesc);
             }
             else {
-                return new AggSvcGroupByWTableRollupSingleKeyImpl(tableInstanceGrouped, methodPairs, accessAgents, accessColumnsZeroOffset);
+                return new AggSvcGroupByWTableRollupSingleKeyImpl(
+                    tableInstanceGrouped,
+                    methodPairs,
+                    accessAgents,
+                    accessColumnsZeroOffset);
             }
         }
     }

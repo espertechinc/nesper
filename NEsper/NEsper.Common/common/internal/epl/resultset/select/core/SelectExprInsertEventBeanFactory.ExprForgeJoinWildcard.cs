@@ -8,6 +8,7 @@
 
 using System;
 using System.IO;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -57,15 +58,19 @@ namespace com.espertech.esper.common.@internal.epl.resultset.@select.core
                 CodegenClassScope codegenClassScope)
             {
                 var methodNode = codegenMethodScope.MakeChild(
-                    EvaluationType, typeof(ExprForgeJoinWildcard), codegenClassScope);
+                    EvaluationType,
+                    typeof(ExprForgeJoinWildcard),
+                    codegenClassScope);
                 var refEPS = exprSymbol.GetAddEPS(methodNode);
                 methodNode.Block
-                    .DeclareVar(
-                        typeof(EventBean), "bean", CodegenExpressionBuilder.ArrayAtIndex(refEPS, CodegenExpressionBuilder.Constant(streamNum)))
+                    .DeclareVar<EventBean>(
+                        "bean",
+                        CodegenExpressionBuilder.ArrayAtIndex(refEPS, CodegenExpressionBuilder.Constant(streamNum)))
                     .IfRefNullReturnNull("bean")
                     .MethodReturn(
                         CodegenExpressionBuilder.Cast(
-                            EvaluationType, CodegenExpressionBuilder.ExprDotUnderlying(CodegenExpressionBuilder.Ref("bean"))));
+                            EvaluationType,
+                            CodegenExpressionBuilder.ExprDotUnderlying(CodegenExpressionBuilder.Ref("bean"))));
                 return CodegenExpressionBuilder.LocalMethod(methodNode);
             }
 

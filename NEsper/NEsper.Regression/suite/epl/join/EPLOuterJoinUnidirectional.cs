@@ -177,7 +177,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                 var epl = "create window MyCWindow#keepall as SupportBean_C;\n" +
                           "insert into MyCWindow select * from SupportBean_C;\n" +
                           "@Name('s0') select a.Id as aId, b.Id as bId, MyCWindow.Id as cId, SupportBean_D.Id as dId " +
-                          "from pattern[every a=SupportBean_A => b=SupportBean_B] t1 unIdirectional " +
+                          "from pattern[every a=SupportBean_A -> b=SupportBean_B] t1 unIdirectional " +
                           "full outer join " +
                           "MyCWindow unIdirectional " +
                           "full outer join " +

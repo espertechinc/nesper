@@ -8,6 +8,7 @@
 
 using System;
 using System.IO;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -60,13 +61,14 @@ namespace com.espertech.esper.common.@internal.epl.resultset.@select.core
 
                 var refEPS = exprSymbol.GetAddEPS(methodNode);
                 methodNode.Block
-                    .DeclareVar(
-                        typeof(EventBean), "theEvent",
+                    .DeclareVar<EventBean>(
+                        "theEvent",
                         CodegenExpressionBuilder.ArrayAtIndex(refEPS, CodegenExpressionBuilder.Constant(streamNumEval)))
                     .IfRefNullReturnNull("theEvent")
                     .MethodReturn(
                         CodegenExpressionBuilder.Cast(
-                            returnType, CodegenExpressionBuilder.ExprDotUnderlying(CodegenExpressionBuilder.Ref("theEvent"))));
+                            returnType,
+                            CodegenExpressionBuilder.ExprDotUnderlying(CodegenExpressionBuilder.Ref("theEvent"))));
                 return CodegenExpressionBuilder.LocalMethod(methodNode);
             }
 

@@ -8,6 +8,7 @@
 
 using System;
 using System.Reflection;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -16,6 +17,7 @@ using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.expression.dot.core
@@ -61,21 +63,26 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
             CodegenClassScope codegenClassScope)
         {
             CodegenMethod methodNode = codegenMethodScope.MakeChild(
-                forge.EvaluationType, typeof(ExprDotNodeForgePropertyExprEvalIndexed), codegenClassScope);
+                forge.EvaluationType,
+                typeof(ExprDotNodeForgePropertyExprEvalIndexed),
+                codegenClassScope);
 
             CodegenExpressionRef refEPS = exprSymbol.GetAddEPS(methodNode);
             methodNode.Block
-                .DeclareVar(typeof(EventBean), "event", ArrayAtIndex(refEPS, Constant(forge.StreamNum)))
+                .DeclareVar<EventBean>("event", ArrayAtIndex(refEPS, Constant(forge.StreamNum)))
                 .IfRefNullReturnNull("event")
-                .DeclareVar(
-                    typeof(int?), "index",
+                .DeclareVar<int?>(
+                    "index",
                     forge.ExprForge.EvaluateCodegen(typeof(int?), methodNode, exprSymbol, codegenClassScope))
                 .IfRefNullReturnNull("index")
                 .MethodReturn(
                     CodegenLegoCast.CastSafeFromObjectType(
                         forge.EvaluationType,
                         forge.IndexedGetter.EventBeanGetIndexedCodegen(
-                            methodNode, codegenClassScope, @Ref("event"), @Ref("index"))));
+                            methodNode,
+                            codegenClassScope,
+                            @Ref("event"),
+                            @Ref("index"))));
             return LocalMethod(methodNode);
         }
     }

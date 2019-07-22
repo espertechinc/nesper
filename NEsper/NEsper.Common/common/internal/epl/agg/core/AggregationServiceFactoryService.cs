@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.@internal.epl.agg.groupby;
 using com.espertech.esper.common.@internal.epl.agg.groupbylocal;
 using com.espertech.esper.common.@internal.epl.expression.time.abacus;

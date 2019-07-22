@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client.configuration;
 using com.espertech.esper.common.client.soda;
 using com.espertech.esper.common.client.util;
@@ -32,10 +33,13 @@ namespace com.espertech.esper.common.@internal.support
             switch (enumValue) {
                 case EventRepresentationChoice.ARRAY:
                     return "ARRAY";
+
                 case EventRepresentationChoice.MAP:
                     return "MAP";
+
                 case EventRepresentationChoice.AVRO:
                     return "AVRO";
+
                 case EventRepresentationChoice.DEFAULT:
                     return "";
             }
@@ -48,10 +52,13 @@ namespace com.espertech.esper.common.@internal.support
             switch (enumValue) {
                 case EventRepresentationChoice.ARRAY:
                     return "@EventRepresentation('objectarray')";
+
                 case EventRepresentationChoice.MAP:
                     return "@EventRepresentation('map')";
+
                 case EventRepresentationChoice.AVRO:
                     return "@EventRepresentation('avro')";
+
                 case EventRepresentationChoice.DEFAULT:
                     return "";
             }
@@ -64,10 +71,13 @@ namespace com.espertech.esper.common.@internal.support
             switch (enumValue) {
                 case EventRepresentationChoice.ARRAY:
                     return " objectarray";
+
                 case EventRepresentationChoice.MAP:
                     return " map";
+
                 case EventRepresentationChoice.AVRO:
                     return " avro";
+
                 case EventRepresentationChoice.DEFAULT:
                     return "";
             }
@@ -80,10 +90,13 @@ namespace com.espertech.esper.common.@internal.support
             switch (enumValue) {
                 case EventRepresentationChoice.ARRAY:
                     return EventUnderlyingType.OBJECTARRAY.GetUnderlyingClassName();
+
                 case EventRepresentationChoice.MAP:
                     return EventUnderlyingType.MAP.GetUnderlyingClassName();
+
                 case EventRepresentationChoice.AVRO:
                     return EventUnderlyingType.AVRO.GetUnderlyingClassName();
+
                 case EventRepresentationChoice.DEFAULT:
                     return EventUnderlyingTypeExtensions.GetDefault().GetUnderlyingClassName();
             }
@@ -97,10 +110,13 @@ namespace com.espertech.esper.common.@internal.support
             switch (enumValue) {
                 case EventRepresentationChoice.ARRAY:
                     return EventUnderlyingType.OBJECTARRAY;
+
                 case EventRepresentationChoice.MAP:
                     return EventUnderlyingType.MAP;
+
                 case EventRepresentationChoice.AVRO:
                     return EventUnderlyingType.AVRO;
+
                 case EventRepresentationChoice.DEFAULT:
                     return EventUnderlyingTypeExtensions.GetDefault();
             }

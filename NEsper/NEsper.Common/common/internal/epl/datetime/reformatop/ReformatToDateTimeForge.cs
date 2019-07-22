@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -48,9 +49,12 @@ namespace com.espertech.esper.common.@internal.epl.datetime.reformatop
                 .MakeChild(typeof(DateTime), typeof(ReformatToDateTimeForge), codegenClassScope)
                 .AddParam(typeof(long), "ts")
                 .Block
-                .DeclareVar(
-                    typeof(DateTime), "dateTime",
-                    CodegenExpressionBuilder.StaticMethod(typeof(DateTimeHelper), "UtcFromMills", CodegenExpressionBuilder.Ref("ts")))
+                .DeclareVar<DateTime>(
+                    "dateTime",
+                    CodegenExpressionBuilder.StaticMethod(
+                        typeof(DateTimeHelper),
+                        "UtcFromMills",
+                        CodegenExpressionBuilder.Ref("ts")))
                 .MethodReturn(CodegenExpressionBuilder.Ref("dateTime"));
             return CodegenExpressionBuilder.LocalMethod(methodNode, inner);
         }

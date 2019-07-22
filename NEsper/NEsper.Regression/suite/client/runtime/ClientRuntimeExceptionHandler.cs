@@ -112,7 +112,7 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
                 configuration.Runtime.ExceptionHandling.HandlerFactories.Clear();
                 configuration.Compiler.AddPlugInAggregationFunctionForge(
                     "myinvalIdagg",
-                    typeof(SupportInvalidAggregationFunctionForge).Name);
+                    typeof(SupportInvalidAggregationFunctionForge));
                 configuration.Common.AddEventType(typeof(SupportBean));
 
                 var runtime = EPRuntimeProvider.GetRuntime(

@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.collection;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.epl.streamtype;
@@ -57,8 +58,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                 }
                 catch (PropertyAccessException ex) {
                     throw new ExprValidationPropertyException(
-                        "Failed to find property '" + unresolvedPropertyName +
-                        "', the property name does not parse (are you sure?): " + ex.Message, ex);
+                        "Failed to find property '" +
+                        unresolvedPropertyName +
+                        "', the property name does not parse (are you sure?): " +
+                        ex.Message,
+                        ex);
                 }
 
                 // resolves without a stream name, return descriptor and null stream name
@@ -70,7 +74,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             var streamOrPropertyName = StringValue.UnescapeBacktick(streamOrPropertyNameMayEscaped);
             try {
                 propertyInfo = streamTypeService.ResolveByStreamAndPropName(
-                    streamOrPropertyName, unresolvedPropertyName, obtainFragment);
+                    streamOrPropertyName,
+                    unresolvedPropertyName,
+                    obtainFragment);
                 // resolves with a stream name, return descriptor and stream name
                 return new Pair<PropertyResolutionDescriptor, string>(propertyInfo, streamOrPropertyName);
             }
@@ -98,7 +104,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                     if (table != null && table.TableName.Equals(streamOrPropertyName)) {
                         try {
                             propertyInfo = streamTypeService.ResolveByStreamAndPropName(
-                                eventType.Name, unresolvedPropertyName, obtainFragment);
+                                eventType.Name,
+                                unresolvedPropertyName,
+                                obtainFragment);
                         }
                         catch (Exception) {
                         }
@@ -128,8 +136,13 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
 
                         if (text != null) {
                             throw new ExprValidationPropertyException(
-                                "Failed to resolve property '" + propertyNameCandidate + "' (property '" +
-                                streamOrPropertyName + "' is " + text + ")");
+                                "Failed to resolve property '" +
+                                propertyNameCandidate +
+                                "' (property '" +
+                                streamOrPropertyName +
+                                "' is " +
+                                text +
+                                ")");
                         }
                     }
                 }
@@ -153,7 +166,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             if (streamOrPropertyName == null) {
                 try {
                     propertyInfo = streamTypeService.ResolveByPropertyNameExplicitProps(
-                        unresolvedPropertyName, obtainFragment);
+                        unresolvedPropertyName,
+                        obtainFragment);
                 }
                 catch (StreamTypesException ex) {
                     throw GetSuggestionException(ex);
@@ -170,7 +184,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             StreamTypesException typeExceptionOne;
             try {
                 propertyInfo = streamTypeService.ResolveByStreamAndPropNameExplicitProps(
-                    streamOrPropertyName, unresolvedPropertyName, obtainFragment);
+                    streamOrPropertyName,
+                    unresolvedPropertyName,
+                    obtainFragment);
                 // resolves with a stream name, return descriptor and stream name
                 return new Pair<PropertyResolutionDescriptor, string>(propertyInfo, streamOrPropertyName);
             }
@@ -183,7 +199,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             var propertyNameCandidate = streamOrPropertyName + '.' + unresolvedPropertyName;
             try {
                 propertyInfo = streamTypeService.ResolveByPropertyNameExplicitProps(
-                    propertyNameCandidate, obtainFragment);
+                    propertyNameCandidate,
+                    obtainFragment);
                 // resolves without a stream name, return null for stream name
                 return new Pair<PropertyResolutionDescriptor, string>(propertyInfo, null);
             }
@@ -211,7 +228,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
 
             // fail to resolve
             return new ExprValidationPropertyException(
-                "Failed to resolve property '" + propertyNameCandidate +
+                "Failed to resolve property '" +
+                propertyNameCandidate +
                 "' to a stream or nested property in a stream");
         }
 

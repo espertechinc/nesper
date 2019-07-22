@@ -59,7 +59,9 @@ namespace com.espertech.esper.common.@internal.context.controller.condition
 
                     scheduleHandle = null; // terminates automatically unless scheduled again
                     inProcAgentInstanceContext.AuditProvider.ScheduleFire(
-                        inProcAgentInstanceContext, ScheduleObjectType.context, NAME_AUDITPROVIDER_SCHEDULE);
+                        inProcAgentInstanceContext,
+                        ScheduleObjectType.context,
+                        NAME_AUDITPROVIDER_SCHEDULE);
                     callback.RangeNotification(conditionPath, this, null, null, null, null);
 
                     inProcAgentInstanceContext.InstrumentationProvider.AContextScheduledEval();
@@ -67,13 +69,18 @@ namespace com.espertech.esper.common.@internal.context.controller.condition
             };
             var agentInstanceContext = controller.Realization.AgentInstanceContextCreate;
             scheduleHandle = new EPStatementHandleCallbackSchedule(
-                agentInstanceContext.EpStatementAgentInstanceHandle, scheduleCallback);
+                agentInstanceContext.EpStatementAgentInstanceHandle,
+                scheduleCallback);
             long nextScheduledTime = ScheduleComputeHelper.ComputeDeltaNextOccurance(
-                Schedule, agentInstanceContext.TimeProvider.Time,
+                Schedule,
+                agentInstanceContext.TimeProvider.Time,
                 agentInstanceContext.ImportServiceRuntime.TimeZone,
                 agentInstanceContext.ImportServiceRuntime.TimeAbacus);
             agentInstanceContext.AuditProvider.ScheduleAdd(
-                nextScheduledTime, agentInstanceContext, scheduleHandle, ScheduleObjectType.context,
+                nextScheduledTime,
+                agentInstanceContext,
+                scheduleHandle,
+                ScheduleObjectType.context,
                 NAME_AUDITPROVIDER_SCHEDULE);
             agentInstanceContext.SchedulingService.Add(nextScheduledTime, scheduleHandle, scheduleSlot);
             return false;
@@ -84,7 +91,10 @@ namespace com.espertech.esper.common.@internal.context.controller.condition
             if (scheduleHandle != null) {
                 var agentInstanceContext = controller.Realization.AgentInstanceContextCreate;
                 agentInstanceContext.AuditProvider.ScheduleRemove(
-                    agentInstanceContext, scheduleHandle, ScheduleObjectType.context, NAME_AUDITPROVIDER_SCHEDULE);
+                    agentInstanceContext,
+                    scheduleHandle,
+                    ScheduleObjectType.context,
+                    NAME_AUDITPROVIDER_SCHEDULE);
                 agentInstanceContext.SchedulingService.Remove(scheduleHandle, scheduleSlot);
             }
 

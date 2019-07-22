@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.core;
@@ -16,6 +17,7 @@ using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.resultset.core;
 using com.espertech.esper.common.@internal.epl.resultset.@select.core;
 using com.espertech.esper.compat.collections;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 using static com.espertech.esper.common.@internal.epl.resultset.codegen.ResultSetProcessorCodegenNames;
 
@@ -27,7 +29,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowperevent
     /// </summary>
     public class ResultSetProcessorRowPerEventForge : ResultSetProcessorFactoryForge
     {
-        private readonly ResultSetProcessorOutputConditionType outputConditionType;
+        private readonly ResultSetProcessorOutputConditionType? outputConditionType;
         private readonly OutputLimitSpec outputLimitSpec;
         private readonly SelectExprProcessorForge selectExprProcessorForge;
 
@@ -39,7 +41,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowperevent
             bool isUnidirectional,
             bool isHistoricalOnly,
             OutputLimitSpec outputLimitSpec,
-            ResultSetProcessorOutputConditionType outputConditionType,
+            ResultSetProcessorOutputConditionType? outputConditionType,
             bool hasOrderBy)
         {
             ResultEventType = resultEventType;
@@ -81,12 +83,19 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowperevent
             IList<CodegenTypedParam> factoryMembers)
         {
             instance.Methods.AddMethod(
-                typeof(SelectExprProcessor), "getSelectExprProcessor", Collections.GetEmptyList<CodegenNamedParam>(),
-                typeof(ResultSetProcessorRowPerEvent), classScope,
+                typeof(SelectExprProcessor),
+                "getSelectExprProcessor",
+                Collections.GetEmptyList<CodegenNamedParam>(),
+                typeof(ResultSetProcessorRowPerEvent),
+                classScope,
                 methodNode => methodNode.Block.MethodReturn(REF_SELECTEXPRPROCESSOR));
             instance.Methods.AddMethod(
-                typeof(bool), "hasHavingClause", Collections.GetEmptyList<CodegenNamedParam>(), typeof(ResultSetProcessorRowPerEvent),
-                classScope, methodNode => methodNode.Block.MethodReturn(Constant(OptionalHavingNode != null)));
+                typeof(bool),
+                "hasHavingClause",
+                Collections.GetEmptyList<CodegenNamedParam>(),
+                typeof(ResultSetProcessorRowPerEvent),
+                classScope,
+                methodNode => methodNode.Block.MethodReturn(Constant(OptionalHavingNode != null)));
             ResultSetProcessorUtil.EvaluateHavingClauseCodegen(OptionalHavingNode, classScope, instance);
         }
 
@@ -176,7 +185,10 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowperevent
             CodegenInstanceAux instance)
         {
             ResultSetProcessorRowPerEventImpl.ProcessOutputLimitedLastAllNonBufferedViewCodegen(
-                this, classScope, method, instance);
+                this,
+                classScope,
+                method,
+                instance);
         }
 
         public void ProcessOutputLimitedLastAllNonBufferedJoinCodegen(
@@ -185,7 +197,10 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowperevent
             CodegenInstanceAux instance)
         {
             ResultSetProcessorRowPerEventImpl.ProcessOutputLimitedLastAllNonBufferedJoinCodegen(
-                this, classScope, method, instance);
+                this,
+                classScope,
+                method,
+                instance);
         }
 
         public void AcceptHelperVisitorCodegen(

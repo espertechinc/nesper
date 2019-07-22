@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+
 using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.context.controller.condition;
 using com.espertech.esper.compat.collections;
@@ -20,7 +21,9 @@ namespace com.espertech.esper.common.@internal.context.controller.initterm
 
         private int currentSubpath;
 
-        private IDictionary<int, ContextControllerInitTermSvcEntry> endConditions = new Dictionary<int, ContextControllerInitTermSvcEntry>();
+        private IDictionary<int, ContextControllerInitTermSvcEntry> endConditions =
+            new Dictionary<int, ContextControllerInitTermSvcEntry>();
+
         private ContextControllerConditionNonHA startCondition;
 
         public void MgmtCreate(
@@ -68,7 +71,8 @@ namespace com.espertech.esper.common.@internal.context.controller.initterm
             ContextControllerInitTermPartitionKey partitionKey)
         {
             endConditions.Put(
-                ((IntSeqKeyOne) endConditionPath).One, new ContextControllerInitTermSvcEntry(subpathIdOrCPId, endCondition, partitionKey));
+                ((IntSeqKeyOne) endConditionPath).One,
+                new ContextControllerInitTermSvcEntry(subpathIdOrCPId, endCondition, partitionKey));
         }
 
         public ContextControllerInitTermSvcEntry EndDelete(IntSeqKey conditionPath)
@@ -78,7 +82,8 @@ namespace com.espertech.esper.common.@internal.context.controller.initterm
 
         public ICollection<ContextControllerInitTermSvcEntry> EndDeleteByParentPath(IntSeqKey controllerPath)
         {
-            IList<ContextControllerInitTermSvcEntry> entries = new List<ContextControllerInitTermSvcEntry>(endConditions.Values);
+            IList<ContextControllerInitTermSvcEntry> entries =
+                new List<ContextControllerInitTermSvcEntry>(endConditions.Values);
             endConditions.Clear();
             return entries;
         }

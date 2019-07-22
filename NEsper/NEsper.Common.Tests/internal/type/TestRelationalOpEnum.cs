@@ -91,7 +91,7 @@ namespace com.espertech.esper.common.@internal.type
                 var rhs = parameters[i][3];
                 var expected = parameters[i][4];
 
-                RelationalOpEnum.Computer computer;
+                RelationalOpEnumComputer computer;
                 if (isDecimal)
                 {
                     computer = e.GetComputer(typeof(decimal), lhs.GetType(), rhs.GetType());

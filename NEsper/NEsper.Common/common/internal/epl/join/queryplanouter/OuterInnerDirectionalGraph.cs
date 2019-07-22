@@ -10,6 +10,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+
 using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.join.queryplanouter
@@ -201,7 +202,10 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanouter
             int outerStream,
             int innerStream)
         {
-            if ((outerStream >= _numStreams) || (innerStream >= _numStreams) || (outerStream < 0) || (innerStream < 0)) {
+            if ((outerStream >= _numStreams) ||
+                (innerStream >= _numStreams) ||
+                (outerStream < 0) ||
+                (innerStream < 0)) {
                 throw new ArgumentException("Out of bounds parameter for inner or outer stream num");
             }
 

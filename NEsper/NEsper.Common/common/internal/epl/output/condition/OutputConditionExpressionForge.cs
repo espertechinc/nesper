@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.compile.stage1.spec;
@@ -20,6 +21,7 @@ using com.espertech.esper.common.@internal.epl.variable.core;
 using com.espertech.esper.common.@internal.schedule;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.output.condition
@@ -108,33 +110,50 @@ namespace com.espertech.esper.common.@internal.epl.output.condition
             var method = parent.MakeChild(typeof(OutputConditionFactory), GetType(), classScope);
 
             method.Block
-                .DeclareVar(
-                    typeof(OutputConditionExpressionFactory), "factory",
+                .DeclareVar<OutputConditionExpressionFactory>(
+                    "factory",
                     ExprDotMethodChain(symbols.GetAddInitSvc(method))
                         .Add(EPStatementInitServicesConstants.GETRESULTSETPROCESSORHELPERFACTORY)
                         .Add("makeOutputConditionExpression"))
-                .SetProperty(Ref("factory"), "WhenExpressionNodeEval",
+                .SetProperty(
+                    Ref("factory"),
+                    "WhenExpressionNodeEval",
                     ExprNodeUtilityCodegen.CodegenEvaluator(
-                        whenExpressionNodeEval.Forge, method, GetType(), classScope))
-                .SetProperty(Ref("factory"), "AndWhenTerminatedExpressionNodeEval",
+                        whenExpressionNodeEval.Forge,
+                        method,
+                        GetType(),
+                        classScope))
+                .SetProperty(
+                    Ref("factory"),
+                    "AndWhenTerminatedExpressionNodeEval",
                     andWhenTerminatedExpressionNodeEval == null
                         ? ConstantNull()
                         : ExprNodeUtilityCodegen.CodegenEvaluator(
-                            andWhenTerminatedExpressionNodeEval.Forge, method, GetType(), classScope))
+                            andWhenTerminatedExpressionNodeEval.Forge,
+                            method,
+                            GetType(),
+                            classScope))
                 .SetProperty(Ref("factory"), "UsingBuiltinProperties", Constant(isUsingBuiltinProperties))
-                .SetProperty(Ref("factory"), "VariableReadWritePackage",
+                .SetProperty(
+                    Ref("factory"),
+                    "VariableReadWritePackage",
                     variableReadWritePackage == null
                         ? ConstantNull()
                         : variableReadWritePackage.Make(method, symbols, classScope))
-                .SetProperty(Ref("factory"), "VariableReadWritePackageAfterTerminated",
+                .SetProperty(
+                    Ref("factory"),
+                    "VariableReadWritePackageAfterTerminated",
                     variableReadWritePackageAfterTerminated == null
                         ? ConstantNull()
                         : variableReadWritePackageAfterTerminated.Make(method, symbols, classScope))
-                .SetProperty(Ref("factory"), "Variables",
+                .SetProperty(
+                    Ref("factory"),
+                    "Variables",
                     variableNames == null
                         ? ConstantNull()
                         : VariableDeployTimeResolver.MakeResolveVariables(
-                            variableNames.Values, symbols.GetAddInitSvc(method)))
+                            variableNames.Values,
+                            symbols.GetAddInitSvc(method)))
                 .SetProperty(Ref("factory"), "ScheduleCallbackId", Constant(scheduleCallbackId))
                 .Expression(ExprDotMethodChain(symbols.GetAddInitSvc(method)).Add("addReadyCallback", Ref("factory")))
                 .MethodReturn(Ref("factory"));

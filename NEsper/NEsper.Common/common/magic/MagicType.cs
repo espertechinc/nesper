@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.annotation;
 using com.espertech.esper.common.client.util;
@@ -285,7 +286,9 @@ namespace com.espertech.esper.common.magic
         /// <returns></returns>
         public IEnumerable<SimpleMagicPropertyInfo> GetSimpleProperties(bool isCaseSensitive)
         {
-            return GetAllProperties(isCaseSensitive, magicProperty => magicProperty.EventPropertyType == EventPropertyType.SIMPLE);
+            return GetAllProperties(
+                isCaseSensitive,
+                magicProperty => magicProperty.EventPropertyType == EventPropertyType.SIMPLE);
         }
 
         /// <summary>
@@ -295,7 +298,9 @@ namespace com.espertech.esper.common.magic
         /// <returns></returns>
         public IEnumerable<SimpleMagicPropertyInfo> GetMappedProperties(bool isCaseSensitive)
         {
-            return GetAllProperties(isCaseSensitive, magicProperty => magicProperty.EventPropertyType == EventPropertyType.MAPPED);
+            return GetAllProperties(
+                isCaseSensitive,
+                magicProperty => magicProperty.EventPropertyType == EventPropertyType.MAPPED);
         }
 
         /// <summary>
@@ -305,7 +310,9 @@ namespace com.espertech.esper.common.magic
         /// <returns></returns>
         public IEnumerable<SimpleMagicPropertyInfo> GetIndexedProperties(bool isCaseSensitive)
         {
-            return GetAllProperties(isCaseSensitive, magicProperty => magicProperty.EventPropertyType == EventPropertyType.INDEXED);
+            return GetAllProperties(
+                isCaseSensitive,
+                magicProperty => magicProperty.EventPropertyType == EventPropertyType.INDEXED);
         }
 
         /// <summary>
@@ -375,7 +382,8 @@ namespace com.espertech.esper.common.magic
                             }
 
                             throw new EPException(
-                                "Unable to determine which property to use for \"" + propertyName +
+                                "Unable to determine which property to use for \"" +
+                                propertyName +
                                 "\" because more than one property matched");
                         }
 

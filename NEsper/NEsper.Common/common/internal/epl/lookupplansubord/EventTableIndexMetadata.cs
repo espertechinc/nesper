@@ -9,6 +9,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.@join.lookup;
 using com.espertech.esper.common.@internal.epl.@join.queryplan;
@@ -38,8 +39,13 @@ namespace com.espertech.esper.common.@internal.epl.lookupplansubord
             }
 
             var entry = new EventTableIndexMetadataEntry(
-                explicitIndexName, explicitIndexModuleName, isPrimary, explicitIndexDesc, explicitIndexName,
-                explicitIndexModuleName, deploymentId);
+                explicitIndexName,
+                explicitIndexModuleName,
+                isPrimary,
+                explicitIndexDesc,
+                explicitIndexName,
+                explicitIndexModuleName,
+                deploymentId);
             entry.AddReferringDeployment(deploymentId);
             Indexes.Put(indexMultiKey, entry);
         }
@@ -58,7 +64,13 @@ namespace com.espertech.esper.common.@internal.epl.lookupplansubord
             }
 
             var entry = new EventTableIndexMetadataEntry(
-                null, null, false, queryPlanIndexItem, null, null, deploymentId);
+                null,
+                null,
+                false,
+                queryPlanIndexItem,
+                null,
+                null,
+                deploymentId);
             entry.AddReferringDeployment(deploymentId);
             Indexes.Put(indexMultiKey, entry);
         }

@@ -7,12 +7,14 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.metrics.instrumentation;
 using com.espertech.esper.common.@internal.util;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.expression.ops
@@ -28,14 +30,16 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             LikeUtil likeUtil,
             CodegenExpression likeUtilInit)
             : base(
-                parent, isNumericValue)
+                parent,
+                isNumericValue)
         {
             LikeUtil = likeUtil;
             LikeUtilInit = likeUtilInit;
         }
 
         public override ExprEvaluator ExprEvaluator => new ExprLikeNodeForgeConstEval(
-            this, ForgeRenderable.ChildNodes[0].Forge.ExprEvaluator);
+            this,
+            ForgeRenderable.ChildNodes[0].Forge.ExprEvaluator);
 
         public CodegenExpression LikeUtilInit { get; }
 
@@ -50,7 +54,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             CodegenClassScope codegenClassScope)
         {
             var methodNode = ExprLikeNodeForgeConstEval.Codegen(
-                this, ForgeRenderable.ChildNodes[0], codegenMethodScope, exprSymbol, codegenClassScope);
+                this,
+                ForgeRenderable.ChildNodes[0],
+                codegenMethodScope,
+                exprSymbol,
+                codegenClassScope);
             return LocalMethod(methodNode);
         }
 
@@ -61,7 +69,13 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             CodegenClassScope codegenClassScope)
         {
             return new InstrumentationBuilderExpr(
-                GetType(), this, "ExprLike", requiredType, codegenMethodScope, exprSymbol, codegenClassScope).Build();
+                GetType(),
+                this,
+                "ExprLike",
+                requiredType,
+                codegenMethodScope,
+                exprSymbol,
+                codegenClassScope).Build();
         }
     }
 } // end of namespace

@@ -9,6 +9,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.context;
 using com.espertech.esper.common.@internal.context.mgr;
@@ -97,8 +98,11 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.querymethod
                     _contextName != null &&
                     !_processor.ContextName.Equals(_contextName)) {
                     throw new EPException(
-                        "Context for named window is '" + _processor.ContextName + "' and query specifies context '" +
-                        _contextName + "'");
+                        "Context for named window is '" +
+                        _processor.ContextName +
+                        "' and query specifies context '" +
+                        _contextName +
+                        "'");
                 }
 
                 // handle non-specified context
@@ -117,12 +121,15 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.querymethod
 
                 // context partition runtime query
                 var agentInstanceIds = FAFQueryMethodUtil.AgentInstanceIds(
-                    _processor, optionalSingleSelector, contextManagementService);
+                    _processor,
+                    optionalSingleSelector,
+                    contextManagementService);
 
                 // collect events and agent instances
                 if (agentInstanceIds.IsEmpty()) {
                     return new EPPreparedQueryResult(
-                        _processor.EventTypeResultSetProcessor, CollectionUtil.EVENTBEANARRAY_EMPTY);
+                        _processor.EventTypeResultSetProcessor,
+                        CollectionUtil.EVENTBEANARRAY_EMPTY);
                 }
 
                 if (agentInstanceIds.Count == 1) {
@@ -183,7 +190,12 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.querymethod
             // assign
             assignerSetter.Assign(
                 new StatementAIFactoryAssignmentsImpl(
-                    null, null, null, Collections.GetEmptyMap<int, SubSelectFactoryResult>(), tableAccessEvals, null));
+                    null,
+                    null,
+                    null,
+                    Collections.GetEmptyMap<int, SubSelectFactoryResult>(),
+                    tableAccessEvals,
+                    null));
         }
     }
 } // end of namespace

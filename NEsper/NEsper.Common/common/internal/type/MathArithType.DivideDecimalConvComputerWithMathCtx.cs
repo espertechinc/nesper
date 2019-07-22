@@ -35,7 +35,7 @@ namespace com.espertech.esper.common.@internal.type
             {
                 return decimal.Round(
                     decimal.Divide(s1, s2),
-                    mathContext.Precision, 
+                    mathContext.Precision,
                     mathContext.RoundingMode);
             }
 

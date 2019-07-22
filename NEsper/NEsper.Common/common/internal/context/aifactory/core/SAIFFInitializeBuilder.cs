@@ -9,6 +9,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -17,6 +18,7 @@ using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.context.aifactory.core
@@ -160,7 +162,8 @@ namespace com.espertech.esper.common.@internal.context.aifactory.core
             }
 
             var manufacturer = classScope.AddFieldUnshared<EventBeanManufacturer>(
-                true, forge.Make(method, classScope));
+                true,
+                forge.Make(method, classScope));
             return SetValue(name, manufacturer);
         }
 
@@ -184,19 +187,24 @@ namespace com.espertech.esper.common.@internal.context.aifactory.core
             if (map.Count == 1) {
                 var single = map.First();
                 return StaticMethod(
-                    typeof(Collections), "singletonMap", CodegenExpressionBuilder.Constant(single.Key),
+                    typeof(Collections),
+                    "singletonMap",
+                    CodegenExpressionBuilder.Constant(single.Key),
                     BuildMapValue(single.Value));
             }
 
             var child = method.MakeChild(typeof(IDictionary<string, T>), originator, classScope);
-            child.Block.DeclareVar(
-                typeof(IDictionary<string, T>), "map",
+            child.Block.DeclareVar<IDictionary<string, T>>(
+                "map",
                 NewInstance(
                     typeof(LinkedHashMap<string, T>),
                     CodegenExpressionBuilder.Constant(CollectionUtil.CapacityHashMap(map.Count))));
             foreach (var entry in map) {
                 child.Block.ExprDotMethod(
-                    Ref("map"), "put", CodegenExpressionBuilder.Constant(entry.Key), BuildMapValue(entry.Value));
+                    Ref("map"),
+                    "put",
+                    CodegenExpressionBuilder.Constant(entry.Key),
+                    BuildMapValue(entry.Value));
             }
 
             return LocalMethod(child);

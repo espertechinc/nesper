@@ -11,6 +11,7 @@ using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.util;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 using static com.espertech.esper.common.@internal.epl.expression.ops.ExprLikeNodeForgeConstEval;
 
@@ -79,38 +80,40 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             CodegenClassScope codegenClassScope)
         {
             var methodNode = codegenMethodScope.MakeChild(
-                typeof(bool?), typeof(ExprLikeNodeFormNonconstEval), codegenClassScope);
+                typeof(bool?),
+                typeof(ExprLikeNodeFormNonconstEval),
+                codegenClassScope);
             var blockMethod = methodNode.Block
-                .DeclareVar(
-                    typeof(string), "pattern",
+                .DeclareVar<string>(
+                    "pattern",
                     pattern.Forge.EvaluateCodegen(typeof(string), methodNode, exprSymbol, codegenClassScope))
                 .IfRefNullReturnNull("pattern");
 
             // initial like-setup
-            blockMethod.DeclareVar(typeof(char), "es", Constant('\\'));
+            blockMethod.DeclareVar<char>("es", Constant('\\'));
             if (optionalEscape != null) {
-                blockMethod.DeclareVar(
-                    typeof(string), "escapeString",
+                blockMethod.DeclareVar<string>(
+                    "escapeString",
                     optionalEscape.Forge.EvaluateCodegen(typeof(string), methodNode, exprSymbol, codegenClassScope));
                 blockMethod.IfCondition(
                         And(NotEqualsNull(Ref("escapeString")), Not(ExprDotMethod(Ref("escapeString"), "isEmpty"))))
                     .AssignRef("es", ExprDotMethod(Ref("escapeString"), "charAt", Constant(0)));
             }
 
-            blockMethod.DeclareVar(
-                typeof(LikeUtil), "likeUtil",
+            blockMethod.DeclareVar<LikeUtil>(
+                "likeUtil",
                 NewInstance<LikeUtil>(Ref("pattern"), Ref("es"), Constant(false)));
 
             if (!forge.IsNumericValue) {
-                blockMethod.DeclareVar(
-                        typeof(string), "value",
+                blockMethod.DeclareVar<string>(
+                        "value",
                         lhs.Forge.EvaluateCodegen(typeof(string), methodNode, exprSymbol, codegenClassScope))
                     .IfRefNullReturnNull("value")
                     .MethodReturn(GetLikeCode(forge, Ref("likeUtil"), Ref("value")));
             }
             else {
-                blockMethod.DeclareVar(
-                        typeof(object), "value",
+                blockMethod.DeclareVar<object>(
+                        "value",
                         lhs.Forge.EvaluateCodegen(typeof(object), methodNode, exprSymbol, codegenClassScope))
                     .IfRefNullReturnNull("value")
                     .MethodReturn(GetLikeCode(forge, Ref("likeUtil"), ExprDotMethod(Ref("value"), "toString")));

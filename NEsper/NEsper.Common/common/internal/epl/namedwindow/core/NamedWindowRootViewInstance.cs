@@ -44,17 +44,24 @@ namespace com.espertech.esper.common.@internal.epl.namedwindow.core
 
             IndexRepository = new EventTableIndexRepository(eventTableIndexMetadata);
             foreach (var entry in eventTableIndexMetadata.Indexes
-            )
-            {
-                if (entry.Value.OptionalQueryPlanIndexItem != null)
-                {
+            ) {
+                if (entry.Value.OptionalQueryPlanIndexItem != null) {
                     var index = EventTableUtil.BuildIndex(
-                        agentInstanceContext, 0, entry.Value.OptionalQueryPlanIndexItem, rootView.EventType, true,
-                        entry.Key.IsUnique, entry.Value.OptionalIndexName, null, false);
+                        agentInstanceContext,
+                        0,
+                        entry.Value.OptionalQueryPlanIndexItem,
+                        rootView.EventType,
+                        true,
+                        entry.Key.IsUnique,
+                        entry.Value.OptionalIndexName,
+                        null,
+                        false);
                     IndexRepository.AddIndex(
                         entry.Key,
                         new EventTableIndexRepositoryEntry(
-                            entry.Value.OptionalIndexName, entry.Value.OptionalIndexModuleName, index));
+                            entry.Value.OptionalIndexName,
+                            entry.Value.OptionalIndexModuleName,
+                            index));
                 }
             }
         }
@@ -81,11 +88,9 @@ namespace com.espertech.esper.common.@internal.epl.namedwindow.core
 
         public bool IsVirtualDataWindow => Child is VirtualDWView;
 
-        public VirtualDWView VirtualDataWindow
-        {
+        public VirtualDWView VirtualDataWindow {
             get {
-                if (!IsVirtualDataWindow)
-                {
+                if (!IsVirtualDataWindow) {
                     return null;
                 }
 
@@ -99,8 +104,7 @@ namespace com.espertech.esper.common.@internal.epl.namedwindow.core
         /// <param name="oldData">removed stream of the data window</param>
         public void RemoveOldData(EventBean[] oldData)
         {
-            foreach (var table in IndexRepository.Tables)
-            {
+            foreach (var table in IndexRepository.Tables) {
                 table.Remove(oldData, AgentInstanceContext);
             }
         }
@@ -111,8 +115,7 @@ namespace com.espertech.esper.common.@internal.epl.namedwindow.core
         /// <param name="newData">new event</param>
         public void AddNewData(EventBean[] newData)
         {
-            foreach (var table in IndexRepository.Tables)
-            {
+            foreach (var table in IndexRepository.Tables) {
                 table.Add(newData, AgentInstanceContext);
             }
         }
@@ -123,10 +126,8 @@ namespace com.espertech.esper.common.@internal.epl.namedwindow.core
             EventBean[] oldData)
         {
             // Update indexes for fast deletion, if there are any
-            if (rootView.IsChildBatching)
-            {
-                foreach (var table in IndexRepository.Tables)
-                {
+            if (rootView.IsChildBatching) {
+                foreach (var table in IndexRepository.Tables) {
                     table.Add(newData, AgentInstanceContext);
                 }
             }
@@ -146,8 +147,7 @@ namespace com.espertech.esper.common.@internal.epl.namedwindow.core
         public void Destroy()
         {
             IndexRepository.Destroy();
-            if (IsVirtualDataWindow)
-            {
+            if (IsVirtualDataWindow) {
                 VirtualDataWindow.HandleDestroy(AgentInstanceContext.AgentInstanceId);
             }
         }
@@ -163,14 +163,17 @@ namespace com.espertech.esper.common.@internal.epl.namedwindow.core
             Attribute[] annotations)
         {
             VirtualDWView virtualDataWindow = null;
-            if (IsVirtualDataWindow)
-            {
+            if (IsVirtualDataWindow) {
                 virtualDataWindow = VirtualDataWindow;
             }
 
             return FireAndForgetQueryExec.Snapshot(
-                queryGraph, annotations, virtualDataWindow,
-                IndexRepository, rootView.EventType.Name, AgentInstanceContext);
+                queryGraph,
+                annotations,
+                virtualDataWindow,
+                IndexRepository,
+                rootView.EventType.Name,
+                AgentInstanceContext);
         }
 
         /// <summary>
@@ -187,15 +190,20 @@ namespace com.espertech.esper.common.@internal.epl.namedwindow.core
             QueryPlanIndexItem explicitIndexDesc,
             bool isRecoveringResilient)
         {
-            lock (this)
-            {
+            lock (this) {
                 var initIndex =
                     AgentInstanceContext.StatementContext.EventTableIndexService.AllowInitIndex(isRecoveringResilient);
                 var initializeFrom =
                     initIndex ? DataWindowContents : CollectionUtil.NULL_EVENT_ITERABLE;
                 IndexRepository.ValidateAddExplicitIndex(
-                    explicitIndexName, explicitIndexModuleName, explicitIndexDesc, rootView.EventType, initializeFrom,
-                    AgentInstanceContext, isRecoveringResilient, null);
+                    explicitIndexName,
+                    explicitIndexModuleName,
+                    explicitIndexDesc,
+                    rootView.EventType,
+                    initializeFrom,
+                    AgentInstanceContext,
+                    isRecoveringResilient,
+                    null);
             }
         }
 

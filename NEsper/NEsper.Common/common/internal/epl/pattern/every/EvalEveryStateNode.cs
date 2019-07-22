@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.epl.pattern.core;
@@ -60,7 +61,9 @@ namespace com.espertech.esper.common.@internal.epl.pattern.every
             if (!restartable) {
                 agentInstanceContext.AuditProvider.PatternFalse(evalEveryNode.FactoryNode, this, agentInstanceContext);
                 agentInstanceContext.AuditProvider.PatternInstance(
-                    false, evalEveryNode.factoryNode, agentInstanceContext);
+                    false,
+                    evalEveryNode.factoryNode,
+                    agentInstanceContext);
                 ParentEvaluator.EvaluateFalse(this, false);
                 return;
             }
@@ -92,7 +95,8 @@ namespace com.espertech.esper.common.@internal.epl.pattern.every
         {
             AgentInstanceContext agentInstanceContext = evalEveryNode.Context.AgentInstanceContext;
             agentInstanceContext.InstrumentationProvider.QPatternEveryEvaluateTrue(
-                evalEveryNode.factoryNode, matchEvent);
+                evalEveryNode.factoryNode,
+                matchEvent);
 
             if (isQuitted) {
                 spawnedNodes.Remove(fromNode);
@@ -122,7 +126,11 @@ namespace com.espertech.esper.common.@internal.epl.pattern.every
 
             // All nodes indicate to their parents that their child node did not quit, therefore a false for isQuitted
             agentInstanceContext.AuditProvider.PatternTrue(
-                evalEveryNode.FactoryNode, this, matchEvent, false, agentInstanceContext);
+                evalEveryNode.FactoryNode,
+                this,
+                matchEvent,
+                false,
+                agentInstanceContext);
             ParentEvaluator.EvaluateTrue(matchEvent, this, false, optionalTriggeringEvent);
 
             agentInstanceContext.InstrumentationProvider.APatternEveryEvaluateTrue();

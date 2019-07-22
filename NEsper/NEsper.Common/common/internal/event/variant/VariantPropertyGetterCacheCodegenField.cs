@@ -7,10 +7,12 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.context.module;
 using com.espertech.esper.common.@internal.@event.core;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.@event.variant
@@ -32,7 +34,8 @@ namespace com.espertech.esper.common.@internal.@event.variant
         public CodegenExpression InitCtorScoped()
         {
             var type = Cast(
-                typeof(VariantEventType), EventTypeUtility.ResolveTypeCodegen(variantEventType, EPStatementInitServicesConstants.REF));
+                typeof(VariantEventType),
+                EventTypeUtility.ResolveTypeCodegen(variantEventType, EPStatementInitServicesConstants.REF));
             return ExprDotMethod(type, "getVariantPropertyGetterCache");
         }
 

@@ -8,12 +8,14 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.util;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.expression.ops
@@ -167,21 +169,28 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             var isNot = forge.ForgeRenderable.IsNot;
 
             var methodNode = codegenMethodScope.MakeChild(
-                typeof(bool?), typeof(ExprEqualsAllAnyNodeForgeEvalAnyWColl), codegenClassScope);
+                typeof(bool?),
+                typeof(ExprEqualsAllAnyNodeForgeEvalAnyWColl),
+                codegenClassScope);
 
             var block = methodNode.Block;
             var leftTypeUncoerced = forges[0].EvaluationType;
             block.DeclareVar(
-                leftTypeUncoerced, "left",
+                leftTypeUncoerced,
+                "left",
                 forges[0].EvaluateCodegen(leftTypeUncoerced, methodNode, exprSymbol, codegenClassScope));
             block.DeclareVar(
-                forge.CoercionTypeBoxed, "leftCoerced",
+                forge.CoercionTypeBoxed,
+                "leftCoerced",
                 !forge.IsMustCoerce
                     ? Ref("left")
                     : forge.Coercer.CoerceCodegenMayNullBoxed(
-                        Ref("left"), leftTypeUncoerced, methodNode, codegenClassScope));
-            block.DeclareVar(typeof(bool), "hasNonNullRow", ConstantFalse());
-            block.DeclareVar(typeof(bool), "hasNullRow", ConstantFalse());
+                        Ref("left"),
+                        leftTypeUncoerced,
+                        methodNode,
+                        codegenClassScope));
+            block.DeclareVar<bool>("hasNonNullRow", ConstantFalse());
+            block.DeclareVar<bool>("hasNullRow", ConstantFalse());
 
             for (var i = 1; i < forges.Length; i++) {
                 var refforge = forges[i];
@@ -190,9 +199,13 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
 
                 if (reftype != null && reftype.IsImplementsInterface(typeof(ICollection<object>))) {
                     block.IfRefNullReturnNull("left")
-                        .DeclareVar(
-                            typeof(ICollection<object>), refname,
-                            refforge.EvaluateCodegen(typeof(ICollection<object>), methodNode, exprSymbol, codegenClassScope))
+                        .DeclareVar<ICollection<object>>(
+                            refname,
+                            refforge.EvaluateCodegen(
+                                typeof(ICollection<object>),
+                                methodNode,
+                                exprSymbol,
+                                codegenClassScope))
                         .IfCondition(EqualsNull(Ref(refname)))
                         .AssignRef("hasNullRow", ConstantTrue())
                         .IfElse()
@@ -202,9 +215,13 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                 }
                 else if (reftype != null && reftype.IsImplementsInterface(typeof(IDictionary<object, object>))) {
                     block.IfRefNullReturnNull("left")
-                        .DeclareVar(
-                            typeof(IDictionary<object, object>), refname,
-                            refforge.EvaluateCodegen(typeof(IDictionary<object, object>), methodNode, exprSymbol, codegenClassScope))
+                        .DeclareVar<IDictionary<object, object>>(
+                            refname,
+                            refforge.EvaluateCodegen(
+                                typeof(IDictionary<object, object>),
+                                methodNode,
+                                exprSymbol,
+                                codegenClassScope))
                         .IfCondition(EqualsNull(Ref(refname)))
                         .AssignRef("hasNullRow", ConstantTrue())
                         .IfElse()
@@ -215,7 +232,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                 else if (reftype != null && reftype.IsArray) {
                     var arrayBlock = block.IfRefNullReturnNull("left")
                         .DeclareVar(
-                            reftype, refname,
+                            reftype,
+                            refname,
                             refforge.EvaluateCodegen(reftype, methodNode, exprSymbol, codegenClassScope))
                         .IfCondition(EqualsNull(Ref(refname)))
                         .AssignRef("hasNullRow", ConstantTrue())
@@ -224,14 +242,19 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                     var forLoop = arrayBlock.ForLoopIntSimple("i", ArrayLength(Ref(refname)));
                     var arrayAtIndex = ArrayAtIndex(Ref(refname), Ref("i"));
                     forLoop.DeclareVar(
-                        forge.CoercionTypeBoxed, "item",
+                        forge.CoercionTypeBoxed,
+                        "item",
                         forge.Coercer == null
                             ? arrayAtIndex
                             : forge.Coercer.CoerceCodegenMayNullBoxed(
-                                arrayAtIndex, reftype.GetElementType(), methodNode, codegenClassScope));
+                                arrayAtIndex,
+                                reftype.GetElementType(),
+                                methodNode,
+                                codegenClassScope));
 
                     var forLoopElse = forLoop.IfCondition(EqualsNull(Ref("item")))
-                        .AssignRef("hasNullRow", ConstantTrue()).IfElse();
+                        .AssignRef("hasNullRow", ConstantTrue())
+                        .IfElse();
                     forLoopElse.AssignRef("hasNonNullRow", ConstantTrue());
                     forLoopElse.IfCondition(
                             NotOptional(isNot, ExprDotMethod(Ref("leftCoerced"), "equals", Ref("item"))))
@@ -240,14 +263,23 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                 else {
                     block.IfRefNullReturnNull("leftCoerced");
                     block.DeclareVar(
-                        forge.CoercionTypeBoxed, refname,
+                        forge.CoercionTypeBoxed,
+                        refname,
                         forge.Coercer == null
                             ? refforge.EvaluateCodegen(
-                                forge.CoercionTypeBoxed, methodNode, exprSymbol, codegenClassScope)
+                                forge.CoercionTypeBoxed,
+                                methodNode,
+                                exprSymbol,
+                                codegenClassScope)
                             : forge.Coercer.CoerceCodegenMayNullBoxed(
                                 refforge.EvaluateCodegen(
-                                    forge.CoercionTypeBoxed, methodNode, exprSymbol, codegenClassScope), reftype,
-                                methodNode, codegenClassScope));
+                                    forge.CoercionTypeBoxed,
+                                    methodNode,
+                                    exprSymbol,
+                                    codegenClassScope),
+                                reftype,
+                                methodNode,
+                                codegenClassScope));
                     var ifRightNotNull = block.IfRefNotNull(refname);
                     {
                         ifRightNotNull.AssignRef("hasNonNullRow", ConstantTrue());

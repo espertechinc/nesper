@@ -243,7 +243,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
             {
                 var epl =
                     "@Name('create') create window MyWindow#keepall as select TheString as a, LongPrimitive as b from SupportBean;\n" +
-                    "on SupportMarketDataBean delete from MyWindow where b = price;\n" +
+                    "on SupportMarketDataBean delete from MyWindow where b = Price;\n" +
                     "insert into MyWindow select TheString as a, LongPrimitive as b from SupportBean;\n";
                 env.CompileDeploy(epl);
 
@@ -277,7 +277,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
             {
                 var epl =
                     "@Name('create') create window MyWindow#keepall as select TheString as a, LongPrimitive as b from SupportBean;\n" +
-                    "on SupportMarketDataBean delete from MyWindow where b = price;\n" +
+                    "on SupportMarketDataBean delete from MyWindow where b = Price;\n" +
                     "on SupportBean_A delete from MyWindow where Id = a;\n" +
                     "insert into MyWindow select TheString as a, LongPrimitive as b from SupportBean;\n";
                 env.CompileDeploy(epl);
@@ -323,7 +323,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                 for (var i = 0; i < statements.Length; i++) {
                     var name = "s" + i;
                     var stmtTextDelete =
-                        "@Name('" + name + "') on SupportMarketDataBean delete from MyWindow where b = price";
+                        "@Name('" + name + "') on SupportMarketDataBean delete from MyWindow where b = Price";
                     env.CompileDeploy(stmtTextDelete, path);
                     statements[i] = name;
                 }

@@ -44,10 +44,16 @@ namespace com.espertech.esper.common.@internal.view.core
         {
             _agentInstanceContext.AuditProvider.Stream(theEvent, _agentInstanceContext, _filterSpecText);
             _agentInstanceContext.InstrumentationProvider.QFilterActivationStream(
-                theEvent.EventType.Name, _streamNumber, _agentInstanceContext, _subselect, _subselectNumber);
+                theEvent.EventType.Name,
+                _streamNumber,
+                _agentInstanceContext,
+                _subselect,
+                _subselectNumber);
             base.Insert(theEvent);
             _agentInstanceContext.InstrumentationProvider.AFilterActivationStream(
-                _agentInstanceContext, _subselect, _subselectNumber);
+                _agentInstanceContext,
+                _subselect,
+                _subselectNumber);
         }
 
         public override void Insert(EventBean[] events)

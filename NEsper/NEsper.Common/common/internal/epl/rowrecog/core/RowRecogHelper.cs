@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+
 using com.espertech.esper.collection;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.rowrecog.expr;
@@ -24,21 +25,22 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
     /// </summary>
     public class RowRecogHelper
     {
-        protected internal static readonly IComparer<RowRecogNFAStateEntry> END_STATE_COMPARATOR = new ProxyComparer<RowRecogNFAStateEntry> {
-            ProcCompare = (
-                o1,
-                o2) => {
-                if (o1.MatchEndEventSeqNo > o2.MatchEndEventSeqNo) {
-                    return -1;
-                }
+        protected internal static readonly IComparer<RowRecogNFAStateEntry> END_STATE_COMPARATOR =
+            new ProxyComparer<RowRecogNFAStateEntry> {
+                ProcCompare = (
+                    o1,
+                    o2) => {
+                    if (o1.MatchEndEventSeqNo > o2.MatchEndEventSeqNo) {
+                        return -1;
+                    }
 
-                if (o1.MatchEndEventSeqNo < o2.MatchEndEventSeqNo) {
-                    return 1;
-                }
+                    if (o1.MatchEndEventSeqNo < o2.MatchEndEventSeqNo) {
+                        return 1;
+                    }
 
-                return 0;
-            }
-        };
+                    return 0;
+                }
+            };
 
         public static RowRecogNFAViewService RecursiveFindRegexService(Viewable top)
         {
@@ -69,7 +71,11 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
             if (parent is RowRecogExprNodeNested) {
                 var nested = (RowRecogExprNodeNested) parent;
                 foreach (var child in parent.ChildNodes) {
-                    RecursiveInspectVariables(child, nested.Type.IsMultipleMatches() || isMultiple, variablesSingle, variablesMultiple);
+                    RecursiveInspectVariables(
+                        child,
+                        nested.Type.IsMultipleMatches() || isMultiple,
+                        variablesSingle,
+                        variablesMultiple);
                 }
             }
             else if (parent is RowRecogExprNodeAlteration) {
@@ -193,7 +199,11 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
                     nodeNum++;
                 }
 
-                return new RowRecogNFAStrand(cumulativeStartStates, cumulativeEndStates, cumulativeStates, isPassthrough);
+                return new RowRecogNFAStrand(
+                    cumulativeStartStates,
+                    cumulativeEndStates,
+                    cumulativeStates,
+                    isPassthrough);
             }
 
             if (node is RowRecogExprNodeConcatenation) {
@@ -296,29 +306,57 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
             var exprRequiresMultimatch = exprRequiresMultimatchState[streamNum];
 
             RowRecogNFAStateForgeBase nextState;
-            if (atom.Type == RowRecogNFATypeEnum.ZERO_TO_MANY || atom.Type == RowRecogNFATypeEnum.ZERO_TO_MANY_RELUCTANT) {
+            if (atom.Type == RowRecogNFATypeEnum.ZERO_TO_MANY ||
+                atom.Type == RowRecogNFATypeEnum.ZERO_TO_MANY_RELUCTANT) {
                 nextState = new RowRecogNFAStateZeroToManyForge(
-                    ToString(nodeNumStack), atom.Tag, streamNum, multiple, atom.Type.IsGreedy(), exprRequiresMultimatch, expression);
+                    ToString(nodeNumStack),
+                    atom.Tag,
+                    streamNum,
+                    multiple,
+                    atom.Type.IsGreedy(),
+                    exprRequiresMultimatch,
+                    expression);
             }
-            else if (atom.Type == RowRecogNFATypeEnum.ONE_TO_MANY || atom.Type == RowRecogNFATypeEnum.ONE_TO_MANY_RELUCTANT) {
+            else if (atom.Type == RowRecogNFATypeEnum.ONE_TO_MANY ||
+                     atom.Type == RowRecogNFATypeEnum.ONE_TO_MANY_RELUCTANT) {
                 nextState = new RowRecogNFAStateOneToManyForge(
-                    ToString(nodeNumStack), atom.Tag, streamNum, multiple, atom.Type.IsGreedy(), exprRequiresMultimatch, expression);
+                    ToString(nodeNumStack),
+                    atom.Tag,
+                    streamNum,
+                    multiple,
+                    atom.Type.IsGreedy(),
+                    exprRequiresMultimatch,
+                    expression);
             }
-            else if (atom.Type == RowRecogNFATypeEnum.ONE_OPTIONAL || atom.Type == RowRecogNFATypeEnum.ONE_OPTIONAL_RELUCTANT) {
+            else if (atom.Type == RowRecogNFATypeEnum.ONE_OPTIONAL ||
+                     atom.Type == RowRecogNFATypeEnum.ONE_OPTIONAL_RELUCTANT) {
                 nextState = new RowRecogNFAStateOneOptionalForge(
-                    ToString(nodeNumStack), atom.Tag, streamNum, multiple, atom.Type.IsGreedy(), exprRequiresMultimatch, expression);
+                    ToString(nodeNumStack),
+                    atom.Tag,
+                    streamNum,
+                    multiple,
+                    atom.Type.IsGreedy(),
+                    exprRequiresMultimatch,
+                    expression);
             }
             else if (expression == null) {
                 nextState = new RowRecogNFAStateAnyOneForge(ToString(nodeNumStack), atom.Tag, streamNum, multiple);
             }
             else {
                 nextState = new RowRecogNFAStateFilterForge(
-                    ToString(nodeNumStack), atom.Tag, streamNum, multiple, exprRequiresMultimatch, expression);
+                    ToString(nodeNumStack),
+                    atom.Tag,
+                    streamNum,
+                    multiple,
+                    exprRequiresMultimatch,
+                    expression);
             }
 
             return new RowRecogNFAStrand(
-                Collections.SingletonList(nextState), Collections.SingletonList(nextState),
-                Collections.SingletonList(nextState), atom.Type.IsOptional());
+                Collections.SingletonList(nextState),
+                Collections.SingletonList(nextState),
+                Collections.SingletonList(nextState),
+                atom.Type.IsOptional());
         }
 
         private static string ToString(Stack<int> nodeNumStack)

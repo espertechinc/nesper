@@ -36,7 +36,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
             var model = new EPStatementObjectModel();
             model.SelectClause = SelectClause.CreateWildcard();
             model = env.CopyMayFail(model);
-            Expression filter = Expressions.Eq("id", "B3");
+            Expression filter = Expressions.Eq("Id", "B3");
             PatternExpr pattern = Patterns.TimerWithinMax(
                 10.001,
                 1,

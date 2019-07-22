@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -15,6 +16,7 @@ using com.espertech.esper.common.@internal.compile.stage2;
 using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.context.controller.category;
 using com.espertech.esper.common.@internal.filterspec;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.compile.stage1.spec
@@ -49,22 +51,25 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
 
             var makeFilter = filterSpecCompiled.MakeCodegen(method, symbols, classScope);
             method.Block
-                .DeclareVar(typeof(FilterSpecActivatable), "filterSpec", LocalMethod(makeFilter))
-                .DeclareVar(typeof(EventType), "eventType", ExprDotMethod(Ref("filterSpec"), "getFilterForEventType"));
+                .DeclareVar<FilterSpecActivatable>("filterSpec", LocalMethod(makeFilter))
+                .DeclareVar<EventType>("eventType", ExprDotMethod(Ref("filterSpec"), "getFilterForEventType"));
 
-            method.Block.DeclareVar(
-                typeof(ContextControllerDetailCategoryItem[]), "items",
+            method.Block.DeclareVar<ContextControllerDetailCategoryItem[]>(
+                "items",
                 NewArrayByLength(typeof(ContextControllerDetailCategoryItem), Constant(Items.Count)));
             for (var i = 0; i < Items.Count; i++) {
                 method.Block.AssignArrayElement(
-                    "items", Constant(i),
+                    "items",
+                    Constant(i),
                     LocalMethod(
-                        Items[i].MakeCodegen(classScope, method), Ref("eventType"), symbols.GetAddInitSvc(method)));
+                        Items[i].MakeCodegen(classScope, method),
+                        Ref("eventType"),
+                        symbols.GetAddInitSvc(method)));
             }
 
             method.Block
-                .DeclareVar(
-                    typeof(ContextControllerDetailCategory), "detail",
+                .DeclareVar<ContextControllerDetailCategory>(
+                    "detail",
                     NewInstance(typeof(ContextControllerDetailCategory)))
                 .SetProperty(Ref("detail"), "FilterSpecActivatable", Ref("filterSpec"))
                 .SetProperty(Ref("detail"), "Items", Ref("items"))

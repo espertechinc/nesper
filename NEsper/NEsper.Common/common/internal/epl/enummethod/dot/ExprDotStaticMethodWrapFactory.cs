@@ -9,6 +9,7 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.meta;
 using com.espertech.esper.common.client.util;
@@ -84,15 +85,25 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
                 validationContext.StatementCompileTimeService.EventTypeNameGeneratorStatement
                     .GetAnonymousTypeNameUDFMethod(methodName, clazz.Name);
             var metadata = new EventTypeMetadata(
-                eventTypeName, validationContext.ModuleName, EventTypeTypeClass.UDFDERIVED,
-                EventTypeApplicationType.CLASS, NameAccessModifier.TRANSIENT, EventTypeBusModifier.NONBUS, false,
+                eventTypeName,
+                validationContext.ModuleName,
+                EventTypeTypeClass.UDFDERIVED,
+                EventTypeApplicationType.CLASS,
+                NameAccessModifier.TRANSIENT,
+                EventTypeBusModifier.NONBUS,
+                false,
                 EventTypeIdPair.Unassigned());
             var stem = validationContext.StatementCompileTimeService.BeanEventTypeStemService
                 .GetCreateStem(clazz, null);
             var beantype = new BeanEventType(
                 validationContext.Container,
-                stem, metadata, validationContext.StatementCompileTimeService.BeanEventTypeFactoryPrivate, null, null,
-                null, null);
+                stem,
+                metadata,
+                validationContext.StatementCompileTimeService.BeanEventTypeFactoryPrivate,
+                null,
+                null,
+                null,
+                null);
             validationContext.StatementCompileTimeService.EventTypeCompileTimeRegistry.NewType(beantype);
             return beantype;
         }
@@ -103,7 +114,9 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
             ExprValidationContext ctx)
         {
             return EventTypeUtility.RequireEventType(
-                "Method", method.Name, optionalEventTypeName,
+                "Method",
+                method.Name,
+                optionalEventTypeName,
                 ctx.StatementCompileTimeService.EventTypeCompileTimeResolver);
         }
     }

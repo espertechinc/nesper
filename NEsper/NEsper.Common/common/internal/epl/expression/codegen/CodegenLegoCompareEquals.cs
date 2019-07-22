@@ -7,10 +7,12 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.expression.codegen
@@ -23,7 +25,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.codegen
             CodegenExpression rhs,
             Type rhsType)
         {
-            if (lhsType.IsPrimitive && rhsType.IsPrimitive && !TypeHelper.IsFloatingPointClass(lhsType) &&
+            if (lhsType.IsPrimitive &&
+                rhsType.IsPrimitive &&
+                !TypeHelper.IsFloatingPointClass(lhsType) &&
                 !TypeHelper.IsFloatingPointClass(rhsType)) {
                 return EqualsIdentity(lhs, rhs);
             }

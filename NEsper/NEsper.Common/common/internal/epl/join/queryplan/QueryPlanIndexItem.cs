@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.epl.index.advanced.index.service;
 using com.espertech.esper.common.@internal.epl.@join.lookup;
@@ -65,12 +66,18 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplan
         public override string ToString()
         {
             return "QueryPlanIndexItem{" +
-                   "unique=" + IsUnique +
-                   ", hashProps=" + Arrays.AsList(HashProps) +
-                   ", rangeProps=" + Arrays.AsList(RangeProps) +
-                   ", hashPropTypes=" + Arrays.AsList(HashPropTypes) +
-                   ", rangePropTypes=" + Arrays.AsList(RangePropTypes) +
-                   ", advanced=" + AdvancedIndexProvisionDesc +
+                   "unique=" +
+                   IsUnique +
+                   ", hashProps=" +
+                   Arrays.AsList(HashProps) +
+                   ", rangeProps=" +
+                   Arrays.AsList(RangeProps) +
+                   ", hashPropTypes=" +
+                   Arrays.AsList(HashPropTypes) +
+                   ", rangePropTypes=" +
+                   Arrays.AsList(RangePropTypes) +
+                   ", advanced=" +
+                   AdvancedIndexProvisionDesc +
                    "}";
         }
 

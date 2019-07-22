@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using com.espertech.esper.compat;
+
 using Castle.MicroKernel.Registration;
 
 namespace com.espertech.esper.common.client.util

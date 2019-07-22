@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -15,6 +16,7 @@ using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.historical.indexingstrategy;
 using com.espertech.esper.common.@internal.epl.historical.lookupstrategy;
 using com.espertech.esper.common.@internal.epl.@join.queryplan;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.join.@base
@@ -68,13 +70,24 @@ namespace com.espertech.esper.common.@internal.epl.join.@base
             method.Block
                 .SetProperty(Ref("impl"), "PolledNum", Constant(polledNum))
                 .SetProperty(Ref("impl"), "StreamNum", Constant(streamNum))
-                .SetProperty(Ref("impl"), "OuterJoinEqualsEval",
+                .SetProperty(
+                    Ref("impl"),
+                    "OuterJoinEqualsEval",
                     outerJoinEqualsEval == null
                         ? ConstantNull()
                         : ExprNodeUtilityCodegen.CodegenEvaluator(
-                            outerJoinEqualsEval.Forge, method, GetType(), classScope))
-                .SetProperty(Ref("impl"), "LookupStrategy", historicalIndexLookupStrategy.Make(method, symbols, classScope))
-                .SetProperty(Ref("impl"), "IndexingStrategy", pollResultIndexingStrategy.Make(method, symbols, classScope))
+                            outerJoinEqualsEval.Forge,
+                            method,
+                            GetType(),
+                            classScope))
+                .SetProperty(
+                    Ref("impl"),
+                    "LookupStrategy",
+                    historicalIndexLookupStrategy.Make(method, symbols, classScope))
+                .SetProperty(
+                    Ref("impl"),
+                    "IndexingStrategy",
+                    pollResultIndexingStrategy.Make(method, symbols, classScope))
                 .SetProperty(Ref("impl"), "AllHistoricalNoSubordinate", Constant(isAllHistoricalNoSubordinate))
                 .SetProperty(Ref("impl"), "OuterJoinPerStream", Constant(outerJoinPerStream));
         }

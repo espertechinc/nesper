@@ -8,6 +8,7 @@
 
 using System;
 using System.IO;
+
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.type;
 using com.espertech.esper.common.@internal.util;
@@ -73,7 +74,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
 
             if (typeOne != typeTwo) {
                 throw new ExprValidationException(
-                    "Bitwise expressions must be of the same type for bitwise " + BitWiseOpEnum.ComputeDescription +
+                    "Bitwise expressions must be of the same type for bitwise " +
+                    BitWiseOpEnum.ComputeDescription +
                     " operator");
             }
 
@@ -111,7 +113,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             if (!childType.IsBoolean() && !childType.IsNumeric()) {
                 throw new ExprValidationException(
                     "Invalid datatype for bitwise " +
-                    childType.Name + " is not allowed");
+                    childType.Name +
+                    " is not allowed");
             }
         }
     }

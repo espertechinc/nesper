@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.epl.variable.core;
 
@@ -48,7 +49,9 @@ namespace com.espertech.esper.common.@internal.epl.output.condition
             VariableReader variableReader = null;
             if (variable != null) {
                 variableReader = agentInstanceContext.StatementContext.VariableManagementService.GetReader(
-                    variable.DeploymentId, variable.MetaData.VariableName, agentInstanceContext.AgentInstanceId);
+                    variable.DeploymentId,
+                    variable.MetaData.VariableName,
+                    agentInstanceContext.AgentInstanceId);
             }
 
             return new OutputConditionCount(outputCallback, eventRate, variableReader);

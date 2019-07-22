@@ -87,12 +87,15 @@ namespace com.espertech.esper.common.@internal.util
                     case "common":
                         ConfigurationCommonParser.DoConfigure(configuration.Common, element);
                         break;
+
                     case "compiler":
                         ConfigurationCompilerParser.DoConfigure(configuration.Compiler, element);
                         break;
+
                     case "runtime":
                         ConfigurationRuntimeParser.DoConfigure(configuration.Runtime, element);
                         break;
+
                     case "event-type":
                     case "auto-import":
                     case "auto-import-annotations":
@@ -110,7 +113,8 @@ namespace com.espertech.esper.common.@internal.util
                     case "engine-settings":
                     case "variant-stream":
                         Log.Warn(
-                            "The configuration file appears outdated as it has element '" + nodeName +
+                            "The configuration file appears outdated as it has element '" +
+                            nodeName +
                             "' among top-level elements. Please convert to the newest schema using the online converter.");
                         break;
                 }

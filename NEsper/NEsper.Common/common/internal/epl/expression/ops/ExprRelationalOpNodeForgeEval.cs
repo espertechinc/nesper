@@ -11,6 +11,7 @@ using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.expression.ops
@@ -68,7 +69,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             }
 
             var methodNode = codegenMethodScope.MakeChild(
-                typeof(bool?), typeof(ExprRelationalOpNodeForgeEval), codegenClassScope);
+                typeof(bool?),
+                typeof(ExprRelationalOpNodeForgeEval),
+                codegenClassScope);
 
             var block = methodNode.Block
                 .DeclareVar(lhsType, "left", lhs.EvaluateCodegen(lhsType, methodNode, exprSymbol, codegenClassScope));

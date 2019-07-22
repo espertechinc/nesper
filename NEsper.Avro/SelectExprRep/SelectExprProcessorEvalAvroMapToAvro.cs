@@ -40,8 +40,7 @@ namespace NEsper.Avro.SelectExprRep
         {
             _forge = forge;
             _inner = schema.GetField(columnName).Schema;
-            if (_inner.Tag != Schema.Type.Record)
-            {
+            if (_inner.Tag != Schema.Type.Record) {
                 throw new IllegalStateException("Column '" + columnName + "' is not a record but schema " + _inner);
             }
         }
@@ -51,7 +50,10 @@ namespace NEsper.Avro.SelectExprRep
             bool isNewData,
             ExprEvaluatorContext context)
         {
-            IDictionary<string, object> map = (IDictionary<string, object>) _eval.Evaluate(eventsPerStream, isNewData, context);
+            IDictionary<string, object> map = (IDictionary<string, object>) _eval.Evaluate(
+                eventsPerStream,
+                isNewData,
+                context);
             return SelectExprProcessAvroMap(map, _inner);
         }
 
@@ -61,10 +63,13 @@ namespace NEsper.Avro.SelectExprRep
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            CodegenExpressionField schema = codegenClassScope.AddOrGetFieldSharable(new AvroSchemaFieldSharable(_inner));
+            CodegenExpressionField schema =
+                codegenClassScope.AddOrGetFieldSharable(new AvroSchemaFieldSharable(_inner));
             return CodegenExpressionBuilder.StaticMethod(
-                typeof(SelectExprProcessorEvalAvroMapToAvro), "selectExprProcessAvroMap",
-                _forge.EvaluateCodegen(requiredType, codegenMethodScope, exprSymbol, codegenClassScope), schema);
+                typeof(SelectExprProcessorEvalAvroMapToAvro),
+                "selectExprProcessAvroMap",
+                _forge.EvaluateCodegen(requiredType, codegenMethodScope, exprSymbol, codegenClassScope),
+                schema);
         }
 
         /// <summary>
@@ -77,25 +82,21 @@ namespace NEsper.Avro.SelectExprRep
             IDictionary<string, object> map,
             Schema inner)
         {
-            if (map == null)
-            {
+            if (map == null) {
                 return null;
             }
 
             var record = new GenericRecord(inner.AsRecordSchema());
-            foreach (KeyValuePair<string, object> row in map)
-            {
+            foreach (KeyValuePair<string, object> row in map) {
                 record.Put(row.Key, row.Value);
             }
 
             return record;
         }
 
-        public ExprEvaluator ExprEvaluator
-        {
+        public ExprEvaluator ExprEvaluator {
             get {
-                if (_eval == null)
-                {
+                if (_eval == null) {
                     _eval = _forge.ExprEvaluator;
                 }
 
@@ -103,18 +104,15 @@ namespace NEsper.Avro.SelectExprRep
             }
         }
 
-        public Type EvaluationType
-        {
+        public Type EvaluationType {
             get => typeof(GenericRecord);
         }
 
-        public ExprForgeConstantType ForgeConstantType
-        {
+        public ExprForgeConstantType ForgeConstantType {
             get => ExprForgeConstantType.NONCONST;
         }
 
-        public ExprNodeRenderable ForgeRenderable
-        {
+        public ExprNodeRenderable ForgeRenderable {
             get => this;
         }
 

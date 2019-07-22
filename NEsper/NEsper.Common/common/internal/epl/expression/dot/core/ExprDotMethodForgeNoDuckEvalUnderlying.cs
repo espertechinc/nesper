@@ -8,6 +8,7 @@
 
 using System;
 using System.Reflection;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -15,6 +16,7 @@ using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.logging;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.expression.dot.core
@@ -42,7 +44,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
 
             if (!(target is EventBean)) {
                 Log.Warn(
-                    "Expected EventBean return value but received '" + target.GetType().Name + "' for statement " +
+                    "Expected EventBean return value but received '" +
+                    target.GetType().Name +
+                    "' for statement " +
                     forge.OptionalStatementName);
                 return null;
             }
@@ -61,13 +65,17 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
         {
             var underlyingType = forge.Method.DeclaringType;
             var methodNode = codegenMethodScope.MakeChild(
-                forge.Method.ReturnType.GetBoxedType(), typeof(ExprDotMethodForgeNoDuckEvalUnderlying),
-                codegenClassScope).AddParam(typeof(EventBean), "target");
+                    forge.Method.ReturnType.GetBoxedType(),
+                    typeof(ExprDotMethodForgeNoDuckEvalUnderlying),
+                    codegenClassScope)
+                .AddParam(typeof(EventBean), "target");
 
             methodNode.Block
                 .IfRefNullReturnNull("target")
                 .DeclareVar(
-                    underlyingType, "underlying", Cast(underlyingType, ExprDotMethod(Ref("target"), "getUnderlying")))
+                    underlyingType,
+                    "underlying",
+                    Cast(underlyingType, ExprDotMethod(Ref("target"), "getUnderlying")))
                 .MethodReturn(
                     CodegenPlain(forge, Ref("underlying"), innerType, methodNode, exprSymbol, codegenClassScope));
             return LocalMethod(methodNode, inner);

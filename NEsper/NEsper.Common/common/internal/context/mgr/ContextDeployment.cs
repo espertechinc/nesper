@@ -8,6 +8,7 @@
 
 using System.Collections.Generic;
 using System.Reflection;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.context.controller.core;
 using com.espertech.esper.common.@internal.context.module;
@@ -50,7 +51,10 @@ namespace com.espertech.esper.common.@internal.context.mgr
             var entry = contexts.Get(contextName);
             if (entry == null) {
                 Log.Warn(
-                    "Destroy for context '" + contextName + "' deployment-id '" + deploymentIdCreateContext +
+                    "Destroy for context '" +
+                    contextName +
+                    "' deployment-id '" +
+                    deploymentIdCreateContext +
                     "' failed to locate");
                 return;
             }

@@ -6,7 +6,6 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.annotation;
 using com.espertech.esper.common.@internal.collection;
@@ -16,30 +15,28 @@ using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.table.core;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.statement.dispatch;
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.output.view
 {
     /// <summary>
-    /// An output strategy that handles routing (insert-into) and stream selection.
+    ///     An output strategy that handles routing (insert-into) and stream selection.
     /// </summary>
     public class OutputStrategyPostProcess
     {
-        private readonly OutputStrategyPostProcessFactory parent;
-        private readonly AgentInstanceContext agentInstanceContext;
-        private readonly TableInstance tableInstance;
-        private readonly bool audit;
+        private readonly AgentInstanceContext _agentInstanceContext;
+        private readonly bool _audit;
+        private readonly OutputStrategyPostProcessFactory _parent;
+        private readonly TableInstance _tableInstance;
 
         public OutputStrategyPostProcess(
             OutputStrategyPostProcessFactory parent,
             AgentInstanceContext agentInstanceContext,
             TableInstance tableInstance)
         {
-            this.parent = parent;
-            this.agentInstanceContext = agentInstanceContext;
-            this.tableInstance = tableInstance;
-            this.audit = AuditEnum.INSERT.GetAudit(agentInstanceContext.Annotations) != null;
+            _parent = parent;
+            _agentInstanceContext = agentInstanceContext;
+            _tableInstance = tableInstance;
+            _audit = AuditEnum.INSERT.GetAudit(agentInstanceContext.Annotations) != null;
         }
 
         public void Output(
@@ -47,26 +44,26 @@ namespace com.espertech.esper.common.@internal.epl.output.view
             UniformPair<EventBean[]> result,
             UpdateDispatchView finalView)
         {
-            EventBean[] newEvents = result != null ? result.First : null;
-            EventBean[] oldEvents = result != null ? result.Second : null;
+            var newEvents = result != null ? result.First : null;
+            var oldEvents = result != null ? result.Second : null;
 
             // route first
-            if (parent.IsRoute) {
-                if ((newEvents != null) && (parent.InsertIntoStreamSelector.IsSelectsIStream)) {
-                    Route(newEvents, agentInstanceContext);
+            if (_parent.IsRoute) {
+                if (newEvents != null && _parent.InsertIntoStreamSelector.IsSelectsIStream) {
+                    Route(newEvents, _agentInstanceContext);
                 }
 
-                if ((oldEvents != null) && (parent.InsertIntoStreamSelector.IsSelectsRStream)) {
-                    Route(oldEvents, agentInstanceContext);
+                if (oldEvents != null && _parent.InsertIntoStreamSelector.IsSelectsRStream) {
+                    Route(oldEvents, _agentInstanceContext);
                 }
             }
 
             // discard one side of results
-            if (parent.SelectStreamDirEnum == SelectClauseStreamSelectorEnum.RSTREAM_ONLY) {
+            if (_parent.SelectStreamDirEnum == SelectClauseStreamSelectorEnum.RSTREAM_ONLY) {
                 newEvents = oldEvents;
                 oldEvents = null;
             }
-            else if (parent.SelectStreamDirEnum == SelectClauseStreamSelectorEnum.ISTREAM_ONLY) {
+            else if (_parent.SelectStreamDirEnum == SelectClauseStreamSelectorEnum.ISTREAM_ONLY) {
                 oldEvents = null; // since the insert-into may require rstream
             }
 
@@ -83,32 +80,42 @@ namespace com.espertech.esper.common.@internal.epl.output.view
             EventBean[] events,
             ExprEvaluatorContext exprEvaluatorContext)
         {
-            foreach (EventBean routed in events) {
+            foreach (var routed in events) {
                 if (routed is NaturalEventBean) {
-                    NaturalEventBean natural = (NaturalEventBean) routed;
-                    if (audit) {
-                        agentInstanceContext.AuditProvider.Insert(natural.OptionalSynthetic, agentInstanceContext);
+                    var natural = (NaturalEventBean) routed;
+                    if (_audit) {
+                        _agentInstanceContext.AuditProvider.Insert(natural.OptionalSynthetic, _agentInstanceContext);
                     }
 
-                    if (tableInstance != null) {
-                        TableEvalLockUtil.ObtainLockUnless(tableInstance.TableLevelRWLock.WriteLock, exprEvaluatorContext);
-                        tableInstance.AddEventUnadorned(natural.OptionalSynthetic);
+                    if (_tableInstance != null) {
+                        TableEvalLockUtil.ObtainLockUnless(
+                            _tableInstance.TableLevelRWLock.WriteLock,
+                            exprEvaluatorContext);
+                        _tableInstance.AddEventUnadorned(natural.OptionalSynthetic);
                     }
                     else {
-                        agentInstanceContext.InternalEventRouter.Route(natural.OptionalSynthetic, agentInstanceContext, parent.IsAddToFront);
+                        _agentInstanceContext.InternalEventRouter.Route(
+                            natural.OptionalSynthetic,
+                            _agentInstanceContext,
+                            _parent.IsAddToFront);
                     }
                 }
                 else {
-                    if (audit) {
-                        agentInstanceContext.AuditProvider.Insert(routed, agentInstanceContext);
+                    if (_audit) {
+                        _agentInstanceContext.AuditProvider.Insert(routed, _agentInstanceContext);
                     }
 
-                    if (tableInstance != null) {
-                        TableEvalLockUtil.ObtainLockUnless(tableInstance.TableLevelRWLock.WriteLock, exprEvaluatorContext);
-                        tableInstance.AddEventUnadorned(routed);
+                    if (_tableInstance != null) {
+                        TableEvalLockUtil.ObtainLockUnless(
+                            _tableInstance.TableLevelRWLock.WriteLock,
+                            exprEvaluatorContext);
+                        _tableInstance.AddEventUnadorned(routed);
                     }
                     else {
-                        agentInstanceContext.InternalEventRouter.Route(routed, agentInstanceContext, parent.IsAddToFront);
+                        _agentInstanceContext.InternalEventRouter.Route(
+                            routed,
+                            _agentInstanceContext,
+                            _parent.IsAddToFront);
                     }
                 }
             }

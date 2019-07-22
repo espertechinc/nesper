@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -15,6 +16,7 @@ using com.espertech.esper.common.@internal.epl.enummethod.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.enummethod.eval
@@ -73,13 +75,14 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
         {
             CodegenBlock block = codegenMethodScope
                 .MakeChild(returnType.GetBoxedType(), typeof(EnumMostLeastFrequentScalarForge), codegenClassScope)
-                .AddParam(EnumForgeCodegenNames.PARAMS).Block
+                .AddParam(EnumForgeCodegenNames.PARAMS)
+                .Block
                 .IfCondition(ExprDotMethod(EnumForgeCodegenNames.REF_ENUMCOLL, "IsEmpty"))
                 .BlockReturn(ConstantNull())
-                .DeclareVar(typeof(IDictionary<string, object>), "items", NewInstance(typeof(LinkedHashMap<string, object>)));
+                .DeclareVar<IDictionary<string, object>>("items", NewInstance(typeof(LinkedHashMap<string, object>)));
             CodegenBlock forEach = block
                 .ForEach(typeof(object), "next", EnumForgeCodegenNames.REF_ENUMCOLL)
-                .DeclareVar(typeof(int), "existing", Cast(typeof(int), ExprDotMethod(@Ref("items"), "get", @Ref("next"))))
+                .DeclareVar<int>("existing", Cast(typeof(int), ExprDotMethod(@Ref("items"), "get", @Ref("next"))))
                 .IfCondition(EqualsNull(@Ref("existing")))
                 .AssignRef("existing", Constant(1))
                 .IfElse()
@@ -90,7 +93,10 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                 Cast(
                     returnType,
                     StaticMethod(
-                        typeof(EnumMostLeastFrequentEventForgeEval), "getEnumMostLeastFrequentResult", @Ref("items"), Constant(isMostFrequent))));
+                        typeof(EnumMostLeastFrequentEventForgeEval),
+                        "getEnumMostLeastFrequentResult",
+                        @Ref("items"),
+                        Constant(isMostFrequent))));
             return LocalMethod(method, args.Expressions);
         }
     }

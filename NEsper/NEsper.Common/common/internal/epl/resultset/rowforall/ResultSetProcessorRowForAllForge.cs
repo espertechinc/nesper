@@ -78,16 +78,26 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowforall
             IList<CodegenTypedParam> factoryMembers)
         {
             instance.Methods.AddMethod(
-                typeof(AggregationService), "GetAggregationService", Collections.GetEmptyList<CodegenNamedParam>(),
-                typeof(ResultSetProcessorRowForAll), classScope,
+                typeof(AggregationService),
+                "GetAggregationService",
+                Collections.GetEmptyList<CodegenNamedParam>(),
+                typeof(ResultSetProcessorRowForAll),
+                classScope,
                 methodNode => methodNode.Block.MethodReturn(REF_AGGREGATIONSVC));
             instance.Methods.AddMethod(
-                typeof(ExprEvaluatorContext), "GetExprEvaluatorContext", Collections.GetEmptyList<CodegenNamedParam>(),
-                typeof(ResultSetProcessorRowForAll), classScope,
+                typeof(ExprEvaluatorContext),
+                "GetExprEvaluatorContext",
+                Collections.GetEmptyList<CodegenNamedParam>(),
+                typeof(ResultSetProcessorRowForAll),
+                classScope,
                 methodNode => methodNode.Block.MethodReturn(REF_AGENTINSTANCECONTEXT));
             instance.Methods.AddMethod(
-                typeof(bool), "IsSelectRStream", Collections.GetEmptyList<CodegenNamedParam>(), typeof(ResultSetProcessorRowForAll),
-                classScope, methodNode => methodNode.Block.MethodReturn(Constant(IsSelectRStream)));
+                typeof(bool),
+                "IsSelectRStream",
+                Collections.GetEmptyList<CodegenNamedParam>(),
+                typeof(ResultSetProcessorRowForAll),
+                classScope,
+                methodNode => methodNode.Block.MethodReturn(Constant(IsSelectRStream)));
             ResultSetProcessorUtil.EvaluateHavingClauseCodegen(OptionalHavingNode, classScope, instance);
             ResultSetProcessorRowForAllImpl.GetSelectListEventsAsArrayCodegen(this, classScope, instance);
         }
@@ -162,7 +172,10 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowforall
             CodegenInstanceAux instance)
         {
             ResultSetProcessorRowForAllImpl.ProcessOutputLimitedLastAllNonBufferedViewCodegen(
-                this, classScope, method, instance);
+                this,
+                classScope,
+                method,
+                instance);
         }
 
         public void ProcessOutputLimitedLastAllNonBufferedJoinCodegen(
@@ -171,7 +184,10 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowforall
             CodegenInstanceAux instance)
         {
             ResultSetProcessorRowForAllImpl.ProcessOutputLimitedLastAllNonBufferedJoinCodegen(
-                this, classScope, method, instance);
+                this,
+                classScope,
+                method,
+                instance);
         }
 
         public void ContinueOutputLimitedLastAllNonBufferedViewCodegen(

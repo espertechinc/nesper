@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
@@ -20,8 +21,14 @@ namespace com.espertech.esper.common.@internal.collection
             PathRegistryObjectType objectType,
             string moduleName)
             : base(
-                objectType.Prefix + " " + objectType.Name + " by name '" + name + "' has already been created for module '" +
-                StringValue.UnnamedWhenNullOrEmpty(moduleName) + "'")
+                objectType.Prefix +
+                " " +
+                objectType.Name +
+                " by name '" +
+                name +
+                "' has already been created for module '" +
+                StringValue.UnnamedWhenNullOrEmpty(moduleName) +
+                "'")
         {
         }
     }

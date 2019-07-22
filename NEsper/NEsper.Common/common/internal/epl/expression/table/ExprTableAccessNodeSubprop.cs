@@ -9,6 +9,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.compile.stage2;
@@ -19,6 +20,7 @@ using com.espertech.esper.common.@internal.epl.table.compiletime;
 using com.espertech.esper.common.@internal.epl.table.strategy;
 using com.espertech.esper.common.@internal.rettype;
 using com.espertech.esper.compat.collections;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 using static com.espertech.esper.common.@internal.epl.table.strategy.ExprTableEvalStrategyEnum;
 
@@ -134,7 +136,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.table
             if (column is TableMetadataColumnPlain) {
                 ExprDotEnumerationSourceForgeForProps enumerationSource =
                     ExprDotNodeUtility.GetPropertyEnumerationSource(
-                        SubpropName, 0, tableMeta.InternalEventType, true, true);
+                        SubpropName,
+                        0,
+                        tableMeta.InternalEventType,
+                        true,
+                        true);
                 optionalEnumerationType = enumerationSource.ReturnType;
                 optionalPropertyEnumEvaluator = enumerationSource.EnumerationGivenEvent;
             }

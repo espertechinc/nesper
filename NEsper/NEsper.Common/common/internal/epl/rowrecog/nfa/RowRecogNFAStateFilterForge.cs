@@ -7,10 +7,12 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.epl.expression.core;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.rowrecog.nfa
@@ -58,9 +60,15 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.nfa
             SAIFFInitializeSymbol symbols,
             CodegenClassScope classScope)
         {
-            method.Block.SetProperty(eval, "Expression", ExprNodeUtilityCodegen.CodegenEvaluator(expression.Forge, method, this.GetType(), classScope));
+            method.Block.SetProperty(
+                eval,
+                "Expression",
+                ExprNodeUtilityCodegen.CodegenEvaluator(expression.Forge, method, this.GetType(), classScope));
             if (classScope.IsInstrumented) {
-                method.Block.SetProperty(eval, "ExpressionTextForAudit", Constant(ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(expression)));
+                method.Block.SetProperty(
+                    eval,
+                    "ExpressionTextForAudit",
+                    Constant(ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(expression)));
             }
         }
     }

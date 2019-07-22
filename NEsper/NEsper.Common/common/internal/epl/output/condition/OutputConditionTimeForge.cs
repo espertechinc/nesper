@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.context.aifactory.core;
@@ -15,6 +16,7 @@ using com.espertech.esper.common.@internal.epl.expression.time.eval;
 using com.espertech.esper.common.@internal.epl.expression.time.node;
 using com.espertech.esper.common.@internal.schedule;
 using com.espertech.esper.compat;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.output.condition
@@ -45,11 +47,17 @@ namespace com.espertech.esper.common.@internal.epl.output.condition
 
             CodegenMethod method = parent.MakeChild(typeof(OutputConditionFactory), this.GetType(), classScope);
             method.Block
-                .DeclareVar(typeof(TimePeriodCompute), "delta", timePeriod.TimePeriodComputeForge.MakeEvaluator(method, classScope))
+                .DeclareVar<TimePeriodCompute>(
+                    "delta",
+                    timePeriod.TimePeriodComputeForge.MakeEvaluator(method, classScope))
                 .MethodReturn(
-                    ExprDotMethodChain(symbols.GetAddInitSvc(method)).Add(EPStatementInitServicesConstants.GETRESULTSETPROCESSORHELPERFACTORY)
+                    ExprDotMethodChain(symbols.GetAddInitSvc(method))
+                        .Add(EPStatementInitServicesConstants.GETRESULTSETPROCESSORHELPERFACTORY)
                         .Add(
-                            "makeOutputConditionTime", Constant(timePeriod.HasVariable), @Ref("delta"), Constant(isStartConditionOnCreation),
+                            "makeOutputConditionTime",
+                            Constant(timePeriod.HasVariable),
+                            @Ref("delta"),
+                            Constant(isStartConditionOnCreation),
                             Constant(scheduleCallbackId)));
             return LocalMethod(method);
         }

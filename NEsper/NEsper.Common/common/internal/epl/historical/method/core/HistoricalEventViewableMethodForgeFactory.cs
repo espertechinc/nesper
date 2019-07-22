@@ -9,6 +9,7 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
+
 using com.espertech.esper.collection;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.meta;
@@ -47,10 +48,13 @@ namespace com.espertech.esper.common.@internal.epl.historical.method.core
             ExprNodeScript scriptExpression = null;
             if (methodStreamSpec.ClassName == null && methodStreamSpec.MethodName != null) {
                 var script = services.ScriptCompileTimeResolver.Resolve(
-                    methodStreamSpec.MethodName, methodStreamSpec.Expressions.Count);
+                    methodStreamSpec.MethodName,
+                    methodStreamSpec.Expressions.Count);
                 if (script != null) {
                     scriptExpression = new ExprNodeScript(
-                        services.Configuration.Compiler.Scripts.DefaultDialect, script, methodStreamSpec.Expressions);
+                        services.Configuration.Compiler.Scripts.DefaultDialect,
+                        script,
+                        methodStreamSpec.Expressions);
                 }
             }
 
@@ -59,15 +63,22 @@ namespace com.espertech.esper.common.@internal.epl.historical.method.core
                     eventTypeNameProvidedUDFOrScript = scriptExpression.EventTypeNameAnnotation;
                     strategy = MethodPollingExecStrategyEnum.TARGET_SCRIPT;
                     EPLValidationUtil.ValidateSimpleGetSubtree(
-                        ExprNodeOrigin.METHODINVJOIN, scriptExpression, null, false, @base.StatementRawInfo, services);
+                        ExprNodeOrigin.METHODINVJOIN,
+                        scriptExpression,
+                        null,
+                        false,
+                        @base.StatementRawInfo,
+                        services);
                 }
                 else if (variableMetaData != null) {
                     var variableName = variableMetaData.VariableName;
                     if (variableMetaData.OptionalContextName != null) {
                         if (contextName == null || !contextName.Equals(variableMetaData.OptionalContextName)) {
                             throw new ExprValidationException(
-                                "Variable by name '" + variableMetaData.VariableName +
-                                "' has been declared for context '" + variableMetaData.OptionalContextName +
+                                "Variable by name '" +
+                                variableMetaData.VariableName +
+                                "' has been declared for context '" +
+                                variableMetaData.OptionalContextName +
                                 "' and can only be used within the same context");
                         }
 
@@ -83,7 +94,8 @@ namespace com.espertech.esper.common.@internal.epl.historical.method.core
                     }
 
                     methodReflection = classpathImportService.ResolveNonStaticMethodOverloadChecked(
-                        variableMetaData.Type, methodStreamSpec.MethodName);
+                        variableMetaData.Type,
+                        methodStreamSpec.MethodName);
                 }
                 else if (methodStreamSpec.ClassName == null) { // must be either UDF or script
                     Pair<Type, ImportSingleRowDesc> udf;
@@ -97,13 +109,15 @@ namespace com.espertech.esper.common.@internal.epl.historical.method.core
                     }
 
                     methodReflection = classpathImportService.ResolveMethodOverloadChecked(
-                        udf.First, methodStreamSpec.MethodName);
+                        udf.First,
+                        methodStreamSpec.MethodName);
                     eventTypeNameProvidedUDFOrScript = udf.Second.OptionalEventTypeName;
                     strategy = MethodPollingExecStrategyEnum.TARGET_CONST;
                 }
                 else {
                     methodReflection = classpathImportService.ResolveMethodOverloadChecked(
-                        methodStreamSpec.ClassName, methodStreamSpec.MethodName);
+                        methodStreamSpec.ClassName,
+                        methodStreamSpec.MethodName);
                     strategy = MethodPollingExecStrategyEnum.TARGET_CONST;
                 }
             }
@@ -132,8 +146,11 @@ namespace com.espertech.esper.common.@internal.epl.historical.method.core
                 beanClass = methodReflection.ReturnType;
                 if (beanClass == typeof(void) || beanClass == typeof(void) || beanClass.IsBuiltinDataType()) {
                     throw new ExprValidationException(
-                        "Invalid return type for static method '" + methodReflection.Name + "' of class '" +
-                        methodStreamSpec.ClassName + "', expecting a type");
+                        "Invalid return type for static method '" +
+                        methodReflection.Name +
+                        "' of class '" +
+                        methodStreamSpec.ClassName +
+                        "', expecting a type");
                 }
 
                 if (methodReflection.ReturnType.IsArray &&
@@ -158,19 +175,23 @@ namespace com.espertech.esper.common.@internal.epl.historical.method.core
                 // If the method returns a Map, look up the map type
                 string mapTypeName = null;
                 if (GenericExtensions.IsGenericDictionary(methodReflection.ReturnType) ||
-                    methodReflection.ReturnType.IsArray && 
+                    methodReflection.ReturnType.IsArray &&
                     GenericExtensions.IsGenericDictionary(methodReflection.ReturnType.GetElementType()) ||
                     isCollection && GenericExtensions.IsGenericDictionary(collectionClass) ||
                     isIterator && GenericExtensions.IsGenericDictionary(iteratorClass)) {
                     MethodMetadataDesc metadata;
                     if (variableMetaData != null) {
                         metadata = GetCheckMetadataVariable(
-                            methodStreamSpec.MethodName, variableMetaData, classpathImportService,
+                            methodStreamSpec.MethodName,
+                            variableMetaData,
+                            classpathImportService,
                             typeof(IDictionary<object, object>));
                     }
                     else {
                         metadata = GetCheckMetadataNonVariable(
-                            methodStreamSpec.MethodName, methodStreamSpec.ClassName, classpathImportService,
+                            methodStreamSpec.MethodName,
+                            methodStreamSpec.ClassName,
+                            classpathImportService,
                             typeof(IDictionary<object, object>));
                     }
 
@@ -187,12 +208,16 @@ namespace com.espertech.esper.common.@internal.epl.historical.method.core
                     MethodMetadataDesc metadata;
                     if (variableMetaData != null) {
                         metadata = GetCheckMetadataVariable(
-                            methodStreamSpec.MethodName, variableMetaData, classpathImportService,
+                            methodStreamSpec.MethodName,
+                            variableMetaData,
+                            classpathImportService,
                             typeof(LinkedHashMap<object, object>));
                     }
                     else {
                         metadata = GetCheckMetadataNonVariable(
-                            methodStreamSpec.MethodName, methodStreamSpec.ClassName, classpathImportService,
+                            methodStreamSpec.MethodName,
+                            methodStreamSpec.ClassName,
+                            classpathImportService,
                             typeof(LinkedHashMap<object, object>));
                     }
 
@@ -205,8 +230,14 @@ namespace com.espertech.esper.common.@internal.epl.historical.method.core
                 Func<EventTypeApplicationType, EventTypeMetadata> metadataFunction = apptype => {
                     var eventTypeName = services.EventTypeNameGeneratorStatement.GetAnonymousMethodHistorical(stream);
                     return new EventTypeMetadata(
-                        eventTypeName, @base.ModuleName, EventTypeTypeClass.METHODPOLLDERIVED, apptype,
-                        NameAccessModifier.TRANSIENT, EventTypeBusModifier.NONBUS, false, EventTypeIdPair.Unassigned());
+                        eventTypeName,
+                        @base.ModuleName,
+                        EventTypeTypeClass.METHODPOLLDERIVED,
+                        apptype,
+                        NameAccessModifier.TRANSIENT,
+                        EventTypeBusModifier.NONBUS,
+                        false,
+                        EventTypeIdPair.Unassigned());
                 };
                 if (methodReflection.ReturnType.IsArray &&
                     methodReflection.ReturnType.GetElementType() == typeof(EventBean) ||
@@ -216,29 +247,47 @@ namespace com.espertech.esper.common.@internal.epl.historical.method.core
                         ? eventTypeNameProvidedUDFOrScript
                         : methodStreamSpec.EventTypeName;
                     eventType = EventTypeUtility.RequireEventType(
-                        "Method", methodReflection.Name, typeName, services.EventTypeCompileTimeResolver);
+                        "Method",
+                        methodReflection.Name,
+                        typeName,
+                        services.EventTypeCompileTimeResolver);
                     eventTypeWhenMethodReturnsEventBeans = eventType;
                 }
                 else if (mapType != null) {
                     eventType = BaseNestableEventUtil.MakeMapTypeCompileTime(
-                        metadataFunction.Invoke(EventTypeApplicationType.MAP), mapType, null, null, null, null,
-                        services.BeanEventTypeFactoryPrivate, services.EventTypeCompileTimeResolver);
+                        metadataFunction.Invoke(EventTypeApplicationType.MAP),
+                        mapType,
+                        null,
+                        null,
+                        null,
+                        null,
+                        services.BeanEventTypeFactoryPrivate,
+                        services.EventTypeCompileTimeResolver);
                     services.EventTypeCompileTimeRegistry.NewType(eventType);
                 }
                 else if (oaType != null) {
                     eventType = BaseNestableEventUtil.MakeOATypeCompileTime(
-                        metadataFunction.Invoke(EventTypeApplicationType.OBJECTARR), oaType, null, null, null, null,
-                        services.BeanEventTypeFactoryPrivate, services.EventTypeCompileTimeResolver);
+                        metadataFunction.Invoke(EventTypeApplicationType.OBJECTARR),
+                        oaType,
+                        null,
+                        null,
+                        null,
+                        null,
+                        services.BeanEventTypeFactoryPrivate,
+                        services.EventTypeCompileTimeResolver);
                     services.EventTypeCompileTimeRegistry.NewType(eventType);
                 }
                 else {
                     var stem = services.BeanEventTypeStemService.GetCreateStem(beanClass, null);
                     eventType = new BeanEventType(
                         services.Container,
-                        stem, 
+                        stem,
                         metadataFunction.Invoke(EventTypeApplicationType.CLASS),
                         services.BeanEventTypeFactoryPrivate,
-                        null, null, null, null);
+                        null,
+                        null,
+                        null,
+                        null);
                     services.EventTypeCompileTimeRegistry.NewType(eventType);
                 }
 
@@ -252,13 +301,24 @@ namespace com.espertech.esper.common.@internal.epl.historical.method.core
                     ? scriptExpression.EventTypeNameAnnotation
                     : methodStreamSpec.EventTypeName;
                 eventType = EventTypeUtility.RequireEventType(
-                    "Script", scriptExpression.Script.Name, eventTypeName, services.EventTypeCompileTimeResolver);
+                    "Script",
+                    scriptExpression.Script.Name,
+                    eventTypeName,
+                    services.EventTypeCompileTimeResolver);
             }
 
             // metadata
             var meta = new MethodPollingViewableMeta(
-                methodProviderClass, isStaticMethod, mapType, oaType, strategy, isCollection, isIterator,
-                variableMetaData, eventTypeWhenMethodReturnsEventBeans, scriptExpression);
+                methodProviderClass,
+                isStaticMethod,
+                mapType,
+                oaType,
+                strategy,
+                isCollection,
+                isIterator,
+                variableMetaData,
+                eventTypeWhenMethodReturnsEventBeans,
+                scriptExpression);
             return new HistoricalEventViewableMethodForge(stream, eventType, methodStreamSpec, meta);
         }
 
@@ -269,7 +329,11 @@ namespace com.espertech.esper.common.@internal.epl.historical.method.core
             Type metadataClass)
         {
             var typeGetterMethod = GetRequiredTypeGetterMethodCanNonStatic(
-                methodName, null, variableMetaData.Type, importService, metadataClass);
+                methodName,
+                null,
+                variableMetaData.Type,
+                importService,
+                metadataClass);
 
             if (typeGetterMethod.IsStatic) {
                 return InvokeMetadataMethod(null, variableMetaData.GetType().GetSimpleName(), typeGetterMethod);
@@ -297,7 +361,11 @@ namespace com.espertech.esper.common.@internal.epl.historical.method.core
             Type metadataClass)
         {
             var typeGetterMethod = GetRequiredTypeGetterMethodCanNonStatic(
-                methodName, className, null, importService, metadataClass);
+                methodName,
+                className,
+                null,
+                importService,
+                metadataClass);
             return InvokeMetadataMethod(null, className, typeGetterMethod);
         }
 
@@ -313,17 +381,25 @@ namespace com.espertech.esper.common.@internal.epl.historical.method.core
             try {
                 if (clazzWhenAvailable != null) {
                     typeGetterMethod = importService.ResolveMethod(
-                        clazzWhenAvailable, getterMethodName, new Type[0], new bool[0]);
+                        clazzWhenAvailable,
+                        getterMethodName,
+                        new Type[0],
+                        new bool[0]);
                 }
                 else {
                     typeGetterMethod = importService.ResolveMethodOverloadChecked(
-                        classNameWhenNoClass, getterMethodName, new Type[0], new bool[0], new bool[0]);
+                        classNameWhenNoClass,
+                        getterMethodName,
+                        new Type[0],
+                        new bool[0],
+                        new bool[0]);
                 }
             }
             catch (Exception) {
                 throw new ExprValidationException(
                     "Could not find getter method for method invocation, expected a method by name '" +
-                    getterMethodName + "' accepting no parameters");
+                    getterMethodName +
+                    "' accepting no parameters");
             }
 
             bool fail;
@@ -354,7 +430,10 @@ namespace com.espertech.esper.common.@internal.epl.historical.method.core
             catch (Exception e) {
                 throw new ExprValidationException(
                     "Error invoking metadata getter method for method invocation, for method by name '" +
-                    typeGetterMethod.Name + "' accepting no parameters: " + e.Message, e);
+                    typeGetterMethod.Name +
+                    "' accepting no parameters: " +
+                    e.Message,
+                    e);
             }
 
             if (resultType == null) {

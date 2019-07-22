@@ -36,7 +36,9 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupby
                 }
 
                 log.Warn(
-                    "Variable '" + variableReader.MetaData.VariableName + " returned a null value, using last valid value");
+                    "Variable '" +
+                    variableReader.MetaData.VariableName +
+                    " returned a null value, using last valid value");
                 return null;
             }
         }

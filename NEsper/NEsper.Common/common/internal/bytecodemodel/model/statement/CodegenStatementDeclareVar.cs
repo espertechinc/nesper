@@ -9,81 +9,67 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.core.CodeGenerationHelper;
 
 namespace com.espertech.esper.common.@internal.bytecodemodel.model.statement
 {
     public class CodegenStatementDeclareVar : CodegenStatementBase
     {
-        private readonly Type clazz;
-        private readonly CodegenExpression optionalInitializer;
-        private readonly Type optionalTypeVariable;
-        private readonly string typeName;
-        private readonly string var;
+        private readonly Type _clazz;
+        private readonly CodegenExpression _optionalInitializer;
+        private readonly string _typeName;
+        private readonly string _var;
 
         public CodegenStatementDeclareVar(
             Type clazz,
-            Type optionalTypeVariable,
             string var,
             CodegenExpression optionalInitializer)
         {
-            if (clazz == null) {
-                throw new ArgumentException("Class cannot be null");
-            }
-
-            this.clazz = clazz;
-            typeName = null;
-            this.optionalTypeVariable = optionalTypeVariable;
-            this.var = var;
-            this.optionalInitializer = optionalInitializer;
+            _clazz = clazz ?? throw new ArgumentException("Class cannot be null");
+            _typeName = null;
+            _var = var;
+            _optionalInitializer = optionalInitializer;
         }
 
         public CodegenStatementDeclareVar(
             string typeName,
-            Type optionalTypeVariable,
             string var,
             CodegenExpression optionalInitializer)
         {
-            if (typeName == null) {
-                throw new ArgumentException("Class cannot be null");
-            }
-
-            clazz = null;
-            this.typeName = typeName;
-            this.optionalTypeVariable = optionalTypeVariable;
-            this.var = var;
-            this.optionalInitializer = optionalInitializer;
+            _clazz = null;
+            _typeName = typeName ?? throw new ArgumentException("Class cannot be null");
+            _var = var;
+            _optionalInitializer = optionalInitializer;
         }
 
         public override void RenderStatement(
             StringBuilder builder,
-            IDictionary<Type, string> imports,
             bool isInnerClass)
         {
-            if (clazz != null) {
-                AppendClassName(builder, clazz, optionalTypeVariable, imports);
+            if (_clazz != null) {
+                AppendClassName(builder, _clazz);
             }
             else {
-                builder.Append(typeName);
+                builder.Append(_typeName);
             }
 
-            builder.Append(" ").Append(var);
-            if (optionalInitializer != null) {
+            builder.Append(" ").Append(_var);
+            if (_optionalInitializer != null) {
                 builder.Append("=");
-                optionalInitializer.Render(builder, imports, isInnerClass);
+                _optionalInitializer.Render(builder, isInnerClass);
             }
         }
 
         public override void MergeClasses(ISet<Type> classes)
         {
-            if (clazz != null) {
-                classes.Add(clazz);
+            if (_clazz != null) {
+                classes.Add(_clazz);
             }
 
-            if (optionalInitializer != null) {
-                optionalInitializer.MergeClasses(classes);
-            }
+            _optionalInitializer?.MergeClasses(classes);
         }
     }
 } // end of namespace

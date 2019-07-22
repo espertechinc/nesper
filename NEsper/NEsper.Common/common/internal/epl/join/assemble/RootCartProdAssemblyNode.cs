@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.epl.@join.rep;
 using com.espertech.esper.common.@internal.util;
@@ -41,7 +42,8 @@ namespace com.espertech.esper.common.@internal.epl.join.assemble
             bool allSubStreamsOptional,
             int[] childStreamIndex)
             : base(
-                streamNum, numStreams)
+                streamNum,
+                numStreams)
         {
             this.allSubStreamsOptional = allSubStreamsOptional;
             this.childStreamIndex = childStreamIndex;
@@ -122,16 +124,20 @@ namespace com.espertech.esper.common.@internal.epl.join.assemble
         {
             IList<EventBean[]> result = new List<EventBean[]>();
             CartesianUtil.ComputeCartesian(
-                rowsPerStream[0], subStreamsNumsPerChild[0],
-                rowsPerStream[1], subStreamsNumsPerChild[1],
+                rowsPerStream[0],
+                subStreamsNumsPerChild[0],
+                rowsPerStream[1],
+                subStreamsNumsPerChild[1],
                 result);
 
             if (rowsPerStream.Length > 2) {
                 for (var i = 0; i < subStreamsNumsPerChild.Length - 2; i++) {
                     IList<EventBean[]> product = new List<EventBean[]>();
                     CartesianUtil.ComputeCartesian(
-                        result, combinedSubStreams[i],
-                        rowsPerStream[i + 2], subStreamsNumsPerChild[i + 2],
+                        result,
+                        combinedSubStreams[i],
+                        rowsPerStream[i + 2],
+                        subStreamsNumsPerChild[i + 2],
                         product);
                     result = product;
                 }

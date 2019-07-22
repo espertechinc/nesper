@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.core;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -15,6 +16,7 @@ using com.espertech.esper.common.@internal.epl.agg.method.core;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.serde;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 using static com.espertech.esper.common.@internal.epl.agg.method.core.AggregatorCodegenUtil;
 using static com.espertech.esper.common.@internal.serde.CodegenSharableSerdeClassTyped.CodegenSharableSerdeName;
@@ -40,7 +42,13 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.minmax
             bool hasFilter,
             ExprNode optionalFilter)
             : base(
-                factory, col, rowCtor, membersColumnized, classScope, optionalDistinctValueType, hasFilter,
+                factory,
+                col,
+                rowCtor,
+                membersColumnized,
+                classScope,
+                optionalDistinctValueType,
+                hasFilter,
                 optionalFilter)
         {
             this.factory = factory;
@@ -114,7 +122,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.minmax
             CodegenMethod method,
             CodegenClassScope classScope)
         {
-            method.Block.ExprDotMethod(serde, "write", RowDotRef(row, refSet), output, unitKey, writer);
+            method.Block.ExprDotMethod(serde, "Write", RowDotRef(row, refSet), output, unitKey, writer);
         }
 
         protected override void ReadWODistinct(
@@ -127,7 +135,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.minmax
         {
             method.Block.AssignRef(
                 RowDotRef(row, refSet),
-                Cast(typeof(SortedRefCountedSet<object>), ExprDotMethod(serde, "read", input, unitKey)));
+                Cast(typeof(SortedRefCountedSet<object>), ExprDotMethod(serde, "Read", input, unitKey)));
         }
     }
 } // end of namespace

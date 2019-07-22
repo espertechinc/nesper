@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.@event.bean.core;
 using com.espertech.esper.common.@internal.@event.bean.service;
@@ -40,7 +41,10 @@ namespace com.espertech.esper.common.@internal.@event.arr
             BeanEventTypeFactory beanEventTypeFactory)
         {
             return prop.GetGetterObjectArray(
-                PropertiesIndex, nestableTypes, eventBeanTypedEventFactory, beanEventTypeFactory);
+                PropertiesIndex,
+                nestableTypes,
+                eventBeanTypedEventFactory,
+                beanEventTypeFactory);
         }
 
         public EventPropertyGetterSPI GetGetterProperty(
@@ -104,7 +108,11 @@ namespace com.espertech.esper.common.@internal.@event.arr
         {
             var propertyIndex = GetAssertIndex(propertyNameAtomic);
             return new ObjectArrayArrayPONOEntryIndexedPropertyGetter(
-                propertyIndex, index, eventBeanTypedEventFactory, beanEventTypeFactory, componentType);
+                propertyIndex,
+                index,
+                eventBeanTypedEventFactory,
+                beanEventTypeFactory,
+                componentType);
         }
 
         public EventPropertyGetterSPI GetGetterMappedProperty(
@@ -134,7 +142,11 @@ namespace com.espertech.esper.common.@internal.@event.arr
         {
             var propertyIndex = GetAssertIndex(propertyNameAtomic);
             return new ObjectArrayArrayPONOBeanEntryIndexedPropertyGetter(
-                propertyIndex, index, nestedGetter, eventBeanTypedEventFactory, beanEventTypeFactory,
+                propertyIndex,
+                index,
+                nestedGetter,
+                eventBeanTypedEventFactory,
+                beanEventTypeFactory,
                 propertyTypeGetter);
         }
 
@@ -156,7 +168,11 @@ namespace com.espertech.esper.common.@internal.@event.arr
         {
             var index = GetAssertIndex(propertyName);
             return new ObjectArrayPOJOEntryPropertyGetter(
-                index, nestedGetter, eventBeanTypedEventFactory, beanEventTypeFactory, nestedReturnType,
+                index,
+                nestedGetter,
+                eventBeanTypedEventFactory,
+                beanEventTypeFactory,
+                nestedReturnType,
                 nestedComponentType);
         }
 
@@ -177,11 +193,17 @@ namespace com.espertech.esper.common.@internal.@event.arr
             var propertyIndex = GetAssertIndex(propertyName);
             if (getter is ObjectArrayEventPropertyGetter) {
                 return new ObjectArrayNestedEntryPropertyGetterObjectArray(
-                    propertyIndex, innerType, eventBeanTypedEventFactory, (ObjectArrayEventPropertyGetter) getter);
+                    propertyIndex,
+                    innerType,
+                    eventBeanTypedEventFactory,
+                    (ObjectArrayEventPropertyGetter) getter);
             }
 
             return new ObjectArrayNestedEntryPropertyGetterMap(
-                propertyIndex, innerType, eventBeanTypedEventFactory, (MapEventPropertyGetter) getter);
+                propertyIndex,
+                innerType,
+                eventBeanTypedEventFactory,
+                (MapEventPropertyGetter) getter);
         }
 
         public EventPropertyGetterSPI GetGetterNestedEntryBeanArray(
@@ -194,12 +216,19 @@ namespace com.espertech.esper.common.@internal.@event.arr
             var propertyIndex = GetAssertIndex(propertyNameAtomic);
             if (getter is ObjectArrayEventPropertyGetter) {
                 return new ObjectArrayNestedEntryPropertyGetterArrayObjectArray(
-                    propertyIndex, innerType, eventBeanTypedEventFactory, index,
+                    propertyIndex,
+                    innerType,
+                    eventBeanTypedEventFactory,
+                    index,
                     (ObjectArrayEventPropertyGetter) getter);
             }
 
             return new ObjectArrayNestedEntryPropertyGetterArrayMap(
-                propertyIndex, innerType, eventBeanTypedEventFactory, index, (MapEventPropertyGetter) getter);
+                propertyIndex,
+                innerType,
+                eventBeanTypedEventFactory,
+                index,
+                (MapEventPropertyGetter) getter);
         }
 
         public EventPropertyGetterSPI GetGetterBeanNested(
@@ -223,7 +252,10 @@ namespace com.espertech.esper.common.@internal.@event.arr
             BeanEventTypeFactory beanEventTypeFactory)
         {
             return (EventPropertyGetterMappedSPI) mappedProperty.GetGetterObjectArray(
-                PropertiesIndex, nestableTypes, eventBeanTypedEventFactory, beanEventTypeFactory);
+                PropertiesIndex,
+                nestableTypes,
+                eventBeanTypedEventFactory,
+                beanEventTypeFactory);
         }
 
         public EventPropertyGetterIndexedSPI GetPropertyProvidedGetterIndexed(
@@ -234,7 +266,10 @@ namespace com.espertech.esper.common.@internal.@event.arr
             BeanEventTypeFactory beanEventTypeFactory)
         {
             return (EventPropertyGetterIndexedSPI) indexedProperty.GetGetterObjectArray(
-                PropertiesIndex, nestableTypes, eventBeanTypedEventFactory, beanEventTypeFactory);
+                PropertiesIndex,
+                nestableTypes,
+                eventBeanTypedEventFactory,
+                beanEventTypeFactory);
         }
 
         public EventPropertyGetterSPI GetGetterNestedPropertyProvidedGetterDynamic(
@@ -248,8 +283,7 @@ namespace com.espertech.esper.common.@internal.@event.arr
 
         private int GetAssertIndex(string propertyName)
         {
-            if (!PropertiesIndex.TryGetValue(propertyName, out var index))
-            { 
+            if (!PropertiesIndex.TryGetValue(propertyName, out var index)) {
                 throw new PropertyAccessException(
                     "Property '" + propertyName + "' could not be found as a property of type '" + eventTypeName + "'");
             }

@@ -44,16 +44,22 @@ namespace com.espertech.esper.common.client.soda
             switch (value) {
                 case MatchRecogizePatternElementType.SINGLE:
                     return "";
+
                 case MatchRecogizePatternElementType.ZERO_TO_MANY:
                     return "*";
+
                 case MatchRecogizePatternElementType.ONE_TO_MANY:
                     return "+";
+
                 case MatchRecogizePatternElementType.ONE_OPTIONAL:
                     return "?";
+
                 case MatchRecogizePatternElementType.ZERO_TO_MANY_RELUCTANT:
                     return "*?";
+
                 case MatchRecogizePatternElementType.ONE_TO_MANY_RELUCTANT:
                     return "+?";
+
                 case MatchRecogizePatternElementType.ONE_OPTIONAL_RELUCTANT:
                     return "??";
             }

@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
@@ -27,7 +28,9 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
     public class ProxyIntervalDeltaExprForge : IntervalDeltaExprForge
     {
         public Func<IntervalDeltaExprEvaluator> ProcMakeEvaluator;
-        public Func<CodegenExpression, CodegenMethodScope, ExprForgeCodegenSymbol, CodegenClassScope, CodegenExpression> ProcCodegen;
+
+        public Func<CodegenExpression, CodegenMethodScope, ExprForgeCodegenSymbol, CodegenClassScope, CodegenExpression>
+            ProcCodegen;
 
         public IntervalDeltaExprEvaluator MakeEvaluator()
         {
@@ -41,7 +44,10 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
             CodegenClassScope codegenClassScope)
         {
             return ProcCodegen(
-                reference, codegenMethodScope, exprSymbol, codegenClassScope);
+                reference,
+                codegenMethodScope,
+                exprSymbol,
+                codegenClassScope);
         }
     }
 } // end of namespace

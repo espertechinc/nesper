@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.collection;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.collection;
@@ -68,12 +69,17 @@ namespace com.espertech.esper.common.@internal.epl.historical.common
         /// </summary>
         /// <param name="streamViewStreamNum">the stream providing the polling events</param>
         /// <returns>looking and indexing strategy</returns>
-        public Pair<HistoricalIndexLookupStrategyForge, PollResultIndexingStrategyForge> GetStrategy(int streamViewStreamNum)
+        public Pair<HistoricalIndexLookupStrategyForge, PollResultIndexingStrategyForge> GetStrategy(
+            int streamViewStreamNum)
         {
             // If there is only a single polling stream, then build a single index
             if (pollingStreams.Count == 1) {
                 return JoinSetComposerPrototypeForgeFactory.DetermineIndexing(
-                    queryGraph, typesPerStream[historicalStreamNum], typesPerStream[streamViewStreamNum], historicalStreamNum, streamViewStreamNum);
+                    queryGraph,
+                    typesPerStream[historicalStreamNum],
+                    typesPerStream[streamViewStreamNum],
+                    historicalStreamNum,
+                    streamViewStreamNum);
             }
 
             // If there are multiple polling streams, determine if a single index is appropriate.
@@ -92,7 +98,10 @@ namespace com.espertech.esper.common.@internal.epl.historical.common
                     Type[] keyTypes = GetPropertyTypes(hashKeyProps.Keys);
                     Type[] indexTypes = GetPropertyTypes(typesPerStream[historicalStreamNum], indexProperties);
 
-                    HistoricalStreamIndexDesc desc = new HistoricalStreamIndexDesc(indexProperties, indexTypes, keyTypes);
+                    HistoricalStreamIndexDesc desc = new HistoricalStreamIndexDesc(
+                        indexProperties,
+                        indexTypes,
+                        keyTypes);
                     IList<int> usedByStreams = indexesUsedByStreams.Get(desc);
                     if (usedByStreams == null) {
                         usedByStreams = new List<int>();
@@ -106,27 +115,38 @@ namespace com.espertech.esper.common.@internal.epl.historical.common
                 // Build a master indexing strategy that forms multiple indexes and numbers each.
                 if (indexesUsedByStreams.Count > 1) {
                     int numIndexes = indexesUsedByStreams.Count;
-                    PollResultIndexingStrategyForge[] indexingStrategies = new PollResultIndexingStrategyForge[numIndexes];
+                    PollResultIndexingStrategyForge[] indexingStrategies =
+                        new PollResultIndexingStrategyForge[numIndexes];
 
                     // create an indexing strategy for each index
                     int count = 0;
                     foreach (KeyValuePair<HistoricalStreamIndexDesc, IList<int>> desc in indexesUsedByStreams) {
                         int sampleStreamViewStreamNum = desc.Value[0];
                         indexingStrategies[count] = JoinSetComposerPrototypeForgeFactory.DetermineIndexing(
-                            queryGraph, typesPerStream[historicalStreamNum], typesPerStream[sampleStreamViewStreamNum], historicalStreamNum,
-                            sampleStreamViewStreamNum).Second;
+                                queryGraph,
+                                typesPerStream[historicalStreamNum],
+                                typesPerStream[sampleStreamViewStreamNum],
+                                historicalStreamNum,
+                                sampleStreamViewStreamNum)
+                            .Second;
                         count++;
                     }
 
                     // create a master indexing strategy that utilizes each indexing strategy to create a set of indexes
-                    masterIndexingStrategy = new PollResultIndexingStrategyMultiForge(streamViewStreamNum, indexingStrategies);
+                    masterIndexingStrategy = new PollResultIndexingStrategyMultiForge(
+                        streamViewStreamNum,
+                        indexingStrategies);
                 }
             }
 
             // there is one type of index
             if (indexesUsedByStreams.Count == 1) {
                 return JoinSetComposerPrototypeForgeFactory.DetermineIndexing(
-                    queryGraph, typesPerStream[historicalStreamNum], typesPerStream[streamViewStreamNum], historicalStreamNum, streamViewStreamNum);
+                    queryGraph,
+                    typesPerStream[historicalStreamNum],
+                    typesPerStream[streamViewStreamNum],
+                    historicalStreamNum,
+                    streamViewStreamNum);
             }
 
             // determine which index number the polling stream must use
@@ -146,10 +166,19 @@ namespace com.espertech.esper.common.@internal.epl.historical.common
             }
 
             // Use one of the indexes built by the master index and a lookup strategy
-            HistoricalIndexLookupStrategyForge innerLookupStrategy = JoinSetComposerPrototypeForgeFactory.DetermineIndexing(
-                queryGraph, typesPerStream[historicalStreamNum], typesPerStream[streamViewStreamNum], historicalStreamNum, streamViewStreamNum).First;
-            HistoricalIndexLookupStrategyForge lookupStrategy = new HistoricalIndexLookupStrategyMultiForge(indexUsed, innerLookupStrategy);
-            return new Pair<HistoricalIndexLookupStrategyForge, PollResultIndexingStrategyForge>(lookupStrategy, masterIndexingStrategy);
+            HistoricalIndexLookupStrategyForge innerLookupStrategy = JoinSetComposerPrototypeForgeFactory
+                .DetermineIndexing(
+                    queryGraph,
+                    typesPerStream[historicalStreamNum],
+                    typesPerStream[streamViewStreamNum],
+                    historicalStreamNum,
+                    streamViewStreamNum)
+                .First;
+            HistoricalIndexLookupStrategyForge lookupStrategy =
+                new HistoricalIndexLookupStrategyMultiForge(indexUsed, innerLookupStrategy);
+            return new Pair<HistoricalIndexLookupStrategyForge, PollResultIndexingStrategyForge>(
+                lookupStrategy,
+                masterIndexingStrategy);
         }
 
         private Type[] GetPropertyTypes(

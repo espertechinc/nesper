@@ -35,20 +35,16 @@ namespace com.espertech.esper.common.@internal.settings
             TimeZone = timeZone;
             this.methodInvocationRef = methodInvocationRef;
 
-            try
-            {
-                foreach (var import in imports)
-                {
+            try {
+                foreach (var import in imports) {
                     AddImport(import);
                 }
 
-                foreach (var import in annotationImports)
-                {
+                foreach (var import in annotationImports) {
                     AddAnnotationImport(import);
                 }
             }
-            catch (ImportException ex)
-            {
+            catch (ImportException ex) {
                 throw new ConfigurationException("Failed to process imports: " + ex.Message, ex);
             }
         }

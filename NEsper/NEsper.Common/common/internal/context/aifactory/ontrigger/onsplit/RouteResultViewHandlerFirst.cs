@@ -54,7 +54,8 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.onspl
                 }
                 else {
                     // need to get contained events first
-                    EventBean[] containeds = items[i].PropertyEvaluator.GetProperty(eventsPerStream[0], exprEvaluatorContext);
+                    EventBean[] containeds =
+                        items[i].PropertyEvaluator.GetProperty(eventsPerStream[0], exprEvaluatorContext);
                     if (containeds == null || containeds.Length == 0) {
                         continue;
                     }

@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.epl.index.@base;
@@ -162,7 +163,8 @@ namespace com.espertech.esper.common.@internal.epl.lookupplansubord
                 hashPropCoercionTypes[i] = indexedKeyProps[i].CoercionType;
                 var keyForge = hashesDesc[i].HashKey.KeyExpr.Forge;
                 var evaluatorHashkey = keyForge.ExprEvaluator;
-                if (evaluatorHashkey != null && indexedKeyProps[i].CoercionType.GetBoxedType() !=
+                if (evaluatorHashkey != null &&
+                    indexedKeyProps[i].CoercionType.GetBoxedType() !=
                     keyForge.EvaluationType.GetBoxedType()) { // we allow null evaluator
                     isCoerceHash = true;
                 }
@@ -208,8 +210,15 @@ namespace com.espertech.esper.common.@internal.epl.lookupplansubord
                 var table = indexRepository.GetIndexByDesc(desc.IndexMultiKey);
                 if (table == null) {
                     table = EventTableUtil.BuildIndex(
-                        agentInstanceContext, 0, desc.QueryPlanIndexItem, eventType, true,
-                        desc.QueryPlanIndexItem.IsUnique, desc.IndexName, null, false);
+                        agentInstanceContext,
+                        0,
+                        desc.QueryPlanIndexItem,
+                        eventType,
+                        true,
+                        desc.QueryPlanIndexItem.IsUnique,
+                        desc.IndexName,
+                        null,
+                        false);
 
                     // fill table since its new
                     if (!isRecoveringResilient) {

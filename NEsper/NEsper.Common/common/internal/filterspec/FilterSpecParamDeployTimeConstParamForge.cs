@@ -48,11 +48,10 @@ namespace com.espertech.esper.common.@internal.filterspec
             var method = parent.MakeChild(typeof(FilterSpecParam), GetType(), classScope);
 
             method.Block
-                .DeclareVar(
-                    typeof(ExprFilterSpecLookupable),
+                .DeclareVar<ExprFilterSpecLookupable>(
                     "lookupable",
                     LocalMethod(lookupable.MakeCodegen(method, symbols, classScope)))
-                .DeclareVar(typeof(FilterOperator), "op", EnumValue(filterOperator));
+                .DeclareVar<FilterOperator>("op", EnumValue(filterOperator));
 
             var param = NewAnonymousClass(
                 method.Block,
@@ -60,7 +59,7 @@ namespace com.espertech.esper.common.@internal.filterspec
                 Arrays.AsList<CodegenExpression>(Ref("lookupable"), Ref("op")));
             var getFilterValue = CodegenMethod.MakeParentNode(typeof(object), GetType(), classScope)
                 .AddParam(FilterSpecParam.GET_FILTER_VALUE_FP);
-            param.AddMethod("getFilterValue", getFilterValue);
+            param.AddMethod("GetFilterValue", getFilterValue);
             var value = _deployTimeConstant.CodegenGetDeployTimeConstValue(classScope);
             if (_numberCoercer != null) {
                 value = _numberCoercer.CoerceCodegenMayNullBoxed(value, _returnType, method, classScope);

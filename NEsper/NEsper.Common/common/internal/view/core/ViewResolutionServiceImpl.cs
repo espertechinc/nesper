@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.@internal.compile.stage1.spec;
 using com.espertech.esper.common.@internal.epl.virtualdw;
 using com.espertech.esper.common.@internal.util;
@@ -52,7 +53,9 @@ namespace com.espertech.esper.common.@internal.view.core
                     }
 
                     return new VirtualDWViewFactoryForge(
-                        pair.First, optionalCreateNamedWindowName, pair.Second.CustomConfigs);
+                        pair.First,
+                        optionalCreateNamedWindowName,
+                        pair.Second.CustomConfigs);
                 }
                 else {
                     throw new ViewProcessingException(
@@ -76,8 +79,11 @@ namespace com.espertech.esper.common.@internal.view.core
                 }
             }
             catch (InvalidCastException e) {
-                var message = "Error casting view factory instance to " + typeof(ViewFactoryForge).GetCleanName() +
-                              " interface for view '" + name + "'";
+                var message = "Error casting view factory instance to " +
+                              typeof(ViewFactoryForge).GetCleanName() +
+                              " interface for view '" +
+                              name +
+                              "'";
                 throw new ViewProcessingException(message, e);
             }
 

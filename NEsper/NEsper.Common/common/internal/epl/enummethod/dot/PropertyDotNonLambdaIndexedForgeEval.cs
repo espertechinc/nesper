@@ -11,6 +11,7 @@ using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.enummethod.dot
@@ -49,19 +50,25 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
             CodegenClassScope codegenClassScope)
         {
             var methodNode = codegenMethodScope.MakeChild(
-                forge.EvaluationType, typeof(PropertyDotNonLambdaIndexedForgeEval), codegenClassScope);
+                forge.EvaluationType,
+                typeof(PropertyDotNonLambdaIndexedForgeEval),
+                codegenClassScope);
 
             var refEPS = exprSymbol.GetAddEPS(methodNode);
             var evaluationType = forge.ParamForge.EvaluationType;
             methodNode.Block
-                .DeclareVar(typeof(EventBean), "event", ArrayAtIndex(refEPS, Constant(forge.StreamId)))
+                .DeclareVar<EventBean>("event", ArrayAtIndex(refEPS, Constant(forge.StreamId)))
                 .IfRefNullReturnNull("event")
                 .DeclareVar(
-                    evaluationType, "key",
+                    evaluationType,
+                    "key",
                     forge.ParamForge.EvaluateCodegen(evaluationType, methodNode, exprSymbol, codegenClassScope))
                 .MethodReturn(
                     forge.IndexedGetter.EventBeanGetIndexedCodegen(
-                        methodNode, codegenClassScope, Ref("event"), Ref("key")));
+                        methodNode,
+                        codegenClassScope,
+                        Ref("event"),
+                        Ref("key")));
             return LocalMethod(methodNode);
         }
     }

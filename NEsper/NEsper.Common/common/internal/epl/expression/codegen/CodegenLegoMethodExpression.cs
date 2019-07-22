@@ -10,6 +10,7 @@ using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.compat;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.expression.codegen
@@ -95,7 +96,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.codegen
             else {
                 exprMethod.Block
                     .DeclareVar(evaluationType, PASS_NAME, expression)
-                    .IfRefNull(PASS_NAME).BlockReturn(ConstantFalse())
+                    .IfRefNull(PASS_NAME)
+                    .BlockReturn(ConstantFalse())
                     .MethodReturn(Ref(PASS_NAME));
             }
 

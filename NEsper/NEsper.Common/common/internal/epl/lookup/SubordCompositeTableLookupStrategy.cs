@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.index.composite;
@@ -37,9 +38,14 @@ namespace com.espertech.esper.common.@internal.epl.lookup
                 context.InstrumentationProvider.QIndexSubordLookup(this, _index, null);
                 var keys = new List<object>(2); // can collect nulls
                 var result = _factory.InnerIndexQuery.GetCollectKeys(
-                    eventsPerStream, _index.Index, context, keys, _index.PostProcessor);
+                    eventsPerStream,
+                    _index.Index,
+                    context,
+                    keys,
+                    _index.PostProcessor);
                 context.InstrumentationProvider.AIndexSubordLookup(
-                    result, keys.Count > 1 ? keys.ToArray() : keys[0]);
+                    result,
+                    keys.Count > 1 ? keys.ToArray() : keys[0]);
                 return result;
             }
 

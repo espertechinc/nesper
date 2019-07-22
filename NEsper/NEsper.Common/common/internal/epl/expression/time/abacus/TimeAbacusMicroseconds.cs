@@ -7,10 +7,12 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.expression.time.abacus
@@ -73,7 +75,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.time.abacus
                 .AddParam(typeof(long), "fromTime")
                 .AddParam(typeof(DateTimeEx), "dtx")
                 .Block
-                .DeclareVar(typeof(long), "millis", Op(Ref("fromTime"), "/", Constant(1000)))
+                .DeclareVar<long>("millis", Op(Ref("fromTime"), "/", Constant(1000)))
                 .Expression(SetProperty(Ref("dtx"), "TimeInMillis", Ref("millis")))
                 .MethodReturn(Op(Ref("fromTime"), "-", Op(Ref("millis"), "*", Constant(1000))));
             return LocalMethodBuild(method).Pass(startLong).Pass(dateTime).Call();

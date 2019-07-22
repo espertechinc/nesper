@@ -8,6 +8,7 @@
 
 using System.Reflection;
 using System.Xml;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.compat.logging;
@@ -52,8 +53,11 @@ namespace com.espertech.esper.common.@internal.@event.xml
 
                 if (!(candidateEventType is BaseXMLEventType)) {
                     Log.Warn(
-                        "Event type by name '" + eventTypeName + "' is not an XML event type for property '" +
-                        propertyName + "'");
+                        "Event type by name '" +
+                        eventTypeName +
+                        "' is not an XML event type for property '" +
+                        propertyName +
+                        "'");
                     return null;
                 }
 

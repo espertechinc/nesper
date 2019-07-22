@@ -43,9 +43,11 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
                 ExprEvaluatorContext context)
             {
                 long threshold = thresholdExpr.Evaluate(
-                    Math.Min(leftStart, rightStart), eventsPerStream, newData, context);
-                if (threshold < 0)
-                {
+                    Math.Min(leftStart, rightStart),
+                    eventsPerStream,
+                    newData,
+                    context);
+                if (threshold < 0) {
                     LogWarningIntervalStartsThreshold();
                     return null;
                 }
@@ -77,25 +79,43 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
                     .AddParam(IntervalForgeCodegenNames.PARAMS);
 
                 methodNode.Block
-                    .DeclareVar(
-                        typeof(long), "threshold",
+                    .DeclareVar<long>(
+                        "threshold",
                         forge.thresholdExpr.Codegen(
                             CodegenExpressionBuilder.StaticMethod(
-                                typeof(Math), "min", IntervalForgeCodegenNames.REF_LEFTSTART,
-                                IntervalForgeCodegenNames.REF_RIGHTSTART), methodNode, exprSymbol, codegenClassScope))
-                    .IfCondition(CodegenExpressionBuilder.Relational(CodegenExpressionBuilder.Ref("threshold"), CodegenExpressionRelational.CodegenRelational.LT, CodegenExpressionBuilder.Constant(0)))
+                                typeof(Math),
+                                "min",
+                                IntervalForgeCodegenNames.REF_LEFTSTART,
+                                IntervalForgeCodegenNames.REF_RIGHTSTART),
+                            methodNode,
+                            exprSymbol,
+                            codegenClassScope))
+                    .IfCondition(
+                        CodegenExpressionBuilder.Relational(
+                            CodegenExpressionBuilder.Ref("threshold"),
+                            CodegenExpressionRelational.CodegenRelational.LT,
+                            CodegenExpressionBuilder.Constant(0)))
                     .StaticMethod(typeof(IntervalComputerStartsThresholdEval), METHOD_LOGWARNINGINTERVALSTARTSTHRESHOLD)
                     .BlockReturn(CodegenExpressionBuilder.ConstantNull())
-                    .DeclareVar(
-                        typeof(long), "delta",
+                    .DeclareVar<long>(
+                        "delta",
                         CodegenExpressionBuilder.StaticMethod(
-                            typeof(Math), "abs",
-                            CodegenExpressionBuilder.Op(IntervalForgeCodegenNames.REF_LEFTSTART, "-", IntervalForgeCodegenNames.REF_RIGHTSTART)))
+                            typeof(Math),
+                            "abs",
+                            CodegenExpressionBuilder.Op(
+                                IntervalForgeCodegenNames.REF_LEFTSTART,
+                                "-",
+                                IntervalForgeCodegenNames.REF_RIGHTSTART)))
                     .MethodReturn(
                         CodegenExpressionBuilder.And(
-                            CodegenExpressionBuilder.Relational(CodegenExpressionBuilder.Ref("delta"), CodegenExpressionRelational.CodegenRelational.LE, CodegenExpressionBuilder.Ref("threshold")),
                             CodegenExpressionBuilder.Relational(
-                                IntervalForgeCodegenNames.REF_LEFTEND, CodegenExpressionRelational.CodegenRelational.LT, IntervalForgeCodegenNames.REF_RIGHTEND)));
+                                CodegenExpressionBuilder.Ref("delta"),
+                                CodegenExpressionRelational.CodegenRelational.LE,
+                                CodegenExpressionBuilder.Ref("threshold")),
+                            CodegenExpressionBuilder.Relational(
+                                IntervalForgeCodegenNames.REF_LEFTEND,
+                                CodegenExpressionRelational.CodegenRelational.LT,
+                                IntervalForgeCodegenNames.REF_RIGHTEND)));
                 return CodegenExpressionBuilder.LocalMethod(methodNode, leftStart, leftEnd, rightStart, rightEnd);
             }
         }

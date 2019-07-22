@@ -9,6 +9,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+
 using com.espertech.esper.common.@internal.epl.@join.querygraph;
 
 namespace com.espertech.esper.common.@internal.epl.lookupplan

@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.pattern.core;
@@ -65,7 +66,10 @@ namespace com.espertech.esper.common.@internal.epl.pattern.observer
             }
 
             var observerParameters = EvaluateRuntime(
-                beginState, parameters, optionalConvertor, context.AgentInstanceContext);
+                beginState,
+                parameters,
+                optionalConvertor,
+                context.AgentInstanceContext);
             try {
                 return ScheduleSpecUtil.ComputeValues(observerParameters);
             }

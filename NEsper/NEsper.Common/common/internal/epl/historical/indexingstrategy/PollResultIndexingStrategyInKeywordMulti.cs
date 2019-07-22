@@ -8,6 +8,7 @@
 
 using System.Collections.Generic;
 using System.Linq;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.epl.index.@base;
@@ -48,7 +49,11 @@ namespace com.espertech.esper.common.@internal.epl.historical.indexingstrategy
             factories = new PropertyHashedEventTableFactory[ValueGetters.Length];
             for (var i = 0; i < PropertyNames.Length; i++) {
                 factories[i] = new PropertyHashedEventTableFactory(
-                    StreamNum, new[] {PropertyNames[i]}, false, null, ValueGetters[i]);
+                    StreamNum,
+                    new[] {PropertyNames[i]},
+                    false,
+                    null,
+                    ValueGetters[i]);
             }
         }
     }

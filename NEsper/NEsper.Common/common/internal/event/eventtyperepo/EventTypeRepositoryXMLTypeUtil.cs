@@ -35,7 +35,10 @@ namespace com.espertech.esper.common.@internal.@event.eventtyperepo
                 SchemaModel schemaModel = null;
                 if (entry.Value.SchemaResource != null || entry.Value.SchemaText != null) {
                     try {
-                        schemaModel = XSDSchemaMapper.LoadAndMap(entry.Value.SchemaResource, entry.Value.SchemaText, resourceManager);
+                        schemaModel = XSDSchemaMapper.LoadAndMap(
+                            entry.Value.SchemaResource,
+                            entry.Value.SchemaText,
+                            resourceManager);
                     }
                     catch (Exception ex) {
                         throw new ConfigurationException(ex.Message, ex);
@@ -44,7 +47,12 @@ namespace com.espertech.esper.common.@internal.@event.eventtyperepo
 
                 try {
                     AddXMLDOMType(
-                        eventTypeRepositoryPreconfigured, entry.Key, entry.Value, schemaModel, beanEventTypeFactory, xmlFragmentEventTypeFactory);
+                        eventTypeRepositoryPreconfigured,
+                        entry.Key,
+                        entry.Value,
+                        schemaModel,
+                        beanEventTypeFactory,
+                        xmlFragmentEventTypeFactory);
                 }
                 catch (Exception ex) {
                     throw new ConfigurationException(ex.Message, ex);
@@ -66,16 +74,31 @@ namespace com.espertech.esper.common.@internal.@event.eventtyperepo
 
             var existingType = repo.GetTypeByName(eventTypeName);
             if (existingType != null) {
-                var message = "Event type named '" + eventTypeName + "' has already been declared with differing column name or type information";
+                var message = "Event type named '" +
+                              eventTypeName +
+                              "' has already been declared with differing column name or type information";
                 throw new ConfigurationException(message);
             }
 
             var propertyAgnostic = detail.SchemaResource == null && detail.SchemaText == null;
             var metadata = new EventTypeMetadata(
-                eventTypeName, null, EventTypeTypeClass.STREAM, EventTypeApplicationType.XML, NameAccessModifier.PRECONFIGURED,
-                EventTypeBusModifier.BUS, propertyAgnostic, new EventTypeIdPair(CRC32Util.ComputeCRC32(eventTypeName), -1));
+                eventTypeName,
+                null,
+                EventTypeTypeClass.STREAM,
+                EventTypeApplicationType.XML,
+                NameAccessModifier.PRECONFIGURED,
+                EventTypeBusModifier.BUS,
+                propertyAgnostic,
+                new EventTypeIdPair(CRC32Util.ComputeCRC32(eventTypeName), -1));
             var type = beanEventTypeFactory.EventTypeFactory.CreateXMLType(
-                metadata, detail, schemaModel, null, metadata.Name, beanEventTypeFactory, xmlFragmentEventTypeFactory, repo);
+                metadata,
+                detail,
+                schemaModel,
+                null,
+                metadata.Name,
+                beanEventTypeFactory,
+                xmlFragmentEventTypeFactory,
+                repo);
             repo.AddType(type);
 
             if (type is SchemaXMLEventType) {

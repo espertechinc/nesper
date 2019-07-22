@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.configuration;
 using com.espertech.esper.common.client.configuration.common;
@@ -37,7 +38,13 @@ namespace com.espertech.esper.common.@internal.@event.bean.service
             AddPredefinedBeanEventTypes(beanTypes);
 
             foreach (var beanType in beanTypes) {
-                BuildPublicBeanType(beanEventTypeStemService, repo, beanType.Key, beanType.Value, privateFactory, configs);
+                BuildPublicBeanType(
+                    beanEventTypeStemService,
+                    repo,
+                    beanType.Key,
+                    beanType.Value,
+                    privateFactory,
+                    configs);
             }
         }
 
@@ -54,17 +61,23 @@ namespace com.espertech.esper.common.@internal.@event.bean.service
             if (existingType != null) {
                 if (existingType.Metadata.ApplicationType != EventTypeApplicationType.CLASS) {
                     throw new ConfigurationException(
-                        "Event type named '" + eventTypeName +
-                        "' has already been declared with differing underlying type information: Class " + existingType.UnderlyingType.Name +
-                        " versus " + clazz.Name);
+                        "Event type named '" +
+                        eventTypeName +
+                        "' has already been declared with differing underlying type information: Class " +
+                        existingType.UnderlyingType.Name +
+                        " versus " +
+                        clazz.Name);
                 }
 
                 var beanEventType = (BeanEventType) existingType;
                 if (beanEventType.UnderlyingType != clazz) {
                     throw new ConfigurationException(
-                        "Event type named '" + eventTypeName +
-                        "' has already been declared with differing underlying type information: Class " + existingType.UnderlyingType.Name +
-                        " versus " + beanEventType.UnderlyingType);
+                        "Event type named '" +
+                        eventTypeName +
+                        "' has already been declared with differing underlying type information: Class " +
+                        existingType.UnderlyingType.Name +
+                        " versus " +
+                        beanEventType.UnderlyingType);
                 }
 
                 return;
@@ -78,17 +91,35 @@ namespace com.espertech.esper.common.@internal.@event.bean.service
             // metadata
             var publicId = CRC32Util.ComputeCRC32(eventTypeName);
             var metadata = new EventTypeMetadata(
-                eventTypeName, null, EventTypeTypeClass.STREAM, EventTypeApplicationType.CLASS, NameAccessModifier.PRECONFIGURED,
-                EventTypeBusModifier.NONBUS, false, new EventTypeIdPair(publicId, -1));
+                eventTypeName,
+                null,
+                EventTypeTypeClass.STREAM,
+                EventTypeApplicationType.CLASS,
+                NameAccessModifier.PRECONFIGURED,
+                EventTypeBusModifier.NONBUS,
+                false,
+                new EventTypeIdPair(publicId, -1));
 
             // supertypes
             var superTypes = GetSuperTypes(stem.SuperTypes, beanEventTypeStemService, repo, privateFactory, configs);
-            var deepSuperTypes = GetDeepSupertypes(stem.DeepSuperTypes, beanEventTypeStemService, repo, privateFactory, configs);
+            var deepSuperTypes = GetDeepSupertypes(
+                stem.DeepSuperTypes,
+                beanEventTypeStemService,
+                repo,
+                privateFactory,
+                configs);
 
             // bean type
             var startTS = optionalConfig == null ? null : optionalConfig.StartTimestampPropertyName;
             var endTS = optionalConfig == null ? null : optionalConfig.EndTimestampPropertyName;
-            var eventType = privateFactory.EventTypeFactory.CreateBeanType(stem, metadata, privateFactory, superTypes, deepSuperTypes, startTS, endTS);
+            var eventType = privateFactory.EventTypeFactory.CreateBeanType(
+                stem,
+                metadata,
+                privateFactory,
+                superTypes,
+                deepSuperTypes,
+                startTS,
+                endTS);
 
             repo.AddType(eventType);
         }
@@ -163,7 +194,11 @@ namespace com.espertech.esper.common.@internal.@event.bean.service
             var existing = resolvedBeanEventTypes.Get(clazz.Name);
             if (existing != null && existing != clazz) {
                 throw new ConfigurationException(
-                    "Predefined event type " + clazz.Name + " expected class " + clazz.Name + " but is already defined to another class " +
+                    "Predefined event type " +
+                    clazz.Name +
+                    " expected class " +
+                    clazz.Name +
+                    " but is already defined to another class " +
                     existing.Name);
             }
 

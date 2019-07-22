@@ -9,6 +9,7 @@
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.index.advanced.index.service;
 using com.espertech.esper.common.@internal.epl.lookup;
+
 using static com.espertech.esper.common.@internal.epl.index.advanced.index.service.AdvancedIndexValidationHelper;
 
 namespace com.espertech.esper.common.@internal.epl.index.advanced.index.quadtree
@@ -38,7 +39,9 @@ namespace com.espertech.esper.common.@internal.epl.index.advanced.index.quadtree
                 new AdvancedIndexConfigStatementMXCIFQuadtreeForge(xEval, yEval, widthEval, heightEval);
 
             return new EventAdvancedIndexProvisionCompileTime(
-                indexDesc, parameters, EventAdvancedIndexFactoryForgeQuadTreeMXCIFForge.INSTANCE,
+                indexDesc,
+                parameters,
+                EventAdvancedIndexFactoryForgeQuadTreeMXCIFForge.INSTANCE,
                 indexStatementConfigs);
         }
     }

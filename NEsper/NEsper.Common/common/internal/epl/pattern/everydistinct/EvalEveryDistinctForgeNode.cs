@@ -9,6 +9,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.compile.stage2;
 using com.espertech.esper.common.@internal.context.aifactory.core;
@@ -16,6 +17,7 @@ using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.expression.time.eval;
 using com.espertech.esper.common.@internal.epl.pattern.core;
 using com.espertech.esper.common.@internal.schedule;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.pattern.everydistinct
@@ -79,22 +81,30 @@ namespace com.espertech.esper.common.@internal.epl.pattern.everydistinct
         {
             method.Block
                 .SetProperty(
-                    Ref("node"), "ChildNode",
+                    Ref("node"),
+                    "ChildNode",
                     LocalMethod(ChildNodes[0].MakeCodegen(method, symbols, classScope)))
                 .SetProperty(
-                    Ref("node"), "DistinctExpression",
+                    Ref("node"),
+                    "DistinctExpression",
                     ExprNodeUtilityCodegen.CodegenEvaluatorMayMultiKeyWCoerce(
                         ExprNodeUtilityQuery.GetForges(
-                            ExprNodeUtilityQuery.ToArray(DistinctExpressions)), null, method, GetType(),
+                            ExprNodeUtilityQuery.ToArray(DistinctExpressions)),
+                        null,
+                        method,
+                        GetType(),
                         classScope))
                 .SetProperty(
-                    Ref("node"), "DistinctTypes",
+                    Ref("node"),
+                    "DistinctTypes",
                     Constant(ExprNodeUtilityQuery.GetExprResultTypes(DistinctExpressions)))
                 .SetProperty(
-                    Ref("node"), "Convertor", 
+                    Ref("node"),
+                    "Convertor",
                     convertor.MakeAnonymous(method, classScope))
                 .SetProperty(
-                    Ref("node"), "TimePeriodCompute",
+                    Ref("node"),
+                    "TimePeriodCompute",
                     timePeriodComputeForge == null
                         ? ConstantNull()
                         : timePeriodComputeForge.MakeEvaluator(method, classScope));

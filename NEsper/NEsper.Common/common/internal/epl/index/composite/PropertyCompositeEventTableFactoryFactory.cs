@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.epl.index.@base;
@@ -52,10 +53,16 @@ namespace com.espertech.esper.common.@internal.epl.index.composite
             StatementContext statementContext)
         {
             return statementContext.EventTableIndexService.CreateComposite(
-                _indexedStreamNum, eventType,
-                _keyProps, _keyTypes, _keyGetter,
-                _rangeProps, _rangeTypes, _rangeGetters,
-                null, _isFireAndForget);
+                _indexedStreamNum,
+                eventType,
+                _keyProps,
+                _keyTypes,
+                _keyGetter,
+                _rangeProps,
+                _rangeTypes,
+                _rangeGetters,
+                null,
+                _isFireAndForget);
         }
     }
 } // end of namespace

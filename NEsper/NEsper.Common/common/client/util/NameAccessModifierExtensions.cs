@@ -42,13 +42,11 @@ namespace com.espertech.esper.common.client.util
             string objectModuleName,
             string importModuleName)
         {
-            if (objectModuleName == null && importModuleName == null)
-            {
+            if (objectModuleName == null && importModuleName == null) {
                 return true;
             }
 
-            if (objectModuleName != null && importModuleName != null)
-            {
+            if (objectModuleName != null && importModuleName != null) {
                 return objectModuleName.Equals(importModuleName);
             }
 
@@ -63,12 +61,12 @@ namespace com.espertech.esper.common.client.util
         /// <returns>indicator</returns>
         public static bool IsModuleProvidedAccessModifier(this NameAccessModifier value)
         {
-            switch (value)
-            {
+            switch (value) {
                 case NameAccessModifier.PRIVATE:
                 case NameAccessModifier.PROTECTED:
                 case NameAccessModifier.PUBLIC:
                     return true;
+
                 case NameAccessModifier.TRANSIENT:
                 case NameAccessModifier.PRECONFIGURED:
                     return false;
@@ -83,12 +81,12 @@ namespace com.espertech.esper.common.client.util
         /// <returns>indicator</returns>
         public static bool IsNonPrivateNonTransient(this NameAccessModifier value)
         {
-            switch (value)
-            {
+            switch (value) {
                 case NameAccessModifier.TRANSIENT:
                 case NameAccessModifier.PRIVATE:
                 case NameAccessModifier.PRECONFIGURED:
                     return false;
+
                 case NameAccessModifier.PROTECTED:
                 case NameAccessModifier.PUBLIC:
                     return true;
@@ -103,11 +101,11 @@ namespace com.espertech.esper.common.client.util
         /// <returns>indicator</returns>
         public static bool IsPrivateOrTransient(this NameAccessModifier value)
         {
-            switch (value)
-            {
+            switch (value) {
                 case NameAccessModifier.TRANSIENT:
                 case NameAccessModifier.PRIVATE:
                     return true;
+
                 case NameAccessModifier.PROTECTED:
                 case NameAccessModifier.PUBLIC:
                 case NameAccessModifier.PRECONFIGURED:

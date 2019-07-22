@@ -9,7 +9,9 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.bytecodemodel.model.statement
@@ -32,20 +34,19 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.statement
 
         public override void RenderStatement(
             StringBuilder builder,
-            IDictionary<Type, string> imports,
             bool isInnerClass)
         {
             if (expression is CodegenExpressionRef) {
-                expression.Render(builder, imports, isInnerClass);
+                expression.Render(builder, isInnerClass);
             }
             else {
                 builder.Append("(");
-                expression.Render(builder, imports, isInnerClass);
+                expression.Render(builder, isInnerClass);
                 builder.Append(")");
             }
 
             builder.Append('.').Append(method).Append("(");
-            RenderExpressions(builder, @params, imports, isInnerClass);
+            RenderExpressions(builder, @params, isInnerClass);
             builder.Append(")");
         }
 

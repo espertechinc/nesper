@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.core;
@@ -17,6 +18,7 @@ using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.common.@internal.view.core;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 using static com.espertech.esper.common.@internal.epl.resultset.codegen.ResultSetProcessorCodegenNames;
 using static com.espertech.esper.common.@internal.epl.resultset.core.ResultSetProcessorUtil;
@@ -40,18 +42,28 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowperevent
 
         public static void ApplyViewResultCodegen(CodegenMethod method)
         {
-            method.Block.DeclareVar(
-                    typeof(EventBean[]), "eventsPerStream", NewArrayByLength(typeof(EventBean), Constant(1)))
+            method.Block.DeclareVar<EventBean[]>(
+                    "eventsPerStream",
+                    NewArrayByLength(typeof(EventBean), Constant(1)))
                 .StaticMethod(
-                    typeof(ResultSetProcessorUtil), METHOD_APPLYAGGVIEWRESULT, REF_AGGREGATIONSVC,
-                    REF_AGENTINSTANCECONTEXT, REF_NEWDATA, REF_OLDDATA, Ref("eventsPerStream"));
+                    typeof(ResultSetProcessorUtil),
+                    METHOD_APPLYAGGVIEWRESULT,
+                    REF_AGGREGATIONSVC,
+                    REF_AGENTINSTANCECONTEXT,
+                    REF_NEWDATA,
+                    REF_OLDDATA,
+                    Ref("eventsPerStream"));
         }
 
         public static void ApplyJoinResultCodegen(CodegenMethod method)
         {
             method.Block.StaticMethod(
-                typeof(ResultSetProcessorUtil), METHOD_APPLYAGGJOINRESULT, REF_AGGREGATIONSVC, REF_AGENTINSTANCECONTEXT,
-                REF_NEWDATA, REF_OLDDATA);
+                typeof(ResultSetProcessorUtil),
+                METHOD_APPLYAGGJOINRESULT,
+                REF_AGGREGATIONSVC,
+                REF_AGENTINSTANCECONTEXT,
+                REF_NEWDATA,
+                REF_OLDDATA);
         }
 
         public static void ProcessJoinResultCodegen(
@@ -60,7 +72,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowperevent
             CodegenMethod method,
             CodegenInstanceAux instance)
         {
-            method.Block.DeclareVar(typeof(EventBean[]), "selectOldEvents", ConstantNull())
+            method.Block.DeclareVar<EventBean[]>("selectOldEvents", ConstantNull())
                 .DeclareVarNoInit(typeof(EventBean[]), "selectNewEvents");
 
             if (forge.IsUnidirectional) {
@@ -68,11 +80,20 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowperevent
             }
 
             method.Block.StaticMethod(
-                typeof(ResultSetProcessorUtil), METHOD_APPLYAGGJOINRESULT, REF_AGGREGATIONSVC, REF_AGENTINSTANCECONTEXT,
-                REF_NEWDATA, REF_OLDDATA);
+                typeof(ResultSetProcessorUtil),
+                METHOD_APPLYAGGJOINRESULT,
+                REF_AGGREGATIONSVC,
+                REF_AGENTINSTANCECONTEXT,
+                REF_NEWDATA,
+                REF_OLDDATA);
 
             ResultSetProcessorUtil.ProcessJoinResultCodegen(
-                method, classScope, instance, forge.OptionalHavingNode != null, forge.IsSelectRStream, forge.IsSorting,
+                method,
+                classScope,
+                instance,
+                forge.OptionalHavingNode != null,
+                forge.IsSelectRStream,
+                forge.IsSorting,
                 true);
         }
 
@@ -82,15 +103,25 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowperevent
             CodegenMethod method,
             CodegenInstanceAux instance)
         {
-            method.Block.DeclareVar(typeof(EventBean[]), "selectOldEvents", ConstantNull())
+            method.Block.DeclareVar<EventBean[]>("selectOldEvents", ConstantNull())
                 .DeclareVarNoInit(typeof(EventBean[]), "selectNewEvents")
-                .DeclareVar(typeof(EventBean[]), "eventsPerStream", NewArrayByLength(typeof(EventBean), Constant(1)))
+                .DeclareVar<EventBean[]>("eventsPerStream", NewArrayByLength(typeof(EventBean), Constant(1)))
                 .StaticMethod(
-                    typeof(ResultSetProcessorUtil), METHOD_APPLYAGGVIEWRESULT, REF_AGGREGATIONSVC,
-                    REF_AGENTINSTANCECONTEXT, REF_NEWDATA, REF_OLDDATA, Ref("eventsPerStream"));
+                    typeof(ResultSetProcessorUtil),
+                    METHOD_APPLYAGGVIEWRESULT,
+                    REF_AGGREGATIONSVC,
+                    REF_AGENTINSTANCECONTEXT,
+                    REF_NEWDATA,
+                    REF_OLDDATA,
+                    Ref("eventsPerStream"));
 
             ResultSetProcessorUtil.ProcessViewResultCodegen(
-                method, classScope, instance, forge.OptionalHavingNode != null, forge.IsSelectRStream, forge.IsSorting,
+                method,
+                classScope,
+                instance,
+                forge.OptionalHavingNode != null,
+                forge.IsSelectRStream,
+                forge.IsSorting,
                 true);
         }
 
@@ -106,13 +137,16 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowperevent
 
             method.Block
                 .StaticMethod(
-                    typeof(ResultSetProcessorUtil), METHOD_CLEARANDAGGREGATEUNGROUPED, REF_AGENTINSTANCECONTEXT,
-                    REF_AGGREGATIONSVC, REF_VIEWABLE)
-                .DeclareVar(
-                    typeof(IEnumerator<EventBean>), "iterator",
+                    typeof(ResultSetProcessorUtil),
+                    METHOD_CLEARANDAGGREGATEUNGROUPED,
+                    REF_AGENTINSTANCECONTEXT,
+                    REF_AGGREGATIONSVC,
+                    REF_VIEWABLE)
+                .DeclareVar<IEnumerator<EventBean>>(
+                    "iterator",
                     LocalMethod(ObtainIteratorCodegen(forge, classScope, method), REF_VIEWABLE))
-                .DeclareVar(
-                    typeof(ArrayDeque<EventBean>), "deque",
+                .DeclareVar<ArrayDeque<EventBean>>(
+                    "deque",
                     StaticMethod(typeof(ResultSetProcessorUtil), METHOD_ITERATORTODEQUE, Ref("iterator")))
                 .ExprDotMethod(REF_AGGREGATIONSVC, "clearResults", REF_AGENTINSTANCECONTEXT)
                 .MethodReturn(ExprDotMethod(Ref("deque"), "iterator"));
@@ -124,48 +158,69 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowperevent
             CodegenMethod parent)
         {
             var iterator = parent.MakeChild(
-                    typeof(IEnumerator<EventBean>), typeof(ResultSetProcessorRowPerEventImpl), classScope)
+                    typeof(IEnumerator<EventBean>),
+                    typeof(ResultSetProcessorRowPerEventImpl),
+                    classScope)
                 .AddParam(typeof(Viewable), NAME_VIEWABLE);
             if (!forge.IsSorting) {
                 iterator.Block.MethodReturn(
                     NewInstance<ResultSetProcessorRowPerEventEnumerator>(
                         ExprDotMethod(REF_VIEWABLE, "iterator"),
-                        Ref("this"), REF_AGENTINSTANCECONTEXT));
+                        Ref("this"),
+                        REF_AGENTINSTANCECONTEXT));
                 return iterator;
             }
 
-            iterator.Block.DeclareVar(
-                    typeof(EventBean[]), "eventsPerStream", NewArrayByLength(typeof(EventBean), Constant(1)))
-                .DeclareVar(typeof(IList<object>), "outgoingEvents", NewInstance(typeof(List<object>)))
-                .DeclareVar(typeof(IList<object>), "orderKeys", NewInstance(typeof(List<object>)));
+            iterator.Block.DeclareVar<EventBean[]>(
+                    "eventsPerStream",
+                    NewArrayByLength(typeof(EventBean), Constant(1)))
+                .DeclareVar<IList<object>>("outgoingEvents", NewInstance(typeof(List<object>)))
+                .DeclareVar<IList<object>>("orderKeys", NewInstance(typeof(List<object>)));
 
             {
                 var forEach = iterator.Block.ForEach(typeof(EventBean), "candidate", REF_VIEWABLE);
                 forEach.AssignArrayElement("eventsPerStream", Constant(0), Ref("candidate"));
                 if (forge.OptionalHavingNode != null) {
                     forEach.IfCondition(
-                        Not(
-                            ExprDotMethod(
-                                Ref("this"), "evaluateHavingClause", Ref("eventsPerStream"), Constant(true),
-                                REF_AGENTINSTANCECONTEXT))).BlockContinue();
+                            Not(
+                                ExprDotMethod(
+                                    Ref("this"),
+                                    "evaluateHavingClause",
+                                    Ref("eventsPerStream"),
+                                    Constant(true),
+                                    REF_AGENTINSTANCECONTEXT)))
+                        .BlockContinue();
                 }
 
                 forEach.ExprDotMethod(
-                        Ref("outgoingEvents"), "add",
+                        Ref("outgoingEvents"),
+                        "add",
                         ExprDotMethod(
-                            REF_SELECTEXPRPROCESSOR, "process", Ref("eventsPerStream"), ConstantTrue(), ConstantTrue(),
+                            REF_SELECTEXPRPROCESSOR,
+                            "process",
+                            Ref("eventsPerStream"),
+                            ConstantTrue(),
+                            ConstantTrue(),
                             REF_AGENTINSTANCECONTEXT))
                     .ExprDotMethod(
-                        Ref("orderKeys"), "add",
+                        Ref("orderKeys"),
+                        "add",
                         ExprDotMethod(
-                            REF_ORDERBYPROCESSOR, "getSortKey", Ref("eventsPerStream"), ConstantTrue(),
+                            REF_ORDERBYPROCESSOR,
+                            "getSortKey",
+                            Ref("eventsPerStream"),
+                            ConstantTrue(),
                             REF_AGENTINSTANCECONTEXT));
             }
 
             iterator.Block.MethodReturn(
                 StaticMethod(
-                    typeof(ResultSetProcessorUtil), METHOD_ORDEROUTGOINGGETITERATOR, Ref("outgoingEvents"),
-                    Ref("orderKeys"), REF_ORDERBYPROCESSOR, REF_AGENTINSTANCECONTEXT));
+                    typeof(ResultSetProcessorUtil),
+                    METHOD_ORDEROUTGOINGGETITERATOR,
+                    Ref("outgoingEvents"),
+                    Ref("orderKeys"),
+                    REF_ORDERBYPROCESSOR,
+                    REF_AGENTINSTANCECONTEXT));
             return iterator;
         }
 
@@ -177,37 +232,58 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowperevent
         {
             if (forge.OptionalHavingNode == null) {
                 if (!forge.IsSorting) {
-                    method.Block.DeclareVar(
-                        typeof(EventBean[]), "result",
+                    method.Block.DeclareVar<EventBean[]>(
+                        "result",
                         StaticMethod(
-                            typeof(ResultSetProcessorUtil), METHOD_GETSELECTJOINEVENTSNOHAVING, REF_SELECTEXPRPROCESSOR,
-                            REF_JOINSET, ConstantTrue(), ConstantTrue(), REF_AGENTINSTANCECONTEXT));
+                            typeof(ResultSetProcessorUtil),
+                            METHOD_GETSELECTJOINEVENTSNOHAVING,
+                            REF_SELECTEXPRPROCESSOR,
+                            REF_JOINSET,
+                            ConstantTrue(),
+                            ConstantTrue(),
+                            REF_AGENTINSTANCECONTEXT));
                 }
                 else {
-                    method.Block.DeclareVar(
-                        typeof(EventBean[]), "result",
+                    method.Block.DeclareVar<EventBean[]>(
+                        "result",
                         StaticMethod(
-                            typeof(ResultSetProcessorUtil), METHOD_GETSELECTJOINEVENTSNOHAVINGWITHORDERBY,
-                            REF_AGGREGATIONSVC, REF_SELECTEXPRPROCESSOR, REF_ORDERBYPROCESSOR, REF_JOINSET,
-                            ConstantTrue(), ConstantTrue(), REF_AGENTINSTANCECONTEXT));
+                            typeof(ResultSetProcessorUtil),
+                            METHOD_GETSELECTJOINEVENTSNOHAVINGWITHORDERBY,
+                            REF_AGGREGATIONSVC,
+                            REF_SELECTEXPRPROCESSOR,
+                            REF_ORDERBYPROCESSOR,
+                            REF_JOINSET,
+                            ConstantTrue(),
+                            ConstantTrue(),
+                            REF_AGENTINSTANCECONTEXT));
                 }
             }
             else {
                 if (!forge.IsSorting) {
                     var select = GetSelectJoinEventsHavingCodegen(classScope, instance);
-                    method.Block.DeclareVar(
-                        typeof(EventBean[]), "result",
+                    method.Block.DeclareVar<EventBean[]>(
+                        "result",
                         LocalMethod(
-                            select, REF_SELECTEXPRPROCESSOR, REF_JOINSET, ConstantTrue(), ConstantTrue(),
+                            select,
+                            REF_SELECTEXPRPROCESSOR,
+                            REF_JOINSET,
+                            ConstantTrue(),
+                            ConstantTrue(),
                             REF_AGENTINSTANCECONTEXT));
                 }
                 else {
                     var select = GetSelectJoinEventsHavingWithOrderByCodegen(classScope, instance);
-                    method.Block.DeclareVar(
-                        typeof(EventBean[]), "result",
+                    method.Block.DeclareVar<EventBean[]>(
+                        "result",
                         LocalMethod(
-                            select, REF_AGGREGATIONSVC, REF_SELECTEXPRPROCESSOR, REF_ORDERBYPROCESSOR, REF_JOINSET,
-                            ConstantTrue(), ConstantTrue(), REF_AGENTINSTANCECONTEXT));
+                            select,
+                            REF_AGGREGATIONSVC,
+                            REF_SELECTEXPRPROCESSOR,
+                            REF_ORDERBYPROCESSOR,
+                            REF_JOINSET,
+                            ConstantTrue(),
+                            ConstantTrue(),
+                            REF_AGENTINSTANCECONTEXT));
                 }
             }
 
@@ -280,7 +356,11 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowperevent
                     NAME_OUTPUTALLUNORDHELPER,
                     ExprDotMethod(factory, "makeRSRowPerEventOutputAll", Ref("this"), REF_AGENTINSTANCECONTEXT));
                 method.Block.ExprDotMethod(
-                    Ref(NAME_OUTPUTALLUNORDHELPER), methodName, REF_NEWDATA, REF_OLDDATA, REF_ISSYNTHESIZE);
+                    Ref(NAME_OUTPUTALLUNORDHELPER),
+                    methodName,
+                    REF_NEWDATA,
+                    REF_OLDDATA,
+                    REF_ISSYNTHESIZE);
             }
             else if (forge.IsOutputLast) {
                 instance.AddMember(NAME_OUTPUTLASTUNORDHELPER, typeof(ResultSetProcessorRowPerEventOutputLastHelper));
@@ -288,7 +368,11 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowperevent
                     NAME_OUTPUTLASTUNORDHELPER,
                     ExprDotMethod(factory, "makeRSRowPerEventOutputLast", Ref("this"), REF_AGENTINSTANCECONTEXT));
                 method.Block.ExprDotMethod(
-                    Ref(NAME_OUTPUTLASTUNORDHELPER), methodName, REF_NEWDATA, REF_OLDDATA, REF_ISSYNTHESIZE);
+                    Ref(NAME_OUTPUTLASTUNORDHELPER),
+                    methodName,
+                    REF_NEWDATA,
+                    REF_OLDDATA,
+                    REF_ISSYNTHESIZE);
             }
         }
 
@@ -345,49 +429,77 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowperevent
 
             {
                 var forEach = method.Block.ForEach(typeof(UniformPair<EventBean>), "pair", REF_JOINEVENTSSET);
-                forEach.DeclareVar(
-                        typeof(ISet<EventBean>), "newData",
+                forEach.DeclareVar<ISet<EventBean>>(
+                        "newData",
                         Cast(typeof(ISet<EventBean>), ExprDotMethod(Ref("pair"), "getFirst")))
-                    .DeclareVar(
-                        typeof(ISet<EventBean>), "oldData",
+                    .DeclareVar<ISet<EventBean>>(
+                        "oldData",
                         Cast(typeof(ISet<EventBean>), ExprDotMethod(Ref("pair"), "getSecond")));
                 if (forge.IsUnidirectional) {
                     forEach.ExprDotMethod(Ref("this"), "clear");
                 }
 
                 forEach.StaticMethod(
-                    typeof(ResultSetProcessorUtil), METHOD_APPLYAGGJOINRESULT, REF_AGGREGATIONSVC,
-                    REF_AGENTINSTANCECONTEXT, REF_NEWDATA, REF_OLDDATA);
+                    typeof(ResultSetProcessorUtil),
+                    METHOD_APPLYAGGJOINRESULT,
+                    REF_AGGREGATIONSVC,
+                    REF_AGENTINSTANCECONTEXT,
+                    REF_NEWDATA,
+                    REF_OLDDATA);
 
                 // generate old events using select expressions
                 if (forge.IsSelectRStream) {
                     if (forge.OptionalHavingNode == null) {
                         if (!forge.IsSorting) {
                             forEach.StaticMethod(
-                                typeof(ResultSetProcessorUtil), METHOD_POPULATESELECTJOINEVENTSNOHAVING,
-                                REF_SELECTEXPRPROCESSOR, Ref("oldData"), ConstantFalse(), REF_ISSYNTHESIZE,
-                                Ref("oldEvents"), REF_AGENTINSTANCECONTEXT);
+                                typeof(ResultSetProcessorUtil),
+                                METHOD_POPULATESELECTJOINEVENTSNOHAVING,
+                                REF_SELECTEXPRPROCESSOR,
+                                Ref("oldData"),
+                                ConstantFalse(),
+                                REF_ISSYNTHESIZE,
+                                Ref("oldEvents"),
+                                REF_AGENTINSTANCECONTEXT);
                         }
                         else {
                             forEach.StaticMethod(
-                                typeof(ResultSetProcessorUtil), METHOD_POPULATESELECTJOINEVENTSNOHAVINGWITHORDERBY,
-                                REF_SELECTEXPRPROCESSOR, REF_ORDERBYPROCESSOR, REF_OLDDATA, ConstantFalse(),
-                                REF_ISSYNTHESIZE, Ref("oldEvents"), Ref("oldEventsSortKey"), REF_AGENTINSTANCECONTEXT);
+                                typeof(ResultSetProcessorUtil),
+                                METHOD_POPULATESELECTJOINEVENTSNOHAVINGWITHORDERBY,
+                                REF_SELECTEXPRPROCESSOR,
+                                REF_ORDERBYPROCESSOR,
+                                REF_OLDDATA,
+                                ConstantFalse(),
+                                REF_ISSYNTHESIZE,
+                                Ref("oldEvents"),
+                                Ref("oldEventsSortKey"),
+                                REF_AGENTINSTANCECONTEXT);
                         }
                     }
                     else {
                         // generate old events using having then select
                         if (!forge.IsSorting) {
                             var select = PopulateSelectJoinEventsHavingCodegen(classScope, instance);
-                            forEach.LocalMethod(
-                                select, REF_SELECTEXPRPROCESSOR, REF_OLDDATA, ConstantFalse(), REF_ISSYNTHESIZE,
-                                Ref("oldEvents"), REF_AGENTINSTANCECONTEXT);
+                            forEach.InstanceMethod(
+                                select,
+                                REF_SELECTEXPRPROCESSOR,
+                                REF_OLDDATA,
+                                ConstantFalse(),
+                                REF_ISSYNTHESIZE,
+                                Ref("oldEvents"),
+                                REF_AGENTINSTANCECONTEXT);
                         }
                         else {
                             var select = PopulateSelectJoinEventsHavingWithOrderByCodegen(classScope, instance);
-                            forEach.LocalMethod(
-                                select, REF_SELECTEXPRPROCESSOR, REF_ORDERBYPROCESSOR, REF_OLDDATA, ConstantFalse(),
-                                REF_ISSYNTHESIZE, Ref("oldEvents"), Ref("oldEventsSortKey"), REF_AGENTINSTANCECONTEXT);
+                            forEach.InstanceMethod(
+                                select,
+                                REF_SELECTEXPRPROCESSOR,
+                                REF_ORDERBYPROCESSOR,
+                                REF_OLDDATA,
+                                ConstantFalse(),
+                                REF_ISSYNTHESIZE,
+                                Ref("oldEvents"),
+                                Ref("oldEventsSortKey"),
+                                REF_AGENTINSTANCECONTEXT);
                         }
                     }
                 }
@@ -396,36 +508,65 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowperevent
                 if (forge.OptionalHavingNode == null) {
                     if (!forge.IsSorting) {
                         forEach.StaticMethod(
-                            typeof(ResultSetProcessorUtil), METHOD_POPULATESELECTJOINEVENTSNOHAVING,
-                            REF_SELECTEXPRPROCESSOR, Ref("newData"), ConstantTrue(), REF_ISSYNTHESIZE, Ref("newEvents"),
+                            typeof(ResultSetProcessorUtil),
+                            METHOD_POPULATESELECTJOINEVENTSNOHAVING,
+                            REF_SELECTEXPRPROCESSOR,
+                            Ref("newData"),
+                            ConstantTrue(),
+                            REF_ISSYNTHESIZE,
+                            Ref("newEvents"),
                             REF_AGENTINSTANCECONTEXT);
                     }
                     else {
                         forEach.StaticMethod(
-                            typeof(ResultSetProcessorUtil), METHOD_POPULATESELECTJOINEVENTSNOHAVINGWITHORDERBY,
-                            REF_SELECTEXPRPROCESSOR, REF_ORDERBYPROCESSOR, Ref("newData"), ConstantTrue(),
-                            REF_ISSYNTHESIZE, Ref("newEvents"), Ref("newEventsSortKey"), REF_AGENTINSTANCECONTEXT);
+                            typeof(ResultSetProcessorUtil),
+                            METHOD_POPULATESELECTJOINEVENTSNOHAVINGWITHORDERBY,
+                            REF_SELECTEXPRPROCESSOR,
+                            REF_ORDERBYPROCESSOR,
+                            Ref("newData"),
+                            ConstantTrue(),
+                            REF_ISSYNTHESIZE,
+                            Ref("newEvents"),
+                            Ref("newEventsSortKey"),
+                            REF_AGENTINSTANCECONTEXT);
                     }
                 }
                 else {
                     if (!forge.IsSorting) {
                         var select = PopulateSelectJoinEventsHavingCodegen(classScope, instance);
-                        forEach.LocalMethod(
-                            select, REF_SELECTEXPRPROCESSOR, REF_NEWDATA, ConstantTrue(), REF_ISSYNTHESIZE,
-                            Ref("newEvents"), REF_AGENTINSTANCECONTEXT);
+                        forEach.InstanceMethod(
+                            select,
+                            REF_SELECTEXPRPROCESSOR,
+                            REF_NEWDATA,
+                            ConstantTrue(),
+                            REF_ISSYNTHESIZE,
+                            Ref("newEvents"),
+                            REF_AGENTINSTANCECONTEXT);
                     }
                     else {
                         var select = PopulateSelectJoinEventsHavingWithOrderByCodegen(classScope, instance);
-                        forEach.LocalMethod(
-                            select, REF_SELECTEXPRPROCESSOR, REF_ORDERBYPROCESSOR, Ref("newData"), ConstantTrue(),
-                            REF_ISSYNTHESIZE, Ref("newEvents"), Ref("newEventsSortKey"), REF_AGENTINSTANCECONTEXT);
+                        forEach.InstanceMethod(
+                            select,
+                            REF_SELECTEXPRPROCESSOR,
+                            REF_ORDERBYPROCESSOR,
+                            Ref("newData"),
+                            ConstantTrue(),
+                            REF_ISSYNTHESIZE,
+                            Ref("newEvents"),
+                            Ref("newEventsSortKey"),
+                            REF_AGENTINSTANCECONTEXT);
                     }
                 }
             }
 
             FinalizeOutputMaySortMayRStreamCodegen(
-                method.Block, Ref("newEvents"), Ref("newEventsSortKey"), Ref("oldEvents"), Ref("oldEventsSortKey"),
-                forge.IsSelectRStream, forge.IsSorting);
+                method.Block,
+                Ref("newEvents"),
+                Ref("newEventsSortKey"),
+                Ref("oldEvents"),
+                Ref("oldEventsSortKey"),
+                forge.IsSelectRStream,
+                forge.IsSorting);
         }
 
         private static void ProcessOutputLimitedJoinLastCodegen(
@@ -434,16 +575,16 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowperevent
             CodegenMethod method,
             CodegenInstanceAux instance)
         {
-            method.Block.DeclareVar(typeof(EventBean), "lastOldEvent", ConstantNull())
-                .DeclareVar(typeof(EventBean), "lastNewEvent", ConstantNull());
+            method.Block.DeclareVar<EventBean>("lastOldEvent", ConstantNull())
+                .DeclareVar<EventBean>("lastNewEvent", ConstantNull());
 
             {
                 var forEach = method.Block.ForEach(typeof(UniformPair<EventBean>), "pair", REF_JOINEVENTSSET);
-                forEach.DeclareVar(
-                        typeof(ISet<EventBean>), "newData",
+                forEach.DeclareVar<ISet<EventBean>>(
+                        "newData",
                         Cast(typeof(ISet<EventBean>), ExprDotMethod(Ref("pair"), "getFirst")))
-                    .DeclareVar(
-                        typeof(ISet<EventBean>), "oldData",
+                    .DeclareVar<ISet<EventBean>>(
+                        "oldData",
                         Cast(typeof(ISet<EventBean>), ExprDotMethod(Ref("pair"), "getSecond")));
 
                 if (forge.IsUnidirectional) {
@@ -451,24 +592,36 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowperevent
                 }
 
                 forEach.StaticMethod(
-                    typeof(ResultSetProcessorUtil), METHOD_APPLYAGGJOINRESULT, REF_AGGREGATIONSVC,
-                    REF_AGENTINSTANCECONTEXT, Ref("newData"), Ref("oldData"));
+                    typeof(ResultSetProcessorUtil),
+                    METHOD_APPLYAGGJOINRESULT,
+                    REF_AGGREGATIONSVC,
+                    REF_AGENTINSTANCECONTEXT,
+                    Ref("newData"),
+                    Ref("oldData"));
 
                 if (forge.IsSelectRStream) {
                     if (forge.OptionalHavingNode == null) {
-                        forEach.DeclareVar(
-                            typeof(EventBean[]), "selectOldEvents",
+                        forEach.DeclareVar<EventBean[]>(
+                            "selectOldEvents",
                             StaticMethod(
-                                typeof(ResultSetProcessorUtil), METHOD_GETSELECTJOINEVENTSNOHAVING,
-                                REF_SELECTEXPRPROCESSOR, Ref("oldData"), ConstantFalse(), REF_ISSYNTHESIZE,
+                                typeof(ResultSetProcessorUtil),
+                                METHOD_GETSELECTJOINEVENTSNOHAVING,
+                                REF_SELECTEXPRPROCESSOR,
+                                Ref("oldData"),
+                                ConstantFalse(),
+                                REF_ISSYNTHESIZE,
                                 REF_AGENTINSTANCECONTEXT));
                     }
                     else {
                         var select = GetSelectJoinEventsHavingCodegen(classScope, instance);
-                        forEach.DeclareVar(
-                            typeof(EventBean[]), "selectOldEvents",
+                        forEach.DeclareVar<EventBean[]>(
+                            "selectOldEvents",
                             LocalMethod(
-                                select, REF_SELECTEXPRPROCESSOR, Ref("oldData"), ConstantFalse(), REF_ISSYNTHESIZE,
+                                select,
+                                REF_SELECTEXPRPROCESSOR,
+                                Ref("oldData"),
+                                ConstantFalse(),
+                                REF_ISSYNTHESIZE,
                                 REF_AGENTINSTANCECONTEXT));
                     }
 
@@ -477,28 +630,39 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowperevent
                                 NotEqualsNull(Ref("selectOldEvents")),
                                 Relational(
                                     ArrayLength(Ref("selectOldEvents")),
-                                    CodegenExpressionRelational.CodegenRelational.GT, Constant(0))))
+                                    CodegenExpressionRelational.CodegenRelational.GT,
+                                    Constant(0))))
                         .AssignRef(
                             "lastOldEvent",
                             ArrayAtIndex(
-                                Ref("selectOldEvents"), Op(ArrayLength(Ref("selectOldEvents")), "-", Constant(1))))
+                                Ref("selectOldEvents"),
+                                Op(ArrayLength(Ref("selectOldEvents")), "-", Constant(1))))
                         .BlockEnd();
                 }
 
                 // generate new events using select expressions
                 if (forge.OptionalHavingNode == null) {
-                    forEach.DeclareVar(
-                        typeof(EventBean[]), "selectNewEvents",
+                    forEach.DeclareVar<EventBean[]>(
+                        "selectNewEvents",
                         StaticMethod(
-                            typeof(ResultSetProcessorUtil), METHOD_GETSELECTJOINEVENTSNOHAVING, REF_SELECTEXPRPROCESSOR,
-                            Ref("newData"), ConstantTrue(), REF_ISSYNTHESIZE, REF_AGENTINSTANCECONTEXT));
+                            typeof(ResultSetProcessorUtil),
+                            METHOD_GETSELECTJOINEVENTSNOHAVING,
+                            REF_SELECTEXPRPROCESSOR,
+                            Ref("newData"),
+                            ConstantTrue(),
+                            REF_ISSYNTHESIZE,
+                            REF_AGENTINSTANCECONTEXT));
                 }
                 else {
                     var select = GetSelectJoinEventsHavingCodegen(classScope, instance);
-                    forEach.DeclareVar(
-                        typeof(EventBean[]), "selectNewEvents",
+                    forEach.DeclareVar<EventBean[]>(
+                        "selectNewEvents",
                         LocalMethod(
-                            select, REF_SELECTEXPRPROCESSOR, Ref("newData"), ConstantTrue(), REF_ISSYNTHESIZE,
+                            select,
+                            REF_SELECTEXPRPROCESSOR,
+                            Ref("newData"),
+                            ConstantTrue(),
+                            REF_ISSYNTHESIZE,
                             REF_AGENTINSTANCECONTEXT));
                 }
 
@@ -506,7 +670,8 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowperevent
                         And(
                             NotEqualsNull(Ref("selectNewEvents")),
                             Relational(
-                                ArrayLength(Ref("selectNewEvents")), CodegenExpressionRelational.CodegenRelational.GT,
+                                ArrayLength(Ref("selectNewEvents")),
+                                CodegenExpressionRelational.CodegenRelational.GT,
                                 Constant(0))))
                     .AssignRef(
                         "lastNewEvent",
@@ -515,13 +680,14 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowperevent
             }
 
             method.Block
-                .DeclareVar(
-                    typeof(EventBean[]), "lastNew",
+                .DeclareVar<EventBean[]>(
+                    "lastNew",
                     StaticMethod(typeof(CollectionUtil), CollectionUtil.METHOD_TOARRAYMAYNULL, Ref("lastNewEvent")))
-                .DeclareVar(
-                    typeof(EventBean[]), "lastOld",
+                .DeclareVar<EventBean[]>(
+                    "lastOld",
                     StaticMethod(typeof(CollectionUtil), CollectionUtil.METHOD_TOARRAYMAYNULL, Ref("lastOldEvent")))
-                .IfCondition(And(EqualsNull(Ref("lastNew")), EqualsNull(Ref("lastOld")))).BlockReturn(ConstantNull())
+                .IfCondition(And(EqualsNull(Ref("lastNew")), EqualsNull(Ref("lastOld"))))
+                .BlockReturn(ConstantNull())
                 .MethodReturn(NewInstance<UniformPair<EventBean>>(Ref("lastNew"), Ref("lastOld")));
         }
 
@@ -535,47 +701,76 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowperevent
 
             {
                 var forEach = method.Block.ForEach(typeof(UniformPair<EventBean>), "pair", REF_VIEWEVENTSLIST);
-                forEach.DeclareVar(
-                        typeof(EventBean[]), "newData",
+                forEach.DeclareVar<EventBean[]>(
+                        "newData",
                         Cast(typeof(EventBean[]), ExprDotMethod(Ref("pair"), "getFirst")))
-                    .DeclareVar(
-                        typeof(EventBean[]), "oldData",
+                    .DeclareVar<EventBean[]>(
+                        "oldData",
                         Cast(typeof(EventBean[]), ExprDotMethod(Ref("pair"), "getSecond")))
-                    .DeclareVar(
-                        typeof(EventBean[]), "eventsPerStream", NewArrayByLength(typeof(EventBean), Constant(1)))
+                    .DeclareVar<EventBean[]>(
+                        "eventsPerStream",
+                        NewArrayByLength(typeof(EventBean), Constant(1)))
                     .StaticMethod(
-                        typeof(ResultSetProcessorUtil), METHOD_APPLYAGGVIEWRESULT, REF_AGGREGATIONSVC,
-                        REF_AGENTINSTANCECONTEXT, REF_NEWDATA, REF_OLDDATA, Ref("eventsPerStream"));
+                        typeof(ResultSetProcessorUtil),
+                        METHOD_APPLYAGGVIEWRESULT,
+                        REF_AGGREGATIONSVC,
+                        REF_AGENTINSTANCECONTEXT,
+                        REF_NEWDATA,
+                        REF_OLDDATA,
+                        Ref("eventsPerStream"));
 
                 // generate old events using select expressions
                 if (forge.IsSelectRStream) {
                     if (forge.OptionalHavingNode == null) {
                         if (!forge.IsSorting) {
                             forEach.StaticMethod(
-                                typeof(ResultSetProcessorUtil), METHOD_POPULATESELECTEVENTSNOHAVING,
-                                REF_SELECTEXPRPROCESSOR, Ref("oldData"), ConstantFalse(), REF_ISSYNTHESIZE,
-                                Ref("oldEvents"), REF_AGENTINSTANCECONTEXT);
+                                typeof(ResultSetProcessorUtil),
+                                METHOD_POPULATESELECTEVENTSNOHAVING,
+                                REF_SELECTEXPRPROCESSOR,
+                                Ref("oldData"),
+                                ConstantFalse(),
+                                REF_ISSYNTHESIZE,
+                                Ref("oldEvents"),
+                                REF_AGENTINSTANCECONTEXT);
                         }
                         else {
                             forEach.StaticMethod(
-                                typeof(ResultSetProcessorUtil), METHOD_POPULATESELECTEVENTSNOHAVINGWITHORDERBY,
-                                REF_SELECTEXPRPROCESSOR, REF_ORDERBYPROCESSOR, Ref("oldData"), ConstantFalse(),
-                                REF_ISSYNTHESIZE, Ref("oldEvents"), REF_AGENTINSTANCECONTEXT);
+                                typeof(ResultSetProcessorUtil),
+                                METHOD_POPULATESELECTEVENTSNOHAVINGWITHORDERBY,
+                                REF_SELECTEXPRPROCESSOR,
+                                REF_ORDERBYPROCESSOR,
+                                Ref("oldData"),
+                                ConstantFalse(),
+                                REF_ISSYNTHESIZE,
+                                Ref("oldEvents"),
+                                REF_AGENTINSTANCECONTEXT);
                         }
                     }
                     else {
                         // generate old events using having then select
                         if (!forge.IsSorting) {
                             var select = PopulateSelectEventsHavingCodegen(classScope, instance);
-                            forEach.LocalMethod(
-                                select, REF_SELECTEXPRPROCESSOR, REF_OLDDATA, ConstantFalse(), REF_ISSYNTHESIZE,
-                                Ref("oldEvents"), REF_AGENTINSTANCECONTEXT);
+                            forEach.InstanceMethod(
+                                select,
+                                REF_SELECTEXPRPROCESSOR,
+                                REF_OLDDATA,
+                                ConstantFalse(),
+                                REF_ISSYNTHESIZE,
+                                Ref("oldEvents"),
+                                REF_AGENTINSTANCECONTEXT);
                         }
                         else {
                             var select = PopulateSelectEventsHavingWithOrderByCodegen(classScope, instance);
-                            forEach.LocalMethod(
-                                select, REF_SELECTEXPRPROCESSOR, REF_ORDERBYPROCESSOR, REF_OLDDATA, ConstantFalse(),
-                                REF_ISSYNTHESIZE, Ref("oldEvents"), Ref("oldEventsSortKey"), REF_AGENTINSTANCECONTEXT);
+                            forEach.InstanceMethod(
+                                select,
+                                REF_SELECTEXPRPROCESSOR,
+                                REF_ORDERBYPROCESSOR,
+                                REF_OLDDATA,
+                                ConstantFalse(),
+                                REF_ISSYNTHESIZE,
+                                Ref("oldEvents"),
+                                Ref("oldEventsSortKey"),
+                                REF_AGENTINSTANCECONTEXT);
                             throw new UnsupportedOperationException();
                         }
                     }
@@ -585,36 +780,65 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowperevent
                 if (forge.OptionalHavingNode == null) {
                     if (!forge.IsSorting) {
                         forEach.StaticMethod(
-                            typeof(ResultSetProcessorUtil), METHOD_POPULATESELECTEVENTSNOHAVING,
-                            REF_SELECTEXPRPROCESSOR, Ref("newData"), ConstantTrue(), REF_ISSYNTHESIZE, Ref("newEvents"),
+                            typeof(ResultSetProcessorUtil),
+                            METHOD_POPULATESELECTEVENTSNOHAVING,
+                            REF_SELECTEXPRPROCESSOR,
+                            Ref("newData"),
+                            ConstantTrue(),
+                            REF_ISSYNTHESIZE,
+                            Ref("newEvents"),
                             REF_AGENTINSTANCECONTEXT);
                     }
                     else {
                         forEach.StaticMethod(
-                            typeof(ResultSetProcessorUtil), METHOD_POPULATESELECTEVENTSNOHAVINGWITHORDERBY,
-                            REF_SELECTEXPRPROCESSOR, REF_ORDERBYPROCESSOR, Ref("newData"), ConstantTrue(),
-                            REF_ISSYNTHESIZE, Ref("newEvents"), Ref("newEventsSortKey"), REF_AGENTINSTANCECONTEXT);
+                            typeof(ResultSetProcessorUtil),
+                            METHOD_POPULATESELECTEVENTSNOHAVINGWITHORDERBY,
+                            REF_SELECTEXPRPROCESSOR,
+                            REF_ORDERBYPROCESSOR,
+                            Ref("newData"),
+                            ConstantTrue(),
+                            REF_ISSYNTHESIZE,
+                            Ref("newEvents"),
+                            Ref("newEventsSortKey"),
+                            REF_AGENTINSTANCECONTEXT);
                     }
                 }
                 else {
                     if (!forge.IsSorting) {
                         var select = PopulateSelectEventsHavingCodegen(classScope, instance);
-                        forEach.LocalMethod(
-                            select, REF_SELECTEXPRPROCESSOR, REF_NEWDATA, ConstantTrue(), REF_ISSYNTHESIZE,
-                            Ref("newEvents"), REF_AGENTINSTANCECONTEXT);
+                        forEach.InstanceMethod(
+                            select,
+                            REF_SELECTEXPRPROCESSOR,
+                            REF_NEWDATA,
+                            ConstantTrue(),
+                            REF_ISSYNTHESIZE,
+                            Ref("newEvents"),
+                            REF_AGENTINSTANCECONTEXT);
                     }
                     else {
                         var select = PopulateSelectEventsHavingWithOrderByCodegen(classScope, instance);
-                        forEach.LocalMethod(
-                            select, REF_SELECTEXPRPROCESSOR, REF_ORDERBYPROCESSOR, REF_NEWDATA, ConstantTrue(),
-                            REF_ISSYNTHESIZE, Ref("newEvents"), Ref("newEventsSortKey"), REF_AGENTINSTANCECONTEXT);
+                        forEach.InstanceMethod(
+                            select,
+                            REF_SELECTEXPRPROCESSOR,
+                            REF_ORDERBYPROCESSOR,
+                            REF_NEWDATA,
+                            ConstantTrue(),
+                            REF_ISSYNTHESIZE,
+                            Ref("newEvents"),
+                            Ref("newEventsSortKey"),
+                            REF_AGENTINSTANCECONTEXT);
                     }
                 }
             }
 
             FinalizeOutputMaySortMayRStreamCodegen(
-                method.Block, Ref("newEvents"), Ref("newEventsSortKey"), Ref("oldEvents"), Ref("oldEventsSortKey"),
-                forge.IsSelectRStream, forge.IsSorting);
+                method.Block,
+                Ref("newEvents"),
+                Ref("newEventsSortKey"),
+                Ref("oldEvents"),
+                Ref("oldEventsSortKey"),
+                forge.IsSelectRStream,
+                forge.IsSorting);
         }
 
         private static void ProcessOutputLimitedViewLastCodegen(
@@ -623,36 +847,50 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowperevent
             CodegenMethod method,
             CodegenInstanceAux instance)
         {
-            method.Block.DeclareVar(typeof(EventBean), "lastOldEvent", ConstantNull())
-                .DeclareVar(typeof(EventBean), "lastNewEvent", ConstantNull())
-                .DeclareVar(typeof(EventBean[]), "eventsPerStream", NewArrayByLength(typeof(EventBean), Constant(1)));
+            method.Block.DeclareVar<EventBean>("lastOldEvent", ConstantNull())
+                .DeclareVar<EventBean>("lastNewEvent", ConstantNull())
+                .DeclareVar<EventBean[]>("eventsPerStream", NewArrayByLength(typeof(EventBean), Constant(1)));
 
             {
                 var forEach = method.Block.ForEach(typeof(UniformPair<EventBean>), "pair", REF_VIEWEVENTSLIST);
-                forEach.DeclareVar(
-                        typeof(EventBean[]), "newData",
+                forEach.DeclareVar<EventBean[]>(
+                        "newData",
                         Cast(typeof(EventBean[]), ExprDotMethod(Ref("pair"), "getFirst")))
-                    .DeclareVar(
-                        typeof(EventBean[]), "oldData",
+                    .DeclareVar<EventBean[]>(
+                        "oldData",
                         Cast(typeof(EventBean[]), ExprDotMethod(Ref("pair"), "getSecond")))
                     .StaticMethod(
-                        typeof(ResultSetProcessorUtil), METHOD_APPLYAGGVIEWRESULT, REF_AGGREGATIONSVC,
-                        REF_AGENTINSTANCECONTEXT, Ref("newData"), Ref("oldData"), Ref("eventsPerStream"));
+                        typeof(ResultSetProcessorUtil),
+                        METHOD_APPLYAGGVIEWRESULT,
+                        REF_AGGREGATIONSVC,
+                        REF_AGENTINSTANCECONTEXT,
+                        Ref("newData"),
+                        Ref("oldData"),
+                        Ref("eventsPerStream"));
 
                 if (forge.IsSelectRStream) {
                     if (forge.OptionalHavingNode == null) {
-                        forEach.DeclareVar(
-                            typeof(EventBean[]), "selectOldEvents",
+                        forEach.DeclareVar<EventBean[]>(
+                            "selectOldEvents",
                             StaticMethod(
-                                typeof(ResultSetProcessorUtil), METHOD_GETSELECTEVENTSNOHAVING, REF_SELECTEXPRPROCESSOR,
-                                Ref("oldData"), ConstantFalse(), REF_ISSYNTHESIZE, REF_AGENTINSTANCECONTEXT));
+                                typeof(ResultSetProcessorUtil),
+                                METHOD_GETSELECTEVENTSNOHAVING,
+                                REF_SELECTEXPRPROCESSOR,
+                                Ref("oldData"),
+                                ConstantFalse(),
+                                REF_ISSYNTHESIZE,
+                                REF_AGENTINSTANCECONTEXT));
                     }
                     else {
                         var select = GetSelectEventsHavingCodegen(classScope, instance);
-                        forEach.DeclareVar(
-                            typeof(EventBean[]), "selectOldEvents",
+                        forEach.DeclareVar<EventBean[]>(
+                            "selectOldEvents",
                             LocalMethod(
-                                select, REF_SELECTEXPRPROCESSOR, Ref("oldData"), ConstantFalse(), REF_ISSYNTHESIZE,
+                                select,
+                                REF_SELECTEXPRPROCESSOR,
+                                Ref("oldData"),
+                                ConstantFalse(),
+                                REF_ISSYNTHESIZE,
                                 REF_AGENTINSTANCECONTEXT));
                     }
 
@@ -661,28 +899,39 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowperevent
                                 NotEqualsNull(Ref("selectOldEvents")),
                                 Relational(
                                     ArrayLength(Ref("selectOldEvents")),
-                                    CodegenExpressionRelational.CodegenRelational.GT, Constant(0))))
+                                    CodegenExpressionRelational.CodegenRelational.GT,
+                                    Constant(0))))
                         .AssignRef(
                             "lastOldEvent",
                             ArrayAtIndex(
-                                Ref("selectOldEvents"), Op(ArrayLength(Ref("selectOldEvents")), "-", Constant(1))))
+                                Ref("selectOldEvents"),
+                                Op(ArrayLength(Ref("selectOldEvents")), "-", Constant(1))))
                         .BlockEnd();
                 }
 
                 // generate new events using select expressions
                 if (forge.OptionalHavingNode == null) {
-                    forEach.DeclareVar(
-                        typeof(EventBean[]), "selectNewEvents",
+                    forEach.DeclareVar<EventBean[]>(
+                        "selectNewEvents",
                         StaticMethod(
-                            typeof(ResultSetProcessorUtil), METHOD_GETSELECTEVENTSNOHAVING, REF_SELECTEXPRPROCESSOR,
-                            Ref("newData"), ConstantTrue(), REF_ISSYNTHESIZE, REF_AGENTINSTANCECONTEXT));
+                            typeof(ResultSetProcessorUtil),
+                            METHOD_GETSELECTEVENTSNOHAVING,
+                            REF_SELECTEXPRPROCESSOR,
+                            Ref("newData"),
+                            ConstantTrue(),
+                            REF_ISSYNTHESIZE,
+                            REF_AGENTINSTANCECONTEXT));
                 }
                 else {
                     var select = GetSelectEventsHavingCodegen(classScope, instance);
-                    forEach.DeclareVar(
-                        typeof(EventBean[]), "selectNewEvents",
+                    forEach.DeclareVar<EventBean[]>(
+                        "selectNewEvents",
                         LocalMethod(
-                            select, REF_SELECTEXPRPROCESSOR, Ref("newData"), ConstantTrue(), REF_ISSYNTHESIZE,
+                            select,
+                            REF_SELECTEXPRPROCESSOR,
+                            Ref("newData"),
+                            ConstantTrue(),
+                            REF_ISSYNTHESIZE,
                             REF_AGENTINSTANCECONTEXT));
                 }
 
@@ -690,7 +939,8 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowperevent
                         And(
                             NotEqualsNull(Ref("selectNewEvents")),
                             Relational(
-                                ArrayLength(Ref("selectNewEvents")), CodegenExpressionRelational.CodegenRelational.GT,
+                                ArrayLength(Ref("selectNewEvents")),
+                                CodegenExpressionRelational.CodegenRelational.GT,
                                 Constant(0))))
                     .AssignRef(
                         "lastNewEvent",
@@ -699,13 +949,14 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowperevent
             }
 
             method.Block
-                .DeclareVar(
-                    typeof(EventBean[]), "lastNew",
+                .DeclareVar<EventBean[]>(
+                    "lastNew",
                     StaticMethod(typeof(CollectionUtil), CollectionUtil.METHOD_TOARRAYMAYNULL, Ref("lastNewEvent")))
-                .DeclareVar(
-                    typeof(EventBean[]), "lastOld",
+                .DeclareVar<EventBean[]>(
+                    "lastOld",
                     StaticMethod(typeof(CollectionUtil), CollectionUtil.METHOD_TOARRAYMAYNULL, Ref("lastOldEvent")))
-                .IfCondition(And(EqualsNull(Ref("lastNew")), EqualsNull(Ref("lastOld")))).BlockReturn(ConstantNull())
+                .IfCondition(And(EqualsNull(Ref("lastNew")), EqualsNull(Ref("lastOld"))))
+                .BlockReturn(ConstantNull())
                 .MethodReturn(NewInstance<UniformPair<EventBean>>(Ref("lastNew"), Ref("lastOld")));
         }
 

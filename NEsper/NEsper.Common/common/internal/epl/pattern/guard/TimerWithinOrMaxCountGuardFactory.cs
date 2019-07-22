@@ -42,7 +42,9 @@ namespace com.espertech.esper.common.@internal.epl.pattern.guard
             object guardState)
         {
             return new TimerWithinOrMaxCountGuard(
-                ComputeTime(beginState, context), ComputeNumCountTo(beginState, context), quitable);
+                ComputeTime(beginState, context),
+                ComputeNumCountTo(beginState, context),
+                quitable);
         }
 
         public long ComputeTime(
@@ -58,7 +60,10 @@ namespace com.espertech.esper.common.@internal.epl.pattern.guard
         {
             var events = optionalConvertor == null ? null : optionalConvertor.Convert(beginState);
             var numCountToVal = PatternExpressionUtil.EvaluateChecked(
-                "Timer-Within-Or-Max-Count guard", countEval, events, context.AgentInstanceContext);
+                "Timer-Within-Or-Max-Count guard",
+                countEval,
+                events,
+                context.AgentInstanceContext);
             if (null == numCountToVal) {
                 throw new EPException("Timer-within-or-max second parameter evaluated to a null-value");
             }

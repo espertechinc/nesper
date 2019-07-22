@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+
 using com.espertech.esper.collection;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.compile.stage1.spec;
@@ -58,7 +59,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                     return new ComparatorHashableMultiKeyCasting(comparatorMK);
                 }
                 else {
-                    ComparatorHashableMultiKeyCollating comparatorMk = new ComparatorHashableMultiKeyCollating(isDescendingValues, stringTypes);
+                    ComparatorHashableMultiKeyCollating comparatorMk =
+                        new ComparatorHashableMultiKeyCollating(isDescendingValues, stringTypes);
                     return new ComparatorHashableMultiKeyCasting(comparatorMk);
                 }
             }
@@ -104,7 +106,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                     return new ComparatorObjectArrayCasting(comparatorMK);
                 }
                 else {
-                    ComparatorObjectArrayCollating comparatorMk = new ComparatorObjectArrayCollating(isDescendingValues, stringTypes);
+                    ComparatorObjectArrayCollating comparatorMk =
+                        new ComparatorObjectArrayCollating(isDescendingValues, stringTypes);
                     return new ComparatorObjectArrayCasting(comparatorMk);
                 }
             }
@@ -179,7 +182,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                 }
             }
 
-            ExprForge varargForge = new ExprNodeVarargOnlyArrayForge(varargForges, varargClass, needCoercion ? coercers : null);
+            ExprForge varargForge = new ExprNodeVarargOnlyArrayForge(
+                varargForges,
+                varargClass,
+                needCoercion ? coercers : null);
             forges[methodParameterTypes.Length - 1] = varargForge;
             evals[methodParameterTypes.Length - 1] = varargForge.ExprEvaluator;
             return new Pair<ExprForge[], ExprEvaluator[]>(forges, evals);

@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.context.util;
 
@@ -19,7 +20,8 @@ namespace com.espertech.esper.common.@internal.epl.historical.method.poll
             AgentInstanceContext agentInstanceContext)
         {
             return agentInstanceContext.EventBeanTypedEventFactory.AdapterForTypedMap(
-                (IDictionary<string, object>) value, eventType);
+                (IDictionary<string, object>) value,
+                eventType);
         }
     }
 } // end of namespace

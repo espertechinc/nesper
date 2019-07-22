@@ -12,6 +12,7 @@ using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.compat.function;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.compile.stage1.spec
@@ -51,14 +52,16 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
 
             var supplierSodaBytes = NewAnonymousClass(method.Block, typeof(Supplier<byte[]>));
             var get = CodegenMethod.MakeParentNode(typeof(object), GetType(), classScope);
-            supplierSodaBytes.AddMethod("get", get);
+            supplierSodaBytes.AddMethod("Get", get);
             get.Block.MethodReturn(Constant(OptionalSodaBytes.Invoke()));
 
             method.Block
-                .DeclareVar(
-                    typeof(ExpressionDeclItem), "item",
+                .DeclareVar<ExpressionDeclItem>(
+                    "item",
                     NewInstance<ExpressionDeclItem>(
-                        Constant(Name), Constant(ParametersNames), Constant(IsAlias)))
+                        Constant(Name),
+                        Constant(ParametersNames),
+                        Constant(IsAlias)))
                 .SetProperty(Ref("item"), "OptionalSodaBytes", supplierSodaBytes)
                 .SetProperty(Ref("item"), "ModuleName", Constant(ModuleName))
                 .SetProperty(Ref("item"), "Visibility", Constant(Visibility))

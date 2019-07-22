@@ -67,7 +67,10 @@ namespace com.espertech.esper.common.@internal.epl.ontrigger
             AgentInstanceContext agentInstanceContext)
         {
             var pair = StatementAgentInstanceFactoryUtil.StartResultSetAndAggregation(
-                resultSetProcessorPrototype, agentInstanceContext, false, null);
+                resultSetProcessorPrototype,
+                agentInstanceContext,
+                false,
+                null);
 
             var audit = AuditEnum.INSERT.GetAudit(agentInstanceContext.Annotations) != null;
             TableInstance tableInstanceInsertInto = null;
@@ -77,8 +80,14 @@ namespace com.espertech.esper.common.@internal.epl.ontrigger
             }
 
             var selectView = new OnExprViewNamedWindowSelect(
-                lookupStrategy, namedWindowRootViewInstance, agentInstanceContext, this, pair.First, audit,
-                IsSelectAndDelete, tableInstanceInsertInto);
+                lookupStrategy,
+                namedWindowRootViewInstance,
+                agentInstanceContext,
+                this,
+                pair.First,
+                audit,
+                IsSelectAndDelete,
+                tableInstanceInsertInto);
             return new InfraOnExprBaseViewResult(selectView, pair.Second);
         }
 
@@ -88,7 +97,10 @@ namespace com.espertech.esper.common.@internal.epl.ontrigger
             AgentInstanceContext agentInstanceContext)
         {
             var pair = StatementAgentInstanceFactoryUtil.StartResultSetAndAggregation(
-                resultSetProcessorPrototype, agentInstanceContext, false, null);
+                resultSetProcessorPrototype,
+                agentInstanceContext,
+                false,
+                null);
 
             var audit = AuditEnum.INSERT.GetAudit(agentInstanceContext.Annotations) != null;
             TableInstance tableInstanceInsertInto = null;
@@ -98,7 +110,13 @@ namespace com.espertech.esper.common.@internal.epl.ontrigger
             }
 
             var selectView = new OnExprViewTableSelect(
-                lookupStrategy, tableInstance, agentInstanceContext, pair.First, this, audit, IsSelectAndDelete,
+                lookupStrategy,
+                tableInstance,
+                agentInstanceContext,
+                pair.First,
+                this,
+                audit,
+                IsSelectAndDelete,
                 tableInstanceInsertInto);
             return new InfraOnExprBaseViewResult(selectView, pair.Second);
         }

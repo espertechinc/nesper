@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.@internal.compile.stage1.spec;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.settings;
@@ -30,7 +31,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
             if (grouped) {
                 if (subselectExpression.HavingExpr != null) {
                     return new SubselectForgeNRExistsWGroupByWHaving(
-                        subselectExpression, subselectExpression.HavingExpr);
+                        subselectExpression,
+                        subselectExpression.HavingExpr);
                 }
 
                 return new SubselectForgeNRExistsWGroupBy(subselectExpression);
@@ -52,7 +54,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
             bool isNot,
             bool isAll,
             bool isAny,
-            RelationalOpEnum relationalOp,
+            RelationalOpEnum? relationalOp,
             ImportServiceCompileTime importService)
         {
             if (subselectExpression.ChildNodes.Length != 1) {
@@ -65,9 +67,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
             var typeOne = subselectExpression.ChildNodes[0].Forge.EvaluationType.GetBoxedType();
 
             // collections, array or map not supported
-            if (typeOne.IsArray
-                || TypeHelper.IsImplementsInterface(typeOne, typeof(ICollection<object>))
-                || TypeHelper.IsImplementsInterface(typeOne, typeof(IDictionary<object, object>))) {
+            if (typeOne.IsArray ||
+                TypeHelper.IsImplementsInterface(typeOne, typeof(ICollection<object>)) ||
+                TypeHelper.IsImplementsInterface(typeOne, typeof(IDictionary<object, object>))) {
                 throw new ExprValidationException(
                     "Collection or array comparison is not allowed for the IN, ANY, SOME or ALL keywords");
             }
@@ -107,81 +109,169 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                 }
 
                 var compareType = typeOne.GetCompareToCoercionType(typeTwo);
-                var computer = relationalOp.GetComputer(compareType, typeOne, typeTwo);
+                var computer = relationalOp.Value.GetComputer(compareType, typeOne, typeTwo);
 
                 if (isAny) {
                     if (grouped) {
                         return new SubselectForgeNRRelOpAnyWGroupBy(
-                            subselectExpression, valueEval, selectEval, false, computer, havingEval);
+                            subselectExpression,
+                            valueEval,
+                            selectEval,
+                            false,
+                            computer,
+                            havingEval);
                     }
 
                     if (aggregated) {
                         return new SubselectForgeNRRelOpAllAnyAggregated(
-                            subselectExpression, valueEval, selectEval, false, computer, havingEval);
+                            subselectExpression,
+                            valueEval,
+                            selectEval,
+                            false,
+                            computer,
+                            havingEval);
                     }
 
                     return new SubselectForgeStrategyNRRelOpAnyDefault(
-                        subselectExpression, valueEval, selectEval, false, computer, filterEval);
+                        subselectExpression,
+                        valueEval,
+                        selectEval,
+                        false,
+                        computer,
+                        filterEval);
                 }
 
                 // handle ALL
                 if (grouped) {
                     return new SubselectForgeNRRelOpAllWGroupBy(
-                        subselectExpression, valueEval, selectEval, true, computer, havingEval);
+                        subselectExpression,
+                        valueEval,
+                        selectEval,
+                        true,
+                        computer,
+                        havingEval);
                 }
 
                 if (aggregated) {
                     return new SubselectForgeNRRelOpAllAnyAggregated(
-                        subselectExpression, valueEval, selectEval, true, computer, havingEval);
+                        subselectExpression,
+                        valueEval,
+                        selectEval,
+                        true,
+                        computer,
+                        havingEval);
                 }
 
                 return new SubselectForgeNRRelOpAllDefault(
-                    subselectExpression, valueEval, selectEval, true, computer, filterEval);
+                    subselectExpression,
+                    valueEval,
+                    selectEval,
+                    true,
+                    computer,
+                    filterEval);
             }
 
             var coercer = GetCoercer(typeOne, typeTwo);
             if (isAll) {
                 if (grouped) {
                     return new SubselectForgeNREqualsAllAnyWGroupBy(
-                        subselectExpression, valueEval, selectEval, true, isNot, coercer, havingEval, true);
+                        subselectExpression,
+                        valueEval,
+                        selectEval,
+                        true,
+                        isNot,
+                        coercer,
+                        havingEval,
+                        true);
                 }
 
                 if (aggregated) {
                     return new SubselectForgeNREqualsAllAnyAggregated(
-                        subselectExpression, valueEval, selectEval, true, isNot, coercer, havingEval);
+                        subselectExpression,
+                        valueEval,
+                        selectEval,
+                        true,
+                        isNot,
+                        coercer,
+                        havingEval);
                 }
 
                 return new SubselectForgeNREqualsDefault(
-                    subselectExpression, valueEval, selectEval, true, isNot, coercer, filterEval, true);
+                    subselectExpression,
+                    valueEval,
+                    selectEval,
+                    true,
+                    isNot,
+                    coercer,
+                    filterEval,
+                    true);
             }
 
             if (isAny) {
                 if (grouped) {
                     return new SubselectForgeNREqualsAllAnyWGroupBy(
-                        subselectExpression, valueEval, selectEval, false, isNot, coercer, havingEval, false);
+                        subselectExpression,
+                        valueEval,
+                        selectEval,
+                        false,
+                        isNot,
+                        coercer,
+                        havingEval,
+                        false);
                 }
 
                 if (aggregated) {
                     return new SubselectForgeNREqualsAllAnyAggregated(
-                        subselectExpression, valueEval, selectEval, true, isNot, coercer, havingEval);
+                        subselectExpression,
+                        valueEval,
+                        selectEval,
+                        true,
+                        isNot,
+                        coercer,
+                        havingEval);
                 }
 
                 return new SubselectForgeNREqualsDefault(
-                    subselectExpression, valueEval, selectEval, false, isNot, coercer, filterEval, false);
+                    subselectExpression,
+                    valueEval,
+                    selectEval,
+                    false,
+                    isNot,
+                    coercer,
+                    filterEval,
+                    false);
             }
 
             if (grouped) {
                 return new SubselectForgeNREqualsInWGroupBy(
-                    subselectExpression, valueEval, selectEval, isNot, isNot, coercer, havingEval);
+                    subselectExpression,
+                    valueEval,
+                    selectEval,
+                    isNot,
+                    isNot,
+                    coercer,
+                    havingEval);
             }
 
             if (aggregated) {
                 return new SubselectForgeNREqualsInAggregated(
-                    subselectExpression, valueEval, selectEval, isNot, isNot, coercer, havingEval);
+                    subselectExpression,
+                    valueEval,
+                    selectEval,
+                    isNot,
+                    isNot,
+                    coercer,
+                    havingEval);
             }
 
             return new SubselectForgeNREqualsIn(
-                subselectExpression, valueEval, selectEval, isNot, isNot, coercer, filterEval);
+                subselectExpression,
+                valueEval,
+                selectEval,
+                isNot,
+                isNot,
+                coercer,
+                filterEval);
         }
 
         private static SimpleNumberCoercer GetCoercer(

@@ -78,7 +78,13 @@ namespace com.espertech.esper.common.@internal.epl.index.advanced.index.quadtree
                     return null;
                 }
 
-                return BoundingBox.ContainsPoint(x.AsDouble(), y.AsDouble(), width.AsDouble(), height.AsDouble(), px.AsDouble(), py.AsDouble());
+                return BoundingBox.ContainsPoint(
+                    x.AsDouble(),
+                    y.AsDouble(),
+                    width.AsDouble(),
+                    height.AsDouble(),
+                    px.AsDouble(),
+                    py.AsDouble());
             }
 
             public static CodegenExpression Codegen(
@@ -88,18 +94,64 @@ namespace com.espertech.esper.common.@internal.epl.index.advanced.index.quadtree
                 CodegenClassScope codegenClassScope)
             {
                 CodegenMethod methodNode = codegenMethodScope.MakeChild(
-                    typeof(bool?), typeof(SettingsApplicationDotMethodRectangeIntersectsRectangle.RectangleIntersectsRectangleEvaluator),
+                    typeof(bool?),
+                    typeof(SettingsApplicationDotMethodRectangeIntersectsRectangle.RectangleIntersectsRectangleEvaluator
+                    ),
                     codegenClassScope);
 
                 CodegenBlock block = methodNode.Block;
-                CodegenLegoCast.AsDoubleNullReturnNull(block, "px", forge.pxEval, methodNode, exprSymbol, codegenClassScope);
-                CodegenLegoCast.AsDoubleNullReturnNull(block, "py", forge.pyEval, methodNode, exprSymbol, codegenClassScope);
-                CodegenLegoCast.AsDoubleNullReturnNull(block, "x", forge.xEval, methodNode, exprSymbol, codegenClassScope);
-                CodegenLegoCast.AsDoubleNullReturnNull(block, "y", forge.yEval, methodNode, exprSymbol, codegenClassScope);
-                CodegenLegoCast.AsDoubleNullReturnNull(block, "width", forge.widthEval, methodNode, exprSymbol, codegenClassScope);
-                CodegenLegoCast.AsDoubleNullReturnNull(block, "height", forge.heightEval, methodNode, exprSymbol, codegenClassScope);
+                CodegenLegoCast.AsDoubleNullReturnNull(
+                    block,
+                    "px",
+                    forge.pxEval,
+                    methodNode,
+                    exprSymbol,
+                    codegenClassScope);
+                CodegenLegoCast.AsDoubleNullReturnNull(
+                    block,
+                    "py",
+                    forge.pyEval,
+                    methodNode,
+                    exprSymbol,
+                    codegenClassScope);
+                CodegenLegoCast.AsDoubleNullReturnNull(
+                    block,
+                    "x",
+                    forge.xEval,
+                    methodNode,
+                    exprSymbol,
+                    codegenClassScope);
+                CodegenLegoCast.AsDoubleNullReturnNull(
+                    block,
+                    "y",
+                    forge.yEval,
+                    methodNode,
+                    exprSymbol,
+                    codegenClassScope);
+                CodegenLegoCast.AsDoubleNullReturnNull(
+                    block,
+                    "width",
+                    forge.widthEval,
+                    methodNode,
+                    exprSymbol,
+                    codegenClassScope);
+                CodegenLegoCast.AsDoubleNullReturnNull(
+                    block,
+                    "height",
+                    forge.heightEval,
+                    methodNode,
+                    exprSymbol,
+                    codegenClassScope);
                 block.MethodReturn(
-                    CodegenExpressionBuilder.StaticMethod(typeof(BoundingBox), "containsPoint", CodegenExpressionBuilder.Ref("x"), CodegenExpressionBuilder.Ref("y"), CodegenExpressionBuilder.Ref("width"), CodegenExpressionBuilder.Ref("height"), CodegenExpressionBuilder.Ref("px"), CodegenExpressionBuilder.Ref("py")));
+                    CodegenExpressionBuilder.StaticMethod(
+                        typeof(BoundingBox),
+                        "containsPoint",
+                        CodegenExpressionBuilder.Ref("x"),
+                        CodegenExpressionBuilder.Ref("y"),
+                        CodegenExpressionBuilder.Ref("width"),
+                        CodegenExpressionBuilder.Ref("height"),
+                        CodegenExpressionBuilder.Ref("px"),
+                        CodegenExpressionBuilder.Ref("py")));
                 return CodegenExpressionBuilder.LocalMethod(methodNode);
             }
         }

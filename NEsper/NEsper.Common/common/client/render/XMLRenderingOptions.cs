@@ -67,6 +67,5 @@ namespace com.espertech.esper.common.client.render
             Renderer = value;
             return this;
         }
-
     }
 }

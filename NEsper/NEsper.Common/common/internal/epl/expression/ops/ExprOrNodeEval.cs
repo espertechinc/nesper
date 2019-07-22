@@ -11,6 +11,7 @@ using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.expression.ops
@@ -59,7 +60,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             var methodNode = codegenMethodScope.MakeChild(typeof(bool?), typeof(ExprOrNodeEval), codegenClassScope);
 
             var block = methodNode.Block
-                .DeclareVar(typeof(bool?), "result", ConstantFalse());
+                .DeclareVar<bool?>("result", ConstantFalse());
 
             var count = -1;
             foreach (var child in parent.ChildNodes) {
@@ -72,13 +73,14 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                 }
                 else {
                     var refname = "r" + count;
-                    block.DeclareVar(
-                            typeof(bool?), refname,
+                    block.DeclareVar<bool?>(
+                            refname,
                             child.Forge.EvaluateCodegen(typeof(bool?), methodNode, exprSymbol, codegenClassScope))
                         .IfCondition(EqualsNull(Ref(refname)))
                         .AssignRef("result", ConstantNull())
                         .IfElse()
-                        .IfCondition(Ref(refname)).BlockReturn(ConstantTrue());
+                        .IfCondition(Ref(refname))
+                        .BlockReturn(ConstantTrue());
                 }
             }
 

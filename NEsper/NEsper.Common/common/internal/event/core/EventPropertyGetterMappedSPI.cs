@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -43,7 +44,10 @@ namespace com.espertech.esper.common.@internal.@event.core
             CodegenExpression key)
         {
             return ProcEventBeanGetMappedCodegen.Invoke(
-                codegenMethodScope, codegenClassScope, beanExpression, key);
+                codegenMethodScope,
+                codegenClassScope,
+                beanExpression,
+                key);
         }
     }
 } // end of namespace

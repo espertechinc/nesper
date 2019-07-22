@@ -8,10 +8,12 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.context.module;
 using com.espertech.esper.common.@internal.epl.variable.core;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.variable.compiletime
@@ -33,7 +35,8 @@ namespace com.espertech.esper.common.@internal.epl.variable.compiletime
         public CodegenExpression InitCtorScoped()
         {
             return StaticMethod(
-                typeof(VariableDeployTimeResolver), "resolveVariableReaderPerCP",
+                typeof(VariableDeployTimeResolver),
+                "resolveVariableReaderPerCP",
                 Constant(metaWVisibility.VariableName),
                 Constant(metaWVisibility.VariableVisibility),
                 Constant(metaWVisibility.VariableModuleName),

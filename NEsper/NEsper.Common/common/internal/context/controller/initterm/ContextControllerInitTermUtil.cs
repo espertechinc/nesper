@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.context;
 using com.espertech.esper.common.@internal.context.controller.condition;
@@ -46,14 +47,22 @@ namespace com.espertech.esper.common.@internal.context.controller.initterm
                 var scheduleStart = ((ContextControllerConditionCrontab) startCondition).Schedule;
 
                 var endCron = (ContextConditionDescriptorCrontab) spec.EndCondition;
-                var scheduleEnd = ScheduleExpressionUtil.CrontabScheduleBuild(endCron.Evaluators, controller.Realization.AgentInstanceContextCreate);
+                var scheduleEnd = ScheduleExpressionUtil.CrontabScheduleBuild(
+                    endCron.Evaluators,
+                    controller.Realization.AgentInstanceContextCreate);
 
                 var importService = controller.Realization.AgentInstanceContextCreate.ImportServiceRuntime;
                 var time = controller.Realization.AgentInstanceContextCreate.SchedulingService.Time;
                 var nextScheduledStartTime = ScheduleComputeHelper.ComputeNextOccurance(
-                    scheduleStart, time, importService.TimeZone, importService.TimeAbacus);
+                    scheduleStart,
+                    time,
+                    importService.TimeZone,
+                    importService.TimeAbacus);
                 var nextScheduledEndTime = ScheduleComputeHelper.ComputeNextOccurance(
-                    scheduleEnd, time, importService.TimeZone, importService.TimeAbacus);
+                    scheduleEnd,
+                    time,
+                    importService.TimeZone,
+                    importService.TimeAbacus);
                 return nextScheduledStartTime >= nextScheduledEndTime;
             }
 
@@ -76,7 +85,11 @@ namespace com.espertech.esper.common.@internal.context.controller.initterm
         {
             var startTime = controller.realization.AgentInstanceContextCreate.SchedulingService.Time;
             var expectedEndTime = endCondition.ExpectedEndTime;
-            return new ContextControllerInitTermPartitionKey(optionalTriggeringEvent, optionalTriggeringPattern, startTime, expectedEndTime);
+            return new ContextControllerInitTermPartitionKey(
+                optionalTriggeringEvent,
+                optionalTriggeringPattern,
+                startTime,
+                expectedEndTime);
         }
 
         public static ContextPartitionIdentifierInitiatedTerminated KeyToIdentifier(
@@ -92,7 +105,9 @@ namespace com.espertech.esper.common.@internal.context.controller.initterm
             if (start is ContextConditionDescriptorFilter) {
                 var filter = (ContextConditionDescriptorFilter) start;
                 if (filter.OptionalFilterAsName != null) {
-                    identifier.Properties = Collections.SingletonDataMap(filter.OptionalFilterAsName, key.TriggeringEvent);
+                    identifier.Properties = Collections.SingletonDataMap(
+                        filter.OptionalFilterAsName,
+                        key.TriggeringEvent);
                 }
             }
 

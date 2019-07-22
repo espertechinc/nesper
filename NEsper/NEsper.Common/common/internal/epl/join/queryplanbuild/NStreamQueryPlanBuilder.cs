@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.context.aifactory.@select;
@@ -127,7 +128,9 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanbuild
 
             var numStreams = queryGraph.NumStreams;
             var indexSpecs = QueryPlanIndexBuilder.BuildIndexSpec(
-                queryGraph, typesPerStream, indexedStreamsUniqueProps);
+                queryGraph,
+                typesPerStream,
+                indexedStreamsUniqueProps);
             if (Log.IsDebugEnabled) {
                 Log.Debug(".build Index build completed, indexes=" + QueryPlanIndexForge.Print(indexSpecs));
             }
@@ -161,8 +164,15 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanbuild
                 }
 
                 planNodeSpecs[streamNo] = CreateStreamPlan(
-                    streamNo, bestChain, queryGraph, indexSpecs, typesPerStream, historicalViewableDesc.Historical,
-                    historicalStreamIndexLists, tablesPerStream, streamJoinAnalysisResult);
+                    streamNo,
+                    bestChain,
+                    queryGraph,
+                    indexSpecs,
+                    typesPerStream,
+                    historicalViewableDesc.Historical,
+                    historicalStreamIndexLists,
+                    tablesPerStream,
+                    streamJoinAnalysisResult);
                 if (Log.IsDebugEnabled) {
                     Log.Debug(".build spec=" + planNodeSpecs[streamNo]);
                 }
@@ -230,18 +240,28 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanbuild
                 if (isHistorical[indexedStream]) {
                     if (historicalStreamIndexLists[indexedStream] == null) {
                         historicalStreamIndexLists[indexedStream] = new HistoricalStreamIndexListForge(
-                            indexedStream, typesPerStream, queryGraph);
+                            indexedStream,
+                            typesPerStream,
+                            queryGraph);
                     }
 
                     historicalStreamIndexLists[indexedStream].AddIndex(currentLookupStream);
                     node = new HistoricalDataPlanNodeForge(
-                        indexedStream, lookupStream, currentLookupStream, typesPerStream.Length, null);
+                        indexedStream,
+                        lookupStream,
+                        currentLookupStream,
+                        typesPerStream.Length,
+                        null);
                 }
                 else {
                     var tableLookupPlan = CreateLookupPlan(
-                        queryGraph, currentLookupStream, indexedStream,
-                        streamJoinAnalysisResult.IsVirtualDW(indexedStream), indexSpecsPerStream[indexedStream],
-                        typesPerStream, tablesPerStream[indexedStream]);
+                        queryGraph,
+                        currentLookupStream,
+                        indexedStream,
+                        streamJoinAnalysisResult.IsVirtualDW(indexedStream),
+                        indexSpecsPerStream[indexedStream],
+                        typesPerStream,
+                        tablesPerStream[indexedStream]);
                     node = new TableLookupNodeForge(tableLookupPlan);
                 }
 
@@ -324,7 +344,8 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanbuild
                             if (indexPairFound != null) {
                                 indexNum = new TableLookupIndexReqKey(
                                     indexPairFound.Second.OptionalIndexName,
-                                    indexPairFound.Second.OptionalIndexModuleName, indexedStreamTableMeta.TableName);
+                                    indexPairFound.Second.OptionalIndexModuleName,
+                                    indexedStreamTableMeta.TableName);
                                 single = singles.Key[count];
                             }
 
@@ -334,13 +355,18 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanbuild
                     else {
                         single = singles.Key[0];
                         var pairIndex = indexSpecs.GetIndexNum(
-                            new[] {singles.Indexed[0]}, new string[0]);
+                            new[] {singles.Indexed[0]},
+                            new string[0]);
                         indexNum = pairIndex.First;
                     }
 
                     if (indexNum != null) {
                         return new InKeywordTableLookupPlanSingleIdxForge(
-                            currentLookupStream, indexedStream, indexedStreamIsVDW, typesPerStream, indexNum,
+                            currentLookupStream,
+                            indexedStream,
+                            indexedStreamIsVDW,
+                            typesPerStream,
+                            indexNum,
                             single.KeyExprs);
                     }
                 }
@@ -350,7 +376,10 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanbuild
                 if (!multis.IsEmpty()) {
                     if (indexedStreamTableMeta != null) {
                         return GetFullTableScanTable(
-                            currentLookupStream, indexedStream, indexedStreamIsVDW, typesPerStream,
+                            currentLookupStream,
+                            indexedStream,
+                            indexedStreamIsVDW,
+                            typesPerStream,
                             indexedStreamTableMeta);
                     }
 
@@ -360,7 +389,8 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanbuild
                     for (var i = 0; i < multi.Indexed.Length; i++) {
                         var identNode = (ExprIdentNode) multi.Indexed[i];
                         var pairIndex = indexSpecs.GetIndexNum(
-                            new[] {identNode.ResolvedPropertyName}, new string[0]);
+                            new[] {identNode.ResolvedPropertyName},
+                            new string[0]);
                         if (pairIndex == null) {
                             foundAll = false;
                         }
@@ -371,7 +401,11 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanbuild
 
                     if (foundAll) {
                         return new InKeywordTableLookupPlanMultiIdxForge(
-                            currentLookupStream, indexedStream, indexedStreamIsVDW, typesPerStream, indexNameArray,
+                            currentLookupStream,
+                            indexedStream,
+                            indexedStreamIsVDW,
+                            typesPerStream,
+                            indexNameArray,
                             multi.Key.KeyExpr);
                     }
                 }
@@ -381,37 +415,57 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanbuild
                 // If no such full set index exists yet, add to specs
                 if (indexedStreamTableMeta != null) {
                     return GetFullTableScanTable(
-                        currentLookupStream, indexedStream, indexedStreamIsVDW, typesPerStream, indexedStreamTableMeta);
+                        currentLookupStream,
+                        indexedStream,
+                        indexedStreamIsVDW,
+                        typesPerStream,
+                        indexedStreamTableMeta);
                 }
 
                 if (indexNum == null) {
                     indexNum = new TableLookupIndexReqKey(
-                        indexSpecs.AddIndex(new string[0], new Type[0], typesPerStream[indexedStream]), null);
+                        indexSpecs.AddIndex(new string[0], new Type[0], typesPerStream[indexedStream]),
+                        null);
                 }
 
                 return new FullTableScanLookupPlanForge(
-                    currentLookupStream, indexedStream, indexedStreamIsVDW, typesPerStream, indexNum);
+                    currentLookupStream,
+                    indexedStream,
+                    indexedStreamIsVDW,
+                    typesPerStream,
+                    indexNum);
             }
 
             if (indexNum == null) {
                 throw new IllegalStateException(
-                    "Failed to query plan as index for " + hashIndexProps.RenderAny() + " and " +
-                    rangeIndexProps.RenderAny() + " in the index specification");
+                    "Failed to query plan as index for " +
+                    hashIndexProps.RenderAny() +
+                    " and " +
+                    rangeIndexProps.RenderAny() +
+                    " in the index specification");
             }
 
             if (indexedStreamTableMeta != null) {
                 var indexPairFound =
                     EventTableIndexUtil.FindIndexBestAvailable(
-                        indexedStreamTableMeta.IndexMetadata.Indexes, ToSet(hashIndexProps), ToSet(rangeIndexProps),
+                        indexedStreamTableMeta.IndexMetadata.Indexes,
+                        ToSet(hashIndexProps),
+                        ToSet(rangeIndexProps),
                         null);
                 if (indexPairFound != null) {
                     var indexKeyInfo = SubordinateQueryPlannerUtil.CompileIndexKeyInfo(
-                        indexPairFound.First, hashIndexProps, GetHashKeyFuncsAsSubProp(hashPropsKeys), rangeIndexProps,
+                        indexPairFound.First,
+                        hashIndexProps,
+                        GetHashKeyFuncsAsSubProp(hashPropsKeys),
+                        rangeIndexProps,
                         GetRangeFuncsAsSubProp(rangePropsKeys));
                     if (indexKeyInfo.OrderedKeyCoercionTypes.IsCoerce ||
                         indexKeyInfo.OrderedRangeCoercionTypes.IsCoerce) {
                         return GetFullTableScanTable(
-                            currentLookupStream, indexedStream, indexedStreamIsVDW, typesPerStream,
+                            currentLookupStream,
+                            indexedStream,
+                            indexedStreamIsVDW,
+                            typesPerStream,
                             indexedStreamTableMeta);
                     }
 
@@ -420,18 +474,26 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanbuild
                     rangePropsKeys = ToRangeKeyFuncs(indexKeyInfo.OrderedRangeDesc);
                     rangeIndexProps = IndexedPropDesc.GetIndexProperties(indexPairFound.First.RangeIndexedProps);
                     indexNum = new TableLookupIndexReqKey(
-                        indexPairFound.Second.OptionalIndexName, indexPairFound.Second.OptionalIndexModuleName,
+                        indexPairFound.Second.OptionalIndexName,
+                        indexPairFound.Second.OptionalIndexModuleName,
                         indexedStreamTableMeta.TableName);
                     // the plan will be created below
                     if (hashIndexProps.Length == 0 && rangeIndexProps.Length == 0) {
                         return GetFullTableScanTable(
-                            currentLookupStream, indexedStream, indexedStreamIsVDW, typesPerStream,
+                            currentLookupStream,
+                            indexedStream,
+                            indexedStreamIsVDW,
+                            typesPerStream,
                             indexedStreamTableMeta);
                     }
                 }
                 else {
                     return GetFullTableScanTable(
-                        currentLookupStream, indexedStream, indexedStreamIsVDW, typesPerStream, indexedStreamTableMeta);
+                        currentLookupStream,
+                        indexedStream,
+                        indexedStreamIsVDW,
+                        typesPerStream,
+                        indexedStreamTableMeta);
                 }
             }
 
@@ -439,7 +501,11 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanbuild
             if (hashIndexProps.Length > 0 && rangeIndexProps.Length == 0) {
                 // Determine coercion required
                 var coercionTypes = CoercionUtil.GetCoercionTypesHash(
-                    typesPerStream, currentLookupStream, indexedStream, hashPropsKeys, hashIndexProps);
+                    typesPerStream,
+                    currentLookupStream,
+                    indexedStream,
+                    hashPropsKeys,
+                    hashIndexProps);
                 if (coercionTypes.IsCoerce) {
                     // check if there already are coercion types for this index
                     var existCoercionTypes = indexSpecs.GetCoercionTypes(hashIndexProps);
@@ -457,15 +523,28 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanbuild
 
                 var coercionTypesArray = coercionTypes.CoercionTypes;
                 return new IndexedTableLookupPlanHashedOnlyForge(
-                    currentLookupStream, indexedStream, indexedStreamIsVDW, typesPerStream, indexNum,
-                    hashPropsKeys.ToArray(), indexSpecs, coercionTypesArray);
+                    currentLookupStream,
+                    indexedStream,
+                    indexedStreamIsVDW,
+                    typesPerStream,
+                    indexNum,
+                    hashPropsKeys.ToArray(),
+                    indexSpecs,
+                    coercionTypesArray);
             }
 
             // sorted index lookup
             var coercionTypesRange = CoercionUtil.GetCoercionTypesRange(
-                typesPerStream, indexedStream, rangeIndexProps, rangePropsKeys);
+                typesPerStream,
+                indexedStream,
+                rangeIndexProps,
+                rangePropsKeys);
             var coercionTypesHash = CoercionUtil.GetCoercionTypesHash(
-                typesPerStream, currentLookupStream, indexedStream, hashPropsKeys, hashIndexProps);
+                typesPerStream,
+                currentLookupStream,
+                indexedStream,
+                hashPropsKeys,
+                hashIndexProps);
             if (hashIndexProps.Length == 0 && rangeIndexProps.Length == 1) {
                 var range = rangePropsKeys[0];
                 Type coercionType = null;
@@ -474,14 +553,26 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanbuild
                 }
 
                 return new SortedTableLookupPlanForge(
-                    currentLookupStream, indexedStream, indexedStreamIsVDW, typesPerStream, indexNum, range,
+                    currentLookupStream,
+                    indexedStream,
+                    indexedStreamIsVDW,
+                    typesPerStream,
+                    indexNum,
+                    range,
                     coercionType);
             }
 
             // composite range and index lookup
             return new CompositeTableLookupPlanForge(
-                currentLookupStream, indexedStream, indexedStreamIsVDW, typesPerStream, indexNum, hashPropsKeys,
-                coercionTypesHash.CoercionTypes, rangePropsKeys, coercionTypesRange.CoercionTypes);
+                currentLookupStream,
+                indexedStream,
+                indexedStreamIsVDW,
+                typesPerStream,
+                indexNum,
+                hashPropsKeys,
+                coercionTypesHash.CoercionTypes,
+                rangePropsKeys,
+                coercionTypesRange.CoercionTypes);
         }
 
         /// <summary>
@@ -514,8 +605,7 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanbuild
             int[] bestPermutation = null;
             var bestDepth = -1;
 
-            foreach (var permutation in streamEnum)
-            { 
+            foreach (var permutation in streamEnum) {
                 // Only if the permutation satisfies all dependencies is the permutation considered
                 if (dependencyGraph != null) {
                     var pass = IsDependencySatisfied(lookupStream, permutation, dependencyGraph);
@@ -557,8 +647,12 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanbuild
                 var positionTarget = PositionOf(target, lookupStream, permutation);
                 if (positionTarget == -1) {
                     throw new ArgumentException(
-                        "Target dependency not found in permutation for target " + target + " and permutation " +
-                        permutation.RenderAny() + " and lookup stream " + lookupStream);
+                        "Target dependency not found in permutation for target " +
+                        target +
+                        " and permutation " +
+                        permutation.RenderAny() +
+                        " and lookup stream " +
+                        lookupStream);
                 }
 
                 // check the position of each dependency, it must be higher
@@ -566,8 +660,12 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanbuild
                     var positonDep = PositionOf(dependency, lookupStream, permutation);
                     if (positonDep == -1) {
                         throw new ArgumentException(
-                            "Dependency not found in permutation for dependency " + dependency + " and permutation " +
-                            permutation.RenderAny() + " and lookup stream " + lookupStream);
+                            "Dependency not found in permutation for dependency " +
+                            dependency +
+                            " and permutation " +
+                            permutation.RenderAny() +
+                            " and lookup stream " +
+                            lookupStream);
                     }
 
                     if (positonDep > positionTarget) {
@@ -685,10 +783,15 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanbuild
             TableMetaData indexedStreamTableMeta)
         {
             var indexName = new TableLookupIndexReqKey(
-                indexedStreamTableMeta.TableName, indexedStreamTableMeta.TableModuleName,
+                indexedStreamTableMeta.TableName,
+                indexedStreamTableMeta.TableModuleName,
                 indexedStreamTableMeta.TableName);
             return new FullTableScanUniquePerKeyLookupPlanForge(
-                lookupStream, indexedStream, indexedStreamIsVDW, typesPerStream, indexName);
+                lookupStream,
+                indexedStream,
+                indexedStreamIsVDW,
+                typesPerStream,
+                indexName);
         }
 
         private static SubordPropRangeKeyForge[] GetRangeFuncsAsSubProp(IList<QueryGraphValueEntryRangeForge> funcs)

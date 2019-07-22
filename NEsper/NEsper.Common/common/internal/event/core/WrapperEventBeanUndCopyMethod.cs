@@ -44,7 +44,10 @@ namespace com.espertech.esper.common.@internal.@event.core
                 return null;
             }
 
-            return eventAdapterService.AdapterForTypedWrapper(copiedUnderlying, decorated.DecoratingProperties, wrapperEventType);
+            return eventAdapterService.AdapterForTypedWrapper(
+                copiedUnderlying,
+                decorated.DecoratingProperties,
+                wrapperEventType);
         }
     }
 } // end of namespace

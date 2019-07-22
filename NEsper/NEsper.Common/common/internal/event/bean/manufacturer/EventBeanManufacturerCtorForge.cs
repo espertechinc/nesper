@@ -8,6 +8,7 @@
 
 using System;
 using System.Reflection;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -15,6 +16,7 @@ using com.espertech.esper.common.@internal.context.module;
 using com.espertech.esper.common.@internal.@event.bean.core;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.compat.collections;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.@event.bean.manufacturer
@@ -38,10 +40,12 @@ namespace com.espertech.esper.common.@internal.@event.bean.manufacturer
         {
             var factory = codegenClassScope.AddOrGetFieldSharable(EventBeanTypedEventFactoryCodegenField.INSTANCE);
             var beanType = codegenClassScope.AddFieldUnshared(
-                true, typeof(EventType),
+                true,
+                typeof(EventType),
                 EventTypeUtility.ResolveTypeCodegen(beanEventType, EPStatementInitServicesConstants.REF));
             var ctor = StaticMethod(
-                typeof(EventBeanManufacturerCtorForge), "ResolveConstructor",
+                typeof(EventBeanManufacturerCtorForge),
+                "ResolveConstructor",
                 Constant(constructor.GetParameterTypes()),
                 Constant(constructor.DeclaringType));
             return NewInstance<EventBeanManufacturerCtor>(ctor, beanType, factory);
@@ -67,10 +71,10 @@ namespace com.espertech.esper.common.@internal.@event.bean.manufacturer
             }
             catch (Exception) {
                 throw new EPException(
-                    "Failed to resolve constructor for class "
-                    + declaring.GetType()
-                    + " params "
-                    + classes.RenderAny());
+                    "Failed to resolve constructor for class " +
+                    declaring.GetType() +
+                    " params " +
+                    classes.RenderAny());
             }
         }
     }

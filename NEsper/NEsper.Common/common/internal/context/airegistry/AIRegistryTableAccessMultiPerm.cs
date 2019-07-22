@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.epl.expression.core;
@@ -43,8 +44,11 @@ namespace com.espertech.esper.common.@internal.context.airegistry
             bool isNewData,
             ExprEvaluatorContext exprEvaluatorContext)
         {
-            return strategies.Array[exprEvaluatorContext.AgentInstanceId].Evaluate(
-                eventsPerStream, isNewData, exprEvaluatorContext);
+            return strategies.Array[exprEvaluatorContext.AgentInstanceId]
+                .Evaluate(
+                    eventsPerStream,
+                    isNewData,
+                    exprEvaluatorContext);
         }
 
         public ICollection<EventBean> EvaluateGetROCollectionEvents(

@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+
 using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
@@ -24,7 +25,8 @@ namespace com.espertech.esper.common.@internal.context.controller.category
             int[] subpathOrCPId)
         {
             ContextControllerCategorySvcLevelAnyEntry existing = mgmt.PutIfAbsent(
-                controllerPath, new ContextControllerCategorySvcLevelAnyEntry(parentPartitionKeys, subpathOrCPId));
+                controllerPath,
+                new ContextControllerCategorySvcLevelAnyEntry(parentPartitionKeys, subpathOrCPId));
             if (existing != null) {
                 throw new IllegalStateException("Existing entry found");
             }
@@ -38,7 +40,9 @@ namespace com.espertech.esper.common.@internal.context.controller.category
 
         public int[] MgmtDelete(IntSeqKey controllerPath)
         {
-            return mgmt.TryRemove(controllerPath, out ContextControllerCategorySvcLevelAnyEntry entry) ? entry.SubpathOrCPids : null;
+            return mgmt.TryRemove(controllerPath, out ContextControllerCategorySvcLevelAnyEntry entry)
+                ? entry.SubpathOrCPids
+                : null;
         }
 
         public void Destroy()

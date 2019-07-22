@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Linq;
+
 using com.espertech.esper.common.@internal.compile.stage1.spec;
 
 namespace com.espertech.esper.common.@internal.compile.stage2

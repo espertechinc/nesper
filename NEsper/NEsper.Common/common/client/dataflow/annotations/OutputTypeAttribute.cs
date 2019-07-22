@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
@@ -53,7 +54,10 @@ namespace com.espertech.esper.common.client.dataflow.annotations
                 return false;
             if (ReferenceEquals(this, other))
                 return true;
-            return base.Equals(other) && Equals(other.Name, Name) && Equals(other.Type, Type) && Equals(other.TypeName, TypeName);
+            return base.Equals(other) &&
+                   Equals(other.Name, Name) &&
+                   Equals(other.Type, Type) &&
+                   Equals(other.TypeName, TypeName);
         }
 
         /// <summary>

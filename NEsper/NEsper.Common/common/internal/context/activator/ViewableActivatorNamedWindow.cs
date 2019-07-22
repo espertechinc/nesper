@@ -69,13 +69,19 @@ namespace com.espertech.esper.common.@internal.context.activator
             var namedWindowDeploymentId = namedWindow.StatementContext.DeploymentId;
 
             statementContext.NamedWindowConsumerManagementService.AddConsumer(
-                namedWindowDeploymentId, namedWindowName, namedWindowConsumerId, statementContext, subquery);
+                namedWindowDeploymentId,
+                namedWindowName,
+                namedWindowConsumerId,
+                statementContext,
+                subquery);
 
             statementContext.AddFinalizeCallback(
                 new ProxyStatementFinalizeCallback {
                     ProcStatementDestroyed = context => {
                         statementContext.NamedWindowConsumerManagementService.DestroyConsumer(
-                            namedWindowDeploymentId, namedWindowName, context);
+                            namedWindowDeploymentId,
+                            namedWindowName,
+                            context);
                     }
                 });
         }
@@ -89,7 +95,10 @@ namespace com.espertech.esper.common.@internal.context.activator
         {
             var nw = (NamedWindowWDirectConsume) namedWindow;
             var consumerDesc = new NamedWindowConsumerDesc(
-                namedWindowConsumerId, filterEvaluator, optPropertyEvaluator, agentInstanceContext);
+                namedWindowConsumerId,
+                filterEvaluator,
+                optPropertyEvaluator,
+                agentInstanceContext);
             var consumerView = nw.AddConsumer(consumerDesc, isSubselect);
             return new ViewableActivationResult(consumerView, consumerView, null, false, false, null, null);
         }

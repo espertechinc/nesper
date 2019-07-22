@@ -9,6 +9,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -18,6 +19,7 @@ using com.espertech.esper.common.@internal.@event.bean.service;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat.collections;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.@event.bean.getter
@@ -100,7 +102,9 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
             }
 
             return UnderlyingFragmentCodegen(
-                CastUnderlying(TargetType, beanExpression), codegenMethodScope, codegenClassScope);
+                CastUnderlying(TargetType, beanExpression),
+                codegenMethodScope,
+                codegenClassScope);
         }
 
         public CodegenExpression UnderlyingFragmentCodegen(
@@ -292,17 +296,22 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
                     EventTypeUtility.ResolveTypeCodegen(_fragmentEventType, EPStatementInitServicesConstants.REF)));
 
             var block = codegenMethodScope.MakeChild(typeof(object), GetType(), codegenClassScope)
-                .AddParam(TargetType, "underlying").Block
+                .AddParam(TargetType, "underlying")
+                .Block
                 .DeclareVar(
-                    BeanPropType, "object",
+                    BeanPropType,
+                    "object",
                     UnderlyingGetCodegen(Ref("underlying"), codegenMethodScope, codegenClassScope))
                 .IfRefNullReturnNull("object");
 
             if (_isArray) {
                 return block.MethodReturn(
                     StaticMethod(
-                        typeof(BaseNativePropertyGetter), "ToFragmentArray", Cast(typeof(object[]), Ref("object")),
-                        mtype, msvc));
+                        typeof(BaseNativePropertyGetter),
+                        "ToFragmentArray",
+                        Cast(typeof(object[]), Ref("object")),
+                        mtype,
+                        msvc));
             }
 
             if (_isIterable) {

@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.compile.stage2;
@@ -59,13 +60,17 @@ namespace com.espertech.esper.common.@internal.context.controller.condition
             Func<FilterSpecActivatable, FilterValueSetParam[][]> contextAddendumFunction = filter =>
                 ContextManagerUtil.ComputeAddendumNonStmt(partitionKeys, filter, controller.Realization);
             var patternAgentInstanceContext = new PatternAgentInstanceContext(
-                pattern.PatternContext, agentInstanceContext, false, contextAddendumFunction);
+                pattern.PatternContext,
+                agentInstanceContext,
+                false,
+                contextAddendumFunction);
             var rootNode = EvalNodeUtil.MakeRootNodeFromFactory(pattern.Pattern, patternAgentInstanceContext);
 
             var matchedEventMap = new MatchedEventMapImpl(pattern.PatternContext.MatchedEventMapMeta);
             if (optionalTriggeringEvent != null && endConditionMatchEventProvider != null) {
                 endConditionMatchEventProvider.PopulateEndConditionFromTrigger(
-                    matchedEventMap, optionalTriggeringEvent);
+                    matchedEventMap,
+                    optionalTriggeringEvent);
             }
 
             // capture any callbacks that may occur right after start
@@ -121,7 +126,12 @@ namespace com.espertech.esper.common.@internal.context.controller.condition
             }
 
             callback.RangeNotification(
-                conditionPath, this, null, matchEvent, optionalTriggeringEvent, matchEventInclusive);
+                conditionPath,
+                this,
+                null,
+                matchEvent,
+                optionalTriggeringEvent,
+                matchEventInclusive);
         }
 
         public class ConditionPatternMatchCallback : PatternMatchCallback

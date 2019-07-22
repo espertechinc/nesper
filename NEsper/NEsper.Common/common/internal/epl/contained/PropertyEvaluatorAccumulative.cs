@@ -9,6 +9,7 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.compat.collections;
@@ -85,7 +86,9 @@ namespace com.espertech.esper.common.@internal.epl.contained
                             foreach (var theEvent in fragments) {
                                 eventsPerStream[level + 1] = theEvent;
                                 if (ExprNodeUtilityEvaluate.ApplyFilterExpression(
-                                    whereClauses[level], eventsPerStream, exprEvaluatorContext)) {
+                                    whereClauses[level],
+                                    eventsPerStream,
+                                    exprEvaluatorContext)) {
                                     var eventsPerRow = new EventBean[levels];
                                     Array.Copy(eventsPerStream, 0, eventsPerRow, 0, levels);
                                     events.Add(eventsPerRow);
@@ -106,7 +109,9 @@ namespace com.espertech.esper.common.@internal.epl.contained
                             foreach (var next in fragments) {
                                 eventsPerStream[level + 1] = next;
                                 if (ExprNodeUtilityEvaluate.ApplyFilterExpression(
-                                    whereClauses[level], eventsPerStream, exprEvaluatorContext)) {
+                                    whereClauses[level],
+                                    eventsPerStream,
+                                    exprEvaluatorContext)) {
                                     PopulateEvents(eventsPerStream, next, level + 1, events, exprEvaluatorContext);
                                 }
                             }
@@ -125,7 +130,9 @@ namespace com.espertech.esper.common.@internal.epl.contained
                         if (whereClauses[level] != null) {
                             eventsPerStream[level + 1] = fragment;
                             if (ExprNodeUtilityEvaluate.ApplyFilterExpression(
-                                whereClauses[level], eventsPerStream, exprEvaluatorContext)) {
+                                whereClauses[level],
+                                eventsPerStream,
+                                exprEvaluatorContext)) {
                                 var eventsPerRow = new EventBean[levels];
                                 Array.Copy(eventsPerStream, 0, eventsPerRow, 0, levels);
                                 events.Add(eventsPerRow);
@@ -142,7 +149,9 @@ namespace com.espertech.esper.common.@internal.epl.contained
                         if (whereClauses[level] != null) {
                             eventsPerStream[level + 1] = fragment;
                             if (ExprNodeUtilityEvaluate.ApplyFilterExpression(
-                                whereClauses[level], eventsPerStream, exprEvaluatorContext)) {
+                                whereClauses[level],
+                                eventsPerStream,
+                                exprEvaluatorContext)) {
                                 PopulateEvents(eventsPerStream, fragment, level + 1, events, exprEvaluatorContext);
                             }
                         }
@@ -161,7 +170,10 @@ namespace com.espertech.esper.common.@internal.epl.contained
                     "Unexpected error evaluating property expression for event of type '" +
                     branch.EventType.Name +
                     "' and property '" +
-                    propertyNames[level + 1] + "': " + ex.Message, ex);
+                    propertyNames[level + 1] +
+                    "': " +
+                    ex.Message,
+                    ex);
             }
         }
     }

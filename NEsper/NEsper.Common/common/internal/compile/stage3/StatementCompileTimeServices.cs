@@ -110,10 +110,14 @@ namespace com.espertech.esper.common.@internal.compile.stage3
         public DataFlowCompileTimeRegistry DataFlowCompileTimeRegistry => services.DataFlowCompileTimeRegistry;
 
         public StatementSpecMapEnv StatementSpecMapEnv => new StatementSpecMapEnv(
-            services.ImportServiceCompileTime, services.VariableCompileTimeResolver,
+            services.ImportServiceCompileTime,
+            services.VariableCompileTimeResolver,
             services.Configuration,
-            services.ExprDeclaredCompileTimeResolver, services.ContextCompileTimeResolver,
-            services.TableCompileTimeResolver, services.ScriptCompileTimeResolver, services.CompilerServices);
+            services.ExprDeclaredCompileTimeResolver,
+            services.ContextCompileTimeResolver,
+            services.TableCompileTimeResolver,
+            services.ScriptCompileTimeResolver,
+            services.CompilerServices);
 
         public bool IsInstrumented => services.IsInstrumented();
 

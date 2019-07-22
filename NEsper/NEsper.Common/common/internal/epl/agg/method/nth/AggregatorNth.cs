@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.core;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -16,6 +17,7 @@ using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.serde;
 using com.espertech.esper.compat.function;
 using com.espertech.esper.compat.io;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionRelational.
     CodegenRelational;
@@ -43,7 +45,13 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.nth
             bool hasFilter,
             ExprNode optionalFilter)
             : base(
-                factory, col, rowCtor, membersColumnized, classScope, optionalDistinctValueType, hasFilter,
+                factory,
+                col,
+                rowCtor,
+                membersColumnized,
+                classScope,
+                optionalDistinctValueType,
+                hasFilter,
                 optionalFilter)
         {
             this.factory = factory;
@@ -111,8 +119,15 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.nth
             CodegenClassScope classScope)
         {
             method.Block.StaticMethod(
-                GetType(), "write", output, unitKey, writer, serdeValue, RowDotRef(row, circularBuffer),
-                RowDotRef(row, numDataPoints), RowDotRef(row, currentBufferElementPointer),
+                GetType(),
+                "Write",
+                output,
+                unitKey,
+                writer,
+                serdeValue,
+                RowDotRef(row, circularBuffer),
+                RowDotRef(row, numDataPoints),
+                RowDotRef(row, currentBufferElementPointer),
                 Constant(factory.SizeOfBuf));
         }
 
@@ -126,12 +141,13 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.nth
         {
             CodegenExpressionRef state = RefCol("state", col);
             method.Block
-                .DeclareVar(
-                    typeof(AggregationNthState), state.Ref,
-                    StaticMethod(GetType(), "read", input, unitKey, serdeValue, Constant(factory.SizeOfBuf)))
+                .DeclareVar<AggregationNthState>(
+                    state.Ref,
+                    StaticMethod(GetType(), "Read", input, unitKey, serdeValue, Constant(factory.SizeOfBuf)))
                 .AssignRef(RowDotRef(row, circularBuffer), ExprDotMethod(state, "getCircularBuffer"))
                 .AssignRef(
-                    RowDotRef(row, currentBufferElementPointer), ExprDotMethod(state, "getCurrentBufferElementPointer"))
+                    RowDotRef(row, currentBufferElementPointer),
+                    ExprDotMethod(state, "getCurrentBufferElementPointer"))
                 .AssignRef(RowDotRef(row, numDataPoints), ExprDotMethod(state, "getNumDataPoints"));
         }
 
@@ -141,7 +157,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.nth
         {
             var sizeBuf = Constant(factory.SizeOfBuf);
             method.Block.IfRefNullReturnNull(circularBuffer)
-                .DeclareVar(typeof(int), "index", Op(Op(currentBufferElementPointer, "+", sizeBuf), "%", sizeBuf))
+                .DeclareVar<int>("index", Op(Op(currentBufferElementPointer, "+", sizeBuf), "%", sizeBuf))
                 .MethodReturn(ArrayAtIndex(circularBuffer, Ref("index")));
         }
 
@@ -212,7 +228,8 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.nth
         private Consumer<CodegenBlock> ClearCode()
         {
             return block => {
-                block.AssignRef(circularBuffer, NewArrayByLength(typeof(object), Constant(factory.SizeOfBuf)))
+                block
+                    .AssignRef(circularBuffer, NewArrayByLength(typeof(object), Constant(factory.SizeOfBuf)))
                     .AssignRef(numDataPoints, Constant(0))
                     .AssignRef(currentBufferElementPointer, Constant(0));
             };
@@ -235,11 +252,12 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.nth
         protected void ApplyEvalLeaveNonNull(CodegenMethod method)
         {
             method.Block.IfCondition(Relational(Constant(factory.SizeOfBuf), GT, numDataPoints))
-                .DeclareVar(typeof(int), "diff", Op(Constant(factory.SizeOfBuf), "-", Cast(typeof(int), numDataPoints)))
-                .DeclareVar(
-                    typeof(int), "index",
+                .DeclareVar<int>("diff", Op(Constant(factory.SizeOfBuf), "-", Cast(typeof(int), numDataPoints)))
+                .DeclareVar<int>(
+                    "index",
                     Op(
-                        Op(Op(currentBufferElementPointer, "+", Ref("diff")), "-", Constant(1)), "%",
+                        Op(Op(currentBufferElementPointer, "+", Ref("diff")), "-", Constant(1)),
+                        "%",
                         Constant(factory.SizeOfBuf)))
                 .AssignArrayElement(circularBuffer, Ref("index"), ConstantNull())
                 .BlockEnd()

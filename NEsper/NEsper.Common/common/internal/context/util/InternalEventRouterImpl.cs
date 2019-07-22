@@ -11,6 +11,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.annotation;
 using com.espertech.esper.common.@internal.context.aifactory.update;
@@ -76,7 +77,10 @@ namespace com.espertech.esper.common.@internal.context.util
             bool addToFront)
         {
             Route(
-                theEvent, agentInstanceContext.StatementContext.EpStatementHandle, agentInstanceContext.InternalEventRouteDest, agentInstanceContext,
+                theEvent,
+                agentInstanceContext.StatementContext.EpStatementHandle,
+                agentInstanceContext.InternalEventRouteDest,
+                agentInstanceContext,
                 addToFront);
         }
 
@@ -101,7 +105,10 @@ namespace com.espertech.esper.common.@internal.context.util
                 return;
             }
 
-            EventBean preprocessed = GetPreprocessedEvent(theEvent, exprEvaluatorContext, exprEvaluatorContext.InstrumentationProvider);
+            EventBean preprocessed = GetPreprocessedEvent(
+                theEvent,
+                exprEvaluatorContext,
+                exprEvaluatorContext.InstrumentationProvider);
             if (preprocessed != null) {
                 if (insertIntoListener != null) {
                     bool route = insertIntoListener.Inserted(theEvent, statementHandle);
@@ -125,7 +132,10 @@ namespace com.espertech.esper.common.@internal.context.util
                 descriptors.Put(
                     internalEventRouterDesc,
                     new IRDescEntry(
-                        internalEventRouterDesc, outputView, agentInstanceLock, hasSubselect,
+                        internalEventRouterDesc,
+                        outputView,
+                        agentInstanceLock,
+                        hasSubselect,
                         internalEventRouterDesc.OptionalWhereClauseEval));
 
                 // remove all preprocessors for this type as well as any known child types, forcing re-init on next use
@@ -233,16 +243,19 @@ namespace com.espertech.esper.common.@internal.context.util
                 EventBeanWriter writer = eventTypeSPI.GetWriter(entry.Key.Properties);
                 desc.Add(
                     new InternalEventRouterEntry(
-                        priority, isDrop,
+                        priority,
+                        isDrop,
                         entry.Value.OptionalWhereClauseEvaluator,
-                        entry.Key.Assignments, writer,
+                        entry.Key.Assignments,
+                        writer,
                         entry.Value.Wideners,
                         entry.Value.OutputView,
                         entry.Value.AgentInstanceLock,
                         entry.Value.HasSubselect));
             }
 
-            EventBeanCopyMethodForge copyMethodForge = eventTypeSPI.GetCopyMethodForge(eventPropertiesWritten.ToArray());
+            EventBeanCopyMethodForge copyMethodForge =
+                eventTypeSPI.GetCopyMethodForge(eventPropertiesWritten.ToArray());
             if (copyMethodForge == null) {
                 return new NullableObject<InternalEventRouterPreprocessor>(null);
             }

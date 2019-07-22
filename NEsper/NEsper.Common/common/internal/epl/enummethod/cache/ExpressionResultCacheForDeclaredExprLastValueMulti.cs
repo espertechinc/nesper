@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.@event.core;
@@ -77,7 +78,9 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.cache
             else {
                 buf = cacheRef.Get();
                 if (buf == null) {
-                    buf = new RollingTwoValueBuffer<EventBean[], object>(new EventBean[cacheSize][], new object[cacheSize]);
+                    buf = new RollingTwoValueBuffer<EventBean[], object>(
+                        new EventBean[cacheSize][],
+                        new object[cacheSize]);
                     cache.Put(node, new SoftReference<RollingTwoValueBuffer<EventBean[], object>>(buf));
                 }
             }

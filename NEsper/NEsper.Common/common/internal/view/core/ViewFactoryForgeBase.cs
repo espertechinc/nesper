@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -16,6 +17,7 @@ using com.espertech.esper.common.@internal.context.module;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.compat;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.view.core
@@ -50,10 +52,14 @@ namespace com.espertech.esper.common.@internal.view.core
             var factory = Ref("factory");
             method.Block
                 .DeclareVar(
-                    TypeOfFactory(), factory.Ref,
+                    TypeOfFactory(),
+                    factory.Ref,
                     ExprDotMethodChain(symbols.GetAddInitSvc(method))
-                        .Add(EPStatementInitServicesConstants.GETVIEWFACTORYSERVICE).Add(FactoryMethod()))
-                .SetProperty(factory, "EventType",
+                        .Add(EPStatementInitServicesConstants.GETVIEWFACTORYSERVICE)
+                        .Add(FactoryMethod()))
+                .SetProperty(
+                    factory,
+                    "EventType",
                     EventTypeUtility.ResolveTypeCodegen(eventType, EPStatementInitServicesConstants.REF));
 
             Assign(method, factory, symbols, classScope);

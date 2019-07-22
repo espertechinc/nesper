@@ -82,11 +82,9 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
         ///     Returns the type of the underlying method or field of the event property.
         /// </summary>
         /// <value>return type</value>
-        public Type ReturnType
-        {
+        public Type ReturnType {
             get {
-                if (ReadMethod != null)
-                {
+                if (ReadMethod != null) {
                     return ReadMethod.ReturnType;
                 }
 
@@ -98,8 +96,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
         /// Gets the declaring type for the property.
         /// </summary>
         /// <value>The type of the declaring.</value>
-        public Type DeclaringType
-        {
+        public Type DeclaringType {
             get {
                 if (ReadMethod != null) {
                     return ReadMethod.DeclaringType;
@@ -117,17 +114,17 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
         ///     Returns the type of the underlying method or field of the event property.
         /// </summary>
         /// <value>return type</value>
-        public GenericPropertyDesc ReturnTypeGeneric
-        {
+        public GenericPropertyDesc ReturnTypeGeneric {
             get {
-                if (ReadMethod != null)
-                {
+                if (ReadMethod != null) {
                     return new GenericPropertyDesc(
-                        ReadMethod.ReturnType, TypeHelper.GetGenericReturnType(ReadMethod, true));
+                        ReadMethod.ReturnType,
+                        TypeHelper.GetGenericReturnType(ReadMethod, true));
                 }
 
                 return new GenericPropertyDesc(
-                    AccessorField.FieldType, TypeHelper.GetGenericFieldType(AccessorField, true));
+                    AccessorField.FieldType,
+                    TypeHelper.GetGenericFieldType(AccessorField, true));
             }
         }
 
@@ -165,7 +162,6 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
         /// <exception cref="T:System.NullReferenceException">
         /// The <paramref name="obj"/> parameter is null.
         /// </exception>
-
         public override bool Equals(object obj)
         {
             if (ReferenceEquals(null, obj))
@@ -179,8 +175,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
 
         public override int GetHashCode()
         {
-            unchecked
-            {
+            unchecked {
                 int result = (PropertyName != null ? PropertyName.GetHashCode() : 0);
                 result = (result * 397) ^ (ReadMethod != null ? ReadMethod.GetHashCode() : 0);
                 result = (result * 397) ^ (AccessorField != null ? AccessorField.GetHashCode() : 0);

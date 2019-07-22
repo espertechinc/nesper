@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -15,6 +16,7 @@ using com.espertech.esper.common.@internal.epl.resultset.@select.core;
 using com.espertech.esper.common.@internal.epl.table.core;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat.collections;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
@@ -40,7 +42,8 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            var size = context.ExprForges.Length + namedStreams.Count +
+            var size = context.ExprForges.Length +
+                       namedStreams.Count +
                        (isUsingWildcard && context.NumStreams > 1 ? context.NumStreams : 0);
 
             var methodNode = codegenMethodScope.MakeChild(typeof(EventBean), GetType(), codegenClassScope);
@@ -52,14 +55,20 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
                 ? StaticMethod(typeof(Collections), "emptyMap")
                 : NewInstance(typeof(Dictionary<object, object>), Constant(CollectionUtil.CapacityHashMap(size)));
             var block = methodNode.Block
-                .DeclareVar(typeof(IDictionary<object, object>), "props", init);
+                .DeclareVar<IDictionary<object, object>>("props", init);
             var count = 0;
             foreach (var forge in context.ExprForges) {
                 block.Expression(
                     ExprDotMethod(
-                        Ref("props"), "put", Constant(context.ColumnNames[count]),
+                        Ref("props"),
+                        "put",
+                        Constant(context.ColumnNames[count]),
                         CodegenLegoMayVoid.ExpressionMayVoid(
-                            typeof(object), forge, methodNode, exprSymbol, codegenClassScope)));
+                            typeof(object),
+                            forge,
+                            methodNode,
+                            exprSymbol,
+                            codegenClassScope)));
                 count++;
             }
 
@@ -67,7 +76,9 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
                 var theEvent = ArrayAtIndex(refEPS, Constant(element.StreamNumber));
                 if (element.TableMetadata != null) {
                     var eventToPublic = TableDeployTimeResolver.MakeTableEventToPublicField(
-                        element.TableMetadata, codegenClassScope, GetType());
+                        element.TableMetadata,
+                        codegenClassScope,
+                        GetType());
                     theEvent = ExprDotMethod(eventToPublic, "convert", theEvent, refEPS, refIsNewData, refExprEvalCtx);
                 }
 
@@ -79,7 +90,9 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
                 for (var i = 0; i < context.NumStreams; i++) {
                     block.Expression(
                         ExprDotMethod(
-                            Ref("props"), "put", Constant(context.ColumnNames[count]),
+                            Ref("props"),
+                            "put",
+                            Constant(context.ColumnNames[count]),
                             ArrayAtIndex(refEPS, Constant(i))));
                     count++;
                 }
@@ -87,7 +100,12 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
 
             block.MethodReturn(
                 ProcessSpecificCodegen(
-                    resultEventType, eventBeanFactory, Ref("props"), methodNode, exprSymbol, codegenClassScope));
+                    resultEventType,
+                    eventBeanFactory,
+                    Ref("props"),
+                    methodNode,
+                    exprSymbol,
+                    codegenClassScope));
             return methodNode;
         }
 

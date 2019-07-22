@@ -11,6 +11,7 @@ using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.@join.querygraph;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.historical.lookupstrategy
@@ -44,22 +45,30 @@ namespace com.espertech.esper.common.@internal.epl.historical.lookupstrategy
         {
             var method = parent.MakeChild(typeof(HistoricalIndexLookupStrategyComposite), GetType(), classScope);
 
-            method.Block.DeclareVar(
-                typeof(QueryGraphValueEntryRange[]), "rangeGetters",
+            method.Block.DeclareVar<QueryGraphValueEntryRange[]>(
+                "rangeGetters",
                 NewArrayByLength(typeof(QueryGraphValueEntryRange), Constant(ranges.Length)));
             for (var i = 0; i < ranges.Length; i++) {
                 method.Block.AssignArrayElement(
-                    Ref("rangeGetters"), Constant(i), ranges[i].Make(null, method, symbols, classScope));
+                    Ref("rangeGetters"),
+                    Constant(i),
+                    ranges[i].Make(null, method, symbols, classScope));
             }
 
             method.Block
-                .DeclareVar(
-                    typeof(HistoricalIndexLookupStrategyComposite), "strat",
+                .DeclareVar<HistoricalIndexLookupStrategyComposite>(
+                    "strat",
                     NewInstance(typeof(HistoricalIndexLookupStrategyComposite)))
                 .SetProperty(Ref("strat"), "LookupStream", Constant(lookupStream))
-                .SetProperty(Ref("strat"), "HashGetter",
+                .SetProperty(
+                    Ref("strat"),
+                    "HashGetter",
                     ExprNodeUtilityCodegen.CodegenEvaluatorMayMultiKeyWCoerce(
-                        evaluators, null, method, GetType(), classScope))
+                        evaluators,
+                        null,
+                        method,
+                        GetType(),
+                        classScope))
                 .SetProperty(Ref("strat"), "RangeProps", Ref("rangeGetters"))
                 .ExprDotMethod(Ref("strat"), "init")
                 .MethodReturn(Ref("strat"));

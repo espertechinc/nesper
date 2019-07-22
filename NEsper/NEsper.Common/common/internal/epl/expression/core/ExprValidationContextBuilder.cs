@@ -105,10 +105,19 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
         public ExprValidationContext Build()
         {
             return new ExprValidationContext(
-                _streamTypeService, _viewResourceDelegate, _contextDescriptor, _disablePropertyExpressionEventCollCache,
+                _streamTypeService,
+                _viewResourceDelegate,
+                _contextDescriptor,
+                _disablePropertyExpressionEventCollCache,
                 _allowRollupFunctions,
-                _allowBindingConsumption, _isResettingAggregations, _intoTableName, _isFilterExpression, _memberName,
-                _aggregationFutureNameAlreadySet, _statementRawInfo, _compileTimeServices);
+                _allowBindingConsumption,
+                _isResettingAggregations,
+                _intoTableName,
+                _isFilterExpression,
+                _memberName,
+                _aggregationFutureNameAlreadySet,
+                _statementRawInfo,
+                _compileTimeServices);
         }
     }
 } // end of namespace

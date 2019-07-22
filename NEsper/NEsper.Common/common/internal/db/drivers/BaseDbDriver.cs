@@ -16,6 +16,7 @@ using System.Runtime.Serialization;
 using System.Security.Permissions;
 using System.Text;
 using System.Threading;
+
 using com.espertech.esper.client.annotation;
 using com.espertech.esper.common.client.configuration.common;
 using com.espertech.esper.common.@internal.epl.historical.database.connection;
@@ -36,7 +37,8 @@ namespace com.espertech.esper.common.@internal.db.drivers
     /// developers to integrate their own database models.
     /// </summary>
     [Serializable]
-    public abstract class BaseDbDriver : DbDriver, ISerializable
+    public abstract class BaseDbDriver : DbDriver,
+        ISerializable
     {
         private const String SAMPLE_WHERECLAUSE_PLACEHOLDER = "$ESPER-SAMPLE-WHERE";
 
@@ -77,8 +79,7 @@ namespace com.espertech.esper.common.@internal.db.drivers
         /// Gets or sets the connection string.
         /// </summary>
         /// <value>The connection string.</value>
-        public virtual String ConnectionString
-        {
+        public virtual String ConnectionString {
             get => _connectionString;
             set => _connectionString = value;
         }
@@ -87,7 +88,9 @@ namespace com.espertech.esper.common.@internal.db.drivers
         {
         }
 
-        protected BaseDbDriver(SerializationInfo info, StreamingContext context)
+        protected BaseDbDriver(
+            SerializationInfo info,
+            StreamingContext context)
         {
             this._name = info.GetString("_name");
             this._connectionProperties = (Properties) info.GetValue("_connectionProperties", typeof(Properties));
@@ -110,7 +113,6 @@ namespace com.espertech.esper.common.@internal.db.drivers
         /// </summary>
         /// <param name="parameterIndex"></param>
         /// <returns></returns>
-
         protected delegate String PositionalToTextConverter(int parameterIndex);
 
         /// <summary>
@@ -136,15 +138,12 @@ namespace com.espertech.esper.common.@internal.db.drivers
         /// <summary>
         /// Gets the positional to text converter.
         /// </summary>
-        protected PositionalToTextConverter ParamToTextConverter
-        {
+        protected PositionalToTextConverter ParamToTextConverter {
             get {
-                if (UsePositionalParameters)
-                {
+                if (UsePositionalParameters) {
                     return PositionalToPositionalTextConverter;
                 }
-                else
-                {
+                else {
                     return PositionalToNamedTextConverter;
                 }
             }
@@ -162,7 +161,6 @@ namespace com.espertech.esper.common.@internal.db.drivers
         /// we keep around a strong reference that is swept on a regular
         /// interval.
         /// </summary>
-
         private readonly FastThreadStore<compat.WeakReference<DbConnection>> wdbConnection =
             new FastThreadStore<compat.WeakReference<DbConnection>>();
 
@@ -171,20 +169,20 @@ namespace com.espertech.esper.common.@internal.db.drivers
         /// referenced table.  The table allows us to reuse connections to
         /// database that are continually accessed on the same thread.
         /// </summary>
-
         [NonSerialized]
-        private static readonly Dictionary<DbConnection, long> sdbConnectionTable = new Dictionary<DbConnection, long>();
+        private static readonly Dictionary<DbConnection, long>
+            sdbConnectionTable = new Dictionary<DbConnection, long>();
 
         /// <summary>
         /// Periodically removes unused connections from the sdbConnectionTable
         /// and allows them to be reclaimed.
         /// </summary>
-
-        [NonSerialized]
-        private static Timer releaseTimer = null;
+        [NonSerialized] private static Timer releaseTimer = null;
 
         [SecurityPermission(SecurityAction.Demand, SerializationFormatter = true)]
-        public virtual void GetObjectData(SerializationInfo info, StreamingContext context)
+        public virtual void GetObjectData(
+            SerializationInfo info,
+            StreamingContext context)
         {
             info.AddValue("_name", this._name);
             info.AddValue("_connectionProperties", this._connectionProperties);
@@ -199,13 +197,10 @@ namespace com.espertech.esper.common.@internal.db.drivers
         {
             long touchPoint = Environment.TickCount - 15000;
 
-            lock (((ICollection) sdbConnectionTable).SyncRoot)
-            {
+            lock (((ICollection) sdbConnectionTable).SyncRoot) {
                 IList<DbConnection> termList = new List<DbConnection>();
-                foreach (var entry in sdbConnectionTable)
-                {
-                    if (entry.Value < touchPoint)
-                    {
+                foreach (var entry in sdbConnectionTable) {
+                    if (entry.Value < touchPoint) {
                         termList.Add(entry.Key);
                     }
                 }
@@ -213,8 +208,7 @@ namespace com.espertech.esper.common.@internal.db.drivers
                 // Remove strong references to any databases that have not
                 // been active since the touchPoint (expiry time).
 
-                foreach (var termPoint in termList)
-                {
+                foreach (var termPoint in termList) {
                     sdbConnectionTable.Remove(termPoint);
                 }
             }
@@ -224,7 +218,6 @@ namespace com.espertech.esper.common.@internal.db.drivers
         /// Factory method that is used to create instance of a connection.
         /// </summary>
         /// <returns></returns>
-
         public abstract DbConnection CreateConnection();
 
         /// <summary>
@@ -233,32 +226,27 @@ namespace com.espertech.esper.common.@internal.db.drivers
         /// by the BaseDbDriverCommand.
         /// </summary>
         /// <returns></returns>
-
         protected internal DbConnection CreateConnectionInternal()
         {
             DbConnection _dbConnection;
             var dbConnection = wdbConnection.Value;
             if ((dbConnection == null) ||
                 (dbConnection.IsDead) ||
-                (dbConnection.Target == null))
-            {
+                (dbConnection.Target == null)) {
                 _dbConnection = CreateConnection();
                 dbConnection = new compat.WeakReference<DbConnection>(_dbConnection);
                 ApplyConnectionOptions(_dbConnection);
                 wdbConnection.Value = dbConnection;
             }
-            else
-            {
+            else {
                 _dbConnection = dbConnection.Target;
             }
 
             // Enter the time of the last activity on the database
             // connection... i.e. touch the connection.
-            lock (((ICollection) sdbConnectionTable).SyncRoot)
-            {
+            lock (((ICollection) sdbConnectionTable).SyncRoot) {
                 sdbConnectionTable[_dbConnection] = Environment.TickCount;
-                if (releaseTimer == null)
-                {
+                if (releaseTimer == null) {
                     releaseTimer = new Timer(ReleaseConnections, null, 0L, 5000L);
                 }
             }
@@ -271,23 +259,25 @@ namespace com.espertech.esper.common.@internal.db.drivers
         /// </summary>
         /// <param name="connection">The connection.</param>
         /// <param name="isolationLevel">The isolation level.</param>
-        protected virtual void SetTransactionIsolation(DbConnection connection, IsolationLevel? isolationLevel)
+        protected virtual void SetTransactionIsolation(
+            DbConnection connection,
+            IsolationLevel? isolationLevel)
         {
-            try
-            {
-                if (isolationLevel != null)
-                {
+            try {
+                if (isolationLevel != null) {
                     // Begin a transaction to provide the proper isolation.  Need to ensure
                     // that the transaction is properly committed upon completion since we
                     // do not have auto-commit handled.
                     connection.BeginTransaction(isolationLevel.Value);
                 }
             }
-            catch (DbException ex)
-            {
+            catch (DbException ex) {
                 throw new DatabaseConfigException(
-                    "Error setting transaction isolation level to " + isolationLevel +
-                    " on connection with detail " + GetDetail(ex), ex);
+                    "Error setting transaction isolation level to " +
+                    isolationLevel +
+                    " on connection with detail " +
+                    GetDetail(ex),
+                    ex);
             }
         }
 
@@ -296,20 +286,22 @@ namespace com.espertech.esper.common.@internal.db.drivers
         /// </summary>
         /// <param name="connection">The connection.</param>
         /// <param name="catalog">The catalog.</param>
-        protected virtual void SetCatalog(DbConnection connection, String catalog)
+        protected virtual void SetCatalog(
+            DbConnection connection,
+            String catalog)
         {
-            try
-            {
-                if (catalog != null)
-                {
+            try {
+                if (catalog != null) {
                     connection.ChangeDatabase(catalog);
                 }
             }
-            catch (DbException ex)
-            {
+            catch (DbException ex) {
                 throw new DatabaseConfigException(
-                    "Error setting catalog to '" + catalog +
-                    "' on connection with detail " + GetDetail(ex), ex);
+                    "Error setting catalog to '" +
+                    catalog +
+                    "' on connection with detail " +
+                    GetDetail(ex),
+                    ex);
             }
         }
 
@@ -318,30 +310,34 @@ namespace com.espertech.esper.common.@internal.db.drivers
         /// </summary>
         /// <param name="connection">The connection.</param>
         /// <param name="useAutoCommit">The use auto commit.</param>
-        protected virtual void SetAutoCommit(DbConnection connection, bool? useAutoCommit)
+        protected virtual void SetAutoCommit(
+            DbConnection connection,
+            bool? useAutoCommit)
         {
-            try
-            {
-                if (useAutoCommit ?? false)
-                {
+            try {
+                if (useAutoCommit ?? false) {
                     throw new NotSupportedException("AutoCommit semantics not yet supported in this version");
                 }
             }
-            catch (DbException ex)
-            {
+            catch (DbException ex) {
                 throw new DatabaseConfigException(
-                    "Error setting auto-commit to " + useAutoCommit +
-                    " on connection with detail " + GetDetail(ex), ex);
+                    "Error setting auto-commit to " +
+                    useAutoCommit +
+                    " on connection with detail " +
+                    GetDetail(ex),
+                    ex);
             }
         }
 
         /// <summary> Method to set connection-level configuration settings.</summary>
-		/// <param name="connection">is the connection to set on
-		/// </param>
-		/// <param name="connectionSettings">are the settings to apply
-		/// </param>
-		/// <throws>  DatabaseConfigException is thrown if an DbException is thrown </throws>
-        protected virtual void ApplyConnectionOptions(DbConnection connection, ConnectionSettings connectionSettings)
+        /// <param name="connection">is the connection to set on
+        /// </param>
+        /// <param name="connectionSettings">are the settings to apply
+        /// </param>
+        /// <throws>  DatabaseConfigException is thrown if an DbException is thrown </throws>
+        protected virtual void ApplyConnectionOptions(
+            DbConnection connection,
+            ConnectionSettings connectionSettings)
         {
             SetTransactionIsolation(connection, connectionSettings.TransactionIsolation);
             SetCatalog(connection, connectionSettings.Catalog);
@@ -364,8 +360,10 @@ namespace com.espertech.esper.common.@internal.db.drivers
         public static String GetDetail(DbException ex)
         {
             return
-                "DbException: " + ex.Message +
-                " VendorError: " + ex.ErrorCode;
+                "DbException: " +
+                ex.Message +
+                " VendorError: " +
+                ex.ErrorCode;
         }
 
         #region DbDriver Members
@@ -386,12 +384,10 @@ namespace com.espertech.esper.common.@internal.db.drivers
 
             // Determine if we have a SQLTimeoutAttribute specified within this context.  If so,
             // it must be applied to the command timeout.
-            if (contextAttributes != null)
-            {
+            if (contextAttributes != null) {
                 var timeoutAttribute = (TimeoutAttribute) contextAttributes.FirstOrDefault(
                     contextAttribute => contextAttribute is TimeoutAttribute);
-                if (timeoutAttribute != null)
-                {
+                if (timeoutAttribute != null) {
                     dbCommandTimeout = timeoutAttribute.Value;
                 }
             }
@@ -404,18 +400,14 @@ namespace com.espertech.esper.common.@internal.db.drivers
             var buffer = new StringBuilder();
             // Counter for parameters
             var parameterCount = 0;
-            foreach (var fragment in sqlFragments)
-            {
-                if (!fragment.IsParameter)
-                {
+            foreach (var fragment in sqlFragments) {
+                if (!fragment.IsParameter) {
                     buffer.Append(fragment.Value);
                 }
-                else if (fragment.Value == SAMPLE_WHERECLAUSE_PLACEHOLDER)
-                {
+                else if (fragment.Value == SAMPLE_WHERECLAUSE_PLACEHOLDER) {
                     continue;
                 }
-                else
-                {
+                else {
                     var parameter = paramConverter.Invoke(parameterCount++);
                     // Add the parameter to the parameter list
                     parameters.Add(parameter);
@@ -438,8 +430,7 @@ namespace com.espertech.esper.common.@internal.db.drivers
         /// Gets or sets the properties for the driver.
         /// </summary>
         /// <value>The properties.</value>
-        public virtual Properties Properties
-        {
+        public virtual Properties Properties {
             get => _connectionProperties;
             set {
                 _connectionProperties = value;
@@ -448,24 +439,20 @@ namespace com.espertech.esper.common.@internal.db.drivers
                 // then use the other items in the properties to drive a connection string builder.
 
                 if (!_connectionProperties.TryGetValue("connectionString", out _connectionString) &&
-                    !_connectionProperties.TryGetValue("connection-string", out _connectionString))
-                {
+                    !_connectionProperties.TryGetValue("connection-string", out _connectionString)) {
                     // Create the connection string; to do so, we require a connection
                     // string builder.  These are native to every connection class and
                     // ADO.NET providers will provide them to you natively.  We require
                     // that the implementation class provide us with one of these.
                     var builder = CreateConnectionStringBuilder();
 
-                    foreach (var entry in _connectionProperties)
-                    {
+                    foreach (var entry in _connectionProperties) {
                         var ekey = entry.Key;
                         var evalue = entry.Value;
-                        if (String.Equals(ekey, "name", StringComparison.CurrentCultureIgnoreCase))
-                        {
+                        if (String.Equals(ekey, "name", StringComparison.CurrentCultureIgnoreCase)) {
                             _name = evalue;
                         }
-                        else
-                        {
+                        else {
                             builder.Add(ekey, evalue);
                         }
                     }

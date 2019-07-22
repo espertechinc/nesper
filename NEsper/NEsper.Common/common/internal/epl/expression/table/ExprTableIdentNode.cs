@@ -8,6 +8,7 @@
 
 using System;
 using System.IO;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -21,6 +22,7 @@ using com.espertech.esper.common.@internal.metrics.instrumentation;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.expression.table
@@ -83,10 +85,16 @@ namespace com.espertech.esper.common.@internal.epl.expression.table
             CodegenClassScope codegenClassScope)
         {
             CodegenMethod method = parent.MakeChild(requiredType, this.GetType(), codegenClassScope);
-            method.Block.DeclareVar(
-                typeof(object), "result", StaticMethod(
-                    typeof(ExprTableIdentNode), "tableColumnAggValue", Constant(streamNum), Constant(columnNum),
-                    symbols.GetAddEPS(method), symbols.GetAddIsNewData(method), symbols.GetAddExprEvalCtx(method)));
+            method.Block.DeclareVar<object>(
+                "result",
+                StaticMethod(
+                    typeof(ExprTableIdentNode),
+                    "tableColumnAggValue",
+                    Constant(streamNum),
+                    Constant(columnNum),
+                    symbols.GetAddEPS(method),
+                    symbols.GetAddIsNewData(method),
+                    symbols.GetAddExprEvalCtx(method)));
             if (requiredType == typeof(object)) {
                 method.Block.MethodReturn(@Ref("result"));
             }
@@ -103,7 +111,14 @@ namespace com.espertech.esper.common.@internal.epl.expression.table
             ExprForgeCodegenSymbol symbols,
             CodegenClassScope codegenClassScope)
         {
-            return new InstrumentationBuilderExpr(this.GetType(), this, "ExprTableSubproperty", requiredType, parent, symbols, codegenClassScope)
+            return new InstrumentationBuilderExpr(
+                    this.GetType(),
+                    this,
+                    "ExprTableSubproperty",
+                    requiredType,
+                    parent,
+                    symbols,
+                    codegenClassScope)
                 .Qparams(new CodegenExpression[] {Constant(tableMetadata.TableName), Constant(unresolvedPropertyName)})
                 .Build();
         }

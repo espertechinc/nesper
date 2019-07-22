@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+
 using com.espertech.esper.common.@internal.context.mgr;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.filterspec;
@@ -33,7 +34,8 @@ namespace com.espertech.esper.common.@internal.context.controller.condition
         {
             var classpathImportService = realization.AgentInstanceContextCreate.ImportServiceRuntime;
             return ScheduleComputeHelper.ComputeNextOccurance(
-                scheduleSpec, realization.AgentInstanceContextCreate.TimeProvider.Time,
+                scheduleSpec,
+                realization.AgentInstanceContextCreate.TimeProvider.Time,
                 classpathImportService.TimeZone,
                 classpathImportService.TimeAbacus);
         }

@@ -7,11 +7,13 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.compat;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.join.querygraph
@@ -54,14 +56,19 @@ namespace com.espertech.esper.common.@internal.epl.join.querygraph
         {
             var method = parent.MakeChild(typeof(QueryGraphValueEntryRange), GetType(), classScope);
             method.Block
-                .DeclareVar(
-                    typeof(ExprEvaluator), "expression",
+                .DeclareVar<ExprEvaluator>(
+                    "expression",
                     ExprNodeUtilityCodegen.CodegenEvaluatorWCoerce(
-                        Expression.Forge, optCoercionType, method, GetType(), classScope))
+                        Expression.Forge,
+                        optCoercionType,
+                        method,
+                        GetType(),
+                        classScope))
                 .MethodReturn(
                     NewInstance<QueryGraphValueEntryRangeRelOp>(
                         EnumValue(typeof(QueryGraphRangeEnum), type.GetName()),
-                        Ref("expression"), Constant(IsBetweenPart)));
+                        Ref("expression"),
+                        Constant(IsBetweenPart)));
             return LocalMethod(method);
         }
 
@@ -72,13 +79,14 @@ namespace com.espertech.esper.common.@internal.epl.join.querygraph
         {
             var method = parent.MakeChild(typeof(QueryGraphValueEntryRangeRelOp), GetType(), classScope);
             method.Block
-                .DeclareVar(
-                    typeof(ExprEvaluator), "expression",
+                .DeclareVar<ExprEvaluator>(
+                    "expression",
                     ExprNodeUtilityCodegen.CodegenEvaluatorNoCoerce(Expression.Forge, method, GetType(), classScope))
                 .MethodReturn(
                     NewInstance<QueryGraphValueEntryRangeRelOp>(
                         EnumValue(typeof(QueryGraphRangeEnum), type.GetName()),
-                        Ref("expression"), Constant(IsBetweenPart)));
+                        Ref("expression"),
+                        Constant(IsBetweenPart)));
             return LocalMethod(method);
         }
     }

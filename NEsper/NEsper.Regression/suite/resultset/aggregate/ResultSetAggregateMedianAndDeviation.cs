@@ -214,10 +214,10 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
                 var milestone = new AtomicLong();
 
                 var epl = "@Name('s0') select irstream Symbol," +
-                          "median(all price) as myMedian," +
-                          "median(distinct price) as myDistMedian," +
-                          "stddev(all price) as myStdev," +
-                          "avedev(all price) as myAvedev " +
+                          "median(all Price) as myMedian," +
+                          "median(distinct Price) as myDistMedian," +
+                          "stddev(all Price) as myStdev," +
+                          "avedev(all Price) as myAvedev " +
                           "from SupportMarketDataBean#length(5) " +
                           "where Symbol='DELL' or Symbol='IBM' or Symbol='GE' " +
                           "group by Symbol";
@@ -228,7 +228,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
                 // Test NaN sensitivity
                 env.UndeployAll();
 
-                epl = "@Name('s0') select stddev(price) as val from SupportMarketDataBean#length(3)";
+                epl = "@Name('s0') select stddev(Price) as val from SupportMarketDataBean#length(3)";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 SendEvent(env, "A", double.NaN);
@@ -283,10 +283,10 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
                 model = env.CopyMayFail(model);
 
                 var epl = "select irstream Symbol, " +
-                          "median(price) as myMedian, " +
-                          "median(distinct price) as myDistMedian, " +
-                          "stddev(price) as myStdev, " +
-                          "avedev(price) as myAvedev " +
+                          "median(Price) as myMedian, " +
+                          "median(distinct Price) as myDistMedian, " +
+                          "stddev(Price) as myStdev, " +
+                          "avedev(Price) as myAvedev " +
                           "from SupportBeanString#length(100) as one, " +
                           "SupportMarketDataBean#length(5) as two " +
                           "where (Symbol=\"DELL\" or Symbol=\"IBM\" or Symbol=\"GE\") " +
@@ -312,10 +312,10 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
             public void Run(RegressionEnvironment env)
             {
                 var epl = "@Name('s0') select irstream Symbol," +
-                          "median(price) as myMedian," +
-                          "median(distinct price) as myDistMedian," +
-                          "stddev(price) as myStdev," +
-                          "avedev(price) as myAvedev " +
+                          "median(Price) as myMedian," +
+                          "median(distinct Price) as myDistMedian," +
+                          "stddev(Price) as myStdev," +
+                          "avedev(Price) as myAvedev " +
                           "from SupportBeanString#length(100) as one, " +
                           "SupportMarketDataBean#length(5) as two " +
                           "where (Symbol='DELL' or Symbol='IBM' or Symbol='GE') " +

@@ -162,12 +162,10 @@ namespace com.espertech.esper.common.@internal.filterspec
         {
             var method = parent.MakeChild(typeof(FilterSpecParam), GetType(), classScope);
             method.Block
-                .DeclareVar(
-                    typeof(ExprFilterSpecLookupable),
+                .DeclareVar<ExprFilterSpecLookupable>(
                     "lookupable",
                     LocalMethod(lookupable.MakeCodegen(method, symbols, classScope)))
-                .DeclareVar(
-                    typeof(FilterOperator),
+                .DeclareVar<FilterOperator>(
                     "op",
                     EnumValue(typeof(FilterOperator), filterOperator.GetName()));
 
@@ -177,13 +175,12 @@ namespace com.espertech.esper.common.@internal.filterspec
                 Arrays.AsList<CodegenExpression>(Ref("lookupable"), Ref("op")));
             var getFilterValue = CodegenMethod.MakeParentNode(typeof(object), GetType(), classScope)
                 .AddParam(FilterSpecParam.GET_FILTER_VALUE_FP);
-            param.AddMethod("getFilterValue", getFilterValue);
+            param.AddMethod("GetFilterValue", getFilterValue);
             if (_inListConstantsOnly != null) {
                 getFilterValue.Block.MethodReturn(NewInstance<HashableMultiKey>(Constant(_inListConstantsOnly)));
             }
             else if (!_hasCollMapOrArray) {
-                getFilterValue.Block.DeclareVar(
-                    typeof(object[]),
+                getFilterValue.Block.DeclareVar<object[]>(
                     "values",
                     NewArrayByLength(typeof(object), Constant(_listOfValues.Count)));
                 for (var i = 0; i < _listOfValues.Count; i++) {
@@ -197,15 +194,14 @@ namespace com.espertech.esper.common.@internal.filterspec
                 getFilterValue.Block.MethodReturn(NewInstance<HashableMultiKey>(Ref("values")));
             }
             else {
-                getFilterValue.Block.DeclareVar(
-                    typeof(ArrayDeque<object>),
+                getFilterValue.Block.DeclareVar<ArrayDeque<object>>(
                     "values",
                     NewInstance<ArrayDeque<object>>(Constant(_listOfValues.Count)));
                 for (var i = 0; i < _listOfValues.Count; i++) {
                     var valueName = "value" + i;
                     var adderName = "adder" + i;
                     getFilterValue.Block
-                        .DeclareVar(typeof(object), valueName, _listOfValues[i].MakeCodegen(classScope, parent))
+                        .DeclareVar<object>(valueName, _listOfValues[i].MakeCodegen(classScope, parent))
                         .IfRefNotNull(valueName)
                         .DeclareVar(_adders[i].GetType(), adderName, EnumValue(_adders[i].GetType(), "INSTANCE"))
                         .ExprDotMethod(Ref(adderName), "add", Ref("values"), Ref(valueName))

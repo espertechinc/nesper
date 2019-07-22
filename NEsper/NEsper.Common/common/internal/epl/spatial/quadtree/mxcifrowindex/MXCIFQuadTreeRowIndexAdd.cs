@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.epl.index.hash;
 using com.espertech.esper.common.@internal.epl.spatial.quadtree.core;
@@ -285,7 +286,8 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxcifrowinde
             XYWHRectangleMultiType other)
         {
             return PropertyHashedEventTableUnique.HandleUniqueIndexViolation(
-                indexName, "(" + other.X + "," + other.Y + "," + other.W + "," + other.H + ")");
+                indexName,
+                "(" + other.X + "," + other.Y + "," + other.W + "," + other.H + ")");
         }
     }
 } // end of namespace

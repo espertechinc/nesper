@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client.configuration;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.settings;
@@ -37,7 +38,8 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
             }
 
             return new BeanEventTypeStemService(
-                publicClassToTypeNames, eventBeanTypedEventFactory,
+                publicClassToTypeNames,
+                eventBeanTypedEventFactory,
                 configurationSnapshot.Common.EventMeta.ClassPropertyResolutionStyle,
                 configurationSnapshot.Common.EventMeta.DefaultAccessorStyle);
         }

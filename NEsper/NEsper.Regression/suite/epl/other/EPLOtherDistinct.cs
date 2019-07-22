@@ -423,7 +423,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
         {
             public void Run(RegressionEnvironment env)
             {
-                string[] fields = {"id"};
+                string[] fields = {"Id"};
                 var statementText = "@Name('s0') select distinct * from SupportBean_A#keepall";
                 env.CompileDeploy(statementText).AddListener("s0");
 

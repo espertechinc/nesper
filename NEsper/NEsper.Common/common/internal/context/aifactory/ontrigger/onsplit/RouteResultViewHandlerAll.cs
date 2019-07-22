@@ -27,7 +27,12 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.onspl
             ResultSetProcessor[] processors,
             AgentInstanceContext agentInstanceContext)
             : base(
-                epStatementHandle, internalEventRouter, tableStateInstances, items, processors, agentInstanceContext)
+                epStatementHandle,
+                internalEventRouter,
+                tableStateInstances,
+                items,
+                processors,
+                agentInstanceContext)
         {
         }
 
@@ -50,7 +55,8 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.onspl
                 else {
                     // handle contained-event evaluation
                     var containeds = currentItem.PropertyEvaluator.GetProperty(
-                        eventsPerStream[0], exprEvaluatorContext);
+                        eventsPerStream[0],
+                        exprEvaluatorContext);
                     if (containeds == null || containeds.Length == 0) {
                         continue;
                     }

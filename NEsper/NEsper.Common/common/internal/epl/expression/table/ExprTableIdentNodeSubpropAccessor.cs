@@ -97,9 +97,13 @@ namespace com.espertech.esper.common.@internal.epl.expression.table
             var reader = classScope.AddOrGetFieldSharable(
                 new AggregationTableAccessAggReaderCodegenField(_tableAccessDesc.Reader, classScope, GetType()));
             return StaticMethod(
-                typeof(ExprTableIdentNodeSubpropAccessor), "evaluateTableWithReaderCollectionEvents",
-                Constant(_streamNum), reader,
-                Constant(_tableAccessColumn.Column), symbols.GetAddEPS(parent), symbols.GetAddIsNewData(parent),
+                typeof(ExprTableIdentNodeSubpropAccessor),
+                "evaluateTableWithReaderCollectionEvents",
+                Constant(_streamNum),
+                reader,
+                Constant(_tableAccessColumn.Column),
+                symbols.GetAddEPS(parent),
+                symbols.GetAddIsNewData(parent),
                 symbols.GetAddExprEvalCtx(parent));
         }
 
@@ -120,9 +124,13 @@ namespace com.espertech.esper.common.@internal.epl.expression.table
             var reader = classScope.AddOrGetFieldSharable(
                 new AggregationTableAccessAggReaderCodegenField(_tableAccessDesc.Reader, classScope, GetType()));
             return StaticMethod(
-                typeof(ExprTableIdentNodeSubpropAccessor), "evaluateTableWithReaderCollectionScalar",
-                Constant(_streamNum), reader,
-                Constant(_tableAccessColumn.Column), symbols.GetAddEPS(parent), symbols.GetAddIsNewData(parent),
+                typeof(ExprTableIdentNodeSubpropAccessor),
+                "evaluateTableWithReaderCollectionScalar",
+                Constant(_streamNum),
+                reader,
+                Constant(_tableAccessColumn.Column),
+                symbols.GetAddEPS(parent),
+                symbols.GetAddIsNewData(parent),
                 symbols.GetAddExprEvalCtx(parent));
         }
 
@@ -158,9 +166,15 @@ namespace com.espertech.esper.common.@internal.epl.expression.table
             var reader = classScope.AddOrGetFieldSharable(
                 new AggregationTableAccessAggReaderCodegenField(_tableAccessDesc.Reader, classScope, GetType()));
             return CodegenLegoCast.CastSafeFromObjectType(
-                requiredType, StaticMethod(
-                    typeof(ExprTableIdentNodeSubpropAccessor), "evaluateTableWithReader", Constant(_streamNum), reader,
-                    Constant(_tableAccessColumn.Column), symbols.GetAddEPS(parent), symbols.GetAddIsNewData(parent),
+                requiredType,
+                StaticMethod(
+                    typeof(ExprTableIdentNodeSubpropAccessor),
+                    "evaluateTableWithReader",
+                    Constant(_streamNum),
+                    reader,
+                    Constant(_tableAccessColumn.Column),
+                    symbols.GetAddEPS(parent),
+                    symbols.GetAddIsNewData(parent),
                     symbols.GetAddExprEvalCtx(parent)));
         }
 
@@ -185,8 +199,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.table
 
         public override ExprNode Validate(ExprValidationContext validationContext)
         {
-            if (_tableAccessColumn.IsMethodAgg)
-            {
+            if (_tableAccessColumn.IsMethodAgg) {
                 throw new ExprValidationException("Invalid combination of aggregation state and aggregation accessor");
             }
 
@@ -198,8 +211,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.table
 
         public override void ToPrecedenceFreeEPL(TextWriter writer)
         {
-            if (_optionalStreamName != null)
-            {
+            if (_optionalStreamName != null) {
                 writer.Write(_optionalStreamName);
                 writer.Write(".");
             }
@@ -235,8 +247,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.table
             ExprEvaluatorContext exprEvaluatorContext)
         {
             var @event = eventsPerStream[streamNum];
-            if (@event == null)
-            {
+            if (@event == null) {
                 return null;
             }
 
@@ -263,8 +274,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.table
             ExprEvaluatorContext exprEvaluatorContext)
         {
             var @event = eventsPerStream[streamNum];
-            if (@event == null)
-            {
+            if (@event == null) {
                 return null;
             }
 
@@ -293,8 +303,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.table
             ExprEvaluatorContext exprEvaluatorContext)
         {
             var @event = eventsPerStream[streamNum];
-            if (@event == null)
-            {
+            if (@event == null) {
                 return null;
             }
 

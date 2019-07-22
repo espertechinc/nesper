@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.compile.stage3;
@@ -19,6 +20,7 @@ using com.espertech.esper.common.@internal.epl.pattern.core;
 using com.espertech.esper.common.@internal.schedule;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.pattern.guard
@@ -42,8 +44,8 @@ namespace com.espertech.esper.common.@internal.epl.pattern.guard
             MatchedEventConvertorForge convertor,
             StatementCompileTimeServices services)
         {
-            var message = "Timer-within-or-max-count guard requires two parameters: "
-                          + "numeric or time period parameter and an integer-value expression parameter";
+            var message = "Timer-within-or-max-count guard requires two parameters: " +
+                          "numeric or time period parameter and an integer-value expression parameter";
 
             if (parameters.Count != 2) {
                 throw new GuardParameterException(message);
@@ -80,7 +82,11 @@ namespace com.espertech.esper.common.@internal.epl.pattern.guard
 
             var method = parent.MakeChild(typeof(TimerWithinOrMaxCountGuardFactory), GetType(), classScope);
             var patternDelta = PatternDeltaComputeUtil.MakePatternDeltaAnonymous(
-                timeExpr, convertor, timeAbacus, method, classScope);
+                timeExpr,
+                convertor,
+                timeAbacus,
+                method,
+                classScope);
 
             CodegenExpression convertorExpr;
             if (numCountToExpr.Forge.ForgeConstantType.IsCompileTimeConstant) {
@@ -88,18 +94,24 @@ namespace com.espertech.esper.common.@internal.epl.pattern.guard
             }
             else {
                 convertorExpr = ExprNodeUtilityCodegen.CodegenEvaluator(
-                    numCountToExpr.Forge, method, GetType(), classScope);
+                    numCountToExpr.Forge,
+                    method,
+                    GetType(),
+                    classScope);
             }
 
             method.Block
-                .DeclareVar(
-                    typeof(TimerWithinOrMaxCountGuardFactory), "factory",
+                .DeclareVar<TimerWithinOrMaxCountGuardFactory>(
+                    "factory",
                     ExprDotMethodChain(symbols.GetAddInitSvc(method))
-                        .Add(EPStatementInitServicesConstants.GETPATTERNFACTORYSERVICE).Add("guardTimerWithinOrMax"))
+                        .Add(EPStatementInitServicesConstants.GETPATTERNFACTORYSERVICE)
+                        .Add("guardTimerWithinOrMax"))
                 .SetProperty(Ref("factory"), "ScheduleCallbackId", Constant(scheduleCallbackId))
                 .SetProperty(Ref("factory"), "DeltaCompute", patternDelta)
                 .SetProperty(Ref("factory"), "OptionalConvertor", convertorExpr)
-                .SetProperty(Ref("factory"), "CountEval",
+                .SetProperty(
+                    Ref("factory"),
+                    "CountEval",
                     ExprNodeUtilityCodegen.CodegenEvaluator(numCountToExpr.Forge, method, GetType(), classScope))
                 .MethodReturn(Ref("factory"));
             return LocalMethod(method);

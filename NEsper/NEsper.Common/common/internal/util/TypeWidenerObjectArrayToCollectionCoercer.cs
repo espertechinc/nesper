@@ -43,7 +43,8 @@ namespace com.espertech.esper.common.@internal.util
         {
             return CodegenExpressionBuilder.StaticMethod(
                 typeof(TypeWidenerObjectArrayToCollectionCoercer),
-                "WidenInput", expression);
+                "WidenInput",
+                expression);
         }
 
         /// <summary>

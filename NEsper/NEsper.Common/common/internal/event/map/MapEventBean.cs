@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.@event.core;
 
@@ -88,7 +89,8 @@ namespace com.espertech.esper.common.@internal.@event.map
         public override string ToString()
         {
             return "MapEventBean " +
-                   "eventType=" + EventType;
+                   "eventType=" +
+                   EventType;
         }
     }
 } // end of namespace

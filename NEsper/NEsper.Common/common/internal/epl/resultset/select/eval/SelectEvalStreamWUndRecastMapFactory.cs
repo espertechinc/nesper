@@ -8,6 +8,7 @@
 
 using System.Collections.Generic;
 using System.Linq;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -19,6 +20,7 @@ using com.espertech.esper.common.@internal.@event.map;
 using com.espertech.esper.common.@internal.settings;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat.collections;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
@@ -39,7 +41,9 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
 
             // (A) fully assignment-compatible: same number, name and type of fields, no additional expressions: Straight repackage
             var typeSameMssage = BaseNestableEventType.IsDeepEqualsProperties(
-                mapResultType.Name, mapResultType.Types, mapStreamType.Types);
+                mapResultType.Name,
+                mapResultType.Types,
+                mapStreamType.Types);
             if (typeSameMssage == null && selectExprForgeContext.ExprForges.Length == 0) {
                 return new MapInsertProcessorSimpleRepackage(selectExprForgeContext, streamNumber, targetType);
             }
@@ -59,7 +63,11 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
                     var setTwoType = mapResultType.Types.Get(propertyName);
                     var setTwoTypeFound = mapResultType.Types.ContainsKey(propertyName);
                     var message = BaseNestableEventUtil.ComparePropType(
-                        propertyName, setOneType, setTwoType, setTwoTypeFound, mapResultType.Name);
+                        propertyName,
+                        setOneType,
+                        setTwoType,
+                        setTwoTypeFound,
+                        mapResultType.Name);
                     if (message != null) {
                         throw new ExprValidationException(message.Message, message);
                     }
@@ -85,7 +93,11 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
                     var widener = TypeWidenerFactory.GetCheckPropertyAssignType(
                         ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(exprNode),
                         exprNode.Forge.EvaluationType,
-                        writable.PropertyType, columnName, false, null, statementName);
+                        writable.PropertyType,
+                        columnName,
+                        false,
+                        null,
+                        statementName);
                     items.Add(new Item(count, null, exprNode.Forge, widener));
                     written.Add(writable);
                     count++;
@@ -101,7 +113,10 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
             try {
                 manufacturer = EventTypeUtility.GetManufacturer(
                     mapResultType,
-                    written.ToArray(), importService, true, null);
+                    written.ToArray(),
+                    importService,
+                    true,
+                    null);
             }
             catch (EventBeanManufactureException e) {
                 throw new ExprValidationException("Failed to write to type: " + e.Message, e);
@@ -188,29 +203,40 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
                 CodegenClassScope codegenClassScope)
             {
                 var manufacturerField = codegenClassScope.AddFieldUnshared(
-                    true, typeof(EventBeanManufacturer), manufacturer.Make(codegenMethodScope, codegenClassScope));
+                    true,
+                    typeof(EventBeanManufacturer),
+                    manufacturer.Make(codegenMethodScope, codegenClassScope));
                 var methodNode = codegenMethodScope.MakeChild(typeof(EventBean), GetType(), codegenClassScope);
                 var refEPS = exprSymbol.GetAddEPS(methodNode);
                 var block = methodNode.Block
-                    .DeclareVar(
-                        typeof(MappedEventBean), "theEvent",
+                    .DeclareVar<MappedEventBean>(
+                        "theEvent",
                         Cast(typeof(MappedEventBean), ArrayAtIndex(refEPS, Constant(underlyingStreamNumber))))
-                    .DeclareVar(typeof(object[]), "props", NewArrayByLength(typeof(object), Constant(items.Length)));
+                    .DeclareVar<object[]>("props", NewArrayByLength(typeof(object), Constant(items.Length)));
                 foreach (Item item in items) {
                     CodegenExpression value;
                     if (item.OptionalPropertyName != null) {
-                        value = ExprDotMethodChain(Ref("theEvent")).Add("getProperties").Add(
-                            "get", Constant(item.OptionalPropertyName));
+                        value = ExprDotMethodChain(Ref("theEvent"))
+                            .Add("getProperties")
+                            .Add(
+                                "get",
+                                Constant(item.OptionalPropertyName));
                     }
                     else {
                         if (item.OptionalWidener != null) {
                             value = item.Forge.EvaluateCodegen(
-                                item.Forge.EvaluationType, methodNode, exprSymbol, codegenClassScope);
+                                item.Forge.EvaluationType,
+                                methodNode,
+                                exprSymbol,
+                                codegenClassScope);
                             value = item.OptionalWidener.WidenCodegen(value, methodNode, codegenClassScope);
                         }
                         else {
                             value = item.Forge.EvaluateCodegen(
-                                typeof(object), methodNode, exprSymbol, codegenClassScope);
+                                typeof(object),
+                                methodNode,
+                                exprSymbol,
+                                codegenClassScope);
                         }
                     }
 

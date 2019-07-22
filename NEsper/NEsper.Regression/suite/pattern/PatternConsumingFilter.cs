@@ -58,7 +58,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
             {
                 var fields = "a,b".SplitCsv();
                 var pattern =
-                    "@Name('s0') select a.TheString as a, b.TheString as b from pattern[every a=SupportBean => b=SupportBean@consume]";
+                    "@Name('s0') select a.TheString as a, b.TheString as b from pattern[every a=SupportBean -> b=SupportBean@consume]";
                 env.CompileDeploy(pattern).AddListener("s0");
 
                 env.SendEventBean(new SupportBean("E1", 0));

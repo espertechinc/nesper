@@ -8,12 +8,14 @@
 
 using System;
 using System.IO;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.@event.core;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.enummethod.dot
@@ -60,11 +62,13 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
             CodegenClassScope codegenClassScope)
         {
             var methodNode = codegenMethodScope.MakeChild(
-                typeof(EventBean), typeof(PropertyDotNonLambdaFragmentForge), codegenClassScope);
+                typeof(EventBean),
+                typeof(PropertyDotNonLambdaFragmentForge),
+                codegenClassScope);
 
             var refEPS = exprSymbol.GetAddEPS(methodNode);
             methodNode.Block
-                .DeclareVar(typeof(EventBean), "event", ArrayAtIndex(refEPS, Constant(streamId)))
+                .DeclareVar<EventBean>("event", ArrayAtIndex(refEPS, Constant(streamId)))
                 .IfRefNullReturnNull("event")
                 .MethodReturn(
                     Cast(

@@ -27,10 +27,9 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
 
         public void Render(
             StringBuilder builder,
-            IDictionary<Type, string> imports,
             bool isInnerClass)
         {
-            _lhs.Render(builder, imports, isInnerClass);
+            _lhs.Render(builder, isInnerClass);
             builder.Append(" ");
             builder.Append(_not ? "!=" : "==");
             builder.Append(" null");

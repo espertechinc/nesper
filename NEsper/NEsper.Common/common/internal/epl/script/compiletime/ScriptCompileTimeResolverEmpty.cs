@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.@internal.compile.stage1.spec;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;

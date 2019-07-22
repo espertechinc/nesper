@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.meta;
 using com.espertech.esper.common.client.util;
@@ -41,15 +42,22 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.onset
             StatementCompileTimeServices services)
         {
             StreamTypeService typeService = new StreamTypeServiceImpl(
-                new[] {activatorResult.ActivatorResultEventType}, new[] {optionalStreamName}, new[] {true}, false,
+                new[] {activatorResult.ActivatorResultEventType},
+                new[] {optionalStreamName},
+                new[] {true},
+                false,
                 false);
             var validationContext = new ExprValidationContextBuilder(typeService, @base.StatementRawInfo, services)
-                .WithAllowBindingConsumption(true).Build();
+                .WithAllowBindingConsumption(true)
+                .Build();
 
             // handle subselects
             var subselectForges = SubSelectHelperForgePlanner.PlanSubSelect(
-                @base, subselectActivation, new[] {optionalStreamName},
-                new[] {activatorResult.ActivatorResultEventType}, new[] {activatorResult.TriggerEventTypeName},
+                @base,
+                subselectActivation,
+                new[] {optionalStreamName},
+                new[] {activatorResult.ActivatorResultEventType},
+                new[] {activatorResult.TriggerEventTypeName},
                 services);
 
             // validate assignments
@@ -67,12 +75,23 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.onset
             // create output event type
             var eventTypeName = services.EventTypeNameGeneratorStatement.AnonymousTypeName;
             var eventTypeMetadata = new EventTypeMetadata(
-                eventTypeName, @base.ModuleName, EventTypeTypeClass.STATEMENTOUT, EventTypeApplicationType.MAP,
-                NameAccessModifier.TRANSIENT, EventTypeBusModifier.NONBUS, false, EventTypeIdPair.Unassigned());
+                eventTypeName,
+                @base.ModuleName,
+                EventTypeTypeClass.STATEMENTOUT,
+                EventTypeApplicationType.MAP,
+                NameAccessModifier.TRANSIENT,
+                EventTypeBusModifier.NONBUS,
+                false,
+                EventTypeIdPair.Unassigned());
             var eventType = BaseNestableEventUtil.MakeMapTypeCompileTime(
                 eventTypeMetadata,
-                variableReadWritePackageForge.VariableTypes, null, null, null, null,
-                services.BeanEventTypeFactoryPrivate, services.EventTypeCompileTimeResolver);
+                variableReadWritePackageForge.VariableTypes,
+                null,
+                null,
+                null,
+                null,
+                services.BeanEventTypeFactoryPrivate,
+                services.EventTypeCompileTimeResolver);
             services.EventTypeCompileTimeRegistry.NewType(eventType);
 
             // Handle output format
@@ -80,21 +99,40 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.onset
             defaultSelectAllSpec.SelectClauseCompiled.WithSelectExprList(new SelectClauseElementWildcard());
             defaultSelectAllSpec.Raw.SelectStreamDirEnum = SelectClauseStreamSelectorEnum.RSTREAM_ISTREAM_BOTH;
             StreamTypeService streamTypeService = new StreamTypeServiceImpl(
-                new EventType[] {eventType}, new[] {"trigger_stream"}, new[] {true}, false, false);
+                new EventType[] {eventType},
+                new[] {"trigger_stream"},
+                new[] {true},
+                false,
+                false);
             var resultSetProcessor = ResultSetProcessorFactoryFactory.GetProcessorPrototype(
                 new ResultSetSpec(defaultSelectAllSpec),
-                streamTypeService, null, new bool[1], false, @base.ContextPropertyRegistry, false, false,
-                @base.StatementRawInfo, services);
+                streamTypeService,
+                null,
+                new bool[1],
+                false,
+                @base.ContextPropertyRegistry,
+                false,
+                false,
+                @base.StatementRawInfo,
+                services);
             var classNameRSP = CodeGenerationIDGenerator.GenerateClassNameSimple(
-                typeof(ResultSetProcessorFactoryProvider), classPostfix);
+                typeof(ResultSetProcessorFactoryProvider),
+                classPostfix);
 
             var forge = new StatementAgentInstanceFactoryOnTriggerSetForge(
-                activatorResult.Activator, eventType, subselectForges, tableAccessForges, variableReadWritePackageForge,
+                activatorResult.Activator,
+                eventType,
+                subselectForges,
+                tableAccessForges,
+                variableReadWritePackageForge,
                 classNameRSP);
             IList<StmtClassForgable> forgables = new List<StmtClassForgable>();
             forgables.Add(
                 new StmtClassForgableRSPFactoryProvider(
-                    classNameRSP, resultSetProcessor, namespaceScope, @base.StatementRawInfo));
+                    classNameRSP,
+                    resultSetProcessor,
+                    namespaceScope,
+                    @base.StatementRawInfo));
 
             var onTrigger = new StmtClassForgableAIFactoryProviderOnTrigger(className, namespaceScope, forge);
             return new OnTriggerSetPlan(onTrigger, forgables, resultSetProcessor.SelectSubscriberDescriptor);

@@ -58,14 +58,14 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
             SupportOutputLimitOpt outputLimitOpt)
         {
             var stmtText = outputLimitOpt.GetHint() +
-                           "@Name('s0') select Symbol, sum(price) " +
+                           "@Name('s0') select Symbol, sum(Price) " +
                            "from SupportMarketDataBean#time(5.5 sec)" +
                            "group by rollup(Symbol)" +
                            "output all every 1 seconds";
             SendTimer(env, 0);
             env.CompileDeploy(stmtText).AddListener("s0");
 
-            string[] fields = {"Symbol", "sum(price)"};
+            string[] fields = {"Symbol", "sum(Price)"};
             var expected = new ResultAssertTestResult("AllOutputLimit", null, fields);
             expected.AddResultInsRem(
                 1200,
@@ -148,14 +148,14 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
             SupportOutputLimitOpt opt)
         {
             var stmtText = opt.GetHint() +
-                           "@Name('s0') select Symbol, sum(price) " +
+                           "@Name('s0') select Symbol, sum(Price) " +
                            "from SupportMarketDataBean#time(5.5 sec)" +
                            "group by rollup(Symbol)" +
                            "output last every 1 seconds";
             SendTimer(env, 0);
             env.CompileDeploy(stmtText).AddListener("s0");
 
-            string[] fields = {"Symbol", "sum(price)"};
+            string[] fields = {"Symbol", "sum(Price)"};
             var expected = new ResultAssertTestResult("AllOutputLimit", null, fields);
             expected.AddResultInsRem(
                 1200,
@@ -473,13 +473,13 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
         {
             public void Run(RegressionEnvironment env)
             {
-                var stmtText = "@Name('s0') select Symbol, sum(price) " +
+                var stmtText = "@Name('s0') select Symbol, sum(Price) " +
                                "from SupportMarketDataBean#time(5.5 sec)" +
                                "group by rollup(Symbol)";
                 SendTimer(env, 0);
                 env.CompileDeploy(stmtText).AddListener("s0");
 
-                string[] fields = {"Symbol", "sum(price)"};
+                string[] fields = {"Symbol", "sum(Price)"};
                 var expected = new ResultAssertTestResult("NoOutputLimit", null, fields);
                 expected.AddResultInsRem(
                     200,
@@ -551,14 +551,14 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
         {
             public void Run(RegressionEnvironment env)
             {
-                var stmtText = "@Name('s0') select Symbol, sum(price) " +
+                var stmtText = "@Name('s0') select Symbol, sum(Price) " +
                                "from SupportMarketDataBean#time(5.5 sec)" +
                                "group by rollup(Symbol)" +
                                "output every 1 seconds";
                 SendTimer(env, 0);
                 env.CompileDeploy(stmtText).AddListener("s0");
 
-                string[] fields = {"Symbol", "sum(price)"};
+                string[] fields = {"Symbol", "sum(Price)"};
                 var expected = new ResultAssertTestResult("DefaultOutputLimit", null, fields);
                 expected.AddResultInsRem(
                     1200,
@@ -655,14 +655,14 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
         {
             public void Run(RegressionEnvironment env)
             {
-                var stmtText = "@Name('s0') select Symbol, sum(price) " +
+                var stmtText = "@Name('s0') select Symbol, sum(Price) " +
                                "from SupportMarketDataBean#time(5.5 sec)" +
                                "group by rollup(Symbol)" +
                                "output first every 1 seconds";
                 SendTimer(env, 0);
                 env.CompileDeploy(stmtText).AddListener("s0");
 
-                string[] fields = {"Symbol", "sum(price)"};
+                string[] fields = {"Symbol", "sum(Price)"};
                 var expected = new ResultAssertTestResult("AllOutputLimit", null, fields);
                 expected.AddResultInsRem(
                     200,
@@ -736,7 +736,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
 
             public void Run(RegressionEnvironment env)
             {
-                var stmtText = "@Name('s0') select Symbol, sum(price) " +
+                var stmtText = "@Name('s0') select Symbol, sum(Price) " +
                                "from SupportMarketDataBean#time(5.5 sec)" +
                                (join ? ",SupportBean#keepall " : " ") +
                                "group by rollup(Symbol)" +
@@ -750,7 +750,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
                     return;
                 }
 
-                string[] fields = {"Symbol", "sum(price)"};
+                string[] fields = {"Symbol", "sum(Price)"};
                 var expected = new ResultAssertTestResult("AllOutputLimit", null, fields);
                 expected.AddResultInsert(
                     1200,

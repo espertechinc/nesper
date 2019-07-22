@@ -11,6 +11,7 @@ using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.@event.util;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.@event.arr
@@ -109,7 +110,12 @@ namespace com.espertech.esper.common.@internal.@event.arr
             CodegenLegoPropertyBeanOrUnd.AccessType accessType)
         {
             return CodegenLegoPropertyBeanOrUnd.From(
-                codegenMethodScope, codegenClassScope, typeof(object[]), arrayGetter, accessType, GetType());
+                codegenMethodScope,
+                codegenClassScope,
+                typeof(object[]),
+                arrayGetter,
+                accessType,
+                GetType());
         }
     }
 } // end of namespace

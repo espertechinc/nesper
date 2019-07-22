@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.core;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -15,6 +16,7 @@ using com.espertech.esper.common.@internal.epl.agg.core;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.serde;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 using static com.espertech.esper.common.@internal.epl.agg.method.core.AggregatorCodegenUtil;
 using static com.espertech.esper.common.@internal.serde.CodegenSharableSerdeClassTyped.CodegenSharableSerdeName;
@@ -26,7 +28,8 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.core
         internal readonly CodegenExpressionRef distinct;
         private readonly CodegenExpressionField distinctSerde;
 
-        internal readonly bool hasFilter; // this flag can be true and "optionalFilter" can still be null when declaring a table column
+        internal readonly bool
+            hasFilter; // this flag can be true and "optionalFilter" can still be null when declaring a table column
 
         internal readonly Type optionalDistinctValueType;
         internal readonly ExprNode optionalFilter;
@@ -82,10 +85,11 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.core
         {
             if (hasFilter) {
                 method.Block
-                    .DeclareVar(typeof(object[]), "in", Cast(typeof(object[]), value))
-                    .DeclareVar(typeof(bool), "pass", Cast(typeof(bool?), ArrayAtIndex(Ref("in"), Constant(1))))
-                    .IfCondition(Not(Ref("pass"))).BlockReturnNoValue()
-                    .DeclareVar(typeof(object), "filtered", ArrayAtIndex(Ref("in"), Constant(0)));
+                    .DeclareVar<object[]>("in", Cast(typeof(object[]), value))
+                    .DeclareVar<bool>("pass", Cast(typeof(bool?), ArrayAtIndex(Ref("in"), Constant(1))))
+                    .IfCondition(Not(Ref("pass")))
+                    .BlockReturnNoValue()
+                    .DeclareVar<object>("filtered", ArrayAtIndex(Ref("in"), Constant(0)));
                 ApplyTableEnterFiltered(Ref("filtered"), evaluationTypes, method, classScope);
             }
             else {
@@ -114,10 +118,11 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.core
         {
             if (hasFilter) {
                 method.Block
-                    .DeclareVar(typeof(object[]), "in", Cast(typeof(object[]), value))
-                    .DeclareVar(typeof(bool), "pass", Cast(typeof(bool?), ArrayAtIndex(Ref("in"), Constant(1))))
-                    .IfCondition(Not(Ref("pass"))).BlockReturnNoValue()
-                    .DeclareVar(typeof(object), "filtered", ArrayAtIndex(Ref("in"), Constant(0)));
+                    .DeclareVar<object[]>("in", Cast(typeof(object[]), value))
+                    .DeclareVar<bool>("pass", Cast(typeof(bool?), ArrayAtIndex(Ref("in"), Constant(1))))
+                    .IfCondition(Not(Ref("pass")))
+                    .BlockReturnNoValue()
+                    .DeclareVar<object>("filtered", ArrayAtIndex(Ref("in"), Constant(0)));
                 ApplyTableLeaveFiltered(Ref("filtered"), evaluationTypes, method, classScope);
             }
             else {
@@ -146,7 +151,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.core
             CodegenClassScope classScope)
         {
             if (distinct != null) {
-                method.Block.ExprDotMethod(distinctSerde, "write", RowDotRef(row, distinct), output, unitKey, writer);
+                method.Block.ExprDotMethod(distinctSerde, "Write", RowDotRef(row, distinct), output, unitKey, writer);
             }
 
             WriteWODistinct(row, col, output, unitKey, writer, method, classScope);
@@ -163,7 +168,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.core
             if (distinct != null) {
                 method.Block.AssignRef(
                     RowDotRef(row, distinct),
-                    Cast(typeof(RefCountedSet<object>), ExprDotMethod(distinctSerde, "read", input, unitKey)));
+                    Cast(typeof(RefCountedSet<object>), ExprDotMethod(distinctSerde, "Read", input, unitKey)));
             }
 
             ReadWODistinct(row, col, input, unitKey, method, classScope);

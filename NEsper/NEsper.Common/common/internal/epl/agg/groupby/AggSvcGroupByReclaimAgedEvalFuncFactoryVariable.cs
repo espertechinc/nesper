@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.epl.agg.core;
 using com.espertech.esper.common.@internal.epl.variable.core;
@@ -27,7 +28,9 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupby
         public AggSvcGroupByReclaimAgedEvalFunc Make(AgentInstanceContext agentInstanceContext)
         {
             VariableReader reader = agentInstanceContext.VariableManagementService.GetReader(
-                variable.DeploymentId, variable.MetaData.VariableName, agentInstanceContext.AgentInstanceId);
+                variable.DeploymentId,
+                variable.MetaData.VariableName,
+                agentInstanceContext.AgentInstanceId);
             return new AggSvcGroupByReclaimAgedEvalFuncVariable(reader);
         }
     }

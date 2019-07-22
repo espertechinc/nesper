@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.epl.agg.core;
 using com.espertech.esper.common.@internal.epl.expression.core;
@@ -43,8 +44,11 @@ namespace com.espertech.esper.common.@internal.context.airegistry
             object optionalGroupKeyPerRow,
             ExprEvaluatorContext exprEvaluatorContext)
         {
-            services.Get(exprEvaluatorContext.AgentInstanceId).ApplyEnter(
-                eventsPerStream, optionalGroupKeyPerRow, exprEvaluatorContext);
+            services.Get(exprEvaluatorContext.AgentInstanceId)
+                .ApplyEnter(
+                    eventsPerStream,
+                    optionalGroupKeyPerRow,
+                    exprEvaluatorContext);
         }
 
         public void ApplyLeave(
@@ -52,8 +56,11 @@ namespace com.espertech.esper.common.@internal.context.airegistry
             object optionalGroupKeyPerRow,
             ExprEvaluatorContext exprEvaluatorContext)
         {
-            services.Get(exprEvaluatorContext.AgentInstanceId).ApplyLeave(
-                eventsPerStream, optionalGroupKeyPerRow, exprEvaluatorContext);
+            services.Get(exprEvaluatorContext.AgentInstanceId)
+                .ApplyLeave(
+                    eventsPerStream,
+                    optionalGroupKeyPerRow,
+                    exprEvaluatorContext);
         }
 
         public void SetCurrentAccess(
@@ -81,8 +88,13 @@ namespace com.espertech.esper.common.@internal.context.airegistry
             bool isNewData,
             ExprEvaluatorContext exprEvaluatorContext)
         {
-            return services.Get(agentInstanceId).GetValue(
-                column, agentInstanceId, eventsPerStream, isNewData, exprEvaluatorContext);
+            return services.Get(agentInstanceId)
+                .GetValue(
+                    column,
+                    agentInstanceId,
+                    eventsPerStream,
+                    isNewData,
+                    exprEvaluatorContext);
         }
 
         public ICollection<EventBean> GetCollectionOfEvents(

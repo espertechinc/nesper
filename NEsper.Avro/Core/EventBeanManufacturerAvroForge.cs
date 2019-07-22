@@ -37,14 +37,13 @@ namespace NEsper.Avro.Core
 
             Schema schema = _eventType.SchemaAvro;
             _indexPerWritable = new Field[properties.Length];
-            for (var i = 0; i < properties.Length; i++)
-            {
+            for (var i = 0; i < properties.Length; i++) {
                 var propertyName = properties[i].PropertyName;
 
                 var field = schema.GetField(propertyName);
-                if (field == null)
-                {
-                    throw new IllegalStateException("Failed to find property '" + propertyName + "' among the array indexes");
+                if (field == null) {
+                    throw new IllegalStateException(
+                        "Failed to find property '" + propertyName + "' among the array indexes");
                 }
 
                 _indexPerWritable[i] = field;
@@ -64,20 +63,32 @@ namespace NEsper.Avro.Core
 
             var factory = codegenClassScope.AddOrGetFieldSharable(EventBeanTypedEventFactoryCodegenField.INSTANCE);
             var beanType = codegenClassScope.AddFieldUnshared(
-                true, typeof(EventType), EventTypeUtility.ResolveTypeCodegen(_eventType, EPStatementInitServicesConstants.REF));
+                true,
+                typeof(EventType),
+                EventTypeUtility.ResolveTypeCodegen(_eventType, EPStatementInitServicesConstants.REF));
 
             var manufacturer = CodegenExpressionBuilder.NewAnonymousClass(init.Block, typeof(EventBeanManufacturer));
 
             var makeUndMethod = CodegenMethod.MakeParentNode(typeof(GenericRecord), GetType(), codegenClassScope)
                 .AddParam(typeof(object[]), "properties");
-            manufacturer.AddMethod("makeUnderlying", makeUndMethod);
+            manufacturer.AddMethod("MakeUnderlying", makeUndMethod);
             MakeUnderlyingCodegen(makeUndMethod, codegenClassScope);
 
-            var makeMethod = CodegenMethod.MakeParentNode(typeof(EventBean), GetType(), codegenClassScope).AddParam(typeof(object[]), "properties");
-            manufacturer.AddMethod("make", makeMethod);
+            var makeMethod = CodegenMethod
+                .MakeParentNode(typeof(EventBean), GetType(), codegenClassScope)
+                .AddParam(typeof(object[]), "properties");
+            manufacturer
+                .AddMethod("Make", makeMethod);
             makeMethod.Block
-                .DeclareVar(typeof(GenericRecord), "und", CodegenExpressionBuilder.LocalMethod(makeUndMethod, CodegenExpressionBuilder.Ref("properties")))
-                .MethodReturn(CodegenExpressionBuilder.ExprDotMethod(factory, "adapterForTypedAvro", CodegenExpressionBuilder.Ref("und"), beanType));
+                .DeclareVar<GenericRecord>(
+                    "und",
+                    CodegenExpressionBuilder.LocalMethod(makeUndMethod, CodegenExpressionBuilder.Ref("properties")))
+                .MethodReturn(
+                    CodegenExpressionBuilder.ExprDotMethod(
+                        factory,
+                        "adapterForTypedAvro",
+                        CodegenExpressionBuilder.Ref("und"),
+                        beanType));
 
             return codegenClassScope.AddFieldUnshared(true, typeof(EventBeanManufacturer), manufacturer);
         }
@@ -87,16 +98,25 @@ namespace NEsper.Avro.Core
             CodegenClassScope codegenClassScope)
         {
             var schema = codegenClassScope.NamespaceScope.AddFieldUnshared(
-                true, typeof(Schema),
+                true,
+                typeof(Schema),
                 CodegenExpressionBuilder.StaticMethod(
-                    typeof(AvroSchemaUtil), "resolveAvroSchema",
+                    typeof(AvroSchemaUtil),
+                    "resolveAvroSchema",
                     EventTypeUtility.ResolveTypeCodegen(_eventType, EPStatementInitServicesConstants.REF)));
             method.Block
-                .DeclareVar(typeof(GenericRecord), "record", CodegenExpressionBuilder.NewInstance(typeof(GenericRecord), schema));
+                .DeclareVar<GenericRecord>(
+                    "record",
+                    CodegenExpressionBuilder.NewInstance(typeof(GenericRecord), schema));
 
-            for (var i = 0; i < _indexPerWritable.Length; i++)
-            {
-                method.Block.ExprDotMethod(CodegenExpressionBuilder.Ref("record"), "put", CodegenExpressionBuilder.Constant(_indexPerWritable[i]), CodegenExpressionBuilder.ArrayAtIndex(CodegenExpressionBuilder.Ref("properties"), CodegenExpressionBuilder.Constant(i)));
+            for (var i = 0; i < _indexPerWritable.Length; i++) {
+                method.Block.ExprDotMethod(
+                    CodegenExpressionBuilder.Ref("record"),
+                    "put",
+                    CodegenExpressionBuilder.Constant(_indexPerWritable[i]),
+                    CodegenExpressionBuilder.ArrayAtIndex(
+                        CodegenExpressionBuilder.Ref("properties"),
+                        CodegenExpressionBuilder.Constant(i)));
             }
 
             method.Block.MethodReturn(CodegenExpressionBuilder.Ref("record"));

@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.compile.stage1.spec;
 using com.espertech.esper.common.@internal.type;
@@ -90,7 +91,8 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanouter
                     var streamOne = desc.OptLeftNode.StreamId;
                     var streamTwo = desc.OptRightNode.StreamId;
 
-                    if (streamOne > streamMax || streamTwo > streamMax ||
+                    if (streamOne > streamMax ||
+                        streamTwo > streamMax ||
                         streamOne == streamTwo) {
                         throw new ArgumentException("Outer join descriptors reference future streams, or same streams");
                     }

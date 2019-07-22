@@ -23,7 +23,13 @@ namespace com.espertech.esper.common.@internal.context.activator
         {
             Viewable viewable = new ViewableDefaultImpl(EventType);
             return new ViewableActivationResult(
-                viewable, AgentInstanceStopCallbackNoAction.INSTANCE, null, false, false, null, null);
+                viewable,
+                AgentInstanceStopCallbackNoAction.INSTANCE,
+                null,
+                false,
+                false,
+                null,
+                null);
         }
 
         public void SetEventType(EventType eventType)

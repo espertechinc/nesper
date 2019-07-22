@@ -8,6 +8,7 @@
 
 using System;
 using System.Reflection;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -16,7 +17,9 @@ using com.espertech.esper.common.@internal.@event.bean.service;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.@event.util;
 using com.espertech.esper.compat.collections;
+
 using XLR8.CGLib;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.@event.bean.getter
@@ -26,11 +29,11 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
     /// </summary>
     public abstract class DynamicPropertyGetterBase : BeanEventPropertyGetter
     {
-        private readonly BeanEventTypeFactory beanEventTypeFactory;
-        private readonly CopyOnWriteList<DynamicPropertyDescriptor> cache;
-        private readonly EventBeanTypedEventFactory eventBeanTypedEventFactory;
+        private readonly BeanEventTypeFactory _beanEventTypeFactory;
+        private readonly CopyOnWriteList<DynamicPropertyDescriptor> _cache;
+        private readonly EventBeanTypedEventFactory _eventBeanTypedEventFactory;
 
-        private readonly CodegenFieldSharable sharableCode = new ProxyCodegenFieldSharable {
+        private readonly CodegenFieldSharable _sharableCode = new ProxyCodegenFieldSharable {
             ProcType = () => typeof(CopyOnWriteList<DynamicPropertyDescriptor>),
             ProcInitCtorScoped = () => NewInstance(typeof(CopyOnWriteList<DynamicPropertyDescriptor>))
         };
@@ -39,31 +42,31 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
             EventBeanTypedEventFactory eventBeanTypedEventFactory,
             BeanEventTypeFactory beanEventTypeFactory)
         {
-            this.beanEventTypeFactory = beanEventTypeFactory;
-            cache = new CopyOnWriteList<DynamicPropertyDescriptor>();
-            this.eventBeanTypedEventFactory = eventBeanTypedEventFactory;
+            _beanEventTypeFactory = beanEventTypeFactory;
+            _cache = new CopyOnWriteList<DynamicPropertyDescriptor>();
+            _eventBeanTypedEventFactory = eventBeanTypedEventFactory;
         }
 
         public object GetBeanProp(object @object)
         {
-            return CacheAndCall(cache, this, @object, eventBeanTypedEventFactory, beanEventTypeFactory);
+            return CacheAndCall(_cache, this, @object, _eventBeanTypedEventFactory, _beanEventTypeFactory);
         }
 
         public Type TargetType => typeof(object);
 
         public bool IsBeanExistsProperty(object @object)
         {
-            return CacheAndExists(cache, this, @object, eventBeanTypedEventFactory);
+            return CacheAndExists(_cache, this, @object, _eventBeanTypedEventFactory);
         }
 
         public object Get(EventBean @event)
         {
-            return CacheAndCall(cache, this, @event.Underlying, eventBeanTypedEventFactory, beanEventTypeFactory);
+            return CacheAndCall(_cache, this, @event.Underlying, _eventBeanTypedEventFactory, _beanEventTypeFactory);
         }
 
         public bool IsExistsProperty(EventBean eventBean)
         {
-            return CacheAndExists(cache, this, eventBean.Underlying, eventBeanTypedEventFactory);
+            return CacheAndExists(_cache, this, eventBean.Underlying, _eventBeanTypedEventFactory);
         }
 
         public Type BeanPropType => typeof(object);
@@ -120,7 +123,9 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
         {
             var result = Get(eventBean);
             return BaseNativePropertyGetter.GetFragmentDynamic(
-                result, eventBeanTypedEventFactory, beanEventTypeFactory);
+                result,
+                _eventBeanTypedEventFactory,
+                _beanEventTypeFactory);
         }
 
         /// <summary>
@@ -180,15 +185,16 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
             CodegenMethodScope parent,
             CodegenClassScope codegenClassScope)
         {
-            CodegenExpression memberCache = codegenClassScope.AddOrGetFieldSharable(sharableCode);
+            CodegenExpression memberCache = codegenClassScope.AddOrGetFieldSharable(_sharableCode);
             var method = parent
                 .MakeChild(typeof(object), typeof(DynamicPropertyGetterBase), codegenClassScope)
                 .AddParam(typeof(object), "object");
             method.Block
-                .DeclareVar(
-                    typeof(DynamicPropertyDescriptor), "desc",
+                .DeclareVar<DynamicPropertyDescriptor>(
+                    "desc",
                     GetPopulateCacheCodegen(memberCache, Ref("object"), method, codegenClassScope))
-                .IfCondition(EqualsNull(ExprDotMethod(Ref("desc"), "getMethod"))).BlockReturn(ConstantNull())
+                .IfCondition(EqualsNull(ExprDotMethod(Ref("desc"), "getMethod")))
+                .BlockReturn(ConstantNull())
                 .MethodReturn(CallCodegen(Ref("desc"), Ref("object"), method, codegenClassScope));
             return LocalMethod(method, underlyingExpression);
         }
@@ -220,14 +226,15 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
             CodegenMethodScope parent,
             CodegenClassScope codegenClassScope)
         {
-            CodegenExpression memberCache = codegenClassScope.AddOrGetFieldSharable(sharableCode);
+            CodegenExpression memberCache = codegenClassScope.AddOrGetFieldSharable(_sharableCode);
             var method = parent.MakeChild(typeof(bool), typeof(DynamicPropertyGetterBase), codegenClassScope)
                 .AddParam(typeof(object), "object");
             method.Block
-                .DeclareVar(
-                    typeof(DynamicPropertyDescriptor), "desc",
+                .DeclareVar<DynamicPropertyDescriptor>(
+                    "desc",
                     GetPopulateCacheCodegen(memberCache, Ref("object"), method, codegenClassScope))
-                .IfCondition(EqualsNull(ExprDotMethod(Ref("desc"), "getMethod"))).BlockReturn(ConstantFalse())
+                .IfCondition(EqualsNull(ExprDotMethod(Ref("desc"), "getMethod")))
+                .BlockReturn(ConstantFalse())
                 .MethodReturn(Constant(true));
             return LocalMethod(method, underlyingExpression);
         }
@@ -267,19 +274,27 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
         {
             var method = parent
                 .MakeChild(typeof(DynamicPropertyDescriptor), typeof(DynamicPropertyGetterBase), codegenClassScope)
-                .AddParam(typeof(CopyOnWriteList<DynamicPropertyDescriptor>), "cache").AddParam(typeof(object), "obj");
+                .AddParam(typeof(CopyOnWriteList<DynamicPropertyDescriptor>), "cache")
+                .AddParam(typeof(object), "obj");
             method.Block
-                .DeclareVar(
-                    typeof(DynamicPropertyDescriptor), "desc",
+                .DeclareVar<DynamicPropertyDescriptor>(
+                    "desc",
                     StaticMethod(
-                        typeof(DynamicPropertyGetterBase), "dynamicPropertyCacheCheck", Ref("cache"), Ref("obj")))
-                .IfRefNotNull("desc").BlockReturn(Ref("desc"))
-                .DeclareVar(typeof(Type), "clazz", ExprDotMethod(Ref("obj"), "getClass"))
-                .DeclareVar(typeof(MethodInfo), "method", DetermineMethodCodegen(Ref("clazz"), method, codegenClassScope))
+                        typeof(DynamicPropertyGetterBase),
+                        "dynamicPropertyCacheCheck",
+                        Ref("cache"),
+                        Ref("obj")))
+                .IfRefNotNull("desc")
+                .BlockReturn(Ref("desc"))
+                .DeclareVar<Type>("clazz", ExprDotMethod(Ref("obj"), "getClass"))
+                .DeclareVar<MethodInfo>("method", DetermineMethodCodegen(Ref("clazz"), method, codegenClassScope))
                 .AssignRef(
                     "desc",
                     StaticMethod(
-                        typeof(DynamicPropertyGetterBase), "dynamicPropertyCacheAdd", Ref("clazz"), Ref("method"),
+                        typeof(DynamicPropertyGetterBase),
+                        "dynamicPropertyCacheAdd",
+                        Ref("clazz"),
+                        Ref("method"),
                         Ref("cache")))
                 .MethodReturn(Ref("desc"));
             return LocalMethod(method, memberCache, @object);
@@ -323,7 +338,10 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
                 propertyDescriptor = new DynamicPropertyDescriptor(clazz, null, false);
             }
             else {
-                propertyDescriptor = new DynamicPropertyDescriptor(clazz, FastClass.CreateMethod(method), method.GetParameters().Length > 0);
+                propertyDescriptor = new DynamicPropertyDescriptor(
+                    clazz,
+                    FastClass.CreateMethod(method),
+                    method.GetParameters().Length > 0);
             }
 
             cache.Add(propertyDescriptor);
@@ -343,7 +361,10 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
             Exception ex)
         {
             if (ex is InvalidCastException) {
-                throw PropertyUtility.GetMismatchException(descriptor.Method.Target, underlying, (InvalidCastException) ex);
+                throw PropertyUtility.GetMismatchException(
+                    descriptor.Method.Target,
+                    underlying,
+                    (InvalidCastException) ex);
             }
 
             if (ex is TargetException) {

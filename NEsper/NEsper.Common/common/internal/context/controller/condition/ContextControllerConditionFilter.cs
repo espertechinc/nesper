@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.context.controller.core;
@@ -59,17 +60,31 @@ namespace com.espertech.esper.common.@internal.context.controller.condition
             };
 
             FilterValueSetParam[][] addendum = ContextManagerUtil.ComputeAddendumNonStmt(
-                partitionKeys, filter.FilterSpecActivatable, controller.Realization);
-            filterHandle = new EPStatementHandleCallbackFilter(agentInstanceContext.EpStatementAgentInstanceHandle, filterCallback);
+                partitionKeys,
+                filter.FilterSpecActivatable,
+                controller.Realization);
+            filterHandle = new EPStatementHandleCallbackFilter(
+                agentInstanceContext.EpStatementAgentInstanceHandle,
+                filterCallback);
             FilterValueSetParam[][] filterValueSet = filter.FilterSpecActivatable.GetValueSet(
-                null, addendum, agentInstanceContext, agentInstanceContext.StatementContextFilterEvalEnv);
-            agentInstanceContext.FilterService.Add(filter.FilterSpecActivatable.FilterForEventType, filterValueSet, filterHandle);
+                null,
+                addendum,
+                agentInstanceContext,
+                agentInstanceContext.StatementContextFilterEvalEnv);
+            agentInstanceContext.FilterService.Add(
+                filter.FilterSpecActivatable.FilterForEventType,
+                filterValueSet,
+                filterHandle);
             long filtersVersion = agentInstanceContext.FilterService.FiltersVersion;
-            agentInstanceContext.EpStatementAgentInstanceHandle.StatementFilterVersion.StmtFilterVersion = filtersVersion;
+            agentInstanceContext.EpStatementAgentInstanceHandle.StatementFilterVersion.StmtFilterVersion =
+                filtersVersion;
 
             bool match = false;
             if (optionalTriggeringEvent != null) {
-                match = AgentInstanceUtil.EvaluateFilterForStatement(optionalTriggeringEvent, agentInstanceContext, filterHandle);
+                match = AgentInstanceUtil.EvaluateFilterForStatement(
+                    optionalTriggeringEvent,
+                    agentInstanceContext,
+                    filterHandle);
             }
 
             return match;
@@ -83,13 +98,22 @@ namespace com.espertech.esper.common.@internal.context.controller.condition
 
             AgentInstanceContext agentInstanceContext = controller.Realization.AgentInstanceContextCreate;
             FilterValueSetParam[][] addendum = ContextManagerUtil.ComputeAddendumNonStmt(
-                partitionKeys, filter.FilterSpecActivatable, controller.Realization);
+                partitionKeys,
+                filter.FilterSpecActivatable,
+                controller.Realization);
             FilterValueSetParam[][] filterValueSet = filter.FilterSpecActivatable.GetValueSet(
-                null, addendum, agentInstanceContext, agentInstanceContext.StatementContextFilterEvalEnv);
-            agentInstanceContext.FilterService.Remove(filterHandle, filter.FilterSpecActivatable.FilterForEventType, filterValueSet);
+                null,
+                addendum,
+                agentInstanceContext,
+                agentInstanceContext.StatementContextFilterEvalEnv);
+            agentInstanceContext.FilterService.Remove(
+                filterHandle,
+                filter.FilterSpecActivatable.FilterForEventType,
+                filterValueSet);
             filterHandle = null;
             long filtersVersion = agentInstanceContext.StatementContext.FilterService.FiltersVersion;
-            agentInstanceContext.EpStatementAgentInstanceHandle.StatementFilterVersion.StmtFilterVersion = filtersVersion;
+            agentInstanceContext.EpStatementAgentInstanceHandle.StatementFilterVersion.StmtFilterVersion =
+                filtersVersion;
         }
 
         public bool IsImmediate {

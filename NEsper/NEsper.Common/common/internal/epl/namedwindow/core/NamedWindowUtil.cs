@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.epl.namedwindow.consume;
 using com.espertech.esper.compat.collections;
@@ -15,8 +16,9 @@ namespace com.espertech.esper.common.@internal.epl.namedwindow.core
 {
     public class NamedWindowUtil
     {
-        protected internal static IDictionary<EPStatementAgentInstanceHandle, IList<NamedWindowConsumerView>> CreateConsumerMap(
-            bool isPrioritized)
+        protected internal static IDictionary<EPStatementAgentInstanceHandle, IList<NamedWindowConsumerView>>
+            CreateConsumerMap(
+                bool isPrioritized)
         {
             if (!isPrioritized) {
                 return new LinkedHashMap<EPStatementAgentInstanceHandle, IList<NamedWindowConsumerView>>();

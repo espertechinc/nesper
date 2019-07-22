@@ -400,7 +400,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
                 .AddListener("s0");
 
             var thewindow = (SupportVirtualDW) GetFromContext(env, "/virtualdw/MySampleWindow");
-            var row1 = Collections.SingletonDataMap("id", "V1");
+            var row1 = Collections.SingletonDataMap("Id", "V1");
             thewindow.Data = Collections.SingletonSet<object>(row1);
 
             env.SendEventBean(new SupportBean("E1", 1));
@@ -408,7 +408,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
 
             ISet<object> rows = new HashSet<object>();
             rows.Add(row1);
-            rows.Add(Collections.SingletonDataMap("id", "V2"));
+            rows.Add(Collections.SingletonDataMap("Id", "V2"));
             thewindow.Data = rows;
 
             env.SendEventBean(new SupportBean("E2", 2));

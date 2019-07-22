@@ -41,7 +41,11 @@ namespace com.espertech.esper.common.@internal.util
         }
 
         internal bool EquivalentToBetweenPredicate {
-            get { return _iFirstWildCard > 0 && _iFirstWildCard == _wildCardType.Length - 1 && _cLike[_iFirstWildCard] == '%'; }
+            get {
+                return _iFirstWildCard > 0 &&
+                       _iFirstWildCard == _wildCardType.Length - 1 &&
+                       _cLike[_iFirstWildCard] == '%';
+            }
         }
 
         internal bool EquivalentToBetweenPredicateAugmentedWithLike {

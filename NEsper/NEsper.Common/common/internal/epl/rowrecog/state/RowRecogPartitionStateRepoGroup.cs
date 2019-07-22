@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.epl.rowrecog.core;
 using com.espertech.esper.common.@internal.epl.rowrecog.nfa;
@@ -172,25 +173,20 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.state
             _meta.AgentInstanceContext.InstrumentationProvider.QRegExPartition(theEvent);
 
             // collect unused states
-            if (isCollect && States.Count >= _currentCollectionSize)
-            {
+            if (isCollect && States.Count >= _currentCollectionSize) {
                 IList<object> removeList = new List<object>();
-                foreach (var entry in States)
-                {
+                foreach (var entry in States) {
                     if (entry.Value.IsEmptyCurrentState &&
-                        (entry.Value.RandomAccess == null || entry.Value.RandomAccess.IsEmpty()))
-                    {
+                        (entry.Value.RandomAccess == null || entry.Value.RandomAccess.IsEmpty())) {
                         removeList.Add(entry.Key);
                     }
                 }
 
-                foreach (var removeKey in removeList)
-                {
+                foreach (var removeKey in removeList) {
                     States.Remove(removeKey);
                 }
 
-                if (removeList.Count < _currentCollectionSize / 5)
-                {
+                if (removeList.Count < _currentCollectionSize / 5) {
                     _currentCollectionSize *= 2;
                 }
             }
@@ -198,8 +194,7 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.state
             var key = GetKeys(theEvent, _meta);
 
             var state = States.Get(key);
-            if (state != null)
-            {
+            if (state != null) {
                 _meta.AgentInstanceContext.InstrumentationProvider.ARegExPartition(true, key, state);
                 return state;
             }

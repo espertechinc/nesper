@@ -8,6 +8,7 @@
 
 using System;
 using System.IO;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.annotation;
 using com.espertech.esper.common.client.dataflow.core;
@@ -95,9 +96,14 @@ namespace com.espertech.esper.common.@internal.metrics.audit
         {
             if (IsInfoEnabled) {
                 AuditLog(
-                    context, AuditEnum.VIEW,
-                    viewFactory.ViewName + " insert {" + EventBeanSummarizer.Summarize(newData) + "} remove {" +
-                    EventBeanSummarizer.Summarize(oldData) + "}");
+                    context,
+                    AuditEnum.VIEW,
+                    viewFactory.ViewName +
+                    " insert {" +
+                    EventBeanSummarizer.Summarize(newData) +
+                    "} remove {" +
+                    EventBeanSummarizer.Summarize(oldData) +
+                    "}");
             }
         }
 
@@ -318,8 +324,10 @@ namespace com.espertech.esper.common.@internal.metrics.audit
                     }
 
                     var key = new AuditPatternInstanceKey(
-                        agentInstanceContext.RuntimeURI, agentInstanceContext.StatementId,
-                        agentInstanceContext.AgentInstanceId, factoryNode.TextForAudit);
+                        agentInstanceContext.RuntimeURI,
+                        agentInstanceContext.StatementId,
+                        agentInstanceContext.AgentInstanceId,
+                        factoryNode.TextForAudit);
                     int? existing = patternInstanceCounts.Get(key);
                     int count;
                     if (existing == null) {
@@ -463,7 +471,12 @@ namespace com.espertech.esper.common.@internal.metrics.audit
             if (auditCallback != null) {
                 auditCallback.Invoke(
                     new AuditContext(
-                        ctx.RuntimeURI, ctx.DeploymentId, ctx.StatementName, ctx.AgentInstanceId, category, message));
+                        ctx.RuntimeURI,
+                        ctx.DeploymentId,
+                        ctx.StatementName,
+                        ctx.AgentInstanceId,
+                        category,
+                        message));
             }
         }
 

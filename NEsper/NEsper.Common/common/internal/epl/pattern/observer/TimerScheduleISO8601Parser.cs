@@ -8,6 +8,7 @@
 
 using System;
 using System.Text.RegularExpressions;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.schedule;
@@ -126,8 +127,11 @@ namespace com.espertech.esper.common.@internal.epl.pattern.observer
                     throw;
                 }
                 catch (Exception ex) {
-                    var message = "Invalid repeat '" + repeat + "', expecting an long-typed value but received '" +
-                                  repeat.Substring(1) + "'";
+                    var message = "Invalid repeat '" +
+                                  repeat +
+                                  "', expecting an long-typed value but received '" +
+                                  repeat.Substring(1) +
+                                  "'";
                     log.Debug(message, ex);
                     throw new ScheduleParameterException(message);
                 }

@@ -8,6 +8,7 @@
 
 using System.Collections;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.core;
@@ -16,8 +17,10 @@ using com.espertech.esper.common.@internal.epl.agg.access.core;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.serde;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
-using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionRelational.CodegenRelational;
+using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionRelational.
+    CodegenRelational;
 using static com.espertech.esper.common.@internal.epl.agg.method.core.AggregatorCodegenUtil;
 using static com.espertech.esper.common.@internal.serde.CodegenSharableSerdeEventTyped.CodegenSharableSerdeName;
 
@@ -55,8 +58,9 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
         {
             CodegenExpressionRef eps = symbols.GetAddEPS(method);
             method.Block
-                .DeclareVar(typeof(EventBean), "theEvent", ArrayAtIndex(eps, Constant(forge.StreamNum)))
-                .IfRefNull("theEvent").BlockReturnNoValue()
+                .DeclareVar<EventBean>("theEvent", ArrayAtIndex(eps, Constant(forge.StreamNum)))
+                .IfRefNull("theEvent")
+                .BlockReturnNoValue()
                 .ExprDotMethod(events, "add", Ref("theEvent"));
         }
 
@@ -68,8 +72,9 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
         {
             CodegenExpressionRef eps = symbols.GetAddEPS(method);
             method.Block
-                .DeclareVar(typeof(EventBean), "theEvent", ArrayAtIndex(eps, Constant(forge.StreamNum)))
-                .IfRefNull("theEvent").BlockReturnNoValue()
+                .DeclareVar<EventBean>("theEvent", ArrayAtIndex(eps, Constant(forge.StreamNum)))
+                .IfRefNull("theEvent")
+                .BlockReturnNoValue()
                 .ExprDotMethod(events, "remove", Ref("theEvent"));
         }
 
@@ -87,10 +92,15 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
             CodegenNamedMethods namedMethods)
         {
             CodegenMethod method = parentMethod.MakeChildWithScope(
-                typeof(EventBean), typeof(AggregatorAccessLinearNonJoin), CodegenSymbolProviderEmpty.INSTANCE,
-                classScope).AddParam(typeof(int), "index");
-            method.Block.IfCondition(Relational(Ref("index"), LT, Constant(0))).BlockReturn(ConstantNull())
-                .IfCondition(Relational(Ref("index"), GE, ExprDotMethod(events, "size"))).BlockReturn(ConstantNull())
+                    typeof(EventBean),
+                    typeof(AggregatorAccessLinearNonJoin),
+                    CodegenSymbolProviderEmpty.INSTANCE,
+                    classScope)
+                .AddParam(typeof(int), "index");
+            method.Block.IfCondition(Relational(Ref("index"), LT, Constant(0)))
+                .BlockReturn(ConstantNull())
+                .IfCondition(Relational(Ref("index"), GE, ExprDotMethod(events, "size")))
+                .BlockReturn(ConstantNull())
                 .MethodReturn(Cast(typeof(EventBean), ExprDotMethod(events, "get", Ref("index"))));
             return LocalMethod(method, index);
         }
@@ -102,15 +112,21 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
             CodegenNamedMethods namedMethods)
         {
             CodegenMethod method = parentMethod.MakeChildWithScope(
-                typeof(EventBean), typeof(AggregatorAccessLinearNonJoin), CodegenSymbolProviderEmpty.INSTANCE,
-                classScope).AddParam(typeof(int), "index");
-            method.Block.IfCondition(Relational(Ref("index"), LT, Constant(0))).BlockReturn(ConstantNull())
-                .IfCondition(Relational(Ref("index"), GE, ExprDotMethod(events, "size"))).BlockReturn(ConstantNull())
+                    typeof(EventBean),
+                    typeof(AggregatorAccessLinearNonJoin),
+                    CodegenSymbolProviderEmpty.INSTANCE,
+                    classScope)
+                .AddParam(typeof(int), "index");
+            method.Block.IfCondition(Relational(Ref("index"), LT, Constant(0)))
+                .BlockReturn(ConstantNull())
+                .IfCondition(Relational(Ref("index"), GE, ExprDotMethod(events, "size")))
+                .BlockReturn(ConstantNull())
                 .MethodReturn(
                     Cast(
                         typeof(EventBean),
                         ExprDotMethod(
-                            events, "get",
+                            events,
+                            "get",
                             Op(Op(ExprDotMethod(events, "size"), "-", Ref("index")), "-", Constant(1)))));
             return LocalMethod(method, index);
         }
@@ -120,9 +136,12 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
             CodegenMethod parentMethod)
         {
             CodegenMethod method = parentMethod.MakeChildWithScope(
-                typeof(EventBean), typeof(AggregatorAccessLinearNonJoin), CodegenSymbolProviderEmpty.INSTANCE,
+                typeof(EventBean),
+                typeof(AggregatorAccessLinearNonJoin),
+                CodegenSymbolProviderEmpty.INSTANCE,
                 classScope);
-            method.Block.IfCondition(ExprDotMethod(events, "isEmpty")).BlockReturn(ConstantNull())
+            method.Block.IfCondition(ExprDotMethod(events, "isEmpty"))
+                .BlockReturn(ConstantNull())
                 .MethodReturn(Cast(typeof(EventBean), ExprDotMethod(events, "get", Constant(0))));
             return LocalMethod(method);
         }
@@ -133,9 +152,12 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
             CodegenNamedMethods namedMethods)
         {
             CodegenMethod method = parentMethod.MakeChildWithScope(
-                typeof(EventBean), typeof(AggregatorAccessLinearNonJoin), CodegenSymbolProviderEmpty.INSTANCE,
+                typeof(EventBean),
+                typeof(AggregatorAccessLinearNonJoin),
+                CodegenSymbolProviderEmpty.INSTANCE,
                 classScope);
-            method.Block.IfCondition(ExprDotMethod(events, "isEmpty")).BlockReturn(ConstantNull())
+            method.Block.IfCondition(ExprDotMethod(events, "isEmpty"))
+                .BlockReturn(ConstantNull())
                 .MethodReturn(
                     Cast(
                         typeof(EventBean),
@@ -173,7 +195,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
             CodegenMethod method,
             CodegenClassScope classScope)
         {
-            method.Block.ExprDotMethod(GetSerde(classScope), "write", RowDotRef(row, events), output, unitKey, writer);
+            method.Block.ExprDotMethod(GetSerde(classScope), "Write", RowDotRef(row, events), output, unitKey, writer);
         }
 
         public override void ReadCodegen(
@@ -186,7 +208,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
         {
             method.Block.AssignRef(
                 RowDotRef(row, events),
-                Cast(typeof(IList<object>), ExprDotMethod(GetSerde(classScope), "read", input, unitKey)));
+                Cast(typeof(IList<object>), ExprDotMethod(GetSerde(classScope), "Read", input, unitKey)));
         }
 
         private CodegenExpressionField GetSerde(CodegenClassScope classScope)

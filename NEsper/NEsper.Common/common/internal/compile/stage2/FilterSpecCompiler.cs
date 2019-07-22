@@ -8,6 +8,7 @@
 
 using System.Collections.Generic;
 using System.Reflection;
+
 using com.espertech.esper.collection;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.compile.stage1.spec;
@@ -45,11 +46,24 @@ namespace com.espertech.esper.common.@internal.compile.stage2
             // Validate all nodes, make sure each returns a boolean and types are good;
             // Also decompose all AND super nodes into individual expressions
             var validatedNodes = ValidateAllowSubquery(
-                ExprNodeOrigin.FILTER, filterExpessions, streamTypeService, taggedEventTypes, arrayEventTypes,
-                statementRawInfo, services);
+                ExprNodeOrigin.FILTER,
+                filterExpessions,
+                streamTypeService,
+                taggedEventTypes,
+                arrayEventTypes,
+                statementRawInfo,
+                services);
             return Build(
-                validatedNodes, eventType, eventTypeName, optionalPropertyEvalSpec, taggedEventTypes, arrayEventTypes,
-                streamTypeService, optionalStreamName, statementRawInfo, services);
+                validatedNodes,
+                eventType,
+                eventTypeName,
+                optionalPropertyEvalSpec,
+                taggedEventTypes,
+                arrayEventTypes,
+                streamTypeService,
+                optionalStreamName,
+                statementRawInfo,
+                services);
         }
 
         public static FilterSpecCompiled Build(
@@ -65,8 +79,16 @@ namespace com.espertech.esper.common.@internal.compile.stage2
             StatementCompileTimeServices compileTimeServices)
         {
             return BuildNoStmtCtx(
-                validatedNodes, eventType, eventTypeName, optionalStreamName, optionalPropertyEvalSpec,
-                taggedEventTypes, arrayEventTypes, streamTypeService, statementRawInfo, compileTimeServices);
+                validatedNodes,
+                eventType,
+                eventTypeName,
+                optionalStreamName,
+                optionalPropertyEvalSpec,
+                taggedEventTypes,
+                arrayEventTypes,
+                streamTypeService,
+                statementRawInfo,
+                compileTimeServices);
         }
 
         public static FilterSpecCompiled BuildNoStmtCtx(
@@ -85,11 +107,20 @@ namespace com.espertech.esper.common.@internal.compile.stage2
             PropertyEvaluatorForge optionalPropertyEvaluator = null;
             if (optionalPropertyEvalSpec != null) {
                 optionalPropertyEvaluator = PropertyEvaluatorForgeFactory.MakeEvaluator(
-                    optionalPropertyEvalSpec, eventType, optionalStreamName, statementRawInfo, compileTimeServices);
+                    optionalPropertyEvalSpec,
+                    eventType,
+                    optionalStreamName,
+                    statementRawInfo,
+                    compileTimeServices);
             }
 
             var args = new FilterSpecCompilerArgs(
-                taggedEventTypes, arrayEventTypes, streamTypeService, null, statementRawInfo, compileTimeServices);
+                taggedEventTypes,
+                arrayEventTypes,
+                streamTypeService,
+                null,
+                statementRawInfo,
+                compileTimeServices);
             IList<FilterSpecParamForge>[] spec = FilterSpecCompilerPlanner.PlanFilterParameters(validatedNodes, args);
 
             if (Log.IsDebugEnabled) {
@@ -112,7 +143,9 @@ namespace com.espertech.esper.common.@internal.compile.stage2
 
             ExprValidationContext validationContext =
                 new ExprValidationContextBuilder(streamTypeService, statementRawInfo, services)
-                    .WithAllowBindingConsumption(true).WithIsFilterExpression(true).Build();
+                    .WithAllowBindingConsumption(true)
+                    .WithIsFilterExpression(true)
+                    .Build();
             foreach (var node in exprNodes) {
                 // Determine subselects
                 var visitor = new ExprNodeSubselectDeclaredDotVisitor();
@@ -125,14 +158,21 @@ namespace com.espertech.esper.common.@internal.compile.stage2
                         try {
                             SubSelectHelperFilters.HandleSubselectSelectClauses(
                                 subselect,
-                                streamTypeService.EventTypes[0], streamTypeService.StreamNames[0],
+                                streamTypeService.EventTypes[0],
                                 streamTypeService.StreamNames[0],
-                                taggedEventTypes, arrayEventTypes, statementRawInfo, services);
+                                streamTypeService.StreamNames[0],
+                                taggedEventTypes,
+                                arrayEventTypes,
+                                statementRawInfo,
+                                services);
                         }
                         catch (ExprValidationException ex) {
                             throw new ExprValidationException(
-                                "Failed to validate " + ExprNodeUtilityMake.GetSubqueryInfoText(subselect) + ": " +
-                                ex.Message, ex);
+                                "Failed to validate " +
+                                ExprNodeUtilityMake.GetSubqueryInfoText(subselect) +
+                                ": " +
+                                ex.Message,
+                                ex);
                         }
                     }
                 }
@@ -143,7 +183,8 @@ namespace com.espertech.esper.common.@internal.compile.stage2
                 if (validated.Forge.EvaluationType != typeof(bool?) && validated.Forge.EvaluationType != typeof(bool)) {
                     throw new ExprValidationException(
                         "Filter expression not returning a boolean value: '" +
-                        ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(validated) + "'");
+                        ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(validated) +
+                        "'");
                 }
             }
 

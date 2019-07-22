@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Linq;
+
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.compile.stage1.spec;
 using com.espertech.esper.common.@internal.compile.stage2;
@@ -16,6 +17,7 @@ using com.espertech.esper.common.@internal.context.controller.core;
 using com.espertech.esper.common.@internal.context.module;
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.compat.collections;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.context.controller.keyed
@@ -38,7 +40,8 @@ namespace com.espertech.esper.common.@internal.context.controller.keyed
                 for (var i = 0; i < detail.Items.Count; i++) {
                     var props = detail.Items[i];
                     items[i] = new ContextControllerKeyedValidationItem(
-                        props.FilterSpecCompiled.FilterForEventType, props.PropertyNames.ToArray());
+                        props.FilterSpecCompiled.FilterForEventType,
+                        props.PropertyNames.ToArray());
                 }
 
                 return new ContextControllerKeyedValidation(items);
@@ -79,10 +82,11 @@ namespace com.espertech.esper.common.@internal.context.controller.keyed
         {
             var method = parent.MakeChild(typeof(ContextControllerKeyedFactory), GetType(), classScope);
             method.Block
-                .DeclareVar(
-                    typeof(ContextControllerKeyedFactory), "factory",
+                .DeclareVar<ContextControllerKeyedFactory>(
+                    "factory",
                     ExprDotMethodChain(symbols.GetAddInitSvc(method))
-                        .Add(EPStatementInitServicesConstants.GETCONTEXTSERVICEFACTORY).Add("keyedFactory"))
+                        .Add(EPStatementInitServicesConstants.GETCONTEXTSERVICEFACTORY)
+                        .Add("keyedFactory"))
                 .SetProperty(Ref("factory"), "KeyedSpec", detail.MakeCodegen(method, symbols, classScope))
                 .MethodReturn(Ref("factory"));
             return method;

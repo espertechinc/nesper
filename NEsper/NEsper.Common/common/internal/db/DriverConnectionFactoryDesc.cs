@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.configuration.common;
 using com.espertech.esper.common.client.db;
@@ -114,7 +115,10 @@ namespace com.espertech.esper.common.@internal.db
         /// <param name="container">Resource container.</param>
         /// <param name="driverType">Type of the driver.</param>
         /// <param name="properties">The properties.</param>
-        public DriverConnectionFactoryDesc(IContainer container, Type driverType, Properties properties)
+        public DriverConnectionFactoryDesc(
+            IContainer container,
+            Type driverType,
+            Properties properties)
         {
             _driver = ResolveDriverFromType(container, driverType);
             _driver.Properties = properties;
@@ -126,8 +130,10 @@ namespace com.espertech.esper.common.@internal.db
         /// <param name="container">Resource container.</param>
         /// <param name="driverName">Name of the driver.</param>
         /// <param name="properties">Properties that should be applied to the connection.</param>
-
-        public DriverConnectionFactoryDesc(IContainer container, String driverName, Properties properties)
+        public DriverConnectionFactoryDesc(
+            IContainer container,
+            String driverName,
+            Properties properties)
         {
             _driver = ResolveDriverFromName(container, driverName);
             _driver.Properties = properties;
@@ -138,7 +144,9 @@ namespace com.espertech.esper.common.@internal.db
         /// </summary>
         /// <param name="container">Resource container.</param>
         /// <param name="specification">The db specification.</param>
-        public DriverConnectionFactoryDesc(IContainer container, DriverConfiguration specification)
+        public DriverConnectionFactoryDesc(
+            IContainer container,
+            DriverConfiguration specification)
         {
             _driver = ResolveDriverFromName(container, specification.DriverName);
             _driver.Properties = specification.Properties;

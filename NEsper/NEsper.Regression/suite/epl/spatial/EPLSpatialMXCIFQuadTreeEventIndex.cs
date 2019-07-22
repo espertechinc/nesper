@@ -593,7 +593,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.spatial
                     count++;
                 }
 
-                var deleteQuery = BuildDeleteQueryWithInClause("RectangleWindow", "id", idList);
+                var deleteQuery = BuildDeleteQueryWithInClause("RectangleWindow", "Id", idList);
                 env.CompileExecuteFAF(deleteQuery, path);
             }
 
@@ -613,7 +613,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.spatial
                     return;
                 }
 
-                var deleteQuery = BuildDeleteQueryWithInClause("RectangleWindow", "id", idList);
+                var deleteQuery = BuildDeleteQueryWithInClause("RectangleWindow", "Id", idList);
                 env.CompileExecuteFAF(deleteQuery, path);
             }
 
@@ -631,7 +631,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.spatial
                     }
                 }
 
-                var deleteQuery = BuildDeleteQueryWithInClause("RectangleWindow", "id", idList);
+                var deleteQuery = BuildDeleteQueryWithInClause("RectangleWindow", "Id", idList);
                 env.CompileExecuteFAF(deleteQuery, path);
             }
 
@@ -853,7 +853,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.spatial
 
                 // Comment-me-in:
                 // log.info("Moving " + rectangle.getId() + " from " + printPoint(rectangle.getX(), rectangle.getY()) + " to " + printPoint(newX, newY));
-                preparedDelete.SetObject("id", rectangle.Id);
+                preparedDelete.SetObject("Id", rectangle.Id);
                 env.Runtime.FireAndForgetService.ExecuteQuery(preparedDelete);
 
                 rectangle.X = newX;
@@ -945,7 +945,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.spatial
 
                 while (!idList.IsEmpty()) {
                     var first = idList.Count > 100 ? idList.SubList(0, 100) : idList;
-                    env.CompileExecuteFAF(BuildDeleteQueryWithInClause("RectangleWindow", "id", first), path);
+                    env.CompileExecuteFAF(BuildDeleteQueryWithInClause("RectangleWindow", "Id", first), path);
                     idList.RemoveAll(first);
                 }
 

@@ -6,25 +6,18 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using com.espertech.esper.common.@internal.compile.stage1.spec;
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.epl.table.core;
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.output.view
 {
     /// <summary>
-    /// An output strategy that handles routing (insert-into) and stream selection.
+    ///     An output strategy that handles routing (insert-into) and stream selection.
     /// </summary>
     public class OutputStrategyPostProcessFactory
     {
-        private readonly bool isRoute;
-        private readonly SelectClauseStreamSelectorEnum insertIntoStreamSelector;
-        private readonly SelectClauseStreamSelectorEnum selectStreamDirEnum;
-        private readonly bool addToFront;
-        private readonly Table optionalTable;
+        private readonly Table _optionalTable;
 
         public OutputStrategyPostProcessFactory(
             bool isRoute,
@@ -33,37 +26,29 @@ namespace com.espertech.esper.common.@internal.epl.output.view
             bool addToFront,
             Table optionalTable)
         {
-            this.isRoute = isRoute;
-            this.insertIntoStreamSelector = insertIntoStreamSelector;
-            this.selectStreamDirEnum = selectStreamDirEnum;
-            this.addToFront = addToFront;
-            this.optionalTable = optionalTable;
+            IsRoute = isRoute;
+            InsertIntoStreamSelector = insertIntoStreamSelector;
+            SelectStreamDirEnum = selectStreamDirEnum;
+            IsAddToFront = addToFront;
+            _optionalTable = optionalTable;
         }
+
+        public bool IsRoute { get; }
+
+        public SelectClauseStreamSelectorEnum InsertIntoStreamSelector { get; }
+
+        public SelectClauseStreamSelectorEnum SelectStreamDirEnum { get; }
+
+        public bool IsAddToFront { get; }
 
         public OutputStrategyPostProcess Make(AgentInstanceContext agentInstanceContext)
         {
             TableInstance tableInstance = null;
-            if (optionalTable != null) {
-                tableInstance = optionalTable.GetTableInstance(agentInstanceContext.AgentInstanceId);
+            if (_optionalTable != null) {
+                tableInstance = _optionalTable.GetTableInstance(agentInstanceContext.AgentInstanceId);
             }
 
             return new OutputStrategyPostProcess(this, agentInstanceContext, tableInstance);
-        }
-
-        public bool IsRoute {
-            get => isRoute;
-        }
-
-        public SelectClauseStreamSelectorEnum InsertIntoStreamSelector {
-            get => insertIntoStreamSelector;
-        }
-
-        public SelectClauseStreamSelectorEnum SelectStreamDirEnum {
-            get => selectStreamDirEnum;
-        }
-
-        public bool IsAddToFront {
-            get => addToFront;
         }
     }
 } // end of namespace

@@ -10,6 +10,7 @@ using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.epl.lookup;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.lookupplansubord
@@ -34,7 +35,12 @@ namespace com.espertech.esper.common.@internal.epl.lookupplansubord
             CodegenClassScope classScope)
         {
             var builder = new SAIFFInitializeBuilder(
-                typeof(SubordinateQueryPlanDesc), GetType(), "strategy", parent, symbols, classScope);
+                typeof(SubordinateQueryPlanDesc),
+                GetType(),
+                "strategy",
+                parent,
+                symbols,
+                classScope);
             var numIndex = IndexDescs == null ? 0 : IndexDescs.Length;
             var indexDescArray = new CodegenExpression[numIndex];
             for (var i = 0; i < numIndex; i++) {
@@ -42,7 +48,8 @@ namespace com.espertech.esper.common.@internal.epl.lookupplansubord
             }
 
             return builder.Expression(
-                    "lookupStrategyFactory", LookupStrategyFactory.Make(builder.Method(), symbols, classScope))
+                    "lookupStrategyFactory",
+                    LookupStrategyFactory.Make(builder.Method(), symbols, classScope))
                 .Expression("indexDescs", NewArrayWithInit(typeof(SubordinateQueryIndexDesc), indexDescArray))
                 .Build();
         }

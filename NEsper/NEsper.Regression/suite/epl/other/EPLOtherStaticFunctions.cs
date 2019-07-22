@@ -270,7 +270,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             public void Run(RegressionEnvironment env)
             {
                 var className = typeof(SupportStaticMethodLib).Name;
-                var statementText = "@Name('s0') select price, " +
+                var statementText = "@Name('s0') select Price, " +
                                     className +
                                     ".throwException() as value " +
                                     STREAM_MDB_LEN5;
@@ -453,10 +453,10 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
         {
             public void Run(RegressionEnvironment env)
             {
-                var statementText = "@Name('s0') select Convert.ToString(price) " + STREAM_MDB_LEN5;
+                var statementText = "@Name('s0') select Convert.ToString(Price) " + STREAM_MDB_LEN5;
                 env.CompileDeploy(statementText).AddListener("s0");
 
-                var result = AssertStatementAndGetProperty(env, true, "Convert.ToString(price)");
+                var result = AssertStatementAndGetProperty(env, true, "Convert.ToString(Price)");
                 Assert.AreEqual(Convert.ToString(10d), result[0]);
                 env.UndeployAll();
 
@@ -467,21 +467,21 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 Assert.AreEqual(Convert.ToString(17), result[0]);
                 env.UndeployAll();
 
-                statementText = "@Name('s0') select Convert.ToString(price*Volume +Volume) " + STREAM_MDB_LEN5;
+                statementText = "@Name('s0') select Convert.ToString(Price*Volume +Volume) " + STREAM_MDB_LEN5;
                 env.CompileDeploy(statementText).AddListener("s0");
 
-                result = AssertStatementAndGetProperty(env, true, "Convert.ToString(price*Volume+Volume)");
+                result = AssertStatementAndGetProperty(env, true, "Convert.ToString(Price*Volume+Volume)");
                 Assert.AreEqual(Convert.ToString(44d), result[0]);
                 env.UndeployAll();
 
-                statementText = "@Name('s0') select Convert.ToString(Math.pow(price,Convert.ToInt32(\"2\"))) " +
+                statementText = "@Name('s0') select Convert.ToString(Math.pow(Price,Convert.ToInt32(\"2\"))) " +
                                 STREAM_MDB_LEN5;
                 env.CompileDeploy(statementText).AddListener("s0");
 
                 result = AssertStatementAndGetProperty(
                     env,
                     true,
-                    "Convert.ToString(Math.pow(price,Convert.ToInt32(\"2\")))");
+                    "Convert.ToString(Math.pow(Price,Convert.ToInt32(\"2\")))");
                 Assert.AreEqual(Convert.ToString(100d), result[0]);
 
                 env.UndeployAll();
@@ -492,10 +492,10 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
         {
             public void Run(RegressionEnvironment env)
             {
-                var statementText = "@Name('s0') select Math.max(2d,price), Math.max(Volume,4d)" + STREAM_MDB_LEN5;
+                var statementText = "@Name('s0') select Math.max(2d,Price), Math.max(Volume,4d)" + STREAM_MDB_LEN5;
                 env.CompileDeploy(statementText).AddListener("s0");
 
-                var props = AssertStatementAndGetProperty(env, true, "Math.max(2.0,price)", "Math.max(Volume,4.0)");
+                var props = AssertStatementAndGetProperty(env, true, "Math.max(2.0,Price)", "Math.max(Volume,4.0)");
                 Assert.AreEqual(10d, props[0]);
                 Assert.AreEqual(4d, props[1]);
                 env.UndeployAll();
@@ -507,7 +507,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             public void Run(RegressionEnvironment env)
             {
                 // where
-                var statementText = "@Name('s0') select *" + STREAM_MDB_LEN5 + "where Math.pow(price, .5) > 2";
+                var statementText = "@Name('s0') select *" + STREAM_MDB_LEN5 + "where Math.pow(Price, .5) > 2";
                 env.CompileDeploy(statementText).AddListener("s0");
                 Assert.AreEqual("IBM", AssertStatementAndGetProperty(env, true, "Symbol")[0]);
                 SendEvent(env, "CAT", 4d, 100);
@@ -515,29 +515,29 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 env.UndeployAll();
 
                 // group-by
-                statementText = "@Name('s0') select Symbol, sum(price)" +
+                statementText = "@Name('s0') select Symbol, sum(Price)" +
                                 STREAM_MDB_LEN5 +
                                 "group by Convert.ToString(Symbol)";
                 env.CompileDeploy(statementText).AddListener("s0");
-                Assert.AreEqual(10d, AssertStatementAndGetProperty(env, true, "sum(price)")[0]);
+                Assert.AreEqual(10d, AssertStatementAndGetProperty(env, true, "sum(Price)")[0]);
                 SendEvent(env, "IBM", 4d, 100);
-                Assert.AreEqual(14d, GetProperty(env, "sum(price)"));
+                Assert.AreEqual(14d, GetProperty(env, "sum(Price)"));
                 env.UndeployAll();
 
                 // having
-                statementText = "@Name('s0') select Symbol, sum(price)" +
+                statementText = "@Name('s0') select Symbol, sum(Price)" +
                                 STREAM_MDB_LEN5 +
-                                "having Math.pow(sum(price), .5) > 3";
+                                "having Math.pow(sum(Price), .5) > 3";
                 env.CompileDeploy(statementText).AddListener("s0");
-                Assert.AreEqual(10d, AssertStatementAndGetProperty(env, true, "sum(price)")[0]);
+                Assert.AreEqual(10d, AssertStatementAndGetProperty(env, true, "sum(Price)")[0]);
                 SendEvent(env, "IBM", 100d, 100);
-                Assert.AreEqual(110d, GetProperty(env, "sum(price)"));
+                Assert.AreEqual(110d, GetProperty(env, "sum(Price)"));
                 env.UndeployAll();
 
                 // order-by
-                statementText = "@Name('s0') select Symbol, price" +
+                statementText = "@Name('s0') select Symbol, Price" +
                                 STREAM_MDB_LEN5 +
-                                "output every 3 events order by Math.pow(price, 2)";
+                                "output every 3 events order by Math.pow(Price, 2)";
                 env.CompileDeploy(statementText).AddListener("s0");
                 AssertStatementAndGetProperty(env, false, "Symbol");
                 SendEvent(env, "CAT", 10d, 0L);

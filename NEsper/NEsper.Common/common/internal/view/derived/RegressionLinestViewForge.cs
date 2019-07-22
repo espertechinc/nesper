@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -18,6 +19,7 @@ using com.espertech.esper.common.@internal.view.core;
 using com.espertech.esper.common.@internal.view.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+
 using static com.espertech.esper.common.@internal.epl.expression.core.ExprNodeUtilityCodegen;
 
 namespace com.espertech.esper.common.@internal.view.derived
@@ -46,13 +48,20 @@ namespace com.espertech.esper.common.@internal.view.derived
             int streamNumber,
             ViewForgeEnv viewForgeEnv)
         {
-            ExprNode[] validated = ViewForgeSupport.Validate(ViewName, parentEventType, viewParameters, true, viewForgeEnv, streamNumber);
+            ExprNode[] validated = ViewForgeSupport.Validate(
+                ViewName,
+                parentEventType,
+                viewParameters,
+                true,
+                viewForgeEnv,
+                streamNumber);
 
             if (validated.Length < 2) {
                 throw new ViewParameterException(ViewParamMessage);
             }
 
-            if ((!TypeHelper.IsNumeric(validated[0].Forge.EvaluationType)) || (!TypeHelper.IsNumeric(validated[1].Forge.EvaluationType))) {
+            if ((!TypeHelper.IsNumeric(validated[0].Forge.EvaluationType)) ||
+                (!TypeHelper.IsNumeric(validated[1].Forge.EvaluationType))) {
                 throw new ViewParameterException(ViewParamMessage);
             }
 
@@ -84,8 +93,14 @@ namespace com.espertech.esper.common.@internal.view.derived
             }
 
             method.Block
-                .SetProperty(factory, "ExpressionXEval", CodegenEvaluator(expressionX.Forge, method, this.GetType(), classScope))
-                .SetProperty(factory, "ExpressionYEval", CodegenEvaluator(expressionY.Forge, method, this.GetType(), classScope));
+                .SetProperty(
+                    factory,
+                    "ExpressionXEval",
+                    CodegenEvaluator(expressionX.Forge, method, this.GetType(), classScope))
+                .SetProperty(
+                    factory,
+                    "ExpressionYEval",
+                    CodegenEvaluator(expressionY.Forge, method, this.GetType(), classScope));
         }
 
         public override string ViewName {

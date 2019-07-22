@@ -48,7 +48,12 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
                 ExprForgeCodegenSymbol exprSymbol,
                 CodegenClassScope codegenClassScope)
             {
-                return CodegenExpressionBuilder.And(CodegenExpressionBuilder.EqualsIdentity(leftStart, rightStart), CodegenExpressionBuilder.Relational(leftEnd, CodegenExpressionRelational.CodegenRelational.LT, rightEnd));
+                return CodegenExpressionBuilder.And(
+                    CodegenExpressionBuilder.EqualsIdentity(leftStart, rightStart),
+                    CodegenExpressionBuilder.Relational(
+                        leftEnd,
+                        CodegenExpressionRelational.CodegenRelational.LT,
+                        rightEnd));
             }
         }
     }

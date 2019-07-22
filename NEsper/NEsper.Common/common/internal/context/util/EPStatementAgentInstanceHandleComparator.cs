@@ -13,7 +13,8 @@ namespace com.espertech.esper.common.@internal.context.util
 {
     public class EPStatementAgentInstanceHandleComparator : IComparer<EPStatementAgentInstanceHandle>
     {
-        public static EPStatementAgentInstanceHandleComparator INSTANCE = new EPStatementAgentInstanceHandleComparator();
+        public static EPStatementAgentInstanceHandleComparator
+            INSTANCE = new EPStatementAgentInstanceHandleComparator();
 
         public int Compare(
             EPStatementAgentInstanceHandle o1,

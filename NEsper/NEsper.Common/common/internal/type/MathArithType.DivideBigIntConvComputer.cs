@@ -8,6 +8,7 @@
 
 using System;
 using System.Numerics;
+
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.util;
@@ -62,16 +63,24 @@ namespace com.espertech.esper.common.@internal.type
                 var method = codegenMethodScope
                     .MakeChild(typeof(BigInteger), typeof(DivideBigIntConvComputer), codegenClassScope)
                     .AddParam(ltype, "d1")
-                    .AddParam(rtype, "d2").Block
-                    .DeclareVar(typeof(BigInteger), "s1", convOne.CoerceBoxedBigIntCodegen(CodegenExpressionBuilder.Ref("d1"), ltype))
-                    .DeclareVar(typeof(BigInteger), "s2", convTwo.CoerceBoxedBigIntCodegen(CodegenExpressionBuilder.Ref("d2"), rtype))
+                    .AddParam(rtype, "d2")
+                    .Block
+                    .DeclareVar<BigInteger>(
+                        "s1",
+                        convOne.CoerceBoxedBigIntCodegen(CodegenExpressionBuilder.Ref("d1"), ltype))
+                    .DeclareVar<BigInteger>(
+                        "s2",
+                        convTwo.CoerceBoxedBigIntCodegen(CodegenExpressionBuilder.Ref("d2"), rtype))
                     .IfCondition(
                         CodegenExpressionBuilder.EqualsIdentity(
                             CodegenExpressionBuilder.ExprDotMethod(CodegenExpressionBuilder.Ref("s2"), "doubleValue"),
                             CodegenExpressionBuilder.Constant(0)))
                     .BlockReturn(CodegenExpressionBuilder.ConstantNull())
                     .MethodReturn(
-                        CodegenExpressionBuilder.ExprDotMethod(CodegenExpressionBuilder.Ref("s1"), "divide", CodegenExpressionBuilder.Ref("s2")));
+                        CodegenExpressionBuilder.ExprDotMethod(
+                            CodegenExpressionBuilder.Ref("s1"),
+                            "divide",
+                            CodegenExpressionBuilder.Ref("s2")));
                 return CodegenExpressionBuilder.LocalMethodBuild(method).Pass(left).Pass(right).Call();
             }
         }

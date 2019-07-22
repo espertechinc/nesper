@@ -64,8 +64,7 @@ namespace com.espertech.esper.common.@internal.collection
         /// Gets the current.
         /// </summary>
         /// <value>The current.</value>
-        object IEnumerator.Current
-        {
+        object IEnumerator.Current {
             get { return _eventBeanEnum.Current; }
         }
 
@@ -73,51 +72,48 @@ namespace com.espertech.esper.common.@internal.collection
         /// Gets the current.
         /// </summary>
         /// <value>The current.</value>
-        public EventBean Current
-        {
+        public EventBean Current {
             get { return _eventBeanEnum.Current; }
         }
 
         private IEnumerator<EventBean> MakeEnumerator(IEnumerator<object> keyEnumerator)
         {
-            while (keyEnumerator.MoveNext())
-            {
+            while (keyEnumerator.MoveNext()) {
                 var entry = GetValue(keyEnumerator.Current);
-                if (entry is ICollection<EventBean>)
-                {
+                if (entry is ICollection<EventBean>) {
                     var collection = (ICollection<EventBean>) entry;
-                    foreach (EventBean eventBean in collection)
-                    {
+                    foreach (EventBean eventBean in collection) {
                         yield return eventBean;
                     }
                 }
-                else if (entry is EventBean)
-                {
+                else if (entry is EventBean) {
                     yield return ((EventBean) entry);
                 }
-                else if (entry == null)
-                {
+                else if (entry == null) {
                 }
-                else
-                {
+                else {
                     throw new IllegalStateException();
                 }
             }
         }
     }
 
-    public class MixedEventBeanAndCollectionEnumerator 
+    public class MixedEventBeanAndCollectionEnumerator
         : MixedEventBeanAndCollectionEnumeratorBase
     {
         public Func<object, object> ProcGetValue { get; set; }
 
-        public MixedEventBeanAndCollectionEnumerator(IEnumerator<object> keyEnumerator, Func<object, object> procGetValue)
+        public MixedEventBeanAndCollectionEnumerator(
+            IEnumerator<object> keyEnumerator,
+            Func<object, object> procGetValue)
             : base(keyEnumerator)
         {
             ProcGetValue = procGetValue;
         }
 
-        public MixedEventBeanAndCollectionEnumerator(IEnumerable<object> keyEnumerable, Func<object, object> procGetValue) : base(keyEnumerable)
+        public MixedEventBeanAndCollectionEnumerator(
+            IEnumerable<object> keyEnumerable,
+            Func<object, object> procGetValue) : base(keyEnumerable)
         {
             ProcGetValue = procGetValue;
         }

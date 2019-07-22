@@ -14,6 +14,7 @@ using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.resultset.core;
 using com.espertech.esper.common.@internal.epl.table.compiletime;
 using com.espertech.esper.common.@internal.epl.table.core;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.onsplit
@@ -71,19 +72,27 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.onspl
         {
             var method = parent.MakeChild(typeof(OnSplitItemEval), GetType(), classScope);
             method.Block
-                .DeclareVar(typeof(OnSplitItemEval), "eval", NewInstance(typeof(OnSplitItemEval)))
-                .SetProperty(Ref("eval"), "WhereClause",
+                .DeclareVar<OnSplitItemEval>("eval", NewInstance(typeof(OnSplitItemEval)))
+                .SetProperty(
+                    Ref("eval"),
+                    "WhereClause",
                     WhereClause == null
                         ? ConstantNull()
                         : ExprNodeUtilityCodegen.CodegenEvaluator(WhereClause.Forge, method, GetType(), classScope))
                 .SetProperty(Ref("eval"), "NamedWindowInsert", Constant(IsNamedWindowInsert))
-                .SetProperty(Ref("eval"), "InsertIntoTable",
+                .SetProperty(
+                    Ref("eval"),
+                    "InsertIntoTable",
                     InsertIntoTable == null
                         ? ConstantNull()
                         : TableDeployTimeResolver.MakeResolveTable(InsertIntoTable, symbols.GetAddInitSvc(method)))
-                .SetProperty(Ref("eval"), "RspFactoryProvider",
+                .SetProperty(
+                    Ref("eval"),
+                    "RspFactoryProvider",
                     NewInstance(resultSetProcessorClassName, symbols.GetAddInitSvc(method)))
-                .SetProperty(Ref("eval"), "PropertyEvaluator",
+                .SetProperty(
+                    Ref("eval"),
+                    "PropertyEvaluator",
                     PropertyEvaluator == null ? ConstantNull() : PropertyEvaluator.Make(method, symbols, classScope))
                 .MethodReturn(Ref("eval"));
             return LocalMethod(method);

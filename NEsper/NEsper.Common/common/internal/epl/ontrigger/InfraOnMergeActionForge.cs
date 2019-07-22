@@ -7,10 +7,12 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.epl.expression.core;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.ontrigger
@@ -44,10 +46,13 @@ namespace com.espertech.esper.common.@internal.epl.ontrigger
             SAIFFInitializeSymbol symbols,
             CodegenClassScope classScope)
         {
-            var method = parent.MakeChild(typeof(IList<object>), typeof(InfraOnMergeActionForge), classScope);
-            method.Block.DeclareVar(
-                typeof(IList<object>), typeof(InfraOnMergeAction), "list",
-                NewInstance<List<object>>(Constant(actions.Count)));
+            var method = parent.MakeChild(
+                typeof(IList<InfraOnMergeAction>),
+                typeof(InfraOnMergeActionForge),
+                classScope);
+            method.Block.DeclareVar<IList<InfraOnMergeAction>>(
+                "list",
+                NewInstance<List<InfraOnMergeAction>>(Constant(actions.Count)));
             foreach (var item in actions) {
                 method.Block.ExprDotMethod(Ref("list"), "add", item.Make(method, symbols, classScope));
             }

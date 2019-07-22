@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -17,6 +18,7 @@ using com.espertech.esper.common.@internal.epl.join.querygraph;
 using com.espertech.esper.common.@internal.epl.join.queryplan;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+
 using static com.espertech.esper.common.@internal.epl.expression.core.ExprNodeUtilityCodegen;
 
 namespace com.espertech.esper.common.@internal.epl.join.indexlookupplan
@@ -55,9 +57,11 @@ namespace com.espertech.esper.common.@internal.epl.join.indexlookupplan
 
         public override string ToString()
         {
-            return this.GetType().Name + " " +
+            return this.GetType().Name +
+                   " " +
                    base.ToString() +
-                   " keyProperties=" + ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(keyExpr);
+                   " keyProperties=" +
+                   ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(keyExpr);
         }
 
         public override Type TypeOfPlanFactory()

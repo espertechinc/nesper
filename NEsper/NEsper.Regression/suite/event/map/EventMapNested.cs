@@ -177,7 +177,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.map
                                     "simple, object, nodefmap, map, " +
                                     "object.Id as a1, nodefmap.key1? as a2, nodefmap.key2? as a3, nodefmap.key3?.key4 as a4, " +
                                     "map.objectOne as b1, map.simpleOne as b2, map.nodefmapOne.key2? as b3, map.mapOne.simpleTwo? as b4, " +
-                                    "map.objectOne.indexed[1] as c1, map.objectOne.nested.nestedValue as c2," +
+                                    "map.objectOne.indexed[1] as c1, map.objectOne.nested.NestedValue as c2," +
                                     "map.mapOne.simpleTwo as d1, map.mapOne.objectTwo as d2, map.mapOne.nodefmapTwo as d3, " +
                                     "map.mapOne.mapTwo as e1, map.mapOne.mapTwo.simpleThree as e2, map.mapOne.mapTwo.objectThree as e3, " +
                                     "map.mapOne.objectTwo.array[1].mapped('1ma').value as f1, map.mapOne.mapTwo.objectThree.Id as f2" +
@@ -204,7 +204,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.map
                 EPAssertionUtil.AssertProps(
                     received,
                     "c1,c2".SplitCsv(),
-                    new object[] {2, "nestedValue"});
+                    new object[] {2, "NestedValue"});
                 EPAssertionUtil.AssertProps(
                     received,
                     "d1,d2,d3".SplitCsv(),

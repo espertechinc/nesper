@@ -43,18 +43,17 @@ namespace com.espertech.esper.common.@internal.epl.expression.declared.compileti
         {
             // try self-originated protected types first
             ExpressionDeclItem localExpr = locals.Expressions.Get(name);
-            if (localExpr != null)
-            {
+            if (localExpr != null) {
                 return localExpr;
             }
 
-            try
-            {
+            try {
                 var expression = path.GetAnyModuleExpectSingle(name, moduleUses);
-                if (expression != null)
-                {
-                    if (!NameAccessModifierExtensions.Visible(expression.First.Visibility, expression.First.ModuleName, moduleName))
-                    {
+                if (expression != null) {
+                    if (!NameAccessModifierExtensions.Visible(
+                        expression.First.Visibility,
+                        expression.First.ModuleName,
+                        moduleName)) {
                         return null;
                     }
 
@@ -62,8 +61,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.declared.compileti
                     return expression.First;
                 }
             }
-            catch (PathException e)
-            {
+            catch (PathException e) {
                 throw CompileTimeResolverUtil.MakePathAmbiguous(PathRegistryObjectType.EXPRDECL, name, e);
             }
 

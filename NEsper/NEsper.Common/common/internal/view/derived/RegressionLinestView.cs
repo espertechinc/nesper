@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.epl.expression.core;
@@ -61,13 +62,21 @@ namespace com.espertech.esper.common.@internal.view.derived
             result.Put(ViewFieldEnum.REGRESSION__SLOPE.GetName(), baseStatisticsBean.Slope);
             result.Put(ViewFieldEnum.REGRESSION__YINTERCEPT.GetName(), baseStatisticsBean.YIntercept);
             result.Put(ViewFieldEnum.REGRESSION__XAVERAGE.GetName(), baseStatisticsBean.XAverage);
-            result.Put(ViewFieldEnum.REGRESSION__XSTANDARDDEVIATIONPOP.GetName(), baseStatisticsBean.XStandardDeviationPop);
-            result.Put(ViewFieldEnum.REGRESSION__XSTANDARDDEVIATIONSAMPLE.GetName(), baseStatisticsBean.XStandardDeviationSample);
+            result.Put(
+                ViewFieldEnum.REGRESSION__XSTANDARDDEVIATIONPOP.GetName(),
+                baseStatisticsBean.XStandardDeviationPop);
+            result.Put(
+                ViewFieldEnum.REGRESSION__XSTANDARDDEVIATIONSAMPLE.GetName(),
+                baseStatisticsBean.XStandardDeviationSample);
             result.Put(ViewFieldEnum.REGRESSION__XSUM.GetName(), baseStatisticsBean.XSum);
             result.Put(ViewFieldEnum.REGRESSION__XVARIANCE.GetName(), baseStatisticsBean.XVariance);
             result.Put(ViewFieldEnum.REGRESSION__YAVERAGE.GetName(), baseStatisticsBean.YAverage);
-            result.Put(ViewFieldEnum.REGRESSION__YSTANDARDDEVIATIONPOP.GetName(), baseStatisticsBean.YStandardDeviationPop);
-            result.Put(ViewFieldEnum.REGRESSION__YSTANDARDDEVIATIONSAMPLE.GetName(), baseStatisticsBean.YStandardDeviationSample);
+            result.Put(
+                ViewFieldEnum.REGRESSION__YSTANDARDDEVIATIONPOP.GetName(),
+                baseStatisticsBean.YStandardDeviationPop);
+            result.Put(
+                ViewFieldEnum.REGRESSION__YSTANDARDDEVIATIONSAMPLE.GetName(),
+                baseStatisticsBean.YStandardDeviationSample);
             result.Put(ViewFieldEnum.REGRESSION__YSUM.GetName(), baseStatisticsBean.YSum);
             result.Put(ViewFieldEnum.REGRESSION__YVARIANCE.GetName(), baseStatisticsBean.YVariance);
             result.Put(ViewFieldEnum.REGRESSION__DATAPOINTS.GetName(), baseStatisticsBean.DataPoints);
@@ -110,8 +119,10 @@ namespace com.espertech.esper.common.@internal.view.derived
             eventTypeMap.Put(ViewFieldEnum.REGRESSION__SUMY.GetName(), typeof(double?));
             eventTypeMap.Put(ViewFieldEnum.REGRESSION__SUMYSQ.GetName(), typeof(double?));
             StatViewAdditionalPropsForge.AddCheckDupProperties(
-                eventTypeMap, additionalProps,
-                ViewFieldEnum.REGRESSION__SLOPE, ViewFieldEnum.REGRESSION__YINTERCEPT);
+                eventTypeMap,
+                additionalProps,
+                ViewFieldEnum.REGRESSION__SLOPE,
+                ViewFieldEnum.REGRESSION__YINTERCEPT);
             return DerivedViewTypeUtil.NewType("regview", eventTypeMap, env, streamNum);
         }
     }

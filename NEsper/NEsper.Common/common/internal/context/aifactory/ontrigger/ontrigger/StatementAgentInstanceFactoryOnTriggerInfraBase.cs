@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.context.aifactory.ontrigger.core;
@@ -58,7 +59,10 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.ontri
                     ? NamedWindow.EventTableIndexMetadata
                     : Table.EventTableIndexMetadata;
                 SubordinateQueryPlannerUtil.AddIndexMetaAndRef(
-                    queryPlan.IndexDescs, indexInfo, statementContext.DeploymentId, statementContext.StatementName);
+                    queryPlan.IndexDescs,
+                    indexInfo,
+                    statementContext.DeploymentId,
+                    statementContext.StatementName);
 
                 statementContext.AddFinalizeCallback(
                     new ProxyStatementFinalizeCallback {
@@ -66,7 +70,8 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.ontri
                             for (var i = 0; i < queryPlan.IndexDescs.Length; i++) {
                                 if (NamedWindow != null) {
                                     var last = NamedWindow.EventTableIndexMetadata.RemoveIndexReference(
-                                        queryPlan.IndexDescs[i].IndexMultiKey, statementContext.DeploymentId);
+                                        queryPlan.IndexDescs[i].IndexMultiKey,
+                                        statementContext.DeploymentId);
                                     if (last) {
                                         NamedWindow.EventTableIndexMetadata.RemoveIndex(
                                             queryPlan.IndexDescs[i].IndexMultiKey);
@@ -75,7 +80,8 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.ontri
                                 }
                                 else {
                                     var last = Table.EventTableIndexMetadata.RemoveIndexReference(
-                                        queryPlan.IndexDescs[i].IndexMultiKey, statementContext.DeploymentId);
+                                        queryPlan.IndexDescs[i].IndexMultiKey,
+                                        statementContext.DeploymentId);
                                     if (last) {
                                         Table.EventTableIndexMetadata.RemoveIndex(
                                             queryPlan.IndexDescs[i].IndexMultiKey);
@@ -133,7 +139,8 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.ontri
                             ProcStop = services => {
                                 for (var i = 0; i < queryPlan.IndexDescs.Length; i++) {
                                     var last = NamedWindow.EventTableIndexMetadata.RemoveIndexReference(
-                                        queryPlan.IndexDescs[i].IndexMultiKey, agentInstanceContext.DeploymentId);
+                                        queryPlan.IndexDescs[i].IndexMultiKey,
+                                        agentInstanceContext.DeploymentId);
                                     if (last) {
                                         NamedWindow.EventTableIndexMetadata.RemoveIndex(
                                             queryPlan.IndexDescs[i].IndexMultiKey);
@@ -159,12 +166,17 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.ontri
             var virtualDW =
                 NamedWindow != null ? namedWindowInstance.RootViewInstance.VirtualDataWindow : null;
             var lookupStrategy = queryPlan.Factory.Realize(
-                indexes, agentInstanceContext, scanIterable, virtualDW);
+                indexes,
+                agentInstanceContext,
+                scanIterable,
+                virtualDW);
 
             // realize view
             if (NamedWindow != null) {
                 return factory.MakeNamedWindow(
-                    lookupStrategy, namedWindowInstance.RootViewInstance, agentInstanceContext);
+                    lookupStrategy,
+                    namedWindowInstance.RootViewInstance,
+                    agentInstanceContext);
             }
 
             return factory.MakeTable(lookupStrategy, tableInstance, agentInstanceContext);
@@ -177,7 +189,10 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.ontri
             if (!IsSelect) {
                 var pair =
                     StatementAgentInstanceFactoryUtil.StartResultSetAndAggregation(
-                        nonSelectRSPFactoryProvider, agentInstanceContext, false, null);
+                        nonSelectRSPFactoryProvider,
+                        agentInstanceContext,
+                        false,
+                        null);
                 var @out = new OutputProcessViewSimpleWProcessor(agentInstanceContext, pair.First);
                 @out.Parent = onExprView;
                 onExprView.Child = @out;

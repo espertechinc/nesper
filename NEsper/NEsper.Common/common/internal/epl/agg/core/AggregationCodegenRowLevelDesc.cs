@@ -27,7 +27,9 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
         public static AggregationCodegenRowLevelDesc FromTopOnly(AggregationRowStateForgeDesc rowStateDesc)
         {
             var state = new AggregationCodegenRowDetailStateDesc(
-                rowStateDesc.MethodForges, rowStateDesc.OptionalMethodFactories, rowStateDesc.AccessFactoriesForges);
+                rowStateDesc.MethodForges,
+                rowStateDesc.OptionalMethodFactories,
+                rowStateDesc.AccessFactoriesForges);
             var top = new AggregationCodegenRowDetailDesc(state, rowStateDesc.AccessAccessorsForges);
             return new AggregationCodegenRowLevelDesc(top, null);
         }

@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -17,6 +18,7 @@ using com.espertech.esper.common.@internal.rettype;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.enummethod.eval
@@ -59,9 +61,11 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             CodegenClassScope codegenClassScope)
         {
             Type type = Boxing.GetBoxedType(EPTypeHelper.GetCodegenReturnType(resultType));
-            CodegenMethod method = codegenMethodScope.MakeChild(type, typeof(EnumLastOfNoPredicateForge), codegenClassScope)
-                .AddParam(EnumForgeCodegenNames.PARAMS).Block
-                .DeclareVar(typeof(object), "result", ConstantNull())
+            CodegenMethod method = codegenMethodScope
+                .MakeChild(type, typeof(EnumLastOfNoPredicateForge), codegenClassScope)
+                .AddParam(EnumForgeCodegenNames.PARAMS)
+                .Block
+                .DeclareVar<object>("result", ConstantNull())
                 .ForEach(typeof(object), "next", EnumForgeCodegenNames.REF_ENUMCOLL)
                 .AssignRef("result", @Ref("next"))
                 .BlockEnd()

@@ -8,8 +8,10 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.bytecodemodel.@base
@@ -54,7 +56,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
                 fields = new List<CodegenSubstitutionParamEntry>(named.Values);
             }
 
-            method.Block.DeclareVar(typeof(int), "zidx", Op(Ref("index"), "-", Constant(1)));
+            method.Block.DeclareVar<int>("zidx", Op(Ref("index"), "-", Constant(1)));
             var blocks = method.Block.SwitchBlockOfLength("zidx", fields.Count, false);
             for (var i = 0; i < blocks.Length; i++) {
                 CodegenSubstitutionParamEntry param = fields[i];

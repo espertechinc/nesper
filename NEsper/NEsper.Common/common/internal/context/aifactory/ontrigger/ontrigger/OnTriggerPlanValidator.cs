@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.collection;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.meta;
@@ -64,12 +65,19 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.ontri
             EventType[] subselectEventTypes = {namedWindowOrTableType, activatorResult.ActivatorResultEventType};
             string[] subselectEventTypeNames = {namedWindowTypeName, activatorResult.TriggerEventTypeName};
             var subselectForges = SubSelectHelperForgePlanner.PlanSubSelect(
-                @base, subselectActivation, subselectStreamNames, subselectEventTypes, subselectEventTypeNames,
+                @base,
+                subselectActivation,
+                subselectStreamNames,
+                subselectEventTypes,
+                subselectEventTypeNames,
                 services);
 
             var typeService = new StreamTypeServiceImpl(
                 new[] {namedWindowOrTableType, activatorResult.ActivatorResultEventType},
-                new[] {zeroStreamAliasName, streamName}, new[] {false, true}, true, false);
+                new[] {zeroStreamAliasName, streamName},
+                new[] {false, true},
+                true,
+                false);
 
             // allow "initial" as a prefix to properties
             StreamTypeServiceImpl assignmentTypeService;
@@ -79,41 +87,63 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.ontri
             else {
                 assignmentTypeService = new StreamTypeServiceImpl(
                     new[] {namedWindowOrTableType, activatorResult.ActivatorResultEventType, namedWindowOrTableType},
-                    new[] {zeroStreamAliasName, streamName, INITIAL_VALUE_STREAM_NAME}, new[] {false, true, true},
-                    false, false);
+                    new[] {zeroStreamAliasName, streamName, INITIAL_VALUE_STREAM_NAME},
+                    new[] {false, true, true},
+                    false,
+                    false);
                 assignmentTypeService.IsStreamZeroUnambigous = true;
             }
 
             if (onTriggerDesc is OnTriggerWindowUpdateDesc) {
                 var updateDesc = (OnTriggerWindowUpdateDesc) onTriggerDesc;
                 var validationContext = new ExprValidationContextBuilder(
-                        assignmentTypeService, @base.StatementRawInfo, services)
-                    .WithAllowBindingConsumption(true).Build();
+                        assignmentTypeService,
+                        @base.StatementRawInfo,
+                        services)
+                    .WithAllowBindingConsumption(true)
+                    .Build();
                 foreach (var assignment in updateDesc.Assignments) {
                     var validated = ExprNodeUtilityValidate.GetValidatedAssignment(assignment, validationContext);
                     assignment.Expression = validated;
                     EPStatementStartMethodHelperValidate.ValidateNoAggregations(
-                        validated, "Aggregation functions may not be used within an on-update-clause");
+                        validated,
+                        "Aggregation functions may not be used within an on-update-clause");
                 }
             }
 
             if (onTriggerDesc is OnTriggerMergeDesc) {
                 var mergeDesc = (OnTriggerMergeDesc) onTriggerDesc;
                 ValidateMergeDesc(
-                    mergeDesc, namedWindowOrTableType, zeroStreamAliasName, activatorResult.ActivatorResultEventType,
-                    streamName, @base.StatementRawInfo, services);
+                    mergeDesc,
+                    namedWindowOrTableType,
+                    zeroStreamAliasName,
+                    activatorResult.ActivatorResultEventType,
+                    streamName,
+                    @base.StatementRawInfo,
+                    services);
             }
 
             // validate join expression
             var validatedJoin = ValidateJoinNamedWindow(
-                ExprNodeOrigin.WHERE, @base.StatementSpec.Raw.WhereClause,
-                namedWindowOrTableType, zeroStreamAliasName, namedWindowTypeName,
-                activatorResult.ActivatorResultEventType, streamName, activatorResult.TriggerEventTypeName,
-                null, @base.StatementRawInfo, services);
+                ExprNodeOrigin.WHERE,
+                @base.StatementSpec.Raw.WhereClause,
+                namedWindowOrTableType,
+                zeroStreamAliasName,
+                namedWindowTypeName,
+                activatorResult.ActivatorResultEventType,
+                streamName,
+                activatorResult.TriggerEventTypeName,
+                null,
+                @base.StatementRawInfo,
+                services);
 
             // validate filter, output rate limiting
             EPStatementStartMethodHelperValidate.ValidateNodes(
-                @base.StatementSpec.Raw, typeService, null, @base.StatementRawInfo, services);
+                @base.StatementSpec.Raw,
+                typeService,
+                null,
+                @base.StatementRawInfo,
+                services);
 
             // Construct a processor for results; for use in on-select to process selection results
             // Use a wildcard select if the select-clause is empty, such as for on-delete.
@@ -124,14 +154,25 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.ontri
 
             var resultSetProcessorPrototype = ResultSetProcessorFactoryFactory.GetProcessorPrototype(
                 new ResultSetSpec(@base.StatementSpec),
-                typeService, null, new bool[0], true, @base.ContextPropertyRegistry, false, true,
-                @base.StatementRawInfo, services);
+                typeService,
+                null,
+                new bool[0],
+                true,
+                @base.ContextPropertyRegistry,
+                false,
+                true,
+                @base.StatementRawInfo,
+                services);
 
             // plan table access
             var tableAccessForges = ExprTableEvalHelperPlan.PlanTableAccess(@base.StatementSpec.TableAccessNodes);
 
             return new OnTriggerPlanValidationResult(
-                subselectForges, tableAccessForges, resultSetProcessorPrototype, validatedJoin, zeroStreamAliasName);
+                subselectForges,
+                tableAccessForges,
+                resultSetProcessorPrototype,
+                validatedJoin,
+                zeroStreamAliasName);
         }
 
         protected internal static ExprNode ValidateJoinNamedWindow(
@@ -158,7 +199,8 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.ontri
             StreamTypeService typeService = new StreamTypeServiceImpl(namesAndTypes, false, false);
 
             var validationContext = new ExprValidationContextBuilder(typeService, statementRawInfo, compileTimeServices)
-                .WithAllowBindingConsumption(true).Build();
+                .WithAllowBindingConsumption(true)
+                .Build();
             return ExprNodeUtilityValidate.GetValidatedSubtree(exprNodeOrigin, deleteJoinExpr, validationContext);
         }
 
@@ -174,18 +216,35 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.ontri
             var exprNodeErrorMessage = "Aggregation functions may not be used within an merge-clause";
 
             var dummyTypeNoPropertiesMeta = new EventTypeMetadata(
-                "merge_named_window_insert", statementRawInfo.ModuleName, EventTypeTypeClass.STREAM,
-                EventTypeApplicationType.MAP, NameAccessModifier.TRANSIENT, EventTypeBusModifier.NONBUS, false,
+                "merge_named_window_insert",
+                statementRawInfo.ModuleName,
+                EventTypeTypeClass.STREAM,
+                EventTypeApplicationType.MAP,
+                NameAccessModifier.TRANSIENT,
+                EventTypeBusModifier.NONBUS,
+                false,
                 EventTypeIdPair.Unassigned());
             EventType dummyTypeNoProperties = BaseNestableEventUtil.MakeMapTypeCompileTime(
-                dummyTypeNoPropertiesMeta, Collections.GetEmptyMap<string, object>(), null, null, null, null,
-                services.BeanEventTypeFactoryPrivate, services.EventTypeCompileTimeResolver);
+                dummyTypeNoPropertiesMeta,
+                Collections.GetEmptyMap<string, object>(),
+                null,
+                null,
+                null,
+                null,
+                services.BeanEventTypeFactoryPrivate,
+                services.EventTypeCompileTimeResolver);
             StreamTypeService insertOnlyTypeSvc = new StreamTypeServiceImpl(
                 new[] {dummyTypeNoProperties, triggerStreamType},
-                new[] {UuidGenerator.Generate(), triggerStreamName}, new[] {true, true}, true, false);
+                new[] {UuidGenerator.Generate(), triggerStreamName},
+                new[] {true, true},
+                true,
+                false);
             var twoStreamTypeSvc = new StreamTypeServiceImpl(
                 new[] {namedWindowType, triggerStreamType},
-                new[] {namedWindowName, triggerStreamName}, new[] {true, true}, true, false);
+                new[] {namedWindowName, triggerStreamName},
+                new[] {true, true},
+                true,
+                false);
 
             foreach (var matchedItem in mergeDesc.Items) {
                 // we may provide an additional stream "initial" for the prior value, unless already defined
@@ -197,16 +256,23 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.ontri
                 else {
                     assignmentStreamTypeSvc = new StreamTypeServiceImpl(
                         new[] {namedWindowType, triggerStreamType, namedWindowType},
-                        new[] {namedWindowName, triggerStreamName, INITIAL_VALUE_STREAM_NAME}, new[] {true, true, true},
-                        false, false);
+                        new[] {namedWindowName, triggerStreamName, INITIAL_VALUE_STREAM_NAME},
+                        new[] {true, true, true},
+                        false,
+                        false);
                     assignmentStreamTypeSvc.IsStreamZeroUnambigous = true;
                 }
 
                 if (matchedItem.OptionalMatchCond != null) {
                     var matchValidStreams = matchedItem.IsMatchedUnmatched ? twoStreamTypeSvc : insertOnlyTypeSvc;
                     matchedItem.OptionalMatchCond = EPStatementStartMethodHelperValidate.ValidateExprNoAgg(
-                        ExprNodeOrigin.MERGEMATCHCOND, matchedItem.OptionalMatchCond, matchValidStreams,
-                        exprNodeErrorMessage, true, statementRawInfo, services);
+                        ExprNodeOrigin.MERGEMATCHCOND,
+                        matchedItem.OptionalMatchCond,
+                        matchValidStreams,
+                        exprNodeErrorMessage,
+                        true,
+                        statementRawInfo,
+                        services);
                     if (!matchedItem.IsMatchedUnmatched) {
                         EPStatementStartMethodHelperValidate.ValidateSubqueryExcludeOuterStream(
                             matchedItem.OptionalMatchCond);
@@ -218,38 +284,65 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.ontri
                         var delete = (OnTriggerMergeActionDelete) item;
                         if (delete.OptionalWhereClause != null) {
                             delete.OptionalWhereClause = EPStatementStartMethodHelperValidate.ValidateExprNoAgg(
-                                ExprNodeOrigin.MERGEMATCHWHERE, delete.OptionalWhereClause, twoStreamTypeSvc,
-                                exprNodeErrorMessage, true, statementRawInfo, services);
+                                ExprNodeOrigin.MERGEMATCHWHERE,
+                                delete.OptionalWhereClause,
+                                twoStreamTypeSvc,
+                                exprNodeErrorMessage,
+                                true,
+                                statementRawInfo,
+                                services);
                         }
                     }
                     else if (item is OnTriggerMergeActionUpdate) {
                         var update = (OnTriggerMergeActionUpdate) item;
                         if (update.OptionalWhereClause != null) {
                             update.OptionalWhereClause = EPStatementStartMethodHelperValidate.ValidateExprNoAgg(
-                                ExprNodeOrigin.MERGEMATCHWHERE, update.OptionalWhereClause, twoStreamTypeSvc,
-                                exprNodeErrorMessage, true, statementRawInfo, services);
+                                ExprNodeOrigin.MERGEMATCHWHERE,
+                                update.OptionalWhereClause,
+                                twoStreamTypeSvc,
+                                exprNodeErrorMessage,
+                                true,
+                                statementRawInfo,
+                                services);
                         }
 
                         foreach (var assignment in update.Assignments) {
                             assignment.Expression = EPStatementStartMethodHelperValidate.ValidateExprNoAgg(
-                                ExprNodeOrigin.UPDATEASSIGN, assignment.Expression, assignmentStreamTypeSvc,
-                                exprNodeErrorMessage, true, statementRawInfo, services);
+                                ExprNodeOrigin.UPDATEASSIGN,
+                                assignment.Expression,
+                                assignmentStreamTypeSvc,
+                                exprNodeErrorMessage,
+                                true,
+                                statementRawInfo,
+                                services);
                         }
                     }
                     else if (item is OnTriggerMergeActionInsert) {
                         var insert = (OnTriggerMergeActionInsert) item;
 
                         var insertTypeSvc = GetInsertStreamService(
-                            insert.OptionalStreamName, namedWindowName, insertOnlyTypeSvc, twoStreamTypeSvc);
+                            insert.OptionalStreamName,
+                            namedWindowName,
+                            insertOnlyTypeSvc,
+                            twoStreamTypeSvc);
 
                         if (insert.OptionalWhereClause != null) {
                             insert.OptionalWhereClause = EPStatementStartMethodHelperValidate.ValidateExprNoAgg(
-                                ExprNodeOrigin.MERGEMATCHWHERE, insert.OptionalWhereClause, insertTypeSvc,
-                                exprNodeErrorMessage, true, statementRawInfo, services);
+                                ExprNodeOrigin.MERGEMATCHWHERE,
+                                insert.OptionalWhereClause,
+                                insertTypeSvc,
+                                exprNodeErrorMessage,
+                                true,
+                                statementRawInfo,
+                                services);
                         }
 
                         var compiledSelect = ValidateInsertSelect(
-                            insert.SelectClause, insertTypeSvc, insert.Columns, statementRawInfo, services);
+                            insert.SelectClause,
+                            insertTypeSvc,
+                            insert.Columns,
+                            statementRawInfo,
+                            services);
                         insert.SelectClauseCompiled = compiledSelect;
                     }
                     else {
@@ -260,11 +353,16 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.ontri
 
             if (mergeDesc.OptionalInsertNoMatch != null) {
                 var insertTypeSvc = GetInsertStreamService(
-                    mergeDesc.OptionalInsertNoMatch.OptionalStreamName, namedWindowName, insertOnlyTypeSvc,
+                    mergeDesc.OptionalInsertNoMatch.OptionalStreamName,
+                    namedWindowName,
+                    insertOnlyTypeSvc,
                     twoStreamTypeSvc);
                 var compiledSelect = ValidateInsertSelect(
-                    mergeDesc.OptionalInsertNoMatch.SelectClause, insertTypeSvc,
-                    mergeDesc.OptionalInsertNoMatch.Columns, statementRawInfo, services);
+                    mergeDesc.OptionalInsertNoMatch.SelectClause,
+                    insertTypeSvc,
+                    mergeDesc.OptionalInsertNoMatch.Columns,
+                    statementRawInfo,
+                    services);
                 mergeDesc.OptionalInsertNoMatch.SelectClauseCompiled = compiledSelect;
             }
         }
@@ -275,8 +373,10 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.ontri
             StreamTypeService insertOnlyTypeSvc,
             StreamTypeServiceImpl twoStreamTypeSvc)
         {
-            if (optionalStreamName == null || optionalStreamName.Equals(
-                    namedWindowName, StringComparison.InvariantCultureIgnoreCase)) {
+            if (optionalStreamName == null ||
+                optionalStreamName.Equals(
+                    namedWindowName,
+                    StringComparison.InvariantCultureIgnoreCase)) {
                 // if no name was provided in "insert into NAME" or the name is the named window we use the empty type in the first column
                 return insertOnlyTypeSvc;
             }
@@ -310,16 +410,20 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.ontri
                     }
 
                     var streamSelectSpec = new SelectClauseStreamCompiledSpec(
-                        rawStreamSpec.StreamName, rawStreamSpec.OptionalAsName);
+                        rawStreamSpec.StreamName,
+                        rawStreamSpec.OptionalAsName);
                     streamSelectSpec.StreamNumber = foundStreamNum.Value;
                     compiledSelect.Add(streamSelectSpec);
                 }
                 else if (raw is SelectClauseExprRawSpec) {
                     var exprSpec = (SelectClauseExprRawSpec) raw;
                     var validationContext = new ExprValidationContextBuilder(insertTypeSvc, statementRawInfo, services)
-                        .WithAllowBindingConsumption(true).Build();
+                        .WithAllowBindingConsumption(true)
+                        .Build();
                     var exprCompiled = ExprNodeUtilityValidate.GetValidatedSubtree(
-                        ExprNodeOrigin.SELECT, exprSpec.SelectExpression, validationContext);
+                        ExprNodeOrigin.SELECT,
+                        exprSpec.SelectExpression,
+                        validationContext);
                     var resultName = exprSpec.OptionalAsName;
                     if (resultName == null) {
                         if (insertColumns.Count > colIndex) {
@@ -332,9 +436,13 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.ontri
 
                     compiledSelect.Add(
                         new SelectClauseExprCompiledSpec(
-                            exprCompiled, resultName, exprSpec.OptionalAsName, exprSpec.IsEvents));
+                            exprCompiled,
+                            resultName,
+                            exprSpec.OptionalAsName,
+                            exprSpec.IsEvents));
                     EPStatementStartMethodHelperValidate.ValidateNoAggregations(
-                        exprCompiled, "Expression in a merge-selection may not utilize aggregation functions");
+                        exprCompiled,
+                        "Expression in a merge-selection may not utilize aggregation functions");
                 }
                 else if (raw is SelectClauseElementWildcard) {
                     compiledSelect.Add(new SelectClauseElementWildcard());

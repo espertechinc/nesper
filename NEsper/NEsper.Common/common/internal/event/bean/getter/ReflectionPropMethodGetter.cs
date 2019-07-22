@@ -8,6 +8,7 @@
 
 using System;
 using System.Reflection;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -16,6 +17,7 @@ using com.espertech.esper.common.@internal.@event.bean.service;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.@event.util;
 using com.espertech.esper.common.@internal.util;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.@event.bean.getter
@@ -26,30 +28,34 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
     public class ReflectionPropMethodGetter : BaseNativePropertyGetter,
         BeanEventPropertyGetter
     {
-        private readonly MethodInfo method;
+        private readonly MethodInfo _method;
 
         public ReflectionPropMethodGetter(
             MethodInfo method,
             EventBeanTypedEventFactory eventBeanTypedEventFactory,
             BeanEventTypeFactory beanEventTypeFactory)
-            : base(eventBeanTypedEventFactory, beanEventTypeFactory, method.ReturnType, TypeHelper.GetGenericReturnType(method, false))
+            : base(
+                eventBeanTypedEventFactory,
+                beanEventTypeFactory,
+                method.ReturnType,
+                TypeHelper.GetGenericReturnType(method, false))
         {
-            this.method = method;
+            _method = method;
         }
 
         public object GetBeanProp(object @object)
         {
             try {
-                return method.Invoke(@object, null);
+                return _method.Invoke(@object, null);
             }
             catch (ArgumentException e) {
-                throw PropertyUtility.GetArgumentException(method, e);
+                throw PropertyUtility.GetArgumentException(_method, e);
             }
             catch (MemberAccessException e) {
-                throw PropertyUtility.GetMemberAccessException(method, e);
+                throw PropertyUtility.GetMemberAccessException(_method, e);
             }
             catch (TargetException e) {
-                throw PropertyUtility.GetTargetException(method, e);
+                throw PropertyUtility.GetTargetException(_method, e);
             }
         }
 
@@ -69,16 +75,19 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
             return true; // Property exists as the property is not dynamic (unchecked)
         }
 
-        public override Type BeanPropType => method.ReturnType;
+        public override Type BeanPropType => _method.ReturnType;
 
-        public override Type TargetType => method.DeclaringType;
+        public override Type TargetType => _method.DeclaringType;
 
         public override CodegenExpression EventBeanGetCodegen(
             CodegenExpression beanExpression,
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            return UnderlyingGetCodegen(CastUnderlying(TargetType, beanExpression), codegenMethodScope, codegenClassScope);
+            return UnderlyingGetCodegen(
+                CastUnderlying(TargetType, beanExpression),
+                codegenMethodScope,
+                codegenClassScope);
         }
 
         public override CodegenExpression EventBeanExistsCodegen(
@@ -94,7 +103,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            return ExprDotMethod(underlyingExpression, method.Name);
+            return ExprDotMethod(underlyingExpression, _method.Name);
         }
 
         public override CodegenExpression UnderlyingExistsCodegen(
@@ -108,7 +117,8 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
         public override string ToString()
         {
             return "ReflectionPropMethodGetter " +
-                   "method=" + method.ToString();
+                   "method=" +
+                   _method.ToString();
         }
     }
 } // end of namespace

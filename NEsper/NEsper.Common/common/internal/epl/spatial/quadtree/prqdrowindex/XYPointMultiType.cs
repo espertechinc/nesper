@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.@internal.type;
 using com.espertech.esper.compat.collections;
 
@@ -102,9 +103,12 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.prqdrowindex
         public override string ToString()
         {
             return "XYPointMultiType{" +
-                   "x=" + X +
-                   ", y=" + Y +
-                   ", numValues=" + Count() +
+                   "x=" +
+                   X +
+                   ", y=" +
+                   Y +
+                   ", numValues=" +
+                   Count() +
                    '}';
         }
     }

@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.core;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -17,6 +18,7 @@ using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat.io;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 using static com.espertech.esper.common.@internal.epl.agg.method.core.AggregatorCodegenUtil;
 
@@ -37,7 +39,13 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.median
             ExprNode optionalFilter)
             :
             base(
-                factory, col, rowCtor, membersColumnized, classScope, optionalDistinctValueType, hasFilter,
+                factory,
+                col,
+                rowCtor,
+                membersColumnized,
+                classScope,
+                optionalDistinctValueType,
+                hasFilter,
                 optionalFilter)
         {
             vector = membersColumnized.AddMember(col, typeof(SortedDoubleVector), "vector");
@@ -53,7 +61,9 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.median
             CodegenClassScope classScope)
         {
             method.Block.ExprDotMethod(
-                vector, "add", SimpleNumberCoercerFactory.CoercerDouble.CodegenDouble(value, valueType));
+                vector,
+                "add",
+                SimpleNumberCoercerFactory.CoercerDouble.CodegenDouble(value, valueType));
         }
 
         protected override void ApplyEvalLeaveNonNull(
@@ -65,7 +75,9 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.median
             CodegenClassScope classScope)
         {
             method.Block.ExprDotMethod(
-                vector, "remove", SimpleNumberCoercerFactory.CoercerDouble.CodegenDouble(value, valueType));
+                vector,
+                "remove",
+                SimpleNumberCoercerFactory.CoercerDouble.CodegenDouble(value, valueType));
         }
 
         protected override void ApplyTableEnterNonNull(

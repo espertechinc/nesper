@@ -70,7 +70,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
             SupportEventTypeAssertionUtil.AssertConsistency(resultItem);
             var fragmentsInsertItem = (EventBean) resultItem.GetFragment("narr");
             SupportEventTypeAssertionUtil.AssertConsistency(fragmentsInsertItem);
-            Assert.AreEqual("b", fragmentsInsertItem.Get("id"));
+            Assert.AreEqual("b", fragmentsInsertItem.Get("Id"));
             Assert.AreEqual("SAMPLE_V9", fragmentsInsertItem.Get("prop5[0]"));
 
             env.UndeployAll();

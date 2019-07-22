@@ -23,8 +23,10 @@ namespace com.espertech.esper.common.@internal.epl.methodbase
             switch (value) {
                 case DotMethodTypeEnum.ENUM:
                     return "enumeration";
+
                 case DotMethodTypeEnum.DATETIME:
                     return "date-time";
+
                 default:
                     throw new ArgumentException("invalid value", "value");
             }

@@ -12,6 +12,7 @@ using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.table.compiletime;
 using com.espertech.esper.common.@internal.epl.table.core;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 using static com.espertech.esper.common.@internal.epl.expression.subquery.SubselectForgeCodegenUtil;
 
@@ -41,27 +42,39 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
 
             method.Block.ApplyTri(DECLARE_EVENTS_SHIFTED, method, symbols);
 
-            method.Block.DeclareVar(typeof(EventBean), "filtered", ConstantNull());
+            method.Block.DeclareVar<EventBean>("filtered", ConstantNull());
             CodegenBlock @foreach = method.Block.ForEach(
-                typeof(EventBean), "event", symbols.GetAddMatchingEvents(method));
+                typeof(EventBean),
+                "event",
+                symbols.GetAddMatchingEvents(method));
             {
                 @foreach.AssignArrayElement(REF_EVENTS_SHIFTED, Constant(0), @Ref("event"));
                 CodegenMethod filter = CodegenLegoMethodExpression.CodegenExpression(
-                    subselect.FilterExpr, method, classScope);
+                    subselect.FilterExpr,
+                    method,
+                    classScope);
                 CodegenLegoBooleanExpression.CodegenContinueIfNotNullAndNotPass(
-                    @foreach, typeof(bool?),
+                    @foreach,
+                    typeof(bool?),
                     LocalMethod(
-                        filter, REF_EVENTS_SHIFTED, symbols.GetAddIsNewData(method),
+                        filter,
+                        REF_EVENTS_SHIFTED,
+                        symbols.GetAddIsNewData(method),
                         symbols.GetAddExprEvalCtx(method)));
-                @foreach.IfCondition(NotEqualsNull(@Ref("filtered"))).BlockReturn(ConstantNull())
+                @foreach.IfCondition(NotEqualsNull(@Ref("filtered")))
+                    .BlockReturn(ConstantNull())
                     .AssignRef("filtered", @Ref("event"));
             }
 
             method.Block.IfRefNullReturnNull("filtered")
                 .MethodReturn(
                     ExprDotMethod(
-                        eventToPublic, "convertToUnd", @Ref("filtered"), symbols.GetAddEPS(method),
-                        symbols.GetAddIsNewData(method), symbols.GetAddExprEvalCtx(method)));
+                        eventToPublic,
+                        "convertToUnd",
+                        @Ref("filtered"),
+                        symbols.GetAddEPS(method),
+                        symbols.GetAddIsNewData(method),
+                        symbols.GetAddExprEvalCtx(method)));
             return LocalMethod(method);
         }
     }

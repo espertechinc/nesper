@@ -27,7 +27,11 @@ namespace com.espertech.esper.common.@internal.epl.output.core
             AgentInstanceContext agentInstanceContext,
             OutputStrategyPostProcess postProcessor)
             : base(
-                resultSetProcessor, afterConditionTime, afterConditionNumberOfEvents, afterConditionSatisfied, parent,
+                resultSetProcessor,
+                afterConditionTime,
+                afterConditionNumberOfEvents,
+                afterConditionSatisfied,
+                parent,
                 agentInstanceContext)
         {
             this.postProcessor = postProcessor;

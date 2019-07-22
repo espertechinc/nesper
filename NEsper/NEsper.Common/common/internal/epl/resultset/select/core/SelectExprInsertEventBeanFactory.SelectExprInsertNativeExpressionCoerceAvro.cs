@@ -35,13 +35,16 @@ namespace com.espertech.esper.common.@internal.epl.resultset.@select.core
             {
                 var methodNode = codegenMethodScope.MakeChild(typeof(EventBean), GetType(), codegenClassScope);
                 methodNode.Block
-                    .DeclareVar(
-                        typeof(object), "result",
+                    .DeclareVar<object>(
+                        "result",
                         exprForge.EvaluateCodegen(typeof(object), methodNode, exprSymbol, codegenClassScope))
                     .IfRefNullReturnNull("result")
                     .MethodReturn(
                         CodegenExpressionBuilder.ExprDotMethod(
-                            eventBeanFactory, "adapterForTypedAvro", CodegenExpressionBuilder.Ref("result"), resultEventType));
+                            eventBeanFactory,
+                            "adapterForTypedAvro",
+                            CodegenExpressionBuilder.Ref("result"),
+                            resultEventType));
                 return methodNode;
             }
         }

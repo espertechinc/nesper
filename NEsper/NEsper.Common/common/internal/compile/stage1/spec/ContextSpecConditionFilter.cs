@@ -11,6 +11,7 @@ using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.compile.stage2;
 using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.context.controller.condition;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.compile.stage1.spec
@@ -38,10 +39,12 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
         {
             var method = parent.MakeChild(typeof(ContextConditionDescriptorFilter), GetType(), classScope);
             method.Block
-                .DeclareVar(
-                    typeof(ContextConditionDescriptorFilter), "condition",
+                .DeclareVar<ContextConditionDescriptorFilter>(
+                    "condition",
                     NewInstance(typeof(ContextConditionDescriptorFilter)))
-                .SetProperty(Ref("condition"), "FilterSpecActivatable",
+                .SetProperty(
+                    Ref("condition"),
+                    "FilterSpecActivatable",
                     LocalMethod(FilterSpecCompiled.MakeCodegen(method, symbols, classScope)))
                 .SetProperty(Ref("condition"), "OptionalFilterAsName", Constant(OptionalFilterAsName))
                 .MethodReturn(Ref("condition"));

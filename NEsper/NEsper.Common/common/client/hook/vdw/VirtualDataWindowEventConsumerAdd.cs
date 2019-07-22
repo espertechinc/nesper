@@ -35,7 +35,10 @@ namespace com.espertech.esper.common.client.hook.vdw
             ExprEvaluator filter,
             ExprEvaluatorContext exprEvaluatorContext)
             : base(
-                namedWindowName, consumerObject, statementName, agentInstanceId)
+                namedWindowName,
+                consumerObject,
+                statementName,
+                agentInstanceId)
         {
             Filter = filter;
             ExprEvaluatorContext = exprEvaluatorContext;

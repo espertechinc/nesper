@@ -1062,7 +1062,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 string[] fields = {"a.TheString", "a.IntPrimitive", "b.TheString", "b.IntPrimitive"};
                 env.CompileDeploy(
                     "@Name('s0') context SegmentedByString " +
-                    "select * from pattern [every a=SupportBean => b=SupportBean(IntPrimitive=a.IntPrimitive+1)]",
+                    "select * from pattern [every a=SupportBean -> b=SupportBean(IntPrimitive=a.IntPrimitive+1)]",
                     path);
                 env.AddListener("s0");
 
@@ -1099,7 +1099,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 // add another statement: contexts already exist, this one uses @Consume
                 env.CompileDeploy(
                     "@Name('s0') context SegmentedByString " +
-                    "select * from pattern [every a=SupportBean => b=SupportBean(IntPrimitive=a.IntPrimitive+1)@Consume]",
+                    "select * from pattern [every a=SupportBean -> b=SupportBean(IntPrimitive=a.IntPrimitive+1)@Consume]",
                     path);
                 env.AddListener("s0");
 
@@ -1135,7 +1135,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 string[] fieldsThree = {"a.TheString", "a.IntPrimitive", "b.Id", "b.p00"};
                 env.CompileDeploy(
                     "@Name('s0') context SegmentedByString " +
-                    "select * from pattern [every a=SupportBean => b=SupportBean_S0(Id=a.IntPrimitive)@Consume]",
+                    "select * from pattern [every a=SupportBean -> b=SupportBean_S0(Id=a.IntPrimitive)@Consume]",
                     path);
                 env.AddListener("s0");
 
@@ -1163,7 +1163,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                     "@Name('CTX') create context SegmentedByString partition by TheString from SupportBean, p00 from SupportBean_S0;\n" +
                     "@Name('S1') context SegmentedByString " +
                     "select a.TheString as c0, a.IntPrimitive as c1, b.Id as c2, b.p00 as c3 from pattern [" +
-                    "every a=SupportBean => b=SupportBean_S0(Id=a.IntPrimitive)];\n";
+                    "every a=SupportBean -> b=SupportBean_S0(Id=a.IntPrimitive)];\n";
                 env.CompileDeploy(epl).AddListener("S1");
                 var fields = "c0,c1,c2,c3".SplitCsv();
 

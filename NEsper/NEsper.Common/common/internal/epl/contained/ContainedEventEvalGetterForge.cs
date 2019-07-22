@@ -11,6 +11,7 @@ using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.@event.core;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.contained
@@ -31,9 +32,12 @@ namespace com.espertech.esper.common.@internal.epl.contained
         {
             CodegenMethod method = parent.MakeChild(typeof(ContainedEventEvalGetter), this.GetType(), classScope);
 
-            CodegenExpressionNewAnonymousClass anonymousClass = NewAnonymousClass(method.Block, typeof(EventPropertyFragmentGetter));
-            CodegenMethod getFragment = CodegenMethod.MakeParentNode(typeof(object), this.GetType(), classScope).AddParam(typeof(EventBean), "event");
-            anonymousClass.AddMethod("getFragment", getFragment);
+            CodegenExpressionNewAnonymousClass anonymousClass = NewAnonymousClass(
+                method.Block,
+                typeof(EventPropertyFragmentGetter));
+            CodegenMethod getFragment = CodegenMethod.MakeParentNode(typeof(object), this.GetType(), classScope)
+                .AddParam(typeof(EventBean), "event");
+            anonymousClass.AddMethod("GetFragment", getFragment);
             getFragment.Block.MethodReturn(getter.EventBeanFragmentCodegen(@Ref("event"), getFragment, classScope));
 
             method.Block.MethodReturn(NewInstance<ContainedEventEvalGetter>(anonymousClass));

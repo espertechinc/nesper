@@ -14,6 +14,7 @@ using System.Net;
 using System.Reflection;
 using System.Xml;
 using System.Xml.Schema;
+
 using com.espertech.esper.common.client.configuration;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
@@ -223,7 +224,8 @@ namespace com.espertech.esper.common.@internal.@event.xml
                     var complexActualName = schemaElement.QualifiedName;
                     if (Equals(complexActualName, XmlQualifiedName.Empty)) {
                         complexActualName = new XmlQualifiedName(
-                            schemaElement.Name, xsModel.TargetNamespace);
+                            schemaElement.Name,
+                            xsModel.TargetNamespace);
                     }
 
                     var rootNode = new ElementPathNode(null, complexActualName);
@@ -233,7 +235,11 @@ namespace com.espertech.esper.common.@internal.@event.xml
                     }
 
                     var complexElement = Process(
-                        xsModel, complexActualName, complexElementType, false, rootNode);
+                        xsModel,
+                        complexActualName,
+                        complexElementType,
+                        false,
+                        rootNode);
 
                     if (Log.IsDebugEnabled) {
                         Log.Debug("Adding component {0}", complexActualName);
@@ -270,7 +276,8 @@ namespace com.espertech.esper.common.@internal.@event.xml
                     }
                     catch (Exception ex) {
                         throw new ConfigurationException(
-                            "Failed to read schema '" + asImport.SchemaLocation + "' : " + ex.Message, ex);
+                            "Failed to read schema '" + asImport.SchemaLocation + "' : " + ex.Message,
+                            ex);
                     }
                 }
             }
@@ -285,7 +292,8 @@ namespace com.espertech.esper.common.@internal.@event.xml
                     var qualifiedName = complexType.QualifiedName;
                     if (Equals(qualifiedName, XmlQualifiedName.Empty)) {
                         qualifiedName = new XmlQualifiedName(
-                            complexType.Name, xsModel.TargetNamespace);
+                            complexType.Name,
+                            xsModel.TargetNamespace);
                     }
 
                     _schemaTypeDictionary[qualifiedName] = complexType;
@@ -407,10 +415,16 @@ namespace com.espertech.esper.common.@internal.@event.xml
             attributes.AddRange(GetAttributes(xsModel, complexActualElement));
 
             var complexParticles = GetContentModelParticles(
-                xsModel, complexActualElement);
+                xsModel,
+                complexActualElement);
             complexElement = ProcessModelGroup(
-                xsModel, complexParticles, simpleElements, complexElements, node,
-                complexActualElement, complexElement);
+                xsModel,
+                complexParticles,
+                simpleElements,
+                complexElements,
+                node,
+                complexActualElement,
+                complexElement);
 
             return complexElement;
         }
@@ -574,7 +588,8 @@ namespace com.espertech.esper.common.@internal.@event.xml
                         elementName = schemaElement.QualifiedName;
                         if (Equals(elementName, XmlQualifiedName.Empty)) {
                             elementName = new XmlQualifiedName(
-                                schemaElement.Name, xsModel.TargetNamespace);
+                                schemaElement.Name,
+                                xsModel.TargetNamespace);
                         }
 
                         schemaType = schemaElement.SchemaType;
@@ -594,7 +609,8 @@ namespace com.espertech.esper.common.@internal.@event.xml
                             ? xsModel.TargetNamespace
                             : schemaElement.RefName.Namespace;
                         elementName = new XmlQualifiedName(
-                            schemaElement.RefName.Name, elementNamespace);
+                            schemaElement.RefName.Name,
+                            elementNamespace);
 
                         schemaType = referenceElementType;
                         schemaTypeName = referenceElement.SchemaTypeName;
@@ -639,7 +655,12 @@ namespace com.espertech.esper.common.@internal.@event.xml
                 }
 
                 ProcessModelGroup(
-                    xsModel, childParticle, simpleElements, complexElements, node, complexActualElement,
+                    xsModel,
+                    childParticle,
+                    simpleElements,
+                    complexElements,
+                    node,
+                    complexActualElement,
                     complexElement);
             }
 

@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -19,6 +20,7 @@ using com.espertech.esper.common.@internal.epl.expression.time.abacus;
 using com.espertech.esper.common.@internal.epl.@join.analyze;
 using com.espertech.esper.common.@internal.settings;
 using com.espertech.esper.compat;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.datetime.reformatop
@@ -58,8 +60,8 @@ namespace com.espertech.esper.common.@internal.epl.datetime.reformatop
                 .MakeChild(typeof(DateTimeEx), typeof(ReformatToDateTimeOffsetForge), codegenClassScope)
                 .AddParam(typeof(long), "ts")
                 .Block
-                .DeclareVar(
-                    typeof(DateTimeEx), "dateTimeEx",
+                .DeclareVar<DateTimeEx>(
+                    "dateTimeEx",
                     StaticMethod(typeof(DateTimeEx), "GetInstance", timeZoneField))
                 .ExprDotMethod(Ref("dateTimeEx"), "SetUtcMillis", Ref("ts"))
                 .MethodReturn(GetProperty(Ref("dateTimeEx"), "DateTime"));
@@ -78,8 +80,8 @@ namespace com.espertech.esper.common.@internal.epl.datetime.reformatop
                 .MakeChild(typeof(DateTimeEx), typeof(ReformatToDateTimeOffsetForge), codegenClassScope)
                 .AddParam(typeof(DateTime), "input")
                 .Block
-                .DeclareVar(
-                    typeof(DateTimeEx), "dateTimeEx",
+                .DeclareVar<DateTimeEx>(
+                    "dateTimeEx",
                     StaticMethod(typeof(DateTimeEx), "GetInstance", timeZoneField))
                 .ExprDotMethod(Ref("dateTimeEx"), "Set", Ref("input"))
                 .MethodReturn(GetProperty(Ref("dateTimeEx"), "DateTime"));

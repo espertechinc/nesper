@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.collection;
@@ -16,6 +17,7 @@ using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.metrics.instrumentation;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat.collections;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.expression.funcs
@@ -84,16 +86,23 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
             get {
                 IList<UniformPair<ExprEvaluator>> evals = new List<UniformPair<ExprEvaluator>>();
                 foreach (var pair in WhenThenNodeList) {
-                    evals.Add(new UniformPair<ExprEvaluator>(pair.First.Forge.ExprEvaluator, pair.Second.Forge.ExprEvaluator));
+                    evals.Add(
+                        new UniformPair<ExprEvaluator>(
+                            pair.First.Forge.ExprEvaluator,
+                            pair.Second.Forge.ExprEvaluator));
                 }
 
                 if (!ForgeRenderable.IsCase2) {
                     return new ExprCaseNodeForgeEvalSyntax1(
-                        this, evals, OptionalElseExprNode == null ? null : OptionalElseExprNode.Forge.ExprEvaluator);
+                        this,
+                        evals,
+                        OptionalElseExprNode == null ? null : OptionalElseExprNode.Forge.ExprEvaluator);
                 }
 
                 return new ExprCaseNodeForgeEvalSyntax2(
-                    this, evals, OptionalCompareExprNode.Forge.ExprEvaluator,
+                    this,
+                    evals,
+                    OptionalCompareExprNode.Forge.ExprEvaluator,
                     OptionalElseExprNode == null ? null : OptionalElseExprNode.Forge.ExprEvaluator);
             }
         }
@@ -105,7 +114,13 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
             CodegenClassScope codegenClassScope)
         {
             return new InstrumentationBuilderExpr(
-                    GetType(), this, "ExprCase", requiredType, codegenMethodScope, exprSymbol, codegenClassScope)
+                    GetType(),
+                    this,
+                    "ExprCase",
+                    requiredType,
+                    codegenMethodScope,
+                    exprSymbol,
+                    codegenClassScope)
                 .Build();
         }
 
@@ -115,7 +130,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
             CodegenClassScope codegenClassScope)
         {
             return ExprCaseNodeForgeEvalTypable.CodegenTypeableSingle(
-                this, codegenMethodScope, exprSymbol, codegenClassScope);
+                this,
+                codegenMethodScope,
+                exprSymbol,
+                codegenClassScope);
         }
 
         public CodegenExpression EvaluateTypableMultiCodegen(

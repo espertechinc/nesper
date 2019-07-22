@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.epl.expression.core;
 
@@ -25,11 +26,12 @@ namespace com.espertech.esper.common.@internal.epl.script.core
             ExpressionScriptCompiled compiled;
             try {
                 compiled = ExpressionNodeScriptCompiler.CompileScript(
-                    dialect, 
-                    descriptor.ScriptName, 
+                    dialect,
+                    descriptor.ScriptName,
                     descriptor.Expression,
                     descriptor.ParameterNames,
-                    descriptor.EvaluationTypes, null, 
+                    descriptor.EvaluationTypes,
+                    null,
                     descriptor.ImportService);
             }
             catch (ExprValidationException ex) {

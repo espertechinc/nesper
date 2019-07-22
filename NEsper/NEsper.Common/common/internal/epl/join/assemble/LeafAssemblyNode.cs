@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.epl.@join.rep;
 using com.espertech.esper.common.@internal.util;
@@ -62,7 +63,12 @@ namespace com.espertech.esper.common.@internal.epl.join.assemble
             var row = new EventBean[numStreams];
             row[streamNum] = theEvent;
             parentNode.Result(
-                row, streamNum, currentNode.ParentEvent, currentNode.Parent, resultFinalRows, resultRootEvent);
+                row,
+                streamNum,
+                currentNode.ParentEvent,
+                currentNode.Parent,
+                resultFinalRows,
+                resultRootEvent);
         }
 
         public override void Result(

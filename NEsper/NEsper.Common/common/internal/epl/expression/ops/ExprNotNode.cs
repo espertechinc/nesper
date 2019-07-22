@@ -34,15 +34,13 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
         public override ExprNode Validate(ExprValidationContext validationContext)
         {
             // Must have a single child node
-            if (this.ChildNodes.Length != 1)
-            {
+            if (this.ChildNodes.Length != 1) {
                 throw new ExprValidationException("The NOT node requires exactly 1 child node");
             }
 
             ExprForge forge = this.ChildNodes[0].Forge;
             Type childType = forge.EvaluationType;
-            if (!TypeHelper.IsBoolean(childType))
-            {
+            if (!TypeHelper.IsBoolean(childType)) {
                 throw new ExprValidationException("Incorrect use of NOT clause, sub-expressions do not return boolean");
             }
 
@@ -50,20 +48,17 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             return null;
         }
 
-        public ExprEvaluator ExprEvaluator
-        {
+        public ExprEvaluator ExprEvaluator {
             get => this;
         }
 
-        public override ExprForge Forge
-        {
+        public override ExprForge Forge {
             get => this;
         }
 
         ExprNodeRenderable ExprForge.ExprForgeRenderable => ForgeRenderable;
 
-        public ExprNode ForgeRenderable
-        {
+        public ExprNode ForgeRenderable {
             get => this;
         }
 
@@ -74,14 +69,16 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             CodegenClassScope codegenClassScope)
         {
             ExprForge child = this.ChildNodes[0].Forge;
-            if (child.EvaluationType == typeof(bool))
-            {
+            if (child.EvaluationType == typeof(bool)) {
                 Not(child.EvaluateCodegen(requiredType, codegenMethodScope, exprSymbol, codegenClassScope));
             }
 
-            CodegenMethod methodNode = codegenMethodScope.MakeChild(typeof(bool?), typeof(ExprNotNode), codegenClassScope);
+            CodegenMethod methodNode = codegenMethodScope.MakeChild(
+                typeof(bool?),
+                typeof(ExprNotNode),
+                codegenClassScope);
             methodNode.Block
-                .DeclareVar(typeof(bool?), "b", child.EvaluateCodegen(typeof(bool?), methodNode, exprSymbol, codegenClassScope))
+                .DeclareVar<bool?>("b", child.EvaluateCodegen(typeof(bool?), methodNode, exprSymbol, codegenClassScope))
                 .IfRefNullReturnNull("b")
                 .MethodReturn(Not(@Ref("b")));
             return LocalMethod(methodNode);
@@ -93,17 +90,22 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            return new InstrumentationBuilderExpr(this.GetType(), this, "ExprNot", requiredType, codegenMethodScope, exprSymbol, codegenClassScope)
+            return new InstrumentationBuilderExpr(
+                    this.GetType(),
+                    this,
+                    "ExprNot",
+                    requiredType,
+                    codegenMethodScope,
+                    exprSymbol,
+                    codegenClassScope)
                 .Build();
         }
 
-        public Type EvaluationType
-        {
+        public Type EvaluationType {
             get => typeof(bool?);
         }
 
-        public bool IsConstantResult
-        {
+        public bool IsConstantResult {
             get => false;
         }
 
@@ -113,8 +115,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             ExprEvaluatorContext exprEvaluatorContext)
         {
             var evaluated = evaluator.Evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
-            if (evaluated == null)
-            {
+            if (evaluated == null) {
                 return null;
             }
 
@@ -127,8 +128,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             this.ChildNodes[0].ToEPL(writer, Precedence);
         }
 
-        public override ExprPrecedenceEnum Precedence
-        {
+        public override ExprPrecedenceEnum Precedence {
             get => ExprPrecedenceEnum.NEGATED;
         }
 
@@ -136,16 +136,14 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             ExprNode node,
             bool ignoreStreamPrefix)
         {
-            if (!(node is ExprNotNode))
-            {
+            if (!(node is ExprNotNode)) {
                 return false;
             }
 
             return true;
         }
 
-        public ExprForgeConstantType ForgeConstantType
-        {
+        public ExprForgeConstantType ForgeConstantType {
             get => ExprForgeConstantType.NONCONST;
         }
     }

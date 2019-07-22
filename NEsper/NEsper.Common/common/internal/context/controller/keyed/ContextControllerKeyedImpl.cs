@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.context.controller.condition;
@@ -92,7 +93,9 @@ namespace com.espertech.esper.common.@internal.context.controller.keyed
             var partitionKey = getterKey;
             if (factory.keyedSpec.HasAsName) {
                 partitionKey = new ContextControllerKeyedPartitionKeyWInit(
-                    getterKey, optionalInitCondAsName, optionalInitCondAsName == null ? null : theEvent);
+                    getterKey,
+                    optionalInitCondAsName,
+                    optionalInitCondAsName == null ? null : theEvent);
             }
 
             var parentPartitionKeys = keyedSvc.MgmtGetPartitionKeys(controllerPath);
@@ -102,7 +105,13 @@ namespace com.espertech.esper.common.@internal.context.controller.keyed
 
             // instantiate
             var result = realization.ContextPartitionInstantiate(
-                controllerPath, subpathId, this, theEvent, null, parentPartitionKeys, partitionKey);
+                controllerPath,
+                subpathId,
+                this,
+                theEvent,
+                null,
+                parentPartitionKeys,
+                partitionKey);
             var subpathIdOrCPId = result.SubpathOrCPId;
 
             // handle termination filter
@@ -110,7 +119,11 @@ namespace com.espertech.esper.common.@internal.context.controller.keyed
             if (factory.KeyedSpec.OptionalTermination != null) {
                 var conditionPath = controllerPath.AddToEnd(subpathIdOrCPId);
                 terminationCondition = ActivateTermination(
-                    theEvent, parentPartitionKeys, partitionKey, conditionPath, optionalInitCondAsName);
+                    theEvent,
+                    parentPartitionKeys,
+                    partitionKey,
+                    conditionPath,
+                    optionalInitCondAsName);
 
                 foreach (var agentInstance in result.AgentInstances) {
                     agentInstance.AgentInstanceContext.EpStatementAgentInstanceHandle.FilterFaultHandler =
@@ -172,13 +185,23 @@ namespace com.espertech.esper.common.@internal.context.controller.keyed
                         ? optionalTriggeringEvent
                         : optionalTriggeringEventPattern;
                     realization.ContextPartitionTerminate(
-                        conditionPathArg.RemoveFromEnd(), removed.SubpathOrCPId, this, null, false, null);
+                        conditionPathArg.RemoveFromEnd(),
+                        removed.SubpathOrCPId,
+                        this,
+                        null,
+                        false,
+                        null);
                     removed.TerminationCondition.Deactivate();
                 });
 
             var partitionKeys = CollectionUtil.AddValue(parentPartitionKeys, partitionKey);
             var terminationCondition = ContextControllerConditionFactory.GetEndpoint(
-                conditionPath, partitionKeys, factory.keyedSpec.OptionalTermination, callback, this, false);
+                conditionPath,
+                partitionKeys,
+                factory.keyedSpec.OptionalTermination,
+                callback,
+                this,
+                false);
 
             ContextControllerEndConditionMatchEventProvider endConditionMatchEventProvider = null;
             if (optionalInitCondAsName != null) {
@@ -220,7 +243,11 @@ namespace com.espertech.esper.common.@internal.context.controller.keyed
                 var init = inits[i];
                 var found = ContextControllerKeyedUtil.FindInitMatchingKey(factory.KeyedSpec.Items, init);
                 filterEntries[i] = ActivateFilterWithInit(
-                    init, found, optionalTriggeringEvent, controllerPath, parentPartitionKeys);
+                    init,
+                    found,
+                    optionalTriggeringEvent,
+                    controllerPath,
+                    parentPartitionKeys);
             }
 
             return filterEntries;
@@ -235,7 +262,10 @@ namespace com.espertech.esper.common.@internal.context.controller.keyed
             var filterEntries = new ContextControllerFilterEntry[items.Length];
             for (var i = 0; i < items.Length; i++) {
                 filterEntries[i] = ActivateFilterNoInit(
-                    items[i], optionalTriggeringEvent, controllerPath, parentPartitionKeys);
+                    items[i],
+                    optionalTriggeringEvent,
+                    controllerPath,
+                    parentPartitionKeys);
             }
 
             return filterEntries;
@@ -250,7 +280,9 @@ namespace com.espertech.esper.common.@internal.context.controller.keyed
             var callback = new ContextControllerKeyedFilterEntryNoInit(this, controllerPath, parentPartitionKeys, item);
             if (optionalTriggeringEvent != null) {
                 var match = AgentInstanceUtil.EvaluateFilterForStatement(
-                    optionalTriggeringEvent, realization.AgentInstanceContextCreate, callback.FilterHandle);
+                    optionalTriggeringEvent,
+                    realization.AgentInstanceContextCreate,
+                    callback.FilterHandle);
 
                 if (match) {
                     callback.MatchFound(optionalTriggeringEvent, null);

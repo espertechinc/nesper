@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -16,7 +17,7 @@ using com.espertech.esper.common.@internal.compile.stage2;
 using com.espertech.esper.common.@internal.compile.stage3;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.type;
-using com.espertech.esper.compat.collections;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.expression.subquery
@@ -39,7 +40,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
             StatementSpecRaw statementSpec,
             bool not,
             bool all,
-            RelationalOpEnum relationalOpEnum)
+            RelationalOpEnum? relationalOpEnum)
             : base(statementSpec)
         {
             IsNot = not;
@@ -63,7 +64,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
         ///     Returns relational op.
         /// </summary>
         /// <returns>op</returns>
-        public RelationalOpEnum RelationalOp { get; }
+        public RelationalOpEnum? RelationalOp { get; }
 
         public override Type EvaluationType => typeof(bool?);
 
@@ -74,7 +75,12 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
         public override void ValidateSubquery(ExprValidationContext validationContext)
         {
             evalStrategy = SubselectNRForgeFactory.CreateStrategyAnyAllIn(
-                this, IsNot, IsAll, !IsAll, RelationalOp, validationContext.ImportService);
+                this,
+                IsNot,
+                IsAll,
+                !IsAll,
+                RelationalOp,
+                validationContext.ImportService);
         }
 
         public override IDictionary<string, object> TypableGetRowProperties()

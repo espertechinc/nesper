@@ -10,6 +10,7 @@ using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.context.aifactory.core;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.fafquery.processor
@@ -44,12 +45,14 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.processor
                 typeof(FireAndForgetProcessor[]),
                 typeof(FireAndForgetProcessorForge),
                 classScope);
-            method.Block.DeclareVar(
-                typeof(FireAndForgetProcessor[]), "processors",
+            method.Block.DeclareVar<FireAndForgetProcessor[]>(
+                "processors",
                 NewArrayByLength(typeof(FireAndForgetProcessor), Constant(processors.Length)));
             for (var i = 0; i < processors.Length; i++) {
                 method.Block.AssignArrayElement(
-                    "processors", Constant(i), processors[i].Make(method, symbols, classScope));
+                    "processors",
+                    Constant(i),
+                    processors[i].Make(method, symbols, classScope));
             }
 
             method.Block.MethodReturn(Ref("processors"));

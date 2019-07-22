@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -54,9 +55,12 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
             internal CodegenExpression CodegenFormatter(CodegenClassScope codegenClassScope)
             {
                 return codegenClassScope.AddFieldUnshared(
-                    true, typeof(DateTimeFormat),
+                    true,
+                    typeof(DateTimeFormat),
                     CodegenExpressionBuilder.StaticMethod(
-                        typeof(DateTimeFormat), "ofPattern", CodegenExpressionBuilder.Constant(format)));
+                        typeof(DateTimeFormat),
+                        "ofPattern",
+                        CodegenExpressionBuilder.Constant(format)));
             }
         }
     }

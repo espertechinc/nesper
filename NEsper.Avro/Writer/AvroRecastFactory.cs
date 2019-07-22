@@ -43,8 +43,7 @@ namespace NEsper.Avro.Writer
             AvroEventType streamType = (AvroEventType) eventTypes[streamNumber];
 
             // (A) fully assignment-compatible: same number, name and type of fields, no additional expressions: Straight repackage
-            if (resultType.Schema.Equals(streamType.Schema) && selectExprForgeContext.ExprForges.Length == 0)
-            {
+            if (resultType.Schema.Equals(streamType.Schema) && selectExprForgeContext.ExprForges.Length == 0) {
                 return new AvroInsertProcessorSimpleRepackage(selectExprForgeContext, streamNumber, targetType);
             }
 
@@ -54,55 +53,59 @@ namespace NEsper.Avro.Writer
             IList<WriteablePropertyDescriptor> written = new List<WriteablePropertyDescriptor>();
 
             // find the properties coming from the providing source stream
-            foreach (var writeable in writables)
-            {
+            foreach (var writeable in writables) {
                 var propertyName = writeable.PropertyName;
 
                 Field streamTypeField = streamType.SchemaAvro.GetField(propertyName);
                 Field resultTypeField = resultType.SchemaAvro.GetField(propertyName);
 
-                if (streamTypeField != null && resultTypeField != null)
-                {
-                    if (streamTypeField.Schema.Equals(resultTypeField.Schema))
-                    {
+                if (streamTypeField != null && resultTypeField != null) {
+                    if (streamTypeField.Schema.Equals(resultTypeField.Schema)) {
                         items.Add(new Item(resultTypeField, streamTypeField, null, null));
                     }
-                    else
-                    {
+                    else {
                         throw new ExprValidationException(
-                            "Type by name '" + resultType.Name + "' " +
-                            "in property '" + propertyName +
-                            "' expected schema '" + resultTypeField.Schema +
-                            "' but received schema '" + streamTypeField.Schema +
+                            "Type by name '" +
+                            resultType.Name +
+                            "' " +
+                            "in property '" +
+                            propertyName +
+                            "' expected schema '" +
+                            resultTypeField.Schema +
+                            "' but received schema '" +
+                            streamTypeField.Schema +
                             "'");
                     }
                 }
             }
 
             // find the properties coming from the expressions of the select clause
-            var typeWidenerCustomizer = selectExprForgeContext.EventTypeAvroHandler.GetTypeWidenerCustomizer(targetType);
-            for (var i = 0; i < selectExprForgeContext.ExprForges.Length; i++)
-            {
+            var typeWidenerCustomizer =
+                selectExprForgeContext.EventTypeAvroHandler.GetTypeWidenerCustomizer(targetType);
+            for (var i = 0; i < selectExprForgeContext.ExprForges.Length; i++) {
                 var columnName = selectExprForgeContext.ColumnNames[i];
                 var exprNode = exprNodes[i];
 
                 var writable = FindWritable(columnName, writables);
-                if (writable == null)
-                {
-                    throw new ExprValidationException("Failed to find column '" + columnName + "' in target type '" + resultType.Name + "'");
+                if (writable == null) {
+                    throw new ExprValidationException(
+                        "Failed to find column '" + columnName + "' in target type '" + resultType.Name + "'");
                 }
 
                 Field resultTypeField = resultType.SchemaAvro.GetField(writable.PropertyName);
 
                 TypeWidenerSPI widener;
-                try
-                {
+                try {
                     widener = TypeWidenerFactory.GetCheckPropertyAssignType(
-                        ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(exprNode), exprNode.Forge.EvaluationType,
-                        writable.PropertyType, columnName, false, typeWidenerCustomizer, statementName);
+                        ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(exprNode),
+                        exprNode.Forge.EvaluationType,
+                        writable.PropertyType,
+                        columnName,
+                        false,
+                        typeWidenerCustomizer,
+                        statementName);
                 }
-                catch (TypeWidenerException ex)
-                {
+                catch (TypeWidenerException ex) {
                     throw new ExprValidationException(ex.Message, ex);
                 }
 
@@ -113,17 +116,19 @@ namespace NEsper.Avro.Writer
             // make manufacturer
             Item[] itemsArr = items.ToArray();
             return new AvroInsertProcessorAllocate(
-                streamNumber, itemsArr, resultType, resultType.SchemaAvro, selectExprForgeContext.EventBeanTypedEventFactory);
+                streamNumber,
+                itemsArr,
+                resultType,
+                resultType.SchemaAvro,
+                selectExprForgeContext.EventBeanTypedEventFactory);
         }
 
         private static WriteablePropertyDescriptor FindWritable(
             string columnName,
             ISet<WriteablePropertyDescriptor> writables)
         {
-            foreach (var writable in writables)
-            {
-                if (writable.PropertyName.Equals(columnName))
-                {
+            foreach (var writable in writables) {
+                if (writable.PropertyName.Equals(columnName)) {
                     return writable;
                 }
             }
@@ -153,8 +158,11 @@ namespace NEsper.Avro.Writer
                 bool isSynthesize,
                 ExprEvaluatorContext exprEvaluatorContext)
             {
-                AvroGenericDataBackedEventBean theEvent = (AvroGenericDataBackedEventBean) eventsPerStream[_underlyingStreamNumber];
-                return _selectExprForgeContext.EventBeanTypedEventFactory.AdapterForTypedAvro(theEvent.Properties, ResultEventType);
+                AvroGenericDataBackedEventBean theEvent =
+                    (AvroGenericDataBackedEventBean) eventsPerStream[_underlyingStreamNumber];
+                return _selectExprForgeContext.EventBeanTypedEventFactory.AdapterForTypedAvro(
+                    theEvent.Properties,
+                    ResultEventType);
             }
 
             public EventType ResultEventType { get; }
@@ -169,9 +177,17 @@ namespace NEsper.Avro.Writer
             {
                 var methodNode = codegenMethodScope.MakeChild(typeof(EventBean), GetType(), codegenClassScope);
                 var refEPS = exprSymbol.GetAddEPS(methodNode);
-                var theEvent = CodegenExpressionBuilder.Cast(typeof(AvroGenericDataBackedEventBean), CodegenExpressionBuilder.ArrayAtIndex(refEPS, CodegenExpressionBuilder.Constant(_underlyingStreamNumber)));
+                var theEvent = CodegenExpressionBuilder.Cast(
+                    typeof(AvroGenericDataBackedEventBean),
+                    CodegenExpressionBuilder.ArrayAtIndex(
+                        refEPS,
+                        CodegenExpressionBuilder.Constant(_underlyingStreamNumber)));
                 methodNode.Block.MethodReturn(
-                    CodegenExpressionBuilder.ExprDotMethod(eventBeanFactory, "adapterForTypedAvro", CodegenExpressionBuilder.ExprDotMethod(theEvent, "getProperties"), resultEventType));
+                    CodegenExpressionBuilder.ExprDotMethod(
+                        eventBeanFactory,
+                        "adapterForTypedAvro",
+                        CodegenExpressionBuilder.ExprDotMethod(theEvent, "getProperties"),
+                        resultEventType));
                 return methodNode;
             }
 
@@ -212,22 +228,19 @@ namespace NEsper.Avro.Writer
                 bool isSynthesize,
                 ExprEvaluatorContext exprEvaluatorContext)
             {
-                AvroGenericDataBackedEventBean theEvent = (AvroGenericDataBackedEventBean) eventsPerStream[_underlyingStreamNumber];
+                AvroGenericDataBackedEventBean theEvent =
+                    (AvroGenericDataBackedEventBean) eventsPerStream[_underlyingStreamNumber];
                 GenericRecord source = theEvent.Properties;
                 GenericRecord target = new GenericRecord(_resultSchema.AsRecordSchema());
-                foreach (var item in _items)
-                {
+                foreach (var item in _items) {
                     object value;
 
-                    if (item.OptionalFromIndex != null)
-                    {
+                    if (item.OptionalFromIndex != null) {
                         value = source.Get(item.OptionalFromIndex);
                     }
-                    else
-                    {
+                    else {
                         value = item.EvaluatorAssigned.Evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
-                        if (item.OptionalWidener != null)
-                        {
+                        if (item.OptionalWidener != null) {
                             value = item.OptionalWidener.Widen(value);
                         }
                     }
@@ -249,42 +262,69 @@ namespace NEsper.Avro.Writer
                 CodegenClassScope codegenClassScope)
             {
                 CodegenExpressionField schema = codegenClassScope.NamespaceScope.AddFieldUnshared(
-                    true, typeof(Schema),
+                    true,
+                    typeof(Schema),
                     CodegenExpressionBuilder.StaticMethod(
-                        typeof(AvroSchemaUtil), "resolveAvroSchema",
+                        typeof(AvroSchemaUtil),
+                        "resolveAvroSchema",
                         EventTypeUtility.ResolveTypeCodegen(ResultEventType, EPStatementInitServicesConstants.REF)));
                 var methodNode = codegenMethodScope.MakeChild(typeof(EventBean), GetType(), codegenClassScope);
                 var refEPS = exprSymbol.GetAddEPS(methodNode);
                 var block = methodNode.Block
-                    .DeclareVar(
-                        typeof(AvroGenericDataBackedEventBean), "theEvent",
-                        CodegenExpressionBuilder.Cast(typeof(AvroGenericDataBackedEventBean), CodegenExpressionBuilder.ArrayAtIndex(refEPS, CodegenExpressionBuilder.Constant(_underlyingStreamNumber))))
-                    .DeclareVar(typeof(GenericRecord), "source", CodegenExpressionBuilder.ExprDotMethod(CodegenExpressionBuilder.Ref("theEvent"), "getProperties"))
-                    .DeclareVar(typeof(GenericRecord), "target", CodegenExpressionBuilder.NewInstance(typeof(GenericRecord), schema));
-                foreach (var item in _items)
-                {
+                    .DeclareVar<AvroGenericDataBackedEventBean>(
+                        "theEvent",
+                        CodegenExpressionBuilder.Cast(
+                            typeof(AvroGenericDataBackedEventBean),
+                            CodegenExpressionBuilder.ArrayAtIndex(
+                                refEPS,
+                                CodegenExpressionBuilder.Constant(_underlyingStreamNumber))))
+                    .DeclareVar<GenericRecord>(
+                        "source",
+                        CodegenExpressionBuilder.ExprDotMethod(
+                            CodegenExpressionBuilder.Ref("theEvent"),
+                            "getProperties"))
+                    .DeclareVar<GenericRecord>(
+                        "target",
+                        CodegenExpressionBuilder.NewInstance(typeof(GenericRecord), schema));
+                foreach (var item in _items) {
                     CodegenExpression value;
-                    if (item.OptionalFromIndex != null)
-                    {
-                        value = CodegenExpressionBuilder.ExprDotMethod(CodegenExpressionBuilder.Ref("source"), "get", CodegenExpressionBuilder.Constant(item.OptionalFromIndex));
+                    if (item.OptionalFromIndex != null) {
+                        value = CodegenExpressionBuilder.ExprDotMethod(
+                            CodegenExpressionBuilder.Ref("source"),
+                            "get",
+                            CodegenExpressionBuilder.Constant(item.OptionalFromIndex));
                     }
-                    else
-                    {
-                        if (item.OptionalWidener != null)
-                        {
-                            value = item.Forge.EvaluateCodegen(item.Forge.EvaluationType, methodNode, exprSymbol, codegenClassScope);
+                    else {
+                        if (item.OptionalWidener != null) {
+                            value = item.Forge.EvaluateCodegen(
+                                item.Forge.EvaluationType,
+                                methodNode,
+                                exprSymbol,
+                                codegenClassScope);
                             value = item.OptionalWidener.WidenCodegen(value, methodNode, codegenClassScope);
                         }
-                        else
-                        {
-                            value = item.Forge.EvaluateCodegen(typeof(object), methodNode, exprSymbol, codegenClassScope);
+                        else {
+                            value = item.Forge.EvaluateCodegen(
+                                typeof(object),
+                                methodNode,
+                                exprSymbol,
+                                codegenClassScope);
                         }
                     }
 
-                    block.ExprDotMethod(CodegenExpressionBuilder.Ref("target"), "put", CodegenExpressionBuilder.Constant(item.ToIndex), value);
+                    block.ExprDotMethod(
+                        CodegenExpressionBuilder.Ref("target"),
+                        "put",
+                        CodegenExpressionBuilder.Constant(item.ToIndex),
+                        value);
                 }
 
-                block.MethodReturn(CodegenExpressionBuilder.ExprDotMethod(eventBeanFactory, "adapterForTypedAvro", CodegenExpressionBuilder.Ref("target"), resultEventType));
+                block.MethodReturn(
+                    CodegenExpressionBuilder.ExprDotMethod(
+                        eventBeanFactory,
+                        "adapterForTypedAvro",
+                        CodegenExpressionBuilder.Ref("target"),
+                        resultEventType));
                 return methodNode;
             }
         }

@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client.context;
 using com.espertech.esper.common.@internal.context.airegistry;
 using com.espertech.esper.common.@internal.context.mgr;
@@ -33,7 +34,8 @@ namespace com.espertech.esper.common.@internal.context.controller.core
             IDictionary<string, object> props,
             object allPartitionKey);
 
-        public abstract StatementAIResourceRegistry AllocateAgentInstanceResourceRegistry(AIRegistryRequirements registryRequirements);
+        public abstract StatementAIResourceRegistry AllocateAgentInstanceResourceRegistry(
+            AIRegistryRequirements registryRequirements);
 
         public abstract ContextPartitionIdentifier GetContextPartitionIdentifier(object partitionKey);
     }

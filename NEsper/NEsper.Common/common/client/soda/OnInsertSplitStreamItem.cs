@@ -89,7 +89,12 @@ namespace com.espertech.esper.common.client.soda
             string propertySelectsStreamName,
             Expression whereClause)
         {
-            return new OnInsertSplitStreamItem(insertInto, selectClause, propertySelects, propertySelectsStreamName, whereClause);
+            return new OnInsertSplitStreamItem(
+                insertInto,
+                selectClause,
+                propertySelects,
+                propertySelectsStreamName,
+                whereClause);
         }
 
         /// <summary>

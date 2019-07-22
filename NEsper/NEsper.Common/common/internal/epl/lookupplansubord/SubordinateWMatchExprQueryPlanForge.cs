@@ -9,6 +9,7 @@
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.context.aifactory.core;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.lookupplansubord
@@ -35,11 +36,11 @@ namespace com.espertech.esper.common.@internal.epl.lookupplansubord
             var method = parent.MakeChild(typeof(SubordinateWMatchExprQueryPlan), GetType(), classScope);
 
             method.Block
-                .DeclareVar(
-                    typeof(SubordWMatchExprLookupStrategyFactory), "strategy",
+                .DeclareVar<SubordWMatchExprLookupStrategyFactory>(
+                    "strategy",
                     Strategy.Make(parent, symbols, classScope))
-                .DeclareVar(
-                    typeof(SubordinateQueryIndexDesc[]), "indexes",
+                .DeclareVar<SubordinateQueryIndexDesc[]>(
+                    "indexes",
                     Indexes == null
                         ? ConstantNull()
                         : NewArrayByLength(typeof(SubordinateQueryIndexDesc), Constant(Indexes.Length)));
@@ -47,7 +48,9 @@ namespace com.espertech.esper.common.@internal.epl.lookupplansubord
             if (Indexes != null) {
                 for (var i = 0; i < Indexes.Length; i++) {
                     method.Block.AssignArrayElement(
-                        "indexes", Constant(i), Indexes[i].Make(method, symbols, classScope));
+                        "indexes",
+                        Constant(i),
+                        Indexes[i].Make(method, symbols, classScope));
                 }
             }
 

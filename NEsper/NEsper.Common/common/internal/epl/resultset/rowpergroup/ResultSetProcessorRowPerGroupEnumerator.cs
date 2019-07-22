@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.epl.agg.core;
 using com.espertech.esper.common.@internal.epl.expression.core;
@@ -46,7 +47,10 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergroup
 
                 priorSeenGroups.Add(groupKey);
                 yield return resultSetProcessor.SelectExprProcessor.Process(
-                    eventsPerStream, true, true, exprEvaluatorContext);
+                    eventsPerStream,
+                    true,
+                    true,
+                    exprEvaluatorContext);
             }
         }
     }

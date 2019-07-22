@@ -90,11 +90,14 @@ namespace com.espertech.esper.common.@internal.epl.pattern.everydistinct
         {
             var agentInstanceContext = everyNode.Context.AgentInstanceContext;
             agentInstanceContext.InstrumentationProvider.QPatternEveryDistinctEvaluateTrue(
-                everyNode.factoryNode, matchEvent);
+                everyNode.factoryNode,
+                matchEvent);
 
             // determine if this evaluation has been seen before from the same node
             var matchEventKey = PatternExpressionUtil.GetKeys(
-                matchEvent, everyNode.FactoryNode.Convertor, everyNode.FactoryNode.DistinctExpression,
+                matchEvent,
+                everyNode.FactoryNode.Convertor,
+                everyNode.FactoryNode.DistinctExpression,
                 everyNode.Context.AgentInstanceContext);
             var haveSeenThis = false;
             IDictionary<object, long> keysFromNode = spawnedNodes.Get(fromNode);
@@ -159,12 +162,19 @@ namespace com.espertech.esper.common.@internal.epl.pattern.everydistinct
 
             if (!haveSeenThis) {
                 agentInstanceContext.AuditProvider.PatternTrue(
-                    everyNode.FactoryNode, this, matchEvent, false, agentInstanceContext);
+                    everyNode.FactoryNode,
+                    this,
+                    matchEvent,
+                    false,
+                    agentInstanceContext);
                 ParentEvaluator.EvaluateTrue(matchEvent, this, false, optionalTriggeringEvent);
             }
 
             agentInstanceContext.InstrumentationProvider.APatternEveryDistinctEvaluateTrue(
-                null, keysFromNode, matchEventKey, haveSeenThis);
+                null,
+                keysFromNode,
+                matchEventKey,
+                haveSeenThis);
         }
 
         public bool IsFilterChildNonQuitting => true;

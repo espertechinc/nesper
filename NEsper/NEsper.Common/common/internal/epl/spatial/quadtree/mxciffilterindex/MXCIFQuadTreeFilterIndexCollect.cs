@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.epl.spatial.quadtree.core;
 using com.espertech.esper.common.@internal.epl.spatial.quadtree.mxcif;
@@ -69,7 +70,14 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxciffilteri
             if (rectangles is XYWHRectangleWValue<TL>) {
                 XYWHRectangleWValue<TL> rectangle = (XYWHRectangleWValue<TL>) rectangles;
                 if (BoundingBox.IntersectsBoxIncludingEnd(
-                    x, y, x + width, y + height, rectangle.X, rectangle.Y, rectangle.W, rectangle.H)) {
+                    x,
+                    y,
+                    x + width,
+                    y + height,
+                    rectangle.X,
+                    rectangle.Y,
+                    rectangle.W,
+                    rectangle.H)) {
                     collector.CollectInto(eventBean, rectangle.Value, target);
                 }
 
@@ -79,7 +87,14 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxciffilteri
             ICollection<XYWHRectangleWValue<TL>> collection = (ICollection<XYWHRectangleWValue<TL>>) rectangles;
             foreach (XYWHRectangleWValue<TL> rectangle in collection) {
                 if (BoundingBox.IntersectsBoxIncludingEnd(
-                    x, y, x + width, y + height, rectangle.X, rectangle.Y, rectangle.W, rectangle.H)) {
+                    x,
+                    y,
+                    x + width,
+                    y + height,
+                    rectangle.X,
+                    rectangle.Y,
+                    rectangle.W,
+                    rectangle.H)) {
                     collector.CollectInto(eventBean, rectangle.Value, target);
                 }
             }

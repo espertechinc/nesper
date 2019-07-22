@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.epl.index.@base;
@@ -40,7 +41,11 @@ namespace com.espertech.esper.common.@internal.epl.index.inkeyword
             factories = new PropertyHashedEventTableFactory[propertyGetters.Length];
             for (var i = 0; i < factories.Length; i++) {
                 factories[i] = new PropertyHashedEventTableFactory(
-                    streamNum, new[] {propertyNames[i]}, unique, null, propertyGetters[i]);
+                    streamNum,
+                    new[] {propertyNames[i]},
+                    unique,
+                    null,
+                    propertyGetters[i]);
             }
         }
 
@@ -77,8 +82,10 @@ namespace com.espertech.esper.common.@internal.epl.index.inkeyword
         {
             return GetType().GetSimpleName() +
                    (unique ? " unique" : " non-unique") +
-                   " streamNum=" + streamNum +
-                   " propertyNames=" + propertyNames.RenderAny();
+                   " streamNum=" +
+                   streamNum +
+                   " propertyNames=" +
+                   propertyNames.RenderAny();
         }
     }
 } // end of namespace

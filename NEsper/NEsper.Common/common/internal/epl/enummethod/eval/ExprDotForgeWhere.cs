@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.compile.stage2;
 using com.espertech.esper.common.@internal.compile.stage3;
@@ -35,7 +36,11 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             EventType firstParamType;
             if (inputEventType == null) {
                 firstParamType = ExprDotNodeUtility.MakeTransientOAType(
-                    enumMethodUsedName, goesToNames[0], collectionComponentType, statementRawInfo, services);
+                    enumMethodUsedName,
+                    goesToNames[0],
+                    collectionComponentType,
+                    statementRawInfo,
+                    services);
             }
             else {
                 firstParamType = inputEventType;
@@ -46,7 +51,11 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             }
 
             ObjectArrayEventType indexEventType = ExprDotNodeUtility.MakeTransientOAType(
-                enumMethodUsedName, goesToNames[1], typeof(int), statementRawInfo, services);
+                enumMethodUsedName,
+                goesToNames[1],
+                typeof(int),
+                statementRawInfo,
+                services);
             return new EventType[] {firstParamType, indexEventType};
         }
 
@@ -69,16 +78,25 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                     return new EnumWhereEventsForge(first.BodyForge, first.StreamCountIncoming);
                 }
 
-                return new EnumWhereIndexEventsForge(first.BodyForge, first.StreamCountIncoming, (ObjectArrayEventType) first.GoesToTypes[1]);
+                return new EnumWhereIndexEventsForge(
+                    first.BodyForge,
+                    first.StreamCountIncoming,
+                    (ObjectArrayEventType) first.GoesToTypes[1]);
             }
 
             base.TypeInfo = EPTypeHelper.CollectionOfSingleValue(collectionComponentType);
             if (first.GoesToNames.Count == 1) {
-                return new EnumWhereScalarForge(first.BodyForge, first.StreamCountIncoming, (ObjectArrayEventType) first.GoesToTypes[0]);
+                return new EnumWhereScalarForge(
+                    first.BodyForge,
+                    first.StreamCountIncoming,
+                    (ObjectArrayEventType) first.GoesToTypes[0]);
             }
 
             return new EnumWhereScalarIndexForge(
-                first.BodyForge, first.StreamCountIncoming, (ObjectArrayEventType) first.GoesToTypes[0], (ObjectArrayEventType) first.GoesToTypes[1]);
+                first.BodyForge,
+                first.StreamCountIncoming,
+                (ObjectArrayEventType) first.GoesToTypes[0],
+                (ObjectArrayEventType) first.GoesToTypes[1]);
         }
     }
 } // end of namespace

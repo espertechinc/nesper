@@ -7,10 +7,12 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.epl.expression.core;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.historical.lookupstrategy
@@ -45,13 +47,19 @@ namespace com.espertech.esper.common.@internal.epl.historical.lookupstrategy
             var method = parent.MakeChild(typeof(HistoricalIndexLookupStrategyHash), GetType(), classScope);
 
             method.Block
-                .DeclareVar(
-                    typeof(HistoricalIndexLookupStrategyHash), "strat",
+                .DeclareVar<HistoricalIndexLookupStrategyHash>(
+                    "strat",
                     NewInstance(typeof(HistoricalIndexLookupStrategyHash)))
                 .SetProperty(Ref("strat"), "LookupStream", Constant(lookupStream))
-                .SetProperty(Ref("strat"), "Evaluator",
+                .SetProperty(
+                    Ref("strat"),
+                    "Evaluator",
                     ExprNodeUtilityCodegen.CodegenEvaluatorMayMultiKeyWCoerce(
-                        evaluators, coercionTypes, method, GetType(), classScope))
+                        evaluators,
+                        coercionTypes,
+                        method,
+                        GetType(),
+                        classScope))
                 .MethodReturn(Ref("strat"));
             return LocalMethod(method);
         }

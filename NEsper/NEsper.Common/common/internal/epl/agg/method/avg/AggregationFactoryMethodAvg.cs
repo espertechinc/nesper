@@ -8,6 +8,7 @@
 
 using System;
 using System.Numerics;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.core;
@@ -45,7 +46,9 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.avg
 
         public override AggregationPortableValidation AggregationPortableValidation =>
             new AggregationPortableValidationAvg(
-                parent.IsDistinct, parent.HasFilter, parent.ChildNodes[0].Forge.EvaluationType);
+                parent.IsDistinct,
+                parent.HasFilter,
+                parent.ChildNodes[0].Forge.EvaluationType);
 
         public override AggregatorMethod Aggregator => aggregator;
 
@@ -58,15 +61,23 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.avg
             var distinctValueType = !parent.IsDistinct ? null : childType;
             if (resultType == typeof(BigInteger) || resultType == typeof(decimal?)) {
                 aggregator = new AggregatorAvgBig(
-                    this, col, rowCtor,
-                    membersColumnized, classScope, distinctValueType,
+                    this,
+                    col,
+                    rowCtor,
+                    membersColumnized,
+                    classScope,
+                    distinctValueType,
                     parent.HasFilter,
                     parent.OptionalFilter);
             }
             else {
                 aggregator = new AggregatorAvgNonBig(
-                    this, col, rowCtor,
-                    membersColumnized, classScope, distinctValueType,
+                    this,
+                    col,
+                    rowCtor,
+                    membersColumnized,
+                    classScope,
+                    distinctValueType,
                     parent.HasFilter,
                     parent.OptionalFilter,
                     childType.GetBoxedType());

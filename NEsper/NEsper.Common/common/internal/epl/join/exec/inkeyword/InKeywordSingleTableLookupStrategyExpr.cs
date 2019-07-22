@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.index.hash;
@@ -48,7 +49,11 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.inkeyword
             instrumentationCommon.QIndexJoinLookup(this, index);
 
             eventsPerStream[factory.LookupStream] = theEvent;
-            ISet<EventBean> result = InKeywordTableLookupUtil.SingleIndexLookup(factory.Expressions, eventsPerStream, exprEvaluatorContext, index);
+            ISet<EventBean> result = InKeywordTableLookupUtil.SingleIndexLookup(
+                factory.Expressions,
+                eventsPerStream,
+                exprEvaluatorContext,
+                index);
 
             instrumentationCommon.AIndexJoinLookup(result, null);
             return result;
@@ -57,7 +62,9 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.inkeyword
         public override string ToString()
         {
             return "IndexedTableLookupStrategyExpr expressions" +
-                   " index=(" + index + ')';
+                   " index=(" +
+                   index +
+                   ')';
         }
 
         public LookupStrategyType LookupStrategyType {

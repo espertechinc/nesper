@@ -24,7 +24,9 @@ namespace com.espertech.esper.common.@internal.epl.index.advanced.index.quadtree
             EventTableOrganization organization)
         {
             return AdvancedIndexFactoryProviderQuadTree.ConfigureQuadTree(
-                organization.IndexName, advancedIndexProvisionDesc.ParameterEvaluators, agentInstanceContext);
+                organization.IndexName,
+                advancedIndexProvisionDesc.ParameterEvaluators,
+                agentInstanceContext);
         }
 
         public abstract EventAdvancedIndexFactoryForge Forge { get; }

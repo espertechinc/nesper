@@ -9,6 +9,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+
 using com.espertech.esper.collection;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.meta;
@@ -20,6 +21,7 @@ using com.espertech.esper.common.@internal.@event.map;
 using com.espertech.esper.common.@internal.@event.wrap;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat.collections;
+
 using static com.espertech.esper.common.client.util.NameAccessModifier;
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
@@ -86,10 +88,22 @@ namespace com.espertech.esper.common.@internal.@event.core
             var innerName = EventTypeNameUtil.GetWrapperInnerTypeName(metadata.Name);
             var ids = ComputeIdFromWrapped(metadata.AccessModifier, innerName, metadata);
             var metadataMapType = new EventTypeMetadata(
-                innerName, this.metadata.ModuleName, metadata.TypeClass, metadata.ApplicationType,
-                metadata.AccessModifier, EventTypeBusModifier.NONBUS, false, ids);
+                innerName,
+                this.metadata.ModuleName,
+                metadata.TypeClass,
+                metadata.ApplicationType,
+                metadata.AccessModifier,
+                EventTypeBusModifier.NONBUS,
+                false,
+                ids);
             underlyingMapType = new MapEventType(
-                metadataMapType, properties, null, null, null, null, beanEventTypeFactory);
+                metadataMapType,
+                properties,
+                null,
+                null,
+                null,
+                null,
+                beanEventTypeFactory);
             isNoMapProperties = properties.IsEmpty();
             this.eventBeanTypedEventFactory = eventBeanTypedEventFactory;
             propertyGetterCache = new Dictionary<string, EventPropertyGetterSPI>();
@@ -100,7 +114,9 @@ namespace com.espertech.esper.common.@internal.@event.core
                 StartTimestampPropertyName = underlyingEventType.StartTimestampPropertyName;
                 EndTimestampPropertyName = underlyingEventType.EndTimestampPropertyName;
                 EventTypeUtility.ValidateTimestampProperties(
-                    this, StartTimestampPropertyName, EndTimestampPropertyName);
+                    this,
+                    StartTimestampPropertyName,
+                    EndTimestampPropertyName);
             }
         }
 
@@ -143,7 +159,10 @@ namespace com.espertech.esper.common.@internal.@event.core
             if (underlyingMapType.IsProperty(property) && property.IndexOf('?') == -1) {
                 var mapGetter = underlyingMapType.GetGetterSPI(property);
                 var getter = new WrapperMapPropertyGetter(
-                    this, eventBeanTypedEventFactory, underlyingMapType, mapGetter);
+                    this,
+                    eventBeanTypedEventFactory,
+                    underlyingMapType,
+                    mapGetter);
                 propertyGetterCache.Put(property, getter);
                 return getter;
             }
@@ -196,22 +215,28 @@ namespace com.espertech.esper.common.@internal.@event.core
                         var eventType = codegenClassScope.AddFieldUnshared<EventType>(
                             true,
                             EventTypeUtility.ResolveTypeCodegen(
-                                underlyingEventType, EPStatementInitServicesConstants.REF));
+                                underlyingEventType,
+                                EPStatementInitServicesConstants.REF));
                         var method = codegenMethodScope
                             .MakeChild(typeof(object), typeof(WrapperEventType), codegenClassScope)
-                            .AddParam(typeof(EventBean), "theEvent").AddParam(typeof(string), "mapKey").Block
-                            .DeclareVar(
-                                typeof(DecoratingEventBean), "wrapperEvent",
+                            .AddParam(typeof(EventBean), "theEvent")
+                            .AddParam(typeof(string), "mapKey")
+                            .Block
+                            .DeclareVar<DecoratingEventBean>(
+                                "wrapperEvent",
                                 Cast(typeof(DecoratingEventBean), Ref("theEvent")))
-                            .DeclareVar(
-                                typeof(IDictionary<object, object>), "map",
+                            .DeclareVar<IDictionary<object, object>>(
+                                "map",
                                 ExprDotMethod(Ref("wrapperEvent"), "getDecoratingProperties"))
-                            .DeclareVar(
-                                typeof(EventBean), "wrapped",
+                            .DeclareVar<EventBean>(
+                                "wrapped",
                                 ExprDotMethod(factory, "adapterForTypedMap", Ref("map"), eventType))
                             .MethodReturn(
                                 decoMapped.EventBeanGetMappedCodegen(
-                                    codegenMethodScope, codegenClassScope, Ref("wrapped"), Ref("mapKey")));
+                                    codegenMethodScope,
+                                    codegenClassScope,
+                                    Ref("wrapped"),
+                                    Ref("mapKey")));
                         return LocalMethodBuild(method).Pass(beanExpression).Pass(key).Call();
                     }
                 };
@@ -263,22 +288,28 @@ namespace com.espertech.esper.common.@internal.@event.core
                         var eventType = codegenClassScope.AddFieldUnshared<EventType>(
                             true,
                             EventTypeUtility.ResolveTypeCodegen(
-                                underlyingEventType, EPStatementInitServicesConstants.REF));
+                                underlyingEventType,
+                                EPStatementInitServicesConstants.REF));
                         var method = codegenMethodScope
                             .MakeChild(typeof(object), typeof(WrapperEventType), codegenClassScope)
-                            .AddParam(typeof(EventBean), "theEvent").AddParam(typeof(int), "index").Block
-                            .DeclareVar(
-                                typeof(DecoratingEventBean), "wrapperEvent",
+                            .AddParam(typeof(EventBean), "theEvent")
+                            .AddParam(typeof(int), "index")
+                            .Block
+                            .DeclareVar<DecoratingEventBean>(
+                                "wrapperEvent",
                                 Cast(typeof(DecoratingEventBean), Ref("theEvent")))
-                            .DeclareVar(
-                                typeof(IDictionary<object, object>), "map",
+                            .DeclareVar<IDictionary<object, object>>(
+                                "map",
                                 ExprDotMethod(Ref("wrapperEvent"), "getDecoratingProperties"))
-                            .DeclareVar(
-                                typeof(EventBean), "wrapped",
+                            .DeclareVar<EventBean>(
+                                "wrapped",
                                 ExprDotMethod(factory, "adapterForTypedMap", Ref("map"), eventType))
                             .MethodReturn(
                                 decoIndexed.EventBeanGetIndexedCodegen(
-                                    codegenMethodScope, codegenClassScope, Ref("wrapped"), Ref("index")));
+                                    codegenMethodScope,
+                                    codegenClassScope,
+                                    Ref("wrapped"),
+                                    Ref("index")));
                         return LocalMethodBuild(method).Pass(beanExpression).Pass(key).Call();
                     }
                 };
@@ -557,9 +588,15 @@ namespace com.espertech.esper.common.@internal.@event.core
         public override string ToString()
         {
             return "WrapperEventType " +
-                   "name=" + Name + " " +
-                   "underlyingEventType=(" + underlyingEventType + ") " +
-                   "underlyingMapType=(" + underlyingMapType + ")";
+                   "name=" +
+                   Name +
+                   " " +
+                   "underlyingEventType=(" +
+                   underlyingEventType +
+                   ") " +
+                   "underlyingMapType=(" +
+                   underlyingMapType +
+                   ")";
         }
 
         private void InitializeWriters()
@@ -592,8 +629,10 @@ namespace com.espertech.esper.common.@internal.@event.core
                     }
                 };
                 writerMap.Put(
-                    propertyName, new Pair<EventPropertyDescriptor, EventPropertyWriterSPI>(
-                        writableMapProp, writer));
+                    propertyName,
+                    new Pair<EventPropertyDescriptor, EventPropertyWriterSPI>(
+                        writableMapProp,
+                        writer));
             }
 
             if (underlyingEventType is EventTypeSPI) {
@@ -625,12 +664,18 @@ namespace com.espertech.esper.common.@internal.@event.core
                             var underlying = ExprDotMethod(underlyingBean, "getUnderlying");
                             var casted = Cast(underlyingEventType.UnderlyingType, underlying);
                             return ((EventPropertyWriterSPI) innerWriter).WriteCodegen(
-                                assigned, casted, target, parent, classScope);
+                                assigned,
+                                casted,
+                                target,
+                                parent,
+                                classScope);
                         }
                     };
                     writerMap.Put(
-                        propertyName, new Pair<EventPropertyDescriptor, EventPropertyWriterSPI>(
-                            writableUndProp, writer));
+                        propertyName,
+                        new Pair<EventPropertyDescriptor, EventPropertyWriterSPI>(
+                            writableUndProp,
+                            writer));
                 }
             }
 
@@ -645,7 +690,8 @@ namespace com.espertech.esper.common.@internal.@event.core
             foreach (var property in eventType.PropertyNames) {
                 if (properties.Keys.Contains(property)) {
                     throw new EPException(
-                        "Property " + property +
+                        "Property " +
+                        property +
                         " occurs in both the underlying event and in the additional properties");
                 }
             }

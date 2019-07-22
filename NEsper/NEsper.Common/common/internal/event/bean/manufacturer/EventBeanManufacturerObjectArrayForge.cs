@@ -13,6 +13,7 @@ using com.espertech.esper.common.@internal.context.module;
 using com.espertech.esper.common.@internal.@event.arr;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.compat;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.@event.bean.manufacturer
@@ -43,7 +44,8 @@ namespace com.espertech.esper.common.@internal.@event.bean.manufacturer
             for (var i = 0; i < properties.Length; i++) {
                 var propertyName = properties[i].PropertyName;
                 if (!indexes.TryGetValue(propertyName, out var index)) {
-                    throw new IllegalStateException("Failed to find property '" + propertyName + "' among the array indexes");
+                    throw new IllegalStateException(
+                        "Failed to find property '" + propertyName + "' among the array indexes");
                 }
 
                 indexPerWritable[i] = index;
@@ -57,7 +59,11 @@ namespace com.espertech.esper.common.@internal.@event.bean.manufacturer
 
         public EventBeanManufacturer GetManufacturer(EventBeanTypedEventFactory eventBeanTypedEventFactory)
         {
-            return new EventBeanManufacturerObjectArray(eventType, eventBeanTypedEventFactory, indexPerWritable, oneToOne);
+            return new EventBeanManufacturerObjectArray(
+                eventType,
+                eventBeanTypedEventFactory,
+                indexPerWritable,
+                oneToOne);
         }
 
         public CodegenExpression Make(
@@ -68,20 +74,22 @@ namespace com.espertech.esper.common.@internal.@event.bean.manufacturer
 
             var factory = codegenClassScope.AddOrGetFieldSharable(EventBeanTypedEventFactoryCodegenField.INSTANCE);
             var eventType = codegenClassScope.AddFieldUnshared(
-                true, typeof(EventType), EventTypeUtility.ResolveTypeCodegen(this.eventType, EPStatementInitServicesConstants.REF));
+                true,
+                typeof(EventType),
+                EventTypeUtility.ResolveTypeCodegen(this.eventType, EPStatementInitServicesConstants.REF));
 
             var manufacturer = NewAnonymousClass(init.Block, typeof(EventBeanManufacturer));
 
             var makeUndMethod = CodegenMethod.MakeParentNode(typeof(object[]), GetType(), codegenClassScope)
                 .AddParam(typeof(object[]), "properties");
-            manufacturer.AddMethod("makeUnderlying", makeUndMethod);
+            manufacturer.AddMethod("MakeUnderlying", makeUndMethod);
             MakeUnderlyingCodegen(makeUndMethod, codegenClassScope);
 
             var makeMethod = CodegenMethod.MakeParentNode(typeof(EventBean), GetType(), codegenClassScope)
                 .AddParam(typeof(object[]), "properties");
-            manufacturer.AddMethod("make", makeMethod);
+            manufacturer.AddMethod("Make", makeMethod);
             makeMethod.Block
-                .DeclareVar(typeof(object[]), "und", LocalMethod(makeUndMethod, Ref("properties")))
+                .DeclareVar<object[]>("und", LocalMethod(makeUndMethod, Ref("properties")))
                 .MethodReturn(ExprDotMethod(factory, "adapterForTypedObjectArray", Ref("und"), eventType));
 
             return codegenClassScope.AddFieldUnshared(true, typeof(EventBeanManufacturer), manufacturer);
@@ -96,9 +104,14 @@ namespace com.espertech.esper.common.@internal.@event.bean.manufacturer
                 return;
             }
 
-            method.Block.DeclareVar(typeof(object[]), "cols", NewArrayByLength(typeof(object), Constant(eventType.PropertyNames.Length)));
+            method.Block.DeclareVar<object[]>(
+                "cols",
+                NewArrayByLength(typeof(object), Constant(eventType.PropertyNames.Length)));
             for (var i = 0; i < indexPerWritable.Length; i++) {
-                method.Block.AssignArrayElement(Ref("cols"), Constant(indexPerWritable[i]), ArrayAtIndex(Ref("properties"), Constant(i)));
+                method.Block.AssignArrayElement(
+                    Ref("cols"),
+                    Constant(indexPerWritable[i]),
+                    ArrayAtIndex(Ref("properties"), Constant(i)));
             }
 
             method.Block.MethodReturn(Ref("cols"));

@@ -9,6 +9,7 @@
 using System.Collections.Generic;
 using System.Reflection;
 using System.Threading;
+
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.compat.logging;
 
@@ -75,8 +76,13 @@ namespace com.espertech.esper.common.@internal.epl.namedwindow.consume
                 long spinDelta = factory.TimeSourceService.TimeMillis - spinStartTime;
                 if (spinDelta > factory.MsecWait) {
                     Log.Info(
-                        "Spin wait timeout exceeded in named window '" + factory.Name + "' consumer dispatch at " + factory.MsecWait + "ms for " +
-                        factory.Name + ", consider disabling named window consumer dispatch latching for better performance");
+                        "Spin wait timeout exceeded in named window '" +
+                        factory.Name +
+                        "' consumer dispatch at " +
+                        factory.MsecWait +
+                        "ms for " +
+                        factory.Name +
+                        ", consider disabling named window consumer dispatch latching for better performance");
                     break;
                 }
             }

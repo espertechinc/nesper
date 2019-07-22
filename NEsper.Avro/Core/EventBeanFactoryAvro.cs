@@ -20,7 +20,9 @@ namespace NEsper.Avro.Core
         private readonly EventType _type;
         private readonly EventBeanTypedEventFactory _eventAdapterService;
 
-        public EventBeanFactoryAvro(EventType type, EventBeanTypedEventFactory eventAdapterService)
+        public EventBeanFactoryAvro(
+            EventType type,
+            EventBeanTypedEventFactory eventAdapterService)
         {
             _type = type;
             _eventAdapterService = eventAdapterService;
@@ -31,8 +33,7 @@ namespace NEsper.Avro.Core
             return _eventAdapterService.AdapterForTypedAvro(underlying, _type);
         }
 
-        public Type UnderlyingType
-        {
+        public Type UnderlyingType {
             get => typeof(GenericRecord[]);
         }
     }

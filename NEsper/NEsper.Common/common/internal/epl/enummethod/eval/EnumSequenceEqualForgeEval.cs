@@ -9,6 +9,7 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -17,6 +18,7 @@ using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.enummethod.eval
@@ -55,7 +57,9 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
 
             methodNode.Block.MethodReturn(
                 StaticMethod(
-                    typeof(EnumSequenceEqualForgeEval), "enumSequenceEqualsCompare", EnumForgeCodegenNames.REF_ENUMCOLL,
+                    typeof(EnumSequenceEqualForgeEval),
+                    "enumSequenceEqualsCompare",
+                    EnumForgeCodegenNames.REF_ENUMCOLL,
                     forge.innerExpression.EvaluateCodegen(typeof(object), methodNode, scope, codegenClassScope)));
             return LocalMethod(methodNode, args.Eps, args.Enumcoll, args.IsNewData, args.ExprCtx);
         }
@@ -92,7 +96,8 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                 else {
                     Log.Warn(
                         "Enumeration method 'sequenceEqual' expected a Collection-type return value from its parameter but received '" +
-                        otherObj.GetType() + "'");
+                        otherObj.GetType() +
+                        "'");
                     return false;
                 }
             }

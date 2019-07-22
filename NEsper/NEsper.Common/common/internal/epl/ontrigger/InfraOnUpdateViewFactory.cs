@@ -75,7 +75,10 @@ namespace com.espertech.esper.common.@internal.epl.ontrigger
             AgentInstanceContext agentInstanceContext)
         {
             var view = new OnExprViewNamedWindowUpdate(
-                lookupStrategy, namedWindowRootViewInstance, agentInstanceContext, this);
+                lookupStrategy,
+                namedWindowRootViewInstance,
+                agentInstanceContext,
+                this);
             return new InfraOnExprBaseViewResult(view, null);
         }
 

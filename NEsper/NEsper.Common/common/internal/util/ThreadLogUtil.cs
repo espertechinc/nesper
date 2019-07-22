@@ -10,6 +10,7 @@ using System;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
+
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.compat.threading;
 using com.espertech.esper.compat.threading.locks;
@@ -100,7 +101,8 @@ namespace com.espertech.esper.common.@internal.util
             string lockid = string.Format("RWLock@{0:X}", lockObj.GetHashCode());
             return lockid +
                    //" readLockCount=" + lockObj.ReadLockCount +
-                   " isWriteLocked=" + lockObj.IsWriterLockHeld;
+                   " isWriteLocked=" +
+                   lockObj.IsWriterLockHeld;
         }
 
         private static void Write(

@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Reflection;
+
 using com.espertech.esper.common.@internal.epl.expression.time.abacus;
 using com.espertech.esper.common.@internal.type;
 using com.espertech.esper.common.@internal.util;
@@ -55,9 +56,12 @@ namespace com.espertech.esper.common.@internal.schedule
             if (ExecutionPathDebugLog.IsDebugEnabled && Log.IsDebugEnabled) {
                 Log.Debug(
                     ".computeNextOccurance Computing next occurance," +
-                    "  afterTimeInTicks=" + afterTimeInMillis.TimeFromMillis(timeZone) +
-                    "  as long=" + afterTimeInMillis +
-                    "  spec=" + spec);
+                    "  afterTimeInTicks=" +
+                    afterTimeInMillis.TimeFromMillis(timeZone) +
+                    "  as long=" +
+                    afterTimeInMillis +
+                    "  spec=" +
+                    spec);
             }
 
             // Add the minimum resolution to the Start time to ensure we don't get the same exact time
@@ -250,7 +254,8 @@ namespace com.espertech.esper.common.@internal.schedule
                 }
                 // rolling backwards is not allowed
                 else if (rolledYYMMDD < currentYYMMDD) {
-                    throw new IllegalStateException("Failed to evaluate special date op, rolled date less then current date");
+                    throw new IllegalStateException(
+                        "Failed to evaluate special date op, rolled date less then current date");
                 }
                 else {
                     var work = new DateTimeEx(after);

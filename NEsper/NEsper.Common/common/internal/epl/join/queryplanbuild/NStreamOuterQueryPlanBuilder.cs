@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.compile.stage1.spec;
 using com.espertech.esper.common.@internal.compile.stage2;
@@ -58,7 +59,10 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanbuild
             var planNodeSpecs = new QueryPlanNodeForge[numStreams];
 
             // Build index specifications
-            var indexSpecs = QueryPlanIndexBuilder.BuildIndexSpec(queryGraph, typesPerStream, indexedStreamsUniqueProps);
+            var indexSpecs = QueryPlanIndexBuilder.BuildIndexSpec(
+                queryGraph,
+                typesPerStream,
+                indexedStreamsUniqueProps);
 
             // any historical streams don't get indexes, the lookup strategy accounts for cached indexes
             if (historicalViewableDesc.IsHistorical) {
@@ -96,14 +100,31 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanbuild
                 }
 
                 var queryPlanNode = BuildPlanNode(
-                    numStreams, streamNo, streamNames, queryGraph, outerInnerGraph, outerJoinDescList, innerJoinGraph, indexSpecs, typesPerStream,
-                    historicalViewableDesc.Historical, dependencyGraph, historicalStreamIndexLists, tablesPerStream, streamJoinAnalysisResult,
-                    statementRawInfo, services);
+                    numStreams,
+                    streamNo,
+                    streamNames,
+                    queryGraph,
+                    outerInnerGraph,
+                    outerJoinDescList,
+                    innerJoinGraph,
+                    indexSpecs,
+                    typesPerStream,
+                    historicalViewableDesc.Historical,
+                    dependencyGraph,
+                    historicalStreamIndexLists,
+                    tablesPerStream,
+                    streamJoinAnalysisResult,
+                    statementRawInfo,
+                    services);
 
                 if (Log.IsDebugEnabled) {
                     Log.Debug(
-                        ".build spec for stream '" + streamNames[streamNo] +
-                        "' number " + streamNo + " is " + queryPlanNode);
+                        ".build spec for stream '" +
+                        streamNames[streamNo] +
+                        "' number " +
+                        streamNo +
+                        " is " +
+                        queryPlanNode);
                 }
 
                 planNodeSpecs[streamNo] = queryPlanNode;
@@ -150,7 +171,13 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanbuild
             // For all inner-joins, the algorithm is slightly different
             if (innerJoinGraph.IsAllInnerJoin) {
                 requiredPerStream.Fill(true);
-                RecursiveBuildInnerJoin(streamNo, streamCallStack, queryGraph, completedStreams, substreamsPerStream, dependencyGraph);
+                RecursiveBuildInnerJoin(
+                    streamNo,
+                    streamCallStack,
+                    queryGraph,
+                    completedStreams,
+                    substreamsPerStream,
+                    dependencyGraph);
 
                 // compute a best chain to see if all streams are handled and add the remaining
                 var bestChain = NStreamQueryPlanBuilder.ComputeBestPath(streamNo, queryGraph, dependencyGraph);
@@ -158,7 +185,14 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanbuild
             }
             else {
                 RecursiveBuild(
-                    streamNo, streamCallStack, queryGraph, outerInnerGraph, innerJoinGraph, completedStreams, substreamsPerStream, requiredPerStream,
+                    streamNo,
+                    streamCallStack,
+                    queryGraph,
+                    outerInnerGraph,
+                    innerJoinGraph,
+                    completedStreams,
+                    substreamsPerStream,
+                    requiredPerStream,
                     dependencyGraph);
             }
 
@@ -167,9 +201,20 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanbuild
 
             // build list of instructions for lookup
             var lookupInstructions = BuildLookupInstructions(
-                streamNo, substreamsPerStream, requiredPerStream,
-                streamNames, queryGraph, indexSpecs, typesPerStream, outerJoinDescList, isHistorical, historicalStreamIndexLists, tablesPerStream,
-                streamJoinAnalysisResult, statementRawInfo, services);
+                streamNo,
+                substreamsPerStream,
+                requiredPerStream,
+                streamNames,
+                queryGraph,
+                indexSpecs,
+                typesPerStream,
+                outerJoinDescList,
+                isHistorical,
+                historicalStreamIndexLists,
+                tablesPerStream,
+                streamJoinAnalysisResult,
+                statementRawInfo,
+                services);
 
             // build historical index and lookup strategies
             foreach (var lookups in lookupInstructions) {
@@ -185,12 +230,20 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanbuild
             }
 
             // build strategy tree for putting the result back together
-            var assemblyTopNodeFactory = AssemblyStrategyTreeBuilder.Build(streamNo, substreamsPerStream, requiredPerStream);
-            var assemblyInstructionFactories = BaseAssemblyNodeFactory.GetDescendentNodesBottomUp(assemblyTopNodeFactory);
+            var assemblyTopNodeFactory = AssemblyStrategyTreeBuilder.Build(
+                streamNo,
+                substreamsPerStream,
+                requiredPerStream);
+            var assemblyInstructionFactories =
+                BaseAssemblyNodeFactory.GetDescendentNodesBottomUp(assemblyTopNodeFactory);
 
             return new LookupInstructionQueryPlanNodeForge(
-                streamNo, streamNames[streamNo], numStreams, requiredPerStream,
-                lookupInstructions, assemblyInstructionFactories);
+                streamNo,
+                streamNames[streamNo],
+                numStreams,
+                requiredPerStream,
+                lookupInstructions,
+                assemblyInstructionFactories);
         }
 
         private static void AddNotYetNavigated(
@@ -281,22 +334,40 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanbuild
                         }
 
                         if (historicalStreamIndexLists[toStream] == null) {
-                            historicalStreamIndexLists[toStream] = new HistoricalStreamIndexListForge(toStream, typesPerStream, queryGraph);
+                            historicalStreamIndexLists[toStream] = new HistoricalStreamIndexListForge(
+                                toStream,
+                                typesPerStream,
+                                queryGraph);
                         }
 
                         historicalStreamIndexLists[toStream].AddIndex(fromStream);
                         historicalPlans[i] = new HistoricalDataPlanNodeForge(
-                            toStream, rootStreamNum, fromStream, typesPerStream.Length, outerJoinExpr == null ? null : outerJoinExpr.Forge);
+                            toStream,
+                            rootStreamNum,
+                            fromStream,
+                            typesPerStream.Length,
+                            outerJoinExpr == null ? null : outerJoinExpr.Forge);
                     }
                     else {
                         plans[i] = NStreamQueryPlanBuilder.CreateLookupPlan(
-                            queryGraph, fromStream, toStream, streamJoinAnalysisResult.IsVirtualDW(toStream), indexSpecs[toStream], typesPerStream,
+                            queryGraph,
+                            fromStream,
+                            toStream,
+                            streamJoinAnalysisResult.IsVirtualDW(toStream),
+                            indexSpecs[toStream],
+                            typesPerStream,
                             tablesPerStream[toStream]);
                     }
                 }
 
                 var fromStreamName = streamNames[fromStream];
-                var instruction = new LookupInstructionPlanForge(fromStream, fromStreamName, substreams, plans, historicalPlans, requiredPerStream);
+                var instruction = new LookupInstructionPlanForge(
+                    fromStream,
+                    fromStreamName,
+                    substreams,
+                    plans,
+                    historicalPlans,
+                    requiredPerStream);
                 result.Add(instruction);
             }
 
@@ -341,7 +412,10 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanbuild
                 foreach (var dependentStream in dependencies) {
                     if (!streamCallStack.Contains(dependentStream)) {
                         throw new ExprValidationException(
-                            "Historical stream " + streamNum + " parameter dependency originating in stream " + dependentStream +
+                            "Historical stream " +
+                            streamNum +
+                            " parameter dependency originating in stream " +
+                            dependentStream +
                             " cannot or may not be satisfied by the join");
                     }
                 }
@@ -365,7 +439,12 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanbuild
             // Add inner joins, if any, unless already completed for this stream
             innerJoinGraph.AddRequiredStreams(streamNum, requiredStreams, completedStreams);
 
-            var optionalStreams = GetInnerStreams(streamNum, navigableStreams, outerInnerGraph, innerJoinGraph, completedStreams);
+            var optionalStreams = GetInnerStreams(
+                streamNum,
+                navigableStreams,
+                outerInnerGraph,
+                innerJoinGraph,
+                completedStreams);
 
             // Remove from the required streams the optional streams which places 'full' joined streams
             // into the optional stream category
@@ -398,8 +477,15 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanbuild
             foreach (var stream in requiredStreams) {
                 streamCallStack.Push(stream);
                 RecursiveBuild(
-                    stream, streamCallStack, queryGraph, outerInnerGraph, innerJoinGraph,
-                    completedStreams, substreamsPerStream, requiredPerStream, dependencyGraph);
+                    stream,
+                    streamCallStack,
+                    queryGraph,
+                    outerInnerGraph,
+                    innerJoinGraph,
+                    completedStreams,
+                    substreamsPerStream,
+                    requiredPerStream,
+                    dependencyGraph);
                 streamCallStack.Pop();
             }
 
@@ -407,8 +493,15 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanbuild
             foreach (var stream in optionalStreams) {
                 streamCallStack.Push(stream);
                 RecursiveBuild(
-                    stream, streamCallStack, queryGraph, outerInnerGraph, innerJoinGraph,
-                    completedStreams, substreamsPerStream, requiredPerStream, dependencyGraph);
+                    stream,
+                    streamCallStack,
+                    queryGraph,
+                    outerInnerGraph,
+                    innerJoinGraph,
+                    completedStreams,
+                    substreamsPerStream,
+                    requiredPerStream,
+                    dependencyGraph);
                 streamCallStack.Pop();
             }
         }
@@ -444,7 +537,10 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanbuild
                 foreach (var dependentStream in dependencies) {
                     if (!streamCallStack.Contains(dependentStream)) {
                         throw new ExprValidationException(
-                            "Historical stream " + streamNum + " parameter dependency originating in stream " + dependentStream +
+                            "Historical stream " +
+                            streamNum +
+                            " parameter dependency originating in stream " +
+                            dependentStream +
                             " cannot or may not be satisfied by the join");
                     }
                 }
@@ -481,7 +577,13 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanbuild
 
             foreach (var stream in navigableStreams) {
                 streamCallStack.Push(stream);
-                RecursiveBuildInnerJoin(stream, streamCallStack, queryGraph, completedStreams, substreamsPerStream, dependencyGraph);
+                RecursiveBuildInnerJoin(
+                    stream,
+                    streamCallStack,
+                    queryGraph,
+                    completedStreams,
+                    substreamsPerStream,
+                    dependencyGraph);
                 streamCallStack.Pop();
             }
         }
@@ -501,7 +603,11 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanbuild
                     if (!innerJoinGraph.IsEmpty()) {
                         var doNotUseStreams = new HashSet<int>(completedStreams);
                         completedStreams.Add(fromStream);
-                        hasInnerJoin = RecursiveHasInnerJoin(toStream, outerInnerGraph, innerJoinGraph, doNotUseStreams);
+                        hasInnerJoin = RecursiveHasInnerJoin(
+                            toStream,
+                            outerInnerGraph,
+                            innerJoinGraph,
+                            doNotUseStreams);
                     }
 
                     if (!hasInnerJoin) {
@@ -609,7 +715,8 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanbuild
                     streamOne = desc.OptLeftNode.StreamId;
                     streamTwo = desc.OptRightNode.StreamId;
 
-                    if (streamOne > streamMax || streamTwo > streamMax ||
+                    if (streamOne > streamMax ||
+                        streamTwo > streamMax ||
                         streamOne == streamTwo) {
                         throw new ArgumentException("Outer join descriptors reference future streams, or same streams");
                     }
@@ -646,7 +753,8 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanbuild
                     // no navigability for inner joins
                 }
                 else {
-                    throw new ArgumentException("Outer join descriptors join type not handled, type=" + desc.OuterJoinType);
+                    throw new ArgumentException(
+                        "Outer join descriptors join type not handled, type=" + desc.OuterJoinType);
                 }
             }
 
@@ -686,7 +794,9 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanbuild
         {
             if (currentStream >= streamsJoinedPerStream.Count && verify) {
                 throw new ArgumentException(
-                    "Error in stream " + currentStream + " streamsJoinedPerStream=" +
+                    "Error in stream " +
+                    currentStream +
+                    " streamsJoinedPerStream=" +
                     Print(streamsJoinedPerStream));
             }
 
@@ -694,7 +804,8 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanbuild
             for (var i = 0; i < joinedStreams.Length; i++) {
                 var addStream = joinedStreams[i];
                 if (streams.Contains(addStream)) {
-                    throw new ArgumentException("Stream " + addStream + " found twice when validating " + validatedStream);
+                    throw new ArgumentException(
+                        "Stream " + addStream + " found twice when validating " + validatedStream);
                 }
 
                 streams.Add(addStream);

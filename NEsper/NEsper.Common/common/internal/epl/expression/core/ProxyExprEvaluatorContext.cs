@@ -49,7 +49,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
         public StatementAgentInstanceLock AgentInstanceLock => ProcAgentInstanceLock?.Invoke();
         public ExpressionResultCacheService ExpressionResultCacheService => ProcExpressionResultCacheService?.Invoke();
         public TableExprEvaluatorContext TableExprEvaluatorContext => ProcTableExprEvaluatorContext?.Invoke();
-        public AgentInstanceScriptContext AllocateAgentInstanceScriptContext => ProcAllocateAgentInstanceScriptContext?.Invoke();
+
+        public AgentInstanceScriptContext AllocateAgentInstanceScriptContext =>
+            ProcAllocateAgentInstanceScriptContext?.Invoke();
+
         public string DeploymentId => ProcDeploymentId?.Invoke();
         public AuditProvider AuditProvider => ProcAuditProvider?.Invoke();
         public InstrumentationCommon InstrumentationProvider => ProcInstrumentationProvider?.Invoke();

@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.context.aifactory.core;
@@ -17,6 +18,7 @@ using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.agg.access.countminsketch
@@ -48,7 +50,8 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.countminsketch
             AggregationValidationUtil.ValidateAggregationType(this, tableExpression, intoTableAgg, intoExpression);
 
             if (factory is AggregationForgeFactoryAccessCountMinSketchAdd) {
-                AggregationForgeFactoryAccessCountMinSketchAdd add = (AggregationForgeFactoryAccessCountMinSketchAdd) factory;
+                AggregationForgeFactoryAccessCountMinSketchAdd add =
+                    (AggregationForgeFactoryAccessCountMinSketchAdd) factory;
                 CountMinSketchAggType aggType = add.Parent.AggType;
                 if (aggType == CountMinSketchAggType.FREQ || aggType == CountMinSketchAggType.ADD) {
                     Type clazz = add.AddOrFrequencyEvaluatorReturnType;
@@ -61,8 +64,10 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.countminsketch
 
                     if (!foundMatch) {
                         throw new ExprValidationException(
-                            "Mismatching parameter return type, expected any of " + CompatExtensions.RenderAny(acceptableValueTypes) +
-                            " but received " + TypeHelper.GetCleanName(clazz));
+                            "Mismatching parameter return type, expected any of " +
+                            CompatExtensions.RenderAny(acceptableValueTypes) +
+                            " but received " +
+                            TypeHelper.GetCleanName(clazz));
                     }
                 }
             }
@@ -73,10 +78,14 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.countminsketch
             ModuleTableInitializeSymbol symbols,
             CodegenClassScope classScope)
         {
-            CodegenMethod method = parent.MakeChild(typeof(AggregationPortableValidationCountMinSketch), this.GetType(), classScope);
+            CodegenMethod method = parent.MakeChild(
+                typeof(AggregationPortableValidationCountMinSketch),
+                this.GetType(),
+                classScope);
             method.Block
-                .DeclareVar(
-                    typeof(AggregationPortableValidationCountMinSketch), "v", NewInstance(typeof(AggregationPortableValidationCountMinSketch)))
+                .DeclareVar<AggregationPortableValidationCountMinSketch>(
+                    "v",
+                    NewInstance(typeof(AggregationPortableValidationCountMinSketch)))
                 .SetProperty(Ref("v"), "AcceptableValueTypes", Constant(acceptableValueTypes))
                 .MethodReturn(@Ref("v"));
             return LocalMethod(method);

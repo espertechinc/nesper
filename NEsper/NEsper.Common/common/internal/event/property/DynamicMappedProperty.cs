@@ -9,6 +9,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+
 using com.espertech.esper.common.@internal.@event.arr;
 using com.espertech.esper.common.@internal.@event.bean.core;
 using com.espertech.esper.common.@internal.@event.bean.getter;
@@ -58,7 +59,10 @@ namespace com.espertech.esper.common.@internal.@event.property
             BeanEventTypeFactory beanEventTypeFactory)
         {
             return new DynamicMappedPropertyGetter(
-                PropertyNameAtomic, Key, eventBeanTypedEventFactory, beanEventTypeFactory);
+                PropertyNameAtomic,
+                Key,
+                eventBeanTypedEventFactory,
+                beanEventTypeFactory);
         }
 
         public override Type GetPropertyType(

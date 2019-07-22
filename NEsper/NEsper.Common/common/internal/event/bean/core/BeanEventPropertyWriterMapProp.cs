@@ -8,6 +8,7 @@
 
 using System;
 using System.Reflection;
+
 using com.espertech.esper.common.client;
 
 namespace com.espertech.esper.common.@internal.@event.bean.core

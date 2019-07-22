@@ -10,6 +10,7 @@ using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.@event.core;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.context.aifactory.createdataflow
@@ -35,10 +36,12 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createdataflow
         {
             var method = parent.MakeChild(typeof(StatementAgentInstanceFactoryCreateDataflow), GetType(), classScope);
             method.Block
-                .DeclareVar(
-                    typeof(StatementAgentInstanceFactoryCreateDataflow), "saiff",
+                .DeclareVar<StatementAgentInstanceFactoryCreateDataflow>(
+                    "saiff",
                     NewInstance(typeof(StatementAgentInstanceFactoryCreateDataflow)))
-                .SetProperty(Ref("saiff"), "EventType",
+                .SetProperty(
+                    Ref("saiff"),
+                    "EventType",
                     EventTypeUtility.ResolveTypeCodegen(eventType, symbols.GetAddInitSvc(method)))
                 .SetProperty(Ref("saiff"), "Dataflow", dataflowForge.Make(method, symbols, classScope))
                 .Expression(ExprDotMethodChain(symbols.GetAddInitSvc(method)).Add("addReadyCallback", Ref("saiff")))

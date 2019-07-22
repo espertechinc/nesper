@@ -9,6 +9,7 @@
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 using static com.espertech.esper.common.@internal.epl.expression.subquery.SubselectForgeCodegenUtil;
 
@@ -31,15 +32,23 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
             var method = parent.MakeChild(subselect.EvaluationType, GetType(), classScope);
             var havingMethod = CodegenLegoMethodExpression.CodegenExpression(subselect.HavingExpr, method, classScope);
             CodegenExpression having = LocalMethod(
-                havingMethod, REF_EVENTS_SHIFTED, symbols.GetAddIsNewData(method), symbols.GetAddExprEvalCtx(method));
+                havingMethod,
+                REF_EVENTS_SHIFTED,
+                symbols.GetAddIsNewData(method),
+                symbols.GetAddExprEvalCtx(method));
 
             method.Block.ApplyTri(DECLARE_EVENTS_SHIFTED, method, symbols);
             CodegenLegoBooleanExpression.CodegenReturnValueIfNotNullAndNotPass(
-                method.Block, typeof(bool?), having, ConstantNull());
+                method.Block,
+                typeof(bool?),
+                having,
+                ConstantNull());
 
             if (subselect.SelectClause.Length == 1) {
                 var eval = CodegenLegoMethodExpression.CodegenExpression(
-                    subselect.SelectClause[0].Forge, method, classScope);
+                    subselect.SelectClause[0].Forge,
+                    method,
+                    classScope);
                 method.Block.MethodReturn(
                     LocalMethod(eval, REF_EVENTS_SHIFTED, ConstantTrue(), symbols.GetAddExprEvalCtx(method)));
             }

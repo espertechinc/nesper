@@ -218,7 +218,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.define
                 env.UndeployAll();
 
                 var eplPattern = "@Name('s0') expression abc { x => IntPrimitive * 2} " +
-                                 "select * from pattern [a=SupportBean => b=SupportBean(IntPrimitive = abc(a))]";
+                                 "select * from pattern [a=SupportBean -> b=SupportBean(IntPrimitive = abc(a))]";
                 env.CompileDeploy(eplPattern).AddListener("s0");
 
                 env.SendEventBean(new SupportBean("E1", 2));

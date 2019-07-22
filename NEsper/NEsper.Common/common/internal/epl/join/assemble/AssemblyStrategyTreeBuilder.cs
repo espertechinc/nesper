@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
+
 using com.espertech.esper.common.@internal.epl.join.queryplanbuild;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
@@ -52,13 +53,20 @@ namespace com.espertech.esper.common.@internal.epl.join.assemble
 
             if (Log.IsDebugEnabled) {
                 Log.Debug(
-                    ".build Building node for root stream " + rootStream +
-                    " streamsJoinedPerStream=" + NStreamOuterQueryPlanBuilder.Print(streamsJoinedPerStream) +
-                    " isRequiredPerStream=" + CompatExtensions.Render(isRequiredPerStream));
+                    ".build Building node for root stream " +
+                    rootStream +
+                    " streamsJoinedPerStream=" +
+                    NStreamOuterQueryPlanBuilder.Print(streamsJoinedPerStream) +
+                    " isRequiredPerStream=" +
+                    CompatExtensions.Render(isRequiredPerStream));
             }
 
             BaseAssemblyNodeFactory topNode = CreateNode(
-                true, rootStream, streamsJoinedPerStream.Count, streamsJoinedPerStream.Get(rootStream), isRequiredPerStream);
+                true,
+                rootStream,
+                streamsJoinedPerStream.Count,
+                streamsJoinedPerStream.Get(rootStream),
+                isRequiredPerStream);
 
             RecursiveBuild(rootStream, topNode, streamsJoinedPerStream, isRequiredPerStream);
 
@@ -84,7 +92,11 @@ namespace com.espertech.esper.common.@internal.epl.join.assemble
             for (int i = 0; i < streamsJoinedPerStream.Get(parentStreamNum).Length; i++) {
                 int streamJoined = streamsJoinedPerStream.Get(parentStreamNum)[i];
                 BaseAssemblyNodeFactory childNode = CreateNode(
-                    false, streamJoined, numStreams, streamsJoinedPerStream.Get(streamJoined), isRequiredPerStream);
+                    false,
+                    streamJoined,
+                    numStreams,
+                    streamsJoinedPerStream.Get(streamJoined),
+                    isRequiredPerStream);
                 parentNode.AddChild(childNode);
 
                 if (streamsJoinedPerStream.Get(streamJoined).Length > 0) {

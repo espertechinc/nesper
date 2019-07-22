@@ -21,10 +21,11 @@ namespace NEsper.Avro.IO
         {
         }
 
-        private bool ValueMatchSchemaType(Schema schema, object value)
+        private bool ValueMatchSchemaType(
+            Schema schema,
+            object value)
         {
-            switch (schema.Tag)
-            {
+            switch (schema.Tag) {
                 case Schema.Type.Null:
                     return value == null;
 
@@ -51,19 +52,19 @@ namespace NEsper.Avro.IO
 
                 case Schema.Type.Error:
                 case Schema.Type.Record:
-                    return (value is GenericRecord)
-                           && (schema is RecordSchema)
-                           && (value as GenericRecord).Schema.SchemaName.Equals(((RecordSchema) schema).SchemaName);
+                    return (value is GenericRecord) &&
+                           (schema is RecordSchema) &&
+                           (value as GenericRecord).Schema.SchemaName.Equals(((RecordSchema) schema).SchemaName);
 
                 case Schema.Type.Enumeration:
-                    return (value is GenericEnum)
-                           && (schema is EnumSchema)
-                           && (value as GenericEnum).Schema.SchemaName.Equals(((EnumSchema) schema).SchemaName);
+                    return (value is GenericEnum) &&
+                           (schema is EnumSchema) &&
+                           (value as GenericEnum).Schema.SchemaName.Equals(((EnumSchema) schema).SchemaName);
 
                 case Schema.Type.Fixed:
-                    return (value is GenericFixed)
-                           && (schema is FixedSchema)
-                           && (value as GenericFixed).Schema.SchemaName.Equals(((FixedSchema) schema).SchemaName);
+                    return (value is GenericFixed) &&
+                           (schema is FixedSchema) &&
+                           (value as GenericFixed).Schema.SchemaName.Equals(((FixedSchema) schema).SchemaName);
 
                 case Schema.Type.Array:
                     return (value is Array) && (!(value is byte[]));
@@ -79,7 +80,9 @@ namespace NEsper.Avro.IO
             }
         }
 
-        private JToken EncodeFixed(FixedSchema schema, GenericFixed value)
+        private JToken EncodeFixed(
+            FixedSchema schema,
+            GenericFixed value)
         {
             var jvalue = new JObject();
 
@@ -89,19 +92,18 @@ namespace NEsper.Avro.IO
             return jvalue;
         }
 
-        private JObject EncodeRecord(RecordSchema schema, GenericRecord record)
+        private JObject EncodeRecord(
+            RecordSchema schema,
+            GenericRecord record)
         {
             var jvalue = new JObject();
 
-            foreach (var field in schema.Fields)
-            {
+            foreach (var field in schema.Fields) {
                 object fieldValue;
-                if (record.TryGetValue(field.Name, out fieldValue))
-                {
+                if (record.TryGetValue(field.Name, out fieldValue)) {
                     jvalue.Add(field.Name, Encode(field.Schema, fieldValue));
                 }
-                else
-                {
+                else {
                     // field does not exist in schema
                 }
             }
@@ -109,48 +111,48 @@ namespace NEsper.Avro.IO
             return jvalue;
         }
 
-        private JArray EncodeArray(ArraySchema arraySchema, object value)
+        private JArray EncodeArray(
+            ArraySchema arraySchema,
+            object value)
         {
             var itemsType = arraySchema.ItemSchema;
             var itemsArray = value as Array;
             var jvalue = new JArray();
 
-            for (int ii = 0; ii < itemsArray.Length; ii++)
-            {
+            for (int ii = 0; ii < itemsArray.Length; ii++) {
                 jvalue.Add(Encode(itemsType, itemsArray.GetValue(ii)));
             }
 
             return jvalue;
         }
 
-        private JObject EncodeMap(MapSchema schema, object value)
+        private JObject EncodeMap(
+            MapSchema schema,
+            object value)
         {
             var valueType = schema.ValueSchema;
             var valueDict = MagicMarker.SingletonInstance.GetStringDictionary(value);
             var jvalue = new JObject();
 
-            foreach (var valueKeyPair in valueDict)
-            {
+            foreach (var valueKeyPair in valueDict) {
                 jvalue.Add(new JProperty(valueKeyPair.Key, Encode(valueType, valueKeyPair.Value)));
             }
 
             return jvalue;
         }
 
-        private JToken EncodeUnion(UnionSchema schema, object value)
+        private JToken EncodeUnion(
+            UnionSchema schema,
+            object value)
         {
             var unionTypes = schema.Schemas.ToArray();
 
-            foreach (var unionType in unionTypes)
-            {
-                if (ValueMatchSchemaType(unionType, value))
-                {
-                    if (String.IsNullOrEmpty(unionType.Name))
-                    {
+            foreach (var unionType in unionTypes) {
+                if (ValueMatchSchemaType(unionType, value)) {
+                    if (String.IsNullOrEmpty(unionType.Name)) {
                         return Encode(unionType, value);
                     }
-                    else
-                    {
+                    else {
                         return new JObject(
                             new JProperty(unionType.Name, Encode(unionType, value)));
                     }
@@ -160,15 +162,18 @@ namespace NEsper.Avro.IO
             throw new ArgumentException("value did not match schema");
         }
 
-        private JToken EncodeEnum(EnumSchema schema, GenericEnum value)
+        private JToken EncodeEnum(
+            EnumSchema schema,
+            GenericEnum value)
         {
             return new JValue(value.Value);
         }
 
-        private JToken Encode(Schema schema, Object value)
+        private JToken Encode(
+            Schema schema,
+            Object value)
         {
-            switch (schema.Tag)
-            {
+            switch (schema.Tag) {
                 case Schema.Type.Null:
                     return NULL_VALUE;
 
@@ -197,6 +202,7 @@ namespace NEsper.Avro.IO
 
                 case Schema.Type.Error:
                     throw new NotImplementedException();
+
                 case Schema.Type.Record:
                     return EncodeRecord((RecordSchema) schema, (GenericRecord) value);
 

@@ -686,7 +686,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
             public void Run(RegressionEnvironment env)
             {
                 Assert.IsTrue("aq".Matches("^aq|^Id"));
-                Assert.IsTrue("id".Matches("^aq|^Id"));
+                Assert.IsTrue("Id".Matches("^aq|^Id"));
                 Assert.IsTrue("ad".Matches("a(q|i)?d"));
                 Assert.IsTrue("aqd".Matches("a(q|i)?d"));
                 Assert.IsTrue("aId".Matches("a(q|i)?d"));

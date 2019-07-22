@@ -485,7 +485,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 var path = new RegressionPath();
                 env.CompileDeploy("insert into SupportBeanStream select * from SupportBean", path);
                 env.CompileDeploy(
-                    "insert into SupportBeanStreamTwo select * from pattern[a=SupportBean => b=SupportBean]",
+                    "insert into SupportBeanStreamTwo select * from pattern[a=SupportBean -> b=SupportBean]",
                     path);
                 env.CompileDeploy("insert into SupportBeanStreamRO select * from SupportBeanReadOnly", path);
 

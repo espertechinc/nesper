@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Text;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.render;
 using com.espertech.esper.common.@internal.@event.util;
@@ -46,7 +47,11 @@ namespace com.espertech.esper.common.@internal.@event.render
                 propertyRendererContext = new EventPropertyRendererContext(eventType, false);
             }
 
-            rendererMetaOptions = new RendererMetaOptions(options.PreventLooping, true, propertyRenderer, propertyRendererContext);
+            rendererMetaOptions = new RendererMetaOptions(
+                options.PreventLooping,
+                true,
+                propertyRenderer,
+                propertyRendererContext);
             meta = new RendererMeta(eventType, new Stack<EventTypePropertyPair>(), rendererMetaOptions);
             this.options = options;
         }
@@ -173,7 +178,12 @@ namespace com.espertech.esper.common.@internal.@event.render
                 var value = mappedProp.Getter.Get(theEvent);
 
                 if (value != null && !(value is IDictionary<string, object>)) {
-                    Log.Warn("Property '" + mappedProp.Name + "' expected to return Map and returned " + value.GetType() + " instead");
+                    Log.Warn(
+                        "Property '" +
+                        mappedProp.Name +
+                        "' expected to return Map and returned " +
+                        value.GetType() +
+                        " instead");
                     continue;
                 }
 
@@ -195,7 +205,9 @@ namespace com.espertech.esper.common.@internal.@event.render
                             buf.Append(entry.Key);
                             buf.Append("=\"");
                             var outputValueRenderer =
-                                OutputValueRendererFactory.GetOutputValueRenderer(entry.Value.GetType(), rendererMetaOptions);
+                                OutputValueRendererFactory.GetOutputValueRenderer(
+                                    entry.Value.GetType(),
+                                    rendererMetaOptions);
 
                             if (rendererMetaOptions.Renderer == null) {
                                 outputValueRenderer.Render(entry.Value, buf);
@@ -229,7 +241,12 @@ namespace com.espertech.esper.common.@internal.@event.render
 
                 if (!nestedProp.IsArray) {
                     if (!(value is EventBean)) {
-                        Log.Warn("Property '" + nestedProp.Name + "' expected to return EventBean and returned " + value.GetType() + " instead");
+                        Log.Warn(
+                            "Property '" +
+                            nestedProp.Name +
+                            "' expected to return EventBean and returned " +
+                            value.GetType() +
+                            " instead");
                         buf.Append("null");
                         continue;
                     }
@@ -239,7 +256,12 @@ namespace com.espertech.esper.common.@internal.@event.render
                 }
                 else {
                     if (!(value is EventBean[])) {
-                        Log.Warn("Property '" + nestedProp.Name + "' expected to return EventBean[] and returned " + value.GetType() + " instead");
+                        Log.Warn(
+                            "Property '" +
+                            nestedProp.Name +
+                            "' expected to return EventBean[] and returned " +
+                            value.GetType() +
+                            " instead");
                         buf.Append("null");
                         continue;
                     }
@@ -391,7 +413,12 @@ namespace com.espertech.esper.common.@internal.@event.render
                 var value = mappedProp.Getter.Get(theEvent);
 
                 if (value != null && !(value is IDictionary<string, object>)) {
-                    Log.Warn("Property '" + mappedProp.Name + "' expected to return Map and returned " + value.GetType() + " instead");
+                    Log.Warn(
+                        "Property '" +
+                        mappedProp.Name +
+                        "' expected to return Map and returned " +
+                        value.GetType() +
+                        " instead");
                     continue;
                 }
 
@@ -420,7 +447,9 @@ namespace com.espertech.esper.common.@internal.@event.render
 
                             if (entry.Value != null) {
                                 var outputValueRenderer =
-                                    OutputValueRendererFactory.GetOutputValueRenderer(entry.Value.GetType(), rendererMetaOptions);
+                                    OutputValueRendererFactory.GetOutputValueRenderer(
+                                        entry.Value.GetType(),
+                                        rendererMetaOptions);
                                 if (rendererMetaOptions.Renderer == null) {
                                     outputValueRenderer.Render(entry.Value, buf);
                                 }
@@ -461,7 +490,12 @@ namespace com.espertech.esper.common.@internal.@event.render
 
                 if (!nestedProp.IsArray) {
                     if (!(value is EventBean)) {
-                        Log.Warn("Property '" + nestedProp.Name + "' expected to return EventBean and returned " + value.GetType() + " instead");
+                        Log.Warn(
+                            "Property '" +
+                            nestedProp.Name +
+                            "' expected to return EventBean and returned " +
+                            value.GetType() +
+                            " instead");
                         buf.Append("null");
                         continue;
                     }
@@ -470,7 +504,12 @@ namespace com.espertech.esper.common.@internal.@event.render
                 }
                 else {
                     if (!(value is EventBean[])) {
-                        Log.Warn("Property '" + nestedProp.Name + "' expected to return EventBean[] and returned " + value.GetType() + " instead");
+                        Log.Warn(
+                            "Property '" +
+                            nestedProp.Name +
+                            "' expected to return EventBean[] and returned " +
+                            value.GetType() +
+                            " instead");
                         buf.Append("null");
                         continue;
                     }

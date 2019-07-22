@@ -45,7 +45,12 @@ namespace NEsper.Avro.Writer
             CodegenClassScope classScope)
         {
             return CodegenExpressionBuilder.StaticMethod(
-                typeof(AvroEventBeanPropertyWriterIndexedProp), "avroWriteIndexedProp", assigned, und, CodegenExpressionBuilder.Constant(index), CodegenExpressionBuilder.Constant(_indexTarget));
+                typeof(AvroEventBeanPropertyWriterIndexedProp),
+                "avroWriteIndexedProp",
+                assigned,
+                und,
+                CodegenExpressionBuilder.Constant(index),
+                CodegenExpressionBuilder.Constant(_indexTarget));
         }
 
         /// <summary>
@@ -62,11 +67,9 @@ namespace NEsper.Avro.Writer
             int indexTarget)
         {
             var val = record.Get(index);
-            if (val != null && val is IList<object>)
-            {
+            if (val != null && val is IList<object>) {
                 var list = (IList<object>) val;
-                if (list.Count > indexTarget)
-                {
+                if (list.Count > indexTarget) {
                     list[indexTarget] = value;
                 }
             }

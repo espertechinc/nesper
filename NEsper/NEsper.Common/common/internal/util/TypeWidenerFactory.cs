@@ -8,10 +8,12 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.util
@@ -28,7 +30,10 @@ namespace com.espertech.esper.common.@internal.util
                     codegenMethodScope,
                     codegenClassScope) =>
                 SimpleTypeCasterFactory.CharTypeCaster.Codegen(
-                    expression, typeof(object), codegenMethodScope, codegenClassScope)
+                    expression,
+                    typeof(object),
+                    codegenMethodScope,
+                    codegenClassScope)
         };
 
         public static readonly TypeWidenerObjectArrayToCollectionCoercer OBJECT_ARRAY_TO_COLLECTION_COERCER =
@@ -84,7 +89,11 @@ namespace com.espertech.esper.common.@internal.util
 
             if (customizer != null) {
                 var custom = customizer.WidenerFor(
-                    columnName, columnType, writeablePropertyType, writeablePropertyName, statementName);
+                    columnName,
+                    columnType,
+                    writeablePropertyType,
+                    writeablePropertyName,
+                    statementName);
                 if (custom != null) {
                     return custom;
                 }
@@ -92,9 +101,12 @@ namespace com.espertech.esper.common.@internal.util
 
             if (columnType == null) {
                 if (writeablePropertyType.IsPrimitive) {
-                    var message = "Invalid assignment of column '" + columnName +
-                                  "' of null type to event property '" + writeablePropertyName +
-                                  "' typed as '" + writeablePropertyType.Name +
+                    var message = "Invalid assignment of column '" +
+                                  columnName +
+                                  "' of null type to event property '" +
+                                  writeablePropertyName +
+                                  "' typed as '" +
+                                  writeablePropertyType.Name +
                                   "', nullable type mismatch";
                     throw new TypeWidenerException(message);
                 }
@@ -122,10 +134,14 @@ namespace com.espertech.esper.common.@internal.util
                         columnTypeName = columnType.GetElementType().Name + "[]";
                     }
 
-                    var message = "Invalid assignment of column '" + columnName +
-                                  "' of type '" + columnTypeName +
-                                  "' to event property '" + writeablePropertyName +
-                                  "' typed as '" + writablePropName +
+                    var message = "Invalid assignment of column '" +
+                                  columnName +
+                                  "' of type '" +
+                                  columnTypeName +
+                                  "' to event property '" +
+                                  writeablePropertyName +
+                                  "' typed as '" +
+                                  writablePropName +
                                   "', column and parameter types mismatch";
                     throw new TypeWidenerException(message);
                 }
@@ -203,7 +219,8 @@ namespace com.espertech.esper.common.@internal.util
             CodegenClassScope codegenClassScope)
         {
             var method = codegenMethodScope.MakeChild(typeof(ICollection<object>), generator, codegenClassScope)
-                .AddParam(typeof(object), "input").Block
+                .AddParam(typeof(object), "input")
+                .Block
                 .IfRefNullReturnNull("input")
                 .MethodReturn(StaticMethod(typeof(CompatExtensions), "AsList", Cast(arrayType, Ref("input"))));
             return LocalMethodBuild(method).Pass(expression).Call();
@@ -222,7 +239,10 @@ namespace com.espertech.esper.common.@internal.util
                 CodegenClassScope codegenClassScope)
             {
                 return CodegenWidenArrayAsListMayNull(
-                    expression, typeof(byte[]), codegenMethodScope, typeof(TypeWidenerByteArrayToCollectionCoercer),
+                    expression,
+                    typeof(byte[]),
+                    codegenMethodScope,
+                    typeof(TypeWidenerByteArrayToCollectionCoercer),
                     codegenClassScope);
             }
         }
@@ -240,7 +260,10 @@ namespace com.espertech.esper.common.@internal.util
                 CodegenClassScope codegenClassScope)
             {
                 return CodegenWidenArrayAsListMayNull(
-                    expression, typeof(short[]), codegenMethodScope, typeof(TypeWidenerShortArrayToCollectionCoercer),
+                    expression,
+                    typeof(short[]),
+                    codegenMethodScope,
+                    typeof(TypeWidenerShortArrayToCollectionCoercer),
                     codegenClassScope);
             }
         }
@@ -258,7 +281,10 @@ namespace com.espertech.esper.common.@internal.util
                 CodegenClassScope codegenClassScope)
             {
                 return CodegenWidenArrayAsListMayNull(
-                    expression, typeof(int[]), codegenMethodScope, typeof(TypeWidenerIntArrayToCollectionCoercer),
+                    expression,
+                    typeof(int[]),
+                    codegenMethodScope,
+                    typeof(TypeWidenerIntArrayToCollectionCoercer),
                     codegenClassScope);
             }
         }
@@ -276,7 +302,10 @@ namespace com.espertech.esper.common.@internal.util
                 CodegenClassScope codegenClassScope)
             {
                 return CodegenWidenArrayAsListMayNull(
-                    expression, typeof(long[]), codegenMethodScope, typeof(TypeWidenerLongArrayToCollectionCoercer),
+                    expression,
+                    typeof(long[]),
+                    codegenMethodScope,
+                    typeof(TypeWidenerLongArrayToCollectionCoercer),
                     codegenClassScope);
             }
         }
@@ -294,7 +323,10 @@ namespace com.espertech.esper.common.@internal.util
                 CodegenClassScope codegenClassScope)
             {
                 return CodegenWidenArrayAsListMayNull(
-                    expression, typeof(float[]), codegenMethodScope, typeof(TypeWidenerFloatArrayToCollectionCoercer),
+                    expression,
+                    typeof(float[]),
+                    codegenMethodScope,
+                    typeof(TypeWidenerFloatArrayToCollectionCoercer),
                     codegenClassScope);
             }
         }
@@ -312,7 +344,10 @@ namespace com.espertech.esper.common.@internal.util
                 CodegenClassScope codegenClassScope)
             {
                 return CodegenWidenArrayAsListMayNull(
-                    expression, typeof(double[]), codegenMethodScope, typeof(TypeWidenerDoubleArrayToCollectionCoercer),
+                    expression,
+                    typeof(double[]),
+                    codegenMethodScope,
+                    typeof(TypeWidenerDoubleArrayToCollectionCoercer),
                     codegenClassScope);
             }
         }
@@ -330,7 +365,10 @@ namespace com.espertech.esper.common.@internal.util
                 CodegenClassScope codegenClassScope)
             {
                 return CodegenWidenArrayAsListMayNull(
-                    expression, typeof(bool[]), codegenMethodScope, typeof(TypeWidenerBooleanArrayToCollectionCoercer),
+                    expression,
+                    typeof(bool[]),
+                    codegenMethodScope,
+                    typeof(TypeWidenerBooleanArrayToCollectionCoercer),
                     codegenClassScope);
             }
         }
@@ -348,7 +386,10 @@ namespace com.espertech.esper.common.@internal.util
                 CodegenClassScope codegenClassScope)
             {
                 return CodegenWidenArrayAsListMayNull(
-                    expression, typeof(char[]), codegenMethodScope, typeof(TypeWidenerCharArrayToCollectionCoercer),
+                    expression,
+                    typeof(char[]),
+                    codegenMethodScope,
+                    typeof(TypeWidenerCharArrayToCollectionCoercer),
                     codegenClassScope);
             }
         }

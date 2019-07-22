@@ -9,6 +9,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -17,6 +18,7 @@ using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.@join.querygraph;
 using com.espertech.esper.common.@internal.epl.@join.queryplan;
 using com.espertech.esper.compat.collections;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.join.indexlookupplan
@@ -65,17 +67,22 @@ namespace com.espertech.esper.common.@internal.epl.join.indexlookupplan
             if (!hashKeys.IsEmpty()) {
                 var forges = QueryGraphValueEntryHashKeyedForge.GetForges(hashKeys.ToArray());
                 hashGetter = ExprNodeUtilityCodegen.CodegenEvaluatorMayMultiKeyWCoerce(
-                    forges, hashCoercionTypes, method, GetType(), classScope);
+                    forges,
+                    hashCoercionTypes,
+                    method,
+                    GetType(),
+                    classScope);
             }
 
             var rangeGetters = method.MakeChild(typeof(QueryGraphValueEntryRange[]), GetType(), classScope);
-            rangeGetters.Block.DeclareVar(
-                typeof(QueryGraphValueEntryRange[]), "rangeGetters",
+            rangeGetters.Block.DeclareVar<QueryGraphValueEntryRange[]>(
+                "rangeGetters",
                 NewArrayByLength(typeof(QueryGraphValueEntryRange), Constant(rangeKeyPairs.Count)));
             for (var i = 0; i < rangeKeyPairs.Count; i++) {
                 var optCoercionType = optRangeCoercionTypes == null ? null : optRangeCoercionTypes[i];
                 rangeGetters.Block.AssignArrayElement(
-                    Ref("rangeGetters"), Constant(i),
+                    Ref("rangeGetters"),
+                    Constant(i),
                     rangeKeyPairs[i].Make(optCoercionType, rangeGetters, symbols, classScope));
             }
 
@@ -88,8 +95,10 @@ namespace com.espertech.esper.common.@internal.epl.join.indexlookupplan
         {
             return "CompositeTableLookupPlan " +
                    base.ToString() +
-                   " directKeys=" + QueryGraphValueEntryHashKeyedForge.ToQueryPlan(hashKeys) +
-                   " rangeKeys=" + QueryGraphValueEntryRangeForge.ToQueryPlan(rangeKeyPairs);
+                   " directKeys=" +
+                   QueryGraphValueEntryHashKeyedForge.ToQueryPlan(hashKeys) +
+                   " rangeKeys=" +
+                   QueryGraphValueEntryRangeForge.ToQueryPlan(rangeKeyPairs);
         }
     }
 } // end of namespace

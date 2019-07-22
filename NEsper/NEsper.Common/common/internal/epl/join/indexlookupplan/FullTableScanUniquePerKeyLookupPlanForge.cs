@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -30,7 +31,11 @@ namespace com.espertech.esper.common.@internal.epl.join.indexlookupplan
             EventType[] typesPerStream,
             TableLookupIndexReqKey indexNum)
             : base(
-                lookupStream, indexedStream, indexedStreamIsVDW, typesPerStream, new[] {indexNum})
+                lookupStream,
+                indexedStream,
+                indexedStreamIsVDW,
+                typesPerStream,
+                new[] {indexNum})
         {
         }
 

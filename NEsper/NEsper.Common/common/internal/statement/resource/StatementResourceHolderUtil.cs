@@ -22,9 +22,13 @@ namespace com.espertech.esper.common.@internal.statement.resource
             StatementAgentInstanceFactoryResult startResult)
         {
             var holder = new StatementResourceHolder(
-                agentInstanceContext, startResult.StopCallback, startResult.FinalView,
-                startResult.OptionalAggegationService, startResult.PriorStrategies,
-                startResult.PreviousGetterStrategies, startResult.RowRecogPreviousStrategy);
+                agentInstanceContext,
+                startResult.StopCallback,
+                startResult.FinalView,
+                startResult.OptionalAggegationService,
+                startResult.PriorStrategies,
+                startResult.PreviousGetterStrategies,
+                startResult.RowRecogPreviousStrategy);
             holder.SubselectStrategies = startResult.SubselectStrategies;
             holder.TableAccessStrategies = startResult.TableAccessStrategies;
 
