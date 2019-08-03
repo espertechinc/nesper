@@ -190,9 +190,7 @@ namespace com.espertech.esper.common.client.configuration.compiler
             string methodName)
         {
             AddPlugInSingleRowFunction(
-                functionName,
-                clazz.FullName,
-                methodName,
+                functionName, clazz.FullName, methodName,
                 ConfigurationCompilerPlugInSingleRowFunction.ValueCacheEnum.DISABLED);
         }
 
@@ -233,7 +231,7 @@ namespace com.espertech.esper.common.client.configuration.compiler
                 valueCache,
                 ConfigurationCompilerPlugInSingleRowFunction.FilterOptimizableEnum.ENABLED);
         }
-
+        
         /// <summary>
         ///     Adds a plug-in single-row function given a EPL function name, a class name, method name and setting for value-cache
         ///     behavior.
@@ -426,12 +424,12 @@ namespace com.espertech.esper.common.client.configuration.compiler
 
 
         /// <summary>
-        ///     Add a pattern event observer for plug-in.
-        /// </summary>
-        /// <param name="namespace">is the namespace the observer should be available under</param>
-        /// <param name="name">is the name of the observer</param>
-        /// <param name="observerForgeClass">is the observer forge class to use</param>
-        public void AddPlugInPatternObserver(
+            ///     Add a pattern event observer for plug-in.
+            /// </summary>
+            /// <param name="namespace">is the namespace the observer should be available under</param>
+            /// <param name="name">is the name of the observer</param>
+            /// <param name="observerForgeClass">is the observer forge class to use</param>
+            public void AddPlugInPatternObserver(
             string @namespace,
             string name,
             string observerForgeClass)

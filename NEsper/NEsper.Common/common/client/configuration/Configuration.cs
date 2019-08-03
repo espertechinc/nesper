@@ -36,7 +36,8 @@ namespace com.espertech.esper.common.client.configuration
     {
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-        [NonSerialized] private IContainer _container;
+        [NonSerialized]
+        private IContainer _container;
 
         /// <summary>
         /// Default name of the configuration file.

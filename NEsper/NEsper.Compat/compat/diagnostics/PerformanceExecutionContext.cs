@@ -10,7 +10,7 @@ using System;
 
 namespace com.espertech.esper.compat.diagnostics
 {
-    public struct PerformanceExecutionContext
+    public class PerformanceExecutionContext
     {
         public TimeSpan InitialUserTime;
         public TimeSpan InitialPrivTime;

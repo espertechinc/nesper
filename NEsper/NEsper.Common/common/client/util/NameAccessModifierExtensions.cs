@@ -61,12 +61,12 @@ namespace com.espertech.esper.common.client.util
         /// <returns>indicator</returns>
         public static bool IsModuleProvidedAccessModifier(this NameAccessModifier value)
         {
-            switch (value) {
+            switch (value)
+            {
                 case NameAccessModifier.PRIVATE:
                 case NameAccessModifier.PROTECTED:
                 case NameAccessModifier.PUBLIC:
                     return true;
-
                 case NameAccessModifier.TRANSIENT:
                 case NameAccessModifier.PRECONFIGURED:
                     return false;
@@ -81,12 +81,12 @@ namespace com.espertech.esper.common.client.util
         /// <returns>indicator</returns>
         public static bool IsNonPrivateNonTransient(this NameAccessModifier value)
         {
-            switch (value) {
+            switch (value)
+            {
                 case NameAccessModifier.TRANSIENT:
                 case NameAccessModifier.PRIVATE:
                 case NameAccessModifier.PRECONFIGURED:
                     return false;
-
                 case NameAccessModifier.PROTECTED:
                 case NameAccessModifier.PUBLIC:
                     return true;
