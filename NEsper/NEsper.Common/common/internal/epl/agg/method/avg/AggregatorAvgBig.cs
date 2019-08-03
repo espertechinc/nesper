@@ -78,7 +78,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.avg
                     sum,
                     ExprDotMethod(
                         sum,
-                        "add",
+                        "Add",
                         NewInstance<decimal>(value)));
             }
             else {
@@ -86,7 +86,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.avg
                     sum,
                     ExprDotMethod(
                         sum,
-                        "add",
+                        "Add",
                         valueType == typeof(decimal) ? value : Cast(typeof(decimal), value)));
             }
 
@@ -137,7 +137,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.avg
                     sum,
                     ExprDotMethod(
                         sum,
-                        "add",
+                        "Add",
                         NewInstance<decimal>(
                             Cast(typeof(BigInteger), value))));
             }
@@ -146,7 +146,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.avg
                     sum,
                     ExprDotMethod(
                         sum,
-                        "add",
+                        "Add",
                         Cast(typeof(decimal), value)));
             }
 

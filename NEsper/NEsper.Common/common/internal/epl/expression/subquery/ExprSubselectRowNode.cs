@@ -327,7 +327,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                 "map",
                 NewInstance(typeof(Dictionary<object, object>)));
             for (var i = 0; i < selectClause.Length; i++) {
-                method.Block.ExprDotMethod(Ref("map"), "put", Constant(selectAsNames[i]), expressions[i]);
+                method.Block.ExprDotMethod(Ref("map"), "Put", Constant(selectAsNames[i]), expressions[i]);
             }
 
             method.Block.MethodReturn(Ref("map"));

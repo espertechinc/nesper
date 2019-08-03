@@ -185,7 +185,7 @@ namespace NEsper.Avro.Writer
                 methodNode.Block.MethodReturn(
                     CodegenExpressionBuilder.ExprDotMethod(
                         eventBeanFactory,
-                        "adapterForTypedAvro",
+                        "AdapterForTypedAvro",
                         CodegenExpressionBuilder.ExprDotMethod(theEvent, "getProperties"),
                         resultEventType));
                 return methodNode;
@@ -314,7 +314,7 @@ namespace NEsper.Avro.Writer
 
                     block.ExprDotMethod(
                         CodegenExpressionBuilder.Ref("target"),
-                        "put",
+                        "Put",
                         CodegenExpressionBuilder.Constant(item.ToIndex),
                         value);
                 }
@@ -322,7 +322,7 @@ namespace NEsper.Avro.Writer
                 block.MethodReturn(
                     CodegenExpressionBuilder.ExprDotMethod(
                         eventBeanFactory,
-                        "adapterForTypedAvro",
+                        "AdapterForTypedAvro",
                         CodegenExpressionBuilder.Ref("target"),
                         resultEventType));
                 return methodNode;

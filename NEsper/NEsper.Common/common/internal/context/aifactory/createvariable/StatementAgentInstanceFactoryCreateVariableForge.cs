@@ -40,11 +40,13 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createvariable
                 .DeclareVar<StatementAgentInstanceFactoryCreateVariable>(
                     "saiff",
                     NewInstance(typeof(StatementAgentInstanceFactoryCreateVariable)))
-                .SetProperty(Ref("saiff"), "VariableName", Constant(variableName))
+                .SetProperty(
+                    Ref("saiff"), "VariableName", Constant(variableName))
                 .SetProperty(
                     Ref("saiff"),
                     "ResultSetProcessorFactoryProvider",
                     NewInstance(resultSetProcessorProviderClassName, symbols.GetAddInitSvc(method)));
+
             if (optionalInitialValue != null) {
                 method.Block
                     .SetProperty(
@@ -52,7 +54,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createvariable
                         "VariableInitialValueExpr",
                         ExprNodeUtilityCodegen.CodegenEvaluator(optionalInitialValue, method, GetType(), classScope))
                     .Expression(
-                        ExprDotMethodChain(symbols.GetAddInitSvc(method)).Add("addReadyCallback", Ref("saiff")));
+                        ExprDotMethodChain(symbols.GetAddInitSvc(method)).Add("AddReadyCallback", Ref("saiff")));
             }
 
             method.Block.MethodReturn(Ref("saiff"));

@@ -55,7 +55,7 @@ namespace com.espertech.esper.common.@internal.view.expression
 
         internal override string FactoryMethod()
         {
-            return "exprbatch";
+            return "Exprbatch";
         }
 
         internal override void MakeSetters(

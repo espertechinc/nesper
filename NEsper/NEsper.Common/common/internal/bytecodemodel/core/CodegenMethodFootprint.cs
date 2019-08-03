@@ -9,6 +9,8 @@
 using System;
 using System.Collections.Generic;
 
+using com.espertech.esper.common.@internal.bytecodemodel.util;
+
 namespace com.espertech.esper.common.@internal.bytecodemodel.core
 {
     public class CodegenMethodFootprint
@@ -39,7 +41,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.core
 
         public void MergeClasses(ISet<Type> classes)
         {
-            classes.Add(ReturnType);
+            classes.AddToSet(ReturnType);
             foreach (var param in Params) {
                 param.MergeClasses(classes);
             }

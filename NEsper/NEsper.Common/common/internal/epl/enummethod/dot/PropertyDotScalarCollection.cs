@@ -215,12 +215,12 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
         {
             var method = codegenMethodScope
                 .MakeChild(typeof(ICollection<object>), typeof(PropertyDotScalarCollection), codegenClassScope)
-                .AddParam(typeof(EventBean), "event")
+                .AddParam(typeof(EventBean), "@event")
                 .Block
                 .MethodReturn(
                     CodegenLegoCast.CastSafeFromObjectType(
                         typeof(ICollection<object>),
-                        getter.EventBeanGetCodegen(Ref("event"), codegenMethodScope, codegenClassScope)));
+                        getter.EventBeanGetCodegen(Ref("@event"), codegenMethodScope, codegenClassScope)));
             return LocalMethodBuild(method).Pass(@event).Call();
         }
     }

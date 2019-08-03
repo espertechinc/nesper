@@ -49,7 +49,7 @@ namespace com.espertech.esper.common.@internal.filterspec
             var method = parent.MakeChild(typeof(object), GetType(), classScope).AddParam(GET_FILTER_VALUE_FP);
 
             method.Block
-                .DeclareVar<EventBean>("props", ExprDotMethod(REF_EXPREVALCONTEXT, "getContextProperties"))
+                .DeclareVar<EventBean>("props", ExprDotName(REF_EXPREVALCONTEXT, "ContextProperties"))
                 .IfRefNullReturnNull(Ref("props"))
                 .MethodReturn(_getter.EventBeanGetCodegen(Ref("props"), method, classScope));
 

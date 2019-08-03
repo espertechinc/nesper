@@ -61,7 +61,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
             CodegenMethod method,
             CodegenClassScope classScope)
         {
-            method.Block.ExprDotMethod(refSet, "clear")
+            method.Block.ExprDotMethod(refSet, "Clear")
                 .AssignRef(array, ConstantNull());
         }
 
@@ -107,9 +107,9 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
                 .AddParam(typeof(int), "index");
             method.Block.IfCondition(Relational(Ref("index"), LT, Constant(0)))
                 .BlockReturn(ConstantNull())
-                .IfCondition(ExprDotMethod(refSet, "isEmpty"))
+                .IfCondition(ExprDotMethod(refSet, "IsEmpty"))
                 .BlockReturn(ConstantNull())
-                .IfCondition(Relational(Ref("index"), GE, ExprDotMethod(refSet, "size")))
+                .IfCondition(Relational(Ref("index"), GE, ExprDotMethod(refSet, "Size")))
                 .BlockReturn(ConstantNull())
                 .IfCondition(EqualsNull(array))
                 .InstanceMethod(initArray)
@@ -133,9 +133,9 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
                 .AddParam(typeof(int), "index");
             method.Block.IfCondition(Relational(Ref("index"), LT, Constant(0)))
                 .BlockReturn(ConstantNull())
-                .IfCondition(ExprDotMethod(refSet, "isEmpty"))
+                .IfCondition(ExprDotMethod(refSet, "IsEmpty"))
                 .BlockReturn(ConstantNull())
-                .IfCondition(Relational(Ref("index"), GE, ExprDotMethod(refSet, "size")))
+                .IfCondition(Relational(Ref("index"), GE, ExprDotMethod(refSet, "Size")))
                 .BlockReturn(ConstantNull())
                 .IfCondition(EqualsNull(array))
                 .InstanceMethod(initArray)
@@ -153,14 +153,14 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
                 typeof(AggregatorAccessLinearJoin),
                 CodegenSymbolProviderEmpty.INSTANCE,
                 classScope);
-            method.Block.IfCondition(ExprDotMethod(refSet, "isEmpty"))
+            method.Block.IfCondition(ExprDotMethod(refSet, "IsEmpty"))
                 .BlockReturn(ConstantNull())
                 .DeclareVar<KeyValuePair<string, object>>(
                     "entry",
                     Cast(
                         typeof(KeyValuePair<string, object>),
-                        ExprDotMethodChain(refSet).Add("entrySet").Add("iterator").Add("next")))
-                .MethodReturn(Cast(typeof(EventBean), ExprDotMethod(Ref("entry"), "getKey")));
+                        ExprDotMethodChain(refSet).Add("First")))
+                .MethodReturn(Cast(typeof(EventBean), ExprDotName(Ref("entry"), "Key")));
             return LocalMethod(method);
         }
 
@@ -175,7 +175,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
                 typeof(AggregatorAccessLinearJoin),
                 CodegenSymbolProviderEmpty.INSTANCE,
                 classScope);
-            method.Block.IfCondition(ExprDotMethod(refSet, "isEmpty"))
+            method.Block.IfCondition(ExprDotMethod(refSet, "IsEmpty"))
                 .BlockReturn(ConstantNull())
                 .IfCondition(EqualsNull(array))
                 .InstanceMethod(initArray)
@@ -222,7 +222,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
 
         public CodegenExpression SizeCodegen()
         {
-            return ExprDotMethod(refSet, "size");
+            return ExprDotMethod(refSet, "Size");
         }
 
         internal override void ApplyEnterFiltered(
@@ -266,10 +266,10 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
             method.Block.AssignRef(array, ConstantNull())
                 .DeclareVar<int>("value", Cast(typeof(int), ExprDotMethod(refSet, "get", Ref("theEvent"))))
                 .IfRefNull("value")
-                .ExprDotMethod(refSet, "put", Ref("theEvent"), Constant(1))
+                .ExprDotMethod(refSet, "Put", Ref("theEvent"), Constant(1))
                 .BlockReturnNoValue()
                 .Increment("value")
-                .ExprDotMethod(refSet, "put", Ref("theEvent"), Ref("value"));
+                .ExprDotMethod(refSet, "Put", Ref("theEvent"), Ref("value"));
             return method;
         }
 
@@ -288,10 +288,10 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
                 .IfRefNull("value")
                 .BlockReturnNoValue()
                 .IfCondition(EqualsIdentity(Ref("value"), Constant(1)))
-                .ExprDotMethod(refSet, "remove", Ref("theEvent"))
+                .ExprDotMethod(refSet, "Remove", Ref("theEvent"))
                 .BlockReturnNoValue()
                 .Decrement("value")
-                .ExprDotMethod(refSet, "put", Ref("theEvent"), Ref("value"));
+                .ExprDotMethod(refSet, "Put", Ref("theEvent"), Ref("value"));
             return method;
         }
 
@@ -301,7 +301,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
         {
             Consumer<CodegenMethod> code = method => {
                 method.Block
-                    .DeclareVar<ISet<EventBean>>("events", ExprDotMethod(refSet, "keySet"))
+                    .DeclareVar<ISet<EventBean>>("events", ExprDotMethod(refSet, "KeySet"))
                     .AssignRef(array, StaticMethod(typeof(CollectionUtil), METHOD_TOARRAYEVENTS, Ref("events")));
             };
             return namedMethods.AddMethod(

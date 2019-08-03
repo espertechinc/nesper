@@ -401,11 +401,11 @@ namespace com.espertech.esper.common.@internal.view.core
             method.Block.DeclareVar<ViewFactoryContext>("ctx", NewInstance(typeof(ViewFactoryContext)))
                 .SetProperty(Ref("ctx"), "StreamNum", Constant(streamNum))
                 .SetProperty(Ref("ctx"), "SubqueryNumber", Constant(subqueryNum))
-                .SetProperty(Ref("ctx"), "Grouped", Constant(grouped));
+                .SetProperty(Ref("ctx"), "IsGrouped", Constant(grouped));
             for (var i = 0; i < forges.Count; i++) {
                 var @ref = "factory_" + i;
                 method.Block.DeclareVar<ViewFactory>(@ref, forges[i].Make(method, symbols, classScope))
-                    .ExprDotMethod(Ref(@ref), "init", Ref("ctx"), symbols.GetAddInitSvc(method))
+                    .ExprDotMethod(Ref(@ref), "Init", Ref("ctx"), symbols.GetAddInitSvc(method))
                     .AssignArrayElement(Ref("factories"), Constant(i), Ref(@ref));
             }
 

@@ -135,7 +135,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.core
             CodegenClassScope classScope)
         {
             if (distinct != null) {
-                method.Block.ExprDotMethod(distinct, "clear");
+                method.Block.ExprDotMethod(distinct, "Clear");
             }
 
             ClearWODistinct(method, classScope);

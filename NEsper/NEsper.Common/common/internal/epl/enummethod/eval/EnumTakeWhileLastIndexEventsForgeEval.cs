@@ -115,7 +115,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                 scope,
                 codegenClassScope);
             CodegenBlock block = methodNode.Block
-                .IfCondition(ExprDotMethod(EnumForgeCodegenNames.REF_ENUMCOLL, "isEmpty"))
+                .IfCondition(ExprDotMethod(EnumForgeCodegenNames.REF_ENUMCOLL, "IsEmpty"))
                 .BlockReturn(EnumForgeCodegenNames.REF_ENUMCOLL);
             block.DeclareVar<ObjectArrayEventBean>(
                     "indexEvent",
@@ -124,10 +124,10 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                     EnumForgeCodegenNames.REF_EPS,
                     Constant(forge.streamNumLambda + 1),
                     @Ref("indexEvent"))
-                .DeclareVar<object[]>("props", ExprDotMethod(@Ref("indexEvent"), "getProperties"));
+                .DeclareVar<object[]>("props", ExprDotName(@Ref("indexEvent"), "Properties"));
 
             CodegenBlock blockSingle = block
-                .IfCondition(EqualsIdentity(ExprDotMethod(EnumForgeCodegenNames.REF_ENUMCOLL, "size"), Constant(1)))
+                .IfCondition(EqualsIdentity(ExprDotMethod(EnumForgeCodegenNames.REF_ENUMCOLL, "Size"), Constant(1)))
                 .DeclareVar<EventBean>(
                     "item",
                     Cast(

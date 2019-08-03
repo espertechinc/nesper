@@ -23,33 +23,32 @@ namespace com.espertech.esper.common.@internal.@event.bean.introspect
 {
     public class BeanEventTypeStemBuilder
     {
-        private readonly ConfigurationCommonEventTypeBean optionalConfig;
-
-        private readonly PropertyResolutionStyle propertyResolutionStyle;
-        private readonly bool smartResolutionStyle;
+        private readonly ConfigurationCommonEventTypeBean _optionalConfig;
+        private readonly PropertyResolutionStyle _propertyResolutionStyle;
+        private readonly bool _smartResolutionStyle;
 
         public BeanEventTypeStemBuilder(
             ConfigurationCommonEventTypeBean optionalConfig,
             PropertyResolutionStyle defaultPropertyResolutionStyle)
         {
-            this.optionalConfig = optionalConfig;
+            this._optionalConfig = optionalConfig;
 
             if (optionalConfig != null) {
-                propertyResolutionStyle = optionalConfig.PropertyResolutionStyle;
+                _propertyResolutionStyle = optionalConfig.PropertyResolutionStyle;
             }
             else {
-                propertyResolutionStyle = defaultPropertyResolutionStyle;
+                _propertyResolutionStyle = defaultPropertyResolutionStyle;
             }
 
-            smartResolutionStyle = propertyResolutionStyle.Equals(PropertyResolutionStyle.CASE_INSENSITIVE) ||
-                                   propertyResolutionStyle.Equals(PropertyResolutionStyle.DISTINCT_CASE_INSENSITIVE);
+            _smartResolutionStyle = _propertyResolutionStyle.Equals(PropertyResolutionStyle.CASE_INSENSITIVE) ||
+                                   _propertyResolutionStyle.Equals(PropertyResolutionStyle.DISTINCT_CASE_INSENSITIVE);
         }
 
         public BeanEventTypeStem Make(Type clazz)
         {
             EventTypeUtility.ValidateEventBeanClassVisibility(clazz);
 
-            var propertyListBuilder = PropertyListBuilderFactory.CreateBuilder(optionalConfig);
+            var propertyListBuilder = PropertyListBuilderFactory.CreateBuilder(_optionalConfig);
             var properties = propertyListBuilder.AssessProperties(clazz);
 
             var propertyDescriptors = new EventPropertyDescriptor[properties.Count];
@@ -63,7 +62,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.introspect
             IDictionary<string, IList<PropertyInfo>> simpleSmartPropertyTable = null;
             IDictionary<string, IList<PropertyInfo>> mappedSmartPropertyTable = null;
             IDictionary<string, IList<PropertyInfo>> indexedSmartPropertyTable = null;
-            if (smartResolutionStyle) {
+            if (_smartResolutionStyle) {
                 simpleSmartPropertyTable = new Dictionary<string, IList<PropertyInfo>>();
                 mappedSmartPropertyTable = new Dictionary<string, IList<PropertyInfo>>();
                 indexedSmartPropertyTable = new Dictionary<string, IList<PropertyInfo>>();
@@ -80,21 +79,24 @@ namespace com.espertech.esper.common.@internal.@event.bean.introspect
                 bool isMapped;
                 bool isFragment;
 
-                if (desc.PropertyType.Equals(EventPropertyType.SIMPLE)) {
+                if (desc.PropertyType == EventPropertyType.SIMPLE) {
                     EventPropertyGetterSPIFactory getter;
                     Type type;
                     if (desc.ReadMethod != null) {
                         getter = new ReflectionPropMethodGetterFactory(desc.ReadMethod);
                         type = desc.ReadMethod.ReturnType;
                     }
-                    else {
-                        if (desc.AccessorField == null) {
-                            // Ignore property
-                            continue;
-                        }
-
+                    else if (desc.AccessorProp != null) {
+                        getter = new ReflectionPropMethodGetterFactory(desc.AccessorProp);
+                        type = desc.AccessorProp.PropertyType;
+                    }
+                    else if (desc.AccessorField != null) {
                         getter = new ReflectionPropFieldGetterFactory(desc.AccessorField);
                         type = desc.AccessorField.FieldType;
+                    }
+                    else {
+                        // Ignore property
+                        continue;
                     }
 
                     underlyingType = type;
@@ -112,6 +114,9 @@ namespace com.espertech.esper.common.@internal.@event.bean.introspect
                         if (desc.ReadMethod != null) {
                             componentType = TypeHelper.GetGenericReturnTypeMap(desc.ReadMethod, false);
                         }
+                        else if (desc.AccessorProp != null) {
+                            componentType = TypeHelper.GetGenericPropertyTypeMap(desc.AccessorProp, false);
+                        }
                         else if (desc.AccessorField != null) {
                             componentType = TypeHelper.GetGenericFieldTypeMap(desc.AccessorField, false);
                         }
@@ -126,7 +131,11 @@ namespace com.espertech.esper.common.@internal.@event.bean.introspect
                     }
                     else if (type.IsGenericEnumerable()) {
                         isIndexed = true;
-                        var genericType = TypeHelper.GetGenericReturnType(desc.ReadMethod, desc.AccessorField, true);
+                        var genericType = TypeHelper.GetGenericReturnType(
+                            desc.ReadMethod, 
+                            desc.AccessorField, 
+                            desc.AccessorProp,
+                            true);
                         isFragment = genericType.IsFragmentableType();
                         if (genericType != null) {
                             componentType = genericType;
@@ -142,8 +151,8 @@ namespace com.espertech.esper.common.@internal.@event.bean.introspect
 
                     simpleProperties.Put(propertyName, new PropertyInfo(type, getter, desc));
 
-                    // Recognize that there may be properties with overlapping case-insentitive names
-                    if (smartResolutionStyle) {
+                    // Recognize that there may be properties with overlapping case-insensitive names
+                    if (_smartResolutionStyle) {
                         // Find the property in the smart property table
                         var smartPropertyName = propertyName.ToLowerInvariant();
                         var propertyInfoList = simpleSmartPropertyTable.Get(smartPropertyName);
@@ -157,7 +166,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.introspect
                         propertyInfoList.Add(propertyInfo);
                     }
                 }
-                else if (desc.PropertyType.Equals(EventPropertyType.MAPPED)) {
+                else if (desc.PropertyType == EventPropertyType.MAPPED) {
                     mappedPropertyDescriptors.Put(propertyName, desc);
 
                     underlyingType = desc.ReturnType;
@@ -169,7 +178,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.introspect
                     isFragment = false;
 
                     // Recognize that there may be properties with overlapping case-insentitive names
-                    if (smartResolutionStyle) {
+                    if (_smartResolutionStyle) {
                         // Find the property in the smart property table
                         var smartPropertyName = propertyName.ToLowerInvariant();
                         var propertyInfoList = mappedSmartPropertyTable.Get(smartPropertyName);
@@ -183,7 +192,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.introspect
                         propertyInfoList.Add(propertyInfo);
                     }
                 }
-                else if (desc.PropertyType.Equals(EventPropertyType.INDEXED)) {
+                else if (desc.PropertyType == EventPropertyType.INDEXED) {
                     indexedPropertyDescriptors.Put(propertyName, desc);
 
                     underlyingType = desc.ReturnType;
@@ -194,7 +203,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.introspect
                     isMapped = false;
                     isFragment = desc.ReturnType.IsFragmentableType();
 
-                    if (smartResolutionStyle) {
+                    if (_smartResolutionStyle) {
                         // Find the property in the smart property table
                         var smartPropertyName = propertyName.ToLowerInvariant();
                         var propertyInfoList = indexedSmartPropertyTable.Get(smartPropertyName);
@@ -240,14 +249,14 @@ namespace com.espertech.esper.common.@internal.@event.bean.introspect
 
             return new BeanEventTypeStem(
                 clazz,
-                optionalConfig,
+                _optionalConfig,
                 propertyNames,
                 simpleProperties,
                 mappedPropertyDescriptors,
                 indexedPropertyDescriptors,
                 superTypes,
                 deepSuperTypes,
-                propertyResolutionStyle,
+                _propertyResolutionStyle,
                 simpleSmartPropertyTable,
                 indexedSmartPropertyTable,
                 mappedSmartPropertyTable,

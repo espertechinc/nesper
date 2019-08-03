@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>net461</TargetFrameworks>
+    <TargetFrameworks>net462</TargetFrameworks>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -24,6 +24,7 @@
   <ItemGroup>
     <ProjectReference Include="..\NEsper.Common\NEsper.Common.csproj" />
     <ProjectReference Include="..\NEsper.Common.Tests\NEsper.Common.Tests.csproj" />
+    <ProjectReference Include="..\NEsper.Regression\NEsper.Regression.csproj" />
     <ProjectReference Include="..\NEsper.Runtime\NEsper.Runtime.csproj" />
   </ItemGroup>
 </Project>

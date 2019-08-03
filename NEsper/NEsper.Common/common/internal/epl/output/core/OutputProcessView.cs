@@ -25,11 +25,12 @@ namespace com.espertech.esper.common.@internal.epl.output.core
         AgentInstanceStopCallback,
         OutputProcessViewTerminable
     {
-        internal UpdateDispatchView child;
-        internal JoinExecutionStrategy joinExecutionStrategy;
-        internal Viewable parentView;
+        protected internal UpdateDispatchView child;
+        protected internal JoinExecutionStrategy joinExecutionStrategy;
+        protected internal Viewable parentView;
 
         public JoinExecutionStrategy JoinExecutionStrategy {
+            get => joinExecutionStrategy;
             set => joinExecutionStrategy = value;
         }
 

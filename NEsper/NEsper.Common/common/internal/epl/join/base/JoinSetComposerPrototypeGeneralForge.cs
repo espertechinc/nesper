@@ -72,7 +72,7 @@ namespace com.espertech.esper.common.@internal.epl.join.@base
                     Ref("impl"),
                     "EventTableIndexService",
                     ExprDotMethodChain(symbols.GetAddInitSvc(method))
-                        .Add(EPStatementInitServicesConstants.GETEVENTTABLEINDEXSERVICE))
+                        .Get(EPStatementInitServicesConstants.EVENTTABLEINDEXSERVICE))
                 .SetProperty(Ref("impl"), "HasHistorical", Constant(hasHistorical));
         }
     }

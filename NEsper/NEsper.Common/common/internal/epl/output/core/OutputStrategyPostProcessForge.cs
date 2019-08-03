@@ -72,61 +72,61 @@ namespace com.espertech.esper.common.@internal.epl.output.core
                 if (insertIntoStreamSelector.IsSelectsIStream) {
                     ifResultNotNull.InstanceMethod(
                         RouteCodegen(classScope, parent),
-                        Cast(typeof(EventBean[]), ExprDotMethod(Ref("result"), "getFirst")));
+                        Cast(typeof(EventBean[]), ExprDotName(Ref("result"), "First")));
                 }
 
                 if (insertIntoStreamSelector.IsSelectsRStream) {
                     ifResultNotNull.InstanceMethod(
                         RouteCodegen(classScope, parent),
-                        Cast(typeof(EventBean[]), ExprDotMethod(Ref("result"), "getSecond")));
+                        Cast(typeof(EventBean[]), ExprDotName(Ref("result"), "Second")));
                 }
             }
 
             if (selectStreamSelector == SelectClauseStreamSelectorEnum.RSTREAM_ONLY) {
-                ifResultNotNull.IfCondition(NotEqualsNull(ExprDotMethod(Ref("result"), "getSecond")))
+                ifResultNotNull.IfCondition(NotEqualsNull(ExprDotName(Ref("result"), "Second")))
                     .ExprDotMethod(
                         REF_CHILD,
-                        "newResult",
+                        "NewResult",
                         NewInstance<UniformPair<EventBean>>(
-                            ExprDotMethod(Ref("result"), "getSecond"),
+                            ExprDotName(Ref("result"), "Second"),
                             ConstantNull()))
                     .IfElseIf(Ref("forceUpdate"))
                     .ExprDotMethod(
                         REF_CHILD,
-                        "newResult",
+                        "NewResult",
                         PublicConstValue(typeof(UniformPair<EventBean>), "EMPTY_PAIR"));
             }
             else if (selectStreamSelector == SelectClauseStreamSelectorEnum.RSTREAM_ISTREAM_BOTH) {
                 ifResultNotNull.IfCondition(
                         Or(
-                            NotEqualsNull(ExprDotMethod(Ref("result"), "getFirst")),
-                            NotEqualsNull(ExprDotMethod(Ref("result"), "getSecond"))))
-                    .ExprDotMethod(REF_CHILD, "newResult", Ref("result"))
+                            NotEqualsNull(ExprDotName(Ref("result"), "First")),
+                            NotEqualsNull(ExprDotName(Ref("result"), "Second"))))
+                    .ExprDotMethod(REF_CHILD, "NewResult", Ref("result"))
                     .IfElseIf(Ref("forceUpdate"))
                     .ExprDotMethod(
                         REF_CHILD,
-                        "newResult",
+                        "NewResult",
                         PublicConstValue(typeof(UniformPair<EventBean>), "EMPTY_PAIR"));
             }
             else {
-                ifResultNotNull.IfCondition(NotEqualsNull(ExprDotMethod(Ref("result"), "getFirst")))
+                ifResultNotNull.IfCondition(NotEqualsNull(ExprDotName(Ref("result"), "First")))
                     .ExprDotMethod(
                         REF_CHILD,
-                        "newResult",
+                        "NewResult",
                         NewInstance<UniformPair<EventBean>>(
-                            ExprDotMethod(Ref("result"), "getFirst"),
+                            ExprDotName(Ref("result"), "First"),
                             ConstantNull()))
                     .IfElseIf(Ref("forceUpdate"))
                     .ExprDotMethod(
                         REF_CHILD,
-                        "newResult",
+                        "NewResult",
                         PublicConstValue(typeof(UniformPair<EventBean>), "EMPTY_PAIR"));
             }
 
             // handle null-result (force-update)
             var ifResultNull = ifResultNotNull.IfElse();
             ifResultNull.IfCondition(Ref("forceUpdate"))
-                .ExprDotMethod(REF_CHILD, "newResult", PublicConstValue(typeof(UniformPair<EventBean>), "EMPTY_PAIR"));
+                .ExprDotMethod(REF_CHILD, "NewResult", PublicConstValue(typeof(UniformPair<EventBean>), "EMPTY_PAIR"));
 
             return method;
         }

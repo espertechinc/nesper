@@ -53,21 +53,30 @@ namespace com.espertech.esper.common.@internal.filterspec
             CodegenMethodScope parent,
             SAIFFInitializeSymbolWEventType symbols)
         {
-            var method = parent.MakeChild(typeof(FilterSpecParam), typeof(FilterSpecParamConstantForge), classScope);
+            var method = parent
+                .MakeChild(typeof(FilterSpecParam), typeof(FilterSpecParamConstantForge), classScope);
             method.Block
                 .DeclareVar<ExprFilterSpecLookupable>(
                     "lookupable",
                     LocalMethod(lookupable.MakeCodegen(method, symbols, classScope)))
                 .DeclareVar<FilterOperator>("op", EnumValue(typeof(FilterOperator), filterOperator.GetName()));
 
-            var inner = NewAnonymousClass(
-                method.Block,
-                typeof(FilterSpecParam),
-                Arrays.AsList<CodegenExpression>(Ref("lookupable"), Ref("op")));
-            var getFilterValue = CodegenMethod.MakeParentNode(typeof(object), GetType(), classScope)
-                .AddParam(FilterSpecParam.GET_FILTER_VALUE_FP);
-            inner.AddMethod("GetFilterValue", getFilterValue);
-            getFilterValue.Block.MethodReturn(Constant(FilterConstant));
+            var getFilterValue = new CodegenExpressionLambda(method.Block)
+                .WithParams(FilterSpecParam.GET_FILTER_VALUE_FP);
+            var inner = NewInstance<ProxyFilterSpecParam>(
+                Ref("lookupable"),
+                Ref("op"),
+                getFilterValue);
+
+            //var inner = NewAnonymousClass(
+            //    method.Block,
+            //    typeof(FilterSpecParam),
+            //    Arrays.AsList<CodegenExpression>(Ref("lookupable"), Ref("op")));
+            //var getFilterValue = CodegenMethod.MakeParentNode(typeof(object), GetType(), classScope)
+            //    .AddParam(FilterSpecParam.GET_FILTER_VALUE_FP);
+            //inner.AddMethod("GetFilterValue", getFilterValue);
+
+            getFilterValue.Block.BlockReturn(Constant(FilterConstant));
 
             method.Block.MethodReturn(inner);
             return method;

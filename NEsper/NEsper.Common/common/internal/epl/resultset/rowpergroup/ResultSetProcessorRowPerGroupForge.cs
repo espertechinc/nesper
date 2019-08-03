@@ -175,10 +175,10 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergroup
                             Constant(groupKeyTypes),
                             eventType,
                             REF_AGENTINSTANCECONTEXT))
-                    .ExprDotMethod(REF_AGGREGATIONSVC, "setRemovedCallback", Ref(NAME_GROUPREPS));
+                    .ExprDotMethod(REF_AGGREGATIONSVC, "SetRemovedCallback", Ref(NAME_GROUPREPS));
             }
             else {
-                instance.ServiceCtor.Block.ExprDotMethod(REF_AGGREGATIONSVC, "setRemovedCallback", Ref("this"));
+                instance.ServiceCtor.Block.ExprDotMethod(REF_AGGREGATIONSVC, "SetRemovedCallback", Ref("this"));
             }
         }
 

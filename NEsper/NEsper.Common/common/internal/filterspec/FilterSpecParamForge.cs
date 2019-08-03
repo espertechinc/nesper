@@ -74,17 +74,17 @@ namespace com.espertech.esper.common.@internal.filterspec
                     typeof(EPStatementInitServices),
                     SAIFFInitializeSymbol.REF_STMTINITSVC.Ref);
             method.Block.DeclareVar<FilterSpecParam[][]>(
-                "params",
+                "parameters",
                 NewArrayByLength(typeof(FilterSpecParam[]), Constant(forges.Length)));
 
             for (var i = 0; i < forges.Length; i++) {
                 method.Block.AssignArrayElement(
-                    "params",
+                    "parameters",
                     Constant(i),
                     LocalMethod(MakeParamArrayCodegen(forges[i], classScope, method, symbolsWithType)));
             }
 
-            method.Block.MethodReturn(Ref("params"));
+            method.Block.MethodReturn(Ref("parameters"));
             return method;
         }
 

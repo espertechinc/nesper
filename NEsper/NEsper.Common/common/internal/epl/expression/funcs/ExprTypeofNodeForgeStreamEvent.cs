@@ -73,15 +73,18 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
 
             var refEPS = exprSymbol.GetAddEPS(methodNode);
             methodNode.Block
-                .DeclareVar<EventBean>("event", ArrayAtIndex(refEPS, Constant(streamNum)))
-                .IfRefNullReturnNull("event")
-                .IfCondition(InstanceOf(Ref("event"), typeof(VariantEvent)))
+                .DeclareVar<EventBean>("@event", ArrayAtIndex(refEPS, Constant(streamNum)))
+                .IfRefNullReturnNull("@event")
+                .IfCondition(InstanceOf(Ref("@event"), typeof(VariantEvent)))
                 .BlockReturn(
-                    ExprDotMethodChain(Cast(typeof(VariantEvent), Ref("event")))
-                        .Add("getUnderlyingEventBean")
-                        .Add("getEventType")
-                        .Add("getName"))
-                .MethodReturn(ExprDotMethodChain(Ref("event")).Add("getEventType").Add("getName"));
+                    ExprDotMethodChain(Cast(typeof(VariantEvent), Ref("@event")))
+                        .Get("UnderlyingEventBean")
+                        .Get("EventType")
+                        .Get("Name"))
+                .MethodReturn(
+                    ExprDotMethodChain(Ref("@event"))
+                        .Get("EventType")
+                        .Get("Name"));
             return LocalMethod(methodNode);
         }
 

@@ -109,7 +109,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
                         "cacheValue",
                         ExprDotMethod(Ref("cache"), "getEnumerationMethodLastValue", forgeMember))
                     .IfCondition(NotEqualsNull(Ref("cacheValue")))
-                    .BlockReturn(Cast(returnType, ExprDotMethod(Ref("cacheValue"), "getResult")))
+                    .BlockReturn(Cast(returnType, ExprDotName(Ref("cacheValue"), "Result")))
                     .IfRefNullReturnNull("coll")
                     .DeclareVar<EventBean[]>(
                         "eventsLambda",
@@ -131,7 +131,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
                     true,
                     typeof(AtomicLong),
                     NewInstance(typeof(AtomicLong)));
-                block.DeclareVar<long>("contextNumber", ExprDotMethod(contextNumberMember, "getAndIncrement"))
+                block.DeclareVar<long>("contextNumber", ExprDotName(contextNumberMember, "AndIncrement"))
                     .TryCatch()
                     .Expression(ExprDotMethod(Ref("cache"), "pushContext", Ref("contextNumber")))
                     .IfRefNullReturnNull("coll")
@@ -144,7 +144,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
                             Constant(forge.enumEvalNumRequiredEvents)))
                     .TryReturn(forge.enumForge.Codegen(premade, methodNode, codegenClassScope))
                     .TryFinally()
-                    .Expression(ExprDotMethod(Ref("cache"), "popContext"))
+                    .Expression(ExprDotMethod(Ref("cache"), "PopContext"))
                     .BlockEnd()
                     .MethodEnd();
             }

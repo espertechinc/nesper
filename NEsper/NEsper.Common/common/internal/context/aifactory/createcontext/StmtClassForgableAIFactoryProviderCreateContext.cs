@@ -82,13 +82,14 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createcontext
                 "controllers",
                 NewArrayByLength(typeof(ContextControllerFactory), Constant(forges.Length)));
             for (var i = 0; i < forges.Length; i++) {
-                method.Block.AssignArrayElement(
+                method.Block
+                    .AssignArrayElement(
                         "controllers",
                         Constant(i),
                         LocalMethod(forges[i].MakeCodegen(classScope, method, symbols)))
                     .ExprDotMethod(
                         ArrayAtIndex(Ref("controllers"), Constant(i)),
-                        "SetFactoryEnv",
+                        "WithFactoryEnv",
                         forges[i].FactoryEnv.ToExpression());
             }
 

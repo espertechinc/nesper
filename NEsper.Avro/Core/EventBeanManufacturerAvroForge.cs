@@ -86,7 +86,7 @@ namespace NEsper.Avro.Core
                 .MethodReturn(
                     CodegenExpressionBuilder.ExprDotMethod(
                         factory,
-                        "adapterForTypedAvro",
+                        "AdapterForTypedAvro",
                         CodegenExpressionBuilder.Ref("und"),
                         beanType));
 
@@ -112,7 +112,7 @@ namespace NEsper.Avro.Core
             for (var i = 0; i < _indexPerWritable.Length; i++) {
                 method.Block.ExprDotMethod(
                     CodegenExpressionBuilder.Ref("record"),
-                    "put",
+                    "Put",
                     CodegenExpressionBuilder.Constant(_indexPerWritable[i]),
                     CodegenExpressionBuilder.ArrayAtIndex(
                         CodegenExpressionBuilder.Ref("properties"),

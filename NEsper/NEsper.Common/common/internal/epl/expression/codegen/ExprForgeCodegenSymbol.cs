@@ -139,9 +139,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.codegen
                     var methodNode = parent.MakeChild(underlyingType, typeof(ExprForgeCodegenSymbol), codegenClassScope)
                         .AddParam(typeof(EventBean[]), ExprForgeCodegenNames.NAME_EPS);
                     methodNode.Block
-                        .DeclareVar<EventBean>("event", arrayAtIndex)
-                        .IfRefNullReturnNull("event")
-                        .MethodReturn(Cast(underlyingType, ExprDotUnderlying(Ref("event"))));
+                        .DeclareVar<EventBean>("@event", arrayAtIndex)
+                        .IfRefNullReturnNull("@event")
+                        .MethodReturn(Cast(underlyingType, ExprDotUnderlying(Ref("@event"))));
                     processBlock.DeclareVar(
                         underlyingType,
                         name,

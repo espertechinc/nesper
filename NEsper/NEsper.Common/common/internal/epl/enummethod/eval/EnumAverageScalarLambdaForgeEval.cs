@@ -102,7 +102,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                         NewArrayByLength(typeof(object), Constant(1)),
                         resultTypeMember))
                 .AssignArrayElement(EnumForgeCodegenNames.REF_EPS, Constant(forge.streamNumLambda), @Ref("resultEvent"))
-                .DeclareVar<object[]>("props", ExprDotMethod(@Ref("resultEvent"), "getProperties"));
+                .DeclareVar<object[]>("props", ExprDotName(@Ref("resultEvent"), "Properties"));
 
             CodegenBlock forEach = block.ForEach(typeof(object), "next", EnumForgeCodegenNames.REF_ENUMCOLL)
                 .AssignArrayElement("props", Constant(0), @Ref("next"))

@@ -169,13 +169,21 @@ namespace com.espertech.esper.common.@internal.filterspec
                     "op",
                     EnumValue(typeof(FilterOperator), filterOperator.GetName()));
 
-            var param = NewAnonymousClass(
-                method.Block,
-                typeof(FilterSpecParam),
-                Arrays.AsList<CodegenExpression>(Ref("lookupable"), Ref("op")));
-            var getFilterValue = CodegenMethod.MakeParentNode(typeof(object), GetType(), classScope)
-                .AddParam(FilterSpecParam.GET_FILTER_VALUE_FP);
-            param.AddMethod("GetFilterValue", getFilterValue);
+            var getFilterValue = new CodegenExpressionLambda(method.Block)
+                .WithParams(FilterSpecParam.GET_FILTER_VALUE_FP);
+            var param = NewInstance<ProxyFilterSpecParam>(
+                Ref("lookupable"),
+                Ref("op"),
+                getFilterValue);
+
+            //var param = NewAnonymousClass(
+            //    method.Block,
+            //    typeof(FilterSpecParam),
+            //    Arrays.AsList<CodegenExpression>(Ref("lookupable"), Ref("op")));
+            //var getFilterValue = CodegenMethod.MakeParentNode(typeof(object), GetType(), classScope)
+            //    .AddParam(FilterSpecParam.GET_FILTER_VALUE_FP);
+            //param.AddMethod("GetFilterValue", getFilterValue);
+
             if (_inListConstantsOnly != null) {
                 getFilterValue.Block.MethodReturn(NewInstance<HashableMultiKey>(Constant(_inListConstantsOnly)));
             }
@@ -204,12 +212,12 @@ namespace com.espertech.esper.common.@internal.filterspec
                         .DeclareVar<object>(valueName, _listOfValues[i].MakeCodegen(classScope, parent))
                         .IfRefNotNull(valueName)
                         .DeclareVar(_adders[i].GetType(), adderName, EnumValue(_adders[i].GetType(), "INSTANCE"))
-                        .ExprDotMethod(Ref(adderName), "add", Ref("values"), Ref(valueName))
+                        .ExprDotMethod(Ref(adderName), "Add", Ref("values"), Ref(valueName))
                         .BlockEnd();
                 }
 
                 getFilterValue.Block.MethodReturn(
-                    NewInstance<HashableMultiKey>(ExprDotMethod(Ref("values"), "toArray")));
+                    NewInstance<HashableMultiKey>(ExprDotMethod(Ref("values"), "ToArray")));
             }
 
             method.Block.MethodReturn(param);

@@ -84,7 +84,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupby
                     NewInstance(classNames.ServiceFactory, Ref("this")))
                 .MethodReturn(
                     ExprDotMethodChain(EPStatementInitServicesConstants.REF)
-                        .Add(EPStatementInitServicesConstants.GETAGGREGATIONSERVICEFACTORYSERVICE)
+                        .Get(EPStatementInitServicesConstants.AGGREGATIONSERVICEFACTORYSERVICE)
                         .Add(
                             "groupBy",
                             Ref("svcFactory"),
@@ -110,11 +110,11 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupby
             int level)
         {
             if (HasRefCounting) {
-                method.Block.ExprDotMethod(Ref("output"), "writeInt", Ref("row.refcount"));
+                method.Block.ExprDotMethod(Ref("output"), "WriteInt", Ref("row.refcount"));
             }
 
             if (aggGroupByDesc.IsReclaimAged) {
-                method.Block.ExprDotMethod(Ref("output"), "writeLong", Ref("row.lastUpd"));
+                method.Block.ExprDotMethod(Ref("output"), "WriteLong", Ref("row.lastUpd"));
             }
         }
 
@@ -123,11 +123,11 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupby
             int level)
         {
             if (HasRefCounting) {
-                method.Block.AssignRef("row.refcount", ExprDotMethod(Ref("input"), "readInt"));
+                method.Block.AssignRef("row.refcount", ExprDotMethod(Ref("input"), "ReadInt"));
             }
 
             if (aggGroupByDesc.IsReclaimAged) {
-                method.Block.AssignRef("row.lastUpd", ExprDotMethod(Ref("input"), "readLong"));
+                method.Block.AssignRef("row.lastUpd", ExprDotMethod(Ref("input"), "ReadLong"));
             }
         }
 
@@ -174,7 +174,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupby
             method.Block.MethodReturn(
                 ExprDotMethod(
                     REF_CURRENTROW,
-                    "getValue",
+                    "GetValue",
                     REF_COLUMN,
                     REF_EPS,
                     ExprForgeCodegenNames.REF_ISNEWDATA,
@@ -189,7 +189,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupby
             method.Block.MethodReturn(
                 ExprDotMethod(
                     REF_CURRENTROW,
-                    "getEventBean",
+                    "GetEventBean",
                     REF_COLUMN,
                     REF_EPS,
                     ExprForgeCodegenNames.REF_ISNEWDATA,
@@ -204,7 +204,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupby
             method.Block.MethodReturn(
                 ExprDotMethod(
                     REF_CURRENTROW,
-                    "getCollectionScalar",
+                    "GetCollectionScalar",
                     REF_COLUMN,
                     REF_EPS,
                     ExprForgeCodegenNames.REF_ISNEWDATA,
@@ -219,7 +219,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupby
             method.Block.MethodReturn(
                 ExprDotMethod(
                     REF_CURRENTROW,
-                    "getCollectionOfEvents",
+                    "GetCollectionOfEvents",
                     REF_COLUMN,
                     REF_EPS,
                     ExprForgeCodegenNames.REF_ISNEWDATA,
@@ -255,17 +255,17 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupby
                 Cast(classNames.RowTop, ExprDotMethod(REF_AGGREGATORSPERGROUP, "get", REF_GROUPKEY)));
             block.IfCondition(EqualsNull(REF_CURRENTROW))
                 .AssignRef(REF_CURRENTROW, NewInstance(classNames.RowTop))
-                .ExprDotMethod(REF_AGGREGATORSPERGROUP, "put", REF_GROUPKEY, REF_CURRENTROW);
+                .ExprDotMethod(REF_AGGREGATORSPERGROUP, "Put", REF_GROUPKEY, REF_CURRENTROW);
 
             if (HasRefCounting) {
-                block.ExprDotMethod(REF_CURRENTROW, "increaseRefcount");
+                block.ExprDotMethod(REF_CURRENTROW, "IncreaseRefcount");
             }
 
             if (aggGroupByDesc.IsReclaimAged) {
-                block.ExprDotMethod(REF_CURRENTROW, "setLastUpdateTime", Ref("currentTime"));
+                block.ExprDotMethod(REF_CURRENTROW, "SetLastUpdateTime", Ref("currentTime"));
             }
 
-            block.ExprDotMethod(REF_CURRENTROW, "applyEnter", REF_EPS, REF_EXPREVALCONTEXT)
+            block.ExprDotMethod(REF_CURRENTROW, "ApplyEnter", REF_EPS, REF_EXPREVALCONTEXT)
                 .Apply(Instblock(classScope, "aAggregationGroupedApplyEnterLeave", ConstantTrue()));
         }
 
@@ -289,10 +289,10 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupby
                     Cast(classNames.RowTop, ExprDotMethod(REF_AGGREGATORSPERGROUP, "get", REF_GROUPKEY)))
                 .IfCondition(EqualsNull(REF_CURRENTROW))
                 .AssignRef(REF_CURRENTROW, NewInstance(classNames.RowTop))
-                .ExprDotMethod(REF_AGGREGATORSPERGROUP, "put", REF_GROUPKEY, REF_CURRENTROW);
+                .ExprDotMethod(REF_AGGREGATORSPERGROUP, "Put", REF_GROUPKEY, REF_CURRENTROW);
 
             if (HasRefCounting) {
-                method.Block.ExprDotMethod(REF_CURRENTROW, "decreaseRefcount");
+                method.Block.ExprDotMethod(REF_CURRENTROW, "DecreaseRefcount");
             }
 
             if (aggGroupByDesc.IsReclaimAged) {
@@ -302,11 +302,11 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupby
                     ExprDotMethodChain(REF_EXPREVALCONTEXT).Add("getTimeProvider").Add("getTime"));
             }
 
-            method.Block.ExprDotMethod(REF_CURRENTROW, "applyLeave", REF_EPS, REF_EXPREVALCONTEXT);
+            method.Block.ExprDotMethod(REF_CURRENTROW, "ApplyLeave", REF_EPS, REF_EXPREVALCONTEXT);
 
             if (HasRefCounting) {
-                method.Block.IfCondition(Relational(ExprDotMethod(REF_CURRENTROW, "getRefcount"), LE, Constant(0)))
-                    .ExprDotMethod(REF_REMOVEDKEYS, "add", REF_GROUPKEY);
+                method.Block.IfCondition(Relational(ExprDotName(REF_CURRENTROW, "Refcount"), LE, Constant(0)))
+                    .ExprDotMethod(REF_REMOVEDKEYS, "Add", REF_GROUPKEY);
             }
 
             method.Block.Apply(Instblock(classScope, "aAggregationGroupedApplyEnterLeave", ConstantFalse()));
@@ -343,7 +343,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupby
             CodegenMethod method,
             CodegenClassScope classScope)
         {
-            method.Block.ExprDotMethod(REF_AGGREGATORSPERGROUP, "clear");
+            method.Block.ExprDotMethod(REF_AGGREGATORSPERGROUP, "Clear");
         }
 
         public AggregationCodegenRowLevelDesc RowLevelDesc =>
@@ -356,7 +356,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupby
             method.Block.ExprDotMethod(
                 REF_AGGVISITOR,
                 "visitAggregations",
-                ExprDotMethod(REF_AGGREGATORSPERGROUP, "size"),
+                ExprDotMethod(REF_AGGREGATORSPERGROUP, "Size"),
                 REF_AGGREGATORSPERGROUP);
         }
 
@@ -368,7 +368,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupby
                 method.Block.InstanceMethod(HandleRemovedKeysCodegen(method, classScope));
             }
 
-            method.Block.MethodReturn(ExprDotMethod(REF_AGGREGATORSPERGROUP, "keySet"));
+            method.Block.MethodReturn(ExprDotMethod(REF_AGGREGATORSPERGROUP, "KeySet"));
         }
 
         public void GetGroupKeyCodegen(
@@ -382,23 +382,23 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupby
             CodegenMethod method,
             CodegenClassScope classScope)
         {
-            method.Block.ExprDotMethod(REF_AGGVISITOR, "visitGrouped", ExprDotMethod(REF_AGGREGATORSPERGROUP, "size"))
+            method.Block.ExprDotMethod(REF_AGGVISITOR, "VisitGrouped", ExprDotMethod(REF_AGGREGATORSPERGROUP, "Size"))
                 .ForEach(
                     typeof(KeyValuePair<object, object>),
                     "entry",
-                    ExprDotMethod(REF_AGGREGATORSPERGROUP, "entrySet"))
+                    ExprDotMethod(REF_AGGREGATORSPERGROUP, "EntrySet"))
                 .ExprDotMethod(
                     REF_AGGVISITOR,
                     "visitGroup",
-                    ExprDotMethod(Ref("entry"), "getKey"),
-                    ExprDotMethod(Ref("entry"), "getValue"));
+                    ExprDotName(Ref("entry"), "Key"),
+                    ExprDotName(Ref("entry"), "Value"));
         }
 
         public void IsGroupedCodegen(
-            CodegenMethod method,
+            CodegenProperty property,
             CodegenClassScope classScope)
         {
-            method.Block.MethodReturn(ConstantTrue());
+            property.GetterBlock.BlockReturn(ConstantTrue());
         }
 
         private CodegenMethod HandleRemovedKeysCodegen(
@@ -406,11 +406,11 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupby
             CodegenClassScope classScope)
         {
             var method = scope.MakeChild(typeof(void), typeof(AggregationServiceGroupByForge), classScope);
-            method.Block.IfCondition(Not(ExprDotMethod(REF_REMOVEDKEYS, "isEmpty")))
+            method.Block.IfCondition(Not(ExprDotMethod(REF_REMOVEDKEYS, "IsEmpty")))
                 .ForEach(typeof(object), "removedKey", REF_REMOVEDKEYS)
-                .ExprDotMethod(REF_AGGREGATORSPERGROUP, "remove", Ref("removedKey"))
+                .ExprDotMethod(REF_AGGREGATORSPERGROUP, "Remove", Ref("removedKey"))
                 .BlockEnd()
-                .ExprDotMethod(REF_REMOVEDKEYS, "clear");
+                .ExprDotMethod(REF_REMOVEDKEYS, "Clear");
             return method;
         }
     }

@@ -69,7 +69,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.order
             CodegenClassScope classScope,
             CodegenNamedMethods namedMethods)
         {
-            method.Block.DeclareVar<int>("num", ExprDotMethod(REF_ORDERROLLUPLEVEL, "getLevelNumber"));
+            method.Block.DeclareVar<int>("num", ExprDotName(REF_ORDERROLLUPLEVEL, "LevelNumber"));
             var blocks = method.Block.SwitchBlockOfLength("num", forge.OrderByRollup.Length, true);
             for (var i = 0; i < blocks.Length; i++) {
                 var getSortKey = GenerateOrderKeyCodegen(
@@ -221,7 +221,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.order
                         REF_AGGREGATIONSVC,
                         "SetCurrentAccess",
                         ArrayAtIndex(Ref("groupByKeys"), Ref("count")),
-                        ExprDotMethod(REF_EXPREVALCONTEXT, "getAgentInstanceId"),
+                        ExprDotName(REF_EXPREVALCONTEXT, "AgentInstanceId"),
                         ConstantNull());
                 }
 
@@ -328,7 +328,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.order
             Consumer<CodegenMethod> code = method => {
                 method.Block.DeclareVar<object[]>(
                         "sortProperties",
-                        NewArrayByLength(typeof(object), ExprDotMethod(REF_ORDERCURRENTGENERATORS, "size")))
+                        NewArrayByLength(typeof(object), ExprDotMethod(REF_ORDERCURRENTGENERATORS, "Size")))
                     .DeclareVar<int>("count", Constant(0));
 
                 var forEach = method.Block.ForEach(typeof(GroupByRollupKey), "rollup", REF_ORDERCURRENTGENERATORS);
@@ -337,9 +337,9 @@ namespace com.espertech.esper.common.@internal.epl.resultset.order
                     forEach.ExprDotMethod(
                         REF_AGGREGATIONSVC,
                         "SetCurrentAccess",
-                        ExprDotMethod(Ref("rollup"), "getGroupKey"),
-                        ExprDotMethod(REF_EXPREVALCONTEXT, "getAgentInstanceId"),
-                        ExprDotMethod(Ref("rollup"), "getLevel"));
+                        ExprDotName(Ref("rollup"), "GroupKey"),
+                        ExprDotName(REF_EXPREVALCONTEXT, "AgentInstanceId"),
+                        ExprDotName(Ref("rollup"), "Level"));
                 }
 
                 forEach.DeclareVar<int>(
@@ -358,7 +358,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.order
                             Ref("count"),
                             LocalMethod(
                                 getSortKey,
-                                ExprDotMethod(Ref("rollup"), "getGenerator"),
+                                ExprDotName(Ref("rollup"), "Generator"),
                                 REF_ISNEWDATA,
                                 REF_EXPREVALCONTEXT));
                 }

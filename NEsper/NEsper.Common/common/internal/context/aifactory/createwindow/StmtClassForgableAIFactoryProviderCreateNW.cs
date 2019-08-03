@@ -44,7 +44,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createwindow
             var method = parent.MakeChildWithScope(TypeOfFactory(), GetType(), saiffInitializeSymbol, classScope)
                 .AddParam(typeof(EPStatementInitServices), REF_STMTINITSVC.Ref);
             method.Block
-                .ExprDotMethod(REF_STMTINITSVC, "activateNamedWindow", Constant(_namedWindowName))
+                .ExprDotMethod(REF_STMTINITSVC, "ActivateNamedWindow", Constant(_namedWindowName))
                 .MethodReturn(LocalMethod(_forge.InitializeCodegen(method, saiffInitializeSymbol, classScope)));
             return method;
         }

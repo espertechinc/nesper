@@ -25,76 +25,104 @@ namespace com.espertech.esper.compiler.@internal.util
         private readonly CompilerOptions options;
         private readonly ConfigurationCompilerByteCode config;
 
-        internal ModuleAccessModifierServiceImpl(CompilerOptions options, ConfigurationCompilerByteCode config)
+        internal ModuleAccessModifierServiceImpl(
+            CompilerOptions options,
+            ConfigurationCompilerByteCode config)
         {
             this.options = options;
             this.config = config;
         }
 
-        public NameAccessModifier GetAccessModifierEventType(StatementRawInfo raw, string eventTypeName)
+        public NameAccessModifier GetAccessModifierEventType(
+            StatementRawInfo raw,
+            string eventTypeName)
         {
-            return GetModifier(raw.Annotations,
+            return GetModifier(
+                raw.Annotations,
                 opts => opts.AccessModifierEventType?.Invoke(new AccessModifierEventTypeContext(raw, eventTypeName)),
                 conf => conf.AccessModifierEventType);
         }
 
-        public NameAccessModifier GetAccessModifierVariable(StatementBaseInfo @base, string variableName)
+        public NameAccessModifier GetAccessModifierVariable(
+            StatementBaseInfo @base,
+            string variableName)
         {
-            return GetModifier(@base.StatementRawInfo.Annotations,
+            return GetModifier(
+                @base.StatementRawInfo.Annotations,
                 opts => opts.AccessModifierVariable?.Invoke(new AccessModifierVariableContext(@base, variableName)),
                 conf => conf.AccessModifierVariable);
         }
 
-        public NameAccessModifier GetAccessModifierContext(StatementBaseInfo @base, string contextName)
+        public NameAccessModifier GetAccessModifierContext(
+            StatementBaseInfo @base,
+            string contextName)
         {
-            return GetModifier(@base.StatementRawInfo.Annotations,
+            return GetModifier(
+                @base.StatementRawInfo.Annotations,
                 opts => opts.AccessModifierContext?.Invoke(new AccessModifierContextContext(@base, contextName)),
                 conf => conf.AccessModifierContext);
         }
 
-        public NameAccessModifier GetAccessModifierExpression(StatementBaseInfo @base, string expressionName)
+        public NameAccessModifier GetAccessModifierExpression(
+            StatementBaseInfo @base,
+            string expressionName)
         {
-            return GetModifier(@base.StatementRawInfo.Annotations,
-                opts => opts.AccessModifierExpression?.Invoke(new AccessModifierExpressionContext(@base, expressionName)),
+            return GetModifier(
+                @base.StatementRawInfo.Annotations,
+                opts => opts.AccessModifierExpression?.Invoke(
+                    new AccessModifierExpressionContext(@base, expressionName)),
                 conf => conf.AccessModifierExpression);
         }
 
-        public NameAccessModifier GetAccessModifierTable(StatementBaseInfo @base, string tableName)
+        public NameAccessModifier GetAccessModifierTable(
+            StatementBaseInfo @base,
+            string tableName)
         {
-            return GetModifier(@base.StatementRawInfo.Annotations,
+            return GetModifier(
+                @base.StatementRawInfo.Annotations,
                 opts => opts.AccessModifierTable?.Invoke(new AccessModifierTableContext(@base, tableName)),
                 conf => conf.AccessModifierTable);
         }
 
-        public NameAccessModifier GetAccessModifierNamedWindow(StatementBaseInfo @base, string namedWindowName)
+        public NameAccessModifier GetAccessModifierNamedWindow(
+            StatementBaseInfo @base,
+            string namedWindowName)
         {
-            return GetModifier(@base.StatementRawInfo.Annotations,
-                opts => opts.AccessModifierNamedWindow?.Invoke(new AccessModifierNamedWindowContext(@base, namedWindowName)),
+            return GetModifier(
+                @base.StatementRawInfo.Annotations,
+                opts => opts.AccessModifierNamedWindow?.Invoke(
+                    new AccessModifierNamedWindowContext(@base, namedWindowName)),
                 conf => conf.AccessModifierNamedWindow);
         }
 
-        public NameAccessModifier GetAccessModifierScript(StatementBaseInfo @base, string scriptName, int numParameters)
+        public NameAccessModifier GetAccessModifierScript(
+            StatementBaseInfo @base,
+            string scriptName,
+            int numParameters)
         {
-            return GetModifier(@base.StatementRawInfo.Annotations,
-                opts => opts.AccessModifierScript?.Invoke(new AccessModifierScriptContext(@base, scriptName, numParameters)),
+            return GetModifier(
+                @base.StatementRawInfo.Annotations,
+                opts => opts.AccessModifierScript?.Invoke(
+                    new AccessModifierScriptContext(@base, scriptName, numParameters)),
                 conf => conf.AccessModifierScript);
         }
 
-        public EventTypeBusModifier GetBusModifierEventType(StatementRawInfo raw, string eventTypeName)
+        public EventTypeBusModifier GetBusModifierEventType(
+            StatementRawInfo raw,
+            string eventTypeName)
         {
-            if (options.BusModifierEventType != null)
-            {
+            if (options.BusModifierEventType != null) {
                 var result = options.BusModifierEventType.Invoke(new BusModifierEventTypeContext(raw, eventTypeName));
-                if (result != null)
-                {
+                if (result != null) {
                     return result.Value;
                 }
             }
+
             bool busEventType = AnnotationUtil.FindAnnotation(raw.Annotations, typeof(BusEventTypeAttribute)) != null;
-            if (busEventType)
-            {
+            if (busEventType) {
                 return EventTypeBusModifier.BUS;
             }
+
             return config.BusModifierEventType;
         }
 
@@ -103,11 +131,9 @@ namespace com.espertech.esper.compiler.@internal.util
             Func<CompilerOptions, NameAccessModifier?> optionsGet,
             Func<ConfigurationCompilerByteCode, NameAccessModifier> configGet)
         {
-            if (options != null)
-            {
+            if (options != null) {
                 NameAccessModifier? result = optionsGet.Invoke(options);
-                if (result != null)
-                {
+                if (result != null) {
                     return result.Value;
                 }
             }
@@ -115,35 +141,28 @@ namespace com.espertech.esper.compiler.@internal.util
             bool isPrivate = AnnotationUtil.FindAnnotation(annotations, typeof(PrivateAttribute)) != null;
             bool isProtected = AnnotationUtil.FindAnnotation(annotations, typeof(ProtectedAttribute)) != null;
             bool isPublic = AnnotationUtil.FindAnnotation(annotations, typeof(PublicAttribute)) != null;
-            if (isPrivate)
-            {
-                if (isProtected)
-                {
+            if (isPrivate) {
+                if (isProtected) {
                     throw new EPException("Encountered both the @private and the @protected annotation");
                 }
 
-                if (isPublic)
-                {
+                if (isPublic) {
                     throw new EPException("Encountered both the @private and the @public annotation");
                 }
             }
-            else if (isProtected && isPublic)
-            {
+            else if (isProtected && isPublic) {
                 throw new EPException("Encountered both the @protected and the @public annotation");
             }
 
-            if (isPrivate)
-            {
+            if (isPrivate) {
                 return NameAccessModifier.PRIVATE;
             }
 
-            if (isProtected)
-            {
+            if (isProtected) {
                 return NameAccessModifier.PROTECTED;
             }
 
-            if (isPublic)
-            {
+            if (isPublic) {
                 return NameAccessModifier.PUBLIC;
             }
 

@@ -37,7 +37,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
             CodegenInstanceAux instance)
         {
             StopMethodCodegenBound(method, instance);
-            method.Block.ExprDotMethod(Ref(NAME_UNBOUNDHELPER), "destroy");
+            method.Block.ExprDotMethod(Ref(NAME_UNBOUNDHELPER), "Destroy");
         }
 
         protected internal static void ApplyViewResultUnboundCodegen(
@@ -54,14 +54,14 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                     LocalMethod(
                         generateGroupKeysView,
                         REF_NEWDATA,
-                        ExprDotMethod(Ref(NAME_UNBOUNDHELPER), "getBuffer"),
+                        ExprDotName(Ref(NAME_UNBOUNDHELPER), "Buffer"),
                         ConstantTrue()))
                 .DeclareVar<object[][]>(
                     "oldDataMultiKey",
                     LocalMethod(
                         generateGroupKeysView,
                         REF_OLDDATA,
-                        ExprDotMethod(Ref(NAME_UNBOUNDHELPER), "getBuffer"),
+                        ExprDotName(Ref(NAME_UNBOUNDHELPER), "Buffer"),
                         ConstantFalse()))
                 .DeclareVar<EventBean[]>("eventsPerStream", NewArrayByLength(typeof(EventBean), Constant(1)))
                 .StaticMethod(
@@ -108,21 +108,21 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                     LocalMethod(
                         generateGroupKeysView,
                         REF_NEWDATA,
-                        ExprDotMethod(Ref(NAME_UNBOUNDHELPER), "getBuffer"),
+                        ExprDotName(Ref(NAME_UNBOUNDHELPER), "Buffer"),
                         ConstantTrue()))
                 .DeclareVar<object[][]>(
                     "oldDataMultiKey",
                     LocalMethod(
                         generateGroupKeysView,
                         REF_OLDDATA,
-                        ExprDotMethod(Ref(NAME_UNBOUNDHELPER), "getBuffer"),
+                        ExprDotName(Ref(NAME_UNBOUNDHELPER), "Buffer"),
                         ConstantFalse()))
                 .DeclareVar<EventBean[]>(
                     "selectOldEvents",
                     forge.IsSelectRStream
                         ? LocalMethod(
                             generateOutputEventsView,
-                            ExprDotMethod(Ref(NAME_UNBOUNDHELPER), "getBuffer"),
+                            ExprDotName(Ref(NAME_UNBOUNDHELPER), "Buffer"),
                             ConstantFalse(),
                             REF_ISSYNTHESIZE)
                         : ConstantNull())
@@ -141,7 +141,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                     "selectNewEvents",
                     LocalMethod(
                         generateOutputEventsView,
-                        ExprDotMethod(Ref(NAME_UNBOUNDHELPER), "getBuffer"),
+                        ExprDotName(Ref(NAME_UNBOUNDHELPER), "Buffer"),
                         ConstantTrue(),
                         REF_ISSYNTHESIZE))
                 .MethodReturn(
@@ -164,7 +164,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                     "output",
                     LocalMethod(
                         generateOutputEventsView,
-                        ExprDotMethod(Ref(NAME_UNBOUNDHELPER), "getBuffer"),
+                        ExprDotName(Ref(NAME_UNBOUNDHELPER), "Buffer"),
                         ConstantTrue(),
                         ConstantTrue()))
                 .MethodReturn(StaticMethod(typeof(EnumerationHelper), "Singleton", Ref("output")));

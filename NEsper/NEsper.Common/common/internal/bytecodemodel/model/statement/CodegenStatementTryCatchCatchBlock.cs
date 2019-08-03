@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
+using com.espertech.esper.common.@internal.bytecodemodel.util;
 
 namespace com.espertech.esper.common.@internal.bytecodemodel.model.statement
 {
@@ -33,7 +34,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.statement
 
         internal void MergeClasses(ISet<Type> classes)
         {
-            classes.Add(Ex);
+            classes.AddToSet(Ex);
             Block.MergeClasses(classes);
         }
     }

@@ -10,37 +10,41 @@ using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
+using com.espertech.esper.common.@internal.bytecodemodel.util;
 using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.bytecodemodel.core
 {
     public class CodegenClass
     {
-        private readonly CodegenClassMethods methods;
+        private readonly CodegenClassMethods _methods;
+        private readonly CodegenClassProperties _properties;
 
         public CodegenClass(
             Type interfaceClass,
-            string packageName,
+            string @namespace,
             string className,
             CodegenClassScope codegenClassScope,
             IList<CodegenTypedParam> explicitMembers,
             CodegenCtor optionalCtor,
             CodegenClassMethods methods,
+            CodegenClassProperties properties,
             IList<CodegenInnerClass> innerClasses)
         {
-            PackageName = packageName;
+            Namespace = @namespace;
             ClassName = className;
             InterfaceImplemented = interfaceClass;
             ExplicitMembers = explicitMembers;
             OptionalCtor = optionalCtor;
-            this.methods = methods;
+            _methods = methods;
+            _properties = properties;
 
             IList<CodegenInnerClass> allInnerClasses = new List<CodegenInnerClass>(innerClasses);
             allInnerClasses.AddAll(codegenClassScope.AdditionalInnerClasses);
             InnerClasses = allInnerClasses;
         }
 
-        public string PackageName { get; }
+        public string Namespace { get; }
 
         public string ClassName { get; }
 
@@ -48,9 +52,15 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.core
 
         public IList<CodegenTypedParam> ExplicitMembers { get; }
 
-        public IList<CodegenMethodWGraph> PublicMethods => methods.PublicMethods;
+        public CodegenClassProperties Properties => _properties;
 
-        public IList<CodegenMethodWGraph> PrivateMethods => methods.PrivateMethods;
+        public IList<CodegenPropertyWGraph> PublicProperties => _properties.PublicProperties;
+
+        public IList<CodegenPropertyWGraph> PrivateProperties => _properties.PrivateProperties;
+
+        public IList<CodegenMethodWGraph> PublicMethods => _methods.PublicMethods;
+
+        public IList<CodegenMethodWGraph> PrivateMethods => _methods.PrivateMethods;
 
         public IList<CodegenInnerClass> InnerClasses { get; }
 
@@ -59,12 +69,20 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.core
         public ISet<Type> GetReferencedClasses()
         {
             ISet<Type> classes = new HashSet<Type>();
-            AddReferencedClasses(InterfaceImplemented, methods, classes);
+            AddReferencedClasses(
+                InterfaceImplemented, 
+                _methods, 
+                _properties,
+                classes);
             AddReferencedClasses(ExplicitMembers, classes);
             OptionalCtor?.MergeClasses(classes);
 
             foreach (var inner in InnerClasses) {
-                AddReferencedClasses(inner.InterfaceImplemented, inner.Methods, classes);
+                AddReferencedClasses(
+                    inner.InterfaceImplemented, 
+                    inner.Methods, 
+                    inner.Properties,
+                    classes);
                 AddReferencedClasses(inner.ExplicitMembers, classes);
                 inner.Ctor?.MergeClasses(classes);
             }
@@ -75,28 +93,25 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.core
         private static void AddReferencedClasses(
             Type interfaceImplemented,
             CodegenClassMethods methods,
+            CodegenClassProperties properties,
             ISet<Type> classes)
         {
             if (interfaceImplemented != null) {
-                classes.Add(interfaceImplemented);
+                classes.AddToSet(interfaceImplemented);
             }
 
-            foreach (var publicMethod in methods.PublicMethods) {
-                publicMethod.MergeClasses(classes);
-            }
+            methods.PublicMethods.ForEach(m => m.MergeClasses(classes));
+            methods.PrivateMethods.ForEach(m => m.MergeClasses(classes));
 
-            foreach (var privateMethod in methods.PrivateMethods) {
-                privateMethod.MergeClasses(classes);
-            }
+            properties.PublicProperties.ForEach(m => m.MergeClasses(classes));
+            properties.PrivateProperties.ForEach(m => m.MergeClasses(classes));
         }
 
         private static void AddReferencedClasses(
             IList<CodegenTypedParam> names,
             ISet<Type> classes)
         {
-            foreach (var param in names) {
-                param.MergeClasses(classes);
-            }
+            names.ForEach(param => param.MergeClasses(classes));
         }
     }
 } // end of namespace

@@ -31,7 +31,7 @@ namespace com.espertech.esper.common.@internal.epl.output.core
             CodegenMethod method,
             CodegenClassScope classScope);
 
-        void IteratorCodegen(
+        void EnumeratorCodegen(
             CodegenMethod method,
             CodegenClassScope classScope);
 

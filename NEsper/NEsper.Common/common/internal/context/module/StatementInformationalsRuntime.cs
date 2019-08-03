@@ -26,7 +26,7 @@ namespace com.espertech.esper.common.@internal.context.module
 
         public string OptionalContextModuleName { get; set; }
 
-        public NameAccessModifier OptionalContextVisibility { get; set; }
+        public NameAccessModifier? OptionalContextVisibility { get; set; }
 
         public bool IsCanSelfJoin { get; set; }
 

@@ -84,7 +84,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.variable
             else {
                 var field = classScope.AddOrGetFieldSharable(
                     new VariableReaderPerCPCodegenFieldSharable(VariableMetadata));
-                var cpid = ExprDotMethod(symbols.GetAddExprEvalCtx(methodNode), "getAgentInstanceId");
+                var cpid = ExprDotName(symbols.GetAddExprEvalCtx(methodNode), "AgentInstanceId");
                 readerExpression = Cast(typeof(VariableReader), ExprDotMethod(field, "get", cpid));
             }
 
@@ -94,11 +94,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.variable
                 block.DeclareVar(
                         EvaluationType,
                         "value",
-                        Cast(EvaluationType, ExprDotMethod(Ref("reader"), "getValue")))
+                        Cast(EvaluationType, ExprDotName(Ref("reader"), "Value")))
                     .MethodReturn(Ref("value"));
             }
             else {
-                block.DeclareVar<object>("value", ExprDotMethod(Ref("reader"), "getValue"))
+                block.DeclareVar<object>("value", ExprDotName(Ref("reader"), "Value"))
                     .IfRefNullReturnNull("value")
                     .DeclareVar<EventBean>("theEvent", Cast(typeof(EventBean), Ref("value")));
                 if (optSubPropName == null) {
@@ -138,10 +138,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.variable
             CodegenExpression readerExpression =
                 classScope.AddOrGetFieldSharable(new VariableReaderCodegenFieldSharable(VariableMetadata));
             if (VariableMetadata.EventType == null) {
-                return Cast(EvaluationType, ExprDotMethod(readerExpression, "getValue"));
+                return Cast(EvaluationType, ExprDotName(readerExpression, "Value"));
             }
 
-            var unpack = ExprDotUnderlying(Cast(typeof(EventBean), ExprDotMethod(readerExpression, "getValue")));
+            var unpack = ExprDotUnderlying(Cast(typeof(EventBean), ExprDotName(readerExpression, "Value")));
             return Cast(EvaluationType, unpack);
         }
 

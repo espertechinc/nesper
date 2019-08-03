@@ -52,10 +52,10 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
             CodegenExpression refIsNewData = exprSymbol.GetAddIsNewData(methodNode);
             CodegenExpressionRef refExprEvalCtx = exprSymbol.GetAddExprEvalCtx(methodNode);
             methodNode.Block
-                .DeclareVar<EventBean>("event", ArrayAtIndex(refEPS, Constant(0)))
-                .IfRefNullReturnNull("event")
+                .DeclareVar<EventBean>("@event", ArrayAtIndex(refEPS, Constant(0)))
+                .IfRefNullReturnNull("@event")
                 .MethodReturn(
-                    ExprDotMethod(eventToPublic, "convert", @Ref("event"), refEPS, refIsNewData, refExprEvalCtx));
+                    ExprDotMethod(eventToPublic, "convert", @Ref("@event"), refEPS, refIsNewData, refExprEvalCtx));
             return methodNode;
         }
 

@@ -168,9 +168,8 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.querymethod
                 .SetProperty(
                     queryMethod,
                     "InternalEventRouteDest",
-                    ExprDotMethod(
-                        symbols.GetAddInitSvc(method),
-                        EPStatementInitServicesConstants.GETINTERNALEVENTROUTEDEST))
+                    ExprDotName(
+                        symbols.GetAddInitSvc(method), EPStatementInitServicesConstants.INTERNALEVENTROUTEDEST))
                 .SetProperty(
                     queryMethod,
                     "TableAccesses",

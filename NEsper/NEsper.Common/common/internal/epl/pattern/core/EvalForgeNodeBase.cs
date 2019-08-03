@@ -95,7 +95,7 @@ namespace com.espertech.esper.common.@internal.epl.pattern.core
                     TypeOfFactory(),
                     "node",
                     ExprDotMethodChain(symbols.GetAddInitSvc(method))
-                        .Add(EPStatementInitServicesConstants.GETPATTERNFACTORYSERVICE)
+                        .Get(EPStatementInitServicesConstants.PATTERNFACTORYSERVICE)
                         .Add(NameOfFactory()))
                 .SetProperty(Ref("node"), "FactoryNodeId", Constant(factoryNodeId));
             if (audit || classScope.IsInstrumented) {

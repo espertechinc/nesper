@@ -263,7 +263,7 @@ namespace com.espertech.esper.common.@internal.epl.namedwindow.core
                 var updated = new EventBean[events.Count];
                 var count = 0;
                 foreach (var @event in events) {
-                    updated[count++] = updateHelper.UpdateWCopy(@event, eventsPerStream, AgentInstanceContext);
+                    updated[count++] = updateHelper.Invoke(@event, eventsPerStream, AgentInstanceContext);
                 }
 
                 var deleted = events.ToArray();

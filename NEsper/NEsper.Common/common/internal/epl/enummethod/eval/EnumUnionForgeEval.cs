@@ -90,15 +90,15 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                     forge.evaluatorForge.EvaluateGetROCollectionEventsCodegen(methodNode, scope, codegenClassScope));
             }
 
-            block.IfCondition(Or(EqualsNull(@Ref("other")), ExprDotMethod(@Ref("other"), "isEmpty")))
+            block.IfCondition(Or(EqualsNull(@Ref("other")), ExprDotMethod(@Ref("other"), "IsEmpty")))
                 .BlockReturn(EnumForgeCodegenNames.REF_ENUMCOLL);
             block.DeclareVar<List<object>>(
                     "result",
                     NewInstance<List<object>>(
                         Op(
-                            ExprDotMethod(EnumForgeCodegenNames.REF_ENUMCOLL, "size"),
+                            ExprDotMethod(EnumForgeCodegenNames.REF_ENUMCOLL, "Size"),
                             "+",
-                            ExprDotMethod(@Ref("other"), "size"))))
+                            ExprDotMethod(@Ref("other"), "Size"))))
                 .Expression(ExprDotMethod(@Ref("result"), "addAll", EnumForgeCodegenNames.REF_ENUMCOLL))
                 .Expression(ExprDotMethod(@Ref("result"), "addAll", @Ref("other")))
                 .MethodReturn(@Ref("result"));

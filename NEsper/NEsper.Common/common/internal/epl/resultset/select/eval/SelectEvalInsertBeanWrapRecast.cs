@@ -75,15 +75,15 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
                     "recast",
                     ExprDotMethod(
                         eventBeanFactory,
-                        "adapterForTypedBean",
+                        "AdapterForTypedBean",
                         ExprDotUnderlying(@Ref("theEvent")),
                         memberUndType))
                 .MethodReturn(
                     ExprDotMethod(
                         eventBeanFactory,
-                        "adapterForTypedWrapper",
+                        "AdapterForTypedWrapper",
                         @Ref("recast"),
-                        StaticMethod(typeof(Collections), "emptyMap"),
+                        StaticMethod(typeof(Collections), "GetEmptyMap"),
                         resultEventType));
             return methodNode;
         }

@@ -49,7 +49,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
                 codegenClassScope);
             return ExprDotMethod(
                 eventBeanFactory,
-                "adapterForTypedWrapper",
+                "AdapterForTypedWrapper",
                 LocalMethod(inner),
                 props,
                 resultEventType);

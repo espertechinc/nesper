@@ -35,31 +35,27 @@ namespace com.espertech.esper.compiler.@internal.util
             StatementCompileTimeServices compileTimeServices)
         {
             StatementSpecRaw specRaw;
-            try
-            {
-                if (compilable is CompilableEPL)
-                {
+            try {
+                if (compilable is CompilableEPL) {
                     var compilableEPL = (CompilableEPL) compilable;
                     specRaw = ParseWalk(compilableEPL.Epl, compileTimeServices.StatementSpecMapEnv);
                 }
-                else if (compilable is CompilableSODA)
-                {
+                else if (compilable is CompilableSODA) {
                     var soda = ((CompilableSODA) compilable).Soda;
                     specRaw = StatementSpecMapper.Map(soda, compileTimeServices.StatementSpecMapEnv);
                 }
-                else
-                {
+                else {
                     throw new IllegalStateException("Unrecognized compilable " + compilable);
                 }
             }
-            catch (StatementSpecCompileException)
-            {
+            catch (StatementSpecCompileException) {
                 throw;
             }
-            catch (Exception ex)
-            {
-                throw new StatementSpecCompileException("Unexpected exception parsing statement: " + ex.Message,
-                    ex, compilable.ToEPL());
+            catch (Exception ex) {
+                throw new StatementSpecCompileException(
+                    "Unexpected exception parsing statement: " + ex.Message,
+                    ex,
+                    compilable.ToEPL());
             }
 
             return specRaw;
@@ -72,29 +68,29 @@ namespace com.espertech.esper.compiler.@internal.util
             var parseResult = ParseHelper.Parse(epl, epl, true, EPL_PARSE_RULE, true);
             var ast = parseResult.Tree;
 
-            var defaultStreamSelector = StatementSpecMapper.MapFromSODA(mapEnv.Configuration.Compiler.StreamSelection.DefaultStreamSelector);
-            var walker = new EPLTreeWalkerListener(parseResult.TokenStream, defaultStreamSelector, parseResult.Scripts, mapEnv);
+            var defaultStreamSelector =
+                StatementSpecMapper.MapFromSODA(mapEnv.Configuration.Compiler.StreamSelection.DefaultStreamSelector);
+            var walker = new EPLTreeWalkerListener(
+                parseResult.TokenStream,
+                defaultStreamSelector,
+                parseResult.Scripts,
+                mapEnv);
 
-            try
-            {
+            try {
                 ParseHelper.Walk(ast, walker, epl, epl);
             }
-            catch (ASTWalkException ex)
-            {
+            catch (ASTWalkException ex) {
                 throw new StatementSpecCompileException(ex.Message, ex, epl);
             }
-            catch (ValidationException ex)
-            {
+            catch (ValidationException ex) {
                 throw new StatementSpecCompileException(ex.Message, ex, epl);
             }
-            catch (Exception ex)
-            {
+            catch (Exception ex) {
                 var message = "Invalid expression encountered";
                 throw new StatementSpecCompileException(GetNullableErrortext(message, ex.Message), ex, epl);
             }
 
-            if (Log.IsDebugEnabled)
-            {
+            if (Log.IsDebugEnabled) {
                 ASTUtil.DumpAST(ast);
             }
 
@@ -105,8 +101,7 @@ namespace com.espertech.esper.compiler.@internal.util
             string msg,
             string cause)
         {
-            if (cause == null)
-            {
+            if (cause == null) {
                 return msg;
             }
 

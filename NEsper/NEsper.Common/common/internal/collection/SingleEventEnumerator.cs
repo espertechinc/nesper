@@ -23,7 +23,7 @@ namespace com.espertech.esper.common.@internal.collection
         /// <summary>
         ///     Initializes a new instance of the <see cref="SingleEventEnumerator " /> class.
         /// </summary>
-        /// <param name="event">The events.</param>
+        /// <param name="@event">The events.</param>
         public SingleEventEnumerator(EventBean @event)
         {
             _event = @event;

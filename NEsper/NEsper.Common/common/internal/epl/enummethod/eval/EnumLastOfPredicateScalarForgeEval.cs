@@ -91,7 +91,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                     "evalEvent",
                     NewInstance<ObjectArrayEventBean>(NewArrayByLength(typeof(object), Constant(1)), typeMember))
                 .AssignArrayElement(EnumForgeCodegenNames.REF_EPS, Constant(forge.streamNumLambda), @Ref("evalEvent"))
-                .DeclareVar<object[]>("props", ExprDotMethod(@Ref("evalEvent"), "getProperties"));
+                .DeclareVar<object[]>("props", ExprDotName(@Ref("evalEvent"), "Properties"));
             CodegenBlock forEach = block.ForEach(typeof(object), "next", EnumForgeCodegenNames.REF_ENUMCOLL)
                 .AssignArrayElement("props", Constant(0), @Ref("next"));
             CodegenLegoBooleanExpression.CodegenContinueIfNotNullAndNotPass(

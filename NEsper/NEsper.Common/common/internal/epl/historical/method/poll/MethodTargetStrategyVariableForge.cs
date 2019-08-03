@@ -53,7 +53,7 @@ namespace com.espertech.esper.common.@internal.epl.historical.method.poll
                     VariableDeployTimeResolver.MakeResolveVariable(variableMetaData, symbols.GetAddInitSvc(method)))
                 .SetProperty(Ref("target"), "MethodName", Constant(reflectionMethod.Name))
                 .SetProperty(Ref("target"), "MethodParameters", Constant(reflectionMethod.GetParameterTypes()))
-                .Expression(ExprDotMethodChain(symbols.GetAddInitSvc(method)).Add("addReadyCallback", @Ref("target")))
+                .Expression(ExprDotMethodChain(symbols.GetAddInitSvc(method)).Add("AddReadyCallback", @Ref("target")))
                 .MethodReturn(@Ref("target"));
             return LocalMethod(method);
         }

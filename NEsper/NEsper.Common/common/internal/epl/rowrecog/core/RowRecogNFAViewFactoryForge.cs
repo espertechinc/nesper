@@ -66,7 +66,7 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
 
         internal override string FactoryMethod()
         {
-            return "rowRecog";
+            return "RowRecog";
         }
 
         internal override void Assign(

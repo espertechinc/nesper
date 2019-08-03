@@ -400,7 +400,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
             // get module statements
             IList<StatementProvider> statementResources;
             try {
-                statementResources = provider.ModuleProvider.Statements();
+                statementResources = provider.ModuleProvider.Statements;
             }
             catch (EPException) {
                 throw;

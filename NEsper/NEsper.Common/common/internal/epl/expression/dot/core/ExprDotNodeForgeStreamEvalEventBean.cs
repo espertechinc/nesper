@@ -74,15 +74,15 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
             }
 
             methodNode.Block
-                .DeclareVar<EventBean>("event", ArrayAtIndex(refEPS, Constant(forge.StreamNumber)))
+                .DeclareVar<EventBean>("@event", ArrayAtIndex(refEPS, Constant(forge.StreamNumber)))
                 .Apply(
                     InstrumentationCode.Instblock(
                         codegenClassScope,
                         "qExprDotChain",
                         typeInformation,
-                        @Ref("event"),
+                        @Ref("@event"),
                         Constant(forge.Evaluators.Length)))
-                .IfRefNull("event")
+                .IfRefNull("@event")
                 .Apply(InstrumentationCode.Instblock(codegenClassScope, "aExprDotChain"))
                 .BlockReturn(ConstantNull())
                 .DeclareVar(
@@ -92,7 +92,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
                         methodNode,
                         exprSymbol,
                         codegenClassScope,
-                        @Ref("event"),
+                        @Ref("@event"),
                         typeof(EventBean),
                         forge.Evaluators,
                         null))

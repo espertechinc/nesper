@@ -84,7 +84,7 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
             }
 
             method.Block.Expression(
-                    ExprDotMethodChain(symbols.GetAddInitSvc(method)).Add("addReadyCallback", Ref("detail")))
+                    ExprDotMethodChain(symbols.GetAddInitSvc(method)).Add("AddReadyCallback", Ref("detail")))
                 .MethodReturn(Ref("detail"));
             return LocalMethod(method);
         }

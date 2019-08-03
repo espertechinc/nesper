@@ -467,7 +467,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
                     .AddParam(typeof(DateTimeEx), "parameter");
 
                 methodNode.Block
-                    .DeclareVar<long>("time", ExprDotMethod(Ref("parameter"), "getTimeInMillis"))
+                    .DeclareVar<long>("time", ExprDotName(Ref("parameter"), "TimeInMillis"))
                     .MethodReturn(
                         forge.intervalComputer.Codegen(
                             Ref("startTs"),
@@ -849,8 +849,8 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
                 return intervalComputer.Codegen(
                     startTs,
                     endTs,
-                    ExprDotMethod(paramStartTs, "getTimeInMillis"),
-                    ExprDotMethod(paramEndTs, "getTimeInMillis"),
+                    ExprDotName(paramStartTs, "TimeInMillis"),
+                    ExprDotName(paramEndTs, "TimeInMillis"),
                     parentNode,
                     exprSymbol,
                     codegenClassScope);

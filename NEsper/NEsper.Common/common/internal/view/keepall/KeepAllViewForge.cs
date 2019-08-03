@@ -47,7 +47,7 @@ namespace com.espertech.esper.common.@internal.view.keepall
 
         internal override string FactoryMethod()
         {
-            return "keepall";
+            return "Keepall";
         }
 
         internal override void Assign(

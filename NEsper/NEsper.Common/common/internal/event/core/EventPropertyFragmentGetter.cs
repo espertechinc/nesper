@@ -14,4 +14,25 @@ namespace com.espertech.esper.common.@internal.@event.core
     {
         object GetFragment(EventBean eventBean);
     }
+
+    public class ProxyEventPropertyFragmentGetter : EventPropertyFragmentGetter
+    {
+        public delegate object GetFragmentFunc(EventBean eventBean);
+
+        public GetFragmentFunc ProcGetFragmentFunc { get; set; }
+
+        public ProxyEventPropertyFragmentGetter()
+        {
+        }
+
+        public ProxyEventPropertyFragmentGetter(GetFragmentFunc getFragmentFunc)
+        {
+            ProcGetFragmentFunc = getFragmentFunc;
+        }
+
+        public object GetFragment(EventBean eventBean)
+        {
+            return ProcGetFragmentFunc?.Invoke(eventBean);
+        }
+    }
 } // end of namespace

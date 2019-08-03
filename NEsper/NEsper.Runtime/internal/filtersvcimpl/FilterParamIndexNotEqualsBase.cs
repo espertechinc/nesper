@@ -29,7 +29,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
             FilterOperator filterOperator)
             : base(filterOperator, lookupable)
         {
-            ConstantsMap = new Dictionary<object, EventEvaluator>().WithNullSupport();
+            ConstantsMap = new Dictionary<object, EventEvaluator>().WithNullKeySupport();
             ConstantsMapRwLock = readWriteLock;
         }
 

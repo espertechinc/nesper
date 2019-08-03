@@ -15,7 +15,8 @@ namespace com.espertech.esper.compiler.@internal.util
         public bool IsStatic { get; set; }
         public string Namespace { get; set; }
 
-        public ImportDecl(bool isStatic,
+        public ImportDecl(
+            bool isStatic,
             string ns)
         {
             IsStatic = isStatic;
@@ -81,13 +82,16 @@ namespace com.espertech.esper.compiler.@internal.util
 
             if (this.Namespace == "System") {
                 nameComparison = -1;
-            } else if (that.Namespace == "System") {
+            }
+            else if (that.Namespace == "System") {
                 nameComparison = 1;
-            } else if (this.Namespace.StartsWith("System.")) {
+            }
+            else if (this.Namespace.StartsWith("System.")) {
                 if (!that.Namespace.StartsWith("System.")) {
                     nameComparison = -1;
                 }
-            } else if (that.Namespace.StartsWith("System.")) {
+            }
+            else if (that.Namespace.StartsWith("System.")) {
                 nameComparison = 1;
             }
 
@@ -98,7 +102,8 @@ namespace com.espertech.esper.compiler.@internal.util
                 if (!that.IsStatic) {
                     return 1;
                 }
-            } else if (that.IsStatic) {
+            }
+            else if (that.IsStatic) {
                 return -1;
             }
 

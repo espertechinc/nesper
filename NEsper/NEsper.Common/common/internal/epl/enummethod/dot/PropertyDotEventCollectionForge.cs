@@ -85,11 +85,11 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
             var refEPS = exprSymbol.GetAddEPS(methodNode);
 
             methodNode.Block
-                .DeclareVar<EventBean>("event", ArrayAtIndex(refEPS, Constant(streamId)))
-                .IfRefNullReturnNull("event")
+                .DeclareVar<EventBean>("@event", ArrayAtIndex(refEPS, Constant(streamId)))
+                .IfRefNullReturnNull("@event")
                 .MethodReturn(
                     CodegenEvaluateInternal(
-                        Ref("event"),
+                        Ref("@event"),
                         method => exprSymbol.GetAddExprEvalCtx(method),
                         methodNode,
                         codegenClassScope));
@@ -222,14 +222,14 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
                         typeof(ICollection<object>),
                         typeof(PropertyDotEventCollectionForge),
                         codegenClassScope)
-                    .AddParam(typeof(EventBean), "event");
+                    .AddParam(typeof(EventBean), "@event");
 
                 methodNodeX.Block
                     .DeclareVar<EventBean[]>(
                         "events",
                         Cast(
                             typeof(EventBean[]),
-                            getter.EventBeanFragmentCodegen(Ref("event"), methodNodeX, codegenClassScope)))
+                            getter.EventBeanFragmentCodegen(Ref("@event"), methodNodeX, codegenClassScope)))
                     .IfRefNullReturnNull("events")
                     .MethodReturn(Ref("events"));
                 return LocalMethod(methodNodeX, @event);
@@ -237,7 +237,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
 
             var methodNode = codegenMethodScope
                 .MakeChild(typeof(ICollection<object>), typeof(PropertyDotEventCollectionForge), codegenClassScope)
-                .AddParam(typeof(EventBean), "event");
+                .AddParam(typeof(EventBean), "@event");
             CodegenExpressionRef refExprEvalCtx = refExprEvalCtxFunc.Invoke(methodNode);
 
             methodNode.Block
@@ -248,14 +248,14 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
                         .Add("getAllocateUnwrapProp"))
                 .DeclareVar<ExpressionResultCacheEntryBeanAndCollBean>(
                     "cacheEntry",
-                    ExprDotMethod(Ref("cache"), "getPropertyColl", Constant(propertyNameCache), Ref("event")))
+                    ExprDotMethod(Ref("cache"), "getPropertyColl", Constant(propertyNameCache), Ref("@event")))
                 .IfCondition(NotEqualsNull(Ref("cacheEntry")))
-                .BlockReturn(ExprDotMethod(Ref("cacheEntry"), "getResult"))
+                .BlockReturn(ExprDotName(Ref("cacheEntry"), "Result"))
                 .DeclareVar<EventBean[]>(
                     "events",
                     Cast(
                         typeof(EventBean[]),
-                        getter.EventBeanFragmentCodegen(Ref("event"), methodNode, codegenClassScope)))
+                        getter.EventBeanFragmentCodegen(Ref("@event"), methodNode, codegenClassScope)))
                 .DeclareVarNoInit(typeof(ICollection<object>), "coll")
                 .IfRefNull("events")
                 .AssignRef("coll", ConstantNull())
@@ -267,7 +267,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
                         Ref("cache"),
                         "savePropertyColl",
                         Constant(propertyNameCache),
-                        Ref("event"),
+                        Ref("@event"),
                         Ref("coll")))
                 .MethodReturn(Ref("coll"));
             return LocalMethod(methodNode, @event);

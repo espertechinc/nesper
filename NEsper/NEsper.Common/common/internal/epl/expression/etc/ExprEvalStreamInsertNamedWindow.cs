@@ -77,13 +77,13 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
 
             string method = EventTypeUtility.GetAdapterForMethodName(namedWindowAsType);
             methodNode.Block
-                .DeclareVar<EventBean>("event", ArrayAtIndex(refEPS, Constant(streamNum)))
-                .IfRefNullReturnNull("event")
+                .DeclareVar<EventBean>("@event", ArrayAtIndex(refEPS, Constant(streamNum)))
+                .IfRefNullReturnNull("@event")
                 .MethodReturn(
                     ExprDotMethod(
                         eventSvc,
                         method,
-                        Cast(namedWindowAsType.UnderlyingType, ExprDotUnderlying(@Ref("event"))),
+                        Cast(namedWindowAsType.UnderlyingType, ExprDotUnderlying(@Ref("@event"))),
                         namedWindowType));
             return LocalMethod(methodNode);
         }

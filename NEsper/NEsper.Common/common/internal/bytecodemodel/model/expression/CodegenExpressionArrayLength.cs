@@ -10,6 +10,8 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
+using com.espertech.esper.common.@internal.bytecodemodel.core;
+
 namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
 {
     public class CodegenExpressionArrayLength : CodegenExpression
@@ -23,14 +25,16 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
 
         public void Render(
             StringBuilder builder,
-            bool isInnerClass)
+            bool isInnerClass,
+            int level,
+            CodegenIndent indent)
         {
             if (_expression is CodegenExpressionRef) {
-                _expression.Render(builder, isInnerClass);
+                _expression.Render(builder, isInnerClass, level, indent);
             }
             else {
                 builder.Append("(");
-                _expression.Render(builder, isInnerClass);
+                _expression.Render(builder, isInnerClass, level, indent);
                 builder.Append(")");
             }
 

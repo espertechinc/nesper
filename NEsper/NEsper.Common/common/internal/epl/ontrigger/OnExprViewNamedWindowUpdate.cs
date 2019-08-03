@@ -59,7 +59,7 @@ namespace com.espertech.esper.common.@internal.epl.ontrigger
             foreach (var triggerEvent in triggerEvents) {
                 eventsPerStream[1] = triggerEvent;
                 foreach (var matchingEvent in matchingEvents) {
-                    var copy = parent.UpdateHelperNamedWindow.UpdateWCopy(
+                    var copy = parent.UpdateHelperNamedWindow.Invoke(
                         matchingEvent,
                         eventsPerStream,
                         ExprEvaluatorContext);

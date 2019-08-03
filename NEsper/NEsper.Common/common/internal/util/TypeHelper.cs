@@ -767,7 +767,7 @@ namespace com.espertech.esper.common.@internal.util
 
             if (targetTypeBoxed == typeof(byte?))
             {
-                return ExprDotMethod(exprReturningBoxed, "byteValue");
+                return ExprDotMethod(exprReturningBoxed, "ByteValue");
             }
 
             throw new ArgumentException("Cannot coerce to number subtype " + fromTypeBoxed.Name);
@@ -2684,21 +2684,26 @@ namespace com.espertech.esper.common.@internal.util
         }
 
         /// <summary>Returns the generic type parameter of a return value by a field or method. </summary>
-        /// <param name="method">method or null if field</param>
-        /// <param name="field">field or null if method</param>
+        /// <param name="method">method or null</param>
+        /// <param name="field">field or null</param>
+        /// <param name="property">property or null</param>
         /// <param name="isAllowNull">whether null is allowed as a return value or expected typeof(Object)</param>
         /// <returns>generic type parameter</returns>
         public static Type GetGenericReturnType(
             MethodInfo method,
             FieldInfo field,
+            PropertyInfo property,
             bool isAllowNull)
         {
-            if (method == null)
-            {
+            if (method != null) {
+                return GetGenericReturnType(method, isAllowNull);
+            }
+            else if (property != null) {
+                return GetGenericPropertyType(property, isAllowNull);
+            }
+            else {
                 return GetGenericFieldType(field, isAllowNull);
             }
-
-            return GetGenericReturnType(method, isAllowNull);
         }
 
         private static Type GetGenericMapType(this Type t)

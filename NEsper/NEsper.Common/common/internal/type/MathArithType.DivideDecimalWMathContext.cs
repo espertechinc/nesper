@@ -75,7 +75,7 @@ namespace com.espertech.esper.common.@internal.type
                     .Block;
                 var ifZero = block.IfCondition(
                     CodegenExpressionBuilder.EqualsIdentity(
-                        CodegenExpressionBuilder.ExprDotMethod(CodegenExpressionBuilder.Ref("b2"), "doubleValue"),
+                        CodegenExpressionBuilder.ExprDotMethod(CodegenExpressionBuilder.Ref("b2"), "DoubleValue"),
                         CodegenExpressionBuilder.Constant(0)));
                 {
                     if (divisionByZeroReturnsNull) {
@@ -88,7 +88,7 @@ namespace com.espertech.esper.common.@internal.type
                                 CodegenExpressionBuilder.Op(
                                     CodegenExpressionBuilder.ExprDotMethod(
                                         CodegenExpressionBuilder.Ref("b1"),
-                                        "doubleValue"),
+                                        "DoubleValue"),
                                     "/",
                                     CodegenExpressionBuilder.Constant(0))));
                     }

@@ -52,7 +52,7 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
             var makeFilter = filterSpecCompiled.MakeCodegen(method, symbols, classScope);
             method.Block
                 .DeclareVar<FilterSpecActivatable>("filterSpec", LocalMethod(makeFilter))
-                .DeclareVar<EventType>("eventType", ExprDotMethod(Ref("filterSpec"), "getFilterForEventType"));
+                .DeclareVar<EventType>("eventType", ExprDotName(Ref("filterSpec"), "FilterForEventType"));
 
             method.Block.DeclareVar<ContextControllerDetailCategoryItem[]>(
                 "items",

@@ -37,7 +37,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            return ExprDotMethod(eventBeanFactory, "adapterForTypedBean", expression, resultEventType);
+            return ExprDotMethod(eventBeanFactory, "AdapterForTypedBean", expression, resultEventType);
         }
     }
 } // end of namespace

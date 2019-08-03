@@ -102,14 +102,14 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                 .AddParam(EnumForgeCodegenNames.PARAMS);
 
             CodegenBlock block = methodNode.Block
-                .IfCondition(ExprDotMethod(EnumForgeCodegenNames.REF_ENUMCOLL, "isEmpty"))
+                .IfCondition(ExprDotMethod(EnumForgeCodegenNames.REF_ENUMCOLL, "IsEmpty"))
                 .BlockReturn(EnumForgeCodegenNames.REF_ENUMCOLL);
             block.DeclareVar<ArrayDeque<object>>("result", NewInstance(typeof(ArrayDeque<object>)))
                 .DeclareVar<ObjectArrayEventBean>(
                     "evalEvent",
                     NewInstance<ObjectArrayEventBean>(NewArrayByLength(typeof(object), Constant(1)), evalTypeMember))
                 .AssignArrayElement(EnumForgeCodegenNames.REF_EPS, Constant(forge.streamNumLambda), @Ref("evalEvent"))
-                .DeclareVar<object[]>("evalProps", ExprDotMethod(@Ref("evalEvent"), "getProperties"))
+                .DeclareVar<object[]>("evalProps", ExprDotName(@Ref("evalEvent"), "Properties"))
                 .DeclareVar<ObjectArrayEventBean>(
                     "indexEvent",
                     NewInstance<ObjectArrayEventBean>(NewArrayByLength(typeof(object), Constant(1)), indexTypeMember))
@@ -117,7 +117,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                     EnumForgeCodegenNames.REF_EPS,
                     Constant(forge.streamNumLambda + 1),
                     @Ref("indexEvent"))
-                .DeclareVar<object[]>("indexProps", ExprDotMethod(@Ref("indexEvent"), "getProperties"))
+                .DeclareVar<object[]>("indexProps", ExprDotName(@Ref("indexEvent"), "Properties"))
                 .DeclareVar<int>("count", Constant(-1));
             CodegenBlock forEach = block.ForEach(typeof(object), "next", EnumForgeCodegenNames.REF_ENUMCOLL)
                 .Increment("count")
@@ -127,7 +127,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                 forEach,
                 forge.innerExpression.EvaluationType,
                 forge.innerExpression.EvaluateCodegen(typeof(bool?), methodNode, scope, codegenClassScope));
-            forEach.Expression(ExprDotMethod(@Ref("result"), "add", @Ref("next")));
+            forEach.Expression(ExprDotMethod(@Ref("result"), "Add", @Ref("next")));
             block.MethodReturn(@Ref("result"));
             return LocalMethod(methodNode, args.Eps, args.Enumcoll, args.IsNewData, args.ExprCtx);
         }

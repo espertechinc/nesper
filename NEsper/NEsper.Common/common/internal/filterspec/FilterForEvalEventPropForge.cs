@@ -60,13 +60,13 @@ namespace com.espertech.esper.common.@internal.filterspec
             CodegenMethodScope parent)
         {
             var method = parent.MakeChild(typeof(object), GetType(), classScope).AddParam(GET_FILTER_VALUE_FP);
-            var get = _exprIdentNodeEvaluator.Getter.EventBeanGetCodegen(Ref("event"), method, classScope);
+            var get = _exprIdentNodeEvaluator.Getter.EventBeanGetCodegen(Ref("@event"), method, classScope);
 
             method.Block
                 .DeclareVar<EventBean>(
-                    "event",
+                    "@event",
                     ExprDotMethod(Ref("matchedEvents"), "getMatchingEventByTag", Constant(_resultEventAsName)))
-                .IfRefNull(Ref("event"))
+                .IfRefNull(Ref("@event"))
                 .BlockThrow(
                     NewInstance<IllegalStateException>(
                         Constant("Matching event named '" + _resultEventAsName + "' not found in event result set")))

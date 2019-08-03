@@ -116,7 +116,7 @@ namespace com.espertech.esper.common.@internal.@event.wrap
                 .AddParam(typeof(EventBean), "theEvent")
                 .Block
                 .DeclareVarWCast(typeof(DecoratingEventBean), "wrapperEvent", "theEvent")
-                .DeclareVar<EventBean>("wrappedEvent", ExprDotMethod(Ref("wrapperEvent"), "getUnderlyingEvent"))
+                .DeclareVar<EventBean>("wrappedEvent", ExprDotName(Ref("wrapperEvent"), "UnderlyingEvent"))
                 .IfRefNullReturnNull("wrappedEvent")
                 .MethodReturn(
                     underlyingGetter.EventBeanGetCodegen(Ref("wrappedEvent"), codegenMethodScope, codegenClassScope));
@@ -130,7 +130,7 @@ namespace com.espertech.esper.common.@internal.@event.wrap
                 .AddParam(typeof(EventBean), "theEvent")
                 .Block
                 .DeclareVarWCast(typeof(DecoratingEventBean), "wrapperEvent", "theEvent")
-                .DeclareVar<EventBean>("wrappedEvent", ExprDotMethod(Ref("wrapperEvent"), "getUnderlyingEvent"))
+                .DeclareVar<EventBean>("wrappedEvent", ExprDotName(Ref("wrapperEvent"), "UnderlyingEvent"))
                 .IfRefNullReturnNull("wrappedEvent")
                 .MethodReturn(
                     underlyingGetter.EventBeanFragmentCodegen(

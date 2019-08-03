@@ -53,7 +53,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
                 this.GetType(),
                 codegenClassScope);
 
-            CodegenExpressionRef isSythesize = selectSymbol.GetAddSynthesize(processMethod);
+            CodegenExpressionRef isSynthesize = selectSymbol.GetAddSynthesize(processMethod);
             CodegenMethod syntheticMethod = syntheticProcessorForge.ProcessCodegen(
                 resultEventType,
                 eventBeanFactory,
@@ -68,12 +68,12 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
             CodegenExpressionField stmtResultSvc = codegenClassScope.AddFieldUnshared(
                 true,
                 typeof(StatementResultService),
-                ExprDotMethod(
+                ExprDotName(
                     EPStatementInitServicesConstants.REF,
-                    EPStatementInitServicesConstants.GETSTATEMENTRESULTSERVICE));
+                    EPStatementInitServicesConstants.STATEMENTRESULTSERVICE));
             processMethod.Block
-                .DeclareVar<bool>("makeNatural", ExprDotMethod(stmtResultSvc, "isMakeNatural"))
-                .DeclareVar<bool>("synthesize", Or(ExprDotMethod(stmtResultSvc, "isMakeSynthetic"), isSythesize))
+                .DeclareVar<bool>("makeNatural", ExprDotName(stmtResultSvc, "IsMakeNatural"))
+                .DeclareVar<bool>("synthesize", Or(ExprDotName(stmtResultSvc, "IsMakeSynthetic"), isSynthesize))
                 .IfCondition(Not(@Ref("makeNatural")))
                 .IfCondition(@Ref("synthesize"))
                 .DeclareVar<EventBean>("synthetic", LocalMethod(syntheticMethod))

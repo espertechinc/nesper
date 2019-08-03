@@ -188,8 +188,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
                 Constant(_orderByWithoutOutputRateLimit));
 
             // unidirectional join
-            method.Block.SetProperty(Ref("saiff"), "UnidirectionalJoin", Constant(_unidirectionalJoin));
-
+            method.Block.SetProperty(Ref("saiff"), "IsUnidirectionalJoin", Constant(_unidirectionalJoin));
             method.Block.MethodReturn(Ref("saiff"));
 
             return method;

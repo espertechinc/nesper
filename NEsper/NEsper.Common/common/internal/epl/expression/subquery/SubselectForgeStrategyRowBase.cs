@@ -111,15 +111,15 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                 method.Block
                     .DeclareVar<object[][]>(
 "rows",
-                        NewArrayByLength(typeof(object[]), ExprDotMethod(symbols.GetAddMatchingEvents(method), "size")))
+                        NewArrayByLength(typeof(object[]), ExprDotMethod(symbols.GetAddMatchingEvents(method), "Size")))
                     .DeclareVar<int>("index", Constant(-1))
                     .ApplyTri(SubselectForgeCodegenUtil.DECLARE_EVENTS_SHIFTED, method, symbols);
                 var foreachEvent = method.Block.ForEach(
-                    typeof(EventBean), "event", symbols.GetAddMatchingEvents(method));
+                    typeof(EventBean), "@event", symbols.GetAddMatchingEvents(method));
                 {
                     foreachEvent
                         .Increment("index")
-                        .AssignArrayElement(REF_EVENTS_SHIFTED, Constant(0), Ref("event"))
+                        .AssignArrayElement(REF_EVENTS_SHIFTED, Constant(0), Ref("@event"))
                         .DeclareVar<object[]>(
 "results",
                             NewArrayByLength(typeof(object), Constant(subselect.SelectClause.Length)))
@@ -143,9 +143,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                     .DeclareVar<ArrayDeque<object[]>>("rows", NewInstance(typeof(ArrayDeque<object[]>)))
                     .ApplyTri(SubselectForgeCodegenUtil.DECLARE_EVENTS_SHIFTED, method, symbols);
                 var foreachEvent = method.Block.ForEach(
-                    typeof(EventBean), "event", symbols.GetAddMatchingEvents(method));
+                    typeof(EventBean), "@event", symbols.GetAddMatchingEvents(method));
                 {
-                    foreachEvent.AssignArrayElement(REF_EVENTS_SHIFTED, Constant(0), Ref("event"));
+                    foreachEvent.AssignArrayElement(REF_EVENTS_SHIFTED, Constant(0), Ref("@event"));
 
                     var filter = CodegenLegoMethodExpression.CodegenExpression(
                         subselect.FilterExpr, method, classScope);
@@ -159,7 +159,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                         .DeclareVar<object[]>(
 "results",
                             NewArrayByLength(typeof(object), Constant(subselect.SelectClause.Length)))
-                        .ExprDotMethod(Ref("rows"), "add", Ref("results"));
+                        .ExprDotMethod(Ref("rows"), "Add", Ref("results"));
                     for (var i = 0; i < subselect.SelectClause.Length; i++) {
                         var eval = CodegenLegoMethodExpression.CodegenExpression(
                             subselect.SelectClause[i].Forge, method, classScope);
@@ -171,7 +171,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                     }
                 }
                 method.Block
-                    .IfCondition(ExprDotMethod(Ref("rows"), "isEmpty"))
+                    .IfCondition(ExprDotMethod(Ref("rows"), "IsEmpty"))
                     .BlockReturn(EnumValue(typeof(CollectionUtil), "OBJECTARRAYARRAY_EMPTY"))
                     .MethodReturn(
                         Cast(

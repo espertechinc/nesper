@@ -43,7 +43,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
             CodegenExpressionRef refEPS = exprSymbol.GetAddEPS(methodNode);
             return ExprDotMethod(
                 eventBeanFactory,
-                "adapterForTypedWrapper",
+                "AdapterForTypedWrapper",
                 ArrayAtIndex(refEPS, Constant(0)),
                 props,
                 resultEventType);

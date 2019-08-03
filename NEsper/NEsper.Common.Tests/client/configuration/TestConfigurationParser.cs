@@ -362,9 +362,9 @@ namespace com.espertech.esper.common.client.configuration
 
             Assert.AreEqual(ThreadingProfile.LARGE, common.Execution.ThreadingProfile);
 
-            Assert.AreEqual(2, common.EventTypeAutoNamePackages.Count);
-            Assert.AreEqual("com.mycompany.eventsone", common.EventTypeAutoNamePackages.ToArray()[0]);
-            Assert.AreEqual("com.mycompany.eventstwo", common.EventTypeAutoNamePackages.ToArray()[1]);
+            Assert.AreEqual(2, common.EventTypeAutoNameNamespaces.Count);
+            Assert.AreEqual("com.mycompany.eventsone", common.EventTypeAutoNameNamespaces.ToArray()[0]);
+            Assert.AreEqual("com.mycompany.eventstwo", common.EventTypeAutoNameNamespaces.ToArray()[1]);
 
             /*
              * COMPILER

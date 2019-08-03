@@ -52,7 +52,7 @@ namespace com.espertech.esper.common.@internal.view.lastevent
 
         internal override string FactoryMethod()
         {
-            return "lastevent";
+            return "Lastevent";
         }
 
         internal override void Assign(

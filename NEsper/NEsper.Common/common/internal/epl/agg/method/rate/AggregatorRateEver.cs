@@ -105,15 +105,15 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.rate
             CodegenMethod method,
             CodegenClassScope classScope)
         {
-            method.Block.ExprDotMethod(points, "clear");
+            method.Block.ExprDotMethod(points, "Clear");
         }
 
         public override void GetValueCodegen(
             CodegenMethod method,
             CodegenClassScope classScope)
         {
-            method.Block.IfCondition(Not(ExprDotMethod(points, "isEmpty")))
-                .DeclareVar<long>("newest", Cast(typeof(long), ExprDotMethod(points, "getLast")))
+            method.Block.IfCondition(Not(ExprDotMethod(points, "IsEmpty")))
+                .DeclareVar<long>("newest", Cast(typeof(long), ExprDotName(points, "Last")))
                 .DeclareVar<bool>(
                     "leave",
                     StaticMethod(
@@ -126,12 +126,12 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.rate
                 .BlockEnd()
                 .IfCondition(Not(hasLeave))
                 .BlockReturn(ConstantNull())
-                .IfCondition(ExprDotMethod(points, "isEmpty"))
+                .IfCondition(ExprDotMethod(points, "IsEmpty"))
                 .BlockReturn(Constant(0d))
                 .MethodReturn(
                     Op(
                         Op(
-                            Op(ExprDotMethod(points, "size"), "*", Constant(factory.TimeAbacus.OneSecond)),
+                            Op(ExprDotMethod(points, "Size"), "*", Constant(factory.TimeAbacus.OneSecond)),
                             "*",
                             Constant(1d)),
                         "/",
@@ -186,8 +186,8 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.rate
             CodegenClassScope classScope)
         {
             CodegenExpression timeProvider = classScope.AddOrGetFieldSharable(TimeProviderField.INSTANCE);
-            method.Block.DeclareVar<long>("timestamp", ExprDotMethod(timeProvider, "getTime"))
-                .ExprDotMethod(points, "add", Ref("timestamp"))
+            method.Block.DeclareVar<long>("timestamp", ExprDotName(timeProvider, "Time"))
+                .ExprDotMethod(points, "Add", Ref("timestamp"))
                 .DeclareVar<bool>(
                     "leave",
                     StaticMethod(

@@ -73,7 +73,7 @@ namespace com.espertech.esper.common.@internal.type
                         convTwo.CoerceBoxedBigIntCodegen(CodegenExpressionBuilder.Ref("d2"), rtype))
                     .IfCondition(
                         CodegenExpressionBuilder.EqualsIdentity(
-                            CodegenExpressionBuilder.ExprDotMethod(CodegenExpressionBuilder.Ref("s2"), "doubleValue"),
+                            CodegenExpressionBuilder.ExprDotMethod(CodegenExpressionBuilder.Ref("s2"), "DoubleValue"),
                             CodegenExpressionBuilder.Constant(0)))
                     .BlockReturn(CodegenExpressionBuilder.ConstantNull())
                     .MethodReturn(

@@ -85,7 +85,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.typable
                             codegenClassScope));
                 }
 
-                singleMethodBlock.MethodReturn(ExprDotMethod(manufacturer, "make", @Ref("row")));
+                singleMethodBlock.MethodReturn(ExprDotMethod(manufacturer, "Make", @Ref("row")));
                 return LocalMethod(singleMethodNode);
             }
 
@@ -109,7 +109,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.typable
             }
 
             block.DeclareVar<EventBean[]>("events", NewArrayByLength(typeof(EventBean), Constant(1)))
-                .AssignArrayElement("events", Constant(0), ExprDotMethod(manufacturer, "make", @Ref("row")))
+                .AssignArrayElement("events", Constant(0), ExprDotMethod(manufacturer, "Make", @Ref("row")))
                 .MethodReturn(@Ref("events"));
             return LocalMethod(methodNode);
         }

@@ -74,8 +74,8 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                 .AddParam(EnumForgeCodegenNames.PARAMS);
 
             var block = methodNode.Block
-                .IfCondition(ExprDotMethod(EnumForgeCodegenNames.REF_ENUMCOLL, "isEmpty"))
-                .BlockReturn(StaticMethod(typeof(Collections), "emptyMap"));
+                .IfCondition(ExprDotMethod(EnumForgeCodegenNames.REF_ENUMCOLL, "IsEmpty"))
+                .BlockReturn(StaticMethod(typeof(Collections), "GetEmptyMap"));
             block.DeclareVar<IDictionary<object, object>>("map", NewInstance(typeof(Dictionary<object, object>)));
             block.ForEach(typeof(EventBean), "next", EnumForgeCodegenNames.REF_ENUMCOLL)
                 .AssignArrayElement(EnumForgeCodegenNames.REF_EPS, Constant(forge.streamNumLambda), Ref("next"))
@@ -85,7 +85,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                 .DeclareVar<object>(
                     "value",
                     forge.secondExpression.EvaluateCodegen(typeof(object), methodNode, scope, codegenClassScope))
-                .Expression(ExprDotMethod(Ref("map"), "put", Ref("key"), Ref("value")));
+                .Expression(ExprDotMethod(Ref("map"), "Put", Ref("key"), Ref("value")));
             block.MethodReturn(Ref("map"));
             return LocalMethod(methodNode, args.Eps, args.Enumcoll, args.IsNewData, args.ExprCtx);
         }

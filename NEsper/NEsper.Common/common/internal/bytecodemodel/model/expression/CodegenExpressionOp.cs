@@ -10,6 +10,8 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
+using com.espertech.esper.common.@internal.bytecodemodel.core;
+
 namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
 {
     public class CodegenExpressionOp : CodegenExpression
@@ -30,12 +32,14 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
 
         public void Render(
             StringBuilder builder,
-            bool isInnerClass)
+            bool isInnerClass,
+            int level,
+            CodegenIndent indent)
         {
             builder.Append("(");
-            _left.Render(builder, isInnerClass);
+            _left.Render(builder, isInnerClass, level, indent);
             builder.Append(_expressionText);
-            _right.Render(builder, isInnerClass);
+            _right.Render(builder, isInnerClass, level, indent);
             builder.Append(")");
         }
 

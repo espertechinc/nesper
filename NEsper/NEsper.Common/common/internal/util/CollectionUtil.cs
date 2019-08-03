@@ -670,7 +670,7 @@ namespace com.espertech.esper.common.@internal.util
                     "dq",
                     NewInstance<ArrayDeque<object>>(ArrayLength(Ref("array"))))
                 .ForLoopIntSimple("i", ArrayLength(Ref("array")))
-                .Expression(ExprDotMethod(Ref("dq"), "add", ArrayAtIndex(Ref("array"), Ref("i"))))
+                .Expression(ExprDotMethod(Ref("dq"), "Add", ArrayAtIndex(Ref("array"), Ref("i"))))
                 .BlockEnd()
                 .MethodReturn(Ref("dq"));
             return LocalMethodBuild(method).Pass(array).Call();

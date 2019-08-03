@@ -21,42 +21,22 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createcontext
     public class StatementAgentInstanceFactoryCreateContext : StatementAgentInstanceFactory,
         StatementReadyCallback
     {
-        private string contextName;
+        public string ContextName { get; set; }
 
-        public EventType StatementEventType { get; private set; }
+        public EventType StatementEventType { get; set; }
 
         public AIRegistryRequirements RegistryRequirements => AIRegistryRequirements.NoRequirements();
-
-        public void SetContextName(string contextName)
-        {
-            this.contextName = contextName;
-        }
-
-        public void SetStatementEventType(EventType statementEventType)
-        {
-            StatementEventType = statementEventType;
-        }
-
-        public void Ready(
-            StatementContext statementContext,
-            ModuleIncidentals moduleIncidentals,
-            bool recovery)
-        {
-            ContextManager contextManager =
-                statementContext.ContextManagementService.GetContextManager(statementContext.DeploymentId, contextName);
-            contextManager.SetStatementContext(statementContext);
-        }
 
         public StatementAgentInstanceFactoryResult NewContext(
             AgentInstanceContext agentInstanceContext,
             bool isRecoveringResilient)
         {
-            ContextManager manager = agentInstanceContext.ContextManagementService.GetContextManager(
+            var manager = agentInstanceContext.ContextManagementService.GetContextManager(
                 agentInstanceContext.DeploymentId,
-                contextName);
+                ContextName);
             agentInstanceContext.EpStatementAgentInstanceHandle.FilterFaultHandler = manager;
 
-            ContextManagerRealization realization = manager.AllocateNewRealization(agentInstanceContext);
+            var realization = manager.AllocateNewRealization(agentInstanceContext);
             return new StatementAgentInstanceFactoryCreateContextResult(
                 new ZeroDepthStreamNoIterate(StatementEventType),
                 AgentInstanceStopCallbackConstants.INSTANCE_NO_ACTION,
@@ -73,13 +53,13 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createcontext
 
         public void StatementCreate(StatementContext statementContext)
         {
-            CopyOnWriteList<ContextStateListener> listeners = statementContext.ContextManagementService.Listeners;
+            var listeners = statementContext.ContextManagementService.Listeners;
             ContextStateEventUtil.DispatchContext(
                 listeners,
                 () => new ContextStateEventContextCreated(
                     statementContext.RuntimeURI,
                     statementContext.DeploymentId,
-                    contextName),
+                    ContextName),
                 (
                     listener,
                     @event) => listener.OnContextCreated(@event));
@@ -87,13 +67,13 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createcontext
 
         public void StatementDestroyPreconditions(StatementContext statementContext)
         {
-            ContextManager manager =
-                statementContext.ContextManagementService.GetContextManager(statementContext.DeploymentId, contextName);
-            int count = manager.CountStatements(stmt => !stmt.DeploymentId.Equals(statementContext.DeploymentId));
+            var manager =
+                statementContext.ContextManagementService.GetContextManager(statementContext.DeploymentId, ContextName);
+            var count = manager.CountStatements(stmt => !stmt.DeploymentId.Equals(statementContext.DeploymentId));
             if (count != 0) {
                 throw new UndeployPreconditionException(
                     "Context by name '" +
-                    contextName +
+                    ContextName +
                     "' is still referenced by statements and may not be undeployed");
             }
         }
@@ -103,7 +83,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createcontext
             statementContext.ContextManagementService.DestroyedContext(
                 statementContext.RuntimeURI,
                 statementContext.DeploymentId,
-                contextName);
+                ContextName);
         }
 
         public StatementAgentInstanceLock ObtainAgentInstanceLock(
@@ -111,6 +91,16 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createcontext
             int agentInstanceId)
         {
             return AgentInstanceUtil.NewLock(statementContext);
+        }
+
+        public void Ready(
+            StatementContext statementContext,
+            ModuleIncidentals moduleIncidentals,
+            bool recovery)
+        {
+            var contextManager =
+                statementContext.ContextManagementService.GetContextManager(statementContext.DeploymentId, ContextName);
+            contextManager.SetStatementContext(statementContext);
         }
     }
 } // end of namespace

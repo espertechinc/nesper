@@ -78,7 +78,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
                             methodNode,
                             exprSymbol,
                             codegenClassScope)))
-                .DeclareVar<object[]>("row", NewArrayByLength(typeof(object), ExprDotMethod(@Ref("map"), "size")));
+                .DeclareVar<object[]>("row", NewArrayByLength(typeof(object), ExprDotMethod(@Ref("map"), "Size")));
             int index = -1;
             foreach (KeyValuePair<string, object> entry in forge.mapResultType) {
                 index++;

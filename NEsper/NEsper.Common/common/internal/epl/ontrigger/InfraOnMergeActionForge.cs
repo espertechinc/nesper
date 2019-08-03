@@ -54,7 +54,7 @@ namespace com.espertech.esper.common.@internal.epl.ontrigger
                 "list",
                 NewInstance<List<InfraOnMergeAction>>(Constant(actions.Count)));
             foreach (var item in actions) {
-                method.Block.ExprDotMethod(Ref("list"), "add", item.Make(method, symbols, classScope));
+                method.Block.ExprDotMethod(Ref("list"), "Add", item.Make(method, symbols, classScope));
             }
 
             method.Block.MethodReturn(Ref("list"));

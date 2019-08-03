@@ -95,7 +95,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                 .AddParam(EnumForgeCodegenNames.PARAMS);
 
             CodegenBlock block = methodNode.Block
-                .IfCondition(ExprDotMethod(EnumForgeCodegenNames.REF_ENUMCOLL, "isEmpty"))
+                .IfCondition(ExprDotMethod(EnumForgeCodegenNames.REF_ENUMCOLL, "IsEmpty"))
                 .BlockReturn(EnumForgeCodegenNames.REF_ENUMCOLL);
             block.DeclareVar<ArrayDeque<object>>("result", NewInstance(typeof(ArrayDeque<object>)))
                 .DeclareVar<ObjectArrayEventBean>(
@@ -105,7 +105,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                     EnumForgeCodegenNames.REF_EPS,
                     Constant(forge.streamNumLambda + 1),
                     @Ref("indexEvent"))
-                .DeclareVar<object[]>("props", ExprDotMethod(@Ref("indexEvent"), "getProperties"))
+                .DeclareVar<object[]>("props", ExprDotName(@Ref("indexEvent"), "Properties"))
                 .DeclareVar<int>("count", Constant(-1));
             CodegenBlock forEach = block.ForEach(typeof(EventBean), "next", EnumForgeCodegenNames.REF_ENUMCOLL)
                 .Increment("count")
@@ -115,7 +115,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                 forEach,
                 forge.innerExpression.EvaluationType,
                 forge.innerExpression.EvaluateCodegen(typeof(bool?), methodNode, scope, codegenClassScope));
-            forEach.Expression(ExprDotMethod(@Ref("result"), "add", @Ref("next")));
+            forEach.Expression(ExprDotMethod(@Ref("result"), "Add", @Ref("next")));
             block.MethodReturn(@Ref("result"));
             return LocalMethod(methodNode, args.Eps, args.Enumcoll, args.IsNewData, args.ExprCtx);
         }

@@ -68,9 +68,9 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.typable
                         codegenClassScope))
                 .DeclareVarNoInit(typeof(IDictionary<object, object>), "map")
                 .IfRefNull("values")
-                .AssignRef("values", StaticMethod(typeof(Collections), "emptyMap"))
+                .AssignRef("values", StaticMethod(typeof(Collections), "GetEmptyMap"))
                 .BlockEnd()
-                .MethodReturn(ExprDotMethod(beanFactory, "adapterForTypedMap", @Ref("values"), mapType));
+                .MethodReturn(ExprDotMethod(beanFactory, "AdapterForTypedMap", @Ref("values"), mapType));
             return LocalMethod(methodNode);
         }
     }

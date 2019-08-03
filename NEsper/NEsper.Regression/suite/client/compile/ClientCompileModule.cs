@@ -321,7 +321,7 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
             {
                 var module = MakeModule(
                     "com.testit",
-                    "@Name('A') select SupportStaticMethodLib.plusOne(IntPrimitive) as val from SupportBean");
+                    "@Name('A') select SupportStaticMethodLib.PlusOne(IntPrimitive) as val from SupportBean");
                 module.Imports.Add(new ImportNamespace(typeof(SupportStaticMethodLib)));
 
                 var compiled = CompileModule(env, module);

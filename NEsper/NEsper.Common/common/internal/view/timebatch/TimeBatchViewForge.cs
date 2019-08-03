@@ -119,7 +119,7 @@ namespace com.espertech.esper.common.@internal.view.timebatch
 
         internal override string FactoryMethod()
         {
-            return "timebatch";
+            return "Timebatch";
         }
 
         internal override void Assign(

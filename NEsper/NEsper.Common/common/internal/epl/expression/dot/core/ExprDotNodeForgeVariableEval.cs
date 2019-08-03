@@ -54,7 +54,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
             }
 
             CodegenBlock block = methodNode.Block
-                .DeclareVar(variableType, "result", Cast(variableType, ExprDotMethod(variableReader, "getValue")))
+                .DeclareVar(variableType, "result", Cast(variableType, ExprDotName(variableReader, "Value")))
                 .Apply(
                     InstrumentationCode.Instblock(
                         classScope,

@@ -38,4 +38,15 @@ namespace com.espertech.esper.common.@internal.context.controller.core
 
         ContextPartitionIdentifier GetContextPartitionIdentifier(object partitionKey);
     }
+
+    public static class ContextControllerFactoryExtensions
+    {
+        public static ContextControllerFactory WithFactoryEnv(
+            this ContextControllerFactory factory,
+            ContextControllerFactoryEnv contextControllerFactoryEnv)
+        {
+            factory.FactoryEnv = contextControllerFactoryEnv;
+            return factory;
+        }
+    }
 } // end of namespace

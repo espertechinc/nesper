@@ -136,25 +136,25 @@ namespace com.espertech.esper.common.@internal.context.module
 
     public class EPStatementInitServicesConstants
     {
-        public const string GETAGGREGATIONSERVICEFACTORYSERVICE = "getAggregationServiceFactoryService";
-        public const string GETCONTEXTSERVICEFACTORY = "getContextServiceFactory";
-        public const string GETDATAINPUTOUTPUTSERDEPROVIDER = "getDataInputOutputSerdeProvider";
-        public const string GETCLASSPATHIMPORTSERVICERUNTIME = "getClasspathImportServiceRuntime";
-        public const string GETRUNTIMESETTINGSSERVICE = "getRuntimeSettingsService";
-        public const string GETEVENTBEANTYPEDEVENTFACTORY = "getEventBeanTypedEventFactory";
-        public const string GETEVENTTABLEINDEXSERVICE = "getEventTableIndexService";
+        public const string AGGREGATIONSERVICEFACTORYSERVICE = "AggregationServiceFactoryService";
+        public const string CONTEXTSERVICEFACTORY = "ContextServiceFactory";
+        public const string DATAINPUTOUTPUTSERDEPROVIDER = "DataInputOutputSerdeProvider";
+        public const string IMPORTSERVICERUNTIME = "ImportServiceRuntime";
+        public const string RUNTIMESETTINGSSERVICE = "RuntimeSettingsService";
+        public const string EVENTBEANTYPEDEVENTFACTORY = "EventBeanTypedEventFactory";
+        public const string EVENTTABLEINDEXSERVICE = "EventTableIndexService";
         public const string EVENTTYPERESOLVER = "EventTypeResolver";
-        public const string GETFILTERSHAREDBOOLEXPRREGISTERY = "getFilterSharedBoolExprRegistery";
-        public const string GETFILTERSHAREDLOOKUPABLEREGISTERY = "getFilterSharedLookupableRegistery";
-        public const string GETFILTERSPECACTIVATABLEREGISTRY = "getFilterSpecActivatableRegistry";
-        public const string GETFILTERBOOLEANEXPRESSIONFACTORY = "getFilterBooleanExpressionFactory";
-        public const string GETINTERNALEVENTROUTEDEST = "getInternalEventRouteDest";
-        public const string GETPATTERNFACTORYSERVICE = "getPatternFactoryService";
-        public const string GETRESULTSETPROCESSORHELPERFACTORY = "getResultSetProcessorHelperFactory";
-        public const string GETSTATEMENTRESULTSERVICE = "getStatementResultService";
-        public const string GETTIMEPROVIDER = "getTimeProvider";
-        public const string GETVIEWFACTORYSERVICE = "getViewFactoryService";
-        public const string GETVIEWABLEACTIVATORFACTORY = "getViewableActivatorFactory";
+        public const string FILTERSHAREDBOOLEXPRREGISTERY = "FilterSharedBoolExprRegistery";
+        public const string FILTERSHAREDLOOKUPABLEREGISTERY = "FilterSharedLookupableRegistery";
+        public const string FILTERSPECACTIVATABLEREGISTRY = "FilterSpecActivatableRegistry";
+        public const string FILTERBOOLEANEXPRESSIONFACTORY = "FilterBooleanExpressionFactory";
+        public const string INTERNALEVENTROUTEDEST = "InternalEventRouteDest";
+        public const string PATTERNFACTORYSERVICE = "PatternFactoryService";
+        public const string RESULTSETPROCESSORHELPERFACTORY = "ResultSetProcessorHelperFactory";
+        public const string STATEMENTRESULTSERVICE = "StatementResultService";
+        public const string TIMEPROVIDER = "TimeProvider";
+        public const string VIEWFACTORYSERVICE = "ViewFactoryService";
+        public const string VIEWABLEACTIVATORFACTORY = "ViewableActivatorFactory";
         public static readonly CodegenExpressionRef REF = Ref("stmtInitSvc");
     }
 } // end of namespace

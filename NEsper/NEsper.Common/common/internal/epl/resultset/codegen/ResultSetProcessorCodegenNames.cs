@@ -6,11 +6,7 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
-
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
@@ -36,34 +32,34 @@ namespace com.espertech.esper.common.@internal.epl.resultset.codegen
         public const string NAME_HAVINGEVALUATOR_ARRAYNONMEMBER = "havingEvaluatorArray";
         public const string NAME_HAVINGEVALUATOR_ARRAY_MEMBER = "o." + NAME_HAVINGEVALUATOR_ARRAYNONMEMBER;
 
-        public readonly static CodegenExpressionRef REF_AGENTINSTANCECONTEXT =
+        public static readonly CodegenExpressionRef REF_AGENTINSTANCECONTEXT =
             new CodegenExpressionRef(NAME_AGENTINSTANCECONTEXT);
 
-        public readonly static CodegenExpressionRef REF_SELECTEXPRPROCESSOR =
+        public static readonly CodegenExpressionRef REF_SELECTEXPRPROCESSOR =
             new CodegenExpressionRef(NAME_SELECTEXPRPROCESSOR_MEMBER);
 
-        public readonly static CodegenExpressionRef REF_SELECTEXPRPROCESSOR_ARRAY =
+        public static readonly CodegenExpressionRef REF_SELECTEXPRPROCESSOR_ARRAY =
             new CodegenExpressionRef(NAME_SELECTEXPRPROCESSOR_ARRAY);
 
-        public readonly static CodegenExpressionRef REF_HAVINGEVALUATOR_ARRAY =
+        public static readonly CodegenExpressionRef REF_HAVINGEVALUATOR_ARRAY =
             new CodegenExpressionRef(NAME_HAVINGEVALUATOR_ARRAY_MEMBER);
 
-        public readonly static CodegenExpressionRef REF_SELECTEXPRNONMEMBER =
+        public static readonly CodegenExpressionRef REF_SELECTEXPRNONMEMBER =
             new CodegenExpressionRef(NAME_SELECTEXPRPROCESSOR);
 
-        public readonly static CodegenExpressionRef REF_AGGREGATIONSVC = new CodegenExpressionRef(NAME_AGGREGATIONSVC);
+        public static readonly CodegenExpressionRef REF_AGGREGATIONSVC = new CodegenExpressionRef(NAME_AGGREGATIONSVC);
 
-        public readonly static CodegenExpressionRef REF_ORDERBYPROCESSOR =
+        public static readonly CodegenExpressionRef REF_ORDERBYPROCESSOR =
             new CodegenExpressionRef(NAME_ORDERBYPROCESSOR);
 
-        public readonly static CodegenExpressionRef REF_NEWDATA = @Ref(NAME_NEWDATA);
-        public readonly static CodegenExpressionRef REF_OLDDATA = @Ref(NAME_OLDDATA);
-        public readonly static CodegenExpressionRef REF_ISSYNTHESIZE = @Ref(NAME_ISSYNTHESIZE);
-        public readonly static CodegenExpressionRef REF_ISNEWDATA = @Ref(NAME_ISNEWDATA);
-        public readonly static CodegenExpressionRef REF_JOINSET = @Ref(NAME_JOINSET);
-        public readonly static CodegenExpressionRef REF_VIEWABLE = @Ref(NAME_VIEWABLE);
-        public readonly static CodegenExpressionRef REF_VIEWEVENTSLIST = @Ref(NAME_VIEWEVENTSLIST);
-        public readonly static CodegenExpressionRef REF_JOINEVENTSSET = @Ref(NAME_JOINEVENTSSET);
-        public readonly static CodegenExpressionRef REF_RESULTSETVISITOR = @Ref(NAME_RESULTSETVISITOR);
+        public static readonly CodegenExpressionRef REF_NEWDATA = @Ref(NAME_NEWDATA);
+        public static readonly CodegenExpressionRef REF_OLDDATA = @Ref(NAME_OLDDATA);
+        public static readonly CodegenExpressionRef REF_ISSYNTHESIZE = @Ref(NAME_ISSYNTHESIZE);
+        public static readonly CodegenExpressionRef REF_ISNEWDATA = @Ref(NAME_ISNEWDATA);
+        public static readonly CodegenExpressionRef REF_JOINSET = @Ref(NAME_JOINSET);
+        public static readonly CodegenExpressionRef REF_VIEWABLE = @Ref(NAME_VIEWABLE);
+        public static readonly CodegenExpressionRef REF_VIEWEVENTSLIST = @Ref(NAME_VIEWEVENTSLIST);
+        public static readonly CodegenExpressionRef REF_JOINEVENTSSET = @Ref(NAME_JOINEVENTSSET);
+        public static readonly CodegenExpressionRef REF_RESULTSETVISITOR = @Ref(NAME_RESULTSETVISITOR);
     }
 } // end of namespace

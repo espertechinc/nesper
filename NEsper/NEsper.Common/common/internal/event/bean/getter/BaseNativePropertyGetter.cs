@@ -300,26 +300,26 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
                 .Block
                 .DeclareVar(
                     BeanPropType,
-                    "object",
+                    "@object",
                     UnderlyingGetCodegen(Ref("underlying"), codegenMethodScope, codegenClassScope))
-                .IfRefNullReturnNull("object");
+                .IfRefNullReturnNull("@object");
 
             if (_isArray) {
                 return block.MethodReturn(
                     StaticMethod(
                         typeof(BaseNativePropertyGetter),
                         "ToFragmentArray",
-                        Cast(typeof(object[]), Ref("object")),
+                        Cast(typeof(object[]), Ref("@object")),
                         mtype,
                         msvc));
             }
 
             if (_isIterable) {
                 return block.MethodReturn(
-                    StaticMethod(typeof(BaseNativePropertyGetter), "ToFragmentIterable", Ref("object"), mtype, msvc));
+                    StaticMethod(typeof(BaseNativePropertyGetter), "ToFragmentIterable", Ref("@object"), mtype, msvc));
             }
 
-            return block.MethodReturn(ExprDotMethod(msvc, "AdapterForTypedObject", Ref("object"), mtype));
+            return block.MethodReturn(ExprDotMethod(msvc, "AdapterForTypedObject", Ref("@object"), mtype));
         }
 
         private void DetermineFragmentable()

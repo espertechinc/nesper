@@ -110,7 +110,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                     "resultEvent",
                     NewInstance<ObjectArrayEventBean>(NewArrayByLength(typeof(object), Constant(1)), resultTypeMember))
                 .AssignArrayElement(EnumForgeCodegenNames.REF_EPS, Constant(forge.streamNumLambda), @Ref("resultEvent"))
-                .DeclareVar<object[]>("props", ExprDotMethod(@Ref("resultEvent"), "getProperties"));
+                .DeclareVar<object[]>("props", ExprDotName(@Ref("resultEvent"), "Properties"));
 
             block.ForEach(typeof(object), "next", EnumForgeCodegenNames.REF_ENUMCOLL)
                 .AssignArrayElement("props", Constant(0), @Ref("next"))
@@ -120,15 +120,15 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                     forge.innerExpression.EvaluateCodegen(innerBoxedType, methodNode, scope, codegenClassScope))
                 .DeclareVar<object>("entry", ExprDotMethod(@Ref("sort"), "get", @Ref("value")))
                 .IfCondition(EqualsNull(@Ref("entry")))
-                .Expression(ExprDotMethod(@Ref("sort"), "put", @Ref("value"), @Ref("next")))
+                .Expression(ExprDotMethod(@Ref("sort"), "Put", @Ref("value"), @Ref("next")))
                 .BlockContinue()
                 .IfCondition(InstanceOf(@Ref("entry"), typeof(ICollection<object>)))
-                .ExprDotMethod(Cast(typeof(ICollection<object>), @Ref("entry")), "add", @Ref("next"))
+                .ExprDotMethod(Cast(typeof(ICollection<object>), @Ref("entry")), "Add", @Ref("next"))
                 .BlockContinue()
                 .DeclareVar<Deque<object>>("coll", NewInstance<ArrayDeque<object>>(Constant(2)))
-                .ExprDotMethod(@Ref("coll"), "add", @Ref("entry"))
-                .ExprDotMethod(@Ref("coll"), "add", @Ref("next"))
-                .ExprDotMethod(@Ref("sort"), "put", @Ref("value"), @Ref("coll"))
+                .ExprDotMethod(@Ref("coll"), "Add", @Ref("entry"))
+                .ExprDotMethod(@Ref("coll"), "Add", @Ref("next"))
+                .ExprDotMethod(@Ref("sort"), "Put", @Ref("value"), @Ref("coll"))
                 .AssignRef("hasColl", ConstantTrue())
                 .BlockEnd();
             block.MethodReturn(

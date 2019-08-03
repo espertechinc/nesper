@@ -187,7 +187,7 @@ namespace NEsper.Avro.Getter
                 .MethodReturn(
                     CodegenExpressionBuilder.ExprDotMethod(
                         factory,
-                        "adapterForTypedAvro",
+                        "AdapterForTypedAvro",
                         CodegenExpressionBuilder.Ref("value"),
                         eventType));
         }

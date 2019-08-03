@@ -97,7 +97,9 @@ namespace com.espertech.esper.common.client.module
                 usesSet.AddAll(proposedModule.Uses);
             }
 
-            IDictionary<string, SortedSet<int>> proposedModuleNames = new Dictionary<string, SortedSet<int>>();
+            IDictionary<string, SortedSet<int>> proposedModuleNames = new Dictionary<string, SortedSet<int>>()
+                .WithNullKeySupport();
+
             int count = 0;
             foreach (Module proposedModule in proposedModules) {
                 SortedSet<int> moduleNumbers = proposedModuleNames.Get(proposedModule.Name);

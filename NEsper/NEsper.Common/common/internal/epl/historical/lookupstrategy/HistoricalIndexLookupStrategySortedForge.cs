@@ -52,7 +52,7 @@ namespace com.espertech.esper.common.@internal.epl.historical.lookupstrategy
                     NewInstance(typeof(HistoricalIndexLookupStrategySorted)))
                 .SetProperty(Ref("strat"), "LookupStream", Constant(lookupStream))
                 .SetProperty(Ref("strat"), "EvalRange", range.Make(coercionType, method, symbols, classScope))
-                .ExprDotMethod(Ref("strat"), "init")
+                .ExprDotMethod(Ref("strat"), "Init")
                 .MethodReturn(Ref("strat"));
             return LocalMethod(method);
         }

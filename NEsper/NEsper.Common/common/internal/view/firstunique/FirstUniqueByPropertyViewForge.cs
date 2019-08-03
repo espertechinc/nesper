@@ -77,7 +77,7 @@ namespace com.espertech.esper.common.@internal.view.firstunique
 
         internal override string FactoryMethod()
         {
-            return "firstunique";
+            return "Firstunique";
         }
 
         internal override void Assign(

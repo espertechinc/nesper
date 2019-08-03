@@ -28,7 +28,26 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
     public class ReflectionPropMethodGetter : BaseNativePropertyGetter,
         BeanEventPropertyGetter
     {
+        private readonly Type _propertyType;
+        private readonly PropertyInfo _property;
         private readonly MethodInfo _method;
+        private readonly Type _targetType;
+
+        public ReflectionPropMethodGetter(
+            PropertyInfo property,
+            EventBeanTypedEventFactory eventBeanTypedEventFactory,
+            BeanEventTypeFactory beanEventTypeFactory)
+            : base(
+                eventBeanTypedEventFactory,
+                beanEventTypeFactory,
+                property.PropertyType,
+                TypeHelper.GetGenericReturnType(property, false))
+        {
+            _property = property;
+            _method = property.GetMethod;
+            _propertyType = property.PropertyType;
+            _targetType = property.DeclaringType;
+        }
 
         public ReflectionPropMethodGetter(
             MethodInfo method,
@@ -40,7 +59,10 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
                 method.ReturnType,
                 TypeHelper.GetGenericReturnType(method, false))
         {
+            _property = null;
             _method = method;
+            _propertyType = method.ReturnType;
+            _targetType = method.DeclaringType;
         }
 
         public object GetBeanProp(object @object)
@@ -75,9 +97,9 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
             return true; // Property exists as the property is not dynamic (unchecked)
         }
 
-        public override Type BeanPropType => _method.ReturnType;
+        public override Type BeanPropType => _propertyType;
 
-        public override Type TargetType => _method.DeclaringType;
+        public override Type TargetType => _targetType;
 
         public override CodegenExpression EventBeanGetCodegen(
             CodegenExpression beanExpression,
@@ -103,6 +125,9 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
+            if (_property != null) {
+                return ExprDotName(underlyingExpression, _property.Name);
+            }
             return ExprDotMethod(underlyingExpression, _method.Name);
         }
 
@@ -116,9 +141,12 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
 
         public override string ToString()
         {
-            return "ReflectionPropMethodGetter " +
-                   "method=" +
-                   _method.ToString();
+            return string.Format(
+                "{0}: {1}, {2}: {3}, {4}: {5}, {6}: {7}",
+                nameof(_propertyType), _propertyType,
+                nameof(_property), _property,
+                nameof(_method), _method,
+                nameof(_targetType), _targetType);
         }
     }
 } // end of namespace

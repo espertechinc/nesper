@@ -79,7 +79,7 @@ namespace com.espertech.esper.common.@internal.view.derived
 
         internal override string FactoryMethod()
         {
-            return "correlation";
+            return "Correlation";
         }
 
         internal override void Assign(

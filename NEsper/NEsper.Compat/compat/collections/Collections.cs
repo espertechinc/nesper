@@ -115,7 +115,12 @@ namespace com.espertech.esper.compat.collections
             {
                 item
             };
-        } 
+        }
+
+        public static IDictionary<string, object> GetEmptyDataMap()
+        {
+            return EmptyDataMap;
+        }
 
         /// <summary>
         /// Returns an empty IDictionary for type K,V

@@ -49,12 +49,12 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createtable
         }
 
         public StmtForgeMethodResult Make(
-            string packageName,
+            string @namespace,
             string classPostfix,
             StatementCompileTimeServices services)
         {
             try {
-                return Build(packageName, classPostfix, services);
+                return Build(@namespace, classPostfix, services);
             }
             catch (ExprValidationException ex) {
                 throw;
@@ -70,7 +70,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createtable
         }
 
         private StmtForgeMethodResult Build(
-            string packageName,
+            string @namespace,
             string classPostfix,
             StatementCompileTimeServices services)
         {
@@ -141,7 +141,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createtable
             // build forge list
             IList<StmtClassForgable> forgables = new List<StmtClassForgable>(2);
             var packageScope = new CodegenNamespaceScope(
-                packageName,
+                @namespace,
                 statementFieldsClassName,
                 services.IsInstrumented);
 
@@ -317,7 +317,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createtable
                     Type clazz = TypeHelper.GetTypeForSimpleName(
                         propname,
                         classpathImportService.ClassForNameProvider);
-                    if (propname.ToLowerInvariant().Trim().Equals("object")) {
+                    if (propname.ToLowerInvariant().Trim().Equals("@object")) {
                         clazz = typeof(object);
                     }
 

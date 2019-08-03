@@ -48,7 +48,7 @@ namespace com.espertech.esper.common.@internal.view.firstevent
 
         internal override string FactoryMethod()
         {
-            return "firstevent";
+            return "Firstevent";
         }
 
         internal override void Assign(

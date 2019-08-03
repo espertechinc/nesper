@@ -17,13 +17,15 @@ using com.espertech.esper.compat;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.compiler.@internal.parse;
 
-using static com.espertech.esper.common.@internal.epl.historical.database.core.HistoricalEventViewableDatabaseForgeFactory;
+using static com.espertech.esper.common.@internal.epl.historical.database.core.
+    HistoricalEventViewableDatabaseForgeFactory;
 
 namespace com.espertech.esper.compiler.@internal.util
 {
     public class SQLLexer
     {
-        private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILog Log =
+            LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
         /// <summary>
         /// Lexes the sample SQL and inserts a "where 1=0" where-clause.
@@ -46,59 +48,54 @@ namespace com.espertech.esper.compiler.@internal.util
             tokens.Fill();
             var tokenList = tokens.GetTokens();
 
-            for (var i = 0; i < tokenList.Count; i++)
-            {
+            for (var i = 0; i < tokenList.Count; i++) {
                 var token = tokenList[i];
-                if ((token == null) || token.Text == null)
-                {
+                if ((token == null) || token.Text == null) {
                     break;
                 }
+
                 var text = token.Text.ToLowerInvariant().Trim();
-                if (text.Equals("where"))
-                {
+                if (text.Equals("where")) {
                     whereIndex = token.Column + 1;
                 }
-                if (text.Equals("group"))
-                {
+
+                if (text.Equals("group")) {
                     groupbyIndex = token.Column + 1;
                 }
-                if (text.Equals("having"))
-                {
+
+                if (text.Equals("having")) {
                     havingIndex = token.Column + 1;
                 }
-                if (text.Equals("order"))
-                {
+
+                if (text.Equals("order")) {
                     orderByIndex = token.Column + 1;
                 }
-                if (text.Equals("union"))
-                {
+
+                if (text.Equals("union")) {
                     unionIndexes.Add(token.Column + 1);
                 }
             }
 
             // If we have a union, break string into subselects and process each
-            if (unionIndexes.Count != 0)
-            {
+            if (unionIndexes.Count != 0) {
                 var changedSQL = new StringWriter();
                 var lastIndex = 0;
-                for (var i = 0; i < unionIndexes.Count; i++)
-                {
+                for (var i = 0; i < unionIndexes.Count; i++) {
                     var index = unionIndexes[i];
                     string fragmentX;
-                    if (i > 0)
-                    {
+                    if (i > 0) {
                         fragmentX = querySQL.Substring(lastIndex + 5, index - 1);
                     }
-                    else
-                    {
+                    else {
                         fragmentX = querySQL.Substring(lastIndex, index - 1);
                     }
+
                     var lexedFragmentX = LexSampleSQL(fragmentX);
 
-                    if (i > 0)
-                    {
+                    if (i > 0) {
                         changedSQL.Write("union ");
                     }
+
                     changedSQL.Write(lexedFragmentX);
                     lastIndex = index - 1;
                 }
@@ -113,8 +110,7 @@ namespace com.espertech.esper.compiler.@internal.util
             }
 
             // Found a where clause, simplest cases
-            if (whereIndex != -1)
-            {
+            if (whereIndex != -1) {
                 var changedSQL = new StringWriter();
                 var prefix = querySQL.Substring(0, whereIndex + 5);
                 var suffix = querySQL.Substring(whereIndex + 5, querySQL.Length);
@@ -126,28 +122,23 @@ namespace com.espertech.esper.compiler.@internal.util
 
             // No where clause, find group-by
             int insertIndex;
-            if (groupbyIndex != -1)
-            {
+            if (groupbyIndex != -1) {
                 insertIndex = groupbyIndex;
             }
-            else if (havingIndex != -1)
-            {
+            else if (havingIndex != -1) {
                 insertIndex = havingIndex;
             }
-            else if (orderByIndex != -1)
-            {
+            else if (orderByIndex != -1) {
                 insertIndex = orderByIndex;
             }
-            else
-            {
+            else {
                 var changedSQL = new StringWriter();
                 changedSQL.Write(querySQL);
                 changedSQL.Write(" where 1=0 ");
                 return changedSQL.ToString();
             }
 
-            try
-            {
+            try {
                 var changedSQL = new StringWriter();
                 var prefix = querySQL.Substring(0, insertIndex - 1);
                 changedSQL.Write(prefix);
@@ -156,9 +147,11 @@ namespace com.espertech.esper.compiler.@internal.util
                 changedSQL.Write(suffix);
                 return changedSQL.ToString();
             }
-            catch (Exception ex)
-            {
-                var text = "Error constructing sample SQL to retrieve metadata for ADO-drivers that don't support metadata, consider using the " + SAMPLE_WHERECLAUSE_PLACEHOLDER + " placeholder or providing a sample SQL";
+            catch (Exception ex) {
+                var text =
+                    "Error constructing sample SQL to retrieve metadata for ADO-drivers that don't support metadata, consider using the " +
+                    SAMPLE_WHERECLAUSE_PLACEHOLDER +
+                    " placeholder or providing a sample SQL";
                 Log.Error(text, ex);
                 throw new ExprValidationException(text, ex);
             }

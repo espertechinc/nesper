@@ -61,7 +61,7 @@ namespace com.espertech.esper.common.@internal.epl.pattern.core
 
             method.Block
                 .DeclareVar<EventBean[]>("events", NewArrayByLength(typeof(EventBean), Constant(size)))
-                .DeclareVar<object[]>("buf", ExprDotMethod(Ref("mem"), "getMatchingEvents"));
+                .DeclareVar<object[]>("buf", ExprDotName(Ref("mem"), "MatchingEvents"));
 
             var count = 0;
             foreach (var entry in filterTypes) {

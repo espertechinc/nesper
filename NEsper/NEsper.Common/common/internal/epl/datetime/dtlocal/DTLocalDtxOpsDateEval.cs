@@ -65,9 +65,9 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
             CodegenExpression timeZoneField = codegenClassScope.AddOrGetFieldSharable(RuntimeSettingsTimeZoneField.INSTANCE);
             var block = methodNode.Block
                 .DeclareVar<DateTimeEx>("dtx", StaticMethod(typeof(DateTimeEx), "getInstance", timeZoneField))
-                .Expression(SetProperty(Ref("dtx"), "TimeInMillis", ExprDotMethod(Ref("target"), "getTime")));
+                .Expression(SetProperty(Ref("dtx"), "TimeInMillis", ExprDotName(Ref("target"), "Time")));
             EvaluateCalOpsCalendarCodegen(block, forge.calendarForges, Ref("dtx"), methodNode, exprSymbol, codegenClassScope);
-            block.MethodReturn(ExprDotMethod(Ref("dtx"), "getTime"));
+            block.MethodReturn(ExprDotName(Ref("dtx"), "Time"));
             return LocalMethod(methodNode, inner);
         }
     }

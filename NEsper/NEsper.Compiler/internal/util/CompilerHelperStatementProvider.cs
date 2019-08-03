@@ -63,7 +63,7 @@ namespace com.espertech.esper.compiler.@internal.util
             string optionalModuleName,
             string moduleIdentPostfix,
             int statementNumber,
-            string packageName,
+            string @namespace,
             ISet<string> statementNames,
             StatementCompileTimeServices compileTimeServices,
             CompilerOptions compilerOptions,
@@ -72,19 +72,19 @@ namespace com.espertech.esper.compiler.@internal.util
             // Stage 1 - parse statement
             var raw = ParseWalk(compilable, compileTimeServices);
 
-            try
-            {
+            try {
                 // Stage 2(a) - precompile: compile annotations
-                var annotations = AnnotationUtil.CompileAnnotations(raw.Annotations, compileTimeServices.ImportServiceCompileTime, compilable);
+                var annotations = AnnotationUtil.CompileAnnotations(
+                    raw.Annotations,
+                    compileTimeServices.ImportServiceCompileTime,
+                    compilable);
 
                 // Stage 2(b) - walk subselects, alias expressions, declared expressions, dot-expressions
                 ExprNodeSubselectDeclaredDotVisitor visitor;
-                try
-                {
+                try {
                     visitor = StatementSpecRawWalkerSubselectAndDeclaredDot.WalkSubselectAndDeclaredDotExpr(raw);
                 }
-                catch (ExprValidationException ex)
-                {
+                catch (ExprValidationException ex) {
                     throw new StatementSpecCompileException(ex.Message, compilable.ToEPL());
                 }
 
@@ -92,28 +92,24 @@ namespace com.espertech.esper.compiler.@internal.util
 
                 // Determine a statement name
                 var statementNameProvided = GetNameFromAnnotation(annotations);
-                if (compilerOptions.StatementName != null)
-                {
+                if (compilerOptions.StatementName != null) {
                     var assignedName = compilerOptions.StatementName.Invoke(
                         new StatementNameContext(
                             () => compilable.ToEPL(),
-                            statementNameProvided, 
-                            optionalModuleName, 
-                            annotations, 
+                            statementNameProvided,
+                            optionalModuleName,
+                            annotations,
                             statementNumber));
-                    if (assignedName != null)
-                    {
+                    if (assignedName != null) {
                         statementNameProvided = assignedName;
                     }
                 }
 
                 var statementName = statementNameProvided ?? Convert.ToString(statementNumber);
-                if (statementNames.Contains(statementName))
-                {
+                if (statementNames.Contains(statementName)) {
                     var count = 1;
                     var newStatementName = statementName + "-" + count;
-                    while (statementNames.Contains(newStatementName))
-                    {
+                    while (statementNames.Contains(newStatementName)) {
                         count++;
                         newStatementName = statementName + "-" + count;
                     }
@@ -130,112 +126,128 @@ namespace com.espertech.esper.compiler.@internal.util
 
                 // compile scripts once in this central place, may also compile later in expression
                 ScriptValidationPrecompileUtil.ValidateScripts(
-                    raw.ScriptExpressions, raw.ExpressionDeclDesc, compileTimeServices);
+                    raw.ScriptExpressions,
+                    raw.ExpressionDeclDesc,
+                    compileTimeServices);
 
                 // Determine subselects for compilation, and lambda-expression shortcut syntax for named windows
-                if (!visitor.ChainedExpressionsDot.IsEmpty())
-                {
-                    RewriteNamedWindowSubselect(visitor.ChainedExpressionsDot, subselectNodes, compileTimeServices.NamedWindowCompileTimeResolver);
+                if (!visitor.ChainedExpressionsDot.IsEmpty()) {
+                    RewriteNamedWindowSubselect(
+                        visitor.ChainedExpressionsDot,
+                        subselectNodes,
+                        compileTimeServices.NamedWindowCompileTimeResolver);
                 }
 
                 // Stage 2(c) compile context descriptor
                 ContextCompileTimeDescriptor contextDescriptor = null;
                 var optionalContextName = raw.OptionalContextName;
-                if (optionalContextName != null)
-                {
+                if (optionalContextName != null) {
                     var detail = compileTimeServices.ContextCompileTimeResolver.GetContextInfo(optionalContextName);
-                    if (detail == null)
-                    {
+                    if (detail == null) {
                         throw new StatementSpecCompileException(
-                            "Context by name '" + optionalContextName + "' could not be found", compilable.ToEPL());
+                            "Context by name '" + optionalContextName + "' could not be found",
+                            compilable.ToEPL());
                     }
 
                     contextDescriptor = new ContextCompileTimeDescriptor(
-                        optionalContextName, detail.ContextModuleName, detail.ContextVisibility, new ContextPropertyRegistry(detail),
+                        optionalContextName,
+                        detail.ContextModuleName,
+                        detail.ContextVisibility,
+                        new ContextPropertyRegistry(detail),
                         detail.ValidationInfos);
                 }
 
                 // Stage 2(d) compile raw statement spec
                 var statementType = StatementTypeUtil.GetStatementType(raw).Value;
                 var statementRawInfo = new StatementRawInfo(
-                    statementNumber, statementName, annotations, statementType, contextDescriptor,
-                    raw.IntoTableSpec == null ? null : raw.IntoTableSpec.Name, compilable, optionalModuleName);
+                    statementNumber,
+                    statementName,
+                    annotations,
+                    statementType,
+                    contextDescriptor,
+                    raw.IntoTableSpec == null ? null : raw.IntoTableSpec.Name,
+                    compilable,
+                    optionalModuleName);
                 var specCompiled = StatementRawCompiler.Compile(
-                    raw, compilable, false, false, annotations, subselectNodes, tableAccessNodes, statementRawInfo, compileTimeServices);
+                    raw,
+                    compilable,
+                    false,
+                    false,
+                    annotations,
+                    subselectNodes,
+                    tableAccessNodes,
+                    statementRawInfo,
+                    compileTimeServices);
                 var statementIdentPostfix = IdentifierUtil.GetIdentifierMayStartNumeric(statementName);
 
                 // get compile-time user object
                 object userObjectCompileTime = null;
-                if (compilerOptions.StatementUserObject != null)
-                {
+                if (compilerOptions.StatementUserObject != null) {
                     userObjectCompileTime = compilerOptions.StatementUserObject.Invoke(
                         new StatementUserObjectContext(
-                            () => compilable.ToEPL(), statementName, optionalModuleName, annotations, statementNumber));
+                            () => compilable.ToEPL(),
+                            statementName,
+                            optionalModuleName,
+                            annotations,
+                            statementNumber));
                 }
 
                 // handle hooks
                 HandleStatementCompileHook(annotations, compileTimeServices, specCompiled);
 
                 // Stage 3(a) - statement-type-specific forge building
-                var @base = new StatementBaseInfo(compilable, specCompiled, userObjectCompileTime, statementRawInfo, optionalModuleName);
+                var @base = new StatementBaseInfo(
+                    compilable,
+                    specCompiled,
+                    userObjectCompileTime,
+                    statementRawInfo,
+                    optionalModuleName);
                 StmtForgeMethod forgeMethod;
-                if (raw.UpdateDesc != null)
-                {
+                if (raw.UpdateDesc != null) {
                     forgeMethod = new StmtForgeMethodUpdate(@base);
                 }
-                else if (raw.OnTriggerDesc != null)
-                {
+                else if (raw.OnTriggerDesc != null) {
                     forgeMethod = new StmtForgeMethodOnTrigger(@base);
                 }
-                else if (raw.CreateIndexDesc != null)
-                {
+                else if (raw.CreateIndexDesc != null) {
                     forgeMethod = new StmtForgeMethodCreateIndex(@base);
                 }
-                else if (raw.CreateVariableDesc != null)
-                {
+                else if (raw.CreateVariableDesc != null) {
                     forgeMethod = new StmtForgeMethodCreateVariable(@base);
                 }
-                else if (raw.CreateDataFlowDesc != null)
-                {
+                else if (raw.CreateDataFlowDesc != null) {
                     forgeMethod = new StmtForgeMethodCreateDataflow(@base);
                 }
-                else if (raw.CreateTableDesc != null)
-                {
+                else if (raw.CreateTableDesc != null) {
                     forgeMethod = new StmtForgeMethodCreateTable(@base);
                 }
-                else if (raw.CreateExpressionDesc != null)
-                {
+                else if (raw.CreateExpressionDesc != null) {
                     forgeMethod = new StmtForgeMethodCreateExpression(@base);
                 }
-                else if (raw.CreateWindowDesc != null)
-                {
+                else if (raw.CreateWindowDesc != null) {
                     forgeMethod = new StmtForgeMethodCreateWindow(@base);
                 }
-                else if (raw.CreateContextDesc != null)
-                {
+                else if (raw.CreateContextDesc != null) {
                     forgeMethod = new StmtForgeMethodCreateContext(@base);
                 }
-                else if (raw.CreateSchemaDesc != null)
-                {
+                else if (raw.CreateSchemaDesc != null) {
                     forgeMethod = new StmtForgeMethodCreateSchema(@base);
                 }
-                else
-                {
+                else {
                     forgeMethod = new StmtForgeMethodSelect(@base);
                 }
 
                 // check context-validity conditions for this statement
-                if (contextDescriptor != null)
-                {
-                    try
-                    {
-                        foreach (var validator in contextDescriptor.ValidationInfos)
-                        {
-                            validator.ValidateStatement(contextDescriptor.ContextName, specCompiled, compileTimeServices);
+                if (contextDescriptor != null) {
+                    try {
+                        foreach (var validator in contextDescriptor.ValidationInfos) {
+                            validator.ValidateStatement(
+                                contextDescriptor.ContextName,
+                                specCompiled,
+                                compileTimeServices);
                         }
                     }
-                    catch (ExprValidationException ex)
-                    {
+                    catch (ExprValidationException ex) {
                         throw new StatementSpecCompileException(ex.Message, ex, compilable.ToEPL());
                     }
                 }
@@ -244,10 +256,11 @@ namespace com.espertech.esper.compiler.@internal.util
                 var classPostfix = moduleIdentPostfix + "_" + statementIdentPostfix;
                 IList<StmtClassForgable> forgables = new List<StmtClassForgable>();
                 IList<FilterSpecCompiled> filterSpecCompileds = new List<FilterSpecCompiled>();
-                IList<ScheduleHandleCallbackProvider> scheduleHandleCallbackProviders = new List<ScheduleHandleCallbackProvider>();
+                IList<ScheduleHandleCallbackProvider> scheduleHandleCallbackProviders =
+                    new List<ScheduleHandleCallbackProvider>();
                 IList<NamedWindowConsumerStreamSpec> namedWindowConsumers = new List<NamedWindowConsumerStreamSpec>();
                 IList<FilterSpecParamExprNodeForge> filterBooleanExpressions = new List<FilterSpecParamExprNodeForge>();
-                var result = forgeMethod.Make(packageName, classPostfix, compileTimeServices);
+                var result = forgeMethod.Make(@namespace, classPostfix, compileTimeServices);
                 forgables.AddAll(result.Forgables);
                 VerifyForgables(forgables);
 
@@ -258,30 +271,26 @@ namespace com.espertech.esper.compiler.@internal.util
 
                 // Stage 3(c) - filter assignments: assign filter callback ids and filter-path-num for boolean expressions
                 var filterId = -1;
-                foreach (var provider in filterSpecCompileds)
-                {
+                foreach (var provider in filterSpecCompileds) {
                     var assigned = ++filterId;
                     provider.FilterCallbackId = assigned;
                 }
 
                 // Stage 3(d) - schedule assignments: assign schedule callback ids
                 var scheduleId = 0;
-                foreach (var provider in scheduleHandleCallbackProviders)
-                {
+                foreach (var provider in scheduleHandleCallbackProviders) {
                     provider.ScheduleCallbackId = scheduleId++;
                 }
 
                 // Stage 3(e) - named window consumers: assign consumer id
                 var namedWindowConsumerId = 0;
-                foreach (var provider in namedWindowConsumers)
-                {
+                foreach (var provider in namedWindowConsumers) {
                     provider.NamedWindowConsumerId = namedWindowConsumerId++;
                 }
 
                 // Stage 3(f) - filter boolean expression id assignment
                 var filterBooleanExprNum = 0;
-                foreach (var expr in filterBooleanExpressions)
-                {
+                foreach (var expr in filterBooleanExpressions) {
                     expr.FilterBoolExprId = filterBooleanExprNum++;
                 }
 
@@ -290,8 +299,7 @@ namespace com.espertech.esper.compiler.@internal.util
 
                 // Stage 4 - forge-to-class (forge with statement-fields last)
                 IList<CodegenClass> classes = new List<CodegenClass>(forgables.Count);
-                foreach (var forgable in forgables)
-                {
+                foreach (var forgable in forgables) {
                     var clazz = forgable.Forge(true);
                     classes.Add(clazz);
                 }
@@ -306,22 +314,21 @@ namespace com.espertech.esper.compiler.@internal.util
 
                 assembly = compiler.Compile();
 
-                return CodeGenerationIDGenerator.GenerateClassNameWithNamespace(packageName, typeof(StatementProvider), classPostfix);
+                return CodeGenerationIDGenerator.GenerateClassNameWithNamespace(
+                    @namespace,
+                    typeof(StatementProvider),
+                    classPostfix);
             }
-            catch (StatementSpecCompileException)
-            {
+            catch (StatementSpecCompileException) {
                 throw;
             }
-            catch (ExprValidationException ex)
-            {
+            catch (ExprValidationException ex) {
                 throw new StatementSpecCompileException(ex.Message, ex, compilable.ToEPL());
             }
-            catch (EPException ex)
-            {
+            catch (EPException ex) {
                 throw new StatementSpecCompileException(ex.Message, ex, compilable.ToEPL());
             }
-            catch (Exception ex)
-            {
+            catch (Exception ex) {
                 var text = ex.Message ?? ex.GetType().FullName;
                 throw new StatementSpecCompileException(text, ex, compilable.ToEPL());
             }
@@ -330,18 +337,14 @@ namespace com.espertech.esper.compiler.@internal.util
         private static IList<CodegenClass> SortClasses(IList<CodegenClass> classes)
         {
             IList<CodegenClass> sorted = new List<CodegenClass>(classes.Count);
-            foreach (var clazz in classes)
-            {
-                if (clazz.InterfaceImplemented == typeof(StatementFields))
-                {
+            foreach (var clazz in classes) {
+                if (clazz.InterfaceImplemented == typeof(StatementFields)) {
                     sorted.Add(clazz);
                 }
             }
 
-            foreach (var clazz in classes)
-            {
-                if (clazz.InterfaceImplemented != typeof(StatementFields))
-                {
+            foreach (var clazz in classes) {
+                if (clazz.InterfaceImplemented != typeof(StatementFields)) {
                     sorted.Add(clazz);
                 }
             }
@@ -353,10 +356,8 @@ namespace com.espertech.esper.compiler.@internal.util
         {
             // there can only be one class of the same name
             ISet<string> names = new HashSet<string>();
-            foreach (var forgable in forgables)
-            {
-                if (names.Contains(forgable.ClassName))
-                {
+            foreach (var forgable in forgables) {
+                if (names.Contains(forgable.ClassName)) {
                     throw new IllegalStateException("Class name '" + forgable.ClassName + "' appears twice");
                 }
 
@@ -366,12 +367,9 @@ namespace com.espertech.esper.compiler.@internal.util
             // there can be only one fields and statement provider
             StmtClassForgable fields = null;
             StmtClassForgable stmtProvider = null;
-            foreach (var forgable in forgables)
-            {
-                if (forgable.ForgableType == StmtClassForgableType.STMTPROVIDER)
-                {
-                    if (stmtProvider != null)
-                    {
+            foreach (var forgable in forgables) {
+                if (forgable.ForgableType == StmtClassForgableType.STMTPROVIDER) {
+                    if (stmtProvider != null) {
                         throw new IllegalStateException("Multiple stmt-provider classes");
                     }
 
@@ -386,30 +384,27 @@ namespace com.espertech.esper.compiler.@internal.util
             StatementSpecCompiled specCompiled)
         {
             StatementCompileHook compileHook = null;
-            try
-            {
+            try {
                 compileHook = (StatementCompileHook) ImportUtil.GetAnnotationHook(
-                    annotations, HookType.INTERNAL_COMPILE, typeof(StatementCompileHook), compileTimeServices.ImportServiceCompileTime);
+                    annotations,
+                    HookType.INTERNAL_COMPILE,
+                    typeof(StatementCompileHook),
+                    compileTimeServices.ImportServiceCompileTime);
             }
-            catch (ExprValidationException e)
-            {
+            catch (ExprValidationException e) {
                 throw new EPException("Failed to obtain hook for " + HookType.INTERNAL_QUERY_PLAN);
             }
 
-            if (compileHook != null)
-            {
+            if (compileHook != null) {
                 compileHook.Compiled(specCompiled);
             }
         }
 
         protected internal static string GetNameFromAnnotation(Attribute[] annotations)
         {
-            if (annotations != null && annotations.Length != 0)
-            {
-                foreach (var annotation in annotations)
-                {
-                    if (annotation is NameAttribute name && name.Value != null)
-                    {
+            if (annotations != null && annotations.Length != 0) {
+                foreach (var annotation in annotations) {
+                    if (annotation is NameAttribute name && name.Value != null) {
                         return name.Value;
                     }
                 }
@@ -423,32 +418,31 @@ namespace com.espertech.esper.compiler.@internal.util
             IList<ExprSubselectNode> subselects,
             NamedWindowCompileTimeResolver service)
         {
-            foreach (var dotNode in chainedExpressionsDot)
-            {
+            foreach (var dotNode in chainedExpressionsDot) {
                 var proposedWindow = dotNode.ChainSpec[0].Name;
                 var namedWindowDetail = service.Resolve(proposedWindow);
-                if (namedWindowDetail == null)
-                {
+                if (namedWindowDetail == null) {
                     continue;
                 }
 
                 // build spec for subselect
                 var raw = new StatementSpecRaw(SelectClauseStreamSelectorEnum.ISTREAM_ONLY);
                 var filter = new FilterSpecRaw(proposedWindow, Collections.GetEmptyList<ExprNode>(), null);
-                raw.StreamSpecs.Add(new FilterStreamSpecRaw(filter, ViewSpec.EMPTY_VIEWSPEC_ARRAY, proposedWindow, StreamSpecOptions.DEFAULT));
+                raw.StreamSpecs.Add(
+                    new FilterStreamSpecRaw(
+                        filter,
+                        ViewSpec.EMPTY_VIEWSPEC_ARRAY,
+                        proposedWindow,
+                        StreamSpecOptions.DEFAULT));
 
                 var firstChain = dotNode.ChainSpec.DeleteAt(0);
-                if (!firstChain.Parameters.IsEmpty())
-                {
-                    if (firstChain.Parameters.Count == 1)
-                    {
+                if (!firstChain.Parameters.IsEmpty()) {
+                    if (firstChain.Parameters.Count == 1) {
                         raw.WhereClause = firstChain.Parameters[0];
                     }
-                    else
-                    {
+                    else {
                         ExprAndNode andNode = new ExprAndNodeImpl();
-                        foreach (var node in firstChain.Parameters)
-                        {
+                        foreach (var node in firstChain.Parameters) {
                             andNode.AddChildNode(node);
                         }
 
@@ -468,22 +462,19 @@ namespace com.espertech.esper.compiler.@internal.util
             ExprNodeSubselectDeclaredDotVisitor visitor)
         {
             ISet<ExprTableAccessNode> tableAccessNodes = new HashSet<ExprTableAccessNode>();
-            if (statementDirectTableAccess != null)
-            {
+            if (statementDirectTableAccess != null) {
                 tableAccessNodes.AddAll(statementDirectTableAccess);
             }
 
             // include all declared expression usages
             var tableAccessVisitor = new ExprNodeTableAccessVisitor(tableAccessNodes);
-            foreach (var declared in visitor.DeclaredExpressions)
-            {
+            foreach (var declared in visitor.DeclaredExpressions) {
                 declared.Body.Accept(tableAccessVisitor);
             }
 
             // include all subqueries (and their declared expressions)
             // This is nested as declared expressions can have more subqueries, however all subqueries are in this list.
-            foreach (var subselectNode in visitor.Subselects)
-            {
+            foreach (var subselectNode in visitor.Subselects) {
                 tableAccessNodes.AddAll(subselectNode.StatementSpecRaw.TableExpressions);
             }
 

@@ -60,6 +60,16 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
         {
         }
 
+        public bool IsEmpty()
+        {
+            return statements.IsEmpty();
+        }
+
+        public bool IsNotEmpty()
+        {
+            return !statements.IsEmpty();
+        }
+
         public CodegenBlock Expression(CodegenExpression expression)
         {
             CheckClosed();
@@ -424,6 +434,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
             CheckClosed();
             closed = true;
             statements.Add(new CodegenStatementReturnExpression(expression));
+
             return parentWBlock.Parent;
         }
 
@@ -504,6 +515,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
             return parentMethodNode;
         }
 
+#if false
         public CodegenMethod MethodThrow(CodegenExpression expression)
         {
             if (parentMethodNode == null) {
@@ -515,6 +527,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
             statements.Add(new CodegenStatementThrow(expression));
             return parentMethodNode;
         }
+#endif
 
         public CodegenMethod MethodReturn(CodegenExpression expression)
         {

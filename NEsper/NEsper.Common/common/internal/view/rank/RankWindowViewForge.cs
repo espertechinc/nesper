@@ -153,7 +153,7 @@ namespace com.espertech.esper.common.@internal.view.rank
 
         internal override string FactoryMethod()
         {
-            return "rank";
+            return "Rank";
         }
 
         internal override void Assign(

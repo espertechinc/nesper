@@ -59,7 +59,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
                 codegenClassScope);
             CodegenBlock block = methodNode.Block;
             if (this.context.ExprForges.Length == 0) {
-                block.DeclareVar<IDictionary<object, object>>("props", StaticMethod(typeof(Collections), "emptyMap"));
+                block.DeclareVar<IDictionary<object, object>>("props", StaticMethod(typeof(Collections), "GetEmptyMap"));
             }
             else {
                 block.DeclareVar<IDictionary<object, object>>(
@@ -77,7 +77,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
                     exprSymbol,
                     codegenClassScope);
                 block.Expression(
-                    ExprDotMethod(@Ref("props"), "put", Constant(this.context.ColumnNames[i]), expression));
+                    ExprDotMethod(@Ref("props"), "Put", Constant(this.context.ColumnNames[i]), expression));
             }
 
             block.MethodReturn(

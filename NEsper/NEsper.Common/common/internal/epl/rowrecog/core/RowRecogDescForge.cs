@@ -281,7 +281,7 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
             foreach (var pair in nextStates) {
                 method.Block.ExprDotMethod(
                     Ref("next"),
-                    "add",
+                    "Add",
                     NewInstance(typeof(Pair<int, int[]>), Constant(pair.First), Constant(pair.Second)));
             }
 
@@ -304,7 +304,7 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
             foreach (var entry in _variableStreams) {
                 method.Block.ExprDotMethod(
                     Ref("vars"),
-                    "put",
+                    "Put",
                     Constant(entry.Key),
                     NewInstance(typeof(Pair<int, bool>), Constant(entry.Value.First), Constant(entry.Value.Second)));
             }

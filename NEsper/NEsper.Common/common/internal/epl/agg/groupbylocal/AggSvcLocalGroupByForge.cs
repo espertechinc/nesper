@@ -153,9 +153,9 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupbylocal
                     NewInstance(classNames.ServiceFactory, Ref("this")))
                 .MethodReturn(
                     ExprDotMethodChain(EPStatementInitServicesConstants.REF)
-                        .Add(GETAGGREGATIONSERVICEFACTORYSERVICE)
+                        .Get(AGGREGATIONSERVICEFACTORYSERVICE)
                         .Add(
-                            "groupLocalGroupBy",
+                            "GroupLocalGroupBy",
                             Ref("svcFactory"),
                             useFlags.ToExpression(),
                             Constant(hasGroupBy),
@@ -206,7 +206,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupbylocal
             CodegenClassScope classScope,
             CodegenNamedMethods namedMethods)
         {
-            GetterCodegen("getValue", method, classScope, namedMethods);
+            GetterCodegen("GetValue", method, classScope, namedMethods);
         }
 
         public void GetCollectionOfEventsCodegen(
@@ -214,7 +214,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupbylocal
             CodegenClassScope classScope,
             CodegenNamedMethods namedMethods)
         {
-            GetterCodegen("getCollectionOfEvents", method, classScope, namedMethods);
+            GetterCodegen("GetCollectionOfEvents", method, classScope, namedMethods);
         }
 
         public void GetEventBeanCodegen(
@@ -222,7 +222,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupbylocal
             CodegenClassScope classScope,
             CodegenNamedMethods namedMethods)
         {
-            GetterCodegen("getEventBean", method, classScope, namedMethods);
+            GetterCodegen("GetEventBean", method, classScope, namedMethods);
         }
 
         public void GetCollectionScalarCodegen(
@@ -230,7 +230,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupbylocal
             CodegenClassScope classScope,
             CodegenNamedMethods namedMethods)
         {
-            GetterCodegen("getCollectionScalar", method, classScope, namedMethods);
+            GetterCodegen("GetCollectionScalar", method, classScope, namedMethods);
         }
 
         public void ApplyEnterCodegen(
@@ -286,7 +286,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupbylocal
             int level)
         {
             if (level != -1) {
-                method.Block.ExprDotMethod(Ref("output"), "writeInt", Ref("row.refcount"));
+                method.Block.ExprDotMethod(Ref("output"), "WriteInt", Ref("row.refcount"));
             }
         }
 
@@ -295,7 +295,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupbylocal
             int level)
         {
             if (level != -1) {
-                method.Block.AssignRef("row.refcount", ExprDotMethod(Ref("input"), "readInt"));
+                method.Block.AssignRef("row.refcount", ExprDotMethod(Ref("input"), "ReadInt"));
             }
         }
 
@@ -337,9 +337,9 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupbylocal
             CodegenClassScope classScope)
         {
             method.Block.IfCondition(NotEqualsNull(REF_AGGREGATORSTOPLEVEL))
-                .ExprDotMethod(REF_AGGREGATORSTOPLEVEL, "clear");
+                .ExprDotMethod(REF_AGGREGATORSTOPLEVEL, "Clear");
             for (var i = 0; i < localGroupByPlan.AllLevelsForges.Length; i++) {
-                method.Block.ExprDotMethod(ArrayAtIndex(REF_AGGREGATORSPERLEVELANDGROUP, Constant(i)), "clear");
+                method.Block.ExprDotMethod(ArrayAtIndex(REF_AGGREGATORSPERLEVELANDGROUP, Constant(i)), "Clear");
             }
         }
 
@@ -373,28 +373,28 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupbylocal
             CodegenMethod method,
             CodegenClassScope classScope)
         {
-            method.Block.ExprDotMethod(REF_AGGVISITOR, "visitGrouped", GetNumGroupsCodegen(method, classScope))
+            method.Block.ExprDotMethod(REF_AGGVISITOR, "VisitGrouped", GetNumGroupsCodegen(method, classScope))
                 .IfCondition(NotEqualsNull(REF_AGGREGATORSTOPLEVEL))
-                .ExprDotMethod(REF_AGGVISITOR, "visitGroup", ConstantNull(), REF_AGGREGATORSTOPLEVEL);
+                .ExprDotMethod(REF_AGGVISITOR, "VisitGroup", ConstantNull(), REF_AGGREGATORSTOPLEVEL);
 
             for (var i = 0; i < localGroupByPlan.AllLevelsForges.Length; i++) {
                 method.Block.ForEach(
                         typeof(KeyValuePair<object, object>),
                         "entry",
-                        ExprDotMethod(ArrayAtIndex(REF_AGGREGATORSPERLEVELANDGROUP, Constant(i)), "entrySet"))
+                        ExprDotMethod(ArrayAtIndex(REF_AGGREGATORSPERLEVELANDGROUP, Constant(i)), "EntrySet"))
                     .ExprDotMethod(
                         REF_AGGVISITOR,
                         "visitGroup",
-                        ExprDotMethod(Ref("entry"), "getKey"),
-                        ExprDotMethod(Ref("entry"), "getValue"));
+                        ExprDotName(Ref("entry"), "Key"),
+                        ExprDotName(Ref("entry"), "Value"));
             }
         }
 
         public void IsGroupedCodegen(
-            CodegenMethod method,
+            CodegenProperty property,
             CodegenClassScope classScope)
         {
-            method.Block.MethodReturn(ConstantTrue());
+            property.GetterBlock.BlockReturn(ConstantTrue());
         }
 
         private CodegenExpression GetNumGroupsCodegen(
@@ -410,7 +410,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupbylocal
                 method.Block.AssignCompound(
                     "size",
                     "+",
-                    ExprDotMethod(ArrayAtIndex(REF_AGGREGATORSPERLEVELANDGROUP, Constant(i)), "size"));
+                    ExprDotMethod(ArrayAtIndex(REF_AGGREGATORSPERLEVELANDGROUP, Constant(i)), "Size"));
             }
 
             method.Block.MethodReturn(Ref("size"));
@@ -434,7 +434,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupbylocal
                     .BlockEnd()
                     .ExprDotMethod(
                         REF_AGGREGATORSTOPLEVEL,
-                        enter ? "applyEnter" : "applyLeave",
+                        enter ? "ApplyEnter" : "ApplyLeave",
                         REF_EPS,
                         REF_EXPREVALCONTEXT);
             }
@@ -475,18 +475,18 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupbylocal
                     .AssignRef(rowName, NewInstance(classNames.GetRowPerLevel(levelNum)))
                     .ExprDotMethod(
                         ArrayAtIndex(REF_AGGREGATORSPERLEVELANDGROUP, Constant(levelNum)),
-                        "put",
+                        "Put",
                         Ref(groupKeyName),
                         Ref(rowName))
                     .BlockEnd()
                     .ExprDotMethod(Ref(rowName), enter ? "increaseRefcount" : "decreaseRefcount")
-                    .ExprDotMethod(Ref(rowName), enter ? "applyEnter" : "applyLeave", REF_EPS, REF_EXPREVALCONTEXT);
+                    .ExprDotMethod(Ref(rowName), enter ? "ApplyEnter" : "ApplyLeave", REF_EPS, REF_EXPREVALCONTEXT);
 
                 if (!enter) {
-                    method.Block.IfCondition(Relational(ExprDotMethod(Ref(rowName), "getRefcount"), LE, Constant(0)))
+                    method.Block.IfCondition(Relational(ExprDotName(Ref(rowName), "Refcount"), LE, Constant(0)))
                         .ExprDotMethod(
                             REF_REMOVEDKEYS,
-                            "add",
+                            "Add",
                             NewInstance<AggSvcLocalGroupLevelKeyPair>(Constant(levelNum), Ref(groupKeyName)));
                 }
             }
@@ -623,14 +623,14 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupbylocal
             CodegenClassScope classScope)
         {
             var method = scope.MakeChild(typeof(void), GetType(), classScope);
-            method.Block.IfCondition(Not(ExprDotMethod(REF_REMOVEDKEYS, "isEmpty")))
+            method.Block.IfCondition(Not(ExprDotMethod(REF_REMOVEDKEYS, "IsEmpty")))
                 .ForEach(typeof(AggSvcLocalGroupLevelKeyPair), "removedKey", REF_REMOVEDKEYS)
                 .ExprDotMethod(
-                    ArrayAtIndex(REF_AGGREGATORSPERLEVELANDGROUP, ExprDotMethod(Ref("removedKey"), "getLevel")),
+                    ArrayAtIndex(REF_AGGREGATORSPERLEVELANDGROUP, ExprDotName(Ref("removedKey"), "Level")),
                     "remove",
-                    ExprDotMethod(Ref("removedKey"), "getKey"))
+                    ExprDotName(Ref("removedKey"), "Key"))
                 .BlockEnd()
-                .ExprDotMethod(REF_REMOVEDKEYS, "clear");
+                .ExprDotMethod(REF_REMOVEDKEYS, "Clear");
             return method;
         }
     }

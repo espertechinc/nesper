@@ -45,7 +45,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
                 eventBeanFactory,
                 codegenClassScope,
                 wrapper,
-                "adapterForTypedMap",
+                "AdapterForTypedMap",
                 typeof(IDictionary<object, object>));
         }
 
@@ -76,9 +76,9 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
                 memberUndType);
             return ExprDotMethod(
                 eventBeanFactory,
-                "adapterForTypedWrapper",
+                "AdapterForTypedWrapper",
                 wrapped,
-                StaticMethod(typeof(Collections), "emptyMap"),
+                StaticMethod(typeof(Collections), "GetEmptyMap"),
                 memberWrapperType);
         }
     }

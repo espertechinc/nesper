@@ -6,6 +6,8 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using com.espertech.esper.common.@internal.collection;
+
 namespace com.espertech.esper.common.client
 {
     /// <summary>
@@ -24,5 +26,26 @@ namespace com.espertech.esper.common.client
         /// <returns>value of property in event</returns>
         /// <throws>PropertyAccessException to indicate that property access failed</throws>
         object Get(EventBean eventBean);
+    }
+
+    public class ProxyEventPropertyValueGetter : EventPropertyValueGetter
+    {
+        public delegate object GetFunc(EventBean eventBean);
+
+        public GetFunc ProcGet { get; set; }
+
+        public ProxyEventPropertyValueGetter()
+        {
+        }
+
+        public ProxyEventPropertyValueGetter(GetFunc procGet)
+        {
+            ProcGet = procGet;
+        }
+
+        public object Get(EventBean eventBean)
+        {
+            return ProcGet?.Invoke(eventBean);
+        }
     }
 } // end of namespace

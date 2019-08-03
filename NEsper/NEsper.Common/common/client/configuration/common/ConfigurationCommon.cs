@@ -58,7 +58,7 @@ namespace com.espertech.esper.common.client.configuration.common
         /// <summary>
         ///     Event type auto-name packages.
         /// </summary>
-        private ISet<string> eventTypeAutoNamePackages;
+        private ISet<string> eventTypeAutoNameNamespaces;
 
         /// <summary>
         ///     Map of event type name and XML DOM configuration.
@@ -302,7 +302,7 @@ namespace com.espertech.esper.common.client.configuration.common
         ///     and if successful, uses that class as the event type.
         /// </summary>
         /// <value>set namespaces to look for events types when encountering a new event type name</value>
-        public ISet<string> EventTypeAutoNamePackages => eventTypeAutoNamePackages;
+        public ISet<string> EventTypeAutoNameNamespaces => eventTypeAutoNameNamespaces;
 
         /// <summary>
         ///     Checks if an event type has already been registered for that name.
@@ -901,7 +901,7 @@ namespace com.espertech.esper.common.client.configuration.common
             logging = new ConfigurationCommonLogging();
             timeSource = new ConfigurationCommonTimeSource();
             transientConfiguration = new Dictionary<string, object>(2);
-            eventTypeAutoNamePackages = new HashSet<string>();
+            eventTypeAutoNameNamespaces = new HashSet<string>();
             execution = new ConfigurationCommonExecution();
         }
 
@@ -915,10 +915,10 @@ namespace com.espertech.esper.common.client.configuration.common
         ///     For example, in the statement "select * from MyEvent" the runtime attempts to load class "namespace.MyEvent"
         ///     and if successful, uses that class as the event type.
         /// </summary>
-        /// <param name="packageName">is the fully-qualified namespace of the namespace that event classes reside in</param>
-        public void AddEventTypeAutoName(string packageName)
+        /// <param name="namespace">is the fully-qualified namespace of the namespace that event classes reside in</param>
+        public void AddEventTypeAutoName(string @namespace)
         {
-            eventTypeAutoNamePackages.Add(packageName);
+            eventTypeAutoNameNamespaces.Add(@namespace);
         }
 
         /// <summary>

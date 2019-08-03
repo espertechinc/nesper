@@ -79,7 +79,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                         "value",
                         lhs.Forge.EvaluateCodegen(typeof(object), methodNode, exprSymbol, codegenClassScope))
                     .IfRefNullReturnNull("value")
-                    .MethodReturn(GetLikeCode(forge, mLikeUtil, ExprDotMethod(Ref("value"), "toString")));
+                    .MethodReturn(GetLikeCode(forge, mLikeUtil, ExprDotMethod(Ref("value"), "ToString")));
             }
 
             return methodNode;

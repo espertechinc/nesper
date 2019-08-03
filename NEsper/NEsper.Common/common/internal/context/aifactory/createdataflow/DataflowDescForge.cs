@@ -89,7 +89,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createdataflow
                 "chnl",
                 NewInstance<List<object>>(Constant(logicalChannels.Count)));
             foreach (var channel in logicalChannels) {
-                method.Block.ExprDotMethod(Ref("chnl"), "add", channel.Make(method, symbols, classScope));
+                method.Block.ExprDotMethod(Ref("chnl"), "Add", channel.Make(method, symbols, classScope));
             }
 
             method.Block.MethodReturn(Ref("chnl"));
@@ -111,7 +111,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createdataflow
                 NewInstance<LinkedHashSet<object>>(
                     Constant(CollectionUtil.CapacityHashMap(operatorBuildOrder.Count))));
             foreach (var entry in operatorBuildOrder) {
-                method.Block.ExprDotMethod(Ref("order"), "add", Constant(entry));
+                method.Block.ExprDotMethod(Ref("order"), "Add", Constant(entry));
             }
 
             method.Block.MethodReturn(Ref("order"));
@@ -133,7 +133,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createdataflow
             foreach (var entry in operatorFactories) {
                 method.Block.ExprDotMethod(
                     Ref("fac"),
-                    "put",
+                    "Put",
                     Constant(entry.Key),
                     entry.Value.Make(method, symbols, classScope));
             }
@@ -157,7 +157,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createdataflow
             foreach (var entry in operatorMetadata) {
                 method.Block.ExprDotMethod(
                     Ref("op"),
-                    "put",
+                    "Put",
                     Constant(entry.Key),
                     entry.Value.Make(method, symbols, classScope));
             }
@@ -181,7 +181,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createdataflow
             foreach (var entry in declaredTypes) {
                 method.Block.ExprDotMethod(
                     Ref("types"),
-                    "put",
+                    "Put",
                     Constant(entry.Key),
                     EventTypeUtility.ResolveTypeCodegen(entry.Value, symbols.GetAddInitSvc(method)));
             }

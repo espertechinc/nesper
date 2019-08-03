@@ -46,7 +46,7 @@ namespace com.espertech.esper.common.@internal.view.expression
 
         internal override string FactoryMethod()
         {
-            return "expr";
+            return "Expr";
         }
     }
 } // end of namespace

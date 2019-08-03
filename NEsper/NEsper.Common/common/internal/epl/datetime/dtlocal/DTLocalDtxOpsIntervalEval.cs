@@ -61,7 +61,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
                 .AddParam(typeof(DateTimeEx), "target");
 
             var block = methodNode.Block
-                .DeclareVar<DateTimeEx>("dtx", Cast(typeof(DateTimeEx), ExprDotMethod(Ref("target"), "clone")));
+                .DeclareVar<DateTimeEx>("dtx", Cast(typeof(DateTimeEx), ExprDotMethod(Ref("target"), "Clone")));
             EvaluateCalOpsCalendarCodegen(
                 block,
                 forge.calendarForges,
@@ -69,7 +69,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
                 methodNode,
                 exprSymbol,
                 codegenClassScope);
-            block.DeclareVar<long>("time", ExprDotMethod(Ref("dtx"), "getTimeInMillis"))
+            block.DeclareVar<long>("time", ExprDotName(Ref("dtx"), "TimeInMillis"))
                 .MethodReturn(
                     forge.intervalForge.Codegen(Ref("time"), Ref("time"), methodNode, exprSymbol, codegenClassScope));
             return LocalMethod(methodNode, inner);
@@ -108,8 +108,8 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
                 .AddParam(typeof(DateTimeEx), "endTimestamp");
 
             var block = methodNode.Block
-                .DeclareVar<long>("startLong", ExprDotMethod(Ref("startTimestamp"), "getTimeInMillis"))
-                .DeclareVar<long>("endLong", ExprDotMethod(Ref("endTimestamp"), "getTimeInMillis"))
+                .DeclareVar<long>("startLong", ExprDotName(Ref("startTimestamp"), "TimeInMillis"))
+                .DeclareVar<long>("endLong", ExprDotName(Ref("endTimestamp"), "TimeInMillis"))
                 .DeclareVar<DateTimeEx>("dtx", StaticMethod(typeof(DateTimeEx), "getInstance", timeZoneField))
                 .Expression(SetProperty(Ref("dtx"), "TimeInMillis", Ref("startLong")));
             EvaluateCalOpsCalendarCodegen(
@@ -119,7 +119,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
                 methodNode,
                 exprSymbol,
                 codegenClassScope);
-            block.DeclareVar<long>("startTime", ExprDotMethod(Ref("dtx"), "getTimeInMillis"))
+            block.DeclareVar<long>("startTime", ExprDotName(Ref("dtx"), "TimeInMillis"))
                 .DeclareVar<long>(
                     "endTime",
                     Op(Ref("startTime"), "+", Op(Ref("endLong"), "-", Ref("startLong"))))

@@ -66,7 +66,7 @@ namespace com.espertech.esper.common.@internal.view.time_accum
 
         internal override string FactoryMethod()
         {
-            return "timeaccum";
+            return "Timeaccum";
         }
 
         internal override void Assign(

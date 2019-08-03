@@ -155,13 +155,13 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
         {
             return codegenMethodScope
                 .MakeChild(beanPropType, typeof(ListMethodPropertyGetter), codegenClassScope)
-                .AddParam(targetType, "object")
+                .AddParam(targetType, "@object")
                 .AddParam(typeof(int), "index")
                 .Block
-                .DeclareVar<object>("value", ExprDotMethod(Ref("object"), method.Name))
+                .DeclareVar<object>("value", ExprDotMethod(Ref("@object"), method.Name))
                 .IfRefNotTypeReturnConst("value", typeof(IList<object>), null)
                 .DeclareVar<IList<object>>("l", Cast(typeof(IList<object>), Ref("value")))
-                .IfConditionReturnConst(Relational(ExprDotMethod(Ref("l"), "size"), LE, Ref("index")), null)
+                .IfConditionReturnConst(Relational(ExprDotMethod(Ref("l"), "Size"), LE, Ref("index")), null)
                 .MethodReturn(Cast(beanPropType, ExprDotMethod(Ref("l"), "get", Ref("index"))));
         }
 

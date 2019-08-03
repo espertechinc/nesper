@@ -69,7 +69,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.core
             CodegenExpressionRef row,
             CodegenExpressionRef @ref)
         {
-            return block => block.ExprDotMethod(output, "writeBoolean", RowDotRef(row, @ref));
+            return block => block.ExprDotMethod(output, "WriteBoolean", RowDotRef(row, @ref));
         }
 
         public static Consumer<CodegenBlock> ReadBoolean(
@@ -77,7 +77,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.core
             CodegenExpressionRef @ref,
             CodegenExpression input)
         {
-            return block => block.AssignRef(RowDotRef(row, @ref), ExprDotMethod(input, "readBoolean"));
+            return block => block.AssignRef(RowDotRef(row, @ref), ExprDotMethod(input, "ReadBoolean"));
         }
 
         public static Consumer<CodegenBlock> WriteLong(
@@ -85,7 +85,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.core
             CodegenExpressionRef row,
             CodegenExpressionRef @ref)
         {
-            return block => block.ExprDotMethod(output, "writeLong", RowDotRef(row, @ref));
+            return block => block.ExprDotMethod(output, "WriteLong", RowDotRef(row, @ref));
         }
 
         public static Consumer<CodegenBlock> ReadLong(
@@ -93,7 +93,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.core
             CodegenExpressionRef @ref,
             CodegenExpression input)
         {
-            return block => block.AssignRef(RowDotRef(row, @ref), ExprDotMethod(input, "readLong"));
+            return block => block.AssignRef(RowDotRef(row, @ref), ExprDotMethod(input, "ReadLong"));
         }
 
         public static Consumer<CodegenBlock> WriteDouble(
@@ -101,7 +101,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.core
             CodegenExpressionRef row,
             CodegenExpressionRef @ref)
         {
-            return block => block.ExprDotMethod(output, "writeDouble", RowDotRef(row, @ref));
+            return block => block.ExprDotMethod(output, "WriteDouble", RowDotRef(row, @ref));
         }
 
         public static Consumer<CodegenBlock> ReadDouble(
@@ -109,7 +109,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.core
             CodegenExpressionRef @ref,
             CodegenExpression input)
         {
-            return block => block.AssignRef(RowDotRef(row, @ref), ExprDotMethod(input, "readDouble"));
+            return block => block.AssignRef(RowDotRef(row, @ref), ExprDotMethod(input, "ReadDouble"));
         }
 
         public static Consumer<CodegenBlock> WriteInt(
@@ -117,7 +117,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.core
             CodegenExpressionRef row,
             CodegenExpressionRef @ref)
         {
-            return block => block.ExprDotMethod(output, "writeInt", RowDotRef(row, @ref));
+            return block => block.ExprDotMethod(output, "WriteInt", RowDotRef(row, @ref));
         }
 
         public static Consumer<CodegenBlock> ReadInt(
@@ -125,7 +125,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.core
             CodegenExpressionRef @ref,
             CodegenExpression input)
         {
-            return block => block.AssignRef(RowDotRef(row, @ref), ExprDotMethod(input, "readInt"));
+            return block => block.AssignRef(RowDotRef(row, @ref), ExprDotMethod(input, "ReadInt"));
         }
 
         public static Consumer<CodegenBlock> WriteFloat(
@@ -133,7 +133,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.core
             CodegenExpressionRef row,
             CodegenExpressionRef @ref)
         {
-            return block => block.ExprDotMethod(output, "writeFloat", RowDotRef(row, @ref));
+            return block => block.ExprDotMethod(output, "WriteFloat", RowDotRef(row, @ref));
         }
 
         public static Consumer<CodegenBlock> ReadFloat(
@@ -141,7 +141,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.core
             CodegenExpressionRef @ref,
             CodegenExpression input)
         {
-            return block => block.AssignRef(RowDotRef(row, @ref), ExprDotMethod(input, "readFloat"));
+            return block => block.AssignRef(RowDotRef(row, @ref), ExprDotMethod(input, "ReadFloat"));
         }
     }
 } // end of namespace

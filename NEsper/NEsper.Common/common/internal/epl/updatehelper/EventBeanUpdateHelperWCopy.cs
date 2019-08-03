@@ -6,15 +6,12 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.epl.expression.core;
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.updatehelper
 {
+#if DEPRECATED_INTERFACE
     public interface EventBeanUpdateHelperWCopy
     {
         EventBean UpdateWCopy(
@@ -22,4 +19,12 @@ namespace com.espertech.esper.common.@internal.epl.updatehelper
             EventBean[] eventsPerStream,
             ExprEvaluatorContext exprEvaluatorContext);
     }
+#else
+
+    public delegate EventBean EventBeanUpdateHelperWCopy(
+        EventBean matchingEvent,
+        EventBean[] eventsPerStream,
+        ExprEvaluatorContext exprEvaluatorContext);
+
+#endif
 } // end of namespace

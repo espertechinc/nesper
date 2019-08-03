@@ -182,10 +182,10 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
             CodegenClassScope codegenClassScope)
         {
             return codegenMethodScope.MakeChild(beanPropType, typeof(IterableMethodPropertyGetter), codegenClassScope)
-                .AddParam(targetType, "object")
+                .AddParam(targetType, "@object")
                 .AddParam(typeof(int), "index")
                 .Block
-                .DeclareVar<object>("value", ExprDotMethod(Ref("object"), method.Name))
+                .DeclareVar<object>("value", ExprDotMethod(Ref("@object"), method.Name))
                 .MethodReturn(
                     Cast(
                         beanPropType,

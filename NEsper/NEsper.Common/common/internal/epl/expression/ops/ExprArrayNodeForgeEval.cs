@@ -198,7 +198,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                     added = forge.Coercer.CoerceCodegen(Ref(refname), childForge.EvaluationType);
                 }
 
-                blockIfNotNull.Expression(ExprDotMethod(Ref("resultList"), "add", added));
+                blockIfNotNull.Expression(ExprDotMethod(Ref("resultList"), "Add", added));
             }
 
             block.MethodReturn(Ref("resultList"));

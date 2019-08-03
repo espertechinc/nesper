@@ -95,7 +95,7 @@ namespace com.espertech.esper.common.@internal.epl.pattern.followedby
 
             method.Block
                 .SetProperty(Ref("node"), "Children", Ref("children"))
-                .Expression(ExprDotMethodChain(symbols.GetAddInitSvc(method)).Add("addReadyCallback", Ref("node")));
+                .Expression(ExprDotMethodChain(symbols.GetAddInitSvc(method)).Add("AddReadyCallback", Ref("node")));
 
             if (OptionalMaxExpressions != null && !OptionalMaxExpressions.IsEmpty()) {
                 method.Block.DeclareVar<ExprEvaluator[]>(

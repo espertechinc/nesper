@@ -41,7 +41,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
             method.Block.MethodReturn(
                 Not(
                     ExprDotMethodChain(aggService)
-                        .Add("getGroupKeys", symbols.GetAddExprEvalCtx(method))
+                        .Add("GetGroupKeys", symbols.GetAddExprEvalCtx(method))
                         .Add("isEmpty")));
             return LocalMethod(method);
         }

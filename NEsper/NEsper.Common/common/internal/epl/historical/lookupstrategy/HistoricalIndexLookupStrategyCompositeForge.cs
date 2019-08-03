@@ -70,7 +70,7 @@ namespace com.espertech.esper.common.@internal.epl.historical.lookupstrategy
                         GetType(),
                         classScope))
                 .SetProperty(Ref("strat"), "RangeProps", Ref("rangeGetters"))
-                .ExprDotMethod(Ref("strat"), "init")
+                .ExprDotMethod(Ref("strat"), "Init")
                 .MethodReturn(Ref("strat"));
             return LocalMethod(method);
         }

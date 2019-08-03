@@ -28,12 +28,12 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
         {
             var forge = (AggregatorAccessSorted) context.AccessStateForge.Aggregator;
             context.Method.Block.DeclareVar<EventBean>(
-                    "event",
+                    "@event",
                     max
                         ? forge.GetLastValueCodegen(context.ClassScope, context.Method)
                         : forge.GetFirstValueCodegen(context.ClassScope, context.Method))
-                .IfRefNullReturnNull("event")
-                .MethodReturn(ExprDotUnderlying(Ref("event")));
+                .IfRefNullReturnNull("@event")
+                .MethodReturn(ExprDotUnderlying(Ref("@event")));
         }
     }
 } // end of namespace

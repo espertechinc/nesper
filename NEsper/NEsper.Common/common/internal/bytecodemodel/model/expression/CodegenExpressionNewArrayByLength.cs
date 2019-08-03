@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Text;
 
 using com.espertech.esper.common.@internal.bytecodemodel.core;
+using com.espertech.esper.common.@internal.bytecodemodel.util;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.util.CodegenClassUtil;
 
@@ -31,14 +32,16 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
 
         public void Render(
             StringBuilder builder,
-            bool isInnerClass)
+            bool isInnerClass,
+            int level,
+            CodegenIndent indent)
         {
             int numDimensions = GetNumberOfDimensions(component);
             Type outermostType = GetComponentTypeOutermost(component);
             builder.Append("new ");
             CodeGenerationHelper.AppendClassName(builder, outermostType);
             builder.Append("[");
-            expression.Render(builder, isInnerClass);
+            expression.Render(builder, isInnerClass, level, indent);
             builder.Append("]");
             for (int i = 0; i < numDimensions; i++) {
                 builder.Append("[]");
@@ -47,7 +50,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
 
         public void MergeClasses(ISet<Type> classes)
         {
-            classes.Add(component);
+            classes.AddToSet(component);
             expression.MergeClasses(classes);
         }
     }

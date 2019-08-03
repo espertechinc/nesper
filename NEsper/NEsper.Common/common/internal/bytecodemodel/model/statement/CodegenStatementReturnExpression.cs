@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
+using com.espertech.esper.common.@internal.bytecodemodel.core;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 
 namespace com.espertech.esper.common.@internal.bytecodemodel.model.statement
@@ -34,7 +35,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.statement
             bool isInnerClass)
         {
             builder.Append("return ");
-            expression.Render(builder, isInnerClass);
+            expression.Render(builder, isInnerClass, 4, new CodegenIndent(true));
         }
     }
 } // end of namespace

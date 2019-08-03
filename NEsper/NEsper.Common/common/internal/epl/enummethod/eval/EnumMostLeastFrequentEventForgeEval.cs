@@ -82,7 +82,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                 .AddParam(EnumForgeCodegenNames.PARAMS);
 
             var block = methodNode.Block
-                .IfCondition(ExprDotMethod(EnumForgeCodegenNames.REF_ENUMCOLL, "isEmpty"))
+                .IfCondition(ExprDotMethod(EnumForgeCodegenNames.REF_ENUMCOLL, "IsEmpty"))
                 .BlockReturn(ConstantNull())
                 .DeclareVar<IDictionary<string, object>>(
                     "items",
@@ -100,7 +100,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                 .IfElse()
                 .Increment("existing")
                 .BlockEnd()
-                .ExprDotMethod(Ref("items"), "put", Ref("item"), Ref("existing"));
+                .ExprDotMethod(Ref("items"), "Put", Ref("item"), Ref("existing"));
             block.MethodReturn(
                 Cast(
                     returnType,

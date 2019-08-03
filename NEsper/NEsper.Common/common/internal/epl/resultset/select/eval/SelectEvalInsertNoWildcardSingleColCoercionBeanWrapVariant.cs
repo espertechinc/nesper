@@ -50,14 +50,14 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
                 .DeclareVar<EventType>("beanEventType", ExprDotMethod(type, "eventTypeForNativeObject", @Ref("result")))
                 .DeclareVar<EventBean>(
                     "wrappedEvent",
-                    ExprDotMethod(eventBeanFactory, "adapterForTypedBean", @Ref("result"), @Ref("beanEventType")))
+                    ExprDotMethod(eventBeanFactory, "AdapterForTypedBean", @Ref("result"), @Ref("beanEventType")))
                 .DeclareVar<EventBean>("variant", ExprDotMethod(type, "getValueAddEventBean", @Ref("wrappedEvent")))
                 .MethodReturn(
                     ExprDotMethod(
                         eventBeanFactory,
-                        "adapterForTypedWrapper",
+                        "AdapterForTypedWrapper",
                         @Ref("variant"),
-                        StaticMethod(typeof(Collections), "emptyMap"),
+                        StaticMethod(typeof(Collections), "GetEmptyMap"),
                         resultEventType));
             return LocalMethodBuild(method).Pass(expression).Call();
         }

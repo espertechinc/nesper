@@ -82,7 +82,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.simple
                 // Return an iterator that gives row-by-row a result
                 method.Block.MethodReturn(
                     NewInstance<TransformEventEnumerator>(
-                        ExprDotMethod(REF_VIEWABLE, "iterator"),
+                        ExprDotMethod(REF_VIEWABLE, "GetEnumerator"),
                         NewInstance<ResultSetProcessorHandtruTransform>(Ref("this"))
                     ));
                 return;
@@ -91,9 +91,9 @@ namespace com.espertech.esper.common.@internal.epl.resultset.simple
             // Pull all events, generate order keys
             method.Block
                 .DeclareVar<EventBean[]>("eventsPerStream", NewArrayByLength(typeof(EventBean), Constant(1)))
-                .DeclareVar<IList<object>>("events", NewInstance(typeof(List<object>)))
-                .DeclareVar<IList<object>>("orderKeys", NewInstance(typeof(List<object>)))
-                .DeclareVar<IEnumerator<object>>("parentIterator", ExprDotMethod(REF_VIEWABLE, "iterator"))
+                .DeclareVar<IList<EventBean>>("events", NewInstance(typeof(List<EventBean>)))
+                .DeclareVar<IList<EventBean>>("orderKeys", NewInstance(typeof(List<EventBean>)))
+                .DeclareVar<IEnumerator<EventBean>>("parentIterator", ExprDotMethod(REF_VIEWABLE, "GetEnumerator"))
                 .IfCondition(EqualsNull(Ref("parentIterator")))
                 .BlockReturn(PublicConstValue(typeof(CollectionUtil), "NULL_EVENT_ITERATOR"));
 
@@ -104,7 +104,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.simple
                         "orderKey",
                         ExprDotMethod(
                             REF_ORDERBYPROCESSOR,
-                            "getSortKey",
+                            "GetSortKey",
                             Ref("eventsPerStream"),
                             ConstantTrue(),
                             REF_AGENTINSTANCECONTEXT));
@@ -136,8 +136,8 @@ namespace com.espertech.esper.common.@internal.epl.resultset.simple
 
                 loop.IfCondition(
                         And(NotEqualsNull(Ref("result")), Not(EqualsIdentity(ArrayLength(Ref("result")), Constant(0)))))
-                    .ExprDotMethod(Ref("events"), "add", ArrayAtIndex(Ref("result"), Constant(0)))
-                    .ExprDotMethod(Ref("orderKeys"), "add", Ref("orderKey"));
+                    .ExprDotMethod(Ref("events"), "Add", ArrayAtIndex(Ref("result"), Constant(0)))
+                    .ExprDotMethod(Ref("orderKeys"), "Add", Ref("orderKey"));
             }
 
             method.Block.DeclareVar<EventBean[]>(

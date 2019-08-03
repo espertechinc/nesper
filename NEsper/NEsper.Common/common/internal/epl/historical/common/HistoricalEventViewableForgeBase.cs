@@ -69,7 +69,7 @@ namespace com.espertech.esper.common.@internal.epl.historical.common
                         classScope));
             CodegenSetter(@ref, method, symbols, classScope);
             method.Block
-                .Expression(ExprDotMethodChain(symbols.GetAddInitSvc(method)).Add("addReadyCallback", @ref))
+                .Expression(ExprDotMethodChain(symbols.GetAddInitSvc(method)).Add("AddReadyCallback", @ref))
                 .MethodReturn(@ref);
             return LocalMethod(method);
         }

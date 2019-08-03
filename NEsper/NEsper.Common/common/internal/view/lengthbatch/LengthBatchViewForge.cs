@@ -53,7 +53,7 @@ namespace com.espertech.esper.common.@internal.view.lengthbatch
 
         internal override string FactoryMethod()
         {
-            return "lengthbatch";
+            return "Lengthbatch";
         }
 
         internal override void Assign(

@@ -96,13 +96,13 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                     initType,
                     "value",
                     forge.initialization.EvaluateCodegen(initType, methodNode, scope, codegenClassScope))
-                .IfCondition(ExprDotMethod(EnumForgeCodegenNames.REF_ENUMCOLL, "isEmpty"))
+                .IfCondition(ExprDotMethod(EnumForgeCodegenNames.REF_ENUMCOLL, "IsEmpty"))
                 .BlockReturn(@Ref("value"));
             block.DeclareVar<ObjectArrayEventBean>(
                     "resultEvent",
                     NewInstance<ObjectArrayEventBean>(NewArrayByLength(typeof(object), Constant(1)), typeMember))
                 .AssignArrayElement(EnumForgeCodegenNames.REF_EPS, Constant(forge.streamNumLambda), @Ref("resultEvent"))
-                .DeclareVar<object[]>("props", ExprDotMethod(@Ref("resultEvent"), "getProperties"));
+                .DeclareVar<object[]>("props", ExprDotName(@Ref("resultEvent"), "Properties"));
             block.ForEach(typeof(EventBean), "next", EnumForgeCodegenNames.REF_ENUMCOLL)
                 .AssignArrayElement("props", Constant(0), @Ref("value"))
                 .AssignArrayElement(EnumForgeCodegenNames.REF_EPS, Constant(forge.streamNumLambda + 1), @Ref("next"))

@@ -88,7 +88,7 @@ namespace com.espertech.esper.common.@internal.view.exttimedwin
 
         internal override string FactoryMethod()
         {
-            return "exttime";
+            return "Exttime";
         }
 
         internal override void Assign(

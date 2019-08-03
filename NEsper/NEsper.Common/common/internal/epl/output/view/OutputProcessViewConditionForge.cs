@@ -136,7 +136,7 @@ namespace com.espertech.esper.common.@internal.epl.output.view
         {
         }
 
-        public void IteratorCodegen(
+        public void EnumeratorCodegen(
             CodegenMethod method,
             CodegenClassScope classScope)
         {

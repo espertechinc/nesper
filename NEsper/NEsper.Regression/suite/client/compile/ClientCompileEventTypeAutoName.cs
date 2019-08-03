@@ -32,12 +32,12 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
             public void Run(RegressionEnvironment env)
             {
                 var epl = "create schema MANE as MyAutoNameEvent;\n" +
-                          "@Name('s0') select p0 from MANE;\n";
+                          "@Name('s0') select P0 from MANE;\n";
                 var compiled = env.CompileWBusPublicType(epl);
                 env.Deploy(compiled).AddListener("s0");
 
                 env.SendEventBean(new MyAutoNameEvent("test"), "MANE");
-                Assert.AreEqual("test", env.Listener("s0").AssertOneGetNewAndReset().Get("p0"));
+                Assert.AreEqual("test", env.Listener("s0").AssertOneGetNewAndReset().Get("P0"));
 
                 env.UndeployAll();
             }

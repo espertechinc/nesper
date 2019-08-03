@@ -88,7 +88,7 @@ namespace com.espertech.esper.common.@internal.epl.ontrigger
             OneEventCollection oldData,
             AgentInstanceContext agentInstanceContext)
         {
-            var copy = namedWindowUpdate.UpdateWCopy(matchingEvent, eventsPerStream, agentInstanceContext);
+            var copy = namedWindowUpdate.Invoke(matchingEvent, eventsPerStream, agentInstanceContext);
             newData.Add(copy);
             oldData.Add(matchingEvent);
         }

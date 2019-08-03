@@ -33,8 +33,8 @@ namespace com.espertech.esper.common.@internal.epl.resultset.order
             CodegenClassScope classScope,
             CodegenNamedMethods namedMethods)
         {
-            var limit1 = EqualsIdentity(ExprDotMethod(REF_ROWLIMITPROCESSOR, "getCurrentRowLimit"), Constant(1));
-            var offset0 = EqualsIdentity(ExprDotMethod(REF_ROWLIMITPROCESSOR, "getCurrentOffset"), Constant(0));
+            var limit1 = EqualsIdentity(ExprDotName(REF_ROWLIMITPROCESSOR, "CurrentRowLimit"), Constant(1));
+            var offset0 = EqualsIdentity(ExprDotName(REF_ROWLIMITPROCESSOR, "CurrentOffset"), Constant(0));
             var haveOutgoing = And(
                 NotEqualsNull(REF_OUTGOINGEVENTS),
                 Relational(ArrayLength(REF_OUTGOINGEVENTS), GT, Constant(1)));
@@ -47,7 +47,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.order
                 .AddParam(SORTPLAIN_PARAMS);
             OrderByProcessorImpl.SortPlainCodegen(forge.OrderByProcessorForge, sortPlain, classScope, namedMethods);
 
-            method.Block.ExprDotMethod(REF_ROWLIMITPROCESSOR, "determineCurrentLimit")
+            method.Block.ExprDotMethod(REF_ROWLIMITPROCESSOR, "DetermineCurrentLimit")
                 .IfCondition(And(limit1, offset0, haveOutgoing))
                 .DeclareVar<EventBean>(
                     "minmax",

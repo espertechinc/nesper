@@ -129,8 +129,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.prev
                         Cast(typeof(RandomAccessByIndexGetter), Ref("strategy")))
                     .DeclareVar<RandomAccessByIndex>(
                         "randomAccess",
-                        ExprDotMethod(Ref("getter"), "getAccessor"))
-                    .BlockReturn(ExprDotMethod(Ref("randomAccess"), "getWindowCollectionReadOnly"));
+                        ExprDotName(Ref("getter"), "Accessor"))
+                    .BlockReturn(ExprDotName(Ref("randomAccess"), "WindowCollectionReadOnly"));
             }
             var relativeAccess = randomAccess.IfElse();
             {
@@ -145,7 +145,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.prev
                         "relativeAccess",
                         ExprDotMethod(Ref("getter"), "getAccessor", Ref("evalEvent")))
                     .IfRefNullReturnNull("relativeAccess")
-                    .BlockReturn(ExprDotMethod(Ref("relativeAccess"), "getWindowToEventCollReadOnly"));
+                    .BlockReturn(ExprDotName(Ref("relativeAccess"), "WindowToEventCollReadOnly"));
             }
             return LocalMethod(method);
         }
@@ -206,10 +206,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.prev
                     .AssignArrayElement(
                         eps,
                         Constant(StreamNumber),
-                        Cast(typeof(EventBean), ExprDotMethod(Ref("events"), "next")))
+                        Cast(typeof(EventBean), ExprDotMethod(Ref("events"), "Next")))
                     .ExprDotMethod(
                         Ref("result"),
-                        "add",
+                        "Add",
                         LocalMethod(innerEval, eps, ConstantTrue(), exprSymbol.GetAddExprEvalCtx(methodX)))
                     .BlockEnd()
                     .AssignArrayElement(eps, Constant(StreamNumber), Ref("originalEvent"))
@@ -413,8 +413,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.prev
                         Cast(typeof(RandomAccessByIndexGetter), Ref("strategy")))
                     .DeclareVar<RandomAccessByIndex>(
                         "randomAccess",
-                        ExprDotMethod(Ref("getter"), "getAccessor"))
-                    .AssignRef("size", ExprDotMethod(Ref("randomAccess"), "getWindowCount"));
+                        ExprDotName(Ref("getter"), "Accessor"))
+                    .AssignRef("size", ExprDotName(Ref("randomAccess"), "WindowCount"));
             }
             var relativeAccess = randomAccess.IfElse();
             {
@@ -429,7 +429,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.prev
                         "relativeAccess",
                         ExprDotMethod(Ref("getter"), "getAccessor", Ref("evalEvent")))
                     .IfRefNullReturnNull("relativeAccess")
-                    .AssignRef("size", ExprDotMethod(Ref("relativeAccess"), "getWindowToEventCount"));
+                    .AssignRef("size", ExprDotName(Ref("relativeAccess"), "WindowToEventCount"));
             }
 
             method.Block.MethodReturn(Ref("size"));
@@ -462,7 +462,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.prev
                 .AssignArrayElement(
                     eps,
                     Constant(StreamNumber),
-                    Cast(typeof(EventBean), ExprDotMethod(Ref("events"), "next")))
+                    Cast(typeof(EventBean), ExprDotMethod(Ref("events"), "Next")))
                 .AssignArrayElement(
                     "result",
                     Ref("i"),
@@ -542,7 +542,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.prev
                     .IfRefNullReturnNull("indexResult")
                     .DeclareVar<int>(
                         "index",
-                        ExprDotMethod(Cast(typeof(object), Ref("indexResult")), "intValue"));
+                        ExprDotMethod(Cast(typeof(object), Ref("indexResult")), "IntValue"));
             }
 
             var randomAccess = method.Block.IfCondition(InstanceOf(Ref("strategy"), typeof(RandomAccessByIndexGetter)));
@@ -553,7 +553,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.prev
                         Cast(typeof(RandomAccessByIndexGetter), Ref("strategy")))
                     .DeclareVar<RandomAccessByIndex>(
                         "randomAccess",
-                        ExprDotMethod(Ref("getter"), "getAccessor"));
+                        ExprDotName(Ref("getter"), "Accessor"));
                 if (PreviousType == ExprPreviousNodePreviousType.PREV) {
                     randomAccess.BlockReturn(ExprDotMethod(Ref("randomAccess"), "getNewData", Ref("index")));
                 }
@@ -669,9 +669,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.prev
                             Cast(typeof(RandomAccessByIndexGetter), _getter))
                         .DeclareVar<RandomAccessByIndex>(
                             "randomAccess",
-                            ExprDotMethod(Ref("getter"), "getAccessor"))
-                        .AssignRef("events", ExprDotMethod(Ref("randomAccess"), "getWindowIterator"))
-                        .AssignRef("size", ExprDotMethod(Ref("randomAccess"), "getWindowCount"));
+                            ExprDotName(Ref("getter"), "Accessor"))
+                        .AssignRef("events", ExprDotName(Ref("randomAccess"), "WindowIterator"))
+                        .AssignRef("size", ExprDotName(Ref("randomAccess"), "WindowCount"));
                 }
                 var relativeAccess = randomAccess.IfElse();
                 {
@@ -686,8 +686,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.prev
                             "relativeAccess",
                             ExprDotMethod(Ref("getter"), "getAccessor", Ref("evalEvent")))
                         .IfRefNullReturnNull("relativeAccess")
-                        .AssignRef("events", ExprDotMethod(Ref("relativeAccess"), "getWindowToEvent"))
-                        .AssignRef("size", ExprDotMethod(Ref("relativeAccess"), "getWindowToEventCount"));
+                        .AssignRef("events", ExprDotName(Ref("relativeAccess"), "WindowToEvent"))
+                        .AssignRef("size", ExprDotName(Ref("relativeAccess"), "WindowToEventCount"));
                 }
 
                 _method.Block.IfCondition(Relational(Ref("size"), LE, Constant(0)))

@@ -6,6 +6,7 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
 using System.Collections.Generic;
 using System.IO;
 
@@ -14,6 +15,7 @@ namespace com.espertech.esper.common.client.soda
     /// <summary>
     ///     Base expression.
     /// </summary>
+    [Serializable]
     public abstract class ExpressionBase : Expression
     {
         /// <summary>

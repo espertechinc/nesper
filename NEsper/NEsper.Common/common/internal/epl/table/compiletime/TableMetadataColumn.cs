@@ -43,7 +43,7 @@ namespace com.espertech.esper.common.@internal.epl.table.compiletime
             CodegenExpressionRef col,
             CodegenBlock block)
         {
-            block.SetProperty(col, "Key", Constant(IsKey))
+            block.SetProperty(col, "IsKey", Constant(IsKey))
                 .SetProperty(col, "ColumnName", Constant(ColumnName));
         }
 
@@ -63,7 +63,7 @@ namespace com.espertech.esper.common.@internal.epl.table.compiletime
             foreach (KeyValuePair<string, TableMetadataColumn> entry in columns) {
                 method.Block.ExprDotMethod(
                     Ref("cols"),
-                    "put",
+                    "Put",
                     Constant(entry.Key),
                     entry.Value.Make(method, symbols, classScope));
             }

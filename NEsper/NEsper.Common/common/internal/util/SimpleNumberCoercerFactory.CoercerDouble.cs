@@ -70,7 +70,7 @@ namespace com.espertech.esper.common.@internal.util
                 CodegenClassScope codegenClassScope)
             {
                 if (valueType == typeof(BigInteger) || valueType == typeof(decimal)) {
-                    return CodegenExpressionBuilder.ExprDotMethod(value, "doubleValue");
+                    return CodegenExpressionBuilder.ExprDotMethod(value, "DoubleValue");
                 }
 
                 return CodegenCoerceMayNull(

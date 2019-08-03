@@ -55,7 +55,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                 .MakeChild(typeof(ICollection<object>), typeof(EnumReverseForge), codegenClassScope)
                 .AddParam(EnumForgeCodegenNames.PARAMS)
                 .Block
-                .IfCondition(ExprDotMethod(EnumForgeCodegenNames.REF_ENUMCOLL, "isEmpty"))
+                .IfCondition(ExprDotMethod(EnumForgeCodegenNames.REF_ENUMCOLL, "IsEmpty"))
                 .BlockReturn(EnumForgeCodegenNames.REF_ENUMCOLL)
                 .DeclareVar<List<object>>(
                     "result",

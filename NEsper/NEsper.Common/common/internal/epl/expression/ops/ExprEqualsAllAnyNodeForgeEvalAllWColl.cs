@@ -243,7 +243,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                         .AssignRef("hasNullRow", ConstantTrue())
                         .IfElse()
                         .AssignRef("hasNonNullRow", ConstantTrue())
-                        .IfCondition(NotOptional(!isNot, ExprDotMethod(Ref(refname), "contains", Ref("left"))))
+                        .IfCondition(NotOptional(!isNot, ExprDotMethod(Ref(refname), "Contains", Ref("left"))))
                         .BlockReturn(ConstantFalse());
                 }
                 else if (reftype.IsGenericDictionary()) {

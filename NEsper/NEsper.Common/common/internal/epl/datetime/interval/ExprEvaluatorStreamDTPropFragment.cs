@@ -77,15 +77,15 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
                 .DeclareVar<EventBean>("theEvent", ArrayAtIndex(refEPS, Constant(streamId)))
                 .IfRefNullReturnNull("theEvent")
                 .DeclareVar<object>(
-                    "event",
+                    "@event",
                     getterFragment.EventBeanFragmentCodegen(Ref("theEvent"), methodNode, codegenClassScope))
-                .IfCondition(Not(InstanceOf(Ref("event"), typeof(EventBean))))
+                .IfCondition(Not(InstanceOf(Ref("@event"), typeof(EventBean))))
                 .BlockReturn(ConstantNull())
                 .MethodReturn(
                     CodegenLegoCast.CastSafeFromObjectType(
                         typeof(long),
                         getterTimestamp.EventBeanGetCodegen(
-                            Cast(typeof(EventBean), Ref("event")),
+                            Cast(typeof(EventBean), Ref("@event")),
                             methodNode,
                             codegenClassScope)));
             return LocalMethod(methodNode);

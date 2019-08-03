@@ -10,6 +10,9 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
+using com.espertech.esper.common.@internal.bytecodemodel.core;
+using com.espertech.esper.common.@internal.bytecodemodel.util;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.core.CodeGenerationHelper;
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionUtil;
 
@@ -36,13 +39,15 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
 
         public void Render(
             StringBuilder builder,
-            bool isInnerClass)
+            bool isInnerClass,
+            int level,
+            CodegenIndent indent)
         {
             builder.Append("((");
             AppendClassName(builder, _clazz);
             builder.Append(")");
-            _expression.Render(builder, isInnerClass);
-            builder.Append(".getUnderlying()).");
+            _expression.Render(builder, isInnerClass, level, indent);
+            builder.Append(".Underlying).");
             builder.Append(_method).Append("(");
             RenderConstant(builder, _constant);
             builder.Append(")");
@@ -51,7 +56,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
         public void MergeClasses(ISet<Type> classes)
         {
             _expression.MergeClasses(classes);
-            classes.Add(_clazz);
+            classes.AddToSet(_clazz);
         }
     }
 } // end of namespace

@@ -10,6 +10,8 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
+using com.espertech.esper.common.@internal.bytecodemodel.util;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.core.CodeGenerationHelper;
 
 namespace com.espertech.esper.common.@internal.bytecodemodel.core
@@ -121,7 +123,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.core
         public void MergeClasses(ISet<Type> classes)
         {
             if (_type != null) {
-                classes.Add(_type);
+                classes.AddToSet(_type);
             }
         }
 

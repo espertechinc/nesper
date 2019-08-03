@@ -34,8 +34,9 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
 
         public CodegenExpression InitCtorScoped()
         {
-            return ExprDotMethodChain(EPStatementInitServicesConstants.REF)
-                .Add(EPStatementInitServicesConstants.GETRESULTSETPROCESSORHELPERFACTORY);
+            return ExprDotName(
+                    EPStatementInitServicesConstants.REF,
+                    EPStatementInitServicesConstants.RESULTSETPROCESSORHELPERFACTORY);
         }
     }
 } // end of namespace

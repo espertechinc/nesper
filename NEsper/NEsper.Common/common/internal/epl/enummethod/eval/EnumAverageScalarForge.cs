@@ -70,7 +70,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                 .IfRefNull("num")
                 .BlockContinue()
                 .Increment("count")
-                .AssignRef("sum", Op(Ref("sum"), "+", ExprDotMethod(Ref("num"), "doubleValue")))
+                .AssignRef("sum", Op(Ref("sum"), "+", ExprDotMethod(Ref("num"), "DoubleValue")))
                 .BlockEnd()
                 .IfCondition(EqualsIdentity(Ref("count"), Constant(0)))
                 .BlockReturn(ConstantNull())

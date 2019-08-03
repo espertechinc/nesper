@@ -96,7 +96,7 @@ namespace com.espertech.esper.common.@internal.epl.historical.indexingstrategy
                 .SetProperty(Ref("strat"), "RangeProps", Constant(rangeProps))
                 .SetProperty(Ref("strat"), "OptRangeCoercedTypes", Constant(rangeTypes))
                 .SetProperty(Ref("strat"), "RangeGetters", Ref("rangeGetters"))
-                .ExprDotMethod(Ref("strat"), "init")
+                .ExprDotMethod(Ref("strat"), "Init")
                 .MethodReturn(Ref("strat"));
             return LocalMethod(method);
         }

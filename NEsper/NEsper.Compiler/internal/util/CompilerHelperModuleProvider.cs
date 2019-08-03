@@ -56,28 +56,27 @@ namespace com.espertech.esper.compiler.@internal.util
             ModuleCompileTimeServices compileTimeServices,
             CompilerOptions compilerOptions)
         {
-            var packageName = "generated";
+            var @namespace = "generated";
 
-            try
-            {
+            try {
                 var manifest = CompileToBytes(
-                    compilables, 
-                    optionalModuleName, 
-                    moduleProperties, 
-                    compileTimeServices, 
-                    compilerOptions, 
-                    packageName,
+                    compilables,
+                    optionalModuleName,
+                    moduleProperties,
+                    compileTimeServices,
+                    compilerOptions,
+                    @namespace,
                     out var assembly);
 
                 return new EPCompiled(assembly, manifest);
             }
-            catch (EPCompileException)
-            {
+            catch (EPCompileException) {
                 throw;
             }
-            catch (Exception ex)
-            {
-                throw new EPCompileException("Unexpected exception compiling module: " + ex.Message, ex,
+            catch (Exception ex) {
+                throw new EPCompileException(
+                    "Unexpected exception compiling module: " + ex.Message,
+                    ex,
                     new EmptyList<EPCompileExceptionItem>());
             }
         }
@@ -88,7 +87,7 @@ namespace com.espertech.esper.compiler.@internal.util
             IDictionary<ModuleProperty, object> moduleProperties,
             ModuleCompileTimeServices compileTimeServices,
             CompilerOptions compilerOptions,
-            string packageName,
+            string @namespace,
             out Assembly assembly)
         {
             var moduleAssignedName = optionalModuleName ?? Guid.NewGuid().ToString();
@@ -99,34 +98,29 @@ namespace com.espertech.esper.compiler.@internal.util
             IList<string> statementClassNames = new List<string>();
 
             ISet<string> statementNames = new HashSet<string>();
-            foreach (var compilable in compilables)
-            {
+            foreach (var compilable in compilables) {
                 string className;
 
-                try
-                {
+                try {
                     var statementCompileTimeServices =
                         new StatementCompileTimeServices(statementNumber, compileTimeServices);
                     className = CompilerHelperStatementProvider.CompileItem(
                         compilable,
-                        optionalModuleName, 
+                        optionalModuleName,
                         moduleIdentPostfix,
                         statementNumber,
-                        packageName, 
+                        @namespace,
                         statementNames,
                         statementCompileTimeServices,
                         compilerOptions,
                         out assembly);
                 }
-                catch (StatementSpecCompileException ex)
-                {
+                catch (StatementSpecCompileException ex) {
                     EPCompileExceptionItem first;
-                    if (ex is StatementSpecCompileSyntaxException)
-                    {
+                    if (ex is StatementSpecCompileSyntaxException) {
                         first = new EPCompileExceptionSyntaxItem(ex.Message, ex.Expression, -1);
                     }
-                    else
-                    {
+                    else {
                         first = new EPCompileExceptionItem(ex.Message, ex.Expression, -1);
                     }
 
@@ -140,11 +134,11 @@ namespace com.espertech.esper.compiler.@internal.util
 
             // compile module resource
             var moduleProviderClassName = CompileModule(
-                optionalModuleName, 
-                moduleProperties, 
-                statementClassNames, 
+                optionalModuleName,
+                moduleProperties,
+                statementClassNames,
                 moduleIdentPostfix,
-                packageName, 
+                @namespace,
                 compileTimeServices,
                 out assembly);
 
@@ -157,30 +151,42 @@ namespace com.espertech.esper.compiler.@internal.util
             IDictionary<ModuleProperty, object> moduleProperties,
             IList<string> statementClassNames,
             string moduleIdentPostfix,
-            string packageName,
+            string @namespace,
             ModuleCompileTimeServices compileTimeServices,
             out Assembly assembly)
         {
             // write code to create an implementation of StatementResource
-            var packageScope = new CodegenNamespaceScope(packageName, null, compileTimeServices.IsInstrumented());
-            var moduleClassName = CodeGenerationIDGenerator.GenerateClassNameSimple(typeof(ModuleProvider), moduleIdentPostfix);
-            var classScope = new CodegenClassScope(true, packageScope, moduleClassName);
+            var namespaceScope = new CodegenNamespaceScope(@namespace, null, compileTimeServices.IsInstrumented());
+            var moduleClassName = CodeGenerationIDGenerator.GenerateClassNameSimple(
+                typeof(ModuleProvider),
+                moduleIdentPostfix);
+            var classScope = new CodegenClassScope(true, namespaceScope, moduleClassName);
             var methods = new CodegenClassMethods();
+            var properties = new CodegenClassProperties();
 
             // provide module name
-            var getModuleNameMethod = CodegenMethod.MakeParentNode(
-                typeof(string), typeof(EPCompilerImpl), CodegenSymbolProviderEmpty.INSTANCE, classScope);
-            getModuleNameMethod.Block.MethodReturn(Constant(optionalModuleName));
+            var moduleNameProp = CodegenProperty.MakeParentNode(
+                typeof(string),
+                typeof(EPCompilerImpl),
+                CodegenSymbolProviderEmpty.INSTANCE,
+                classScope);
+            moduleNameProp.GetterBlock.BlockReturn(Constant(optionalModuleName));
 
             // provide module properties
-            var getModulePropertiesMethod = CodegenMethod.MakeParentNode(
-                typeof(IDictionary<string, string>), typeof(EPCompilerImpl), CodegenSymbolProviderEmpty.INSTANCE, classScope);
-            MakeModuleProperties(moduleProperties, getModulePropertiesMethod);
+            var modulePropertiesProp = CodegenProperty.MakeParentNode(
+                typeof(IDictionary<ModuleProperty, object>),
+                typeof(EPCompilerImpl),
+                CodegenSymbolProviderEmpty.INSTANCE,
+                classScope);
+            MakeModuleProperties(moduleProperties, modulePropertiesProp);
 
             // provide module dependencies
-            var getModuleDependenciesMethod = CodegenMethod.MakeParentNode(
-                typeof(ModuleDependenciesRuntime), typeof(EPCompilerImpl), CodegenSymbolProviderEmpty.INSTANCE, classScope);
-            getModuleDependenciesMethod.Block.MethodReturn(compileTimeServices.ModuleDependencies.Make(getModuleDependenciesMethod, classScope));
+            var moduleDependenciesProp = CodegenProperty.MakeParentNode(
+                typeof(ModuleDependenciesRuntime),
+                typeof(EPCompilerImpl),
+                CodegenSymbolProviderEmpty.INSTANCE,
+                classScope);
+            compileTimeServices.ModuleDependencies.Inject(moduleDependenciesProp.GetterBlock);
 
             // register types
             var initializeEventTypesMethod = MakeInitEventTypes(classScope, compileTimeServices);
@@ -188,31 +194,36 @@ namespace com.espertech.esper.compiler.@internal.util
             // register named windows
             var symbolsNamedWindowInit = new ModuleNamedWindowInitializeSymbol();
             var initializeNamedWindowsMethod = CodegenMethod
-                .MakeParentNode(typeof(void), typeof(EPCompilerImpl), symbolsNamedWindowInit, classScope).AddParam(
-                    typeof(EPModuleNamedWindowInitServices), ModuleNamedWindowInitializeSymbol.REF_INITSVC.Ref);
-            foreach (var namedWindow in compileTimeServices.NamedWindowCompileTimeRegistry.NamedWindows)
-            {
+                .MakeParentNode(typeof(void), typeof(EPCompilerImpl), symbolsNamedWindowInit, classScope)
+                .AddParam(
+                    typeof(EPModuleNamedWindowInitServices),
+                    ModuleNamedWindowInitializeSymbol.REF_INITSVC.Ref);
+            foreach (var namedWindow in compileTimeServices.NamedWindowCompileTimeRegistry.NamedWindows) {
                 var addNamedWindow = RegisterNamedWindowCodegen(
-                    namedWindow, initializeNamedWindowsMethod, classScope, symbolsNamedWindowInit);
+                    namedWindow,
+                    initializeNamedWindowsMethod,
+                    classScope,
+                    symbolsNamedWindowInit);
                 initializeNamedWindowsMethod.Block.Expression(LocalMethod(addNamedWindow));
             }
 
             // register tables
             var symbolsTableInit = new ModuleTableInitializeSymbol();
-            var initializeTablesMethod = CodegenMethod.MakeParentNode(typeof(void), typeof(EPCompilerImpl), symbolsTableInit, classScope)
+            var initializeTablesMethod = CodegenMethod
+                .MakeParentNode(typeof(void), typeof(EPCompilerImpl), symbolsTableInit, classScope)
                 .AddParam(typeof(EPModuleTableInitServices), ModuleTableInitializeSymbol.REF_INITSVC.Ref);
-            foreach (var table in compileTimeServices.TableCompileTimeRegistry.Tables)
-            {
+            foreach (var table in compileTimeServices.TableCompileTimeRegistry.Tables) {
                 var addTable = RegisterTableCodegen(table, initializeTablesMethod, classScope, symbolsTableInit);
                 initializeTablesMethod.Block.Expression(LocalMethod(addTable));
             }
 
             // register indexes
             var symbolsIndexInit = new ModuleIndexesInitializeSymbol();
-            var initializeIndexesMethod = CodegenMethod.MakeParentNode(typeof(void), typeof(EPCompilerImpl), symbolsIndexInit, classScope)
+            var initializeIndexesMethod = CodegenMethod
+                .MakeParentNode(typeof(void), typeof(EPCompilerImpl), symbolsIndexInit, classScope)
                 .AddParam(typeof(EPModuleIndexInitServices), EPModuleIndexInitServicesConstants.REF.Ref);
-            foreach (KeyValuePair<IndexCompileTimeKey, IndexDetailForge> index in compileTimeServices.IndexCompileTimeRegistry.Indexes)
-            {
+            foreach (KeyValuePair<IndexCompileTimeKey, IndexDetailForge> index in compileTimeServices
+                .IndexCompileTimeRegistry.Indexes) {
                 var addIndex = RegisterIndexCodegen(index, initializeIndexesMethod, classScope, symbolsIndexInit);
                 initializeIndexesMethod.Block.Expression(LocalMethod(addIndex));
             }
@@ -220,78 +231,106 @@ namespace com.espertech.esper.compiler.@internal.util
             // register contexts
             var symbolsContextInit = new ModuleContextInitializeSymbol();
             var initializeContextsMethod = CodegenMethod
-                .MakeParentNode(typeof(void), typeof(EPCompilerImpl), symbolsContextInit, classScope).AddParam(
-                    typeof(EPModuleContextInitServices), ModuleContextInitializeSymbol.REF_INITSVC.Ref);
-            foreach (var context in compileTimeServices.ContextCompileTimeRegistry.Contexts)
-            {
-                var addContext = RegisterContextCodegen(context, initializeContextsMethod, classScope, symbolsContextInit);
+                .MakeParentNode(typeof(void), typeof(EPCompilerImpl), symbolsContextInit, classScope)
+                .AddParam(
+                    typeof(EPModuleContextInitServices),
+                    ModuleContextInitializeSymbol.REF_INITSVC.Ref);
+            foreach (var context in compileTimeServices.ContextCompileTimeRegistry.Contexts) {
+                var addContext = RegisterContextCodegen(
+                    context,
+                    initializeContextsMethod,
+                    classScope,
+                    symbolsContextInit);
                 initializeContextsMethod.Block.Expression(LocalMethod(addContext));
             }
 
             // register variables
             var symbolsVariablesInit = new ModuleVariableInitializeSymbol();
             var initializeVariablesMethod = CodegenMethod
-                .MakeParentNode(typeof(void), typeof(EPCompilerImpl), symbolsVariablesInit, classScope).AddParam(
-                    typeof(EPModuleVariableInitServices), ModuleVariableInitializeSymbol.REF_INITSVC.Ref);
-            foreach (var variable in compileTimeServices.VariableCompileTimeRegistry.Variables)
-            {
-                var addVariable = RegisterVariableCodegen(variable, initializeVariablesMethod, classScope, symbolsVariablesInit);
+                .MakeParentNode(typeof(void), typeof(EPCompilerImpl), symbolsVariablesInit, classScope)
+                .AddParam(
+                    typeof(EPModuleVariableInitServices),
+                    ModuleVariableInitializeSymbol.REF_INITSVC.Ref);
+            foreach (var variable in compileTimeServices.VariableCompileTimeRegistry.Variables) {
+                var addVariable = RegisterVariableCodegen(
+                    variable,
+                    initializeVariablesMethod,
+                    classScope,
+                    symbolsVariablesInit);
                 initializeVariablesMethod.Block.Expression(LocalMethod(addVariable));
             }
 
             // register expressions
             var symbolsExprDeclaredInit = new ModuleExpressionDeclaredInitializeSymbol();
             var initializeExprDeclaredMethod = CodegenMethod
-                .MakeParentNode(typeof(void), typeof(EPCompilerImpl), symbolsExprDeclaredInit, classScope).AddParam(
-                    typeof(EPModuleExprDeclaredInitServices), ModuleExpressionDeclaredInitializeSymbol.REF_INITSVC.Ref);
-            foreach (var expression in compileTimeServices.ExprDeclaredCompileTimeRegistry.Expressions)
-            {
+                .MakeParentNode(typeof(void), typeof(EPCompilerImpl), symbolsExprDeclaredInit, classScope)
+                .AddParam(
+                    typeof(EPModuleExprDeclaredInitServices),
+                    ModuleExpressionDeclaredInitializeSymbol.REF_INITSVC.Ref);
+            foreach (var expression in compileTimeServices.ExprDeclaredCompileTimeRegistry.Expressions) {
                 var addExpression = RegisterExprDeclaredCodegen(
-                    expression, initializeExprDeclaredMethod, classScope, symbolsExprDeclaredInit);
+                    expression,
+                    initializeExprDeclaredMethod,
+                    classScope,
+                    symbolsExprDeclaredInit);
                 initializeExprDeclaredMethod.Block.Expression(LocalMethod(addExpression));
             }
 
             // register scripts
             var symbolsScriptInit = new ModuleScriptInitializeSymbol();
-            var initializeScriptsMethod = CodegenMethod.MakeParentNode(typeof(void), typeof(EPCompilerImpl), symbolsScriptInit, classScope)
+            var initializeScriptsMethod = CodegenMethod
+                .MakeParentNode(typeof(void), typeof(EPCompilerImpl), symbolsScriptInit, classScope)
                 .AddParam(typeof(EPModuleScriptInitServices), ModuleScriptInitializeSymbol.REF_INITSVC.Ref);
-            foreach (var expression in compileTimeServices.ScriptCompileTimeRegistry.Scripts)
-            {
-                var addScript = RegisterScriptCodegen(expression, initializeScriptsMethod, classScope, symbolsScriptInit);
+            foreach (var expression in compileTimeServices.ScriptCompileTimeRegistry.Scripts) {
+                var addScript = RegisterScriptCodegen(
+                    expression,
+                    initializeScriptsMethod,
+                    classScope,
+                    symbolsScriptInit);
                 initializeScriptsMethod.Block.Expression(LocalMethod(addScript));
             }
 
             // instantiate factories for statements
-            var statementsMethod = CodegenMethod.MakeParentNode(
-                typeof(IList<object>), typeof(EPCompilerImpl), CodegenSymbolProviderEmpty.INSTANCE, classScope);
-            statementsMethod.Block.DeclareVar<IList<object>>(
-                "statements", NewInstance(typeof(List<object>), Constant(statementClassNames.Count)));
-            foreach (var statementClassName in statementClassNames)
-            {
-                statementsMethod.Block.ExprDotMethod(
-                    @Ref("statements"), "Add", 
+            var statementsProp = CodegenProperty.MakeParentNode(
+                typeof(IList<StatementProvider>),
+                typeof(EPCompilerImpl),
+                CodegenSymbolProviderEmpty.INSTANCE,
+                classScope);
+            statementsProp.GetterBlock.DeclareVar<IList<StatementProvider>>(
+                "statements",
+                NewInstance(typeof(List<StatementProvider>), Constant(statementClassNames.Count)));
+            foreach (var statementClassName in statementClassNames) {
+                statementsProp.GetterBlock.ExprDotMethod(
+                    @Ref("statements"),
+                    "Add",
                     NewInstance(statementClassName));
             }
 
-            statementsMethod.Block.MethodReturn(@Ref("statements"));
+            statementsProp.GetterBlock.BlockReturn(@Ref("statements"));
 
             // build stack
-            CodegenStackGenerator.RecursiveBuildStack(getModuleNameMethod, "getModuleName", methods);
-            CodegenStackGenerator.RecursiveBuildStack(getModulePropertiesMethod, "getModuleProperties", methods);
-            CodegenStackGenerator.RecursiveBuildStack(getModuleDependenciesMethod, "getModuleDependencies", methods);
-            CodegenStackGenerator.RecursiveBuildStack(initializeEventTypesMethod, "initializeEventTypes", methods);
-            CodegenStackGenerator.RecursiveBuildStack(initializeNamedWindowsMethod, "initializeNamedWindows", methods);
-            CodegenStackGenerator.RecursiveBuildStack(initializeTablesMethod, "initializeTables", methods);
-            CodegenStackGenerator.RecursiveBuildStack(initializeIndexesMethod, "initializeIndexes", methods);
-            CodegenStackGenerator.RecursiveBuildStack(initializeContextsMethod, "initializeContexts", methods);
-            CodegenStackGenerator.RecursiveBuildStack(initializeVariablesMethod, "initializeVariables", methods);
-            CodegenStackGenerator.RecursiveBuildStack(initializeExprDeclaredMethod, "initializeExprDeclareds", methods);
-            CodegenStackGenerator.RecursiveBuildStack(initializeScriptsMethod, "initializeScripts", methods);
-            CodegenStackGenerator.RecursiveBuildStack(statementsMethod, "statements", methods);
+            CodegenStackGenerator.RecursiveBuildStack(moduleNameProp, "ModuleName", methods, properties);
+            CodegenStackGenerator.RecursiveBuildStack(modulePropertiesProp, "ModuleProperties", methods, properties);
+            CodegenStackGenerator.RecursiveBuildStack(moduleDependenciesProp, "ModuleDependencies", methods, properties);
+            CodegenStackGenerator.RecursiveBuildStack(initializeEventTypesMethod, "InitializeEventTypes", methods, properties);
+            CodegenStackGenerator.RecursiveBuildStack(initializeNamedWindowsMethod, "InitializeNamedWindows", methods, properties);
+            CodegenStackGenerator.RecursiveBuildStack(initializeTablesMethod, "InitializeTables", methods, properties);
+            CodegenStackGenerator.RecursiveBuildStack(initializeIndexesMethod, "InitializeIndexes", methods, properties);
+            CodegenStackGenerator.RecursiveBuildStack(initializeContextsMethod, "InitializeContexts", methods, properties);
+            CodegenStackGenerator.RecursiveBuildStack(initializeVariablesMethod, "InitializeVariables", methods, properties);
+            CodegenStackGenerator.RecursiveBuildStack(initializeExprDeclaredMethod, "InitializeExprDeclareds", methods, properties);
+            CodegenStackGenerator.RecursiveBuildStack(initializeScriptsMethod, "InitializeScripts", methods, properties);
+            CodegenStackGenerator.RecursiveBuildStack(statementsProp, "Statements", methods, properties);
 
             var clazz = new CodegenClass(
-                typeof(ModuleProvider), packageName, moduleClassName, classScope,
-                new EmptyList<CodegenTypedParam>(), null, methods,
+                typeof(ModuleProvider),
+                @namespace,
+                moduleClassName,
+                classScope,
+                new EmptyList<CodegenTypedParam>(),
+                null,
+                methods,
+                properties,
                 new EmptyList<CodegenInnerClass>());
             var compiler = new RoslynCompiler()
                 .WithCodeLogging(compileTimeServices.Configuration.Compiler.Logging.IsEnableCode)
@@ -300,33 +339,51 @@ namespace com.espertech.esper.compiler.@internal.util
             assembly = compiler.Compile();
 
             return CodeGenerationIDGenerator.GenerateClassNameWithNamespace(
-                packageName, typeof(ModuleProvider), moduleIdentPostfix);
+                @namespace,
+                typeof(ModuleProvider),
+                moduleIdentPostfix);
         }
 
         private static void MakeModuleProperties(
             IDictionary<ModuleProperty, object> props,
-            CodegenMethod method)
+            CodegenProperty method)
         {
-            if (props.IsEmpty())
-            {
-                method.Block.MethodReturn(StaticMethod(typeof(Collections), "emptyMap"));
+            if (props.IsEmpty()) {
+                method.GetterBlock.BlockReturn(StaticMethod(
+                    typeof(Collections),
+                    "GetEmptyMap",
+                    new Type[] {
+                        typeof(ModuleProperty),
+                        typeof(object)
+                    }));
+
                 return;
             }
 
-            if (props.Count == 1)
-            {
+            if (props.Count == 1) {
                 var entry = props.First();
-                method.Block.MethodReturn(
-                    StaticMethod(typeof(Collections), "singletonMap", MakeModulePropKey(entry.Key), MakeModulePropValue(entry.Value)));
+                method.GetterBlock.BlockReturn(
+                    StaticMethod(
+                        typeof(Collections),
+                        "SingletonMap",
+                        new Type[] {
+                            typeof(ModuleProperty),
+                            typeof(object)
+                        },
+                        MakeModulePropKey(entry.Key),
+                        MakeModulePropValue(entry.Value)));
                 return;
             }
 
             method.Block.DeclareVar<IDictionary<string, string>>(
-"props",
+                "props",
                 NewInstance(typeof(Dictionary<string, string>), Constant(CollectionUtil.CapacityHashMap(props.Count))));
-            foreach (var entry in props)
-            {
-                method.Block.ExprDotMethod(@Ref("props"), "put", MakeModulePropKey(entry.Key), MakeModulePropValue(entry.Value));
+            foreach (var entry in props) {
+                method.Block.ExprDotMethod(
+                    @Ref("props"),
+                    "Put",
+                    MakeModulePropKey(entry.Key),
+                    MakeModulePropValue(entry.Value));
             }
 
             method.Block.MethodReturn(@Ref("props"));
@@ -351,9 +408,12 @@ namespace com.espertech.esper.compiler.@internal.util
             var method = parent.MakeChild(typeof(void), typeof(EPCompilerImpl), classScope);
             method.Block
                 .Expression(
-                    ExprDotMethodChain(symbols.GetAddInitSvc(method)).Add(EPModuleScriptInitServicesConstants.GETSCRIPTCOLLECTOR)
+                    ExprDotMethodChain(symbols.GetAddInitSvc(method))
+                        .Get(EPModuleScriptInitServicesConstants.GETSCRIPTCOLLECTOR)
                         .Add(
-                            "registerScript", Constant(script.Key.Name), Constant(script.Key.ParamNum),
+                            "RegisterScript",
+                            Constant(script.Key.Name),
+                            Constant(script.Key.ParamNum),
                             script.Value.Make(method, symbols, classScope)));
             return method;
         }
@@ -373,8 +433,9 @@ namespace com.espertech.esper.compiler.@internal.util
             method.Block
                 .DeclareVar<ExpressionDeclItem>("detail", expression.Value.Make(method, symbols, classScope))
                 .Expression(
-                    ExprDotMethodChain(symbols.GetAddInitSvc(method)).Add(EPModuleExprDeclaredInitServicesConstants.GETEXPRDECLAREDCOLLECTOR)
-                        .Add("registerExprDeclared", Constant(expression.Key), @Ref("detail")));
+                    ExprDotMethodChain(symbols.GetAddInitSvc(method))
+                        .Get(EPModuleExprDeclaredInitServicesConstants.GETEXPRDECLAREDCOLLECTOR)
+                        .Add("RegisterExprDeclared", Constant(expression.Key), @Ref("detail")));
             return method;
         }
 
@@ -384,11 +445,16 @@ namespace com.espertech.esper.compiler.@internal.util
         {
             var symbolsEventTypeInit = new ModuleEventTypeInitializeSymbol();
             var initializeEventTypesMethod = CodegenMethod
-                .MakeParentNode(typeof(void), typeof(EPCompilerImpl), symbolsEventTypeInit, classScope).AddParam(
-                    typeof(EPModuleEventTypeInitServices), ModuleEventTypeInitializeSymbol.REF_INITSVC.Ref);
-            foreach (var eventType in compileTimeServices.EventTypeCompileTimeRegistry.NewTypesAdded)
-            {
-                var addType = RegisterEventTypeCodegen(eventType, initializeEventTypesMethod, classScope, symbolsEventTypeInit);
+                .MakeParentNode(typeof(void), typeof(EPCompilerImpl), symbolsEventTypeInit, classScope)
+                .AddParam(
+                    typeof(EPModuleEventTypeInitServices),
+                    ModuleEventTypeInitializeSymbol.REF_INITSVC.Ref);
+            foreach (var eventType in compileTimeServices.EventTypeCompileTimeRegistry.NewTypesAdded) {
+                var addType = RegisterEventTypeCodegen(
+                    eventType,
+                    initializeEventTypesMethod,
+                    classScope,
+                    symbolsEventTypeInit);
                 initializeEventTypesMethod.Block.Expression(LocalMethod(addType));
             }
 
@@ -406,10 +472,11 @@ namespace com.espertech.esper.compiler.@internal.util
                 .DeclareVar<NamedWindowMetaData>("detail", namedWindow.Value.Make(symbols.GetAddInitSvc(method)))
                 .Expression(
                     ExprDotMethodChain(symbols.GetAddInitSvc(method))
-                        .Add(EPModuleNamedWindowInitServicesConstants.GETNAMEDWINDOWCOLLECTOR)
+                        .Get(EPModuleNamedWindowInitServicesConstants.GETNAMEDWINDOWCOLLECTOR)
                         .Add(
-                        "registerNamedWindow",
-                        Constant(namedWindow.Key), @Ref("detail")));
+                            "RegisterNamedWindow",
+                            Constant(namedWindow.Key),
+                            @Ref("detail")));
             return method;
         }
 
@@ -424,10 +491,11 @@ namespace com.espertech.esper.compiler.@internal.util
                 .DeclareVar<TableMetaData>("detail", table.Value.Make(parent, symbols, classScope))
                 .Expression(
                     ExprDotMethodChain(symbols.GetAddInitSvc(method))
-                        .Add(EPModuleTableInitServicesConstants.GETTABLECOLLECTOR)
+                        .Get(EPModuleTableInitServicesConstants.GETTABLECOLLECTOR)
                         .Add(
-                        "registerTable",
-                        Constant(table.Key), @Ref("detail")));
+                            "RegisterTable",
+                            Constant(table.Key),
+                            @Ref("detail")));
             return method;
         }
 
@@ -444,7 +512,7 @@ namespace com.espertech.esper.compiler.@internal.util
                 .Expression(
                     ExprDotMethodChain(symbols.GetAddInitSvc(method))
                         .Add(EPModuleIndexInitServicesConstants.GETINDEXCOLLECTOR)
-                        .Add("registerIndex", @Ref("key"), @Ref("detail")));
+                        .Add("RegisterIndex", @Ref("key"), @Ref("detail")));
             return method;
         }
 
@@ -459,8 +527,8 @@ namespace com.espertech.esper.compiler.@internal.util
                 .DeclareVar<ContextMetaData>("detail", context.Value.Make(symbols.GetAddInitSvc(method)))
                 .Expression(
                     ExprDotMethodChain(symbols.GetAddInitSvc(method))
-                        .Add(EPModuleContextInitServicesConstants.GETCONTEXTCOLLECTOR)
-                        .Add("registerContext", Constant(context.Key), @Ref("detail")));
+                        .Get(EPModuleContextInitServicesConstants.GETCONTEXTCOLLECTOR)
+                        .Add("RegisterContext", Constant(context.Key), @Ref("detail")));
             return method;
         }
 
@@ -475,8 +543,8 @@ namespace com.espertech.esper.compiler.@internal.util
                 .DeclareVar<VariableMetaData>("detail", variable.Value.Make(symbols.GetAddInitSvc(method)))
                 .Expression(
                     ExprDotMethodChain(symbols.GetAddInitSvc(method))
-                        .Add(EPModuleVariableInitServicesConstants.GETVARIABLECOLLECTOR)
-                        .Add("registerVariable", Constant(variable.Key), @Ref("detail")));
+                        .Get(EPModuleVariableInitServicesConstants.GETVARIABLECOLLECTOR)
+                        .Add("RegisterVariable", Constant(variable.Key), @Ref("detail")));
             return method;
         }
 
@@ -491,91 +559,107 @@ namespace com.espertech.esper.compiler.@internal.util
             // metadata
             method.Block.DeclareVar<EventTypeMetadata>("metadata", eventType.Metadata.ToExpression());
 
-            if (eventType is BaseNestableEventType baseNestable)
-            {
+            if (eventType is BaseNestableEventType baseNestable) {
                 method.Block.DeclareVar<LinkedHashMap<string, object>>(
-                    "props", LocalMethod(MakePropsCodegen(
-                        baseNestable.Types, method, symbols, classScope,
-                        () => baseNestable.DeepSuperTypes.GetEnumerator())));
-                var registerMethodName = baseNestable is MapEventType ? "registerMap" : "registerObjectArray";
+                    "props",
+                    LocalMethod(
+                        MakePropsCodegen(
+                            baseNestable.Types,
+                            method,
+                            symbols,
+                            classScope,
+                            () => baseNestable.DeepSuperTypes.GetEnumerator())));
+                var registerMethodName = baseNestable is MapEventType ? "RegisterMap" : "RegisterObjectArray";
                 string[] superTypeNames = null;
-                if (baseNestable.SuperTypes != null && baseNestable.SuperTypes.Length > 0)
-                {
+                if (baseNestable.SuperTypes != null && baseNestable.SuperTypes.Length > 0) {
                     superTypeNames = new string[baseNestable.SuperTypes.Length];
-                    for (var i = 0; i < baseNestable.SuperTypes.Length; i++)
-                    {
+                    for (var i = 0; i < baseNestable.SuperTypes.Length; i++) {
                         superTypeNames[i] = baseNestable.SuperTypes[i].Name;
                     }
                 }
 
                 method.Block
-                    .Expression(ExprDotMethodChain(symbols.GetAddInitSvc(method))
-                        .Add(EPModuleEventTypeInitServicesConstants.GETEVENTTYPECOLLECTOR)
-                        .Add(registerMethodName, @Ref("metadata"), @Ref("props"),
-                        Constant(superTypeNames), Constant(baseNestable.StartTimestampPropertyName),
-                        Constant(baseNestable.EndTimestampPropertyName)));
+                    .Expression(
+                        ExprDotMethodChain(symbols.GetAddInitSvc(method))
+                            .Get(EPModuleEventTypeInitServicesConstants.GETEVENTTYPECOLLECTOR)
+                            .Add(
+                                registerMethodName,
+                                @Ref("metadata"),
+                                @Ref("props"),
+                                Constant(superTypeNames),
+                                Constant(baseNestable.StartTimestampPropertyName),
+                                Constant(baseNestable.EndTimestampPropertyName)));
             }
-            else if (eventType is WrapperEventType wrapper)
-            {
+            else if (eventType is WrapperEventType wrapper) {
                 method.Block.DeclareVar<EventType>(
-"inner",
+                    "inner",
                     EventTypeUtility.ResolveTypeCodegen(wrapper.UnderlyingEventType, symbols.GetAddInitSvc(method)));
                 method.Block.DeclareVar<LinkedHashMap<string, object>>(
-"props",
+                    "props",
                     LocalMethod(
                         MakePropsCodegen(
-                            wrapper.UnderlyingMapType.Types, method, symbols, classScope,
+                            wrapper.UnderlyingMapType.Types,
+                            method,
+                            symbols,
+                            classScope,
                             () => wrapper.UnderlyingMapType.DeepSuperTypes.GetEnumerator())));
                 method.Block
-                    .Expression(ExprDotMethodChain(symbols.GetAddInitSvc(method))
-                        .Add(EPModuleEventTypeInitServicesConstants.GETEVENTTYPECOLLECTOR)
-                        .Add("registerWrapper", @Ref("metadata"), @Ref("inner"), @Ref("props")));
+                    .Expression(
+                        ExprDotMethodChain(symbols.GetAddInitSvc(method))
+                            .Get(EPModuleEventTypeInitServicesConstants.GETEVENTTYPECOLLECTOR)
+                            .Add("RegisterWrapper", @Ref("metadata"), @Ref("inner"), @Ref("props")));
             }
-            else if (eventType is BeanEventType beanType)
-            {
+            else if (eventType is BeanEventType beanType) {
                 var superTypes = MakeSupertypes(beanType.SuperTypes, symbols.GetAddInitSvc(method));
                 var deepSuperTypes = MakeDeepSupertypes(beanType.DeepSuperTypesCollection, method, symbols, classScope);
                 method.Block
-                    .Expression(ExprDotMethodChain(symbols.GetAddInitSvc(method))
-                        .Add(EPModuleEventTypeInitServicesConstants.GETEVENTTYPECOLLECTOR)
-                        .Add("registerBean",
-                            @Ref("metadata"),
-                            Constant(beanType.UnderlyingType),
-                            Constant(beanType.StartTimestampPropertyName),
-                            Constant(beanType.EndTimestampPropertyName),
-                            superTypes, deepSuperTypes));
+                    .Expression(
+                        ExprDotMethodChain(symbols.GetAddInitSvc(method))
+                            .Get(EPModuleEventTypeInitServicesConstants.GETEVENTTYPECOLLECTOR)
+                            .Add(
+                                "RegisterBean",
+                                @Ref("metadata"),
+                                Typeof(beanType.UnderlyingType),
+                                Constant(beanType.StartTimestampPropertyName),
+                                Constant(beanType.EndTimestampPropertyName),
+                                superTypes,
+                                deepSuperTypes));
             }
-            else if (eventType is SchemaXMLEventType xmlType)
-            {
+            else if (eventType is SchemaXMLEventType xmlType) {
                 method.Block
-                    .Expression(ExprDotMethodChain(symbols.GetAddInitSvc(method))
-                        .Add(EPModuleEventTypeInitServicesConstants.GETEVENTTYPECOLLECTOR)
-                        .Add("registerXML",
-                            @Ref("metadata"),
-                            Constant(xmlType.RepresentsFragmentOfProperty),
-                            Constant(xmlType.RepresentsOriginalTypeName)));
+                    .Expression(
+                        ExprDotMethodChain(symbols.GetAddInitSvc(method))
+                            .Get(EPModuleEventTypeInitServicesConstants.GETEVENTTYPECOLLECTOR)
+                            .Add(
+                                "RegisterXML",
+                                @Ref("metadata"),
+                                Constant(xmlType.RepresentsFragmentOfProperty),
+                                Constant(xmlType.RepresentsOriginalTypeName)));
             }
-            else if (eventType is AvroSchemaEventType avroType)
-            {
+            else if (eventType is AvroSchemaEventType avroType) {
                 method.Block
-                    .Expression(ExprDotMethodChain(symbols.GetAddInitSvc(method))
-                        .Add(EPModuleEventTypeInitServicesConstants.GETEVENTTYPECOLLECTOR)
-                        .Add("registerAvro",
-                            @Ref("metadata"),
-                            Constant(avroType.Schema.ToString())));
+                    .Expression(
+                        ExprDotMethodChain(symbols.GetAddInitSvc(method))
+                            .Get(EPModuleEventTypeInitServicesConstants.GETEVENTTYPECOLLECTOR)
+                            .Add(
+                                "RegisterAvro",
+                                @Ref("metadata"),
+                                Constant(avroType.Schema.ToString())));
             }
-            else if (eventType is VariantEventType variantEventType)
-            {
+            else if (eventType is VariantEventType variantEventType) {
                 method.Block
-                    .Expression(ExprDotMethodChain(symbols.GetAddInitSvc(method))
-                        .Add(EPModuleEventTypeInitServicesConstants.GETEVENTTYPECOLLECTOR)
-                        .Add("registerVariant",
-                            @Ref("metadata"),
-                            EventTypeUtility.ResolveTypeArrayCodegen(variantEventType.Variants, symbols.GetAddInitSvc(method)),
-                            Constant(variantEventType.IsVariantAny)));
+                    .Expression(
+                        ExprDotMethodChain(symbols.GetAddInitSvc(method))
+                            .Get(EPModuleEventTypeInitServicesConstants.GETEVENTTYPECOLLECTOR)
+                            .Add(
+                                "RegisterVariant",
+                                @Ref("metadata"),
+                                EventTypeUtility.ResolveTypeArrayCodegen(
+                                    variantEventType.Variants,
+                                    symbols.GetAddInitSvc(method)),
+                                Constant(variantEventType.IsVariantAny)));
             }
-            else
-            {
+            else {
                 throw new IllegalStateException("Event type '" + eventType + "' cannot be registered");
             }
 
@@ -588,26 +672,27 @@ namespace com.espertech.esper.compiler.@internal.util
             ModuleEventTypeInitializeSymbol symbols,
             CodegenClassScope classScope)
         {
-            if (deepSuperTypes == null || deepSuperTypes.IsEmpty())
-            {
-                return StaticMethod(typeof(Collections), "emptySet");
+            if (deepSuperTypes == null || deepSuperTypes.IsEmpty()) {
+                return StaticMethod(typeof(Collections), "GetEmptySet", new[] { typeof(EventType) });
             }
 
-            if (deepSuperTypes.Count == 1)
-            {
+            if (deepSuperTypes.Count == 1) {
                 return StaticMethod(
-                    typeof(Collections), "Singleton",
+                    typeof(Collections),
+                    "Singleton",
                     EventTypeUtility.ResolveTypeCodegen(deepSuperTypes.First(), symbols.GetAddInitSvc(parent)));
             }
 
             var method = parent.MakeChild(typeof(ISet<object>), typeof(CompilerHelperModuleProvider), classScope);
             method.Block.DeclareVar<ISet<object>>(
-"dst",
-                NewInstance(typeof(LinkedHashSet<object>), Constant(CollectionUtil.CapacityHashMap(deepSuperTypes.Count))));
-            foreach (var eventType in deepSuperTypes)
-            {
+                "dst",
+                NewInstance(
+                    typeof(LinkedHashSet<object>),
+                    Constant(CollectionUtil.CapacityHashMap(deepSuperTypes.Count))));
+            foreach (var eventType in deepSuperTypes) {
                 method.Block.ExprDotMethod(
-                    @Ref("dst"), "Add",
+                    @Ref("dst"),
+                    "Add",
                     EventTypeUtility.ResolveTypeCodegen(eventType, symbols.GetAddInitSvc(method)));
             }
 
@@ -619,14 +704,12 @@ namespace com.espertech.esper.compiler.@internal.util
             EventType[] superTypes,
             CodegenExpressionRef initSvcRef)
         {
-            if (superTypes == null || superTypes.Length == 0)
-            {
+            if (superTypes == null || superTypes.Length == 0) {
                 return ConstantNull();
             }
 
             var expressions = new CodegenExpression[superTypes.Length];
-            for (var i = 0; i < superTypes.Length; i++)
-            {
+            for (var i = 0; i < superTypes.Length; i++) {
                 expressions[i] = EventTypeUtility.ResolveTypeCodegen(superTypes[i], initSvcRef);
             }
 
@@ -640,61 +723,67 @@ namespace com.espertech.esper.compiler.@internal.util
             CodegenClassScope classScope,
             Supplier<IEnumerator<EventType>> deepSuperTypes)
         {
-            var method = parent.MakeChild(typeof(LinkedHashMap<string, object>), typeof(CompilerHelperModuleProvider), classScope);
+            var method = parent.MakeChild(
+                typeof(LinkedHashMap<string, object>),
+                typeof(CompilerHelperModuleProvider),
+                classScope);
             symbols.GetAddInitSvc(method);
 
-            method.Block.DeclareVar<LinkedHashMap<string, object>>("props", NewInstance(typeof(LinkedHashMap<string, object>)));
-            foreach (var entry in types)
-            {
+            method.Block.DeclareVar<LinkedHashMap<string, object>>(
+                "props",
+                NewInstance(typeof(LinkedHashMap<string, object>)));
+            foreach (var entry in types) {
                 var propertyOfSupertype = IsPropertyOfSupertype(deepSuperTypes, entry.Key);
-                if (propertyOfSupertype)
-                {
+                if (propertyOfSupertype) {
                     continue;
                 }
 
                 var type = entry.Value;
                 CodegenExpression typeResolver;
-                if (type is Type)
-                {
-                    typeResolver = EnumValue((Type) entry.Value, "class");
+                if (type is Type) {
+                    typeResolver = Typeof((Type) entry.Value);
                 }
-                else if (type is EventType)
-                {
+                else if (type is EventType) {
                     var innerType = (EventType) type;
-                    typeResolver = EventTypeUtility.ResolveTypeCodegen(innerType, ModuleEventTypeInitializeSymbol.REF_INITSVC);
+                    typeResolver = EventTypeUtility.ResolveTypeCodegen(
+                        innerType,
+                        ModuleEventTypeInitializeSymbol.REF_INITSVC);
                 }
-                else if (type is EventType[])
-                {
+                else if (type is EventType[]) {
                     var innerType = (EventType[]) type;
-                    var typeExpr = EventTypeUtility.ResolveTypeCodegen(innerType[0], ModuleEventTypeInitializeSymbol.REF_INITSVC);
+                    var typeExpr = EventTypeUtility.ResolveTypeCodegen(
+                        innerType[0],
+                        ModuleEventTypeInitializeSymbol.REF_INITSVC);
                     typeResolver = NewArrayWithInit(typeof(EventType), typeExpr);
                 }
-                else if (type == null)
-                {
+                else if (type == null) {
                     typeResolver = ConstantNull();
                 }
-                else if (type is TypeBeanOrUnderlying)
-                {
+                else if (type is TypeBeanOrUnderlying) {
                     var innerType = ((TypeBeanOrUnderlying) type).EventType;
-                    var innerTypeExpr = EventTypeUtility.ResolveTypeCodegen(innerType, ModuleEventTypeInitializeSymbol.REF_INITSVC);
+                    var innerTypeExpr = EventTypeUtility.ResolveTypeCodegen(
+                        innerType,
+                        ModuleEventTypeInitializeSymbol.REF_INITSVC);
                     typeResolver = NewInstance(typeof(TypeBeanOrUnderlying), innerTypeExpr);
                 }
-                else if (type is TypeBeanOrUnderlying[])
-                {
+                else if (type is TypeBeanOrUnderlying[]) {
                     var innerType = ((TypeBeanOrUnderlying[]) type)[0].EventType;
-                    var innerTypeExpr = EventTypeUtility.ResolveTypeCodegen(innerType, ModuleEventTypeInitializeSymbol.REF_INITSVC);
-                    typeResolver = NewArrayWithInit(typeof(TypeBeanOrUnderlying), NewInstance(typeof(TypeBeanOrUnderlying), innerTypeExpr));
+                    var innerTypeExpr = EventTypeUtility.ResolveTypeCodegen(
+                        innerType,
+                        ModuleEventTypeInitializeSymbol.REF_INITSVC);
+                    typeResolver = NewArrayWithInit(
+                        typeof(TypeBeanOrUnderlying),
+                        NewInstance(typeof(TypeBeanOrUnderlying), innerTypeExpr));
                 }
-                else if (type is IDictionary<string, object>)
-                {
-                    typeResolver = LocalMethod(MakePropsCodegen((IDictionary<string, object>) type, parent, symbols, classScope, null));
+                else if (type is IDictionary<string, object>) {
+                    typeResolver = LocalMethod(
+                        MakePropsCodegen((IDictionary<string, object>) type, parent, symbols, classScope, null));
                 }
-                else
-                {
+                else {
                     throw new IllegalStateException("Unrecognized type '" + type + "'");
                 }
 
-                method.Block.ExprDotMethod(@Ref("props"), "put", Constant(entry.Key), typeResolver);
+                method.Block.ExprDotMethod(@Ref("props"), "Put", Constant(entry.Key), typeResolver);
             }
 
             method.Block.MethodReturn(@Ref("props"));
@@ -705,17 +794,14 @@ namespace com.espertech.esper.compiler.@internal.util
             Supplier<IEnumerator<EventType>> deepSuperTypes,
             string key)
         {
-            if (deepSuperTypes == null)
-            {
+            if (deepSuperTypes == null) {
                 return false;
             }
 
             var deepSuperTypesIterator = deepSuperTypes.Invoke();
-            while (deepSuperTypesIterator.MoveNext())
-            {
+            while (deepSuperTypesIterator.MoveNext()) {
                 var type = deepSuperTypesIterator.Current;
-                if (type.IsProperty(key))
-                {
+                if (type.IsProperty(key)) {
                     return true;
                 }
             }

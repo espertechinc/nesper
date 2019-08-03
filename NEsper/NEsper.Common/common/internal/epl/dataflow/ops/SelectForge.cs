@@ -187,7 +187,7 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.ops
             var forablesResult = StmtForgeMethodSelectUtil.Make(
                 context.Container,
                 true,
-                context.CodegenEnv.PackageName,
+                context.CodegenEnv.Namespace,
                 dataflowClassPostfix,
                 context.Base,
                 context.Services);

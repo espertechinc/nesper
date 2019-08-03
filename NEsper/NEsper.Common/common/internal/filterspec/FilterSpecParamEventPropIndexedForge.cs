@@ -124,13 +124,21 @@ namespace com.espertech.esper.common.@internal.filterspec
                     LocalMethod(lookupable.MakeCodegen(method, symbols, classScope)))
                 .DeclareVar<FilterOperator>("op", EnumValue(filterOperator));
 
-            var param = NewAnonymousClass(
-                method.Block,
-                typeof(FilterSpecParam),
-                Arrays.AsList<CodegenExpression>(Ref("lookupable"), Ref("op")));
-            var getFilterValue = CodegenMethod.MakeParentNode(typeof(object), GetType(), classScope)
-                .AddParam(FilterSpecParam.GET_FILTER_VALUE_FP);
-            param.AddMethod("GetFilterValue", getFilterValue);
+            var getFilterValue = new CodegenExpressionLambda(method.Block)
+                .WithParams(FilterSpecParam.GET_FILTER_VALUE_FP);
+            var param = NewInstance<ProxyFilterSpecParam>(
+                Ref("lookupable"),
+                Ref("op"),
+                getFilterValue);
+
+            //var param = NewAnonymousClass(
+            //    method.Block,
+            //    typeof(FilterSpecParam),
+            //    Arrays.AsList<CodegenExpression>(Ref("lookupable"), Ref("op")));
+            //var getFilterValue = CodegenMethod.MakeParentNode(typeof(object), GetType(), classScope)
+            //    .AddParam(FilterSpecParam.GET_FILTER_VALUE_FP);
+            //param.AddMethod("GetFilterValue", getFilterValue);
+
             getFilterValue.Block
                 .DeclareVar<EventBean[]>(
                     "events",
@@ -160,7 +168,7 @@ namespace com.espertech.esper.common.@internal.filterspec
                         classScope));
             }
 
-            getFilterValue.Block.MethodReturn(Ref("value"));
+            getFilterValue.Block.BlockReturn(Ref("value"));
 
             method.Block.MethodReturn(param);
             return method;

@@ -69,7 +69,7 @@ namespace com.espertech.esper.common.@internal.view.union
 
         internal override string FactoryMethod()
         {
-            return "union";
+            return "Union";
         }
 
         internal override void Assign(

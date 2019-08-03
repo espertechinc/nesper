@@ -78,7 +78,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                 .AddParam(EnumForgeCodegenNames.PARAMS);
 
             CodegenBlock block = methodNode.Block
-                .IfCondition(ExprDotMethod(EnumForgeCodegenNames.REF_ENUMCOLL, "isEmpty"))
+                .IfCondition(ExprDotMethod(EnumForgeCodegenNames.REF_ENUMCOLL, "IsEmpty"))
                 .BlockReturn(EnumForgeCodegenNames.REF_ENUMCOLL);
             block.DeclareVar<ArrayDeque<object>>("result", NewInstance(typeof(ArrayDeque<object>)));
 
@@ -88,7 +88,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                 forEach,
                 forge.innerExpression.EvaluationType,
                 forge.innerExpression.EvaluateCodegen(typeof(bool?), methodNode, scope, codegenClassScope));
-            forEach.Expression(ExprDotMethod(@Ref("result"), "add", @Ref("next")));
+            forEach.Expression(ExprDotMethod(@Ref("result"), "Add", @Ref("next")));
             block.MethodReturn(@Ref("result"));
             return LocalMethod(methodNode, args.Eps, args.Enumcoll, args.IsNewData, args.ExprCtx);
         }

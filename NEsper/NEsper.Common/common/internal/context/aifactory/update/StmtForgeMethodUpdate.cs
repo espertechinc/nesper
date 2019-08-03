@@ -36,7 +36,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.update
         }
 
         public StmtForgeMethodResult Make(
-            string packageName,
+            string @namespace,
             string classPostfix,
             StatementCompileTimeServices services)
         {
@@ -132,7 +132,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.update
             var statementFieldsClassName =
                 CodeGenerationIDGenerator.GenerateClassNameSimple(typeof(StatementFields), classPostfix);
             var packageScope = new CodegenNamespaceScope(
-                packageName,
+                @namespace,
                 statementFieldsClassName,
                 services.IsInstrumented);
 

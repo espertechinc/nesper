@@ -154,10 +154,10 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
             CodegenClassScope codegenClassScope)
         {
             return codegenMethodScope.MakeChild(BeanPropType, GetType(), codegenClassScope)
-                .AddParam(TargetType, "object")
+                .AddParam(TargetType, "@object")
                 .AddParam(typeof(object), "key")
                 .Block
-                .DeclareVar<object>("result", ExprDotName(Ref("object"), _field.Name))
+                .DeclareVar<object>("result", ExprDotName(Ref("@object"), _field.Name))
                 .IfRefNotTypeReturnConst("result", typeof(IDictionary<object, object>), null)
                 .DeclareVarWCast(typeof(IDictionary<object, object>), "map", "result")
                 .MethodReturn(Cast(BeanPropType, ExprDotMethod(Ref("map"), "get", Ref("key"))));

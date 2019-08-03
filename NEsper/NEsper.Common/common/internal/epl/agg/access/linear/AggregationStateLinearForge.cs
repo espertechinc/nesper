@@ -83,7 +83,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
             CodegenClassScope classScope)
         {
             return
-                ConstantNull(); // not implemented for linear state as AggregationTableAccessAggReader can simple call "getCollectionOfEvents"
+                ConstantNull(); // not implemented for linear state as AggregationTableAccessAggReader can simple call "GetCollectionOfEvents"
         }
     }
 } // end of namespace

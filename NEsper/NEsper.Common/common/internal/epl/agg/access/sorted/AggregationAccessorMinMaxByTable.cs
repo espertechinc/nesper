@@ -38,16 +38,16 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
                 TableDeployTimeResolver.MakeTableEventToPublicField(table, context.ClassScope, GetType());
             var forge = (AggregatorAccessSorted) context.AccessStateForge.Aggregator;
             context.Method.Block.DeclareVar<EventBean>(
-                    "event",
+                    "@event",
                     max
                         ? forge.GetLastValueCodegen(context.ClassScope, context.Method)
                         : forge.GetFirstValueCodegen(context.ClassScope, context.Method))
-                .IfRefNullReturnNull("event")
+                .IfRefNullReturnNull("@event")
                 .MethodReturn(
                     ExprDotMethod(
                         eventToPublic,
                         "convertToUnd",
-                        Ref("event"),
+                        Ref("@event"),
                         REF_EPS,
                         REF_ISNEWDATA,
                         REF_EXPREVALCONTEXT));

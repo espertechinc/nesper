@@ -112,16 +112,16 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                 scope,
                 codegenClassScope);
             CodegenBlock block = methodNode.Block
-                .IfCondition(ExprDotMethod(EnumForgeCodegenNames.REF_ENUMCOLL, "isEmpty"))
+                .IfCondition(ExprDotMethod(EnumForgeCodegenNames.REF_ENUMCOLL, "IsEmpty"))
                 .BlockReturn(EnumForgeCodegenNames.REF_ENUMCOLL);
             block.DeclareVar<ObjectArrayEventBean>(
                     "evalEvent",
                     NewInstance<ObjectArrayEventBean>(NewArrayByLength(typeof(object), Constant(1)), typeMember))
                 .AssignArrayElement(EnumForgeCodegenNames.REF_EPS, Constant(forge.streamNumLambda), @Ref("evalEvent"))
-                .DeclareVar<object[]>("props", ExprDotMethod(@Ref("evalEvent"), "getProperties"));
+                .DeclareVar<object[]>("props", ExprDotName(@Ref("evalEvent"), "Properties"));
 
             CodegenBlock blockSingle = block
-                .IfCondition(EqualsIdentity(ExprDotMethod(EnumForgeCodegenNames.REF_ENUMCOLL, "size"), Constant(1)))
+                .IfCondition(EqualsIdentity(ExprDotMethod(EnumForgeCodegenNames.REF_ENUMCOLL, "Size"), Constant(1)))
                 .DeclareVar<object>(
                     "item",
                     ExprDotMethodChain(EnumForgeCodegenNames.REF_ENUMCOLL).Add("iterator").Add("next"))

@@ -165,11 +165,11 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
             {
                 var methodNode = codegenMethodScope.MakeChild(typeof(EventBean), GetType(), codegenClassScope);
                 var refEPS = exprSymbol.GetAddEPS(methodNode);
-                var value = ExprDotMethod(
+                var value = ExprDotName(
                     Cast(typeof(MappedEventBean), ArrayAtIndex(refEPS, Constant(underlyingStreamNumber))),
-                    "getProperties");
+                    "Properties");
                 methodNode.Block.MethodReturn(
-                    ExprDotMethod(eventBeanFactory, "adapterForTypedMap", value, resultEventType));
+                    ExprDotMethod(eventBeanFactory, "AdapterForTypedMap", value, resultEventType));
                 return methodNode;
             }
         }
@@ -243,7 +243,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
                     block.AssignArrayElement("props", Constant(item.ToIndex), value);
                 }
 
-                block.MethodReturn(ExprDotMethod(manufacturerField, "make", Ref("props")));
+                block.MethodReturn(ExprDotMethod(manufacturerField, "Make", Ref("props")));
                 return methodNode;
             }
         }

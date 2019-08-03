@@ -66,7 +66,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.minmax
             ExprForge[] forges,
             CodegenClassScope classScope)
         {
-            method.Block.ExprDotMethod(refSet, "add", value);
+            method.Block.ExprDotMethod(refSet, "Add", value);
         }
 
         protected override void ApplyTableEnterNonNull(
@@ -75,7 +75,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.minmax
             CodegenMethod method,
             CodegenClassScope classScope)
         {
-            method.Block.ExprDotMethod(refSet, "add", value);
+            method.Block.ExprDotMethod(refSet, "Add", value);
         }
 
         protected override void ApplyEvalLeaveNonNull(
@@ -86,7 +86,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.minmax
             ExprForge[] forges,
             CodegenClassScope classScope)
         {
-            method.Block.ExprDotMethod(refSet, "remove", value);
+            method.Block.ExprDotMethod(refSet, "Remove", value);
         }
 
         protected override void ApplyTableLeaveNonNull(
@@ -95,14 +95,14 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.minmax
             CodegenMethod method,
             CodegenClassScope classScope)
         {
-            method.Block.ExprDotMethod(refSet, "remove", value);
+            method.Block.ExprDotMethod(refSet, "Remove", value);
         }
 
         protected override void ClearWODistinct(
             CodegenMethod method,
             CodegenClassScope classScope)
         {
-            method.Block.ExprDotMethod(refSet, "clear");
+            method.Block.ExprDotMethod(refSet, "Clear");
         }
 
         public override void GetValueCodegen(

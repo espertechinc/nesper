@@ -174,7 +174,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             public void Run(RegressionEnvironment env)
             {
                 var epl =
-                    "@Name('s0') select sb.getLongPrimitive() as c0, sum(IntPrimitive) as c1 from SupportBean#length_batch(2) as sb group by sb.getTheString()";
+                    "@Name('s0') select sb.GetLongPrimitive() as c0, sum(IntPrimitive) as c1 from SupportBean#length_batch(2) as sb group by sb.getTheString()";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 MakeSendSupportBean(env, "E1", 10, 100L);

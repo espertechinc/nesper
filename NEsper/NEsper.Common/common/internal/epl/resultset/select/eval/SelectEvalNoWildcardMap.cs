@@ -47,10 +47,10 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
                 typeof(EventBean),
                 this.GetType(),
                 codegenClassScope);
-            methodNode.Block.DeclareVar<IDictionary<object, object>>(
+            methodNode.Block.DeclareVar<IDictionary<string, object>>(
                 "props",
                 NewInstance(
-                    typeof(Dictionary<object, object>),
+                    typeof(Dictionary<string, object>),
                     Constant(CollectionUtil.CapacityHashMap(selectContext.ColumnNames.Length))));
             for (int i = 0; i < selectContext.ColumnNames.Length; i++) {
                 CodegenExpression expression = CodegenLegoMayVoid.ExpressionMayVoid(
@@ -59,12 +59,13 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
                     methodNode,
                     exprSymbol,
                     codegenClassScope);
+                Console.WriteLine("{0} => {1}", selectContext.ColumnNames[i], expression.GetType().Name);
                 methodNode.Block.Expression(
-                    ExprDotMethod(@Ref("props"), "put", Constant(selectContext.ColumnNames[i]), expression));
+                    ExprDotMethod(@Ref("props"), "Put", Constant(selectContext.ColumnNames[i]), expression));
             }
 
             methodNode.Block.MethodReturn(
-                ExprDotMethod(eventBeanFactory, "adapterForTypedMap", @Ref("props"), resultEventType));
+                ExprDotMethod(eventBeanFactory, "AdapterForTypedMap", @Ref("props"), resultEventType));
             return methodNode;
         }
 

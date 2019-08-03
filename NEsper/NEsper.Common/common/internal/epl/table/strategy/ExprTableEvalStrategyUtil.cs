@@ -46,7 +46,7 @@ namespace com.espertech.esper.common.@internal.epl.table.strategy
             foreach (KeyValuePair<ExprTableAccessNode, ExprTableEvalStrategyFactoryForge> entry in tableAccesses) {
                 method.Block.ExprDotMethod(
                     @Ref("ta"),
-                    "put",
+                    "Put",
                     Constant(entry.Key.TableAccessNumber),
                     entry.Value.Make(method, symbols, classScope));
             }

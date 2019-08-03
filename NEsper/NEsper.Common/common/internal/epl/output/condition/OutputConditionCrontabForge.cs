@@ -73,9 +73,9 @@ namespace com.espertech.esper.common.@internal.epl.output.condition
 
             method.Block.MethodReturn(
                 ExprDotMethodChain(symbols.GetAddInitSvc(method))
-                    .Add(EPStatementInitServicesConstants.GETRESULTSETPROCESSORHELPERFACTORY)
+                    .Get(EPStatementInitServicesConstants.RESULTSETPROCESSORHELPERFACTORY)
                     .Add(
-                        "makeOutputConditionCrontab",
+                        "MakeOutputConditionCrontab",
                         Ref("evals"),
                         Constant(isStartConditionOnCreation),
                         Constant(scheduleCallbackId)));

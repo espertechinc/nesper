@@ -84,7 +84,7 @@ namespace com.espertech.esper.common.@internal.view.timetolive
 
         internal override string FactoryMethod()
         {
-            return "timeorder";
+            return "Timeorder";
         }
 
         internal override void Assign(

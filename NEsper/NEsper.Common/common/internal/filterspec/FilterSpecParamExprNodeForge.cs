@@ -172,10 +172,10 @@ namespace com.espertech.esper.common.@internal.filterspec
                                 compositeEventType,
                                 EPStatementInitServicesConstants.REF));
                         var factory = classScope.AddOrGetFieldSharable(EventBeanTypedEventFactoryCodegenField.INSTANCE);
-                        var matchingAsMap = ExprDotMethod(REF_MATCHEDEVENTMAP, "getMatchingEventsAsMap");
+                        var matchingAsMap = ExprDotName(REF_MATCHEDEVENTMAP, "MatchingEventsAsMap");
                         var mapBean = ExprDotMethod(
                             factory,
-                            "adapterForTypedMap",
+                            "AdapterForTypedMap",
                             matchingAsMap,
                             compositeEventTypeMember);
                         getFilterValue.Block.AssignArrayElement("events", Constant(count), mapBean);
@@ -191,7 +191,7 @@ namespace com.espertech.esper.common.@internal.filterspec
                 .MethodReturn(
                     ExprDotMethod(
                         Ref("filterBooleanExpressionFactory"),
-                        "make",
+                        "Make",
                         Ref("this"), // FilterSpecParamExprNode filterSpecParamExprNode
                         Ref("events"), // EventBean[] events
                         REF_EXPREVALCONTEXT, // ExprEvaluatorContext exprEvaluatorContext
@@ -222,8 +222,9 @@ namespace com.espertech.esper.common.@internal.filterspec
                 .SetProperty(
                     Ref("node"),
                     "FilterBooleanExpressionFactory",
-                    ExprDotMethodChain(symbols.GetAddInitSvc(method))
-                        .Add(EPStatementInitServicesConstants.GETFILTERBOOLEANEXPRESSIONFACTORY))
+                    ExprDotName(
+                        symbols.GetAddInitSvc(method),
+                        EPStatementInitServicesConstants.FILTERBOOLEANEXPRESSIONFACTORY))
                 .SetProperty(
                     Ref("node"),
                     "UseLargeThreadingProfile",
@@ -262,8 +263,8 @@ namespace com.espertech.esper.common.@internal.filterspec
             // register boolean expression so it can be found
             method.Block.Expression(
                 ExprDotMethodChain(symbols.GetAddInitSvc(method))
-                    .Add(EPStatementInitServicesConstants.GETFILTERSHAREDBOOLEXPRREGISTERY)
-                    .Add("registerBoolExpr", Ref("node")));
+                    .Get(EPStatementInitServicesConstants.FILTERSHAREDBOOLEXPRREGISTERY)
+                    .Add("RegisterBoolExpr", Ref("node")));
 
             method.Block.MethodReturn(Ref("node"));
             return method;

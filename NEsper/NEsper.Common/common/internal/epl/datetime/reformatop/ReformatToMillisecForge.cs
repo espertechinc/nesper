@@ -44,7 +44,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.reformatop
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            return ExprDotMethod(inner, "getTimeInMillis");
+            return ExprDotName(inner, "TimeInMillis");
         }
 
         public CodegenExpression CodegenDateTimeOffset(
@@ -120,7 +120,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.reformatop
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            return ExprDotMethod(inner, "getTime");
+            return ExprDotName(inner, "Time");
         }
     }
 } // end of namespace

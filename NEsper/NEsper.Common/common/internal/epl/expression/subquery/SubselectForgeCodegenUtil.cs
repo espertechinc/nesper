@@ -57,7 +57,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                 CodegenExpression matching = symbols.GetAddMatchingEvents(method);
                 block.IfCondition(EqualsNull(matching))
                     .BlockReturn(valueIfNull)
-                    .IfCondition(ExprDotMethod(matching, "isEmpty"))
+                    .IfCondition(ExprDotMethod(matching, "IsEmpty"))
                     .BlockReturn(valueIfEmpty);
             }
         }

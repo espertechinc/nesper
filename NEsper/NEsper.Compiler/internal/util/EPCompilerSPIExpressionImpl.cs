@@ -35,7 +35,8 @@ namespace com.espertech.esper.compiler.@internal.util
             }
             catch (ExprValidationException e) {
                 throw new EPCompileException(
-                    "Failed to compile expression '" + expression + "': " + e.Message, e,
+                    "Failed to compile expression '" + expression + "': " + e.Message,
+                    e,
                     new EmptyList<EPCompileExceptionItem>());
             }
 
@@ -44,13 +45,22 @@ namespace com.espertech.esper.compiler.@internal.util
 
                 StreamTypeService streamTypeService = new StreamTypeServiceImpl(true);
                 var statementRawInfo = new StatementRawInfo(
-                    0, "API-provided", null, StatementType.INTERNAL_USE_API_COMPILE_EXPR, null, null, new CompilableEPL(expression), "API-provided");
-                var validationContext = new ExprValidationContextBuilder(streamTypeService, statementRawInfo, services).Build();
+                    0,
+                    "API-provided",
+                    null,
+                    StatementType.INTERNAL_USE_API_COMPILE_EXPR,
+                    null,
+                    null,
+                    new CompilableEPL(expression),
+                    "API-provided");
+                var validationContext =
+                    new ExprValidationContextBuilder(streamTypeService, statementRawInfo, services).Build();
                 node = ExprNodeUtilityValidate.GetValidatedSubtree(ExprNodeOrigin.API, node, validationContext);
             }
             catch (ExprValidationException e) {
                 throw new EPCompileException(
-                    "Failed to validate expression '" + expression + "': " + e.Message, e,
+                    "Failed to validate expression '" + expression + "': " + e.Message,
+                    e,
                     new EmptyList<EPCompileExceptionItem>());
             }
 

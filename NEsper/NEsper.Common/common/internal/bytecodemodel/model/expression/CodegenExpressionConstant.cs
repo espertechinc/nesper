@@ -10,6 +10,9 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
+using com.espertech.esper.common.@internal.bytecodemodel.core;
+using com.espertech.esper.common.@internal.bytecodemodel.util;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionUtil;
 
 namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
@@ -25,7 +28,9 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
 
         public void Render(
             StringBuilder builder,
-            bool isInnerClass)
+            bool isInnerClass,
+            int level,
+            CodegenIndent indent)
         {
             RenderConstant(builder, _constant);
         }
@@ -37,10 +42,10 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
             }
 
             if (_constant.GetType().IsArray) {
-                classes.Add(_constant.GetType().GetElementType());
+                classes.AddToSet(_constant.GetType().GetElementType());
             }
             else if (_constant.GetType().IsEnum) {
-                classes.Add(_constant.GetType());
+                classes.AddToSet(_constant.GetType());
             }
         }
     }

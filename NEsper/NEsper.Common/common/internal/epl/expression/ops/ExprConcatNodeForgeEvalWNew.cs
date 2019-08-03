@@ -80,10 +80,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                         "value",
                         expr.Forge.EvaluateCodegen(typeof(string), methodNode, exprSymbol, codegenClassScope))
                     .IfRefNullReturnNull("value")
-                    .ExprDotMethod(Ref("buf"), "append", Ref("value"));
+                    .ExprDotMethod(Ref("buf"), "Append", Ref("value"));
             }
 
-            block.MethodReturn(ExprDotMethod(chain, "toString"));
+            block.MethodReturn(ExprDotMethod(chain, "ToString"));
             return LocalMethod(methodNode);
         }
     }

@@ -79,7 +79,7 @@ namespace com.espertech.esper.common.@internal.view.intersect
 
         internal override string FactoryMethod()
         {
-            return "intersect";
+            return "Intersect";
         }
 
         internal override void Assign(

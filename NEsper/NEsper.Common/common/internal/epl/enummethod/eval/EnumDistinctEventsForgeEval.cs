@@ -78,7 +78,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                 .AddParam(EnumForgeCodegenNames.PARAMS);
 
             CodegenBlock block = methodNode.Block
-                .IfCondition(Relational(ExprDotMethod(EnumForgeCodegenNames.REF_ENUMCOLL, "size"), LE, Constant(1)))
+                .IfCondition(Relational(ExprDotMethod(EnumForgeCodegenNames.REF_ENUMCOLL, "Size"), LE, Constant(1)))
                 .BlockReturn(EnumForgeCodegenNames.REF_ENUMCOLL)
                 .DeclareVar<IDictionary<object, object>>(
                     "distinct",
@@ -90,9 +90,9 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                     "comparable",
                     forge.innerExpression.EvaluateCodegen(innerType, methodNode, scope, codegenClassScope))
                 .IfCondition(Not(ExprDotMethod(@Ref("distinct"), "containsKey", @Ref("comparable"))))
-                .Expression(ExprDotMethod(@Ref("distinct"), "put", @Ref("comparable"), @Ref("next")))
+                .Expression(ExprDotMethod(@Ref("distinct"), "Put", @Ref("comparable"), @Ref("next")))
                 .BlockEnd();
-            block.MethodReturn(ExprDotMethod(@Ref("distinct"), "values"));
+            block.MethodReturn(ExprDotMethod(@Ref("distinct"), "Values"));
             return LocalMethod(methodNode, args.Eps, args.Enumcoll, args.IsNewData, args.ExprCtx);
         }
     }

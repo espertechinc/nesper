@@ -157,8 +157,8 @@ namespace com.espertech.esper.common.@internal.epl.pattern.observer
                 .DeclareVar<TimerScheduleObserverFactory>(
                     "factory",
                     ExprDotMethodChain(symbols.GetAddInitSvc(method))
-                        .Add(EPStatementInitServicesConstants.GETPATTERNFACTORYSERVICE)
-                        .Add("observerTimerSchedule"))
+                        .Get(EPStatementInitServicesConstants.PATTERNFACTORYSERVICE)
+                        .Add("ObserverTimerSchedule"))
                 .SetProperty(Ref("factory"), "ScheduleCallbackId", Constant(scheduleCallbackId))
                 .SetProperty(Ref("factory"), "AllConstant", Constant(allConstantResult))
                 .SetProperty(Ref("factory"), "ScheduleComputer", scheduleComputer.Make(method, classScope))

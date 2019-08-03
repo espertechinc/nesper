@@ -86,14 +86,14 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
                     getter,
                     Constant(types[i]),
                     ConstantFalse());
-                var eventType = ExprDotMethod(Ref("activatable"), "getFilterForEventType");
+                var eventType = ExprDotName(Ref("activatable"), "FilterForEventType");
                 method.Block
                     .AssignArrayElement(Ref("lookupables"), Constant(i), lookupable)
                     .Expression(
                         ExprDotMethodChain(symbols.GetAddInitSvc(method))
-                            .Add(EPStatementInitServicesConstants.GETFILTERSHAREDLOOKUPABLEREGISTERY)
+                            .Get(EPStatementInitServicesConstants.FILTERSHAREDLOOKUPABLEREGISTERY)
                             .Add(
-                                "registerLookupable",
+                                "RegisterLookupable",
                                 eventType,
                                 ArrayAtIndex(Ref("lookupables"), Constant(i))));
             }

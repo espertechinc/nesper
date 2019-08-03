@@ -239,11 +239,11 @@ namespace com.espertech.esper.common.@internal.epl.resultset.grouped
         {
             var generateGroupKeySingle = GenerateGroupKeySingleCodegen(groupKeyExpressions, classScope, instance);
             Consumer<CodegenMethod> code = method => {
-                method.Block.IfCondition(ExprDotMethod(Ref("resultSet"), "isEmpty"))
+                method.Block.IfCondition(ExprDotMethod(Ref("resultSet"), "IsEmpty"))
                     .BlockReturn(ConstantNull())
                     .DeclareVar<object[]>(
                         "keys",
-                        NewArrayByLength(typeof(object), ExprDotMethod(Ref("resultSet"), "size")))
+                        NewArrayByLength(typeof(object), ExprDotMethod(Ref("resultSet"), "Size")))
                     .DeclareVar<int>("count", Constant(0))
                     .ForEach(typeof(MultiKey<object>), "eventsPerStream", Ref("resultSet"))
                     .AssignArrayElement(
@@ -253,7 +253,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.grouped
                             generateGroupKeySingle,
                             Cast(
                                 typeof(EventBean[]),
-                                ExprDotMethod(Ref("eventsPerStream"), "getArray")),
+                                ExprDotName(Ref("eventsPerStream"), "Array")),
                             ExprForgeCodegenNames.REF_ISNEWDATA))
                     .Increment("count")
                     .BlockEnd()

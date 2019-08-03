@@ -22,19 +22,21 @@ namespace com.espertech.esper.compiler.@internal.util
         public static string CompileQuery(
             FAFQueryMethodForge query,
             string classPostfix,
-            string packageName,
+            string @namespace,
             ModuleCompileTimeServices compileTimeServices,
             out Assembly assembly)
         {
             var statementFieldsClassName = CodeGenerationIDGenerator.GenerateClassNameSimple(
-                typeof(StatementFields), classPostfix);
+                typeof(StatementFields),
+                classPostfix);
             var packageScope = new CodegenNamespaceScope(
-                packageName, 
-                statementFieldsClassName, 
+                @namespace,
+                statementFieldsClassName,
                 compileTimeServices.IsInstrumented());
 
             var queryMethodProviderClassName = CodeGenerationIDGenerator.GenerateClassNameSimple(
-                typeof(FAFQueryMethodProvider), classPostfix);
+                typeof(FAFQueryMethodProvider),
+                classPostfix);
             var forgablesQueryMethod = query.MakeForgables(queryMethodProviderClassName, classPostfix, packageScope);
 
             IList<StmtClassForgable> forgables = new List<StmtClassForgable>(forgablesQueryMethod);
@@ -42,8 +44,7 @@ namespace com.espertech.esper.compiler.@internal.util
 
             // forge with statement-fields last
             var classes = new List<CodegenClass>(forgables.Count);
-            foreach (var forgable in forgables)
-            {
+            foreach (var forgable in forgables) {
                 var clazz = forgable.Forge(true);
                 classes.Add(clazz);
             }
@@ -52,7 +53,10 @@ namespace com.espertech.esper.compiler.@internal.util
             assembly = null;
 
             // compile with statement-field first
-            classes.Sort((o1, o2) => o1.InterfaceImplemented == typeof(StatementFields) ? -1 : 0);
+            classes.Sort(
+                (
+                        o1,
+                        o2) => o1.InterfaceImplemented == typeof(StatementFields) ? -1 : 0);
 
             var compiler = new RoslynCompiler()
                 .WithCodeLogging(compileTimeServices.Configuration.Compiler.Logging.IsEnableCode)

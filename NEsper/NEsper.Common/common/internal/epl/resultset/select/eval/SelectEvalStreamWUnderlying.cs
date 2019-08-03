@@ -91,7 +91,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
                         "wrapper",
                         Cast(typeof(DecoratingEventBean), ArrayAtIndex(refEPS, Constant(0))))
                     .IfRefNotNull("wrapper")
-                    .ExprDotMethod(props, "putAll", ExprDotMethod(Ref("wrapper"), "getDecoratingProperties"))
+                    .ExprDotMethod(props, "PutAll", ExprDotName(Ref("wrapper"), "DecoratingProperties"))
                     .BlockEnd();
             }
 
@@ -116,7 +116,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
                     .IfRefNotNull("value")
                     .AssignRef(
                         "theEvent",
-                        ExprDotMethod(eventBeanFactory, "adapterForTypedBean", Ref("value"), wrapperUndType))
+                        ExprDotMethod(eventBeanFactory, "AdapterForTypedBean", Ref("value"), wrapperUndType))
                     .BlockEnd();
             }
             else if (underlyingExprForge != null) {
@@ -127,7 +127,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
                     .IfRefNotNull("value")
                     .AssignRef(
                         "theEvent",
-                        ExprDotMethod(eventBeanFactory, "adapterForTypedBean", Ref("value"), wrapperUndType))
+                        ExprDotMethod(eventBeanFactory, "AdapterForTypedBean", Ref("value"), wrapperUndType))
                     .BlockEnd();
             }
             else {
@@ -154,7 +154,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
             block.MethodReturn(
                 ExprDotMethod(
                     eventBeanFactory,
-                    "adapterForTypedWrapper",
+                    "AdapterForTypedWrapper",
                     Ref("theEvent"),
                     Ref("props"),
                     resultEventType));

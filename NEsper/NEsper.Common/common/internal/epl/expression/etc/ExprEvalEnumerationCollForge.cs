@@ -58,7 +58,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
                             exprSymbol,
                             codegenClassScope))
                     .IfRefNullReturnNull("events")
-                    .IfCondition(EqualsIdentity(ExprDotMethod(@Ref("events"), "size"), Constant(0)))
+                    .IfCondition(EqualsIdentity(ExprDotMethod(@Ref("events"), "Size"), Constant(0)))
                     .BlockReturn(ConstantNull())
                     .MethodReturn(StaticMethod(typeof(EventBeanUtility), "getNonemptyFirstEvent", @Ref("events")));
                 return LocalMethod(firstMethodNode);

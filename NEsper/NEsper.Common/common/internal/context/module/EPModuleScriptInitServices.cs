@@ -19,7 +19,7 @@ namespace com.espertech.esper.common.@internal.context.module
 
     public static class EPModuleScriptInitServicesConstants
     {
-        public static readonly string GETSCRIPTCOLLECTOR = "getScriptCollector";
+        public static readonly string GETSCRIPTCOLLECTOR = "ScriptCollector";
         public static readonly CodegenExpressionRef REF = ModuleContextInitializeSymbol.REF_INITSVC;
     }
 } // end of namespace

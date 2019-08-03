@@ -106,7 +106,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createwindow
                     CodegenExpressionBuilder.NewInstance(
                         resultSetProcessorProviderClassName,
                         symbols.GetAddInitSvc(method)))
-                .ExprDotMethod(symbols.GetAddInitSvc(method), "addReadyCallback", @Ref("saiff"));
+                .ExprDotMethod(symbols.GetAddInitSvc(method), "AddReadyCallback", @Ref("saiff"));
 
             method.Block.MethodReturn(@Ref("saiff"));
             return method;

@@ -86,9 +86,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                 codegenClassScope);
             var refEPS = exprSymbol.GetAddEPS(methodNode);
             methodNode.Block
-                .DeclareVar<EventBean>("event", ArrayAtIndex(refEPS, Constant(streamNum)))
-                .IfRefNullReturnNull("event")
-                .MethodReturn(Cast(eventType.UnderlyingType, ExprDotMethod(Ref("event"), "getUnderlying")));
+                .DeclareVar<EventBean>("@event", ArrayAtIndex(refEPS, Constant(streamNum)))
+                .IfRefNullReturnNull("@event")
+                .MethodReturn(Cast(eventType.UnderlyingType, ExprDotName(Ref("@event"), "Underlying")));
             return LocalMethod(methodNode);
         }
 

@@ -66,7 +66,7 @@ namespace com.espertech.esper.common.@internal.filterspec
                             classScope)))
                 .BlockEnd()
                 .IfRefNullReturnNull("value")
-                .MethodReturn(ExprDotMethod(Ref("value"), "doubleValue"));
+                .MethodReturn(ExprDotMethod(Ref("value"), "DoubleValue"));
             return LocalMethod(method, GET_FILTER_VALUE_REFS);
         }
 

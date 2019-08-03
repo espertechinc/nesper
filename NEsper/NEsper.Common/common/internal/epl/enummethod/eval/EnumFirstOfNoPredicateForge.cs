@@ -67,7 +67,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                 .IfCondition(
                     Or(
                         EqualsNull(EnumForgeCodegenNames.REF_ENUMCOLL),
-                        ExprDotMethod(EnumForgeCodegenNames.REF_ENUMCOLL, "isEmpty")))
+                        ExprDotMethod(EnumForgeCodegenNames.REF_ENUMCOLL, "IsEmpty")))
                 .BlockReturn(ConstantNull())
                 .MethodReturn(
                     Cast(type, ExprDotMethodChain(EnumForgeCodegenNames.REF_ENUMCOLL).Add("iterator").Add("next")));

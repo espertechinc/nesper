@@ -52,7 +52,7 @@ namespace com.espertech.esper.common.@internal.view.length
 
         internal override string FactoryMethod()
         {
-            return "length";
+            return "Length";
         }
 
         internal override void Assign(
@@ -61,7 +61,7 @@ namespace com.espertech.esper.common.@internal.view.length
             SAIFFInitializeSymbol symbols,
             CodegenClassScope classScope)
         {
-            CodegenExpressionNewAnonymousClass sizeEval = ExprNodeUtilityCodegen
+            var sizeEval = ExprNodeUtilityCodegen
                 .CodegenEvaluator(sizeForge, method, this.GetType(), classScope);
             method.Block.SetProperty(factory, "Size", sizeEval);
         }

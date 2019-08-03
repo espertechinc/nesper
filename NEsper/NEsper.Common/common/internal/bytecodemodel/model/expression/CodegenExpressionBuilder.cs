@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Text;
 
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
+using com.espertech.esper.common.@internal.bytecodemodel.core;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
@@ -137,6 +138,12 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
             params CodegenExpression[] parameters)
         {
             return new CodegenExpressionLocalMethod(methodNode, parameters);
+        }
+
+        public static CodegenExpressionLocalProperty LocalProperty(
+            CodegenProperty propertyNode)
+        {
+            return new CodegenExpressionLocalProperty(propertyNode);
         }
 
         public static CodegenExpression ConstantTrue()
@@ -310,6 +317,15 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
         public static CodegenExpression StaticMethod(
             Type clazz,
             string method,
+            Type[] methodTypeArgs,
+            params CodegenExpression[] @params)
+        {
+            return new CodegenExpressionStaticMethod(clazz, method, methodTypeArgs, @params);
+        }
+
+        public static CodegenExpression StaticMethod(
+            Type clazz,
+            string method,
             params CodegenExpression[] @params)
         {
             return new CodegenExpressionStaticMethod(clazz, method, @params);
@@ -396,15 +412,27 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
             return new CodegenExpressionNewArrayWithInit(component, expressions);
         }
 
+        public static CodegenExpression Typeof<T>()
+        {
+            return new CodegenExpressionTypeof(typeof(T));
+        }
+
+        public static CodegenExpression Typeof(Type type)
+        {
+            return new CodegenExpressionTypeof(type);
+        }
+
         public static void RenderExpressions(
             StringBuilder builder,
             CodegenExpression[] expressions,
             bool isInnerClass)
         {
             var delimiter = "";
+            var indent = new CodegenIndent(true);
+
             foreach (var expression in expressions) {
                 builder.Append(delimiter);
-                expression.Render(builder, isInnerClass);
+                expression.Render(builder, isInnerClass, 1, indent);
                 delimiter = ",";
             }
         }

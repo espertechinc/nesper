@@ -25,8 +25,8 @@ namespace com.espertech.esper.common.@internal.compile.stage3
         private const string MEMBERNAME_FACTORY_PROVIDER = "factoryProvider";
 
         private readonly CodegenNamespaceScope _namespaceScope;
-        private readonly string statementAIFactoryClassName;
-        private readonly StatementInformationalsCompileTime statementInformationals;
+        private readonly string _statementAiFactoryClassName;
+        private readonly StatementInformationalsCompileTime _statementInformationals;
 
         public StmtClassForgableStmtProvider(
             string statementAIFactoryClassName,
@@ -34,9 +34,9 @@ namespace com.espertech.esper.common.@internal.compile.stage3
             StatementInformationalsCompileTime statementInformationals,
             CodegenNamespaceScope namespaceScope)
         {
-            this.statementAIFactoryClassName = statementAIFactoryClassName;
+            _statementAiFactoryClassName = statementAIFactoryClassName;
             ClassName = statementProviderClassName;
-            this.statementInformationals = statementInformationals;
+            _statementInformationals = statementInformationals;
             _namespaceScope = namespaceScope;
         }
 
@@ -44,6 +44,7 @@ namespace com.espertech.esper.common.@internal.compile.stage3
         {
             // write code to create an implementation of StatementResource
             var methods = new CodegenClassMethods();
+            var properties = new CodegenClassProperties();
 
             // members
             IList<CodegenTypedParam> members = new List<CodegenTypedParam>();
@@ -55,33 +56,48 @@ namespace com.espertech.esper.common.@internal.compile.stage3
             // ctor
             var ctor = new CodegenCtor(GetType(), includeDebugSymbols, Collections.GetEmptyList<CodegenTypedParam>());
             var classScope = new CodegenClassScope(includeDebugSymbols, _namespaceScope, ClassName);
-            ctor.Block.AssignRef(MEMBERNAME_INFORMATION, statementInformationals.Make(ctor, classScope));
+            ctor.Block.AssignRef(MEMBERNAME_INFORMATION, _statementInformationals.Make(ctor, classScope));
 
             var initializeMethod = MakeInitialize(classScope);
-            var getStatementAIFactoryProviderMethod = MakeGetStatementAIFactoryProvider(classScope);
-            var getStatementInformationalsMethod = CodegenMethod.MakeParentNode(
+            var statementAIFactoryProviderProp = MakeGetStatementAIFactoryProvider(classScope);
+            var statementInformationalsProp = CodegenProperty.MakeParentNode(
                     typeof(StatementInformationalsRuntime),
                     typeof(StmtClassForgableStmtProvider),
                     CodegenSymbolProviderEmpty.INSTANCE,
-                    classScope)
-                .Block.MethodReturn(Ref(MEMBERNAME_INFORMATION));
+                    classScope);
+            statementInformationalsProp
+                .GetterBlock.BlockReturn(Ref(MEMBERNAME_INFORMATION));
 
-            CodegenStackGenerator.RecursiveBuildStack(getStatementInformationalsMethod, "getInformationals", methods);
-            CodegenStackGenerator.RecursiveBuildStack(initializeMethod, "initialize", methods);
             CodegenStackGenerator.RecursiveBuildStack(
-                getStatementAIFactoryProviderMethod,
-                "getStatementAIFactoryProvider",
-                methods);
-            CodegenStackGenerator.RecursiveBuildStack(ctor, "ctor", methods);
+                statementInformationalsProp, 
+                "Informationals", 
+                methods,
+                properties);
+            CodegenStackGenerator.RecursiveBuildStack(
+                initializeMethod, 
+                "Initialize", 
+                methods,
+                properties);
+            CodegenStackGenerator.RecursiveBuildStack(
+                statementAIFactoryProviderProp,
+                "StatementAIFactoryProvider",
+                methods,
+                properties);
+            CodegenStackGenerator.RecursiveBuildStack(
+                ctor,
+                "ctor",
+                methods,
+                properties);
 
             return new CodegenClass(
                 typeof(StatementProvider),
-                _namespaceScope.PackageName,
+                _namespaceScope.Namespace,
                 ClassName,
                 classScope,
                 members,
                 ctor,
                 methods,
+                properties,
                 new EmptyList<CodegenInnerClass>());
         }
 
@@ -98,19 +114,19 @@ namespace com.espertech.esper.common.@internal.compile.stage3
                     SAIFFInitializeSymbol.REF_STMTINITSVC.Ref);
             method.Block.AssignRef(
                 MEMBERNAME_FACTORY_PROVIDER,
-                NewInstance(statementAIFactoryClassName, SAIFFInitializeSymbol.REF_STMTINITSVC));
+                NewInstance(_statementAiFactoryClassName, SAIFFInitializeSymbol.REF_STMTINITSVC));
             return method;
         }
 
-        private static CodegenMethod MakeGetStatementAIFactoryProvider(CodegenClassScope classScope)
+        private static CodegenProperty MakeGetStatementAIFactoryProvider(CodegenClassScope classScope)
         {
-            var method = CodegenMethod.MakeParentNode(
+            var property = CodegenProperty.MakeParentNode(
                 typeof(StatementAIFactoryProvider),
                 typeof(StmtClassForgableStmtProvider),
                 CodegenSymbolProviderEmpty.INSTANCE,
                 classScope);
-            method.Block.MethodReturn(Ref(MEMBERNAME_FACTORY_PROVIDER));
-            return method;
+            property.GetterBlock.BlockReturn(Ref(MEMBERNAME_FACTORY_PROVIDER));
+            return property;
         }
     }
 } // end of namespace

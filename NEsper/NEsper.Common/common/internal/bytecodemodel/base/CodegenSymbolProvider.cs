@@ -15,23 +15,4 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
     {
         void Provide(IDictionary<string, Type> symbols);
     }
-
-    public class ProxyCodegenSymbolProvider : CodegenSymbolProvider
-    {
-        public Action<IDictionary<string, Type>> ProcProvide;
-
-        public ProxyCodegenSymbolProvider()
-        {
-        }
-
-        public ProxyCodegenSymbolProvider(Action<IDictionary<string, Type>> procProvide)
-        {
-            ProcProvide = procProvide;
-        }
-
-        public void Provide(IDictionary<string, Type> symbols)
-        {
-            ProcProvide.Invoke(symbols);
-        }
-    }
 } // end of namespace

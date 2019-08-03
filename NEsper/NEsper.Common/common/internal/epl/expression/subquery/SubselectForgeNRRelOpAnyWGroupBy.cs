@@ -57,13 +57,13 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
             var left = symbols.GetAddLeftResult(method);
 
             method.Block
-                .DeclareVar<int>("cpid", ExprDotMethod(evalCtx, "getAgentInstanceId"))
+                .DeclareVar<int>("cpid", ExprDotName(evalCtx, "AgentInstanceId"))
                 .DeclareVar<AggregationService>(
                     "aggregationService",
-                    ExprDotMethod(aggService, "getContextPartitionAggregationService", Ref("cpid")))
+                    ExprDotMethod(aggService, "GetContextPartitionAggregationService", Ref("cpid")))
                 .DeclareVar<ICollection<object>>(
                     "groupKeys",
-                    ExprDotMethod(Ref("aggregationService"), "getGroupKeys", evalCtx))
+                    ExprDotMethod(Ref("aggregationService"), "GetGroupKeys", evalCtx))
                 .DeclareVar<bool>("hasRows", ConstantFalse())
                 .DeclareVar<bool>("hasNonNullRow", ConstantFalse());
 

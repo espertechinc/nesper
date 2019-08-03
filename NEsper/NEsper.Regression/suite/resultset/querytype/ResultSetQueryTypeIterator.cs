@@ -76,7 +76,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
                 // Test for Esper-115
                 var epl = "@Name('s0') @IterableUnbound select * from pattern " +
                           "[every ( addressInfo = SupportBean(TheString='address') " +
-                          "=> txnWD = SupportBean(TheString='txn') ) ] " +
+                          "-> txnWD = SupportBean(TheString='txn') ) ] " +
                           "where addressInfo.IntBoxed = txnWD.IntBoxed";
                 env.CompileDeploy(epl).AddListener("s0");
 
@@ -110,7 +110,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             {
                 var epl = "@Name('s0') select * from pattern " +
                           "[every ( addressInfo = SupportBean(TheString='address') " +
-                          "=> txnWD = SupportBean(TheString='txn') ) ]#lastevent " +
+                          "-> txnWD = SupportBean(TheString='txn') ) ]#lastevent " +
                           "where addressInfo.IntBoxed = txnWD.IntBoxed";
                 env.CompileDeploy(epl).AddListener("s0");
 

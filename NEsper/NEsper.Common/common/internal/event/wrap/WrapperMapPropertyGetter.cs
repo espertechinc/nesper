@@ -123,7 +123,7 @@ namespace com.espertech.esper.common.@internal.@event.wrap
                 .DeclareVarWCast(typeof(DecoratingEventBean), "wrapperEvent", "theEvent")
                 .DeclareVar<IDictionary<object, object>>(
                     "map",
-                    ExprDotMethod(Ref("wrapperEvent"), "getDecoratingProperties"))
+                    ExprDotName(Ref("wrapperEvent"), "DecoratingProperties"))
                 .MethodReturn(mapGetter.UnderlyingGetCodegen(Ref("map"), codegenMethodScope, codegenClassScope));
         }
 
@@ -137,7 +137,7 @@ namespace com.espertech.esper.common.@internal.@event.wrap
                 .DeclareVarWCast(typeof(DecoratingEventBean), "wrapperEvent", "theEvent")
                 .DeclareVar<IDictionary<object, object>>(
                     "map",
-                    ExprDotMethod(Ref("wrapperEvent"), "getDecoratingProperties"))
+                    ExprDotName(Ref("wrapperEvent"), "DecoratingProperties"))
                 .MethodReturn(mapGetter.UnderlyingFragmentCodegen(Ref("map"), codegenMethodScope, codegenClassScope));
         }
 

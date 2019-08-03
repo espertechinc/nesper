@@ -319,7 +319,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
                             "generated",
                             ExprDotMethod(
                                 REF_SELECTEXPRNONMEMBER,
-                                "process",
+                                "Process",
                                 REF_EPS,
                                 ExprForgeCodegenNames.REF_ISNEWDATA,
                                 REF_ISSYNTHESIZE,
@@ -331,10 +331,10 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
                             "eventGenerators",
                             NewInstance<ArrayDeque<EventBean>>(ArrayLength(Ref("events"))))
                         .BlockEnd()
-                        .ExprDotMethod(Ref("result"), "add", Ref("generated"))
+                        .ExprDotMethod(Ref("result"), "Add", Ref("generated"))
                         .DeclareVar<EventBean[]>("tmp", NewArrayByLength(typeof(EventBean), Constant(0)))
                         .AssignArrayElement("tmp", Constant(0), Ref("theEvent"))
-                        .ExprDotMethod(Ref("eventGenerators"), "add", Ref("tmp"))
+                        .ExprDotMethod(Ref("eventGenerators"), "Add", Ref("tmp"))
                         .BlockEnd();
                 }
 
@@ -462,7 +462,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
                             "generated",
                             ExprDotMethod(
                                 REF_SELECTEXPRNONMEMBER,
-                                "process",
+                                "Process",
                                 REF_EPS,
                                 ExprForgeCodegenNames.REF_ISNEWDATA,
                                 REF_ISSYNTHESIZE,
@@ -471,7 +471,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
                         .IfCondition(EqualsNull(Ref("result")))
                         .AssignRef("result", NewInstance<ArrayDeque<EventBean>>(ArrayLength(Ref("events"))))
                         .BlockEnd()
-                        .ExprDotMethod(Ref("result"), "add", Ref("generated"))
+                        .ExprDotMethod(Ref("result"), "Add", Ref("generated"))
                         .BlockEnd();
                 }
                 methodNode.Block.MethodReturn(
@@ -632,7 +632,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
         {
             Consumer<CodegenMethod> code = methodNode => {
                 methodNode.Block
-                    .IfCondition(Or(EqualsNull(Ref("events")), ExprDotMethod(Ref("events"), "isEmpty")))
+                    .IfCondition(Or(EqualsNull(Ref("events")), ExprDotMethod(Ref("events"), "IsEmpty")))
                     .BlockReturn(ConstantNull())
                     .IfRefNullReturnNull("events")
                     .DeclareVar<ArrayDeque<EventBean>>("result", ConstantNull());
@@ -640,7 +640,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
                     var forEach = methodNode.Block.ForEach(typeof(MultiKey<EventBean>), "key", Ref("events"));
                     forEach.DeclareVar<EventBean[]>(
                         NAME_EPS,
-                        Cast(typeof(EventBean[]), ExprDotMethod(Ref("key"), "getArray")));
+                        Cast(typeof(EventBean[]), ExprDotName(Ref("key"), "Array")));
                     forEach.IfCondition(
                             Not(
                                 LocalMethod(
@@ -653,7 +653,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
                             "generated",
                             ExprDotMethod(
                                 REF_SELECTEXPRNONMEMBER,
-                                "process",
+                                "Process",
                                 REF_EPS,
                                 ExprForgeCodegenNames.REF_ISNEWDATA,
                                 REF_ISSYNTHESIZE,
@@ -662,9 +662,9 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
                         .IfCondition(EqualsNull(Ref("result")))
                         .AssignRef(
                             "result",
-                            NewInstance<ArrayDeque<EventBean>>(ExprDotMethod(Ref("events"), "size")))
+                            NewInstance<ArrayDeque<EventBean>>(ExprDotMethod(Ref("events"), "Size")))
                         .BlockEnd()
-                        .ExprDotMethod(Ref("result"), "add", Ref("generated"))
+                        .ExprDotMethod(Ref("result"), "Add", Ref("generated"))
                         .BlockEnd();
                 }
                 methodNode.Block.MethodReturn(
@@ -764,7 +764,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
         {
             Consumer<CodegenMethod> code = methodNode => {
                 methodNode.Block
-                    .IfCondition(Or(EqualsNull(Ref("events")), ExprDotMethod(Ref("events"), "isEmpty")))
+                    .IfCondition(Or(EqualsNull(Ref("events")), ExprDotMethod(Ref("events"), "IsEmpty")))
                     .BlockReturn(ConstantNull())
                     .IfRefNullReturnNull("events")
                     .DeclareVar<ArrayDeque<EventBean>>("result", ConstantNull())
@@ -773,7 +773,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
                     var forEach = methodNode.Block.ForEach(typeof(MultiKey<EventBean>), "key", Ref("events"));
                     forEach.DeclareVar<EventBean[]>(
                         NAME_EPS,
-                        Cast(typeof(EventBean[]), ExprDotMethod(Ref("key"), "getArray")));
+                        Cast(typeof(EventBean[]), ExprDotName(Ref("key"), "Array")));
                     forEach.IfCondition(
                             Not(
                                 LocalMethod(
@@ -786,7 +786,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
                             "resultEvent",
                             ExprDotMethod(
                                 REF_SELECTEXPRNONMEMBER,
-                                "process",
+                                "Process",
                                 REF_EPS,
                                 ExprForgeCodegenNames.REF_ISNEWDATA,
                                 REF_ISSYNTHESIZE,
@@ -795,13 +795,13 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
                         .IfCondition(EqualsNull(Ref("result")))
                         .AssignRef(
                             "result",
-                            NewInstance<ArrayDeque<EventBean>>(ExprDotMethod(Ref("events"), "size")))
+                            NewInstance<ArrayDeque<EventBean>>(ExprDotMethod(Ref("events"), "Size")))
                         .AssignRef(
                             "eventGenerators",
-                            NewInstance<ArrayDeque<EventBean>>(ExprDotMethod(Ref("events"), "size")))
+                            NewInstance<ArrayDeque<EventBean>>(ExprDotMethod(Ref("events"), "Size")))
                         .BlockEnd()
-                        .ExprDotMethod(Ref("result"), "add", Ref("resultEvent"))
-                        .ExprDotMethod(Ref("eventGenerators"), "add", Ref("eventsPerStream"))
+                        .ExprDotMethod(Ref("result"), "Add", Ref("resultEvent"))
+                        .ExprDotMethod(Ref("eventGenerators"), "Add", Ref("eventsPerStream"))
                         .BlockEnd();
                 }
                 methodNode.Block.IfRefNullReturnNull("result")
@@ -965,13 +965,13 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
                             "resultEvent",
                             ExprDotMethod(
                                 REF_SELECTEXPRNONMEMBER,
-                                "process",
+                                "Process",
                                 REF_EPS,
                                 ExprForgeCodegenNames.REF_ISNEWDATA,
                                 REF_ISSYNTHESIZE,
                                 REF_EXPREVALCONTEXT))
                         .IfCondition(NotEqualsNull(Ref("resultEvent")))
-                        .ExprDotMethod(Ref("result"), "add", Ref("resultEvent"));
+                        .ExprDotMethod(Ref("result"), "Add", Ref("resultEvent"));
                 }
             };
 
@@ -1059,16 +1059,16 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
                             "resultEvent",
                             ExprDotMethod(
                                 REF_SELECTEXPRNONMEMBER,
-                                "process",
+                                "Process",
                                 REF_EPS,
                                 ExprForgeCodegenNames.REF_ISNEWDATA,
                                 REF_ISSYNTHESIZE,
                                 REF_EXPREVALCONTEXT))
                         .IfCondition(NotEqualsNull(Ref("resultEvent")))
-                        .ExprDotMethod(Ref("result"), "add", Ref("resultEvent"))
+                        .ExprDotMethod(Ref("result"), "Add", Ref("resultEvent"))
                         .ExprDotMethod(
                             Ref("optSortKeys"),
-                            "add",
+                            "Add",
                             ExprDotMethod(
                                 REF_ORDERBYPROCESSOR,
                                 "getSortKey",
@@ -1146,7 +1146,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
                     var forEach = methodNode.Block.ForEach(typeof(MultiKey<EventBean>), "key", Ref("events"));
                     forEach.DeclareVar<EventBean[]>(
                         NAME_EPS,
-                        Cast(typeof(EventBean[]), ExprDotMethod(Ref("key"), "getArray")));
+                        Cast(typeof(EventBean[]), ExprDotName(Ref("key"), "Array")));
                     forEach.IfCondition(
                             Not(
                                 LocalMethod(
@@ -1159,13 +1159,13 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
                             "resultEvent",
                             ExprDotMethod(
                                 REF_SELECTEXPRNONMEMBER,
-                                "process",
+                                "Process",
                                 REF_EPS,
                                 ExprForgeCodegenNames.REF_ISNEWDATA,
                                 REF_ISSYNTHESIZE,
                                 REF_EXPREVALCONTEXT))
                         .IfCondition(NotEqualsNull(Ref("resultEvent")))
-                        .ExprDotMethod(Ref("result"), "add", Ref("resultEvent"));
+                        .ExprDotMethod(Ref("result"), "Add", Ref("resultEvent"));
                 }
             };
 
@@ -1236,7 +1236,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
                     var forEach = methodNode.Block.ForEach(typeof(MultiKey<EventBean>), "key", Ref("events"));
                     forEach.DeclareVar<EventBean[]>(
                         NAME_EPS,
-                        Cast(typeof(EventBean[]), ExprDotMethod(Ref("key"), "getArray")));
+                        Cast(typeof(EventBean[]), ExprDotName(Ref("key"), "Array")));
                     forEach.IfCondition(
                             Not(
                                 LocalMethod(
@@ -1249,16 +1249,16 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
                             "resultEvent",
                             ExprDotMethod(
                                 REF_SELECTEXPRNONMEMBER,
-                                "process",
+                                "Process",
                                 REF_EPS,
                                 ExprForgeCodegenNames.REF_ISNEWDATA,
                                 REF_ISSYNTHESIZE,
                                 REF_EXPREVALCONTEXT))
                         .IfCondition(NotEqualsNull(Ref("resultEvent")))
-                        .ExprDotMethod(Ref("result"), "add", Ref("resultEvent"))
+                        .ExprDotMethod(Ref("result"), "Add", Ref("resultEvent"))
                         .ExprDotMethod(
                             Ref("sortKeys"),
-                            "add",
+                            "Add",
                             ExprDotMethod(
                                 REF_ORDERBYPROCESSOR,
                                 "getSortKey",

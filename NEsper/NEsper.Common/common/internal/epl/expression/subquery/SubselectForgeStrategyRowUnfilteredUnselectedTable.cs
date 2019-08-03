@@ -40,12 +40,12 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
             method.Block
                 .IfCondition(
                     Relational(
-                        ExprDotMethod(symbols.GetAddMatchingEvents(method), "size"),
+                        ExprDotMethod(symbols.GetAddMatchingEvents(method), "Size"),
                         CodegenExpressionRelational.CodegenRelational.GT,
                         Constant(1)))
                 .BlockReturn(ConstantNull())
                 .DeclareVar<EventBean>(
-                    "event",
+                    "@event",
                     StaticMethod(
                         typeof(EventBeanUtility),
                         "getNonemptyFirstEvent",
@@ -54,7 +54,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                     ExprDotMethod(
                         eventToPublic,
                         "convertToUnd",
-                        Ref("event"),
+                        Ref("@event"),
                         symbols.GetAddEPS(method),
                         symbols.GetAddIsNewData(method),
                         symbols.GetAddExprEvalCtx(method)));

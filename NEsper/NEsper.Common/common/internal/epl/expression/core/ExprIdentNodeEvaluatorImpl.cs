@@ -85,7 +85,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                 .DeclareVar(targetType, "value", CodegenGet(requiredType, method, symbols, classScope))
                 .Expression(
                     ExprDotMethodChain(symbols.GetAddExprEvalCtx(method))
-                        .Add("getAuditProvider")
+                        .Get("AuditProvider")
                         .Add(
                             "property",
                             Constant(identNode.ResolvedPropertyName),
@@ -138,15 +138,15 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             }
             else {
                 CodegenExpressionRef refEPS = exprSymbol.GetAddEPS(method);
-                method.Block.DeclareVar<EventBean>("event", ArrayAtIndex(refEPS, Constant(streamNum)));
+                method.Block.DeclareVar<EventBean>("@event", ArrayAtIndex(refEPS, Constant(streamNum)));
                 if (optionalEvent) {
-                    block.IfRefNullReturnNull("event");
+                    block.IfRefNullReturnNull("@event");
                 }
 
                 block.MethodReturn(
                     CodegenLegoCast.CastSafeFromObjectType(
                         castTargetType,
-                        propertyGetter.EventBeanGetCodegen(@Ref("event"), method, codegenClassScope)));
+                        propertyGetter.EventBeanGetCodegen(@Ref("@event"), method, codegenClassScope)));
             }
 
             return LocalMethod(method);

@@ -93,7 +93,7 @@ namespace com.espertech.esper.common.@internal.view.timelengthbatch
 
         internal override string FactoryMethod()
         {
-            return "timelengthbatch";
+            return "Timelengthbatch";
         }
 
         internal override void Assign(

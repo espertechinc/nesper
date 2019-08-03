@@ -36,7 +36,7 @@ namespace com.espertech.esper.common.@internal.@event.variant
             var type = Cast(
                 typeof(VariantEventType),
                 EventTypeUtility.ResolveTypeCodegen(variantEventType, EPStatementInitServicesConstants.REF));
-            return ExprDotMethod(type, "getVariantPropertyGetterCache");
+            return ExprDotName(type, "VariantPropertyGetterCache");
         }
 
         public override bool Equals(object o)

@@ -10,6 +10,8 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
+using com.espertech.esper.common.@internal.bytecodemodel.util;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.core.CodeGenerationHelper;
 
 namespace com.espertech.esper.common.@internal.bytecodemodel.model.statement
@@ -50,7 +52,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.statement
 
         public override void MergeClasses(ISet<Type> classes)
         {
-            classes.Add(clazz);
+            classes.AddToSet(clazz);
         }
     }
 } // end of namespace

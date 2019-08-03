@@ -10,6 +10,8 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
+using com.espertech.esper.common.@internal.bytecodemodel.core;
+
 namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
 {
     public class CodegenExpressionExprDotMethodChain : CodegenExpression
@@ -24,9 +26,11 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
 
         public void Render(
             StringBuilder builder,
-            bool isInnerClass)
+            bool isInnerClass,
+            int level,
+            CodegenIndent indent)
         {
-            _expression.Render(builder, isInnerClass);
+            _expression.Render(builder, isInnerClass, level, indent);
             foreach (var element in _chain) {
                 builder.Append(".");
                 element.Render(builder, isInnerClass);
@@ -41,11 +45,18 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
             }
         }
 
+        public CodegenExpressionExprDotMethodChain Get(
+            string propertyName)
+        {
+            _chain.Add(new CodegenChainPropertyElement(propertyName));
+            return this;
+        }
+
         public CodegenExpressionExprDotMethodChain Add(
             string method,
             params CodegenExpression[] @params)
         {
-            _chain.Add(new CodegenChainElement(method, @params));
+            _chain.Add(new CodegenChainMethodElement(method, @params));
             return this;
         }
     }

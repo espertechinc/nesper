@@ -47,7 +47,7 @@ namespace com.espertech.esper.regressionrun.suite.@event
             var myLegacyNestedEvent = new ConfigurationCommonEventTypeBean();
             myLegacyNestedEvent.AccessorStyle = AccessorStyle.EXPLICIT;
             myLegacyNestedEvent.AddFieldProperty("fieldNestedClassValue", "fieldNestedValue");
-            myLegacyNestedEvent.AddMethodProperty("readNestedClassValue", "readNestedValue");
+            myLegacyNestedEvent.AddMethodProperty("readNestedClassValue", "ReadNestedValue");
             configuration.Common.AddEventType(
                 "MyLegacyNestedEvent",
                 typeof(SupportLegacyBean.LegacyNested),
@@ -83,7 +83,7 @@ namespace com.espertech.esper.regressionrun.suite.@event
             var myLegacyTwo = new ConfigurationCommonEventTypeBean();
             myLegacyTwo.AccessorStyle = AccessorStyle.NATIVE;
             myLegacyTwo.AddFieldProperty("explicitFInt", "fieldIntPrimitive");
-            myLegacyTwo.AddMethodProperty("explicitMGetInt", "GetIntPrimitive");
+            myLegacyTwo.AddMethodProperty("explicitMGetInt", "get_IntPrimitive");
             myLegacyTwo.AddMethodProperty("explicitMReadInt", "ReadIntPrimitive");
             configuration.Common.AddEventType("MyLegacyTwo", typeof(SupportLegacyBeanInt), myLegacyTwo);
 
@@ -135,7 +135,8 @@ namespace com.espertech.esper.regressionrun.suite.@event
             frosty.Put("p0bean", typeof(SupportBeanComplexProps));
             configuration.Common.AddEventType("Frosty", frosty);
 
-            configuration.Common.AddEventType("WheatLev0", new[] {"p1id"}, new object[] {typeof(int)});
+            configuration.Common.AddEventType(
+                "WheatLev0", new[] {"p1id"}, new object[] {typeof(int)});
             configuration.Common.AddEventType(
                 "WheatRoot",
                 new[] {"p0simple", "p0bean"},

@@ -28,7 +28,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
         EventPropertyGetter
     {
         public const string METHOD_STATICMETHODEVALHANDLEINVOCATIONEXCEPTION =
-            "staticMethodEvalHandleInvocationException";
+            "StaticMethodEvalHandleInvocationException";
 
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 

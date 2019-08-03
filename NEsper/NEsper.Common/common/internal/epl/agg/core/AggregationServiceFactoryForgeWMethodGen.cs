@@ -107,7 +107,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
             CodegenClassScope classScope);
 
         void IsGroupedCodegen(
-            CodegenMethod method,
+            CodegenProperty property,
             CodegenClassScope classScope);
     }
 } // end of namespace

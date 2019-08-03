@@ -64,11 +64,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
 
             var refEPS = exprSymbol.GetAddEPS(methodNode);
             methodNode.Block
-                .DeclareVar<EventBean>("event", ArrayAtIndex(refEPS, Constant(identNode.StreamId)))
-                .IfRefNullReturnNull("event")
+                .DeclareVar<EventBean>("@event", ArrayAtIndex(refEPS, Constant(identNode.StreamId)))
+                .IfRefNullReturnNull("@event")
                 .MethodReturn(
                     identNode.ExprEvaluatorIdent.Getter.EventBeanExistsCodegen(
-                        Ref("event"),
+                        Ref("@event"),
                         methodNode,
                         codegenClassScope));
             return LocalMethod(methodNode);

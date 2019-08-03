@@ -47,14 +47,14 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupby
             rowMembers.Add(new CodegenTypedParam(typeof(long), "lastUpdateTime"));
             namedMethods.AddMethod(
                 typeof(void),
-                "setLastUpdateTime",
+                "SetLastUpdateTime",
                 CodegenNamedParam.From(typeof(long), "time"),
                 typeof(AggSvcGroupByReclaimAgedImpl),
                 classScope,
                 method => method.Block.AssignRef("lastUpdateTime", Ref("time")));
             namedMethods.AddMethod(
                 typeof(long),
-                "getLastUpdateTime",
+                "GetLastUpdateTime",
                 Collections.GetEmptyList<CodegenNamedParam>(),
                 typeof(AggSvcGroupByReclaimAgedImpl),
                 classScope,
@@ -78,10 +78,10 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupby
                 new CodegenTypedParam(typeof(AggSvcGroupByReclaimAgedEvalFunc), REF_EVALUATIONFUNCTIONFREQUENCY.Ref));
             ctor.Block.AssignRef(REF_CURRENTMAXAGE, Constant(DEFAULT_MAX_AGE_MSEC))
                 .AssignRef(REF_CURRENTRECLAIMFREQUENCY, Constant(DEFAULT_MAX_AGE_MSEC))
-                .AssignRef(REF_EVALUATORFUNCTIONMAXAGE, ExprDotMethod(maxAgeFactory, "make", REF_AGENTINSTANCECONTEXT))
+                .AssignRef(REF_EVALUATORFUNCTIONMAXAGE, ExprDotMethod(maxAgeFactory, "Make", REF_AGENTINSTANCECONTEXT))
                 .AssignRef(
                     REF_EVALUATIONFUNCTIONFREQUENCY,
-                    ExprDotMethod(frequencyFactory, "make", REF_AGENTINSTANCECONTEXT));
+                    ExprDotMethod(frequencyFactory, "Make", REF_AGENTINSTANCECONTEXT));
         }
 
         public static void ApplyEnterCodegenSweep(
@@ -148,22 +148,22 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupby
                 .ForEach(
                     typeof(KeyValuePair<object, object>),
                     "entry",
-                    ExprDotMethod(REF_AGGREGATORSPERGROUP, "entrySet"))
+                    ExprDotMethod(REF_AGGREGATORSPERGROUP, "EntrySet"))
                 .DeclareVar<long>(
                     "age",
                     Op(
                         Ref("currentTime"),
                         "-",
-                        ExprDotMethod(
-                            Cast(classNames.RowTop, ExprDotMethod(Ref("entry"), "getValue")),
-                            "getLastUpdateTime")))
+                        ExprDotName(
+                            Cast(classNames.RowTop, ExprDotMethod(Ref("entry"), "GetValue")),
+                            "LastUpdateTime")))
                 .IfCondition(Relational(Ref("age"), GT, REF_CURRENTMAXAGE))
-                .ExprDotMethod(Ref("removed"), "add", ExprDotMethod(Ref("entry"), "getKey"))
+                .ExprDotMethod(Ref("removed"), "Add", ExprDotName(Ref("entry"), "Key"))
                 .BlockEnd()
                 .BlockEnd()
                 .ForEach(typeof(object), "key", Ref("removed"))
-                .ExprDotMethod(REF_AGGREGATORSPERGROUP, "remove", Ref("key"))
-                .ExprDotMethod(REF_REMOVEDCALLBACK, "removedAggregationGroupKey", Ref("key"));
+                .ExprDotMethod(REF_AGGREGATORSPERGROUP, "Remove", Ref("key"))
+                .ExprDotMethod(REF_REMOVEDCALLBACK, "RemovedAggregationGroupKey", Ref("key"));
 
             return method;
         }

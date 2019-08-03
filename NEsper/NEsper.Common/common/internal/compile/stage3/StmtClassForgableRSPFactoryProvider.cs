@@ -89,7 +89,7 @@ namespace com.espertech.esper.common.@internal.compile.stage3
                     includeDebugSymbols,
                     ctorParms);
                 var classScope = new CodegenClassScope(includeDebugSymbols, _namespaceScope, ClassName);
-                IList<CodegenTypedParam> providerExplicitMembers = new List<CodegenTypedParam>(2);
+                var providerExplicitMembers = new List<CodegenTypedParam>(2);
 
                 // add event type
                 providerExplicitMembers.Add(new CodegenTypedParam(typeof(EventType), MEMBERNAME_RESULTEVENTTYPE));
@@ -146,71 +146,91 @@ namespace com.espertech.esper.common.@internal.compile.stage3
                     _spec.SelectExprProcessorForges);
 
                 // make provider methods
-                var getResultSetProcessorFactoryMethod = CodegenMethod.MakeParentNode(
+                var propResultSetProcessorFactoryMethod = CodegenProperty.MakeParentNode(
                     typeof(ResultSetProcessorFactory),
                     GetType(),
                     CodegenSymbolProviderEmpty.INSTANCE,
                     classScope);
-                getResultSetProcessorFactoryMethod.Block.MethodReturn(Ref(MEMBERNAME_RESULTSETPROCESSORFACTORY));
+                propResultSetProcessorFactoryMethod
+                    .GetterBlock
+                    .BlockReturn(Ref(MEMBERNAME_RESULTSETPROCESSORFACTORY));
 
-                var getAggregationServiceFactoryMethod = CodegenMethod.MakeParentNode(
+                var propAggregationServiceFactoryMethod = CodegenProperty.MakeParentNode(
                     typeof(AggregationServiceFactory),
                     GetType(),
                     CodegenSymbolProviderEmpty.INSTANCE,
                     classScope);
-                getAggregationServiceFactoryMethod.Block.MethodReturn(Ref(MEMBERNAME_AGGREGATIONSVCFACTORY));
+                propAggregationServiceFactoryMethod
+                    .GetterBlock
+                    .BlockReturn(Ref(MEMBERNAME_AGGREGATIONSVCFACTORY));
 
-                var getOrderByProcessorFactoryMethod = CodegenMethod.MakeParentNode(
+                var propOrderByProcessorFactoryMethod = CodegenProperty.MakeParentNode(
                     typeof(OrderByProcessorFactory),
                     GetType(),
                     CodegenSymbolProviderEmpty.INSTANCE,
                     classScope);
-                getOrderByProcessorFactoryMethod.Block.MethodReturn(Ref(MEMBERNAME_ORDERBYFACTORY));
+                propOrderByProcessorFactoryMethod
+                    .GetterBlock
+                    .BlockReturn(Ref(MEMBERNAME_ORDERBYFACTORY));
 
-                var getResultSetProcessorTypeMethod = CodegenMethod.MakeParentNode(
+                var propResultSetProcessorTypeMethod = CodegenProperty.MakeParentNode(
                     typeof(ResultSetProcessorType),
                     GetType(),
                     CodegenSymbolProviderEmpty.INSTANCE,
                     classScope);
-                getResultSetProcessorTypeMethod.Block.MethodReturn(
-                    EnumValue(typeof(ResultSetProcessorType), _spec.ResultSetProcessorType.GetName()));
+                propResultSetProcessorTypeMethod
+                    .GetterBlock
+                    .BlockReturn(EnumValue(typeof(ResultSetProcessorType), _spec.ResultSetProcessorType.GetName()));
 
-                var getResultEventTypeMethod = CodegenMethod.MakeParentNode(
+                var propResultEventTypeMethod = CodegenProperty.MakeParentNode(
                     typeof(EventType),
                     GetType(),
                     CodegenSymbolProviderEmpty.INSTANCE,
                     classScope);
-                getResultEventTypeMethod.Block.MethodReturn(Ref(MEMBERNAME_RESULTEVENTTYPE));
+                propResultEventTypeMethod
+                    .GetterBlock
+                    .BlockReturn(Ref(MEMBERNAME_RESULTEVENTTYPE));
+
+                var properties = new CodegenClassProperties();
 
                 var methods = new CodegenClassMethods();
-                CodegenStackGenerator.RecursiveBuildStack(providerCtor, "ctor", methods);
+                CodegenStackGenerator.RecursiveBuildStack(providerCtor, "ctor", methods, properties);
                 CodegenStackGenerator.RecursiveBuildStack(
-                    getResultSetProcessorFactoryMethod,
-                    "getResultSetProcessorFactory",
-                    methods);
+                    propResultSetProcessorFactoryMethod,
+                    "ResultSetProcessorFactory",
+                    methods,
+                    properties);
                 CodegenStackGenerator.RecursiveBuildStack(
-                    getAggregationServiceFactoryMethod,
-                    "getAggregationServiceFactory",
-                    methods);
+                    propAggregationServiceFactoryMethod,
+                    "AggregationServiceFactory",
+                    methods,
+                    properties);
                 CodegenStackGenerator.RecursiveBuildStack(
-                    getOrderByProcessorFactoryMethod,
-                    "getOrderByProcessorFactory",
-                    methods);
+                    propOrderByProcessorFactoryMethod,
+                    "OrderByProcessorFactory",
+                    methods,
+                    properties);
                 CodegenStackGenerator.RecursiveBuildStack(
-                    getResultSetProcessorTypeMethod,
-                    "getResultSetProcessorType",
-                    methods);
-                CodegenStackGenerator.RecursiveBuildStack(getResultEventTypeMethod, "getResultEventType", methods);
+                    propResultSetProcessorTypeMethod,
+                    "ResultSetProcessorType",
+                    methods,
+                    properties);
+                CodegenStackGenerator.RecursiveBuildStack(
+                    propResultEventTypeMethod, 
+                    "ResultEventType",
+                    methods,
+                    properties);
 
                 // render and compile
                 return new CodegenClass(
                     typeof(ResultSetProcessorFactoryProvider),
-                    _namespaceScope.PackageName,
+                    _namespaceScope.Namespace,
                     ClassName,
                     classScope,
                     providerExplicitMembers,
                     providerCtor,
                     methods,
+                    properties,
                     innerClasses);
             }
             catch (Exception t) {
@@ -249,8 +269,10 @@ namespace com.espertech.esper.common.@internal.compile.stage3
                     REF_ORDERBYPROCESSOR,
                     REF_AGGREGATIONSVC,
                     REF_AGENTINSTANCECONTEXT));
+
+            var properties = new CodegenClassProperties();
             var methods = new CodegenClassMethods();
-            CodegenStackGenerator.RecursiveBuildStack(instantiateMethod, "Instantiate", methods);
+            CodegenStackGenerator.RecursiveBuildStack(instantiateMethod, "Instantiate", methods, properties);
 
             var ctorParams = Collections.SingletonList(new CodegenTypedParam(providerClassName, "o"));
             var ctor = new CodegenCtor(typeof(StmtClassForgableRSPFactoryProvider), classScope, ctorParams);
@@ -260,7 +282,8 @@ namespace com.espertech.esper.common.@internal.compile.stage3
                 typeof(ResultSetProcessorFactory),
                 ctor,
                 Collections.GetEmptyList<CodegenTypedParam>(),
-                methods);
+                methods,
+                properties);
             innerClasses.Add(innerClass);
 
             providerExplicitMembers.Add(new CodegenTypedParam(typeof(ResultSetProcessorFactory), "rspFactory"));
@@ -288,12 +311,12 @@ namespace com.espertech.esper.common.@internal.compile.stage3
 
             // Get-Result-Type Method
             var forge = spec.ResultSetProcessorFactoryForge;
-            var getResultEventTypeMethod = CodegenMethod.MakeParentNode(
+            var resultEventTypeGetter = CodegenProperty.MakeParentNode(
                 typeof(EventType),
                 forge.GetType(),
                 CodegenSymbolProviderEmpty.INSTANCE,
                 classScope);
-            getResultEventTypeMethod.Block.MethodReturn(Ref("o." + MEMBERNAME_RESULTEVENTTYPE));
+            resultEventTypeGetter.GetterBlock.BlockReturn(Ref("o." + MEMBERNAME_RESULTEVENTTYPE));
 
             // Instance members and methods
             var instance = new CodegenInstanceAux(serviceCtor);
@@ -322,8 +345,8 @@ namespace com.espertech.esper.common.@internal.compile.stage3
                     forge.GetType(),
                     CodegenSymbolProviderEmpty.INSTANCE,
                     classScope)
-                .AddParam(typeof(ISet<object>), NAME_NEWDATA)
-                .AddParam(typeof(ISet<object>), NAME_OLDDATA)
+                .AddParam(typeof(ISet<MultiKey<EventBean>>), NAME_NEWDATA)
+                .AddParam(typeof(ISet<MultiKey<EventBean>>), NAME_OLDDATA)
                 .AddParam(typeof(bool), NAME_ISSYNTHESIZE);
             if (!spec.IsJoin) {
                 processJoinResultMethod.Block.MethodThrowUnsupported();
@@ -338,33 +361,33 @@ namespace com.espertech.esper.common.@internal.compile.stage3
             forge.ClearMethodCodegen(classScope, clearMethod);
 
             // Get-Iterator-View
-            var getIteratorMethodView = CodegenMethod
+            var getEnumeratorMethodView = CodegenMethod
                 .MakeParentNode(
-                    typeof(IEnumerator<object>),
+                    typeof(IEnumerator<EventBean>),
                     forge.GetType(),
                     CodegenSymbolProviderEmpty.INSTANCE,
                     classScope)
                 .AddParam(typeof(Viewable), NAME_VIEWABLE);
             if (!spec.IsJoin) {
-                forge.GetIteratorViewCodegen(classScope, getIteratorMethodView, instance);
+                forge.GetIteratorViewCodegen(classScope, getEnumeratorMethodView, instance);
             }
             else {
-                getIteratorMethodView.Block.MethodThrowUnsupported();
+                getEnumeratorMethodView.Block.MethodThrowUnsupported();
             }
 
             // Get-Iterator-Join
-            var getIteratorMethodJoin = CodegenMethod
+            var getEnumeratorMethodJoin = CodegenMethod
                 .MakeParentNode(
-                    typeof(IEnumerator<object>),
+                    typeof(IEnumerator<EventBean>),
                     forge.GetType(),
                     CodegenSymbolProviderEmpty.INSTANCE,
                     classScope)
-                .AddParam(typeof(ISet<object>), NAME_JOINSET);
+                .AddParam(typeof(ISet<MultiKey<EventBean>>), NAME_JOINSET);
             if (!spec.IsJoin) {
-                getIteratorMethodJoin.Block.MethodThrowUnsupported();
+                getEnumeratorMethodJoin.Block.MethodThrowUnsupported();
             }
             else {
-                forge.GetIteratorJoinCodegen(classScope, getIteratorMethodJoin, instance);
+                forge.GetIteratorJoinCodegen(classScope, getEnumeratorMethodJoin, instance);
             }
 
             // Process-output-rate-buffered-view
@@ -374,7 +397,7 @@ namespace com.espertech.esper.common.@internal.compile.stage3
                     forge.GetType(),
                     CodegenSymbolProviderEmpty.INSTANCE,
                     classScope)
-                .AddParam(typeof(IList<object>), NAME_VIEWEVENTSLIST)
+                .AddParam(typeof(IList<UniformPair<EventBean[]>>), NAME_VIEWEVENTSLIST)
                 .AddParam(typeof(bool), NAME_ISSYNTHESIZE);
             if (!spec.IsJoin && spec.HasOutputLimit && !spec.HasOutputLimitSnapshot) {
                 forge.ProcessOutputLimitedViewCodegen(classScope, processOutputLimitedViewMethod, instance);
@@ -390,7 +413,7 @@ namespace com.espertech.esper.common.@internal.compile.stage3
                     forge.GetType(),
                     CodegenSymbolProviderEmpty.INSTANCE,
                     classScope)
-                .AddParam(typeof(IList<object>), NAME_JOINEVENTSSET)
+                .AddParam(typeof(IList<UniformPair<ISet<MultiKey<EventBean>>>>), NAME_JOINEVENTSSET)
                 .AddParam(typeof(bool), NAME_ISSYNTHESIZE);
             if (!spec.IsJoin || !spec.HasOutputLimit || spec.HasOutputLimitSnapshot) {
                 processOutputLimitedJoinMethod.Block.MethodThrowUnsupported();
@@ -400,10 +423,10 @@ namespace com.espertech.esper.common.@internal.compile.stage3
             }
 
             // Set-Agent-Instance is supported for fire-and-forget queries only
-            var setAgentInstanceContextMethod = CodegenMethod
-                .MakeParentNode(typeof(void), forge.GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope)
-                .AddParam(typeof(AgentInstanceContext), "context");
-            setAgentInstanceContextMethod.Block.AssignRef(NAME_AGENTINSTANCECONTEXT, Ref("context"));
+            var agentInstanceContextProperty = CodegenProperty
+                .MakeParentNode(typeof(AgentInstanceContext), forge.GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope);
+            agentInstanceContextProperty.GetterBlock.BlockReturn(ExprDotName(Ref("this"), NAME_AGENTINSTANCECONTEXT));
+            agentInstanceContextProperty.SetterBlock.AssignRef(NAME_AGENTINSTANCECONTEXT, Ref("value"));
 
             // Apply-view
             var applyViewResultMethod = CodegenMethod
@@ -420,8 +443,8 @@ namespace com.espertech.esper.common.@internal.compile.stage3
             // Apply-join
             var applyJoinResultMethod = CodegenMethod
                 .MakeParentNode(typeof(void), forge.GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope)
-                .AddParam(typeof(ISet<object>), NAME_NEWDATA)
-                .AddParam(typeof(ISet<object>), NAME_OLDDATA);
+                .AddParam(typeof(ISet<MultiKey<EventBean>>), NAME_NEWDATA)
+                .AddParam(typeof(ISet<MultiKey<EventBean>>), NAME_OLDDATA);
             if (!spec.IsJoin || !spec.HasOutputLimit || !spec.HasOutputLimitSnapshot) {
                 applyJoinResultMethod.Block.MethodThrowUnsupported();
             }
@@ -448,8 +471,8 @@ namespace com.espertech.esper.common.@internal.compile.stage3
             // Process-output-unbuffered-join
             var processOutputLimitedLastAllNonBufferedJoinMethod = CodegenMethod
                 .MakeParentNode(typeof(void), forge.GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope)
-                .AddParam(typeof(ISet<object>), NAME_NEWDATA)
-                .AddParam(typeof(ISet<object>), NAME_OLDDATA)
+                .AddParam(typeof(ISet<MultiKey<EventBean>>), NAME_NEWDATA)
+                .AddParam(typeof(ISet<MultiKey<EventBean>>), NAME_OLDDATA)
                 .AddParam(typeof(bool), NAME_ISSYNTHESIZE);
             if (!spec.IsJoin || !spec.HasOutputLimit || spec.OutputConditionType != POLICY_LASTALL_UNORDERED) {
                 processOutputLimitedLastAllNonBufferedJoinMethod.Block.MethodThrowUnsupported();
@@ -511,78 +534,100 @@ namespace com.espertech.esper.common.@internal.compile.stage3
                 classScope);
             forge.StopMethodCodegen(classScope, stopMethod, instance);
 
+            var innerProperties = new CodegenClassProperties();
             var innerMethods = new CodegenClassMethods();
             CodegenStackGenerator.RecursiveBuildStack(
-                getResultEventTypeMethod,
-                "getResultEventType",
-                innerMethods);
+                resultEventTypeGetter,
+                "ResultEventType",
+                innerMethods,
+                innerProperties);
             CodegenStackGenerator.RecursiveBuildStack(
                 processViewResultMethod,
                 "ProcessViewResult",
-                innerMethods);
+                innerMethods,
+                innerProperties);
             CodegenStackGenerator.RecursiveBuildStack(
                 processJoinResultMethod,
                 "ProcessJoinResult",
-                innerMethods);
+                innerMethods,
+                innerProperties);
             CodegenStackGenerator.RecursiveBuildStack(
-                getIteratorMethodView,
+                getEnumeratorMethodView,
                 "GetEnumerator",
-                innerMethods);
+                innerMethods,
+                innerProperties);
             CodegenStackGenerator.RecursiveBuildStack(
-                getIteratorMethodJoin,
+                getEnumeratorMethodJoin,
                 "GetEnumerator",
-                innerMethods);
+                innerMethods,
+                innerProperties);
             CodegenStackGenerator.RecursiveBuildStack(
                 clearMethod,
                 "Clear",
-                innerMethods);
+                innerMethods,
+                innerProperties);
             CodegenStackGenerator.RecursiveBuildStack(
                 stopMethod,
                 "Stop",
-                innerMethods);
+                innerMethods,
+                innerProperties);
             CodegenStackGenerator.RecursiveBuildStack(
                 processOutputLimitedJoinMethod,
                 "ProcessOutputLimitedJoin",
-                innerMethods);
+                innerMethods,
+                innerProperties);
             CodegenStackGenerator.RecursiveBuildStack(
                 processOutputLimitedViewMethod,
                 "ProcessOutputLimitedView",
-                innerMethods);
+                innerMethods,
+                innerProperties);
             CodegenStackGenerator.RecursiveBuildStack(
-                setAgentInstanceContextMethod,
-                "setAgentInstanceContext",
-                innerMethods);
+                agentInstanceContextProperty,
+                "AgentInstanceContext",
+                innerMethods,
+                innerProperties);
             CodegenStackGenerator.RecursiveBuildStack(
                 applyViewResultMethod,
                 "ApplyViewResult",
-                innerMethods);
+                innerMethods,
+                innerProperties);
             CodegenStackGenerator.RecursiveBuildStack(
                 applyJoinResultMethod,
                 "ApplyJoinResult",
-                innerMethods);
+                innerMethods,
+                innerProperties);
             CodegenStackGenerator.RecursiveBuildStack(
                 processOutputLimitedLastAllNonBufferedViewMethod,
                 "ProcessOutputLimitedLastAllNonBufferedView",
-                innerMethods);
+                innerMethods,
+                innerProperties);
             CodegenStackGenerator.RecursiveBuildStack(
                 processOutputLimitedLastAllNonBufferedJoinMethod,
                 "ProcessOutputLimitedLastAllNonBufferedJoin",
-                innerMethods);
+                innerMethods,
+                innerProperties);
             CodegenStackGenerator.RecursiveBuildStack(
                 continueOutputLimitedLastAllNonBufferedViewMethod,
                 "ContinueOutputLimitedLastAllNonBufferedView",
-                innerMethods);
+                innerMethods,
+                innerProperties);
             CodegenStackGenerator.RecursiveBuildStack(
                 continueOutputLimitedLastAllNonBufferedJoinMethod,
                 "ContinueOutputLimitedLastAllNonBufferedJoin",
-                innerMethods);
+                innerMethods,
+                innerProperties);
             CodegenStackGenerator.RecursiveBuildStack(
                 acceptHelperVisitorMethod,
                 "AcceptHelperVisitor",
-                innerMethods);
+                innerMethods,
+                innerProperties);
 
             foreach (var methodEntry in instance.Methods.Methods) {
-                CodegenStackGenerator.RecursiveBuildStack(methodEntry.Value, methodEntry.Key, innerMethods);
+                CodegenStackGenerator.RecursiveBuildStack(
+                    methodEntry.Value,
+                    methodEntry.Key,
+                    innerMethods,
+                    innerProperties);
             }
 
             var innerClass = new CodegenInnerClass(
@@ -590,7 +635,8 @@ namespace com.espertech.esper.common.@internal.compile.stage3
                 forge.InterfaceClass,
                 serviceCtor,
                 instance.Members,
-                innerMethods);
+                innerMethods,
+                innerProperties);
             innerClasses.Add(innerClass);
         }
 
@@ -716,7 +762,7 @@ namespace com.espertech.esper.common.@internal.compile.stage3
             var ctor = new CodegenCtor(typeof(StmtClassForgableRSPFactoryProvider), classScope, ctorParams);
             ctor.Block.AssignRef(
                 "factory",
-                ExprDotMethod(EPStatementInitServicesConstants.REF, "getEventBeanTypedEventFactory"));
+                ExprDotName(EPStatementInitServicesConstants.REF, "EventBeanTypedEventFactory"));
 
             var processMethod = CodegenMethod.MakeParentNode(
                     typeof(EventBean),
@@ -744,20 +790,28 @@ namespace com.espertech.esper.common.@internal.compile.stage3
                 classScope);
             exprSymbol.DerivedSymbolsCodegen(processMethod, processMethod.Block, classScope);
             processMethod.Block
-                .DeclareVar<EventBean>("out", LocalMethod(performMethod))
+                .DeclareVar<EventBean>("@out", LocalMethod(performMethod))
                 .Apply(
                     InstrumentationCode.Instblock(
                         classScope,
                         "aSelectClause",
                         ResultSetProcessorCodegenNames.REF_ISNEWDATA,
-                        Ref("out"),
+                        Ref("@out"),
                         ConstantNull()))
-                .MethodReturn(Ref("out"));
+                .MethodReturn(Ref("@out"));
 
+            var allProperties = new CodegenClassProperties();
             var allMethods = new CodegenClassMethods();
-            CodegenStackGenerator.RecursiveBuildStack(processMethod, "process", allMethods);
+            CodegenStackGenerator.RecursiveBuildStack(
+                processMethod, "Process", allMethods, allProperties);
 
-            return new CodegenInnerClass(className, typeof(SelectExprProcessor), ctor, members, allMethods);
+            return new CodegenInnerClass(
+                className,
+                typeof(SelectExprProcessor),
+                ctor,
+                members,
+                allMethods,
+                allProperties);
         }
     }
 } // end of namespace

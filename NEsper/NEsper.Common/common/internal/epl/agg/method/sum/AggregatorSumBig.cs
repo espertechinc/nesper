@@ -64,7 +64,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.sum
             Type valueType,
             CodegenMethod method)
         {
-            method.Block.AssignRef(sum, ExprDotMethod(sum, "add", valueType == sumType ? value : Cast(sumType, value)));
+            method.Block.AssignRef(sum, ExprDotMethod(sum, "Add", valueType == sumType ? value : Cast(sumType, value)));
         }
 
         protected override void ApplyAggLeaveSum(
@@ -83,7 +83,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.sum
             CodegenMethod method,
             CodegenClassScope classScope)
         {
-            method.Block.AssignRef(sum, ExprDotMethod(sum, "add", Cast(evaluationTypes[0], value)));
+            method.Block.AssignRef(sum, ExprDotMethod(sum, "Add", Cast(evaluationTypes[0], value)));
         }
 
         protected override void ApplyTableLeaveSum(

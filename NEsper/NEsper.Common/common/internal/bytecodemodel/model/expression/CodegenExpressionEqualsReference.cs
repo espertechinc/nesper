@@ -10,6 +10,8 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
+using com.espertech.esper.common.@internal.bytecodemodel.core;
+
 namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
 {
     public class CodegenExpressionEqualsReference : CodegenExpression
@@ -30,12 +32,14 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
 
         public void Render(
             StringBuilder builder,
-            bool isInnerClass)
+            bool isInnerClass,
+            int level,
+            CodegenIndent indent)
         {
             builder.Append("(");
-            _lhs.Render(builder, isInnerClass);
+            _lhs.Render(builder, isInnerClass, level, indent);
             builder.Append(_isNot ? "!=" : "==");
-            _rhs.Render(builder, isInnerClass);
+            _rhs.Render(builder, isInnerClass, level, indent);
             builder.Append(")");
         }
 

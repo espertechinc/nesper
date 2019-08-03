@@ -35,8 +35,8 @@ namespace com.espertech.esper.common.@internal.settings
         public CodegenExpression InitCtorScoped()
         {
             return ExprDotMethodChain(EPStatementInitServicesConstants.REF)
-                .Add(EPStatementInitServicesConstants.GETCLASSPATHIMPORTSERVICERUNTIME)
-                .Add("getTimeZone");
+                .Get(EPStatementInitServicesConstants.IMPORTSERVICERUNTIME)
+                .Get("TimeZone");
         }
     }
 } // end of namespace

@@ -234,15 +234,13 @@ namespace com.espertech.esper.common.@internal.@event.core
             }
 
             if (eventType is BeanEventType && eventType.Metadata.AccessModifier == NameAccessModifier.TRANSIENT) {
-                return ExprDotMethodChain(
-                        ExprDotName(
-                            initServicesRef, EPStatementInitServicesConstants.EVENTTYPERESOLVER))
+                return ExprDotMethodChain(initServicesRef)
+                    .Get(EPStatementInitServicesConstants.EVENTTYPERESOLVER)
                     .Add(EventTypeResolverConstants.RESOLVE_PRIVATE_BEAN_METHOD, Constant(eventType.UnderlyingType));
             }
 
-            return ExprDotMethodChain(
-                    ExprDotName(
-                        initServicesRef, EPStatementInitServicesConstants.EVENTTYPERESOLVER))
+            return ExprDotMethodChain(initServicesRef)
+                .Get(EPStatementInitServicesConstants.EVENTTYPERESOLVER)
                 .Add(EventTypeResolverConstants.RESOLVE_METHOD, eventType.Metadata.ToExpression());
         }
 
@@ -281,10 +279,15 @@ namespace com.espertech.esper.common.@internal.@event.core
             CodegenClassScope classScope)
         {
             getterType = getterType.GetBoxedType();
-            var anonymous = NewAnonymousClass(method.Block, typeof(EventPropertyValueGetter));
-            var get = CodegenMethod.MakeParentNode(typeof(object), generator, classScope)
-                .AddParam(CodegenNamedParam.From(typeof(EventBean), "bean"));
-            anonymous.AddMethod("Get", get);
+
+            var get = new CodegenExpressionLambda(method.Block)
+                .WithParams(CodegenNamedParam.From(typeof(EventBean), "bean"));
+            var anonymous = NewInstance<ProxyEventPropertyValueGetter>(get);
+
+            //var anonymous = NewAnonymousClass(method.Block, typeof(EventPropertyValueGetter));
+            //var get = CodegenMethod.MakeParentNode(typeof(object), generator, classScope)
+            //    .AddParam(CodegenNamedParam.From(typeof(EventBean), "bean"));
+            //anonymous.AddMethod("Get", get);
 
             var result = getter.EventBeanGetCodegen(Ref("bean"), method, classScope);
             if (optionalCoercionType != null && getterType != optionalCoercionType && getterType.IsNumeric()) {
@@ -343,10 +346,14 @@ namespace com.espertech.esper.common.@internal.@event.core
                     classScope);
             }
 
-            var anonymous = NewAnonymousClass(method.Block, typeof(EventPropertyValueGetter));
-            var get = CodegenMethod.MakeParentNode(typeof(object), generator, classScope)
-                .AddParam(CodegenNamedParam.From(typeof(EventBean), "bean"));
-            anonymous.AddMethod("Get", get);
+            var get = new CodegenExpressionLambda(method.Block)
+                .WithParams(CodegenNamedParam.From(typeof(EventBean), "bean"));
+            var anonymous = NewInstance<ProxyEventPropertyValueGetter>(get);
+
+            //var anonymous = NewAnonymousClass(method.Block, typeof(EventPropertyValueGetter));
+            //var get = CodegenMethod.MakeParentNode(typeof(object), generator, classScope)
+            //    .AddParam(CodegenNamedParam.From(typeof(EventBean), "bean"));
+            //anonymous.AddMethod("Get", get);
 
             get.Block
                 .DeclareVar(
@@ -357,7 +364,7 @@ namespace com.espertech.esper.common.@internal.@event.core
                 .DeclareVar<HashableMultiKey>("valuesMk", NewInstance<HashableMultiKey>(Ref("values")));
 
             for (var i = 0; i < getters.Length; i++) {
-                var result = getters[i].UnderlyingGetCodegen(Ref("und"), get, classScope);
+                var result = getters[i].UnderlyingGetCodegen(Ref("und"), method /* get */, classScope);
                 var typeBoxed = types[i].GetBoxedType();
                 if (optionalCoercionTypes != null && typeBoxed != optionalCoercionTypes[i].GetBoxedType()) {
                     var coercer = SimpleNumberCoercerFactory.GetCoercer(
@@ -373,7 +380,7 @@ namespace com.espertech.esper.common.@internal.@event.core
                 get.Block.AssignArrayElement("values", Constant(i), result);
             }
 
-            get.Block.MethodReturn(Ref("valuesMk"));
+            get.Block.BlockReturn(Ref("valuesMk"));
 
             return anonymous;
         }

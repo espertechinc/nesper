@@ -48,13 +48,13 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
 
             method.Block
                 .ApplyTri(new ReturnIfNoMatch(ConstantFalse(), ConstantFalse()), method, symbols)
-                .DeclareVar<int>("cpid", ExprDotMethod(evalCtx, "getAgentInstanceId"))
+                .DeclareVar<int>("cpid", ExprDotName(evalCtx, "AgentInstanceId"))
                 .DeclareVar<AggregationService>(
                     "aggregationService",
-                    ExprDotMethod(aggService, "getContextPartitionAggregationService", Ref("cpid")))
+                    ExprDotMethod(aggService, "GetContextPartitionAggregationService", Ref("cpid")))
                 .DeclareVar<ICollection<object>>(
                     "groupKeys",
-                    ExprDotMethod(Ref("aggregationService"), "getGroupKeys", evalCtx));
+                    ExprDotMethod(Ref("aggregationService"), "GetGroupKeys", evalCtx));
             method.Block.ApplyTri(DECLARE_EVENTS_SHIFTED, method, symbols);
 
             var forEach = method.Block.ForEach(typeof(object), "groupKey", Ref("groupKeys"));

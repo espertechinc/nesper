@@ -47,7 +47,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.statement
                 .Append(@ref)
                 .Append("<");
 
-            upperLimit.Render(builder, isInnerClass);
+            upperLimit.Render(builder, isInnerClass, level, indent);
 
             builder
                 .Append("; ")

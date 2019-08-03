@@ -75,7 +75,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
                     LocalMethod(generateGroupKeySingle, Ref("eventsPerStream"), ConstantTrue()))
                 .ExprDotMethod(
                     REF_AGGREGATIONSVC,
-                    "applyEnter",
+                    "ApplyEnter",
                     Ref("eventsPerStream"),
                     Ref("mk"),
                     REF_AGENTINSTANCECONTEXT)
@@ -89,7 +89,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
                     LocalMethod(generateGroupKeySingle, Ref("eventsPerStream"), ConstantFalse()))
                 .ExprDotMethod(
                     REF_AGGREGATIONSVC,
-                    "applyLeave",
+                    "ApplyLeave",
                     Ref("eventsPerStream"),
                     Ref("mk"),
                     REF_AGENTINSTANCECONTEXT)
@@ -109,33 +109,33 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
                 instance);
 
             method.Block
-                .IfCondition(Not(ExprDotMethod(REF_NEWDATA, "isEmpty")))
+                .IfCondition(Not(ExprDotMethod(REF_NEWDATA, "IsEmpty")))
                 .ForEach(typeof(MultiKey<EventBean>), "aNewEvent", REF_NEWDATA)
                 .DeclareVar<EventBean[]>(
                     "eventsPerStream",
-                    Cast(typeof(EventBean[]), ExprDotMethod(Ref("aNewEvent"), "getArray")))
+                    Cast(typeof(EventBean[]), ExprDotName(Ref("aNewEvent"), "Array")))
                 .DeclareVar<object>(
                     "mk",
                     LocalMethod(generateGroupKeySingle, Ref("eventsPerStream"), ConstantTrue()))
                 .ExprDotMethod(
                     REF_AGGREGATIONSVC,
-                    "applyEnter",
+                    "ApplyEnter",
                     Ref("eventsPerStream"),
                     Ref("mk"),
                     REF_AGENTINSTANCECONTEXT)
                 .BlockEnd()
                 .BlockEnd()
-                .IfCondition(And(NotEqualsNull(REF_OLDDATA), Not(ExprDotMethod(REF_OLDDATA, "isEmpty"))))
+                .IfCondition(And(NotEqualsNull(REF_OLDDATA), Not(ExprDotMethod(REF_OLDDATA, "IsEmpty"))))
                 .ForEach(typeof(MultiKey<EventBean>), "anOldEvent", REF_OLDDATA)
                 .DeclareVar<EventBean[]>(
                     "eventsPerStream",
-                    Cast(typeof(EventBean[]), ExprDotMethod(Ref("anOldEvent"), "getArray")))
+                    Cast(typeof(EventBean[]), ExprDotName(Ref("anOldEvent"), "Array")))
                 .DeclareVar<object>(
                     "mk",
                     LocalMethod(generateGroupKeySingle, Ref("eventsPerStream"), ConstantFalse()))
                 .ExprDotMethod(
                     REF_AGGREGATIONSVC,
-                    "applyLeave",
+                    "ApplyLeave",
                     Ref("eventsPerStream"),
                     Ref("mk"),
                     REF_AGENTINSTANCECONTEXT)
@@ -163,7 +163,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
                     LocalMethod(generateGroupKeyArrayJoin, REF_OLDDATA, ConstantFalse()));
 
             if (forge.IsUnidirectional) {
-                method.Block.ExprDotMethod(Ref("this"), "clear");
+                method.Block.ExprDotMethod(Ref("this"), "Clear");
             }
 
             method.Block.StaticMethod(
@@ -293,7 +293,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
                 }
 
                 methodNode.Block.DeclareVar<int>("countOutputRows", Constant(0))
-                    .DeclareVar<int>("cpid", ExprDotMethod(REF_AGENTINSTANCECONTEXT, "getAgentInstanceId"));
+                    .DeclareVar<int>("cpid", ExprDotName(REF_AGENTINSTANCECONTEXT, "AgentInstanceId"));
 
                 {
                     var forLoop = methodNode.Block.ForLoopIntSimple("countInputRows", ArrayLength(Ref("outputEvents")));
@@ -324,7 +324,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
                             Ref("countOutputRows"),
                             ExprDotMethod(
                                 REF_SELECTEXPRPROCESSOR,
-                                "process",
+                                "Process",
                                 ExprForgeCodegenNames.REF_EPS,
                                 REF_ISNEWDATA,
                                 REF_ISSYNTHESIZE,
@@ -380,19 +380,19 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
             CodegenInstanceAux instance)
         {
             if (instance.HasMember(NAME_OUTPUTALLGROUPREPS)) {
-                method.Block.ExprDotMethod(REF_RESULTSETVISITOR, "visit", Ref(NAME_OUTPUTALLGROUPREPS));
+                method.Block.ExprDotMethod(REF_RESULTSETVISITOR, "Visit", Ref(NAME_OUTPUTALLGROUPREPS));
             }
 
             if (instance.HasMember(NAME_OUTPUTLASTHELPER)) {
-                method.Block.ExprDotMethod(REF_RESULTSETVISITOR, "visit", Ref(NAME_OUTPUTLASTHELPER));
+                method.Block.ExprDotMethod(REF_RESULTSETVISITOR, "Visit", Ref(NAME_OUTPUTLASTHELPER));
             }
 
             if (instance.HasMember(NAME_OUTPUTALLHELPER)) {
-                method.Block.ExprDotMethod(REF_RESULTSETVISITOR, "visit", Ref(NAME_OUTPUTALLHELPER));
+                method.Block.ExprDotMethod(REF_RESULTSETVISITOR, "Visit", Ref(NAME_OUTPUTALLHELPER));
             }
 
             if (instance.HasMember(NAME_OUTPUTFIRSTHELPER)) {
-                method.Block.ExprDotMethod(REF_RESULTSETVISITOR, "visit", Ref(NAME_OUTPUTFIRSTHELPER));
+                method.Block.ExprDotMethod(REF_RESULTSETVISITOR, "Visit", Ref(NAME_OUTPUTFIRSTHELPER));
             }
         }
 
@@ -402,31 +402,31 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
             CodegenInstanceAux instance)
         {
             Consumer<CodegenMethod> code = methodNode => {
-                methodNode.Block.IfCondition(ExprDotMethod(Ref("resultSet"), "isEmpty"))
+                methodNode.Block.IfCondition(ExprDotMethod(Ref("resultSet"), "IsEmpty"))
                     .BlockReturn(ConstantNull())
                     .DeclareVar<EventBean[]>(
                         "events",
-                        NewArrayByLength(typeof(EventBean), ExprDotMethod(Ref("resultSet"), "size")))
+                        NewArrayByLength(typeof(EventBean), ExprDotMethod(Ref("resultSet"), "Size")))
                     .DeclareVar<object[]>(
                         "keys",
-                        NewArrayByLength(typeof(object), ExprDotMethod(Ref("resultSet"), "size")));
+                        NewArrayByLength(typeof(object), ExprDotMethod(Ref("resultSet"), "Size")));
 
                 if (forge.IsSorting) {
                     methodNode.Block.DeclareVar<EventBean[][]>(
                         "currentGenerators",
-                        NewArrayByLength(typeof(EventBean[]), ExprDotMethod(Ref("resultSet"), "size")));
+                        NewArrayByLength(typeof(EventBean[]), ExprDotMethod(Ref("resultSet"), "Size")));
                 }
 
                 methodNode.Block.DeclareVar<int>("countOutputRows", Constant(0))
                     .DeclareVar<int>("countInputRows", Constant(-1))
-                    .DeclareVar<int>("cpid", ExprDotMethod(REF_AGENTINSTANCECONTEXT, "getAgentInstanceId"));
+                    .DeclareVar<int>("cpid", ExprDotName(REF_AGENTINSTANCECONTEXT, "AgentInstanceId"));
 
                 {
                     var forLoop = methodNode.Block.ForEach(typeof(MultiKey<object>), "row", Ref("resultSet"));
                     forLoop.Increment("countInputRows")
                         .DeclareVar<EventBean[]>(
                             "eventsPerStream",
-                            Cast(typeof(EventBean[]), ExprDotMethod(Ref("row"), "getArray")))
+                            Cast(typeof(EventBean[]), ExprDotName(Ref("row"), "Array")))
                         .ExprDotMethod(
                             REF_AGGREGATIONSVC,
                             "SetCurrentAccess",
@@ -450,7 +450,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
                             Ref("countOutputRows"),
                             ExprDotMethod(
                                 REF_SELECTEXPRPROCESSOR,
-                                "process",
+                                "Process",
                                 ExprForgeCodegenNames.REF_EPS,
                                 REF_ISNEWDATA,
                                 REF_ISSYNTHESIZE,
@@ -511,22 +511,22 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
                 classScope,
                 instance);
 
-            method.Block.ExprDotMethod(REF_AGGREGATIONSVC, "clearResults", REF_AGENTINSTANCECONTEXT)
-                .DeclareVar<IEnumerator<EventBean>>("it", ExprDotMethod(REF_VIEWABLE, "iterator"))
+            method.Block.ExprDotMethod(REF_AGGREGATIONSVC, "ClearResults", REF_AGENTINSTANCECONTEXT)
+                .DeclareVar<IEnumerator<EventBean>>("it", ExprDotMethod(REF_VIEWABLE, "GetEnumerator"))
                 .DeclareVar<EventBean[]>("eventsPerStream", NewArrayByLength(typeof(EventBean), Constant(1)));
 
             {
-                method.Block.WhileLoop(ExprDotMethod(Ref("it"), "hasNext"))
+                method.Block.WhileLoop(ExprDotMethod(Ref("it"), "HasNext"))
                     .AssignArrayElement(
                         Ref("eventsPerStream"),
                         Constant(0),
-                        Cast(typeof(EventBean), ExprDotMethod(Ref("it"), "next")))
+                        Cast(typeof(EventBean), ExprDotMethod(Ref("it"), "Next")))
                     .DeclareVar<object>(
                         "groupKey",
                         LocalMethod(generateGroupKeySingle, Ref("eventsPerStream"), ConstantTrue()))
                     .ExprDotMethod(
                         REF_AGGREGATIONSVC,
-                        "applyEnter",
+                        "ApplyEnter",
                         Ref("eventsPerStream"),
                         Ref("groupKey"),
                         REF_AGENTINSTANCECONTEXT)
@@ -539,8 +539,8 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
                         typeof(ResultSetProcessorUtil),
                         METHOD_ITERATORTODEQUE,
                         LocalMethod(ObtainIteratorCodegen(forge, method, classScope, instance), REF_VIEWABLE)))
-                .ExprDotMethod(REF_AGGREGATIONSVC, "clearResults", REF_AGENTINSTANCECONTEXT)
-                .MethodReturn(ExprDotMethod(Ref("deque"), "iterator"));
+                .ExprDotMethod(REF_AGGREGATIONSVC, "ClearResults", REF_AGENTINSTANCECONTEXT)
+                .MethodReturn(ExprDotMethod(Ref("deque"), "GetEnumerator"));
         }
 
         private static CodegenMethod ObtainIteratorCodegen(
@@ -557,7 +557,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
                     StaticMethod(
                         typeof(ResultSetProcessorAggregateGroupedIterator),
                         "Create",
-                        ExprDotMethod(REF_VIEWABLE, "iterator"),
+                        ExprDotMethod(REF_VIEWABLE, "GetEnumerator"),
                         Ref("this"),
                         REF_AGGREGATIONSVC,
                         REF_AGENTINSTANCECONTEXT));
@@ -587,7 +587,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
                         REF_AGGREGATIONSVC,
                         "SetCurrentAccess",
                         Ref("groupKey"),
-                        ExprDotMethod(REF_AGENTINSTANCECONTEXT, "getAgentInstanceId"),
+                        ExprDotName(REF_AGENTINSTANCECONTEXT, "AgentInstanceId"),
                         ConstantNull());
 
                 if (forge.OptionalHavingNode != null) {
@@ -603,17 +603,17 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
 
                 forLoop.ExprDotMethod(
                         Ref("outgoingEvents"),
-                        "add",
+                        "Add",
                         ExprDotMethod(
                             REF_SELECTEXPRPROCESSOR,
-                            "process",
+                            "Process",
                             Ref("eventsPerStream"),
                             ConstantTrue(),
                             ConstantTrue(),
                             REF_AGENTINSTANCECONTEXT))
                     .ExprDotMethod(
                         Ref("orderKeys"),
-                        "add",
+                        "Add",
                         ExprDotMethod(
                             REF_ORDERBYPROCESSOR,
                             "getSortKey",
@@ -666,7 +666,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
 
         public static void ClearMethodCodegen(CodegenMethod method)
         {
-            method.Block.ExprDotMethod(REF_AGGREGATIONSVC, "clearResults", REF_AGENTINSTANCECONTEXT);
+            method.Block.ExprDotMethod(REF_AGGREGATIONSVC, "ClearResults", REF_AGENTINSTANCECONTEXT);
         }
 
         public static void ProcessOutputLimitedJoinCodegen(
@@ -722,19 +722,19 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
             CodegenInstanceAux instance)
         {
             if (instance.HasMember(NAME_OUTPUTALLGROUPREPS)) {
-                method.Block.ExprDotMethod(Ref(NAME_OUTPUTALLGROUPREPS), "destroy");
+                method.Block.ExprDotMethod(Ref(NAME_OUTPUTALLGROUPREPS), "Destroy");
             }
 
             if (instance.HasMember(NAME_OUTPUTALLHELPER)) {
-                method.Block.ExprDotMethod(Ref(NAME_OUTPUTALLHELPER), "destroy");
+                method.Block.ExprDotMethod(Ref(NAME_OUTPUTALLHELPER), "Destroy");
             }
 
             if (instance.HasMember(NAME_OUTPUTLASTHELPER)) {
-                method.Block.ExprDotMethod(Ref(NAME_OUTPUTLASTHELPER), "destroy");
+                method.Block.ExprDotMethod(Ref(NAME_OUTPUTLASTHELPER), "Destroy");
             }
 
             if (instance.HasMember(NAME_OUTPUTFIRSTHELPER)) {
-                method.Block.ExprDotMethod(Ref(NAME_OUTPUTFIRSTHELPER), "destroy");
+                method.Block.ExprDotMethod(Ref(NAME_OUTPUTFIRSTHELPER), "Destroy");
             }
         }
 
@@ -755,9 +755,9 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
                             REF_AGGREGATIONSVC,
                             "SetCurrentAccess",
                             ArrayAtIndex(Ref("groupByKeys"), Ref("count")),
-                            ExprDotMethod(REF_AGENTINSTANCECONTEXT, "getAgentInstanceId"),
+                            ExprDotName(REF_AGENTINSTANCECONTEXT, "AgentInstanceId"),
                             ConstantNull())
-                        .AssignRef("eventsPerStream", Cast(typeof(EventBean[]), ExprDotMethod(Ref("row"), "getArray")));
+                        .AssignRef("eventsPerStream", Cast(typeof(EventBean[]), ExprDotName(Ref("row"), "Array")));
 
                     if (forge.OptionalHavingNode != null) {
                         forEach.IfCondition(
@@ -773,10 +773,10 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
 
                     forEach.ExprDotMethod(
                         Ref("resultEvents"),
-                        "add",
+                        "Add",
                         ExprDotMethod(
                             REF_SELECTEXPRPROCESSOR,
-                            "process",
+                            "Process",
                             Ref("eventsPerStream"),
                             REF_ISNEWDATA,
                             REF_ISSYNTHESIZE,
@@ -785,7 +785,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
                     if (forge.IsSorting) {
                         forEach.ExprDotMethod(
                             Ref("optSortKeys"),
-                            "add",
+                            "Add",
                             ExprDotMethod(
                                 REF_ORDERBYPROCESSOR,
                                 "getSortKey",
@@ -828,7 +828,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
                     REF_AGGREGATIONSVC,
                     "SetCurrentAccess",
                     Ref("groupByKey"),
-                    ExprDotMethod(REF_AGENTINSTANCECONTEXT, "getAgentInstanceId"),
+                    ExprDotName(REF_AGENTINSTANCECONTEXT, "AgentInstanceId"),
                     ConstantNull());
 
                 if (forge.OptionalHavingNode != null) {
@@ -846,7 +846,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
                 methodNode.Block.MethodReturn(
                     ExprDotMethod(
                         REF_SELECTEXPRPROCESSOR,
-                        "process",
+                        "Process",
                         Ref("eventsPerStream"),
                         REF_ISNEWDATA,
                         REF_ISSYNTHESIZE,
@@ -886,7 +886,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
                             REF_AGGREGATIONSVC,
                             "SetCurrentAccess",
                             Ref("groupKey"),
-                            ExprDotMethod(REF_AGENTINSTANCECONTEXT, "getAgentInstanceId"),
+                            ExprDotName(REF_AGENTINSTANCECONTEXT, "AgentInstanceId"),
                             ConstantNull())
                         .AssignArrayElement(
                             Ref("eventsPerStream"),
@@ -906,11 +906,11 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
 
                     forEach.ExprDotMethod(
                         Ref("resultEvents"),
-                        "put",
+                        "Put",
                         Ref("groupKey"),
                         ExprDotMethod(
                             REF_SELECTEXPRPROCESSOR,
-                            "process",
+                            "Process",
                             Ref("eventsPerStream"),
                             REF_ISNEWDATA,
                             REF_ISSYNTHESIZE,
@@ -919,7 +919,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
                     if (forge.IsSorting) {
                         forEach.ExprDotMethod(
                             Ref("optSortKeys"),
-                            "put",
+                            "Put",
                             Ref("groupKey"),
                             ExprDotMethod(
                                 REF_ORDERBYPROCESSOR,
@@ -972,11 +972,11 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
                             REF_AGGREGATIONSVC,
                             "SetCurrentAccess",
                             Ref("groupKey"),
-                            ExprDotMethod(REF_AGENTINSTANCECONTEXT, "getAgentInstanceId"),
+                            ExprDotName(REF_AGENTINSTANCECONTEXT, "AgentInstanceId"),
                             ConstantNull())
                         .DeclareVar<EventBean[]>(
                             "eventsPerStream",
-                            Cast(typeof(EventBean[]), ExprDotMethod(Ref("row"), "getArray")));
+                            Cast(typeof(EventBean[]), ExprDotName(Ref("row"), "Array")));
 
                     if (forge.OptionalHavingNode != null) {
                         forEach.IfCondition(
@@ -991,11 +991,11 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
 
                     forEach.ExprDotMethod(
                         Ref("resultEvents"),
-                        "put",
+                        "Put",
                         Ref("groupKey"),
                         ExprDotMethod(
                             REF_SELECTEXPRPROCESSOR,
-                            "process",
+                            "Process",
                             Ref("eventsPerStream"),
                             REF_ISNEWDATA,
                             REF_ISSYNTHESIZE,
@@ -1004,7 +1004,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
                     if (forge.IsSorting) {
                         forEach.ExprDotMethod(
                             Ref("optSortKeys"),
-                            "put",
+                            "Put",
                             Ref("groupKey"),
                             ExprDotMethod(
                                 REF_ORDERBYPROCESSOR,
@@ -1044,19 +1044,19 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
         {
             Consumer<CodegenMethod> code = method => {
                 if (instance.HasMember(NAME_OUTPUTALLGROUPREPS)) {
-                    method.Block.ExprDotMethod(Ref(NAME_OUTPUTALLGROUPREPS), "remove", Ref("key"));
+                    method.Block.ExprDotMethod(Ref(NAME_OUTPUTALLGROUPREPS), "Remove", Ref("key"));
                 }
 
                 if (instance.HasMember(NAME_OUTPUTALLHELPER)) {
-                    method.Block.ExprDotMethod(Ref(NAME_OUTPUTALLHELPER), "remove", Ref("key"));
+                    method.Block.ExprDotMethod(Ref(NAME_OUTPUTALLHELPER), "Remove", Ref("key"));
                 }
 
                 if (instance.HasMember(NAME_OUTPUTLASTHELPER)) {
-                    method.Block.ExprDotMethod(Ref(NAME_OUTPUTLASTHELPER), "remove", Ref("key"));
+                    method.Block.ExprDotMethod(Ref(NAME_OUTPUTLASTHELPER), "Remove", Ref("key"));
                 }
 
                 if (instance.HasMember(NAME_OUTPUTFIRSTHELPER)) {
-                    method.Block.ExprDotMethod(Ref(NAME_OUTPUTFIRSTHELPER), "remove", Ref("key"));
+                    method.Block.ExprDotMethod(Ref(NAME_OUTPUTFIRSTHELPER), "Remove", Ref("key"));
                 }
             };
             instance.Methods.AddMethod(
@@ -1199,10 +1199,10 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
                 var forEach = method.Block.ForEach(typeof(UniformPair<object>), "pair", REF_JOINEVENTSSET);
                 forEach.DeclareVar<ISet<object>>(
                         "newData",
-                        Cast(typeof(ISet<object>), ExprDotMethod(Ref("pair"), "getFirst")))
+                        Cast(typeof(ISet<object>), ExprDotName(Ref("pair"), "First")))
                     .DeclareVar<ISet<object>>(
                         "oldData",
-                        Cast(typeof(ISet<object>), ExprDotMethod(Ref("pair"), "getSecond")))
+                        Cast(typeof(ISet<object>), ExprDotName(Ref("pair"), "Second")))
                     .DeclareVar<object[]>(
                         "newDataMultiKey",
                         LocalMethod(generateGroupKeyArrayJoin, Ref("newData"), ConstantTrue()))
@@ -1340,10 +1340,10 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
                     var forEach = method.Block.ForEach(typeof(UniformPair<object>), "pair", REF_JOINEVENTSSET);
                     forEach.DeclareVar<ISet<object>>(
                             "newData",
-                            Cast(typeof(ISet<object>), ExprDotMethod(Ref("pair"), "getFirst")))
+                            Cast(typeof(ISet<object>), ExprDotName(Ref("pair"), "First")))
                         .DeclareVar<ISet<object>>(
                             "oldData",
-                            Cast(typeof(ISet<object>), ExprDotMethod(Ref("pair"), "getSecond")))
+                            Cast(typeof(ISet<object>), ExprDotName(Ref("pair"), "Second")))
                         .DeclareVar<object[]>(
                             "newDataMultiKey",
                             LocalMethod(generateGroupKeyArrayJoin, Ref("newData"), ConstantTrue()))
@@ -1359,7 +1359,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
                             forloop.DeclareVar<object>("mk", ArrayAtIndex(Ref("newDataMultiKey"), Ref("count")))
                                 .DeclareVar<EventBean[]>(
                                     "eventsPerStream",
-                                    Cast(typeof(EventBean[]), ExprDotMethod(Ref("aNewData"), "getArray")))
+                                    Cast(typeof(EventBean[]), ExprDotName(Ref("aNewData"), "Array")))
                                 .DeclareVar<OutputConditionPolled>(
                                     "outputStateGroup",
                                     ExprDotMethod(
@@ -1376,10 +1376,10 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
                                         Constant(1),
                                         Constant(0)));
                             var ifPass = forloop.IfCondition(Ref("pass"));
-                            ifPass.ExprDotMethod(Ref("workCollection"), "put", Ref("mk"), Ref("eventsPerStream"));
+                            ifPass.ExprDotMethod(Ref("workCollection"), "Put", Ref("mk"), Ref("eventsPerStream"));
                             forloop.ExprDotMethod(
                                     REF_AGGREGATIONSVC,
-                                    "applyEnter",
+                                    "ApplyEnter",
                                     Ref("eventsPerStream"),
                                     Ref("mk"),
                                     REF_AGENTINSTANCECONTEXT)
@@ -1394,7 +1394,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
                             forloop.DeclareVar<object>("mk", ArrayAtIndex(Ref("oldDataMultiKey"), Ref("count")))
                                 .DeclareVar<EventBean[]>(
                                     "eventsPerStream",
-                                    Cast(typeof(EventBean[]), ExprDotMethod(Ref("aOldData"), "getArray")))
+                                    Cast(typeof(EventBean[]), ExprDotName(Ref("aOldData"), "Array")))
                                 .DeclareVar<OutputConditionPolled>(
                                     "outputStateGroup",
                                     ExprDotMethod(
@@ -1411,10 +1411,10 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
                                         Constant(0),
                                         Constant(1)));
                             var ifPass = forloop.IfCondition(Ref("pass"));
-                            ifPass.ExprDotMethod(Ref("workCollection"), "put", Ref("mk"), Ref("eventsPerStream"));
+                            ifPass.ExprDotMethod(Ref("workCollection"), "Put", Ref("mk"), Ref("eventsPerStream"));
                             forloop.ExprDotMethod(
                                     REF_AGGREGATIONSVC,
-                                    "applyLeave",
+                                    "ApplyLeave",
                                     Ref("eventsPerStream"),
                                     Ref("mk"),
                                     REF_AGENTINSTANCECONTEXT)
@@ -1437,10 +1437,10 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
                     var forEach = method.Block.ForEach(typeof(UniformPair<object>), "pair", REF_JOINEVENTSSET);
                     forEach.DeclareVar<ISet<object>>(
                             "newData",
-                            Cast(typeof(ISet<object>), ExprDotMethod(Ref("pair"), "getFirst")))
+                            Cast(typeof(ISet<object>), ExprDotName(Ref("pair"), "First")))
                         .DeclareVar<ISet<object>>(
                             "oldData",
-                            Cast(typeof(ISet<object>), ExprDotMethod(Ref("pair"), "getSecond")))
+                            Cast(typeof(ISet<object>), ExprDotName(Ref("pair"), "Second")))
                         .DeclareVar<object[]>(
                             "newDataMultiKey",
                             LocalMethod(generateGroupKeyArrayJoin, Ref("newData"), ConstantTrue()))
@@ -1465,12 +1465,12 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
                             forloop.DeclareVar<object>("mk", ArrayAtIndex(Ref("newDataMultiKey"), Ref("count")))
                                 .DeclareVar<EventBean[]>(
                                     "eventsPerStream",
-                                    Cast(typeof(EventBean[]), ExprDotMethod(Ref("aNewData"), "getArray")))
+                                    Cast(typeof(EventBean[]), ExprDotName(Ref("aNewData"), "Array")))
                                 .ExprDotMethod(
                                     REF_AGGREGATIONSVC,
                                     "SetCurrentAccess",
                                     Ref("mk"),
-                                    ExprDotMethod(REF_AGENTINSTANCECONTEXT, "getAgentInstanceId"),
+                                    ExprDotName(REF_AGENTINSTANCECONTEXT, "AgentInstanceId"),
                                     ConstantNull())
                                 .IfCondition(
                                     Not(
@@ -1498,7 +1498,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
                                         Constant(1),
                                         Constant(0)));
                             forloop.IfCondition(Ref("pass"))
-                                .ExprDotMethod(Ref("workCollection"), "put", Ref("mk"), Ref("eventsPerStream"));
+                                .ExprDotMethod(Ref("workCollection"), "Put", Ref("mk"), Ref("eventsPerStream"));
                         }
                     }
 
@@ -1510,12 +1510,12 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
                             forloop.DeclareVar<object>("mk", ArrayAtIndex(Ref("oldDataMultiKey"), Ref("count")))
                                 .DeclareVar<EventBean[]>(
                                     "eventsPerStream",
-                                    Cast(typeof(EventBean[]), ExprDotMethod(Ref("aOldData"), "getArray")))
+                                    Cast(typeof(EventBean[]), ExprDotName(Ref("aOldData"), "Array")))
                                 .ExprDotMethod(
                                     REF_AGGREGATIONSVC,
                                     "SetCurrentAccess",
                                     Ref("mk"),
-                                    ExprDotMethod(REF_AGENTINSTANCECONTEXT, "getAgentInstanceId"),
+                                    ExprDotName(REF_AGENTINSTANCECONTEXT, "AgentInstanceId"),
                                     ConstantNull())
                                 .IfCondition(
                                     Not(
@@ -1543,7 +1543,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
                                         Constant(0),
                                         Constant(1)));
                             forloop.IfCondition(Ref("pass"))
-                                .ExprDotMethod(Ref("workCollection"), "put", Ref("mk"), Ref("eventsPerStream"));
+                                .ExprDotMethod(Ref("workCollection"), "Put", Ref("mk"), Ref("eventsPerStream"));
                         }
                     }
 
@@ -1626,10 +1626,10 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
                 var forEach = method.Block.ForEach(typeof(UniformPair<object>), "pair", REF_JOINEVENTSSET);
                 forEach.DeclareVar<ISet<object>>(
                         "newData",
-                        Cast(typeof(ISet<object>), ExprDotMethod(Ref("pair"), "getFirst")))
+                        Cast(typeof(ISet<object>), ExprDotName(Ref("pair"), "First")))
                     .DeclareVar<ISet<object>>(
                         "oldData",
-                        Cast(typeof(ISet<object>), ExprDotMethod(Ref("pair"), "getSecond")))
+                        Cast(typeof(ISet<object>), ExprDotName(Ref("pair"), "Second")))
                     .DeclareVar<object[]>(
                         "newDataMultiKey",
                         LocalMethod(generateGroupKeyArrayJoin, Ref("newData"), ConstantTrue()))
@@ -1638,7 +1638,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
                         LocalMethod(generateGroupKeyArrayJoin, Ref("oldData"), ConstantFalse()));
 
                 if (forge.IsUnidirectional) {
-                    forEach.ExprDotMethod(Ref("this"), "clear");
+                    forEach.ExprDotMethod(Ref("this"), "Clear");
                 }
 
                 {
@@ -1650,16 +1650,16 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
                             .DeclareVar<object>("mk", ArrayAtIndex(Ref("newDataMultiKey"), Ref("count")))
                             .DeclareVar<EventBean[]>(
                                 "eventsPerStream",
-                                Cast(typeof(EventBean[]), ExprDotMethod(Ref("aNewData"), "getArray")))
+                                Cast(typeof(EventBean[]), ExprDotName(Ref("aNewData"), "Array")))
                             .ExprDotMethod(
                                 REF_AGGREGATIONSVC,
-                                "applyEnter",
+                                "ApplyEnter",
                                 Ref("eventsPerStream"),
                                 Ref("mk"),
                                 REF_AGENTINSTANCECONTEXT)
                             .Increment("count")
-                            .ExprDotMethod(Ref("workCollection"), "put", Ref("mk"), Ref("eventsPerStream"))
-                            .ExprDotMethod(Ref(NAME_OUTPUTALLGROUPREPS), "put", Ref("mk"), Ref("eventsPerStream"));
+                            .ExprDotMethod(Ref("workCollection"), "Put", Ref("mk"), Ref("eventsPerStream"))
+                            .ExprDotMethod(Ref(NAME_OUTPUTALLGROUPREPS), "Put", Ref("mk"), Ref("eventsPerStream"));
                     }
 
                     var ifOldData = forEach.IfCondition(NotEqualsNull(Ref("oldData")))
@@ -1669,10 +1669,10 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
                             .DeclareVar<object>("mk", ArrayAtIndex(Ref("oldDataMultiKey"), Ref("count")))
                             .DeclareVar<EventBean[]>(
                                 "eventsPerStream",
-                                Cast(typeof(EventBean[]), ExprDotMethod(Ref("anOldData"), "getArray")))
+                                Cast(typeof(EventBean[]), ExprDotName(Ref("anOldData"), "Array")))
                             .ExprDotMethod(
                                 REF_AGGREGATIONSVC,
-                                "applyLeave",
+                                "ApplyLeave",
                                 Ref("eventsPerStream"),
                                 Ref("mk"),
                                 REF_AGENTINSTANCECONTEXT)
@@ -1703,18 +1703,18 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
 
             method.Block.DeclareVar<IEnumerator<object>>(
                 "entryIterator",
-                ExprDotMethod(Ref(NAME_OUTPUTALLGROUPREPS), "entryIterator"));
+                ExprDotMethod(Ref(NAME_OUTPUTALLGROUPREPS), "EntryIterator"));
             {
-                method.Block.WhileLoop(ExprDotMethod(Ref("entryIterator"), "hasNext"))
+                method.Block.WhileLoop(ExprDotMethod(Ref("entryIterator"), "HasNext"))
                     .DeclareVar<KeyValuePair<object, object>>(
                         "entry",
-                        Cast(typeof(KeyValuePair<object, object>), ExprDotMethod(Ref("entryIterator"), "next")))
+                        Cast(typeof(KeyValuePair<object, object>), ExprDotMethod(Ref("entryIterator"), "Next")))
                     .IfCondition(
                         Not(ExprDotMethod(Ref("workCollection"), "containsKey", ExprDotMethod(Ref("entry"), "getKey"))))
                     .InstanceMethod(
                         generateOutputBatchedAddToListSingle,
-                        ExprDotMethod(Ref("entry"), "getKey"),
-                        Cast(typeof(EventBean[]), ExprDotMethod(Ref("entry"), "getValue")),
+                        ExprDotName(Ref("entry"), "Key"),
+                        Cast(typeof(EventBean[]), ExprDotName(Ref("entry"), "Value")),
                         ConstantTrue(),
                         REF_ISSYNTHESIZE,
                         Ref("newEvents"),
@@ -1749,10 +1749,10 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
                 var forEach = method.Block.ForEach(typeof(UniformPair<object>), "pair", REF_JOINEVENTSSET);
                 forEach.DeclareVar<ISet<object>>(
                         "newData",
-                        Cast(typeof(ISet<object>), ExprDotMethod(Ref("pair"), "getFirst")))
+                        Cast(typeof(ISet<object>), ExprDotName(Ref("pair"), "First")))
                     .DeclareVar<ISet<object>>(
                         "oldData",
-                        Cast(typeof(ISet<object>), ExprDotMethod(Ref("pair"), "getSecond")))
+                        Cast(typeof(ISet<object>), ExprDotName(Ref("pair"), "Second")))
                     .DeclareVar<object[]>(
                         "newDataMultiKey",
                         LocalMethod(generateGroupKeyArrayJoin, Ref("newData"), ConstantTrue()))
@@ -1761,7 +1761,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
                         LocalMethod(generateGroupKeyArrayJoin, Ref("oldData"), ConstantFalse()));
 
                 if (forge.IsUnidirectional) {
-                    forEach.ExprDotMethod(Ref("this"), "clear");
+                    forEach.ExprDotMethod(Ref("this"), "Clear");
                 }
 
                 forEach.StaticMethod(
@@ -1842,10 +1842,10 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
                 var forEach = method.Block.ForEach(typeof(UniformPair<object>), "pair", REF_VIEWEVENTSLIST);
                 forEach.DeclareVar<EventBean[]>(
                         "newData",
-                        Cast(typeof(EventBean[]), ExprDotMethod(Ref("pair"), "getFirst")))
+                        Cast(typeof(EventBean[]), ExprDotName(Ref("pair"), "First")))
                     .DeclareVar<EventBean[]>(
                         "oldData",
-                        Cast(typeof(EventBean[]), ExprDotMethod(Ref("pair"), "getSecond")))
+                        Cast(typeof(EventBean[]), ExprDotName(Ref("pair"), "Second")))
                     .DeclareVar<object[]>(
                         "newDataMultiKey",
                         LocalMethod(generateGroupKeyArrayView, Ref("newData"), ConstantTrue()))
@@ -1987,10 +1987,10 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
                     var forEach = method.Block.ForEach(typeof(UniformPair<EventBean[]>), "pair", REF_VIEWEVENTSLIST);
                     forEach.DeclareVar<EventBean[]>(
                             "newData",
-                            Cast(typeof(EventBean[]), ExprDotMethod(Ref("pair"), "getFirst")))
+                            Cast(typeof(EventBean[]), ExprDotName(Ref("pair"), "First")))
                         .DeclareVar<EventBean[]>(
                             "oldData",
-                            Cast(typeof(EventBean[]), ExprDotMethod(Ref("pair"), "getSecond")))
+                            Cast(typeof(EventBean[]), ExprDotName(Ref("pair"), "Second")))
                         .DeclareVar<object[]>(
                             "newDataMultiKey",
                             LocalMethod(generateGroupKeyArrayView, Ref("newData"), ConstantTrue()))
@@ -2025,12 +2025,12 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
                             var ifPass = forloop.IfCondition(Ref("pass"));
                             ifPass.ExprDotMethod(
                                 Ref("workCollection"),
-                                "put",
+                                "Put",
                                 Ref("mk"),
                                 NewArrayWithInit(typeof(EventBean), ArrayAtIndex(Ref("newData"), Ref("i"))));
                             forloop.ExprDotMethod(
                                 REF_AGGREGATIONSVC,
-                                "applyEnter",
+                                "ApplyEnter",
                                 Ref("eventsPerStream"),
                                 Ref("mk"),
                                 REF_AGENTINSTANCECONTEXT);
@@ -2063,12 +2063,12 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
                             var ifPass = forloop.IfCondition(Ref("pass"));
                             ifPass.ExprDotMethod(
                                 Ref("workCollection"),
-                                "put",
+                                "Put",
                                 Ref("mk"),
                                 NewArrayWithInit(typeof(EventBean), ArrayAtIndex(Ref("oldData"), Ref("i"))));
                             forloop.ExprDotMethod(
                                 REF_AGGREGATIONSVC,
-                                "applyLeave",
+                                "ApplyLeave",
                                 Ref("eventsPerStream"),
                                 Ref("mk"),
                                 REF_AGENTINSTANCECONTEXT);
@@ -2090,10 +2090,10 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
                     var forEach = method.Block.ForEach(typeof(UniformPair<EventBean[]>), "pair", REF_VIEWEVENTSLIST);
                     forEach.DeclareVar<EventBean[]>(
                             "newData",
-                            Cast(typeof(EventBean[]), ExprDotMethod(Ref("pair"), "getFirst")))
+                            Cast(typeof(EventBean[]), ExprDotName(Ref("pair"), "First")))
                         .DeclareVar<EventBean[]>(
                             "oldData",
-                            Cast(typeof(EventBean[]), ExprDotMethod(Ref("pair"), "getSecond")))
+                            Cast(typeof(EventBean[]), ExprDotName(Ref("pair"), "Second")))
                         .DeclareVar<object[]>(
                             "newDataMultiKey",
                             LocalMethod(generateGroupKeyArrayView, Ref("newData"), ConstantTrue()))
@@ -2124,7 +2124,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
                                     REF_AGGREGATIONSVC,
                                     "SetCurrentAccess",
                                     Ref("mk"),
-                                    ExprDotMethod(REF_AGENTINSTANCECONTEXT, "getAgentInstanceId"),
+                                    ExprDotName(REF_AGENTINSTANCECONTEXT, "AgentInstanceId"),
                                     ConstantNull())
                                 .IfCondition(
                                     Not(
@@ -2153,7 +2153,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
                             forloop.IfCondition(Ref("pass"))
                                 .ExprDotMethod(
                                     Ref("workCollection"),
-                                    "put",
+                                    "Put",
                                     Ref("mk"),
                                     NewArrayWithInit(typeof(EventBean), ArrayAtIndex(Ref("newData"), Ref("i"))));
                         }
@@ -2172,7 +2172,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
                                     REF_AGGREGATIONSVC,
                                     "SetCurrentAccess",
                                     Ref("mk"),
-                                    ExprDotMethod(REF_AGENTINSTANCECONTEXT, "getAgentInstanceId"),
+                                    ExprDotName(REF_AGENTINSTANCECONTEXT, "AgentInstanceId"),
                                     ConstantNull())
                                 .IfCondition(
                                     Not(
@@ -2201,7 +2201,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
                             forloop.IfCondition(Ref("pass"))
                                 .ExprDotMethod(
                                     Ref("workCollection"),
-                                    "put",
+                                    "Put",
                                     Ref("mk"),
                                     NewArrayWithInit(typeof(EventBean), ArrayAtIndex(Ref("oldData"), Ref("i"))));
                         }
@@ -2287,10 +2287,10 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
                 var forEach = method.Block.ForEach(typeof(UniformPair<EventBean[]>), "pair", REF_VIEWEVENTSLIST);
                 forEach.DeclareVar<EventBean[]>(
                         "newData",
-                        Cast(typeof(EventBean[]), ExprDotMethod(Ref("pair"), "getFirst")))
+                        Cast(typeof(EventBean[]), ExprDotName(Ref("pair"), "First")))
                     .DeclareVar<EventBean[]>(
                         "oldData",
-                        Cast(typeof(EventBean[]), ExprDotMethod(Ref("pair"), "getSecond")))
+                        Cast(typeof(EventBean[]), ExprDotName(Ref("pair"), "Second")))
                     .DeclareVar<object[]>(
                         "newDataMultiKey",
                         LocalMethod(generateGroupKeyArrayView, Ref("newData"), ConstantTrue()))
@@ -2308,15 +2308,15 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
                             .AssignArrayElement(Ref("eventsPerStream"), Constant(0), Ref("aNewData"))
                             .ExprDotMethod(
                                 REF_AGGREGATIONSVC,
-                                "applyEnter",
+                                "ApplyEnter",
                                 Ref("eventsPerStream"),
                                 Ref("mk"),
                                 REF_AGENTINSTANCECONTEXT)
                             .Increment("count")
-                            .ExprDotMethod(Ref("workCollection"), "put", Ref("mk"), Ref("eventsPerStream"))
+                            .ExprDotMethod(Ref("workCollection"), "Put", Ref("mk"), Ref("eventsPerStream"))
                             .ExprDotMethod(
                                 Ref(NAME_OUTPUTALLGROUPREPS),
-                                "put",
+                                "Put",
                                 Ref("mk"),
                                 NewArrayWithInit(typeof(EventBean), Ref("aNewData")));
                     }
@@ -2329,7 +2329,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
                             .AssignArrayElement(Ref("eventsPerStream"), Constant(0), Ref("anOldData"))
                             .ExprDotMethod(
                                 REF_AGGREGATIONSVC,
-                                "applyLeave",
+                                "ApplyLeave",
                                 Ref("eventsPerStream"),
                                 Ref("mk"),
                                 REF_AGENTINSTANCECONTEXT)
@@ -2362,18 +2362,18 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
 
             method.Block.DeclareVar<IEnumerator<object>>(
                 "entryIterator",
-                ExprDotMethod(Ref(NAME_OUTPUTALLGROUPREPS), "entryIterator"));
+                ExprDotMethod(Ref(NAME_OUTPUTALLGROUPREPS), "EntryIterator"));
             {
-                method.Block.WhileLoop(ExprDotMethod(Ref("entryIterator"), "hasNext"))
+                method.Block.WhileLoop(ExprDotMethod(Ref("entryIterator"), "HasNext"))
                     .DeclareVar<KeyValuePair<object, object>>(
                         "entry",
-                        Cast(typeof(KeyValuePair<object, object>), ExprDotMethod(Ref("entryIterator"), "next")))
+                        Cast(typeof(KeyValuePair<object, object>), ExprDotMethod(Ref("entryIterator"), "Next")))
                     .IfCondition(
                         Not(ExprDotMethod(Ref("workCollection"), "containsKey", ExprDotMethod(Ref("entry"), "getKey"))))
                     .InstanceMethod(
                         generateOutputBatchedAddToListSingle,
-                        ExprDotMethod(Ref("entry"), "getKey"),
-                        Cast(typeof(EventBean[]), ExprDotMethod(Ref("entry"), "getValue")),
+                        ExprDotName(Ref("entry"), "Key"),
+                        Cast(typeof(EventBean[]), ExprDotName(Ref("entry"), "Value")),
                         ConstantTrue(),
                         REF_ISSYNTHESIZE,
                         Ref("newEvents"),
@@ -2412,10 +2412,10 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
                 var forEach = method.Block.ForEach(typeof(UniformPair<EventBean[]>), "pair", REF_VIEWEVENTSLIST);
                 forEach.DeclareVar<EventBean[]>(
                         "newData",
-                        Cast(typeof(EventBean[]), ExprDotMethod(Ref("pair"), "getFirst")))
+                        Cast(typeof(EventBean[]), ExprDotName(Ref("pair"), "First")))
                     .DeclareVar<EventBean[]>(
                         "oldData",
-                        Cast(typeof(EventBean[]), ExprDotMethod(Ref("pair"), "getSecond")))
+                        Cast(typeof(EventBean[]), ExprDotName(Ref("pair"), "Second")))
                     .DeclareVar<object[]>(
                         "newDataMultiKey",
                         LocalMethod(generateGroupKeyArrayView, Ref("newData"), ConstantTrue()))
@@ -2480,11 +2480,11 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
                 methodNode.Block.ForEach(
                         typeof(KeyValuePair<object, object>),
                         "entry",
-                        ExprDotMethod(Ref("keysAndEvents"), "entrySet"))
+                        ExprDotMethod(Ref("keysAndEvents"), "EntrySet"))
                     .InstanceMethod(
                         generateOutputBatchedAddToListSingle,
-                        ExprDotMethod(Ref("entry"), "getKey"),
-                        Cast(typeof(EventBean[]), ExprDotMethod(Ref("entry"), "getValue")),
+                        ExprDotName(Ref("entry"), "Key"),
+                        Cast(typeof(EventBean[]), ExprDotName(Ref("entry"), "Value")),
                         REF_ISNEWDATA,
                         REF_ISSYNTHESIZE,
                         Ref("resultEvents"),
@@ -2521,7 +2521,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
                         REF_AGGREGATIONSVC,
                         "SetCurrentAccess",
                         Ref("key"),
-                        ExprDotMethod(REF_AGENTINSTANCECONTEXT, "getAgentInstanceId"),
+                        ExprDotName(REF_AGENTINSTANCECONTEXT, "AgentInstanceId"),
                         ConstantNull());
 
                     if (forge.OptionalHavingNode != null) {
@@ -2537,10 +2537,10 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
 
                     methodNode.Block.ExprDotMethod(
                         Ref("resultEvents"),
-                        "add",
+                        "Add",
                         ExprDotMethod(
                             REF_SELECTEXPRPROCESSOR,
-                            "process",
+                            "Process",
                             ExprForgeCodegenNames.REF_EPS,
                             REF_ISNEWDATA,
                             REF_ISSYNTHESIZE,
@@ -2549,7 +2549,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
                     if (forge.IsSorting) {
                         methodNode.Block.ExprDotMethod(
                             Ref("optSortKeys"),
-                            "add",
+                            "Add",
                             ExprDotMethod(
                                 REF_ORDERBYPROCESSOR,
                                 "getSortKey",
@@ -2597,7 +2597,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
                             REF_AGGREGATIONSVC,
                             "SetCurrentAccess",
                             ArrayAtIndex(Ref("groupByKeys"), Ref("count")),
-                            ExprDotMethod(REF_AGENTINSTANCECONTEXT, "getAgentInstanceId"),
+                            ExprDotName(REF_AGENTINSTANCECONTEXT, "AgentInstanceId"),
                             ConstantNull())
                         .AssignArrayElement(
                             Ref("eventsPerStream"),
@@ -2618,10 +2618,10 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
 
                     forEach.ExprDotMethod(
                         Ref("resultEvents"),
-                        "add",
+                        "Add",
                         ExprDotMethod(
                             REF_SELECTEXPRPROCESSOR,
-                            "process",
+                            "Process",
                             Ref("eventsPerStream"),
                             REF_ISNEWDATA,
                             REF_ISSYNTHESIZE,
@@ -2630,7 +2630,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
                     if (forge.IsSorting) {
                         forEach.ExprDotMethod(
                             Ref("optSortKeys"),
-                            "add",
+                            "Add",
                             ExprDotMethod(
                                 REF_ORDERBYPROCESSOR,
                                 "getSortKey",
@@ -2686,13 +2686,13 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
                         LocalMethod(generateGroupKeySingle, REF_OLDDATA, ConstantFalse()))
                     .ExprDotMethod(
                         REF_AGGREGATIONSVC,
-                        "applyEnter",
+                        "ApplyEnter",
                         REF_NEWDATA,
                         Ref("newGroupKey"),
                         REF_AGENTINSTANCECONTEXT)
                     .ExprDotMethod(
                         REF_AGGREGATIONSVC,
-                        "applyLeave",
+                        "ApplyLeave",
                         REF_OLDDATA,
                         Ref("oldGroupKey"),
                         REF_AGENTINSTANCECONTEXT)
@@ -2760,7 +2760,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
                         LocalMethod(generateGroupKeySingle, REF_NEWDATA, ConstantTrue()))
                     .ExprDotMethod(
                         REF_AGGREGATIONSVC,
-                        "applyEnter",
+                        "ApplyEnter",
                         REF_NEWDATA,
                         Ref("groupKey"),
                         REF_AGENTINSTANCECONTEXT)
@@ -2795,7 +2795,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
                     REF_AGGREGATIONSVC,
                     "SetCurrentAccess",
                     Ref("groupKey"),
-                    ExprDotMethod(REF_AGENTINSTANCECONTEXT, "getAgentInstanceId"),
+                    ExprDotName(REF_AGENTINSTANCECONTEXT, "AgentInstanceId"),
                     ConstantNull());
                 if (optionalHavingNode != null) {
                     methodNode.Block
@@ -2812,7 +2812,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
                 methodNode.Block.MethodReturn(
                     ExprDotMethod(
                         REF_SELECTEXPRPROCESSOR,
-                        "process",
+                        "Process",
                         ExprForgeCodegenNames.REF_EPS,
                         REF_ISNEWDATA,
                         REF_ISSYNTHESIZE,

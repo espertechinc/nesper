@@ -8,6 +8,7 @@
 
 using System;
 using System.Reflection;
+
 using com.espertech.esper.common.client.soda;
 using com.espertech.esper.common.@internal.compile.stage1;
 using com.espertech.esper.compat.logging;

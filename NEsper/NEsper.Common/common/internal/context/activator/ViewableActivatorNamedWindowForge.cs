@@ -71,8 +71,8 @@ namespace com.espertech.esper.common.@internal.context.activator
                 .DeclareVar<ViewableActivatorNamedWindow>(
                     "activator",
                     ExprDotMethodChain(symbols.GetAddInitSvc(method))
-                        .Add(EPStatementInitServicesConstants.GETVIEWABLEACTIVATORFACTORY)
-                        .Add("createNamedWindow"))
+                        .Get(EPStatementInitServicesConstants.VIEWABLEACTIVATORFACTORY)
+                        .Add("CreateNamedWindow"))
                 .SetProperty(
                     Ref("activator"),
                     "NamedWindow",
@@ -92,7 +92,7 @@ namespace com.espertech.esper.common.@internal.context.activator
                         : optPropertyEvaluator.Make(method, symbols, classScope))
                 .ExprDotMethod(
                     symbols.GetAddInitSvc(method),
-                    "addReadyCallback",
+                    "AddReadyCallback",
                     Ref("activator")) // add ready-callback
                 .MethodReturn(Ref("activator"));
             return LocalMethod(method);

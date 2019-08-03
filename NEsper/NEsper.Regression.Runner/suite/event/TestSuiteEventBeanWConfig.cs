@@ -108,13 +108,13 @@ namespace com.espertech.esper.regressionrun.suite.@event
             ConfigurationCommonEventTypeBean legacyDef = new ConfigurationCommonEventTypeBean();
             legacyDef.AccessorStyle = AccessorStyle.EXPLICIT;
             legacyDef.AddFieldProperty("explicitFNested", "fieldNested");
-            legacyDef.AddMethodProperty("explicitMNested", "readLegacyNested");
+            legacyDef.AddMethodProperty("explicitMNested", "ReadLegacyNested");
             session.Configuration.Common.AddEventType("MyLegacyEvent", typeof(SupportLegacyBean), legacyDef);
 
             legacyDef = new ConfigurationCommonEventTypeBean();
             legacyDef.AccessorStyle = AccessorStyle.EXPLICIT;
             legacyDef.AddFieldProperty("fieldNestedClassValue", "fieldNestedValue");
-            legacyDef.AddMethodProperty("readNestedClassValue", "readNestedValue");
+            legacyDef.AddMethodProperty("readNestedClassValue", "ReadNestedValue");
             session.Configuration.Common.AddEventType("MyLegacyNestedEvent", typeof(SupportLegacyBean.LegacyNested), legacyDef);
 
             ConfigurationCommonEventTypeBean mySupportBean = new ConfigurationCommonEventTypeBean();

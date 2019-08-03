@@ -27,7 +27,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.time.adder
             CodegenExpression value,
             int unit)
         {
-            return ExprDotMethod(dtx, "add", Constant(unit), value);
+            return ExprDotMethod(dtx, "Add", Constant(unit), value);
         }
 
         public static CodegenExpression MakeArray(

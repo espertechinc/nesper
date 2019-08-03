@@ -66,10 +66,10 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
             CodegenMethod methodNode = codegenMethodScope.MakeChild(returnType, this.GetType(), codegenClassScope);
             CodegenExpressionRef refEPS = exprSymbol.GetAddEPS(methodNode);
             methodNode.Block
-                .DeclareVar<EventBean>("event", ArrayAtIndex(refEPS, Constant(streamNum)))
-                .IfRefNullReturnNull("event")
+                .DeclareVar<EventBean>("@event", ArrayAtIndex(refEPS, Constant(streamNum)))
+                .IfRefNullReturnNull("@event")
                 .MethodReturn(
-                    CodegenLegoCast.CastSafeFromObjectType(returnType, ExprDotMethod(@Ref("event"), "getUnderlying")));
+                    CodegenLegoCast.CastSafeFromObjectType(returnType, ExprDotName(@Ref("@event"), "Underlying")));
             return LocalMethod(methodNode);
         }
 

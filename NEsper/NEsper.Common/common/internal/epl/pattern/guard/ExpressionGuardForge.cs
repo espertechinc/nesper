@@ -63,8 +63,8 @@ namespace com.espertech.esper.common.@internal.epl.pattern.guard
                 .DeclareVar<ExpressionGuardFactory>(
                     "factory",
                     ExprDotMethodChain(symbols.GetAddInitSvc(method))
-                        .Add(EPStatementInitServicesConstants.GETPATTERNFACTORYSERVICE)
-                        .Add("guardWhile"))
+                        .Get(EPStatementInitServicesConstants.PATTERNFACTORYSERVICE)
+                        .Add("GuardWhile"))
                 .SetProperty(Ref("factory"), "Convertor", convertor.MakeAnonymous(method, classScope))
                 .SetProperty(
                     Ref("factory"),

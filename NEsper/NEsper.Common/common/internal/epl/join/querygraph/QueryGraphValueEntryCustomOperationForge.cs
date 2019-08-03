@@ -36,7 +36,7 @@ namespace com.espertech.esper.common.@internal.epl.join.querygraph
             foreach (var entry in PositionalExpressions) {
                 method.Block.ExprDotMethod(
                     Ref("map"),
-                    "put",
+                    "Put",
                     Constant(entry.Key),
                     ExprNodeUtilityCodegen.CodegenEvaluator(entry.Value.Forge, method, GetType(), classScope));
             }

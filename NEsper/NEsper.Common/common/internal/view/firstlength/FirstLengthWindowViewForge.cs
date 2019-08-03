@@ -54,7 +54,7 @@ namespace com.espertech.esper.common.@internal.view.firstlength
 
         internal override string FactoryMethod()
         {
-            return "firstlength";
+            return "Firstlength";
         }
 
         internal override void Assign(

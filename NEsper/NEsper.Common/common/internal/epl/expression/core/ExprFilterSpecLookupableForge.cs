@@ -56,11 +56,16 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                 classScope);
             CodegenExpression getterExpr;
             if (optionalEventPropForge != null) {
-                var anonymous = NewAnonymousClass(method.Block, typeof(EventPropertyValueGetter));
-                var get = CodegenMethod.MakeParentNode(typeof(object), GetType(), classScope)
-                    .AddParam(CodegenNamedParam.From(typeof(EventBean), "bean"));
-                anonymous.AddMethod("Get", get);
-                get.Block.MethodReturn(optionalEventPropForge.EventBeanGetCodegen(Ref("bean"), method, classScope));
+                var get = new CodegenExpressionLambda(method.Block)
+                    .WithParams(CodegenNamedParam.From(typeof(EventBean), "bean"));
+                var anonymous = NewInstance<ProxyEventPropertyValueGetter>(get);
+
+                //var anonymous = NewAnonymousClass(method.Block, typeof(EventPropertyValueGetter));
+                //var get = CodegenMethod.MakeParentNode(typeof(object), GetType(), classScope)
+                //    .AddParam(CodegenNamedParam.From(typeof(EventBean), "bean"));
+                //anonymous.AddMethod("Get", get);
+
+                get.Block.BlockReturn(optionalEventPropForge.EventBeanGetCodegen(Ref("bean"), method, classScope));
                 getterExpr = anonymous;
             }
             else {
@@ -75,13 +80,13 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                     NewInstance<ExprFilterSpecLookupable>(
                         Constant(expression),
                         Ref("getter"),
-                        EnumValue(returnType, "class"),
+                        Typeof(returnType),
                         Constant(isNonPropertyGetter)))
                 .Expression(
                     ExprDotMethodChain(symbols.GetAddInitSvc(method))
-                        .Add(EPStatementInitServicesConstants.GETFILTERSHAREDLOOKUPABLEREGISTERY)
+                        .Get(EPStatementInitServicesConstants.FILTERSHAREDLOOKUPABLEREGISTERY)
                         .Add(
-                            "registerLookupable",
+                            "RegisterLookupable",
                             symbols.GetAddEventType(method),
                             Ref("lookupable")))
                 .MethodReturn(Ref("lookupable"));

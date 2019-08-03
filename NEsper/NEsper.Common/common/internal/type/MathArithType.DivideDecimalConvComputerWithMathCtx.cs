@@ -46,7 +46,7 @@ namespace com.espertech.esper.common.@internal.type
             {
                 CodegenExpression math =
                     codegenClassScope.AddOrGetFieldSharable(new MathContextCodegenField(mathContext));
-                return CodegenExpressionBuilder.ExprDotMethod(s1, "divide", s2, math);
+                return CodegenExpressionBuilder.ExprDotMethod(s1, "Divide", s2, math);
             }
         }
     }

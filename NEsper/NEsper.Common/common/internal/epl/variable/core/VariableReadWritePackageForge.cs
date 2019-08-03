@@ -347,7 +347,7 @@ namespace com.espertech.esper.common.@internal.epl.variable.core
             CodegenClassScope classScope)
         {
             if (copyMethods.IsEmpty()) {
-                return StaticMethod(typeof(Collections), "emptyMap");
+                return StaticMethod(typeof(Collections), "GetEmptyMap");
             }
 
             var method = parent.MakeChild(
@@ -360,7 +360,7 @@ namespace com.espertech.esper.common.@internal.epl.variable.core
             foreach (var entry in copyMethods) {
                 var type = EventTypeUtility.ResolveTypeCodegen(entry.Key, symbols.GetAddInitSvc(method));
                 var copyMethod = entry.Value.MakeCopyMethodClassScoped(classScope);
-                method.Block.ExprDotMethod(Ref("methods"), "put", type, copyMethod);
+                method.Block.ExprDotMethod(Ref("methods"), "Put", type, copyMethod);
             }
 
             method.Block.MethodReturn(Ref("methods"));

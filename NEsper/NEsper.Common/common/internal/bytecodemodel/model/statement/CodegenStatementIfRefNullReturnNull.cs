@@ -31,7 +31,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.statement
             CodegenIndent indent)
         {
             builder.Append("if (");
-            @ref.Render(builder, isInnerClass);
+            @ref.Render(builder, isInnerClass, level + 1, indent);
             builder.Append(" == null) {return null;}\n");
         }
 

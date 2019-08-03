@@ -40,7 +40,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.handthru
             method.Block
                 .DeclareVar<EventBean[]>("selectOldEvents", oldEvents)
                 .DeclareVar<EventBean[]>("selectNewEvents", newEvents)
-                .MethodReturn(NewInstance<UniformPair<EventBean>>(Ref("selectNewEvents"), Ref("selectOldEvents")));
+                .MethodReturn(NewInstance<UniformPair<EventBean[]>>(Ref("selectNewEvents"), Ref("selectOldEvents")));
         }
 
         internal static void ProcessViewResultCodegen(
@@ -61,14 +61,14 @@ namespace com.espertech.esper.common.@internal.epl.resultset.handthru
             method.Block
                 .DeclareVar<EventBean[]>("selectOldEvents", oldEvents)
                 .DeclareVar<EventBean[]>("selectNewEvents", newEvents)
-                .MethodReturn(NewInstance<UniformPair<EventBean>>(Ref("selectNewEvents"), Ref("selectOldEvents")));
+                .MethodReturn(NewInstance<UniformPair<EventBean[]>>(Ref("selectNewEvents"), Ref("selectOldEvents")));
         }
 
         internal static void GetIteratorViewCodegen(CodegenMethod methodNode)
         {
             methodNode.Block.MethodReturn(
                 NewInstance<TransformEventEnumerator>(
-                    ExprDotMethod(REF_VIEWABLE, "iterator"),
+                    ExprDotMethod(REF_VIEWABLE, "GetEnumerator"),
                     NewInstance<ResultSetProcessorHandtruTransform>(Ref("this"))));
         }
 
@@ -79,12 +79,11 @@ namespace com.espertech.esper.common.@internal.epl.resultset.handthru
                     "result",
                     ExprDotMethod(
                         Ref("this"), "ProcessJoinResult", REF_JOINSET,
-                        StaticMethod(
-                            typeof(Collections), "emptySet"),
+                        StaticMethod(typeof(Collections), "emptySet"),
                         Constant(true)))
                 .MethodReturn(
                     NewInstance<ArrayEventEnumerator>(
-                        Cast(typeof(EventBean[]), ExprDotMethod(Ref("result"), "getFirst"))));
+                        Cast(typeof(EventBean[]), ExprDotName(Ref("result"), "First"))));
         }
     }
 } // end of namespace

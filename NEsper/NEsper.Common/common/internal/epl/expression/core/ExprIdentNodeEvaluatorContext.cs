@@ -74,7 +74,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                     CodegenLegoCast.CastSafeFromObjectType(
                         resultType,
                         getter.EventBeanGetCodegen(
-                            ExprDotMethod(refExprEvalCtx, "getContextProperties"),
+                            ExprDotName(refExprEvalCtx, "ContextProperties"),
                             methodNode,
                             codegenClassScope)))
                 .MethodReturn(ConstantNull());

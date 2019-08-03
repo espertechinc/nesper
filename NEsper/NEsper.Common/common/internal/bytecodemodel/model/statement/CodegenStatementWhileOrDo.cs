@@ -41,7 +41,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.statement
         {
             if (isWhile) {
                 builder.Append("while (");
-                condition.Render(builder, isInnerClass);
+                condition.Render(builder, isInnerClass, level + 1, indent);
                 builder.Append(") {\n");
             }
             else {
@@ -54,7 +54,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.statement
             if (!isWhile) {
                 indent.Indent(builder, level);
                 builder.Append("while (");
-                condition.Render(builder, isInnerClass);
+                condition.Render(builder, isInnerClass, level + 1, indent);
                 builder.Append(");\n");
             }
         }

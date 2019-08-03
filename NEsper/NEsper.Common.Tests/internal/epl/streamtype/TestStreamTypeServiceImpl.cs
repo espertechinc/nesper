@@ -110,7 +110,7 @@ namespace com.espertech.esper.common.@internal.epl.streamtype
                 service.ResolveByStreamAndPropName("s4", "xxxx", false);
                 Assert.Fail();
             }
-            catch (PropertyNotFoundException ex)
+            catch (PropertyNotFoundException)
             {
                 // Expected
             }

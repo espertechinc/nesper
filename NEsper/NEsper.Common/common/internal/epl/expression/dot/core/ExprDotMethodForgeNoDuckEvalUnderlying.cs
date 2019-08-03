@@ -75,7 +75,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
                 .DeclareVar(
                     underlyingType,
                     "underlying",
-                    Cast(underlyingType, ExprDotMethod(Ref("target"), "getUnderlying")))
+                    Cast(underlyingType, ExprDotName(Ref("target"), "Underlying")))
                 .MethodReturn(
                     CodegenPlain(forge, Ref("underlying"), innerType, methodNode, exprSymbol, codegenClassScope));
             return LocalMethod(methodNode, inner);

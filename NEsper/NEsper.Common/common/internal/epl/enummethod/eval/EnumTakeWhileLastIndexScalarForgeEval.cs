@@ -119,7 +119,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             var innerValue = forge.innerExpression.EvaluateCodegen(typeof(bool?), methodNode, scope, codegenClassScope);
 
             var block = methodNode.Block
-                .IfCondition(ExprDotMethod(EnumForgeCodegenNames.REF_ENUMCOLL, "isEmpty"))
+                .IfCondition(ExprDotMethod(EnumForgeCodegenNames.REF_ENUMCOLL, "IsEmpty"))
                 .BlockReturn(EnumForgeCodegenNames.REF_ENUMCOLL);
             block.DeclareVar<ObjectArrayEventBean>(
                     "evalEvent",
@@ -127,7 +127,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                         NewArrayByLength(typeof(object), Constant(1)),
                         evalTypeMember))
                 .AssignArrayElement(EnumForgeCodegenNames.REF_EPS, Constant(forge.streamNumLambda), Ref("evalEvent"))
-                .DeclareVar<object[]>("evalProps", ExprDotMethod(Ref("evalEvent"), "getProperties"))
+                .DeclareVar<object[]>("evalProps", ExprDotName(Ref("evalEvent"), "Properties"))
                 .DeclareVar<ObjectArrayEventBean>(
                     "indexEvent",
                     NewInstance<ObjectArrayEventBean>(
@@ -137,10 +137,10 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                     EnumForgeCodegenNames.REF_EPS,
                     Constant(forge.streamNumLambda + 1),
                     Ref("indexEvent"))
-                .DeclareVar<object[]>("indexProps", ExprDotMethod(Ref("indexEvent"), "getProperties"));
+                .DeclareVar<object[]>("indexProps", ExprDotName(Ref("indexEvent"), "Properties"));
 
             var blockSingle = block.IfCondition(
-                    EqualsIdentity(ExprDotMethod(EnumForgeCodegenNames.REF_ENUMCOLL, "size"), Constant(1)))
+                    EqualsIdentity(ExprDotMethod(EnumForgeCodegenNames.REF_ENUMCOLL, "Size"), Constant(1)))
                 .DeclareVar<object>(
                     "item",
                     ExprDotMethodChain(EnumForgeCodegenNames.REF_ENUMCOLL).Add("iterator").Add("next"))

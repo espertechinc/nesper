@@ -20,6 +20,6 @@ namespace com.espertech.esper.common.@internal.context.module
     public static class EPModuleExprDeclaredInitServicesConstants
     {
         public static readonly CodegenExpressionRef REF = ModuleContextInitializeSymbol.REF_INITSVC;
-        public static readonly string GETEXPRDECLAREDCOLLECTOR = "getExprDeclaredCollector";
+        public static readonly string GETEXPRDECLAREDCOLLECTOR = "ExprDeclaredCollector";
     }
 } // end of namespace

@@ -49,8 +49,8 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergroup
                         .DeclareVar<object>(
                             "mk",
                             LocalMethod(generateGroupKeyViewSingle, REF_EPS, ConstantTrue()))
-                        .ExprDotMethod(@Ref("groupReps"), "put", @Ref("mk"), @Ref("aNewData"))
-                        .ExprDotMethod(REF_AGGREGATIONSVC, "applyEnter", REF_EPS, @Ref("mk"), REF_AGENTINSTANCECONTEXT);
+                        .ExprDotMethod(@Ref("groupReps"), "Put", @Ref("mk"), @Ref("aNewData"))
+                        .ExprDotMethod(REF_AGGREGATIONSVC, "ApplyEnter", REF_EPS, @Ref("mk"), REF_AGENTINSTANCECONTEXT);
                 }
             }
 
@@ -62,7 +62,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergroup
                         .DeclareVar<object>(
                             "mk",
                             LocalMethod(generateGroupKeyViewSingle, REF_EPS, ConstantFalse()))
-                        .ExprDotMethod(REF_AGGREGATIONSVC, "applyLeave", REF_EPS, @Ref("mk"), REF_AGENTINSTANCECONTEXT);
+                        .ExprDotMethod(REF_AGGREGATIONSVC, "ApplyLeave", REF_EPS, @Ref("mk"), REF_AGENTINSTANCECONTEXT);
                 }
             }
         }
@@ -121,12 +121,12 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergroup
                     newLoop.AssignArrayElement(NAME_EPS, Constant(0), ArrayAtIndex(REF_NEWDATA, @Ref("i")))
                         .ExprDotMethod(
                             @Ref("groupReps"),
-                            "put",
+                            "Put",
                             ArrayAtIndex(@Ref("newDataMultiKey"), @Ref("i")),
                             ArrayAtIndex(REF_EPS, Constant(0)))
                         .ExprDotMethod(
                             REF_AGGREGATIONSVC,
-                            "applyEnter",
+                            "ApplyEnter",
                             REF_EPS,
                             ArrayAtIndex(@Ref("newDataMultiKey"), @Ref("i")),
                             REF_AGENTINSTANCECONTEXT);
@@ -140,7 +140,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergroup
                     newLoop.AssignArrayElement(NAME_EPS, Constant(0), ArrayAtIndex(REF_OLDDATA, @Ref("i")))
                         .ExprDotMethod(
                             REF_AGGREGATIONSVC,
-                            "applyLeave",
+                            "ApplyLeave",
                             REF_EPS,
                             ArrayAtIndex(@Ref("oldDataMultiKey"), @Ref("i")),
                             REF_AGENTINSTANCECONTEXT);
@@ -170,7 +170,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergroup
             CodegenInstanceAux instance)
         {
             if (!forge.IsSorting) {
-                method.Block.DeclareVar<IEnumerator<EventBean>>("it", ExprDotMethod(@Ref("groupReps"), "valueIterator"))
+                method.Block.DeclareVar<IEnumerator<EventBean>>("it", ExprDotMethod(@Ref("groupReps"), "ValueIterator"))
                     .MethodReturn(
                         NewInstance<ResultSetProcessorRowPerGroupEnumerator>(
                             @Ref("it"),
@@ -179,9 +179,9 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergroup
                             REF_AGENTINSTANCECONTEXT));
             }
             else {
-                CodegenMethod getIteratorSorted = GetIteratorSortedCodegen(forge, classScope, instance);
+                CodegenMethod getIteratorSorted = GetEnumeratorSortedCodegen(forge, classScope, instance);
                 method.Block.MethodReturn(
-                    LocalMethod(getIteratorSorted, ExprDotMethod(@Ref("groupReps"), "valueIterator")));
+                    LocalMethod(getIteratorSorted, ExprDotMethod(@Ref("groupReps"), "ValueIterator")));
             }
         }
 
@@ -218,11 +218,11 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergroup
 
                 methodNode.Block.ExprDotMethod(
                         REF_AGGREGATIONSVC,
-                        "applyEnter",
+                        "ApplyEnter",
                         REF_NEWDATA,
                         @Ref("groupKey"),
                         REF_AGENTINSTANCECONTEXT)
-                    .ExprDotMethod(@Ref("groupReps"), "put", @Ref("groupKey"), ArrayAtIndex(REF_NEWDATA, Constant(0)))
+                    .ExprDotMethod(@Ref("groupReps"), "Put", @Ref("groupKey"), ArrayAtIndex(REF_NEWDATA, Constant(0)))
                     .DeclareVar<EventBean>(
                         "istream",
                         LocalMethod(
@@ -261,7 +261,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergroup
             CodegenInstanceAux instance)
         {
             ResultSetProcessorRowPerGroupImpl.StopMethodCodegenBound(method, instance);
-            method.Block.ExprDotMethod(@Ref("groupReps"), "destroy");
+            method.Block.ExprDotMethod(@Ref("groupReps"), "Destroy");
         }
     }
 } // end of namespace

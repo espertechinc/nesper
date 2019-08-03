@@ -6,22 +6,19 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.resultset.select.core;
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.resultset.handthru
 {
     public class ResultSetProcessorHandThroughUtil
     {
-        public const string METHOD_GETSELECTEVENTSNOHAVINGHANDTHRUVIEW = "getSelectEventsNoHavingHandThruView";
-        public const string METHOD_GETSELECTEVENTSNOHAVINGHANDTHRUJOIN = "getSelectEventsNoHavingHandThruJoin";
+        public const string METHOD_GETSELECTEVENTSNOHAVINGHANDTHRUVIEW = "GetSelectEventsNoHavingHandThruView";
+        public const string METHOD_GETSELECTEVENTSNOHAVINGHANDTHRUJOIN = "GetSelectEventsNoHavingHandThruJoin";
 
         /// <summary>
         /// NOTE: Code-generation-invoked method, method name and parameter order matters
@@ -41,13 +38,15 @@ namespace com.espertech.esper.common.@internal.epl.resultset.handthru
             bool isSynthesize,
             ExprEvaluatorContext agentInstanceContext)
         {
-            if (events == null) {
+            if (events == null)
+            {
                 return null;
             }
 
             EventBean[] result = new EventBean[events.Length];
             EventBean[] eventsPerStream = new EventBean[1];
-            for (int i = 0; i < events.Length; i++) {
+            for (int i = 0; i < events.Length; i++)
+            {
                 eventsPerStream[0] = events[i];
                 result[i] = exprProcessor.Process(eventsPerStream, isNewData, isSynthesize, agentInstanceContext);
             }
@@ -74,13 +73,15 @@ namespace com.espertech.esper.common.@internal.epl.resultset.handthru
             ExprEvaluatorContext agentInstanceContext)
         {
             int length = events.Count;
-            if (length == 0) {
+            if (length == 0)
+            {
                 return null;
             }
 
             EventBean[] result = new EventBean[length];
             int count = 0;
-            foreach (MultiKey<EventBean> key in events) {
+            foreach (MultiKey<EventBean> key in events)
+            {
                 EventBean[] eventsPerStream = key.Array;
                 result[count] = exprProcessor.Process(eventsPerStream, isNewData, isSynthesize, agentInstanceContext);
                 count++;

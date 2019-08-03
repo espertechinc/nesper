@@ -84,7 +84,7 @@ namespace com.espertech.esper.common.@internal.epl.variable.compiletime
                 Constant(OptionalContextName),
                 Constant(OptionalContextVisibility),
                 Constant(OptionalContextModule),
-                Constant(Type),
+                Typeof(Type),
                 EventType == null ? ConstantNull() : EventTypeUtility.ResolveTypeCodegen(EventType, addInitSvc),
                 Constant(IsPreconfigured),
                 Constant(IsConstant),

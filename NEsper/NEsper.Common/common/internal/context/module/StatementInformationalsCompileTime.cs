@@ -144,14 +144,14 @@ namespace com.espertech.esper.common.@internal.context.module
                     info.Ref,
                     NewInstance(typeof(StatementInformationalsRuntime)))
                 .SetProperty(info, "StatementNameCompileTime", Constant(_statementNameCompileTime))
-                .SetProperty(info, "AlwaysSynthesizeOutputEvents", Constant(_alwaysSynthesizeOutputEvents))
+                .SetProperty(info, "IsAlwaysSynthesizeOutputEvents", Constant(_alwaysSynthesizeOutputEvents))
                 .SetProperty(info, "OptionalContextName", Constant(_optionalContextName))
                 .SetProperty(info, "OptionalContextModuleName", Constant(_optionalContextModuleName))
                 .SetProperty(info, "OptionalContextVisibility", Constant(_optionalContextVisibility))
-                .SetProperty(info, "CanSelfJoin", Constant(_canSelfJoin))
+                .SetProperty(info, "IsCanSelfJoin", Constant(_canSelfJoin))
                 .SetProperty(info, "HasSubquery", Constant(_hasSubquery))
-                .SetProperty(info, "NeedDedup", Constant(_needDedup))
-                .SetProperty(info, "Stateless", Constant(_stateless))
+                .SetProperty(info, "IsNeedDedup", Constant(_needDedup))
+                .SetProperty(info, "IsStateless", Constant(_stateless))
                 .SetProperty(
                     info,
                     "Annotations",
@@ -167,13 +167,13 @@ namespace com.espertech.esper.common.@internal.context.module
                 .SetProperty(info, "NumNamedWindowCallbacks", Constant(_numNamedWindowCallbacks))
                 .SetProperty(info, "StatementType", Constant(_statementType))
                 .SetProperty(info, "Priority", Constant(_priority))
-                .SetProperty(info, "Preemptive", Constant(_preemptive))
+                .SetProperty(info, "IsPreemptive", Constant(_preemptive))
                 .SetProperty(info, "HasVariables", Constant(_hasVariables))
-                .SetProperty(info, "WritesToTables", Constant(_writesToTables))
+                .SetProperty(info, "IsWritesToTables", Constant(_writesToTables))
                 .SetProperty(info, "HasTableAccess", Constant(_hasTableAccess))
                 .SetProperty(info, "SelectClauseTypes", Constant(_selectClauseTypes))
                 .SetProperty(info, "SelectClauseColumnNames", Constant(_selectClauseColumnNames))
-                .SetProperty(info, "ForClauseDelivery", Constant(_forClauseDelivery))
+                .SetProperty(info, "IsForClauseDelivery", Constant(_forClauseDelivery))
                 .SetProperty(
                     info,
                     "GroupDeliveryEval",
@@ -188,12 +188,12 @@ namespace com.espertech.esper.common.@internal.context.module
                 .SetProperty(info, "Properties", MakeProperties(_properties, method, classScope))
                 .SetProperty(info, "HasMatchRecognize", Constant(_hasMatchRecognize))
                 .SetProperty(info, "AuditProvider", MakeAuditProvider(method, classScope))
-                .SetProperty(info, "Instrumented", Constant(_instrumented))
+                .SetProperty(info, "IsInstrumented", Constant(_instrumented))
                 .SetProperty(info, "InstrumentationProvider", MakeInstrumentationProvider(method, classScope))
                 .SetProperty(info, "SubstitutionParamTypes", MakeSubstitutionParamTypes())
                 .SetProperty(info, "SubstitutionParamNames", MakeSubstitutionParamNames(method, classScope))
                 .SetProperty(info, "InsertIntoLatchName", Constant(_insertIntoLatchName))
-                .SetProperty(info, "AllowSubscriber", Constant(_allowSubscriber))
+                .SetProperty(info, "IsAllowSubscriber", Constant(_allowSubscriber))
                 .MethodReturn(info);
             return LocalMethod(method);
         }
@@ -237,13 +237,13 @@ namespace com.espertech.esper.common.@internal.context.module
                 return ConstantNull();
             }
 
-            var method = parent.MakeChild(typeof(IDictionary<object, object>), GetType(), classScope);
-            method.Block.DeclareVar<IDictionary<object, object>>(
+            var method = parent.MakeChild(typeof(IDictionary<string, int>), GetType(), classScope);
+            method.Block.DeclareVar<IDictionary<string, int>>(
                 "names",
-                NewInstance(typeof(Dictionary<object, object>), Constant(CollectionUtil.CapacityHashMap(named.Count))));
+                NewInstance(typeof(Dictionary<string, int>), Constant(CollectionUtil.CapacityHashMap(named.Count))));
             var count = 1;
             foreach (var entry in named) {
-                method.Block.ExprDotMethod(Ref("names"), "put", Constant(entry.Key), Constant(count++));
+                method.Block.ExprDotMethod(Ref("names"), "Put", Constant(entry.Key), Constant(count++));
             }
 
             method.Block.MethodReturn(Ref("names"));
@@ -326,7 +326,7 @@ namespace com.espertech.esper.common.@internal.context.module
             }
 
             var streamOne = CodegenMethod.MakeParentNode(typeof(void), GetType(), classScope)
-                .AddParam(typeof(EventBean), "event")
+                .AddParam(typeof(EventBean), "@event")
                 .AddParam(typeof(ExprEvaluatorContext), REF_EXPREVALCONTEXT.Ref)
                 .AddParam(typeof(string), "filterText");
             anonymousClass.AddMethod("Stream", streamOne);
@@ -340,7 +340,7 @@ namespace com.espertech.esper.common.@internal.context.module
                 streamOne.Block.StaticMethod(
                     typeof(AuditPath),
                     "auditStream",
-                    Ref("event"),
+                    Ref("@event"),
                     REF_EXPREVALCONTEXT,
                     Ref("filterText"));
                 streamTwo.Block.StaticMethod(
@@ -411,11 +411,11 @@ namespace com.espertech.esper.common.@internal.context.module
             }
 
             var insert = CodegenMethod.MakeParentNode(typeof(void), GetType(), classScope)
-                .AddParam(typeof(EventBean), "event")
+                .AddParam(typeof(EventBean), "@event")
                 .AddParam(typeof(ExprEvaluatorContext), REF_EXPREVALCONTEXT.Ref);
             anonymousClass.AddMethod("insert", insert);
             if (AuditEnum.INSERT.GetAudit(_annotations) != null) {
-                insert.Block.StaticMethod(typeof(AuditPath), "auditInsert", Ref("event"), REF_EXPREVALCONTEXT);
+                insert.Block.StaticMethod(typeof(AuditPath), "auditInsert", Ref("@event"), REF_EXPREVALCONTEXT);
             }
 
             var expression = CodegenMethod.MakeParentNode(typeof(void), GetType(), classScope)
@@ -545,7 +545,7 @@ namespace com.espertech.esper.common.@internal.context.module
                 .AddParam(typeof(string), "instance")
                 .AddParam(typeof(string), "operatorName")
                 .AddParam(typeof(int), "operatorNum")
-                .AddParam(typeof(object[]), "params")
+                .AddParam(typeof(object[]), "parameters")
                 .AddParam(
                     typeof(AgentInstanceContext),
                     REF_AGENTINSTANCECONTEXT.Ref);
@@ -558,7 +558,7 @@ namespace com.espertech.esper.common.@internal.context.module
                     Ref("instance"),
                     Ref("operatorName"),
                     Ref("operatorNum"),
-                    Ref("params"),
+                    Ref("parameters"),
                     REF_AGENTINSTANCECONTEXT);
             }
 
@@ -585,7 +585,7 @@ namespace com.espertech.esper.common.@internal.context.module
             CodegenClassScope classScope)
         {
             if (properties.IsEmpty()) {
-                return StaticMethod(typeof(Collections), "emptyMap");
+                return StaticMethod(typeof(Collections), "GetEmptyDataMap");
             }
 
             Func<StatementProperty, CodegenExpression> field = x => EnumValue(typeof(StatementProperty), x.GetName());
@@ -594,9 +594,9 @@ namespace com.espertech.esper.common.@internal.context.module
                 var first = properties.First();
                 return StaticMethod(
                     typeof(Collections),
-                    "singletonMap",
+                    "SingletonMap",
                     field.Invoke(first.Key),
-                    value.Invoke(first.Value));
+                    Cast(typeof(object), value.Invoke(first.Value)));
             }
 
             var method = parent.MakeChild(
@@ -604,15 +604,15 @@ namespace com.espertech.esper.common.@internal.context.module
                 typeof(StatementInformationalsCompileTime),
                 classScope);
             method.Block
-                .DeclareVar<IDictionary<object, object>>(
+                .DeclareVar<IDictionary<StatementProperty, object>>(
                     "properties",
                     NewInstance(
-                        typeof(Dictionary<object, object>),
+                        typeof(Dictionary<StatementProperty, object>),
                         Constant(CollectionUtil.CapacityHashMap(properties.Count))));
             foreach (var entry in properties) {
                 method.Block.ExprDotMethod(
                     Ref("properties"),
-                    "put",
+                    "Put",
                     field.Invoke(entry.Key),
                     value.Invoke(entry.Value));
             }

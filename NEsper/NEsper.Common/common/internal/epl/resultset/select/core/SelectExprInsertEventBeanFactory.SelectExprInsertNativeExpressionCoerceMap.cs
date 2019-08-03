@@ -53,7 +53,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.@select.core
                     .MethodReturn(
                         CodegenExpressionBuilder.ExprDotMethod(
                             eventBeanFactory,
-                            "adapterForTypedMap",
+                            "AdapterForTypedMap",
                             CodegenExpressionBuilder.Ref("result"),
                             resultEventType));
                 return methodNode;

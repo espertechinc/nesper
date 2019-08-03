@@ -39,6 +39,23 @@ namespace com.espertech.esper.common.@internal.view.core
             return Make(parent, (SAIFFInitializeSymbol) symbols, classScope);
         }
 
+        public abstract void SetViewParameters(
+            IList<ExprNode> parameters,
+            ViewForgeEnv viewForgeEnv,
+            int streamNumber);
+
+        public abstract void Attach(
+            EventType parentEventType,
+            int streamNumber,
+            ViewForgeEnv viewForgeEnv);
+
+        public abstract string ViewName { get; }
+
+        public virtual void Accept(ViewForgeVisitor visitor)
+        {
+            visitor.Visit(this);
+        }
+
         public CodegenExpression Make(
             CodegenMethodScope parent,
             SAIFFInitializeSymbol symbols,
@@ -55,7 +72,7 @@ namespace com.espertech.esper.common.@internal.view.core
                     TypeOfFactory(),
                     factory.Ref,
                     ExprDotMethodChain(symbols.GetAddInitSvc(method))
-                        .Add(EPStatementInitServicesConstants.GETVIEWFACTORYSERVICE)
+                        .Get(EPStatementInitServicesConstants.VIEWFACTORYSERVICE)
                         .Add(FactoryMethod()))
                 .SetProperty(
                     factory,
@@ -77,22 +94,5 @@ namespace com.espertech.esper.common.@internal.view.core
             CodegenExpressionRef factory,
             SAIFFInitializeSymbol symbols,
             CodegenClassScope classScope);
-
-        public abstract void SetViewParameters(
-            IList<ExprNode> parameters,
-            ViewForgeEnv viewForgeEnv,
-            int streamNumber);
-
-        public abstract void Attach(
-            EventType parentEventType,
-            int streamNumber,
-            ViewForgeEnv viewForgeEnv);
-
-        public abstract string ViewName { get; }
-
-        public virtual void Accept(ViewForgeVisitor visitor)
-        {
-            visitor.Visit(this);
-        }
     }
 } // end of namespace

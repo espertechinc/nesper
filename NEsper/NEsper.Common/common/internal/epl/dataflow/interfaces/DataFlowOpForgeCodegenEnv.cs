@@ -11,14 +11,14 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.interfaces
     public class DataFlowOpForgeCodegenEnv
     {
         public DataFlowOpForgeCodegenEnv(
-            string packageName,
+            string @namespace,
             string classPostfix)
         {
-            PackageName = packageName;
+            Namespace = @namespace;
             ClassPostfix = classPostfix;
         }
 
-        public string PackageName { get; }
+        public string Namespace { get; }
 
         public string ClassPostfix { get; }
     }

@@ -43,7 +43,7 @@ namespace com.espertech.esper.common.@internal.serde
         {
             var type = EventTypeUtility.ResolveTypeCodegen(eventType, EPStatementInitServicesConstants.REF);
             return ExprDotMethodChain(EPStatementInitServicesConstants.REF)
-                .Add(EPStatementInitServicesConstants.GETDATAINPUTOUTPUTSERDEPROVIDER)
+                .Get(EPStatementInitServicesConstants.DATAINPUTOUTPUTSERDEPROVIDER)
                 .Add(name.MethodName, type);
         }
 

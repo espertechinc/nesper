@@ -71,7 +71,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
 
             return namedMethods.AddMethodWithSymbols(
                 typeof(object),
-                "computeKeyArrayCodegen_" + idNumber,
+                "ComputeKeyArrayCodegen_" + idNumber,
                 CodegenNamedParam.From(
                     typeof(EventBean[]),
                     NAME_EPS,
@@ -128,7 +128,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
 
             namedMethods.AddMethod(
                 typeof(void),
-                "setLastUpdateTime",
+                "SetLastUpdateTime",
                 CodegenNamedParam.From(typeof(long), "time"),
                 typeof(AggregationServiceCodegenUtil),
                 classScope,
@@ -138,7 +138,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
 
             namedMethods.AddMethod(
                 typeof(long),
-                "getLastUpdateTime",
+                "GetLastUpdateTime",
                 NIL_NAMED_PARAM,
                 typeof(AggregationServiceCodegenUtil),
                 classScope,

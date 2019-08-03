@@ -40,7 +40,9 @@ namespace com.espertech.esper.compiler.@internal.util
                 raw = services.CompilerServices.ParseWalk(toCompile, services.StatementSpecMapEnv);
             }
             catch (StatementSpecCompileException e) {
-                throw new ExprValidationException("Failed to compile expression '" + expression + "': " + e.Expression, e);
+                throw new ExprValidationException(
+                    "Failed to compile expression '" + expression + "': " + e.Expression,
+                    e);
             }
 
             return raw.StreamSpecs[0].ViewSpecs[0].ObjectParameters[0];

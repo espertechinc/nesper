@@ -21,9 +21,46 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.util
     public class CodegenStackGenerator
     {
         public static void RecursiveBuildStack(
+            CodegenProperty propertyNode,
+            string name,
+            CodegenClassMethods methods,
+            CodegenClassProperties properties)
+        {
+            if (propertyNode.OptionalSymbolProvider == null) {
+                throw new ArgumentException("Property node does not have symbol provider");
+            }
+
+            var currentSymbols = new Dictionary<string, Type>();
+            propertyNode.OptionalSymbolProvider.Provide(currentSymbols);
+
+            var property = new CodegenPropertyWGraph(
+                name,
+                propertyNode.ReturnType,
+                propertyNode.ReturnTypeName,
+                propertyNode.AdditionalDebugInfo,
+                propertyNode.GetterBlock,
+                propertyNode.SetterBlock,
+                true,
+                propertyNode.IsOverride);
+
+            propertyNode.AssignedProperty = property;
+            properties.PublicProperties.Add(property);
+
+            foreach (var child in propertyNode.Children) {
+                RecursiveAdd(
+                    child,
+                    currentSymbols,
+                    methods,
+                    properties,
+                    propertyNode.IsStatic);
+            }
+        }
+
+        public static void RecursiveBuildStack(
             CodegenMethod methodNode,
             string name,
-            CodegenClassMethods methods)
+            CodegenClassMethods methods,
+            CodegenClassProperties properties)
         {
             if (methodNode.OptionalSymbolProvider == null) {
                 throw new ArgumentException("Method node does not have symbol provider");
@@ -38,28 +75,33 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.util
                     methodNode.ReturnTypeName,
                     methodNode.LocalParams,
                     methodNode.AdditionalDebugInfo);
-                CodegenMethodWGraph method = new CodegenMethodWGraph(
+                var method = new CodegenMethodWGraph(
                     name,
                     footprint,
                     methodNode.Block,
                     true,
-                    methodNode.Thrown) {
-                    IsStatic = methodNode.IsStatic
-                };
+                    methodNode.IsOverride,
+                    methodNode.IsStatic);
 
                 methodNode.AssignedMethod = method;
                 methods.PublicMethods.Add(method);
             }
 
             foreach (var child in methodNode.Children) {
-                RecursiveAdd(child, currentSymbols, methods.PrivateMethods, methodNode.IsStatic);
+                RecursiveAdd(
+                    child,
+                    currentSymbols,
+                    methods,
+                    properties,
+                    methodNode.IsStatic);
             }
         }
 
         private static void RecursiveAdd(
             CodegenMethod methodNode,
             IDictionary<string, Type> currentSymbols,
-            IList<CodegenMethodWGraph> privateMethods,
+            CodegenClassMethods classMethods,
+            CodegenClassProperties classProperties,
             bool isStatic)
         {
             ISet<string> namesPassed = GetNamesPassed(methodNode);
@@ -93,26 +135,67 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.util
                 methodNode.OptionalSymbolProvider.Provide(currentSymbols);
             }
 
-            var name = "m" + privateMethods.Count;
+            var name = "M" + classMethods.PrivateMethods.Count;
             var footprint = new CodegenMethodFootprint(
                 methodNode.ReturnType,
                 methodNode.ReturnTypeName,
                 paramset,
                 methodNode.AdditionalDebugInfo);
-            CodegenMethodWGraph method = new CodegenMethodWGraph(
+            var method = new CodegenMethodWGraph(
                 name,
                 footprint,
                 methodNode.Block,
                 false,
-                methodNode.Thrown) {
-                IsStatic = isStatic
-            };
+                methodNode.IsOverride,
+                isStatic);
 
             methodNode.AssignedMethod = method;
-            privateMethods.Add(method);
+            classMethods.PrivateMethods.Add(method);
 
             foreach (var child in methodNode.Children) {
-                RecursiveAdd(child, currentSymbols, privateMethods, isStatic);
+                RecursiveAdd(
+                    child,
+                    currentSymbols,
+                    classMethods,
+                    classProperties,
+                    isStatic);
+            }
+        }
+
+        private static void RecursiveAdd(
+            CodegenProperty propertyNode,
+            IDictionary<string, Type> currentSymbols,
+            CodegenClassMethods classMethods,
+            CodegenClassProperties classProperties,
+            bool isStatic)
+        {
+            // add pass-thru for those methods that do not have their own scope
+            if (propertyNode.OptionalSymbolProvider != null) {
+                currentSymbols = new Dictionary<string, Type>();
+                propertyNode.OptionalSymbolProvider.Provide(currentSymbols);
+            }
+
+            var name = "AutoProp" + classProperties.PrivateProperties.Count;
+            var propertyWGraph = new CodegenPropertyWGraph(
+                name,
+                propertyNode.ReturnType,
+                propertyNode.ReturnTypeName,
+                propertyNode.AdditionalDebugInfo,
+                propertyNode.GetterBlock,
+                propertyNode.SetterBlock,
+                false,
+                false);
+
+            propertyNode.AssignedProperty = propertyWGraph;
+            classProperties.PrivateProperties.Add(propertyWGraph);
+
+            foreach (var child in propertyNode.Children) {
+                RecursiveAdd(
+                    child,
+                    currentSymbols,
+                    classMethods,
+                    classProperties,
+                    isStatic);
             }
         }
 
@@ -145,7 +228,8 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.util
             string memberName,
             IList<CodegenTypedParam> members,
             CodegenClassMethods methods,
-            CodegenClassScope classScope)
+            CodegenClassScope classScope,
+            CodegenClassProperties properties)
         {
             members.Add(new CodegenTypedParam(className, memberName));
 
@@ -156,8 +240,8 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.util
                     classScope)
                 .AddParam(className, "p");
             method.Block.AssignRef(memberName, Ref("p"));
-            var setterMethodName = "set" + memberName.Substring(0, 1).ToUpperInvariant() + memberName.Substring(1);
-            RecursiveBuildStack(method, setterMethodName, methods);
+            var setterMethodName = "Set" + memberName.Substring(0, 1).ToUpperInvariant() + memberName.Substring(1);
+            RecursiveBuildStack(method, setterMethodName, methods, properties);
         }
     }
 } // end of namespace

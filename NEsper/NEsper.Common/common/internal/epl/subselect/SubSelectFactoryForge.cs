@@ -56,7 +56,7 @@ namespace com.espertech.esper.common.@internal.epl.subselect
                 .SetProperty(Ref("factory"), "HasAggregation", Constant(strategyFactoryForge.HasAggregation))
                 .SetProperty(Ref("factory"), "HasPrior", Constant(strategyFactoryForge.HasPrior))
                 .SetProperty(Ref("factory"), "HasPrevious", Constant(strategyFactoryForge.HasPrevious))
-                .ExprDotMethod(symbols.GetAddInitSvc(method), "addReadyCallback", Ref("factory"))
+                .ExprDotMethod(symbols.GetAddInitSvc(method), "AddReadyCallback", Ref("factory"))
                 .MethodReturn(Ref("factory"));
             return LocalMethod(method);
         }
@@ -76,7 +76,7 @@ namespace com.espertech.esper.common.@internal.epl.subselect
             foreach (var entry in subselects) {
                 method.Block.ExprDotMethod(
                     Ref("subselects"),
-                    "put",
+                    "Put",
                     Constant(entry.Key.SubselectNumber),
                     entry.Value.Make(method, symbols, classScope));
             }

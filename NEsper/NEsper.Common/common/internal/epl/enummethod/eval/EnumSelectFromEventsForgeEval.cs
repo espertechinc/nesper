@@ -75,18 +75,18 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                 .AddParam(EnumForgeCodegenNames.PARAMS);
 
             CodegenBlock block = methodNode.Block
-                .IfCondition(ExprDotMethod(EnumForgeCodegenNames.REF_ENUMCOLL, "isEmpty"))
+                .IfCondition(ExprDotMethod(EnumForgeCodegenNames.REF_ENUMCOLL, "IsEmpty"))
                 .BlockReturn(EnumForgeCodegenNames.REF_ENUMCOLL)
                 .DeclareVar<ArrayDeque<object>>(
                     "result",
-                    NewInstance<ArrayDeque<object>>(ExprDotMethod(EnumForgeCodegenNames.REF_ENUMCOLL, "size")));
+                    NewInstance<ArrayDeque<object>>(ExprDotMethod(EnumForgeCodegenNames.REF_ENUMCOLL, "Size")));
             CodegenBlock forEach = block.ForEach(typeof(EventBean), "next", EnumForgeCodegenNames.REF_ENUMCOLL)
                 .AssignArrayElement(EnumForgeCodegenNames.REF_EPS, Constant(forge.streamNumLambda), @Ref("next"))
                 .DeclareVar<object>(
                     "item",
                     forge.innerExpression.EvaluateCodegen(typeof(object), methodNode, scope, codegenClassScope))
                 .IfCondition(NotEqualsNull(@Ref("item")))
-                .Expression(ExprDotMethod(@Ref("result"), "add", @Ref("item")));
+                .Expression(ExprDotMethod(@Ref("result"), "Add", @Ref("item")));
             block.MethodReturn(@Ref("result"));
             return LocalMethod(methodNode, args.Eps, args.Enumcoll, args.IsNewData, args.ExprCtx);
         }

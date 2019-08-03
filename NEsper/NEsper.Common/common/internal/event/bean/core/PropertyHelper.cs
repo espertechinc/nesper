@@ -129,11 +129,20 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
             IList<PropertyStem> result)
         {
             foreach (var propertyInfo in magicType.GetAllProperties(true).Where(p => p.GetMethod != null)) {
-                result.Add(
-                    new PropertyStem(
-                        propertyInfo.Name,
-                        propertyInfo.GetMethod,
-                        propertyInfo.EventPropertyType));
+                if (propertyInfo.Member is PropertyInfo propertyInfoMember) {
+                    result.Add(
+                        new PropertyStem(
+                            propertyInfo.Name,
+                            propertyInfoMember,
+                            propertyInfo.EventPropertyType));
+                }
+                else if (propertyInfo.Member is MethodInfo) {
+                    result.Add(
+                        new PropertyStem(
+                            propertyInfo.Name,
+                            propertyInfo.GetMethod,
+                            propertyInfo.EventPropertyType));
+                }
             }
         }
 
@@ -209,7 +218,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
 
             for (var i = 0; i < methods.Length; i++) {
                 var methodName = methods[i].Name;
-                if (!methodName.StartsWith("get")) {
+                if (!methodName.StartsWith("Get")) {
                     continue;
                 }
 

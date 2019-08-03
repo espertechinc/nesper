@@ -85,4 +85,31 @@ namespace com.espertech.esper.common.@internal.filterspec
             return coll.ToArray();
         }
     }
+
+    public class ProxyFilterSpecParam : FilterSpecParam
+    {
+        public delegate object GetFilterValueFunc(
+            MatchedEventMap matchedEvents,
+            ExprEvaluatorContext exprEvaluatorContext,
+            StatementContextFilterEvalEnv filterEvalEnv);
+
+        public ProxyFilterSpecParam(
+            ExprFilterSpecLookupable lookupable,
+            FilterOperator filterOperator,
+            GetFilterValueFunc getFilterValueFunc) : base(lookupable, filterOperator)
+        {
+            ProcGetFilterValue = getFilterValueFunc;
+        }
+
+
+        public GetFilterValueFunc ProcGetFilterValue;
+
+        public override object GetFilterValue(
+            MatchedEventMap matchedEvents,
+            ExprEvaluatorContext exprEvaluatorContext,
+            StatementContextFilterEvalEnv filterEvalEnv)
+        {
+            return ProcGetFilterValue.Invoke(matchedEvents, exprEvaluatorContext, filterEvalEnv);
+        }
+    }
 } // end of namespace

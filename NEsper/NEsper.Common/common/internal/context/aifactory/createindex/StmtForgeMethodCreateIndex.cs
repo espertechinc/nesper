@@ -45,7 +45,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createindex
         }
 
         public StmtForgeMethodResult Make(
-            string packageName,
+            string @namespace,
             string classPostfix,
             StatementCompileTimeServices services)
         {
@@ -126,7 +126,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createindex
                 table.AddIndex(spec.IndexName, @base.ModuleName, imk, explicitIndexDesc.ToRuntime());
             }
 
-            var packageScope = new CodegenNamespaceScope(packageName, null, services.IsInstrumented);
+            var packageScope = new CodegenNamespaceScope(@namespace, null, services.IsInstrumented);
 
             var aiFactoryProviderClassName = CodeGenerationIDGenerator.GenerateClassNameSimple(
                 typeof(StatementAIFactoryProvider),

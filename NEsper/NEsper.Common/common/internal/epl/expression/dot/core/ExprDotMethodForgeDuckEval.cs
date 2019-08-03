@@ -96,7 +96,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
                     StaticMethod(
                         typeof(ExprDotMethodForgeDuckEval),
                         "dotMethodDuckGetMethod",
-                        ExprDotMethod(Ref("target"), "getClass"),
+                        ExprDotName(Ref("target"), "Class"),
                         mCache,
                         Constant(forge.MethodName),
                         Constant(forge.ParameterTypes),
@@ -112,7 +112,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
                     forge.Parameters[i].EvaluateCodegen(typeof(object), methodNode, exprSymbol, codegenClassScope));
             }
 
-            var statementName = ExprDotMethod(exprSymbol.GetAddExprEvalCtx(methodNode), "getStatementName");
+            var statementName = ExprDotName(exprSymbol.GetAddExprEvalCtx(methodNode), "StatementName");
             block.MethodReturn(
                 StaticMethod(
                     typeof(ExprDotMethodForgeDuckEval),

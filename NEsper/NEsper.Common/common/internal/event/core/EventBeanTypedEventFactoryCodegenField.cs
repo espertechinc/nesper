@@ -32,9 +32,9 @@ namespace com.espertech.esper.common.@internal.@event.core
 
         public CodegenExpression InitCtorScoped()
         {
-            return ExprDotMethod(
+            return ExprDotName(
                 EPStatementInitServicesConstants.REF,
-                EPStatementInitServicesConstants.GETEVENTBEANTYPEDEVENTFACTORY);
+                EPStatementInitServicesConstants.EVENTBEANTYPEDEVENTFACTORY);
         }
     }
 } // end of namespace

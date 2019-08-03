@@ -8,13 +8,11 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 
 using com.espertech.esper.common.@internal.bytecodemodel.core;
+using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
-
-using static com.espertech.esper.common.@internal.bytecodemodel.util.CodegenClassUtil;
 
 namespace com.espertech.esper.compiler.@internal.util
 {
@@ -35,6 +33,10 @@ namespace com.espertech.esper.compiler.@internal.util
         private static ICollection<ImportDecl> CompileImports(IEnumerable<Type> types)
         {
             ISet<ImportDecl> imports = new SortedSet<ImportDecl>();
+            imports.Add(new ImportDecl(false, typeof(Int32).Namespace));
+            imports.Add(new ImportDecl(false, typeof(CompatExtensions).Namespace));
+            imports.Add(new ImportDecl(false, typeof(UnsupportedOperationException).Namespace));
+
             foreach (var type in types) {
                 if (type != null && !type.IsPrimitive) {
                     imports.Add(new ImportDecl(false, type.Namespace));
@@ -51,7 +53,7 @@ namespace com.espertech.esper.compiler.@internal.util
             var builder = new StringBuilder();
 
             CodeGenerationUtil.Importsdecl(builder, imports);
-            CodeGenerationUtil.NamespaceDecl(builder, clazz.PackageName);
+            CodeGenerationUtil.NamespaceDecl(builder, clazz.Namespace);
             CodeGenerationUtil.Classimplements(builder, clazz.ClassName, clazz.InterfaceImplemented, null, true, false);
 
             // members
@@ -60,22 +62,51 @@ namespace com.espertech.esper.compiler.@internal.util
             // ctor
             GenerateCodeCtor(builder, clazz.ClassName, false, clazz.OptionalCtor, 1);
 
+            // properties
+            GenerateCodeProperties(builder, false, clazz.PublicProperties, clazz.PrivateProperties, 1);
+
             // methods
             GenerateCodeMethods(builder, false, clazz.PublicMethods, clazz.PrivateMethods, 1);
 
             // inner classes
-            foreach (var inner in clazz.InnerClasses)
-            {
+            foreach (var inner in clazz.InnerClasses) {
                 builder.Append("\n");
                 INDENT.Indent(builder, 2);
                 CodeGenerationUtil.Classimplements(
-                    builder, inner.ClassName, inner.InterfaceImplemented, inner.InterfaceGenericClass, false, false);
+                    builder,
+                    inner.ClassName,
+                    inner.InterfaceImplemented,
+                    inner.InterfaceGenericClass,
+                    false,
+                    false);
 
-                GenerateCodeMembers(builder, inner.ExplicitMembers, inner.Ctor, 2);
+                GenerateCodeMembers(
+                    builder,
+                    inner.ExplicitMembers,
+                    inner.Ctor,
+                    2);
 
-                GenerateCodeCtor(builder, inner.ClassName, true, inner.Ctor, 1);
+                GenerateCodeCtor(
+                    builder,
+                    inner.ClassName,
+                    true,
+                    inner.Ctor,
+                    1);
 
-                GenerateCodeMethods(builder, true, inner.Methods.PublicMethods, inner.Methods.PrivateMethods, 1);
+                GenerateCodeProperties(
+                    builder,
+                    true,
+                    inner.Properties.PublicProperties,
+                    inner.Properties.PrivateProperties,
+                    1);
+
+                GenerateCodeMethods(
+                    builder,
+                    true,
+                    inner.Methods.PublicMethods,
+                    inner.Methods.PrivateMethods,
+                    1);
+
                 INDENT.Indent(builder, 1);
                 builder.Append("}\n");
             }
@@ -86,7 +117,30 @@ namespace com.espertech.esper.compiler.@internal.util
             return builder.ToString();
         }
 
-        protected static void GenerateCodeMethods(
+        internal static void GenerateCodeProperties(
+            StringBuilder builder,
+            bool isInnerClass,
+            IList<CodegenPropertyWGraph> publicProperties,
+            IList<CodegenPropertyWGraph> privateProperties,
+            int additionalIndent)
+        {
+            // public methods
+            var delimiter = "";
+            foreach (var property in publicProperties) {
+                builder.Append(delimiter);
+                property.Render(builder, true, isInnerClass, INDENT, additionalIndent);
+                delimiter = "\n";
+            }
+
+            // private methods
+            foreach (var property in privateProperties) {
+                builder.Append(delimiter);
+                property.Render(builder, false, isInnerClass, INDENT, additionalIndent);
+                delimiter = "\n";
+            }
+        }
+
+        internal static void GenerateCodeMethods(
             StringBuilder builder,
             bool isInnerClass,
             IList<CodegenMethodWGraph> publicMethods,
@@ -95,16 +149,14 @@ namespace com.espertech.esper.compiler.@internal.util
         {
             // public methods
             var delimiter = "";
-            foreach (var publicMethod in publicMethods)
-            {
+            foreach (var publicMethod in publicMethods) {
                 builder.Append(delimiter);
                 publicMethod.Render(builder, true, isInnerClass, INDENT, additionalIndent);
                 delimiter = "\n";
             }
 
             // private methods
-            foreach (var method in privateMethods)
-            {
+            foreach (var method in privateMethods) {
                 builder.Append(delimiter);
                 method.Render(builder, false, isInnerClass, INDENT, additionalIndent);
                 delimiter = "\n";
@@ -123,10 +175,8 @@ namespace com.espertech.esper.compiler.@internal.util
             var delimiter = "";
 
             // parameters
-            if (optionalCtor != null)
-            {
-                foreach (var param in optionalCtor.CtorParams)
-                {
+            if (optionalCtor != null) {
+                foreach (var param in optionalCtor.CtorParams) {
                     builder.Append(delimiter);
                     param.RenderAsParameter(builder);
                     delimiter = ",";
@@ -136,12 +186,9 @@ namespace com.espertech.esper.compiler.@internal.util
             builder.Append("){\n");
 
             // code assigning parameters
-            if (optionalCtor != null)
-            {
-                foreach (var param in optionalCtor.CtorParams)
-                {
-                    if (param.IsMemberWhenCtorParam)
-                    {
+            if (optionalCtor != null) {
+                foreach (var param in optionalCtor.CtorParams) {
+                    if (param.IsMemberWhenCtorParam) {
                         INDENT.Indent(builder, 2 + additionalIndent);
                         builder
                             .Append("this.")
@@ -166,36 +213,40 @@ namespace com.espertech.esper.compiler.@internal.util
             CodegenCtor optionalCtor,
             int indent)
         {
-            if (optionalCtor != null)
-            {
-                foreach (var param in optionalCtor.CtorParams)
-                {
-                    if (param.IsMemberWhenCtorParam)
-                    {
+            if (optionalCtor != null) {
+                foreach (var param in optionalCtor.CtorParams) {
+                    if (param.IsMemberWhenCtorParam) {
                         INDENT.Indent(builder, indent);
-                        builder.Append("private readonly ");
+                        builder.Append("private ");
                         param.RenderAsMember(builder);
                         builder.Append(";\n");
                     }
                 }
             }
 
-            foreach (var param in explicitMembers)
-            {
+            foreach (var param in explicitMembers) {
                 INDENT.Indent(builder, indent);
-                if (!param.IsPublic && param.IsReadonly)
-                {
-                    builder.Append("private readonly ");
+
+                if (param.IsPublic) {
+                    builder.Append("public ");
+                }
+                else {
+                    builder.Append("internal ");
                 }
 
-                if (param.IsStatic)
-                {
+                if (param.IsReadonly) {
+                    builder.Append("readonly ");
+                }
+
+                if (param.IsStatic) {
                     builder.Append("static ");
                 }
 
                 param.RenderType(builder);
-                builder.Append(" ").Append(param.Name);
-                builder.Append(";\n");
+                builder
+                    .Append(" ")
+                    .Append(param.Name)
+                    .Append(";\n");
             }
 
             builder.Append("\n");

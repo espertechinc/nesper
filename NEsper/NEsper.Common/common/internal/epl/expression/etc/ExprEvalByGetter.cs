@@ -64,12 +64,12 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
 
             var refEPS = exprSymbol.GetAddEPS(methodNode);
             methodNode.Block
-                .DeclareVar<EventBean>("event", ArrayAtIndex(refEPS, Constant(streamNum)))
-                .IfRefNullReturnNull("event")
+                .DeclareVar<EventBean>("@event", ArrayAtIndex(refEPS, Constant(streamNum)))
+                .IfRefNullReturnNull("@event")
                 .MethodReturn(
                     CodegenLegoCast.CastSafeFromObjectType(
                         EvaluationType,
-                        getter.EventBeanGetCodegen(Ref("event"), methodNode, codegenClassScope)));
+                        getter.EventBeanGetCodegen(Ref("@event"), methodNode, codegenClassScope)));
             return LocalMethod(methodNode);
         }
 

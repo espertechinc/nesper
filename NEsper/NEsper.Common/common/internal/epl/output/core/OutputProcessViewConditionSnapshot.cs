@@ -204,7 +204,7 @@ namespace com.espertech.esper.common.@internal.epl.output.core
 
         public override IEnumerator<EventBean> GetEnumerator()
         {
-            return OutputStrategyUtil.GetIterator(
+            return OutputStrategyUtil.GetEnumerator(
                 joinExecutionStrategy,
                 resultSetProcessor,
                 parentView,

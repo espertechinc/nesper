@@ -151,14 +151,14 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
                     typeof(ICollection<object>),
                     typeof(PropertyDotScalarIterable),
                     codegenClassScope)
-                .AddParam(typeof(EventBean), "event")
+                .AddParam(typeof(EventBean), "@event")
                 .Block
                 .DeclareVar(
                     getterReturnType,
                     "result",
                     CodegenLegoCast.CastSafeFromObjectType(
                         typeof(IEnumerable),
-                        getter.EventBeanGetCodegen(@Ref("event"), codegenMethodScope, codegenClassScope)))
+                        getter.EventBeanGetCodegen(@Ref("@event"), codegenMethodScope, codegenClassScope)))
                 .IfRefNullReturnNull("result")
                 .MethodReturn(StaticMethod(typeof(CollectionUtil), "iterableToCollection", @Ref("result")));
             return LocalMethodBuild(method).Pass(@event).Call();

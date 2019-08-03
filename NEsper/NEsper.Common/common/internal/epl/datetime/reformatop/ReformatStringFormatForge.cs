@@ -44,7 +44,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.reformatop
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            return ActionCodegen(ExprDotMethod(inner, "getTime"));
+            return ActionCodegen(ExprDotName(inner, "Time"));
         }
 
         public CodegenExpression CodegenDateTimeOffset(

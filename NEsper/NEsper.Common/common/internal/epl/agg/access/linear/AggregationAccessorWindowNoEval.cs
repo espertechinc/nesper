@@ -40,8 +40,8 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
                     NewArrayByLength(forge.ComponentType, size))
                 .DeclareVar<int>("count", Constant(0))
                 .DeclareVar<IEnumerator<EventBean>>("it", iterator)
-                .WhileLoop(ExprDotMethod(Ref("it"), "hasNext"))
-                .DeclareVar<EventBean>("bean", Cast(typeof(EventBean), ExprDotMethod(Ref("it"), "next")))
+                .WhileLoop(ExprDotMethod(Ref("it"), "HasNext"))
+                .DeclareVar<EventBean>("bean", Cast(typeof(EventBean), ExprDotMethod(Ref("it"), "Next")))
                 .AssignArrayElement(
                     Ref("array"),
                     Ref("count"),
@@ -80,10 +80,10 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
                         context.ClassScope,
                         context.Method,
                         context.NamedMethods))
-                .WhileLoop(ExprDotMethod(Ref("it"), "hasNext"))
-                .DeclareVar<EventBean>("bean", Cast(typeof(EventBean), ExprDotMethod(Ref("it"), "next")))
+                .WhileLoop(ExprDotMethod(Ref("it"), "HasNext"))
+                .DeclareVar<EventBean>("bean", Cast(typeof(EventBean), ExprDotMethod(Ref("it"), "Next")))
                 .DeclareVar(forge.ComponentType, "value", Cast(forge.ComponentType, ExprDotUnderlying(Ref("bean"))))
-                .ExprDotMethod(Ref("values"), "add", Ref("value"))
+                .ExprDotMethod(Ref("values"), "Add", Ref("value"))
                 .BlockEnd()
                 .MethodReturn(Ref("values"));
         }

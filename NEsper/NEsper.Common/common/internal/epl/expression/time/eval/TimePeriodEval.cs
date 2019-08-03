@@ -19,4 +19,30 @@ namespace com.espertech.esper.common.@internal.epl.expression.time.eval
             bool isNewData,
             ExprEvaluatorContext exprEvaluatorContext);
     }
+
+    public class ProxyTimePeriodEval : TimePeriodEval
+    {
+        public delegate TimePeriod TimePeriodEvalFunc(
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext exprEvaluatorContext);
+
+        public ProxyTimePeriodEval()
+        {
+        }
+
+        public ProxyTimePeriodEval(TimePeriodEvalFunc procTimePeriodEvalFunc)
+        {
+            ProcTimePeriodEvalFunc = procTimePeriodEvalFunc;
+        }
+
+        public TimePeriodEvalFunc ProcTimePeriodEvalFunc { get; set; }
+        public TimePeriod TimePeriodEval(
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext exprEvaluatorContext)
+        {
+            return ProcTimePeriodEvalFunc.Invoke(eventsPerStream, isNewData, exprEvaluatorContext);
+        }
+    }
 } // end of namespace

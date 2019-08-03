@@ -12,6 +12,7 @@ using System.Diagnostics;
 
 using com.espertech.esper.common.@internal.bytecodemodel.core;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
+using com.espertech.esper.common.@internal.bytecodemodel.util;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
@@ -50,6 +51,8 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
         public IList<CodegenExpressionRef> Environment { get; private set; } =
             Collections.GetEmptyList<CodegenExpressionRef>();
 
+        public bool IsOverride { get; set; }
+
         public Type ReturnType { get; }
 
         public string ReturnTypeName { get; }
@@ -72,6 +75,12 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
         public CodegenMethod WithStatic(bool value)
         {
             IsStatic = value;
+            return this;
+        }
+
+        public CodegenMethod WithOverride(bool isOverride = true)
+        {
+            IsOverride = isOverride;
             return this;
         }
 
@@ -196,9 +205,9 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
         public virtual void MergeClasses(ISet<Type> classes)
         {
             Block.MergeClasses(classes);
-            classes.Add(ReturnType);
+            classes.AddToSet(ReturnType);
             foreach (var ex in Thrown) {
-                classes.Add(ex);
+                classes.AddToSet(ex);
             }
 
             foreach (var param in LocalParams) {

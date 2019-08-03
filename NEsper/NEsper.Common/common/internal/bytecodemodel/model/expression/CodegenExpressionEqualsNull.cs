@@ -10,6 +10,8 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
+using com.espertech.esper.common.@internal.bytecodemodel.core;
+
 namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
 {
     public class CodegenExpressionEqualsNull : CodegenExpression
@@ -27,9 +29,11 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
 
         public void Render(
             StringBuilder builder,
-            bool isInnerClass)
+            bool isInnerClass,
+            int level,
+            CodegenIndent indent)
         {
-            _lhs.Render(builder, isInnerClass);
+            _lhs.Render(builder, isInnerClass, level, indent);
             builder.Append(" ");
             builder.Append(_not ? "!=" : "==");
             builder.Append(" null");

@@ -52,7 +52,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
             var refExprEvalCtx = exprSymbol.GetAddExprEvalCtx(methodNode);
 
             var init = size == 0
-                ? StaticMethod(typeof(Collections), "emptyMap")
+                ? StaticMethod(typeof(Collections), "GetEmptyMap")
                 : NewInstance(typeof(Dictionary<object, object>), Constant(CollectionUtil.CapacityHashMap(size)));
             var block = methodNode.Block
                 .DeclareVar<IDictionary<object, object>>("props", init);
@@ -61,7 +61,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
                 block.Expression(
                     ExprDotMethod(
                         Ref("props"),
-                        "put",
+                        "Put",
                         Constant(context.ColumnNames[count]),
                         CodegenLegoMayVoid.ExpressionMayVoid(
                             typeof(object),
@@ -82,7 +82,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
                     theEvent = ExprDotMethod(eventToPublic, "convert", theEvent, refEPS, refIsNewData, refExprEvalCtx);
                 }
 
-                block.Expression(ExprDotMethod(Ref("props"), "put", Constant(context.ColumnNames[count]), theEvent));
+                block.Expression(ExprDotMethod(Ref("props"), "Put", Constant(context.ColumnNames[count]), theEvent));
                 count++;
             }
 
@@ -91,7 +91,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
                     block.Expression(
                         ExprDotMethod(
                             Ref("props"),
-                            "put",
+                            "Put",
                             Constant(context.ColumnNames[count]),
                             ArrayAtIndex(refEPS, Constant(i))));
                     count++;

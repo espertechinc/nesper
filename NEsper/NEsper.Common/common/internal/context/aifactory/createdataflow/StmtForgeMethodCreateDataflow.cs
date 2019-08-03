@@ -57,7 +57,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createdataflow
         }
 
         public StmtForgeMethodResult Make(
-            string packageName,
+            string @namespace,
             string classPostfix,
             StatementCompileTimeServices services)
         {
@@ -89,12 +89,12 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createdataflow
 
             var statementFieldsClassName =
                 CodeGenerationIDGenerator.GenerateClassNameSimple(typeof(StatementFields), classPostfix);
-            var codegenEnv = new DataFlowOpForgeCodegenEnv(packageName, classPostfix);
+            var codegenEnv = new DataFlowOpForgeCodegenEnv(@namespace, classPostfix);
 
             var dataflowForge = BuildForge(createDataFlowDesc, codegenEnv, @base, services);
 
             var packageScope = new CodegenNamespaceScope(
-                packageName,
+                @namespace,
                 statementFieldsClassName,
                 services.IsInstrumented);
             var aiFactoryProviderClassName = CodeGenerationIDGenerator.GenerateClassNameSimple(

@@ -89,8 +89,8 @@ namespace com.espertech.esper.common.@internal.epl.pattern.observer
                 .DeclareVar<TimerIntervalObserverFactory>(
                     "factory",
                     ExprDotMethodChain(symbols.GetAddInitSvc(method))
-                        .Add(EPStatementInitServicesConstants.GETPATTERNFACTORYSERVICE)
-                        .Add("observerTimerInterval"))
+                        .Get(EPStatementInitServicesConstants.PATTERNFACTORYSERVICE)
+                        .Add("ObserverTimerInterval"))
                 .SetProperty(Ref("factory"), "ScheduleCallbackId", Constant(scheduleCallbackId))
                 .SetProperty(Ref("factory"), "DeltaCompute", patternDelta)
                 .MethodReturn(Ref("factory"));

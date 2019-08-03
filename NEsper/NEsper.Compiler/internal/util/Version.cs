@@ -10,9 +10,11 @@ using System;
 
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+
 namespace com.espertech.esper.compiler.@internal.util
 {
-	public class Version {
-	    public const string COMPILER_VERSION = "8.0.0-beta1";
-	}
+    public class Version
+    {
+        public const string COMPILER_VERSION = "8.0.0-beta1";
+    }
 } // end of namespace

@@ -40,7 +40,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
                 eventBeanFactory,
                 codegenClassScope,
                 wrapper,
-                "adapterForTypedAvro",
+                "AdapterForTypedAvro",
                 typeof(object));
         }
     }

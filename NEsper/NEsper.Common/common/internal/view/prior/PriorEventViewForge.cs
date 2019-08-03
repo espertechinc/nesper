@@ -55,7 +55,7 @@ namespace com.espertech.esper.common.@internal.view.prior
 
         internal override string FactoryMethod()
         {
-            return "prior";
+            return "Prior";
         }
 
         internal override void Assign(

@@ -98,7 +98,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.time.abacus
             CodegenExpression startRemainder,
             CodegenClassScope codegenClassScope)
         {
-            return ExprDotMethod(dateTime, "getTimeInMillis");
+            return ExprDotName(dateTime, "TimeInMillis");
         }
     }
 } // end of namespace

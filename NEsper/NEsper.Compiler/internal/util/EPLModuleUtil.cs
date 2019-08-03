@@ -42,8 +42,7 @@ namespace com.espertech.esper.compiler.@internal.util
             var reader = new StreamReader(stream);
             var buffer = new StringWriter();
             string strLine;
-            while ((strLine = reader.ReadLine()) != null)
-            {
+            while ((strLine = reader.ReadLine()) != null) {
                 buffer.Write(strLine);
                 buffer.Write(NEWLINE);
             }
@@ -61,31 +60,28 @@ namespace com.espertech.esper.compiler.@internal.util
         {
             var semicolonSegments = Parse(buffer);
             IList<ParseNode> nodes = new List<ParseNode>();
-            foreach (var segment in semicolonSegments)
-            {
+            foreach (var segment in semicolonSegments) {
                 nodes.Add(GetModule(segment, resourceName));
             }
 
             string moduleName = null;
             var count = 0;
-            foreach (var node in nodes)
-            {
-                if (node is ParseNodeComment)
-                {
+            foreach (var node in nodes) {
+                if (node is ParseNodeComment) {
                     continue;
                 }
 
-                if (node is ParseNodeModule parseNodeModule)
-                {
-                    if (moduleName != null)
-                    {
-                        throw new ParseException("Duplicate use of the 'module' keyword for resource '" + resourceName + "'");
+                if (node is ParseNodeModule parseNodeModule) {
+                    if (moduleName != null) {
+                        throw new ParseException(
+                            "Duplicate use of the 'module' keyword for resource '" + resourceName + "'");
                     }
 
-                    if (count > 0)
-                    {
+                    if (count > 0) {
                         throw new ParseException(
-                            "The 'module' keyword must be the first declaration in the module file for resource '" + resourceName + "'");
+                            "The 'module' keyword must be the first declaration in the module file for resource '" +
+                            resourceName +
+                            "'");
                     }
 
                     moduleName = parseNodeModule.ModuleName;
@@ -97,18 +93,15 @@ namespace com.espertech.esper.compiler.@internal.util
             ISet<string> uses = new LinkedHashSet<string>();
             ISet<Import> imports = new HashSet<Import>();
             count = 0;
-            foreach (var node in nodes)
-            {
-                if (node is ParseNodeComment || node is ParseNodeModule)
-                {
+            foreach (var node in nodes) {
+                if (node is ParseNodeComment || node is ParseNodeModule) {
                     continue;
                 }
 
-                var message = "The 'uses' and 'import' keywords must be the first declaration in the module file or follow the 'module' declaration";
-                if (node is ParseNodeUses parseNodeUses)
-                {
-                    if (count > 0)
-                    {
+                var message =
+                    "The 'uses' and 'import' keywords must be the first declaration in the module file or follow the 'module' declaration";
+                if (node is ParseNodeUses parseNodeUses) {
+                    if (count > 0) {
                         throw new ParseException(message);
                     }
 
@@ -116,10 +109,8 @@ namespace com.espertech.esper.compiler.@internal.util
                     continue;
                 }
 
-                if (node is ParseNodeImport parseNodeImport)
-                {
-                    if (count > 0)
-                    {
+                if (node is ParseNodeImport parseNodeImport) {
+                    if (count > 0) {
                         throw new ParseException(message);
                     }
 
@@ -137,12 +128,16 @@ namespace com.espertech.esper.compiler.@internal.util
             }
 
             IList<ModuleItem> items = new List<ModuleItem>();
-            foreach (var node in nodes)
-            {
-                if (node is ParseNodeComment || node is ParseNodeExpression)
-                {
+            foreach (var node in nodes) {
+                if (node is ParseNodeComment || node is ParseNodeExpression) {
                     var isComments = node is ParseNodeComment;
-                    items.Add(new ModuleItem(node.Item.Expression, isComments, node.Item.LineNum, node.Item.StartChar, node.Item.EndChar));
+                    items.Add(
+                        new ModuleItem(
+                            node.Item.Expression,
+                            isComments,
+                            node.Item.LineNum,
+                            node.Item.StartChar,
+                            node.Item.EndChar));
                 }
             }
 
@@ -165,39 +160,32 @@ namespace com.espertech.esper.compiler.@internal.util
             var isUses = false;
             var isExpression = false;
 
-            while (beginIndex < tokens.Count)
-            {
+            while (beginIndex < tokens.Count) {
                 var t = tokens[beginIndex];
-                if (t.Type == EsperEPL2GrammarParser.Eof)
-                {
+                if (t.Type == EsperEPL2GrammarParser.Eof) {
                     break;
                 }
 
                 if (t.Type == EsperEPL2GrammarParser.WS ||
                     t.Type == EsperEPL2GrammarParser.SL_COMMENT ||
-                    t.Type == EsperEPL2GrammarParser.ML_COMMENT)
-                {
+                    t.Type == EsperEPL2GrammarParser.ML_COMMENT) {
                     beginIndex++;
                     continue;
                 }
 
                 var tokenText = t.Text.Trim().ToLowerInvariant();
-                if (tokenText.Equals("module"))
-                {
+                if (tokenText.Equals("module")) {
                     isModule = true;
                     isMeta = true;
                 }
-                else if (tokenText.Equals("uses"))
-                {
+                else if (tokenText.Equals("uses")) {
                     isUses = true;
                     isMeta = true;
                 }
-                else if (tokenText.Equals("import"))
-                {
+                else if (tokenText.Equals("import")) {
                     isMeta = true;
                 }
-                else
-                {
+                else {
                     isExpression = true;
                     break;
                 }
@@ -207,31 +195,26 @@ namespace com.espertech.esper.compiler.@internal.util
                 break;
             }
 
-            if (isExpression)
-            {
+            if (isExpression) {
                 return new ParseNodeExpression(item);
             }
 
-            if (!isMeta)
-            {
+            if (!isMeta) {
                 return new ParseNodeComment(item);
             }
 
             // check meta tag (module, uses, import)
             var buffer = new StringWriter();
-            for (var i = beginIndex; i < tokens.Count; i++)
-            {
+            for (var i = beginIndex; i < tokens.Count; i++) {
                 var t = tokens[i];
-                if (t.Type == EsperEPL2GrammarParser.Eof)
-                {
+                if (t.Type == EsperEPL2GrammarParser.Eof) {
                     break;
                 }
 
                 if (t.Type != EsperEPL2GrammarParser.IDENT &&
                     t.Type != EsperEPL2GrammarParser.DOT &&
                     t.Type != EsperEPL2GrammarParser.STAR &&
-                    !t.Text.Matches("[a-zA-Z]*"))
-                {
+                    !t.Text.Matches("[a-zA-Z]*")) {
                     throw GetMessage(isModule, isUses, resourceName, t.Type);
                 }
 
@@ -239,18 +222,15 @@ namespace com.espertech.esper.compiler.@internal.util
             }
 
             var result = buffer.ToString().Trim();
-            if (result.Length == 0)
-            {
+            if (result.Length == 0) {
                 throw GetMessage(isModule, isUses, resourceName, -1);
             }
 
-            if (isModule)
-            {
+            if (isModule) {
                 return new ParseNodeModule(item, result);
             }
 
-            if (isUses)
-            {
+            if (isUses) {
                 return new ParseNodeUses(item, result);
             }
 
@@ -264,31 +244,27 @@ namespace com.espertech.esper.compiler.@internal.util
             int type)
         {
             var message = "Keyword '";
-            if (module)
-            {
+            if (module) {
                 message += "module";
             }
-            else if (uses)
-            {
+            else if (uses) {
                 message += "uses";
             }
-            else
-            {
+            else {
                 message += "import";
             }
 
-            message += "' must be followed by a name or package name (set of names separated by dots) for resource '" + resourceName + "'";
+            message += "' must be followed by a name or package name (set of names separated by dots) for resource '" +
+                       resourceName +
+                       "'";
 
-            if (type != -1)
-            {
+            if (type != -1) {
                 string tokenName = EsperEPL2GrammarParser.GetLexerTokenParaphrases().Get(type);
-                if (tokenName == null)
-                {
+                if (tokenName == null) {
                     tokenName = EsperEPL2GrammarParser.GetParserTokenParaphrases().Get(type);
                 }
 
-                if (tokenName != null)
-                {
+                if (tokenName != null) {
                     message += ", unexpected reserved keyword " + tokenName + " was encountered as part of the name";
                 }
             }
@@ -301,31 +277,24 @@ namespace com.espertech.esper.compiler.@internal.util
             ICharStream input = new CaseInsensitiveInputStream(module);
             var lex = ParseHelper.NewLexer(input);
             var tokens = new CommonTokenStream(lex);
-            try
-            {
+            try {
                 tokens.Fill();
             }
-            catch (Exception ex)
-            {
+            catch (Exception ex) {
                 var message = "Unexpected exception recognizing module text";
-                if (ex is LexerNoViableAltException)
-                {
-                    if (ParseHelper.HasControlCharacters(module))
-                    {
+                if (ex is LexerNoViableAltException) {
+                    if (ParseHelper.HasControlCharacters(module)) {
                         message = "Unrecognized control characters found in text, failed to parse text";
                     }
-                    else
-                    {
+                    else {
                         message += ", recognition failed for " + ex;
                     }
                 }
-                else if (ex is RecognitionException)
-                {
+                else if (ex is RecognitionException) {
                     var recog = (RecognitionException) ex;
                     message += ", recognition failed for " + recog;
                 }
-                else if (ex.Message != null)
-                {
+                else if (ex.Message != null) {
                     message += ": " + ex.Message;
                 }
 
@@ -343,39 +312,33 @@ namespace com.espertech.esper.compiler.@internal.util
             var skippedSemicolonIndexes = GetSkippedSemicolons(tokenList);
             var index = -1;
             // Call getTokens first before invoking tokens.size! ANTLR problem
-            foreach (var token in tokenList)
-            {
+            foreach (var token in tokenList) {
                 index++;
                 var t = token;
                 var semi = t.Type == EsperEPL2GrammarLexer.SEMI && !skippedSemicolonIndexes.Contains(index);
-                if (semi)
-                {
-                    if (current.ToString().Trim().Length > 0)
-                    {
-                        statements.Add(new EPLModuleParseItem(current.ToString().Trim(), lineNum ?? 0, charPosStart, charPos));
+                if (semi) {
+                    if (current.ToString().Trim().Length > 0) {
+                        statements.Add(
+                            new EPLModuleParseItem(current.ToString().Trim(), lineNum ?? 0, charPosStart, charPos));
                         lineNum = null;
                     }
 
                     current = new StringWriter();
                 }
-                else
-                {
-                    if (lineNum == null && t.Type != EsperEPL2GrammarParser.WS)
-                    {
+                else {
+                    if (lineNum == null && t.Type != EsperEPL2GrammarParser.WS) {
                         lineNum = t.Line;
                         charPosStart = charPos;
                     }
 
-                    if (t.Type != EsperEPL2GrammarLexer.Eof)
-                    {
+                    if (t.Type != EsperEPL2GrammarLexer.Eof) {
                         current.Write(t.Text);
                         charPos += t.Text.Length;
                     }
                 }
             }
 
-            if (current.ToString().Trim().Length > 0)
-            {
+            if (current.ToString().Trim().Length > 0) {
                 statements.Add(new EPLModuleParseItem(current.ToString().Trim(), lineNum ?? 0, 0, 0));
             }
 
@@ -413,14 +376,11 @@ namespace com.espertech.esper.compiler.@internal.util
             ISet<int> result = null;
 
             var index = -1;
-            foreach (var token in tokens)
-            {
+            foreach (var token in tokens) {
                 index++;
                 var t = token;
-                if (t.Type == EsperEPL2GrammarParser.EXPRESSIONDECL)
-                {
-                    if (result == null)
-                    {
+                if (t.Type == EsperEPL2GrammarParser.EXPRESSIONDECL) {
+                    if (result == null) {
                         result = new HashSet<int>();
                     }
 
@@ -442,34 +402,27 @@ namespace com.espertech.esper.compiler.@internal.util
             // Handle EPL expression "{text}" and script expression "[text]"
             var indexFirstCurly = IndexFirstToken(index, tokens, EsperEPL2GrammarParser.LCURLY);
             var indexFirstSquare = IndexFirstToken(index, tokens, EsperEPL2GrammarParser.LBRACK);
-            if (indexFirstSquare == -1)
-            {
+            if (indexFirstSquare == -1) {
                 return;
             }
 
-            if (indexFirstCurly != -1 && indexFirstCurly < indexFirstSquare)
-            {
+            if (indexFirstCurly != -1 && indexFirstCurly < indexFirstSquare) {
                 return;
             }
 
             var indexCloseSquare = FindEndSquareBrackets(indexFirstSquare, tokens);
-            if (indexCloseSquare == -1)
-            {
+            if (indexCloseSquare == -1) {
                 return;
             }
 
-            if (indexFirstSquare == indexCloseSquare - 1)
-            {
+            if (indexFirstSquare == indexCloseSquare - 1) {
                 GetSkippedSemicolonsBetweenSquareBrackets(indexCloseSquare, tokens, result);
             }
-            else
-            {
+            else {
                 var current = indexFirstSquare;
-                while (current < indexCloseSquare)
-                {
+                while (current < indexCloseSquare) {
                     var t = tokens[current];
-                    if (t.Type == EsperEPL2GrammarParser.SEMI)
-                    {
+                    if (t.Type == EsperEPL2GrammarParser.SEMI) {
                         result.Add(current);
                     }
 
@@ -484,21 +437,17 @@ namespace com.espertech.esper.compiler.@internal.util
         {
             var index = startIndex + 1;
             var squareBracketDepth = 0;
-            while (index < tokens.Count)
-            {
+            while (index < tokens.Count) {
                 var t = tokens[index];
-                if (t.Type == EsperEPL2GrammarParser.RBRACK)
-                {
-                    if (squareBracketDepth == 0)
-                    {
+                if (t.Type == EsperEPL2GrammarParser.RBRACK) {
+                    if (squareBracketDepth == 0) {
                         return index;
                     }
 
                     squareBracketDepth--;
                 }
 
-                if (t.Type == EsperEPL2GrammarParser.LBRACK)
-                {
+                if (t.Type == EsperEPL2GrammarParser.LBRACK) {
                     squareBracketDepth++;
                 }
 
@@ -514,11 +463,9 @@ namespace com.espertech.esper.compiler.@internal.util
             int tokenType)
         {
             var index = startIndex;
-            while (index < tokens.Count)
-            {
+            while (index < tokens.Count) {
                 var t = tokens[index];
-                if (t.Type == tokenType)
-                {
+                if (t.Type == tokenType) {
                     return index;
                 }
 

@@ -68,7 +68,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                 var child = nodes[i].Forge;
                 block.ExprDotMethod(
                     Ref("props"),
-                    "put",
+                    "Put",
                     Constant(columnNames[i]),
                     child.EvaluateCodegen(typeof(object), methodNode, exprSymbol, codegenClassScope));
             }

@@ -144,11 +144,11 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.nth
                 .DeclareVar<AggregationNthState>(
                     state.Ref,
                     StaticMethod(GetType(), "Read", input, unitKey, serdeValue, Constant(factory.SizeOfBuf)))
-                .AssignRef(RowDotRef(row, circularBuffer), ExprDotMethod(state, "getCircularBuffer"))
+                .AssignRef(RowDotRef(row, circularBuffer), ExprDotName(state, "CircularBuffer"))
                 .AssignRef(
                     RowDotRef(row, currentBufferElementPointer),
-                    ExprDotMethod(state, "getCurrentBufferElementPointer"))
-                .AssignRef(RowDotRef(row, numDataPoints), ExprDotMethod(state, "getNumDataPoints"));
+                    ExprDotName(state, "CurrentBufferElementPointer"))
+                .AssignRef(RowDotRef(row, numDataPoints), ExprDotName(state, "NumDataPoints"));
         }
 
         public override void GetValueCodegen(

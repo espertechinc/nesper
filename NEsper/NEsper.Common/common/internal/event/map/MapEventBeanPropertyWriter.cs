@@ -42,7 +42,7 @@ namespace com.espertech.esper.common.@internal.@event.map
             CodegenMethodScope parent,
             CodegenClassScope classScope)
         {
-            return ExprDotMethod(und, "put", Constant(propertyName), assigned);
+            return ExprDotMethod(und, "Put", Constant(propertyName), assigned);
         }
 
         public virtual void Write(

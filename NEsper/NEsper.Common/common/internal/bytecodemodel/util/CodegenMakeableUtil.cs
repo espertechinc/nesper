@@ -82,7 +82,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.util
                     name,
                     NewInstance(typeof(LinkedHashMap<object, object>), Constant(map.Count)));
                 for (var i = 0; i < map.Count; i++) {
-                    method.Block.ExprDotMethod(Ref(name), "put", Ref("key" + i), Ref("value" + i));
+                    method.Block.ExprDotMethod(Ref(name), "Put", Ref("key" + i), Ref("value" + i));
                 }
 
                 method.Block.MethodReturn(Ref(name));

@@ -65,6 +65,13 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.querymethod
         }
 
         public CodegenExpression Make(
+            CodegenPropertyScope parent,
+            CodegenClassScope classScope)
+        {
+            throw new NotImplementedException();
+        }
+
+        public CodegenExpression Make(
             CodegenMethodScope parent,
             CodegenClassScope classScope)
         {
@@ -88,7 +95,7 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.querymethod
                     typeof(Dictionary<object, object>),
                     Constant(CollectionUtil.CapacityHashMap(SubstitutionParamsNames.Count))));
             foreach (var entry in SubstitutionParamsNames) {
-                method.Block.ExprDotMethod(Ref("names"), "put", Constant(entry.Key), Constant(entry.Value));
+                method.Block.ExprDotMethod(Ref("names"), "Put", Constant(entry.Key), Constant(entry.Value));
             }
 
             method.Block.MethodReturn(Ref("names"));

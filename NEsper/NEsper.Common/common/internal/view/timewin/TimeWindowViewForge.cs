@@ -74,7 +74,7 @@ namespace com.espertech.esper.common.@internal.view.timewin
 
         internal override string FactoryMethod()
         {
-            return "time";
+            return "Time";
         }
 
         internal override void Assign(

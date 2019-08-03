@@ -96,7 +96,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                     "escapeString",
                     optionalEscape.Forge.EvaluateCodegen(typeof(string), methodNode, exprSymbol, codegenClassScope));
                 blockMethod.IfCondition(
-                        And(NotEqualsNull(Ref("escapeString")), Not(ExprDotMethod(Ref("escapeString"), "isEmpty"))))
+                        And(NotEqualsNull(Ref("escapeString")), Not(ExprDotMethod(Ref("escapeString"), "IsEmpty"))))
                     .AssignRef("es", ExprDotMethod(Ref("escapeString"), "charAt", Constant(0)));
             }
 
@@ -116,7 +116,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                         "value",
                         lhs.Forge.EvaluateCodegen(typeof(object), methodNode, exprSymbol, codegenClassScope))
                     .IfRefNullReturnNull("value")
-                    .MethodReturn(GetLikeCode(forge, Ref("likeUtil"), ExprDotMethod(Ref("value"), "toString")));
+                    .MethodReturn(GetLikeCode(forge, Ref("likeUtil"), ExprDotMethod(Ref("value"), "ToString")));
             }
 
             return methodNode;

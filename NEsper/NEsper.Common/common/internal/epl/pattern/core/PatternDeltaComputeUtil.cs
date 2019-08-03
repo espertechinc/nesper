@@ -42,7 +42,7 @@ namespace com.espertech.esper.common.@internal.epl.pattern.core
 
             if (parameter is ExprTimePeriod) {
                 var timePeriod = (ExprTimePeriod) parameter;
-                var time = ExprDotMethod(Ref("context"), "getTime");
+                var time = ExprDotName(Ref("context"), "Time");
                 if (timePeriod.IsConstantResult) {
                     var delta = classScope.AddFieldUnshared<TimePeriodCompute>(
                         true,
@@ -97,7 +97,7 @@ namespace com.espertech.esper.common.@internal.epl.pattern.core
                             eval,
                             Ref("events"),
                             ConstantTrue(),
-                            ExprDotMethod(Ref("context"), "getAgentInstanceContext")));
+                            ExprDotName(Ref("context"), "AgentInstanceContext")));
                 if (!parameter.Forge.EvaluationType.IsPrimitive) {
                     computeDelta.Block.IfRefNull("result")
                         .BlockThrow(

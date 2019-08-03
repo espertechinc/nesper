@@ -350,7 +350,7 @@ namespace com.espertech.esper.common.@internal.epl.join.querygraph
             var method = parent.MakeChild(typeof(QueryGraphValue), GetType(), classScope);
             method.Block.DeclareVar<IList<object>>("items", NewInstance<List<object>>(Constant(Items.Count)));
             for (var i = 0; i < Items.Count; i++) {
-                method.Block.ExprDotMethod(Ref("items"), "add", Items[i].Make(method, symbols, classScope));
+                method.Block.ExprDotMethod(Ref("items"), "Add", Items[i].Make(method, symbols, classScope));
             }
 
             method.Block.MethodReturn(NewInstance<QueryGraphValue>(Ref("items")));

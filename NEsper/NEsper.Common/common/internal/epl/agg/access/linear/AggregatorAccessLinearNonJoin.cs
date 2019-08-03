@@ -61,7 +61,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
                 .DeclareVar<EventBean>("theEvent", ArrayAtIndex(eps, Constant(forge.StreamNum)))
                 .IfRefNull("theEvent")
                 .BlockReturnNoValue()
-                .ExprDotMethod(events, "add", Ref("theEvent"));
+                .ExprDotMethod(events, "Add", Ref("theEvent"));
         }
 
         internal override void ApplyLeaveFiltered(
@@ -75,14 +75,14 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
                 .DeclareVar<EventBean>("theEvent", ArrayAtIndex(eps, Constant(forge.StreamNum)))
                 .IfRefNull("theEvent")
                 .BlockReturnNoValue()
-                .ExprDotMethod(events, "remove", Ref("theEvent"));
+                .ExprDotMethod(events, "Remove", Ref("theEvent"));
         }
 
         public override void ClearCodegen(
             CodegenMethod method,
             CodegenClassScope classScope)
         {
-            method.Block.ExprDotMethod(events, "clear");
+            method.Block.ExprDotMethod(events, "Clear");
         }
 
         public CodegenExpression GetFirstNthValueCodegen(
@@ -99,7 +99,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
                 .AddParam(typeof(int), "index");
             method.Block.IfCondition(Relational(Ref("index"), LT, Constant(0)))
                 .BlockReturn(ConstantNull())
-                .IfCondition(Relational(Ref("index"), GE, ExprDotMethod(events, "size")))
+                .IfCondition(Relational(Ref("index"), GE, ExprDotMethod(events, "Size")))
                 .BlockReturn(ConstantNull())
                 .MethodReturn(Cast(typeof(EventBean), ExprDotMethod(events, "get", Ref("index"))));
             return LocalMethod(method, index);
@@ -119,7 +119,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
                 .AddParam(typeof(int), "index");
             method.Block.IfCondition(Relational(Ref("index"), LT, Constant(0)))
                 .BlockReturn(ConstantNull())
-                .IfCondition(Relational(Ref("index"), GE, ExprDotMethod(events, "size")))
+                .IfCondition(Relational(Ref("index"), GE, ExprDotMethod(events, "Size")))
                 .BlockReturn(ConstantNull())
                 .MethodReturn(
                     Cast(
@@ -140,7 +140,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
                 typeof(AggregatorAccessLinearNonJoin),
                 CodegenSymbolProviderEmpty.INSTANCE,
                 classScope);
-            method.Block.IfCondition(ExprDotMethod(events, "isEmpty"))
+            method.Block.IfCondition(ExprDotMethod(events, "IsEmpty"))
                 .BlockReturn(ConstantNull())
                 .MethodReturn(Cast(typeof(EventBean), ExprDotMethod(events, "get", Constant(0))));
             return LocalMethod(method);
@@ -156,7 +156,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
                 typeof(AggregatorAccessLinearNonJoin),
                 CodegenSymbolProviderEmpty.INSTANCE,
                 classScope);
-            method.Block.IfCondition(ExprDotMethod(events, "isEmpty"))
+            method.Block.IfCondition(ExprDotMethod(events, "IsEmpty"))
                 .BlockReturn(ConstantNull())
                 .MethodReturn(
                     Cast(
@@ -170,7 +170,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
             CodegenMethod method,
             CodegenNamedMethods namedMethods)
         {
-            return ExprDotMethod(events, "iterator");
+            return ExprDotMethod(events, "GetEnumerator");
         }
 
         public CodegenExpression CollectionReadOnlyCodegen(
@@ -183,7 +183,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
 
         public CodegenExpression SizeCodegen()
         {
-            return ExprDotMethod(events, "size");
+            return ExprDotMethod(events, "Size");
         }
 
         public override void WriteCodegen(

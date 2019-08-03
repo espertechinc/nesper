@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat.collections;
@@ -35,8 +36,13 @@ namespace com.espertech.esper.compiler.@internal.util
                     else {
                         if (!TypeHelper.IsSubclassOrImplementsInterface(node.ResolvedType, existing)) {
                             throw new ExprValidationException(
-                                "Substitution parameter '" + name + "' incompatible type assignment between types '" + existing.Name + "' and '" +
-                                node.ResolvedType.Name + "'");
+                                "Substitution parameter '" +
+                                name +
+                                "' incompatible type assignment between types '" +
+                                existing.Name +
+                                "' and '" +
+                                node.ResolvedType.Name +
+                                "'");
                         }
                     }
                 }

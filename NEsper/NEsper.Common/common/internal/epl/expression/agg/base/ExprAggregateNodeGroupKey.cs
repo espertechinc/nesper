@@ -63,7 +63,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.@base
             CodegenMethod method = parent.MakeChild(returnType, this.GetType(), classScope);
             CodegenExpression getGroupKey = ExprDotMethod(
                 future,
-                "getGroupKey",
+                "GetGroupKey",
                 ExprDotMethod(symbol.GetAddExprEvalCtx(method), "getAgentInstanceId"));
             if (numGroupKeys == 1) {
                 method.Block.MethodReturn(CodegenLegoCast.CastSafeFromObjectType(returnType, getGroupKey));
@@ -74,7 +74,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.@base
                     .MethodReturn(
                         CodegenLegoCast.CastSafeFromObjectType(
                             returnType,
-                            ArrayAtIndex(ExprDotMethod(@Ref("mk"), "getKeys"), Constant(groupKeyIndex))));
+                            ArrayAtIndex(ExprDotName(@Ref("mk"), "Keys"), Constant(groupKeyIndex))));
             }
 
             return LocalMethod(method);

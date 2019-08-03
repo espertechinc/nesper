@@ -59,7 +59,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
             var block = methodNode.Block
                 .DeclareVar<DateTimeEx>(
                     "dtx",
-                    Cast(typeof(DateTimeEx), ExprDotMethod(Ref("target"), "clone")));
+                    Cast(typeof(DateTimeEx), ExprDotMethod(Ref("target"), "Clone")));
             DTLocalUtil.EvaluateCalOpsCalendarCodegen(
                 block,
                 forge.calendarForges,

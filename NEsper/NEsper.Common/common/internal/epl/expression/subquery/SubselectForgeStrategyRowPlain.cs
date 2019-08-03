@@ -40,7 +40,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                 method.Block
                     .IfCondition(
                         Relational(
-                            ExprDotMethod(symbols.GetAddMatchingEvents(method), "size"),
+                            ExprDotMethod(symbols.GetAddMatchingEvents(method), "Size"),
                             CodegenExpressionRelational.CodegenRelational.GT,
                             Constant(1)))
                     .BlockReturn(ConstantNull());
@@ -71,10 +71,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                 method.Block.DeclareVar<EventBean>("filtered", ConstantNull());
                 CodegenBlock @foreach = method.Block.ForEach(
                     typeof(EventBean),
-                    "event",
+                    "@event",
                     symbols.GetAddMatchingEvents(method));
                 {
-                    @foreach.AssignArrayElement(REF_EVENTS_SHIFTED, Constant(0), @Ref("event"));
+                    @foreach.AssignArrayElement(REF_EVENTS_SHIFTED, Constant(0), @Ref("@event"));
                     CodegenMethod filter = CodegenLegoMethodExpression.CodegenExpression(
                         subselect.FilterExpr,
                         method,
@@ -89,7 +89,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                             symbols.GetAddExprEvalCtx(method)));
                     @foreach.IfCondition(NotEqualsNull(@Ref("filtered")))
                         .BlockReturn(ConstantNull())
-                        .AssignRef("filtered", @Ref("event"));
+                        .AssignRef("filtered", @Ref("@event"));
                 }
 
                 if (subselect.SelectClause == null) {
@@ -126,18 +126,18 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                         method.Block.DeclareVar<ICollection<object>>(
                             "events",
                             NewInstance<ArrayDeque<object>>(
-                                ExprDotMethod(symbols.GetAddMatchingEvents(method), "size")));
+                                ExprDotMethod(symbols.GetAddMatchingEvents(method), "Size")));
                         CodegenBlock @foreach = method.Block.ForEach(
                             typeof(EventBean),
-                            "event",
+                            "@event",
                             symbols.GetAddMatchingEvents(method));
                         {
                             @foreach.DeclareVar<object>(
                                     "fragment",
-                                    eval.Getter.EventBeanFragmentCodegen(@Ref("event"), method, classScope))
+                                    eval.Getter.EventBeanFragmentCodegen(@Ref("@event"), method, classScope))
                                 .IfRefNull("fragment")
                                 .BlockContinue()
-                                .ExprDotMethod(@Ref("events"), "add", @Ref("fragment"));
+                                .ExprDotMethod(@Ref("events"), "Add", @Ref("fragment"));
                         }
                         method.Block.MethodReturn(@Ref("events"));
                         return LocalMethod(method);
@@ -158,14 +158,14 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                         .DeclareVar<ICollection<object>>(
                             "result",
                             NewInstance<ArrayDeque<object>>(
-                                ExprDotMethod(symbols.GetAddMatchingEvents(methodX), "size")))
+                                ExprDotMethod(symbols.GetAddMatchingEvents(methodX), "Size")))
                         .ApplyTri(DECLARE_EVENTS_SHIFTED, methodX, symbols);
                     CodegenBlock foreachX = methodX.Block.ForEach(
                         typeof(EventBean),
-                        "event",
+                        "@event",
                         symbols.GetAddMatchingEvents(methodX));
                     {
-                        foreachX.AssignArrayElement(REF_EVENTS_SHIFTED, Constant(0), @Ref("event"))
+                        foreachX.AssignArrayElement(REF_EVENTS_SHIFTED, Constant(0), @Ref("@event"))
                             .DeclareVar<IDictionary<object, object>>(
                                 "row",
                                 LocalMethod(
@@ -175,8 +175,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                                     symbols.GetAddExprEvalCtx(methodX)))
                             .DeclareVar<EventBean>(
                                 "rowEvent",
-                                ExprDotMethod(eventBeanSvc, "adapterForTypedMap", @Ref("row"), fieldEventType))
-                            .ExprDotMethod(@Ref("result"), "add", @Ref("rowEvent"));
+                                ExprDotMethod(eventBeanSvc, "AdapterForTypedMap", @Ref("row"), fieldEventType))
+                            .ExprDotMethod(@Ref("result"), "Add", @Ref("rowEvent"));
                     }
                     methodX.Block.MethodReturn(@Ref("result"));
                     return LocalMethod(methodX);
@@ -195,10 +195,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
             methodY.Block.DeclareVar<ArrayDeque<object>>("filtered", ConstantNull());
             CodegenBlock foreachY = methodY.Block.ForEach(
                 typeof(EventBean),
-                "event",
+                "@event",
                 symbols.GetAddMatchingEvents(methodY));
             {
-                foreachY.AssignArrayElement(REF_EVENTS_SHIFTED, Constant(0), @Ref("event"));
+                foreachY.AssignArrayElement(REF_EVENTS_SHIFTED, Constant(0), @Ref("@event"));
                 CodegenMethod filter = CodegenLegoMethodExpression.CodegenExpression(
                     subselect.FilterExpr,
                     methodY,
@@ -214,7 +214,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                 foreachY.IfCondition(EqualsNull(@Ref("filtered")))
                     .AssignRef("filtered", NewInstance(typeof(ArrayDeque<object>)))
                     .BlockEnd()
-                    .ExprDotMethod(@Ref("filtered"), "add", @Ref("event"));
+                    .ExprDotMethod(@Ref("filtered"), "Add", @Ref("@event"));
             }
 
             methodY.Block.MethodReturn(@Ref("filtered"));
@@ -238,12 +238,12 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                     CodegenExpression selectClause = GetSelectClauseExpr(method, symbols, classScope);
                     CodegenBlock @foreach = method.Block.ForEach(
                         typeof(EventBean),
-                        "event",
+                        "@event",
                         symbols.GetAddMatchingEvents(method));
                     {
-                        @foreach.AssignArrayElement(REF_EVENTS_SHIFTED, Constant(0), @Ref("event"))
+                        @foreach.AssignArrayElement(REF_EVENTS_SHIFTED, Constant(0), @Ref("@event"))
                             .DeclareVar<object>("value", selectClause)
-                            .ExprDotMethod(@Ref("result"), "add", @Ref("value"));
+                            .ExprDotMethod(@Ref("result"), "Add", @Ref("value"));
                     }
                     method.Block.MethodReturn(@Ref("result"));
                     return LocalMethod(method);
@@ -263,10 +263,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                 CodegenLegoMethodExpression.CodegenExpression(subselect.FilterExpr, methodX, classScope);
             CodegenBlock foreachX = methodX.Block.ForEach(
                 typeof(EventBean),
-                "event",
+                "@event",
                 symbols.GetAddMatchingEvents(methodX));
             {
-                foreachX.AssignArrayElement(REF_EVENTS_SHIFTED, Constant(0), @Ref("event"));
+                foreachX.AssignArrayElement(REF_EVENTS_SHIFTED, Constant(0), @Ref("@event"));
                 CodegenLegoBooleanExpression.CodegenContinueIfNullOrNotPass(
                     foreachX,
                     typeof(bool?),
@@ -276,7 +276,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                         symbols.GetAddIsNewData(methodX),
                         symbols.GetAddExprEvalCtx(methodX)));
                 foreachX.DeclareVar<object>("value", selectClauseX)
-                    .ExprDotMethod(@Ref("result"), "add", @Ref("value"));
+                    .ExprDotMethod(@Ref("result"), "Add", @Ref("value"));
             }
             methodX.Block.MethodReturn(@Ref("result"));
             return LocalMethod(methodX);
@@ -320,7 +320,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                             symbols.GetAddExprEvalCtx(method)))
                     .DeclareVar<EventBean>(
                         "bean",
-                        ExprDotMethod(eventBeanSvc, "adapterForTypedMap", @Ref("row"), typeMember))
+                        ExprDotMethod(eventBeanSvc, "AdapterForTypedMap", @Ref("row"), typeMember))
                     .MethodReturn(@Ref("bean"));
                 return LocalMethod(method);
             }
@@ -352,7 +352,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                         symbols.GetAddExprEvalCtx(method)))
                 .DeclareVar<EventBean>(
                     "bean",
-                    ExprDotMethod(eventBeanSvc, "adapterForTypedMap", @Ref("row"), typeMember))
+                    ExprDotMethod(eventBeanSvc, "AdapterForTypedMap", @Ref("row"), typeMember))
                 .MethodReturn(@Ref("bean"));
             return LocalMethod(method);
         }

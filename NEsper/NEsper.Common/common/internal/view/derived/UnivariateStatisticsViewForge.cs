@@ -79,7 +79,7 @@ namespace com.espertech.esper.common.@internal.view.derived
 
         internal override string FactoryMethod()
         {
-            return "uni";
+            return "Uni";
         }
 
         internal override void Assign(

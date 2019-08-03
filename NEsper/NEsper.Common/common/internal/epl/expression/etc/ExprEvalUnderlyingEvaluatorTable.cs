@@ -78,13 +78,13 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
                 typeof(ExprEvalUnderlyingEvaluatorTable),
                 codegenClassScope);
             method.Block.IfRefNullReturnNull(exprSymbol.GetAddEPS(method))
-                .DeclareVar<EventBean>("event", ArrayAtIndex(exprSymbol.GetAddEPS(method), Constant(streamNum)))
-                .IfRefNullReturnNull("event")
+                .DeclareVar<EventBean>("@event", ArrayAtIndex(exprSymbol.GetAddEPS(method), Constant(streamNum)))
+                .IfRefNullReturnNull("@event")
                 .MethodReturn(
                     ExprDotMethod(
                         eventToPublic,
                         "convertToUnd",
-                        @Ref("event"),
+                        @Ref("@event"),
                         exprSymbol.GetAddEPS(method),
                         exprSymbol.GetAddIsNewData(method),
                         exprSymbol.GetAddExprEvalCtx(method)));

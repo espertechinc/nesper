@@ -12,43 +12,12 @@ using System.Text;
 
 namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
 {
-    public class CodegenChainElement
+    public abstract class CodegenChainElement
     {
-        private readonly string _method;
-        private readonly CodegenExpression[] _optionalParams;
-
-        public CodegenChainElement(
-            string method,
-            CodegenExpression[] optionalParams)
-        {
-            this._method = method;
-            this._optionalParams = optionalParams;
-        }
-
-        public void Render(
+        abstract public void Render(
             StringBuilder builder,
-            bool isInnerClass)
-        {
-            builder.Append(_method).Append("(");
-            if (_optionalParams != null) {
-                var delimiter = "";
-                foreach (var param in _optionalParams) {
-                    builder.Append(delimiter);
-                    param.Render(builder, isInnerClass);
-                    delimiter = ",";
-                }
-            }
+            bool isInnerClass);
 
-            builder.Append(")");
-        }
-
-        public void MergeClasses(ISet<Type> classes)
-        {
-            if (_optionalParams != null) {
-                foreach (var param in _optionalParams) {
-                    param.MergeClasses(classes);
-                }
-            }
-        }
+        abstract public void MergeClasses(ISet<Type> classes);
     }
 } // end of namespace

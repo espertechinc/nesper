@@ -88,7 +88,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                 .IfElse()
                 .Increment("existing")
                 .BlockEnd()
-                .ExprDotMethod(@Ref("items"), "put", @Ref("next"), @Ref("existing"));
+                .ExprDotMethod(@Ref("items"), "Put", @Ref("next"), @Ref("existing"));
             CodegenMethod method = block.MethodReturn(
                 Cast(
                     returnType,

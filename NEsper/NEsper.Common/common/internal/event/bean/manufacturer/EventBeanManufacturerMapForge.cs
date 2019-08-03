@@ -60,7 +60,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.manufacturer
             manufacturer.AddMethod("Make", makeMethod);
             makeMethod.Block
                 .DeclareVar<IDictionary<object, object>>("und", LocalMethod(makeUndMethod, Ref("properties")))
-                .MethodReturn(ExprDotMethod(factory, "adapterForTypedMap", Ref("und"), eventType));
+                .MethodReturn(ExprDotMethod(factory, "AdapterForTypedMap", Ref("und"), eventType));
 
             return codegenClassScope.AddFieldUnshared(true, typeof(EventBeanManufacturer), manufacturer);
         }
@@ -80,7 +80,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.manufacturer
             for (var i = 0; i < writables.Length; i++) {
                 method.Block.ExprDotMethod(
                     Ref("values"),
-                    "put",
+                    "Put",
                     Constant(writables[i].PropertyName),
                     ArrayAtIndex(Ref("properties"), Constant(i)));
             }

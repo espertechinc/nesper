@@ -100,7 +100,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                         NewArrayByLength(typeof(object), Constant(1)),
                         resultTypeMember))
                 .AssignArrayElement(EnumForgeCodegenNames.REF_EPS, Constant(forge.streamNumLambda), @Ref("resultEvent"))
-                .DeclareVar<object[]>("props", ExprDotMethod(@Ref("resultEvent"), "getProperties"));
+                .DeclareVar<object[]>("props", ExprDotName(@Ref("resultEvent"), "Properties"));
 
             CodegenBlock forEach = block.ForEach(typeof(object), "next", EnumForgeCodegenNames.REF_ENUMCOLL)
                 .AssignArrayElement("props", Constant(0), @Ref("next"))
@@ -113,7 +113,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             }
 
             forEach.Expression(ExprDotMethod(@Ref("agg"), "enter", @Ref("num")));
-            block.MethodReturn(ExprDotMethod(@Ref("agg"), "getValue"));
+            block.MethodReturn(ExprDotName(@Ref("agg"), "Value"));
             return LocalMethod(methodNode, args.Eps, args.Enumcoll, args.IsNewData, args.ExprCtx);
         }
     }

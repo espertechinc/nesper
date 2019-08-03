@@ -40,7 +40,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.countminsketch
                 true,
                 typeof(CountMinSketchSpec),
                 forge.specification.CodegenMake(classScope.NamespaceScope.InitMethod, classScope));
-            rowCtor.Block.AssignRef(state, ExprDotMethod(spec, "makeAggState"));
+            rowCtor.Block.AssignRef(state, ExprDotMethod(spec, "MakeAggState"));
         }
 
         public void ApplyEnterCodegen(

@@ -62,7 +62,7 @@ namespace com.espertech.esper.common.@internal.view.derived
 
         internal override string FactoryMethod()
         {
-            return "size";
+            return "Size";
         }
 
         internal override void Assign(

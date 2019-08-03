@@ -104,7 +104,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
             var importServiceRuntime = new ImportServiceRuntime(
                 container,
                 configs.Common.TransientConfiguration, timeAbacus,
-                configs.Common.EventTypeAutoNamePackages, timeZone,
+                configs.Common.EventTypeAutoNameNamespaces, timeZone,
                 configs.Common.MethodInvocationReferences,
                 configs.Common.Imports,
                 configs.Common.AnnotationImports);

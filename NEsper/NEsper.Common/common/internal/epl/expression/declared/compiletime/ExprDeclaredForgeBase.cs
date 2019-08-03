@@ -392,7 +392,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.declared.compileti
             scope.DerivedSymbolsCodegen(methodNode, block, codegenClassScope);
 
             if (isCache) {
-                var eval = ExprDotMethod(Ref("entry"), "getResult");
+                CodegenExpression eval = ExprDotName(Ref("entry"), "Result");
                 if (evaluationType != typeof(object)) {
                     eval = Cast(InnerForge.EvaluationType.GetBoxedType(), eval);
                 }
@@ -461,7 +461,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.declared.compileti
                         "entry",
                         ExprDotMethod(Ref("cache"), "getDeclaredExpressionLastColl", nodeObject, refEPS))
                     .IfCondition(NotEqualsNull(Ref("entry")))
-                    .BlockReturn(ExprDotMethod(Ref("entry"), "getResult"))
+                    .BlockReturn(ExprDotName(Ref("entry"), "Result"))
                     .DeclareVar<ICollection<object>>("result", innerValue)
                     .Expression(
                         ExprDotMethod(
@@ -517,7 +517,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.declared.compileti
                         "entry",
                         ExprDotMethod(Ref("cache"), "getDeclaredExpressionLastColl", nodeObject, refEPS))
                     .IfCondition(NotEqualsNull(Ref("entry")))
-                    .BlockReturn(ExprDotMethod(Ref("entry"), "getResult"))
+                    .BlockReturn(ExprDotName(Ref("entry"), "Result"))
                     .DeclareVar<ICollection<object>>("result", innerValue)
                     .Expression(
                         ExprDotMethod(

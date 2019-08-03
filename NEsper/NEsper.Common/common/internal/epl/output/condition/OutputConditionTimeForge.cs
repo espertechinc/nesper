@@ -52,9 +52,9 @@ namespace com.espertech.esper.common.@internal.epl.output.condition
                     timePeriod.TimePeriodComputeForge.MakeEvaluator(method, classScope))
                 .MethodReturn(
                     ExprDotMethodChain(symbols.GetAddInitSvc(method))
-                        .Add(EPStatementInitServicesConstants.GETRESULTSETPROCESSORHELPERFACTORY)
+                        .Get(EPStatementInitServicesConstants.RESULTSETPROCESSORHELPERFACTORY)
                         .Add(
-                            "makeOutputConditionTime",
+                            "MakeOutputConditionTime",
                             Constant(timePeriod.HasVariable),
                             @Ref("delta"),
                             Constant(isStartConditionOnCreation),

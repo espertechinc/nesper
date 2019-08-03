@@ -181,7 +181,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.core
             }
 
             if (map.IsEmpty()) {
-                return StaticMethod(typeof(Collections), "emptyMap");
+                return StaticMethod(typeof(Collections), "GetEmptyMap");
             }
 
             if (map.Count == 1) {
@@ -202,7 +202,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.core
             foreach (var entry in map) {
                 child.Block.ExprDotMethod(
                     Ref("map"),
-                    "put",
+                    "Put",
                     CodegenExpressionBuilder.Constant(entry.Key),
                     BuildMapValue(entry.Value));
             }

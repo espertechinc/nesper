@@ -47,14 +47,14 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
             var evalCtx = symbols.GetAddExprEvalCtx(method);
 
             method.Block
-                .DeclareVar<int>("cpid", ExprDotMethod(evalCtx, "getAgentInstanceId"))
+                .DeclareVar<int>("cpid", ExprDotName(evalCtx, "AgentInstanceId"))
                 .DeclareVar<AggregationService>(
                     "aggregationService",
-                    ExprDotMethod(aggService, "getContextPartitionAggregationService", Ref("cpid")))
+                    ExprDotMethod(aggService, "GetContextPartitionAggregationService", Ref("cpid")))
                 .DeclareVar<ICollection<object>>(
                     "groupKeys",
-                    ExprDotMethod(Ref("aggregationService"), "getGroupKeys", evalCtx))
-                .IfCondition(ExprDotMethod(Ref("groupKeys"), "isEmpty"))
+                    ExprDotMethod(Ref("aggregationService"), "GetGroupKeys", evalCtx))
+                .IfCondition(ExprDotMethod(Ref("groupKeys"), "IsEmpty"))
                 .BlockReturn(ConstantNull())
                 .ApplyTri(DECLARE_EVENTS_SHIFTED, method, symbols)
                 .DeclareVar<bool>("haveResult", ConstantFalse())
@@ -141,19 +141,19 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
             var evalCtx = symbols.GetAddExprEvalCtx(method);
 
             method.Block
-                .DeclareVar<int>("cpid", ExprDotMethod(evalCtx, "getAgentInstanceId"))
+                .DeclareVar<int>("cpid", ExprDotName(evalCtx, "AgentInstanceId"))
                 .DeclareVar<AggregationService>(
                     "aggregationService",
-                    ExprDotMethod(aggService, "getContextPartitionAggregationService", Ref("cpid")))
+                    ExprDotMethod(aggService, "GetContextPartitionAggregationService", Ref("cpid")))
                 .DeclareVar<ICollection<object>>(
                     "groupKeys",
-                    ExprDotMethod(Ref("aggregationService"), "getGroupKeys", evalCtx))
-                .IfCondition(ExprDotMethod(Ref("groupKeys"), "isEmpty"))
+                    ExprDotMethod(Ref("aggregationService"), "GetGroupKeys", evalCtx))
+                .IfCondition(ExprDotMethod(Ref("groupKeys"), "IsEmpty"))
                 .BlockReturn(ConstantNull())
                 .ApplyTri(DECLARE_EVENTS_SHIFTED, method, symbols)
                 .DeclareVar<ICollection<object>>(
                     "result",
-                    NewInstance<ArrayDeque<object>>(ExprDotMethod(Ref("groupKeys"), "size")));
+                    NewInstance<ArrayDeque<object>>(ExprDotMethod(Ref("groupKeys"), "Size")));
 
             var forEach = method.Block.ForEach(typeof(object), "groupKey", Ref("groupKeys"));
             {
@@ -184,9 +184,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                             ConstantTrue(),
                             symbols.GetAddExprEvalCtx(method)))
                     .DeclareVar<EventBean>(
-                        "event",
-                        ExprDotMethod(factory, "adapterForTypedMap", Ref("row"), subselectMultirowType))
-                    .ExprDotMethod(Ref("result"), "add", Ref("event"));
+                        "@event",
+                        ExprDotMethod(factory, "AdapterForTypedMap", Ref("row"), subselectMultirowType))
+                    .ExprDotMethod(Ref("result"), "Add", Ref("@event"));
             }
             method.Block.MethodReturn(Ref("result"));
             return LocalMethod(method);

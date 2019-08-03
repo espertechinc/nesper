@@ -50,7 +50,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.statement
             CodegenIndent indent)
         {
             builder.Append("if (");
-            condition.Render(builder, isInnerClass);
+            condition.Render(builder, isInnerClass, level, indent);
             builder.Append(") {\n");
             block.Render(builder, isInnerClass, level + 1, indent);
             indent.Indent(builder, level);

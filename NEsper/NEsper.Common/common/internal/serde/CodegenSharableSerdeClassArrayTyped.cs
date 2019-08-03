@@ -38,7 +38,7 @@ namespace com.espertech.esper.common.@internal.serde
         public CodegenExpression InitCtorScoped()
         {
             return ExprDotMethodChain(EPStatementInitServicesConstants.REF)
-                .Add(EPStatementInitServicesConstants.GETDATAINPUTOUTPUTSERDEPROVIDER)
+                .Get(EPStatementInitServicesConstants.DATAINPUTOUTPUTSERDEPROVIDER)
                 .Add(name.MethodName, Constant(valueTypes));
         }
 

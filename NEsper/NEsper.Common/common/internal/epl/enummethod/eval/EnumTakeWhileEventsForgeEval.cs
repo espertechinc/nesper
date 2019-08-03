@@ -96,11 +96,11 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                 codegenClassScope);
 
             CodegenBlock block = methodNode.Block
-                .IfCondition(ExprDotMethod(EnumForgeCodegenNames.REF_ENUMCOLL, "isEmpty"))
+                .IfCondition(ExprDotMethod(EnumForgeCodegenNames.REF_ENUMCOLL, "IsEmpty"))
                 .BlockReturn(EnumForgeCodegenNames.REF_ENUMCOLL);
 
             CodegenBlock blockSingle = block
-                .IfCondition(EqualsIdentity(ExprDotMethod(EnumForgeCodegenNames.REF_ENUMCOLL, "size"), Constant(1)))
+                .IfCondition(EqualsIdentity(ExprDotMethod(EnumForgeCodegenNames.REF_ENUMCOLL, "Size"), Constant(1)))
                 .DeclareVar<EventBean>(
                     "item",
                     Cast(
@@ -121,7 +121,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                 forEach,
                 forge.innerExpression.EvaluationType,
                 innerValue);
-            forEach.Expression(ExprDotMethod(@Ref("result"), "add", @Ref("next")));
+            forEach.Expression(ExprDotMethod(@Ref("result"), "Add", @Ref("next")));
             block.MethodReturn(@Ref("result"));
             return LocalMethod(methodNode, args.Eps, args.Enumcoll, args.IsNewData, args.ExprCtx);
         }

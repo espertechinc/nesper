@@ -47,11 +47,11 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
                 this.GetType(),
                 codegenClassScope);
             CodegenExpressionRef refEPS = exprSymbol.GetAddEPS(methodNode);
-            CodegenExpression bean = ExprDotMethod(
+            CodegenExpression bean = ExprDotName(
                 Cast(typeof(ObjectArrayBackedEventBean), ArrayAtIndex(refEPS, Constant(0))),
-                "getProperties");
+                "Properties");
             methodNode.Block.MethodReturn(
-                ExprDotMethod(eventBeanFactory, "adapterForTypedObjectArray", bean, resultEventType));
+                ExprDotMethod(eventBeanFactory, "AdapterForTypedObjectArray", bean, resultEventType));
             return methodNode;
         }
     }

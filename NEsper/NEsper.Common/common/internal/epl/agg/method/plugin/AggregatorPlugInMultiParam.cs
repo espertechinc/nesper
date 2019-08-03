@@ -71,7 +71,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.plugin
             CodegenMethod method,
             CodegenClassScope classScope)
         {
-            method.Block.ExprDotMethod(plugin, "enter", value);
+            method.Block.ExprDotMethod(plugin, "Enter", value);
         }
 
         public void ApplyTableLeaveCodegen(
@@ -80,21 +80,21 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.plugin
             CodegenMethod method,
             CodegenClassScope classScope)
         {
-            method.Block.ExprDotMethod(plugin, "leave", value);
+            method.Block.ExprDotMethod(plugin, "Leave", value);
         }
 
         public void ClearCodegen(
             CodegenMethod method,
             CodegenClassScope classScope)
         {
-            method.Block.ExprDotMethod(plugin, "clear");
+            method.Block.ExprDotMethod(plugin, "Clear");
         }
 
         public void GetValueCodegen(
             CodegenMethod method,
             CodegenClassScope classScope)
         {
-            method.Block.MethodReturn(ExprDotMethod(plugin, "getValue"));
+            method.Block.MethodReturn(ExprDotName(plugin, "Value"));
         }
 
         public void WriteCodegen(
@@ -140,16 +140,16 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.plugin
             }
             else {
                 method.Block.DeclareVar<object[]>(
-                    "params",
+                    "parameters",
                     NewArrayByLength(typeof(object), Constant(forges.Length)));
                 for (var i = 0; i < forges.Length; i++) {
                     method.Block.AssignArrayElement(
-                        "params",
+                        "parameters",
                         Constant(i),
                         forges[i].EvaluateCodegen(typeof(object), method, symbols, classScope));
                 }
 
-                expression = Ref("params");
+                expression = Ref("parameters");
             }
 
             method.Block.ExprDotMethod(plugin, enter ? "enter" : "leave", expression);

@@ -27,7 +27,9 @@ namespace com.espertech.esper.compiler.@internal.util
         public override string ToString()
         {
             return "CompilableEPL{" +
-                   "epl='" + Epl + '\'' +
+                   "epl='" +
+                   Epl +
+                   '\'' +
                    '}';
         }
     }

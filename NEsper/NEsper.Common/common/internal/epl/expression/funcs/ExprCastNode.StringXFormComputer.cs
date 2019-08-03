@@ -43,7 +43,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
                 ExprForgeCodegenSymbol exprSymbol,
                 CodegenClassScope codegenClassScope)
             {
-                return CodegenExpressionBuilder.ExprDotMethod(input, "toString");
+                return CodegenExpressionBuilder.ExprDotMethod(input, "ToString");
             }
 
             public CasterParserComputer EvaluatorComputer => this;

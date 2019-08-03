@@ -119,7 +119,7 @@ namespace com.espertech.esper.common.@internal.epl.historical.database.core
                     typeof(Dictionary<object, object>),
                     Constant(CollectionUtil.CapacityHashMap(outputTypes.Count))));
             foreach (KeyValuePair<string, DBOutputTypeDesc> entry in outputTypes) {
-                method.Block.ExprDotMethod(@Ref("types"), "put", Constant(entry.Key), entry.Value.Make());
+                method.Block.ExprDotMethod(@Ref("types"), "Put", Constant(entry.Key), entry.Value.Make());
             }
 
             method.Block.MethodReturn(@Ref("types"));

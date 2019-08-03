@@ -171,7 +171,7 @@ namespace com.espertech.esper.common.@internal.view.groupwin
 
         internal override string FactoryMethod()
         {
-            return "group";
+            return "Group";
         }
 
         internal override void Assign(

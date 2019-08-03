@@ -221,7 +221,8 @@ namespace com.espertech.esper.regressionlib.framework
                     .Copy(orig);
             }
             catch (Exception t) {
-                throw new AssertionException("Exception occurred during serialized copy", t);
+                throw;
+                //throw new AssertionException("Exception occurred during serialized copy", t);
             }
         }
     }

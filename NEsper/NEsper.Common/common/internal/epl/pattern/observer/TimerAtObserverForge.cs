@@ -113,8 +113,8 @@ namespace com.espertech.esper.common.@internal.epl.pattern.observer
                 .DeclareVar<TimerAtObserverFactory>(
                     "factory",
                     ExprDotMethodChain(symbols.GetAddInitSvc(method))
-                        .Add(EPStatementInitServicesConstants.GETPATTERNFACTORYSERVICE)
-                        .Add("observerTimerAt"))
+                        .Get(EPStatementInitServicesConstants.PATTERNFACTORYSERVICE)
+                        .Add("ObserverTimerAt"))
                 .SetProperty(Ref("factory"), "ScheduleCallbackId", Constant(scheduleCallbackId))
                 .SetProperty(Ref("factory"), "Parameters", parametersExpr)
                 .SetProperty(Ref("factory"), "OptionalConvertor", optionalConvertorExpr)

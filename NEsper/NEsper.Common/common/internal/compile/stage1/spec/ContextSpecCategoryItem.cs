@@ -45,7 +45,7 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
             var makeFilter = FilterSpecParamForge.MakeParamArrayArrayCodegen(CompiledFilterParam, classScope, method);
             method.Block
                 .DeclareVar<FilterSpecParam[][]>(
-                    "params",
+                    "parameters",
                     LocalMethod(
                         makeFilter,
                         SAIFFInitializeSymbolWEventType.REF_EVENTTYPE,
@@ -53,7 +53,7 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
                 .DeclareVar<ContextControllerDetailCategoryItem>(
                     "item",
                     NewInstance(typeof(ContextControllerDetailCategoryItem)))
-                .SetProperty(Ref("item"), "CompiledFilterParam", Ref("params"))
+                .SetProperty(Ref("item"), "CompiledFilterParam", Ref("parameters"))
                 .SetProperty(Ref("item"), "Name", Constant(Name))
                 .MethodReturn(Ref("item"));
             return method;

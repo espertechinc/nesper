@@ -48,11 +48,11 @@ namespace com.espertech.esper.common.@internal.@event.wrap
             CodegenExpression key)
         {
             var method = codegenMethodScope.MakeChild(typeof(object), typeof(WrapperGetterIndexed), codegenClassScope)
-                .AddParam(typeof(EventBean), "event")
+                .AddParam(typeof(EventBean), "@event")
                 .AddParam(typeof(int), "index")
                 .Block
-                .DeclareVar<DecoratingEventBean>("wrapper", Cast(typeof(DecoratingEventBean), Ref("event")))
-                .DeclareVar<EventBean>("wrapped", ExprDotMethod(Ref("wrapper"), "getUnderlyingEvent"))
+                .DeclareVar<DecoratingEventBean>("wrapper", Cast(typeof(DecoratingEventBean), Ref("@event")))
+                .DeclareVar<EventBean>("wrapped", ExprDotName(Ref("wrapper"), "UnderlyingEvent"))
                 .IfRefNullReturnNull("wrapped")
                 .MethodReturn(
                     undIndexed.EventBeanGetIndexedCodegen(

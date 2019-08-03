@@ -54,6 +54,22 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
         }
 
         /// <summary>
+        ///     Ctor.
+        /// </summary>
+        /// <param name="propertyName">name of property, from getter method</param>
+        /// <param name="accessorProp">property to get value from</param>
+        /// <param name="propertyType">type of property</param>
+        public PropertyStem(
+            string propertyName,
+            PropertyInfo accessorProp,
+            EventPropertyType propertyType)
+        {
+            PropertyName = propertyName;
+            AccessorProp = accessorProp;
+            PropertyType = propertyType;
+        }
+
+        /// <summary>
         ///     Return the property name, for mapped and indexed properties this is just the property name
         ///     without parentheses or brackets.
         /// </summary>
@@ -79,6 +95,12 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
         public FieldInfo AccessorField { get; }
 
         /// <summary>
+        ///     Returns the accessor property. Can return null if the property exists.
+        /// </summary>
+        /// <returns>accessor property of null if property exists</returns>
+        public PropertyInfo AccessorProp { get; }
+
+        /// <summary>
         ///     Returns the type of the underlying method or field of the event property.
         /// </summary>
         /// <value>return type</value>
@@ -87,8 +109,12 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
                 if (ReadMethod != null) {
                     return ReadMethod.ReturnType;
                 }
-
-                return AccessorField.FieldType;
+                else if (AccessorProp != null) {
+                    return AccessorProp.PropertyType;
+                }
+                else {
+                    return AccessorField.FieldType;
+                }
             }
         }
 
@@ -101,8 +127,10 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
                 if (ReadMethod != null) {
                     return ReadMethod.DeclaringType;
                 }
-
-                if (AccessorField != null) {
+                else if (AccessorProp != null) {
+                    return AccessorProp.DeclaringType;
+                }
+                else if (AccessorField != null) {
                     return AccessorField.DeclaringType;
                 }
 
@@ -121,66 +149,54 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
                         ReadMethod.ReturnType,
                         TypeHelper.GetGenericReturnType(ReadMethod, true));
                 }
-
-                return new GenericPropertyDesc(
-                    AccessorField.FieldType,
-                    TypeHelper.GetGenericFieldType(AccessorField, true));
+                else if (AccessorProp != null) {
+                    return new GenericPropertyDesc(
+                        AccessorProp.PropertyType,
+                        TypeHelper.GetGenericPropertyType(AccessorProp, true));
+                }
+                else {
+                    return new GenericPropertyDesc(
+                        AccessorField.FieldType,
+                        TypeHelper.GetGenericFieldType(AccessorField, true));
+                }
             }
         }
 
-        public override string ToString()
+        protected bool Equals(PropertyStem other)
         {
-            return string.Format(
-                "PropertyName: {0}, ReadMethod: {1}, AccessorField: {2}, EventPropertyType: {3}",
-                PropertyName,
-                ReadMethod,
-                AccessorField,
-                PropertyType);
+            return string.Equals(PropertyName, other.PropertyName)
+                   && PropertyType == other.PropertyType 
+                   && Equals(ReadMethod, other.ReadMethod) 
+                   && Equals(AccessorField, other.AccessorField) 
+                   && Equals(AccessorProp, other.AccessorProp);
         }
 
-        public bool Equals(PropertyStem obj)
-        {
-            if (ReferenceEquals(null, obj))
-                return false;
-            if (ReferenceEquals(this, obj))
-                return true;
-            return
-                Equals(obj.PropertyName, PropertyName) &&
-                Equals(obj.ReadMethod, ReadMethod) &&
-                Equals(obj.AccessorField, AccessorField) &&
-                Equals(obj.PropertyType, PropertyType);
-        }
-
-
-        /// <summary>
-        /// Determines whether the specified <see cref="T:System.Object"/> is equal to the current <see cref="T:System.Object"/>.
-        /// </summary>
-        /// <param name="obj">The <see cref="T:System.Object"/> to compare with the current <see cref="T:System.Object"/>.</param>
-        /// <returns>
-        /// true if the specified <see cref="T:System.Object"/> is equal to the current <see cref="T:System.Object"/>; otherwise, false.
-        /// </returns>
-        /// <exception cref="T:System.NullReferenceException">
-        /// The <paramref name="obj"/> parameter is null.
-        /// </exception>
         public override bool Equals(object obj)
         {
-            if (ReferenceEquals(null, obj))
+            if (ReferenceEquals(null, obj)) {
                 return false;
-            if (ReferenceEquals(this, obj))
+            }
+
+            if (ReferenceEquals(this, obj)) {
                 return true;
-            if (obj.GetType() != typeof(PropertyStem))
+            }
+
+            if (obj.GetType() != this.GetType()) {
                 return false;
+            }
+
             return Equals((PropertyStem) obj);
         }
 
         public override int GetHashCode()
         {
             unchecked {
-                int result = (PropertyName != null ? PropertyName.GetHashCode() : 0);
-                result = (result * 397) ^ (ReadMethod != null ? ReadMethod.GetHashCode() : 0);
-                result = (result * 397) ^ (AccessorField != null ? AccessorField.GetHashCode() : 0);
-                result = (result * 397) ^ PropertyType.GetHashCode();
-                return result;
+                var hashCode = (PropertyName != null ? PropertyName.GetHashCode() : 0);
+                hashCode = (hashCode * 397) ^ PropertyType.GetHashCode();
+                hashCode = (hashCode * 397) ^ (ReadMethod != null ? ReadMethod.GetHashCode() : 0);
+                hashCode = (hashCode * 397) ^ (AccessorField != null ? AccessorField.GetHashCode() : 0);
+                hashCode = (hashCode * 397) ^ (AccessorProp != null ? AccessorProp.GetHashCode() : 0);
+                return hashCode;
             }
         }
     }

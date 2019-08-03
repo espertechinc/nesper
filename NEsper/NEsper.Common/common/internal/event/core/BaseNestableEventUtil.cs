@@ -896,7 +896,7 @@ namespace com.espertech.esper.common.@internal.@event.core
                 .AssignArrayElement(
                     "array",
                     Ref("i"),
-                    Cast(underlyingType, ExprDotMethod(ArrayAtIndex(Ref("wrapper"), Ref("i")), "getUnderlying")))
+                    Cast(underlyingType, ExprDotName(ArrayAtIndex(Ref("wrapper"), Ref("i")), "Underlying")))
                 .BlockEnd()
                 .MethodReturn(Ref("array"));
         }

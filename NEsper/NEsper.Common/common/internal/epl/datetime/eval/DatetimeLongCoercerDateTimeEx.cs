@@ -32,7 +32,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.eval
                 throw new IllegalStateException("Expected a DateTimeEx type");
             }
 
-            return ExprDotMethod(value, "getTimeInMillis");
+            return ExprDotName(value, "TimeInMillis");
         }
     }
 } // end of namespace

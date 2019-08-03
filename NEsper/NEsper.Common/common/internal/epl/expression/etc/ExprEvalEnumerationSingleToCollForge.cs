@@ -49,11 +49,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
 
             methodNode.Block
                 .DeclareVar<EventBean>(
-                    "event",
+                    "@event",
                     enumerationForge.EvaluateGetEventBeanCodegen(methodNode, exprSymbol, codegenClassScope))
-                .IfRefNullReturnNull("event")
+                .IfRefNullReturnNull("@event")
                 .DeclareVar<EventBean[]>("events", NewArrayByLength(typeof(EventBean), Constant(1)))
-                .AssignArrayElement(@Ref("events"), Constant(0), @Ref("event"))
+                .AssignArrayElement(@Ref("events"), Constant(0), @Ref("@event"))
                 .MethodReturn(@Ref("events"));
             return LocalMethod(methodNode);
         }

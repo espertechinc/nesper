@@ -8,6 +8,7 @@
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
+using com.espertech.esper.common.@internal.bytecodemodel.core;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.context.module;
@@ -102,32 +103,14 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createtable
                 typeof(EventType),
                 EventTypeUtility.ResolveTypeCodegen(plan.PublicEventType, EPStatementInitServicesConstants.REF));
 
-            var clazz = NewAnonymousClass(method.Block, typeof(TableMetadataInternalEventToPublic));
+            CodegenExpressionLambda convertToUnd = new CodegenExpressionLambda(method.Block)
+                .WithParams(new CodegenNamedParam(typeof(EventBean), "@event"))
+                .WithParams(PARAMS);
 
-            var convert = CodegenMethod.MakeParentNode(typeof(EventBean), GetType(), classScope)
-                .AddParam(typeof(EventBean), "event")
-                .AddParam(PARAMS);
-            clazz.AddMethod("Convert", convert);
-            convert.Block
-                .DeclareVar<object[]>(
-                    "data",
-                    ExprDotMethod(
-                        Ref("this"),
-                        "ConvertToUnd",
-                        Ref("event"),
-                        REF_EPS,
-                        REF_ISNEWDATA,
-                        REF_EXPREVALCONTEXT))
-                .MethodReturn(ExprDotMethod(factory, "AdapterForTypedObjectArray", Ref("data"), eventType));
-
-            var convertToUnd = CodegenMethod.MakeParentNode(typeof(object[]), GetType(), classScope)
-                .AddParam(typeof(EventBean), "event")
-                .AddParam(PARAMS);
-            clazz.AddMethod("ConvertToUnd", convertToUnd);
             convertToUnd.Block
                 .DeclareVar<object[]>(
                     "props",
-                    ExprDotMethod(Cast(typeof(ObjectArrayBackedEventBean), Ref("event")), "getProperties"))
+                    ExprDotName(Cast(typeof(ObjectArrayBackedEventBean), Ref("@event")), "Properties"))
                 .DeclareVar<object[]>(
                     "data",
                     NewArrayByLength(typeof(object), Constant(plan.PublicEventType.PropertyNames.Length)));
@@ -151,7 +134,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createtable
                         Constant(aggMethod.Dest),
                         ExprDotMethod(
                             Ref("row"),
-                            "getValue",
+                            "GetValue",
                             Constant(count),
                             REF_EPS,
                             REF_ISNEWDATA,
@@ -166,7 +149,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createtable
                         Constant(aggAccess.Dest),
                         ExprDotMethod(
                             Ref("row"),
-                            "getValue",
+                            "GetValue",
                             Constant(count),
                             REF_EPS,
                             REF_ISNEWDATA,
@@ -175,9 +158,38 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createtable
                 }
             }
 
-            convertToUnd.Block.MethodReturn(Ref("data"));
+            convertToUnd.Block.BlockReturn(Ref("data"));
 
-            method.Block.MethodReturn(clazz);
+            method.Block.DeclareVar<ProxyTableMetadataInternalEventToPublic.ConvertToUndFunc>(
+                "convertToUndFunc",
+                convertToUnd);
+
+            CodegenExpressionLambda convert = new CodegenExpressionLambda(method.Block)
+                .WithParams(new CodegenNamedParam(typeof(EventBean), "@event"))
+                .WithParams(PARAMS);
+
+            convert.Block
+                .DeclareVar<object[]>(
+                    "data",
+                    ExprDotMethod(
+                        Ref("convertToUndFunc"),
+                        "Invoke",
+                        Ref("@event"),
+                        REF_EPS,
+                        REF_ISNEWDATA,
+                        REF_EXPREVALCONTEXT))
+                .BlockReturn(ExprDotMethod(factory, "AdapterForTypedObjectArray", Ref("data"), eventType));
+
+            method.Block.DeclareVar<ProxyTableMetadataInternalEventToPublic.ConvertFunc>(
+                "convertFunc",
+                convert);
+
+            method.Block.MethodReturn(
+                NewInstance<ProxyTableMetadataInternalEventToPublic>(
+                    Ref("convertFunc"),
+                    Ref("convertToUndFunc")));
+
+            //method.Block.MethodReturn(clazz);
             return LocalMethod(method);
         }
     }

@@ -86,7 +86,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.time.abacus
             CodegenExpression startRemainder,
             CodegenClassScope codegenClassScope)
         {
-            return Op(Op(ExprDotMethod(dateTime, "getTimeInMillis"), "*", Constant(1000)), "+", startRemainder);
+            return Op(Op(ExprDotName(dateTime, "TimeInMillis"), "*", Constant(1000)), "+", startRemainder);
         }
 
         public DateTimeEx ToDateTimeEx(long ts)

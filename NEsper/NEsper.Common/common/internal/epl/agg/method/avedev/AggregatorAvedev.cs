@@ -99,7 +99,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.avedev
             CodegenClassScope classScope)
         {
             method.Block.AssignRef(sum, Constant(0))
-                .ExprDotMethod(valueSet, "clear");
+                .ExprDotMethod(valueSet, "Clear");
         }
 
         public override void GetValueCodegen(
@@ -212,7 +212,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.avedev
                 .DeclareVar<double>(
                     "d",
                     SimpleNumberCoercerFactory.CoercerDouble.CodegenDouble(value, valueType))
-                .ExprDotMethod(valueSet, enter ? "add" : "remove", Ref("d"))
+                .ExprDotMethod(valueSet, enter ? "Add" : "remove", Ref("d"))
                 .AssignCompound(sum, enter ? "+" : "-", Ref("d"));
         }
 
@@ -222,8 +222,8 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.avedev
             CodegenMethod method)
         {
             method.Block
-                .DeclareVar<double>("d", ExprDotMethod(Cast(typeof(double), value), "doubleValue"))
-                .ExprDotMethod(valueSet, enter ? "add" : "remove", Ref("d"))
+                .DeclareVar<double>("d", ExprDotMethod(Cast(typeof(double), value), "DoubleValue"))
+                .ExprDotMethod(valueSet, enter ? "Add" : "remove", Ref("d"))
                 .AssignCompound(sum, enter ? "+" : "-", Ref("d"));
         }
     }

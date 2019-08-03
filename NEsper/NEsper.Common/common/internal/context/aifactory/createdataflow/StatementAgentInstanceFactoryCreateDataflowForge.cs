@@ -44,7 +44,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createdataflow
                     "EventType",
                     EventTypeUtility.ResolveTypeCodegen(eventType, symbols.GetAddInitSvc(method)))
                 .SetProperty(Ref("saiff"), "Dataflow", dataflowForge.Make(method, symbols, classScope))
-                .Expression(ExprDotMethodChain(symbols.GetAddInitSvc(method)).Add("addReadyCallback", Ref("saiff")))
+                .Expression(ExprDotMethodChain(symbols.GetAddInitSvc(method)).Add("AddReadyCallback", Ref("saiff")))
                 .MethodReturn(Ref("saiff"));
             return method;
         }

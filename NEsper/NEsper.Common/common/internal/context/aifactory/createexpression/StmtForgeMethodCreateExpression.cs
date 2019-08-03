@@ -36,7 +36,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createexpressio
         }
 
         public StmtForgeMethodResult Make(
-            string packageName,
+            string @namespace,
             string classPostfix,
             StatementCompileTimeServices services)
         {
@@ -88,7 +88,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createexpressio
                 services.EventTypeCompileTimeResolver);
             services.EventTypeCompileTimeRegistry.NewType(statementEventType);
 
-            var packageScope = new CodegenNamespaceScope(packageName, null, services.IsInstrumented);
+            var packageScope = new CodegenNamespaceScope(@namespace, null, services.IsInstrumented);
 
             var aiFactoryProviderClassName = CodeGenerationIDGenerator.GenerateClassNameSimple(
                 typeof(StatementAIFactoryProvider),

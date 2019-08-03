@@ -113,8 +113,8 @@ namespace com.espertech.esper.common.@internal.epl.output.condition
                 .DeclareVar<OutputConditionExpressionFactory>(
                     "factory",
                     ExprDotMethodChain(symbols.GetAddInitSvc(method))
-                        .Add(EPStatementInitServicesConstants.GETRESULTSETPROCESSORHELPERFACTORY)
-                        .Add("makeOutputConditionExpression"))
+                        .Get(EPStatementInitServicesConstants.RESULTSETPROCESSORHELPERFACTORY)
+                        .Add("MakeOutputConditionExpression"))
                 .SetProperty(
                     Ref("factory"),
                     "WhenExpressionNodeEval",
@@ -155,7 +155,7 @@ namespace com.espertech.esper.common.@internal.epl.output.condition
                             variableNames.Values,
                             symbols.GetAddInitSvc(method)))
                 .SetProperty(Ref("factory"), "ScheduleCallbackId", Constant(scheduleCallbackId))
-                .Expression(ExprDotMethodChain(symbols.GetAddInitSvc(method)).Add("addReadyCallback", Ref("factory")))
+                .Expression(ExprDotMethodChain(symbols.GetAddInitSvc(method)).Add("AddReadyCallback", Ref("factory")))
                 .MethodReturn(Ref("factory"));
             return LocalMethod(method);
         }

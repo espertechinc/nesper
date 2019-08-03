@@ -36,6 +36,6 @@ namespace com.espertech.esper.common.@internal.context.module
 
         void InitializeScripts(EPModuleScriptInitServices svc);
 
-        IList<StatementProvider> Statements();
+        IList<StatementProvider> Statements { get; }
     }
 } // end of namespace

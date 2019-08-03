@@ -11,7 +11,6 @@ using System.Collections.Generic;
 using System.Text;
 
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
-using com.espertech.esper.compat.collections;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.core.CodeGenerationHelper;
 
@@ -19,20 +18,20 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.core
 {
     public class CodegenMethodWGraph
     {
-        private readonly IList<Type> thrown;
-
         public CodegenMethodWGraph(
             string name,
             CodegenMethodFootprint footprint,
             CodegenBlock block,
             bool isPublic,
-            IList<Type> thrown)
+            bool isOverride,
+            bool isStatic)
         {
             Name = name;
             Footprint = footprint;
             Block = block;
             IsPublic = isPublic;
-            this.thrown = thrown;
+            IsOverride = isOverride;
+            IsStatic = isStatic;
         }
 
         public string Name { get; }
@@ -40,6 +39,8 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.core
         public CodegenMethodFootprint Footprint { get; }
 
         public CodegenBlock Block { get; }
+
+        public bool IsOverride { get; set; }
 
         public bool IsPublic { get; set; }
 
@@ -58,46 +59,48 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.core
             CodegenIndent indent,
             int additionalIndent)
         {
-            if (Footprint.OptionalComment != null) {
+            if (Footprint.OptionalComment != null)
+            {
                 indent.Indent(builder, 1 + additionalIndent);
                 builder.Append("// ").Append(Footprint.OptionalComment).Append("\n");
             }
 
             indent.Indent(builder, 1 + additionalIndent);
-            if (isPublic) {
+            if (isPublic)
+            {
                 builder.Append("public ");
             }
 
-            if (IsStatic) {
+            if (IsStatic)
+            {
                 builder.Append("static ");
             }
 
-            if (Footprint.ReturnType != null) {
+            if (IsOverride)
+            {
+                builder.Append("override ");
+            }
+
+            if (Footprint.ReturnType != null)
+            {
                 AppendClassName(builder, Footprint.ReturnType);
             }
-            else {
+            else
+            {
                 builder.Append(Footprint.ReturnTypeName);
             }
 
             builder.Append(" ").Append(Name);
             builder.Append("(");
             var delimiter = "";
-            foreach (var param in Footprint.Params) {
+            foreach (var param in Footprint.Params)
+            {
                 builder.Append(delimiter);
                 param.Render(builder);
                 delimiter = ",";
             }
 
             builder.Append(")");
-            if (!thrown.IsEmpty()) {
-                builder.Append(" throws ");
-                var delimiterThrown = "";
-                foreach (var ex in thrown) {
-                    builder.Append(delimiterThrown);
-                    AppendClassName(builder, ex);
-                    delimiterThrown = ",";
-                }
-            }
 
             builder.Append("{\n");
             Block.Render(builder, isInnerClass, 2 + additionalIndent, indent);

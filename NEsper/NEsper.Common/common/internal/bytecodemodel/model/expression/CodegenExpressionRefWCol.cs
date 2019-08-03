@@ -10,6 +10,8 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
+using com.espertech.esper.common.@internal.bytecodemodel.core;
+
 namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
 {
     public class CodegenExpressionRefWCol : CodegenExpressionRef
@@ -28,9 +30,11 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
 
         public override void Render(
             StringBuilder builder,
-            bool isInnerClass)
+            bool isInnerClass,
+            int level,
+            CodegenIndent indent)
         {
-            base.Render(builder, isInnerClass);
+            base.Render(builder, isInnerClass, level, indent);
             builder.Append(_col);
         }
 

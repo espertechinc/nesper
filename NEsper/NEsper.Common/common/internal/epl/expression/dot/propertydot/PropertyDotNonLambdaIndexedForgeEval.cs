@@ -61,8 +61,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.propertydot
             CodegenExpressionRef refEPS = exprSymbol.GetAddEPS(methodNode);
             Type evaluationType = forge.ParamForge.EvaluationType;
             methodNode.Block
-                .DeclareVar<EventBean>("event", ArrayAtIndex(refEPS, Constant(forge.StreamId)))
-                .IfRefNullReturnNull("event")
+                .DeclareVar<EventBean>("@event", ArrayAtIndex(refEPS, Constant(forge.StreamId)))
+                .IfRefNullReturnNull("@event")
                 .DeclareVar(
                     evaluationType,
                     "key",
@@ -71,7 +71,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.propertydot
                     forge.IndexedGetter.EventBeanGetIndexedCodegen(
                         methodNode,
                         codegenClassScope,
-                        @Ref("event"),
+                        @Ref("@event"),
                         @Ref("key")));
             return LocalMethod(methodNode);
         }

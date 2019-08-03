@@ -69,7 +69,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.plugin
             ExprForge[] forges,
             CodegenClassScope classScope)
         {
-            method.Block.ExprDotMethod(plugin, "enter", value);
+            method.Block.ExprDotMethod(plugin, "Enter", value);
         }
 
         protected override void ApplyEvalLeaveNonNull(
@@ -80,7 +80,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.plugin
             ExprForge[] forges,
             CodegenClassScope classScope)
         {
-            method.Block.ExprDotMethod(plugin, "leave", value);
+            method.Block.ExprDotMethod(plugin, "Leave", value);
         }
 
         protected override void ApplyTableEnterNonNull(
@@ -89,7 +89,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.plugin
             CodegenMethod method,
             CodegenClassScope classScope)
         {
-            method.Block.ExprDotMethod(plugin, "enter", value);
+            method.Block.ExprDotMethod(plugin, "Enter", value);
         }
 
         protected override void ApplyTableLeaveNonNull(
@@ -98,14 +98,14 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.plugin
             CodegenMethod method,
             CodegenClassScope classScope)
         {
-            method.Block.ExprDotMethod(plugin, "leave", value);
+            method.Block.ExprDotMethod(plugin, "Leave", value);
         }
 
         protected override void ClearWODistinct(
             CodegenMethod method,
             CodegenClassScope classScope)
         {
-            method.Block.ExprDotMethod(plugin, "clear");
+            method.Block.ExprDotMethod(plugin, "Clear");
         }
 
         protected override void WriteWODistinct(
@@ -139,7 +139,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.plugin
             CodegenMethod method,
             CodegenClassScope classScope)
         {
-            method.Block.MethodReturn(ExprDotMethod(plugin, "getValue"));
+            method.Block.MethodReturn(ExprDotName(plugin, "Value"));
         }
     }
 } // end of namespace

@@ -168,10 +168,10 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
         }
 
         public void IsGroupedCodegen(
-            CodegenMethod method,
+            CodegenProperty property,
             CodegenClassScope classScope)
         {
-            method.Block.MethodReturn(ConstantFalse());
+            property.GetterBlock.BlockReturn(ConstantFalse());
         }
 
         public void RowWriteMethodCodegen(

@@ -104,11 +104,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
 
             var refEPS = exprSymbol.GetAddEPS(methodNode);
             methodNode.Block
-                .DeclareVar<EventBean>("event", ArrayAtIndex(refEPS, Constant(streamId)))
-                .IfRefNullReturnNull("event")
+                .DeclareVar<EventBean>("@event", ArrayAtIndex(refEPS, Constant(streamId)))
+                .IfRefNullReturnNull("@event")
                 .DeclareVar<object>(
                     "fragment",
-                    getter.EventBeanFragmentCodegen(Ref("event"), methodNode, codegenClassScope))
+                    getter.EventBeanFragmentCodegen(Ref("@event"), methodNode, codegenClassScope))
                 .IfRefNullReturnNull("fragment")
                 .IfInstanceOf("fragment", typeof(EventBean))
                 .BlockReturn(

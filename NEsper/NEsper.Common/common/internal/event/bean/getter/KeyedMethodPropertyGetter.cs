@@ -166,10 +166,10 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
         {
             var parameterTypes = method.GetParameterTypes();
             return codegenMethodScope.MakeChild(method.ReturnType, typeof(KeyedMethodPropertyGetter), codegenClassScope)
-                .AddParam(targetType, "object")
+                .AddParam(targetType, "@object")
                 .AddParam(parameterTypes[0], "key")
                 .Block
-                .MethodReturn(ExprDotMethod(Ref("object"), method.Name, Ref("key")));
+                .MethodReturn(ExprDotMethod(Ref("@object"), method.Name, Ref("key")));
         }
 
         public override string ToString()

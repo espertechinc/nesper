@@ -18,10 +18,30 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.core
             StringBuilder builder,
             Type clazz)
         {
-            if (clazz == typeof(void))
-            {
-                builder.Append("void");
-                return builder;
+            if (clazz == typeof(void)) {
+                return builder.Append("void");
+            } else if (clazz == typeof(short)) {
+                return builder.Append("short");
+            } else if (clazz == typeof(int)) {
+                return builder.Append("int");
+            } else if (clazz == typeof(long)) {
+                return builder.Append("long");
+            } else if (clazz == typeof(float)) {
+                return builder.Append("float");
+            } else if (clazz == typeof(double)) {
+                return builder.Append("double");
+            } else if (clazz == typeof(decimal)) {
+                return builder.Append("decimal");
+            } else if (clazz == typeof(byte)) {
+                return builder.Append("byte");
+            } else if (clazz == typeof(char)) {
+                return builder.Append("char");
+            } else if (clazz == typeof(bool)) {
+                return builder.Append("bool");
+            } else if (clazz == typeof(object)) {
+                return builder.Append("object");
+            } else if (clazz == typeof(string)) {
+                return builder.Append("string");
             }
 
             if (clazz.IsArray) {
@@ -30,11 +50,11 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.core
                 return builder;
             }
 
-            builder.Append(clazz.Name);
-
             if (clazz.IsGenericType) {
                 var delimiter = "";
+                var nameWithoutArgCount = clazz.Name.Substring(0, clazz.Name.IndexOf('`'));
 
+                builder.Append(nameWithoutArgCount);
                 builder.Append('<');
                 foreach (var genericArgument in clazz.GetGenericArguments()) {
                     builder.Append(delimiter);
@@ -43,6 +63,14 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.core
                 }
 
                 builder.Append('>');
+            }
+            else if (clazz.IsNested) {
+                AppendClassName(builder, clazz.DeclaringType);
+                builder.Append('.');
+                builder.Append(clazz.Name);
+            }
+            else {
+                builder.Append(clazz.Name);
             }
 
             return builder;

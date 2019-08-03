@@ -51,7 +51,7 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
                     NewInstance(typeof(ContextControllerDetailInitiatedTerminated)))
                 .SetProperty(Ref("detail"), "StartCondition", StartCondition.Make(method, symbols, classScope))
                 .SetProperty(Ref("detail"), "EndCondition", EndCondition.Make(method, symbols, classScope))
-                .SetProperty(Ref("detail"), "Overlapping", Constant(IsOverlapping));
+                .SetProperty(Ref("detail"), "IsOverlapping", Constant(IsOverlapping));
             if (DistinctExpressions != null && DistinctExpressions.Length > 0) {
                 method.Block
                     .SetProperty(

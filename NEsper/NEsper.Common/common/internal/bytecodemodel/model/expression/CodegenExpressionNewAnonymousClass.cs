@@ -40,16 +40,20 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
             this.ctorParams = ctorParams;
         }
 
+#if false
         public void Render(
             StringBuilder builder,
-            bool isInnerClass)
+            bool isInnerClass,
+            int level,
+            CodegenIndent indent)
         {
             Render(builder, isInnerClass, 4, new CodegenIndent(true));
         }
+#endif
 
         public override void MergeClasses(ISet<Type> classes)
         {
-            classes.Add(interfaceOrSuperClass);
+            classes.AddToSet(interfaceOrSuperClass);
             foreach (var expr in ctorParams) {
                 expr.MergeClasses(classes);
             }
@@ -72,12 +76,35 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
             builder.Append(") {\n");
 
             var methods = new CodegenClassMethods();
+            var properties = new CodegenClassProperties();
             foreach (var pair in this.methods) {
-                CodegenStackGenerator.RecursiveBuildStack(pair.Second, pair.First, methods);
+                CodegenStackGenerator.RecursiveBuildStack(
+                    pair.Second,
+                    pair.First,
+                    methods,
+                    properties);
+            }
+
+            // public properties
+            var delimiter = "";
+            foreach (var publicMethod in properties.PublicProperties)
+            {
+                builder.Append(delimiter);
+                publicMethod.Render(builder, true, isInnerClass, indent, level + 1);
+                delimiter = "\n";
+            }
+
+            // private properties
+            delimiter = "";
+            foreach (var method in properties.PrivateProperties)
+            {
+                builder.Append(delimiter);
+                method.Render(builder, false, isInnerClass, indent, level + 1);
+                delimiter = "\n";
             }
 
             // public methods
-            var delimiter = "";
+            delimiter = "";
             foreach (var publicMethod in methods.PublicMethods) {
                 builder.Append(delimiter);
                 publicMethod.Render(builder, true, isInnerClass, indent, level + 1);
@@ -85,6 +112,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
             }
 
             // private methods
+            delimiter = "";
             foreach (var method in methods.PrivateMethods) {
                 builder.Append(delimiter);
                 method.Render(builder, false, isInnerClass, indent, level + 1);

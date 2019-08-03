@@ -202,7 +202,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                             ifRightNotNull.IfRefNullReturnNull("left");
                         }
 
-                        ifRightNotNull.IfCondition(ExprDotMethod(Ref(refname), "contains", Ref("left")))
+                        ifRightNotNull.IfCondition(ExprDotMethod(Ref(refname), "Contains", Ref("left")))
                             .BlockReturn(!isNot ? ConstantTrue() : ConstantFalse());
                     }
                 }

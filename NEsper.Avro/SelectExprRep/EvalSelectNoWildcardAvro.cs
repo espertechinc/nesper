@@ -129,7 +129,7 @@ namespace NEsper.Avro.SelectExprRep
                 block.Expression(
                     CodegenExpressionBuilder.ExprDotMethod(
                         CodegenExpressionBuilder.Ref("record"),
-                        "put",
+                        "Put",
                         CodegenExpressionBuilder.Constant(_selectExprForgeContext.ColumnNames[i]),
                         expression));
             }
@@ -137,7 +137,7 @@ namespace NEsper.Avro.SelectExprRep
             block.MethodReturn(
                 CodegenExpressionBuilder.ExprDotMethod(
                     eventBeanFactory,
-                    "adapterForTypedAvro",
+                    "AdapterForTypedAvro",
                     CodegenExpressionBuilder.Ref("record"),
                     resultEventType));
             return methodNode;

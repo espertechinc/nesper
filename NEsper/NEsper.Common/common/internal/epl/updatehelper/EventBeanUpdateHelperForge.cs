@@ -70,12 +70,18 @@ namespace com.espertech.esper.common.@internal.epl.updatehelper
             var method = scope.MakeChild(typeof(EventBeanUpdateHelperWCopy), GetType(), classScope);
             var updateInternal = MakeUpdateInternal(method, classScope);
 
-            var clazz = NewAnonymousClass(method.Block, typeof(EventBeanUpdateHelperWCopy));
-            var updateWCopy = CodegenMethod.MakeParentNode(typeof(EventBean), GetType(), classScope)
-                .AddParam(typeof(EventBean), "matchingEvent")
-                .AddParam(typeof(EventBean[]), NAME_EPS)
-                .AddParam(typeof(ExprEvaluatorContext), NAME_EXPREVALCONTEXT);
-            clazz.AddMethod("updateWCopy", updateWCopy);
+            var updateWCopy = new CodegenExpressionLambda(method.Block)
+                .WithParam(typeof(EventBean), "matchingEvent")
+                .WithParam(typeof(EventBean[]), NAME_EPS)
+                .WithParam(typeof(ExprEvaluatorContext), NAME_EXPREVALCONTEXT);
+            var clazz = NewInstance<EventBeanUpdateHelperWCopy>(updateWCopy);
+
+            //var clazz = NewAnonymousClass(method.Block, typeof(EventBeanUpdateHelperWCopy));
+            //var updateWCopy = CodegenMethod.MakeParentNode(typeof(EventBean), GetType(), classScope)
+            //    .AddParam(typeof(EventBean), "matchingEvent")
+            //    .AddParam(typeof(EventBean[]), NAME_EPS)
+            //    .AddParam(typeof(ExprEvaluatorContext), NAME_EXPREVALCONTEXT);
+            //clazz.AddMethod("updateWCopy", updateWCopy);
 
             updateWCopy.Block
                 .Apply(
@@ -93,7 +99,7 @@ namespace com.espertech.esper.common.@internal.epl.updatehelper
                 .Apply(Instblock(classScope, "aInfraUpdate", Ref("copy")))
                 .MethodReturn(Ref("copy"));
 
-            method.Block.MethodReturn(clazz);
+            method.Block.BlockReturn(clazz);
 
             return LocalMethod(method);
         }

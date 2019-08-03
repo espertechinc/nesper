@@ -21,10 +21,10 @@ namespace com.espertech.esper.compiler.@internal.util
     {
         public static void NamespaceDecl(
             StringBuilder builder,
-            string packageName)
+            string @namespace)
         {
             builder.Append("namespace ");
-            builder.Append(packageName);
+            builder.Append(@namespace);
             builder.Append(" {\n");
         }
 
@@ -32,15 +32,10 @@ namespace com.espertech.esper.compiler.@internal.util
             StringBuilder builder,
             ICollection<ImportDecl> imports)
         {
-            foreach (var importDecl in imports)
-            {
-                if (importDecl.Namespace != null &&
-                    importDecl.Namespace.Equals("System"))
-                {
-                    continue;
+            foreach (var importDecl in imports) {
+                if (importDecl.Namespace != null) {
+                    Importdecl(builder, importDecl);
                 }
-
-                Importdecl(builder, importDecl);
             }
 
             builder.Append("\n");
@@ -56,24 +51,20 @@ namespace com.espertech.esper.compiler.@internal.util
         {
             builder.Append("  ");
 
-            if (isPublic)
-            {
+            if (isPublic) {
                 builder.Append("public ");
             }
 
-            if (isStatic)
-            {
+            if (isStatic) {
                 builder.Append("static ");
             }
 
             builder.Append("class ");
             builder.Append(classname);
-            if (implementedInterface != null)
-            {
+            if (implementedInterface != null) {
                 builder.Append(" : ");
                 AppendClassName(builder, implementedInterface);
-                if (implementedInterfaceGeneric != null)
-                {
+                if (implementedInterfaceGeneric != null) {
                     builder.Append("<").Append(implementedInterfaceGeneric).Append(">");
                 }
             }
@@ -86,8 +77,7 @@ namespace com.espertech.esper.compiler.@internal.util
             var lines = FileUtil.ReadFile(new StringReader(code));
             var builder = new StringBuilder();
             var linenum = 1;
-            foreach (var line in lines)
-            {
+            foreach (var line in lines) {
                 PaddedNumber(builder, linenum++, 4);
                 builder.Append("  ");
                 builder.Append(line);
@@ -103,10 +93,8 @@ namespace com.espertech.esper.compiler.@internal.util
             int size)
         {
             var text = Convert.ToString(num);
-            if (text.Length < size)
-            {
-                for (var i = 0; i < size - text.Length; i++)
-                {
+            if (text.Length < size) {
+                for (var i = 0; i < size - text.Length; i++) {
                     builder.Append(" ");
                 }
             }

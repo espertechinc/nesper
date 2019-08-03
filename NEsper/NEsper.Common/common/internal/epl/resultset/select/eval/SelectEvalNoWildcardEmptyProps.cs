@@ -45,8 +45,8 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
             methodNode.Block.MethodReturn(
                 ExprDotMethod(
                     eventBeanFactory,
-                    "adapterForTypedMap",
-                    StaticMethod(typeof(Collections), "emptyMap"),
+                    "AdapterForTypedMap",
+                    StaticMethod(typeof(Collections), "GetEmptyMap"),
                     resultEventType));
             return methodNode;
         }

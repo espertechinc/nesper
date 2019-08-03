@@ -92,7 +92,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.@select.core
                 block.MethodReturn(
                     CodegenExpressionBuilder.ExprDotMethod(
                         manufacturer,
-                        "make",
+                        "Make",
                         CodegenExpressionBuilder.Ref("values")));
                 return methodNode;
             }

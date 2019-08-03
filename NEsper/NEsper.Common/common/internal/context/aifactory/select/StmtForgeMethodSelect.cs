@@ -20,14 +20,14 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
         }
 
         public StmtForgeMethodResult Make(
-            string packageName,
+            string @namespace,
             string classPostfix,
             StatementCompileTimeServices services)
         {
             StmtForgeMethodSelectResult forgablesResult = StmtForgeMethodSelectUtil.Make(
                 services.Container,
                 false,
-                packageName,
+                @namespace,
                 classPostfix,
                 @base,
                 services);

@@ -58,14 +58,14 @@ namespace com.espertech.esper.common.@internal.context.activator
                 .DeclareVar<ViewableActivatorPattern>(
                     "activator",
                     ExprDotMethodChain(symbols.GetAddInitSvc(method))
-                        .Add(EPStatementInitServicesConstants.GETVIEWABLEACTIVATORFACTORY)
-                        .Add("createPattern"))
+                        .Get(EPStatementInitServicesConstants.VIEWABLEACTIVATORFACTORY)
+                        .Add("CreatePattern"))
                 .SetProperty(Ref("activator"), "RootFactoryNode", Ref("root"))
                 .SetProperty(
                     Ref("activator"),
                     "EventBeanTypedEventFactory",
                     ExprDotMethodChain(symbols.GetAddInitSvc(method))
-                        .Add(EPStatementInitServicesConstants.GETEVENTBEANTYPEDEVENTFACTORY))
+                        .Get(EPStatementInitServicesConstants.EVENTBEANTYPEDEVENTFACTORY))
                 .DeclareVar<EventType>(
                     "eventType",
                     EventTypeUtility.ResolveTypeCodegen(_eventType, symbols.GetAddInitSvc(method)))

@@ -106,7 +106,7 @@ namespace com.espertech.esper.common.@internal.view.exttimedbatch
 
         internal override string FactoryMethod()
         {
-            return "exttimebatch";
+            return "Exttimebatch";
         }
 
         internal override void Assign(

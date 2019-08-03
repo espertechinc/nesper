@@ -43,12 +43,12 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createwindow
         }
 
         public StmtForgeMethodResult Make(
-            string packageName,
+            string @namespace,
             string classPostfix,
             StatementCompileTimeServices services)
         {
             try {
-                return Build(packageName, classPostfix, services);
+                return Build(@namespace, classPostfix, services);
             }
             catch (ExprValidationException) {
                 throw;
@@ -64,7 +64,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createwindow
         }
 
         private StmtForgeMethodResult Build(
-            string packageName,
+            string @namespace,
             string classPostfix,
             StatementCompileTimeServices services)
         {
@@ -198,7 +198,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createwindow
             var statementFieldsClassName =
                 CodeGenerationIDGenerator.GenerateClassNameSimple(typeof(StatementFields), classPostfix);
             var packageScope = new CodegenNamespaceScope(
-                packageName,
+                @namespace,
                 statementFieldsClassName,
                 services.IsInstrumented);
             forgables.Add(

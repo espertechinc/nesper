@@ -66,6 +66,9 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
             else if (constant is byte) {
                 builder.Append("(byte)").Append(constant);
             }
+            else if (constant is bool booleanConstant) {
+                builder.Append(booleanConstant ? "true" : "false");
+            }
             else if (constant is Array asArray) {
                 if (asArray.Length == 0) {
                     builder.Append("new ");

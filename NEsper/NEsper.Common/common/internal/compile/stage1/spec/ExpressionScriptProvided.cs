@@ -78,7 +78,7 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
                 .SetProperty(Ref("sp"), "ParameterNames", Constant(ParameterNames))
                 .SetProperty(Ref("sp"), "OptionalReturnTypeName", Constant(OptionalReturnTypeName))
                 .SetProperty(Ref("sp"), "OptionalEventTypeName", Constant(OptionalEventTypeName))
-                .SetProperty(Ref("sp"), "OptionalReturnTypeIsArray", Constant(IsOptionalReturnTypeIsArray))
+                .SetProperty(Ref("sp"), "IsOptionalReturnTypeIsArray", Constant(IsOptionalReturnTypeIsArray))
                 .SetProperty(Ref("sp"), "OptionalDialect", Constant(OptionalDialect))
                 .SetProperty(Ref("sp"), "ModuleName", Constant(ModuleName))
                 .SetProperty(Ref("sp"), "Visibility", Constant(Visibility))

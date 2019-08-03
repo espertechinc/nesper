@@ -75,8 +75,8 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
                 .SetProperty(Ref("item"), "Lookupable", Ref("lookupable"))
                 .Expression(
                     ExprDotMethodChain(symbols.GetAddInitSvc(method))
-                        .Add(EPStatementInitServicesConstants.GETFILTERSHAREDLOOKUPABLEREGISTERY)
-                        .Add("registerLookupable", Ref("eventType"), Ref("lookupable")))
+                        .Get(EPStatementInitServicesConstants.FILTERSHAREDLOOKUPABLEREGISTERY)
+                        .Add("RegisterLookupable", Ref("eventType"), Ref("lookupable")))
                 .MethodReturn(Ref("item"));
 
             return LocalMethod(method);

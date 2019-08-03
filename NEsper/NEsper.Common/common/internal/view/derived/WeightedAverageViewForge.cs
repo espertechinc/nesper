@@ -82,7 +82,7 @@ namespace com.espertech.esper.common.@internal.view.derived
 
         internal override string FactoryMethod()
         {
-            return "weightedavg";
+            return "Weightedavg";
         }
 
         internal override void Assign(

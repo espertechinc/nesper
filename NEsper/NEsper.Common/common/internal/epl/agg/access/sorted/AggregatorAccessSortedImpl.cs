@@ -75,9 +75,9 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
                             forge.Spec.StreamEventType,
                             EPStatementInitServicesConstants.REF);
                         return ExprDotMethodChain(EPStatementInitServicesConstants.REF)
-                            .Add(EPStatementInitServicesConstants.GETDATAINPUTOUTPUTSERDEPROVIDER)
+                            .Get(EPStatementInitServicesConstants.DATAINPUTOUTPUTSERDEPROVIDER)
                             .Add(
-                                "treeMapEventsMayDeque",
+                                "TreeMapEventsMayDeque",
                                 Constant(forge.Spec.CriteriaTypes),
                                 type);
                     }
@@ -103,10 +103,10 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
             CodegenMethod method,
             CodegenClassScope classScope)
         {
-            method.Block.ExprDotMethod(sorted, "clear")
+            method.Block.ExprDotMethod(sorted, "Clear")
                 .AssignRef(size, Constant(0));
             if (joinRefs != null) {
-                method.Block.ExprDotMethod(joinRefs, "clear");
+                method.Block.ExprDotMethod(joinRefs, "Clear");
             }
         }
 
@@ -119,14 +119,14 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
                 GetType(),
                 CodegenSymbolProviderEmpty.INSTANCE,
                 classScope);
-            method.Block.IfCondition(ExprDotMethod(sorted, "isEmpty"))
+            method.Block.IfCondition(ExprDotMethod(sorted, "IsEmpty"))
                 .BlockReturn(ConstantNull())
-                .DeclareVar<KeyValuePair<object, object>>("max", ExprDotMethod(sorted, "firstEntry"))
+                .DeclareVar<KeyValuePair<object, object>>("max", ExprDotMethod(sorted, "FirstEntry"))
                 .MethodReturn(
                     StaticMethod(
                         typeof(AggregatorAccessSortedImpl),
                         "checkedPayloadMayDeque",
-                        ExprDotMethod(Ref("max"), "getValue")));
+                        ExprDotName(Ref("max"), "Value")));
             return LocalMethod(method);
         }
 
@@ -139,14 +139,14 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
                 GetType(),
                 CodegenSymbolProviderEmpty.INSTANCE,
                 classScope);
-            method.Block.IfCondition(ExprDotMethod(sorted, "isEmpty"))
+            method.Block.IfCondition(ExprDotMethod(sorted, "IsEmpty"))
                 .BlockReturn(ConstantNull())
-                .DeclareVar<KeyValuePair<object, object>>("min", ExprDotMethod(sorted, "lastEntry"))
+                .DeclareVar<KeyValuePair<object, object>>("min", ExprDotMethod(sorted, "LastEntry"))
                 .MethodReturn(
                     StaticMethod(
                         typeof(AggregatorAccessSortedImpl),
                         "checkedPayloadMayDeque",
-                        ExprDotMethod(Ref("min"), "getValue")));
+                        ExprDotName(Ref("min"), "Value")));
             return LocalMethod(method);
         }
 
@@ -220,7 +220,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
                 method.Block.InstanceMethod(referenceAddToColl, Ref("theEvent"), eps, ctx);
             }
             else {
-                method.Block.IfCondition(ExprDotMethod(joinRefs, "add", Ref("theEvent")))
+                method.Block.IfCondition(ExprDotMethod(joinRefs, "Add", Ref("theEvent")))
                     .InstanceMethod(referenceAddToColl, Ref("theEvent"), eps, ctx);
             }
         }
@@ -321,15 +321,15 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
                     LocalMethod(getComparable, REF_EPS, ConstantTrue(), REF_EXPREVALCONTEXT))
                 .DeclareVar<object>("existing", ExprDotMethod(sorted, "get", Ref("comparable")))
                 .IfRefNull("existing")
-                .ExprDotMethod(sorted, "put", Ref("comparable"), Ref("theEvent"))
+                .ExprDotMethod(sorted, "Put", Ref("comparable"), Ref("theEvent"))
                 .IfElseIf(InstanceOf(Ref("existing"), typeof(EventBean)))
                 .DeclareVar<ArrayDeque<EventBean>>("coll", NewInstance<ArrayDeque<EventBean>>(Constant(2)))
-                .ExprDotMethod(Ref("coll"), "add", Ref("existing"))
-                .ExprDotMethod(Ref("coll"), "add", Ref("theEvent"))
-                .ExprDotMethod(sorted, "put", Ref("comparable"), Ref("coll"))
+                .ExprDotMethod(Ref("coll"), "Add", Ref("existing"))
+                .ExprDotMethod(Ref("coll"), "Add", Ref("theEvent"))
+                .ExprDotMethod(sorted, "Put", Ref("comparable"), Ref("coll"))
                 .IfElse()
                 .DeclareVar<ArrayDeque<EventBean>>("q", Cast(typeof(ArrayDeque<EventBean>), Ref("existing")))
-                .ExprDotMethod(Ref("q"), "add", Ref("theEvent"))
+                .ExprDotMethod(Ref("q"), "Add", Ref("theEvent"))
                 .BlockEnd()
                 .Increment(size);
 
@@ -357,13 +357,13 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
                 .IfRefNull("existing")
                 .BlockReturnNoValue()
                 .IfCondition(ExprDotMethod(Ref("existing"), "equals", Ref("theEvent")))
-                .ExprDotMethod(sorted, "remove", Ref("comparable"))
+                .ExprDotMethod(sorted, "Remove", Ref("comparable"))
                 .Decrement(size)
                 .IfElseIf(InstanceOf(Ref("existing"), typeof(ArrayDeque<EventBean>)))
                 .DeclareVar<ArrayDeque<EventBean>>("q", Cast(typeof(ArrayDeque<EventBean>), Ref("existing")))
-                .ExprDotMethod(Ref("q"), "remove", Ref("theEvent"))
-                .IfCondition(ExprDotMethod(Ref("q"), "isEmpty"))
-                .ExprDotMethod(sorted, "remove", Ref("comparable"))
+                .ExprDotMethod(Ref("q"), "Remove", Ref("theEvent"))
+                .IfCondition(ExprDotMethod(Ref("q"), "IsEmpty"))
+                .ExprDotMethod(sorted, "Remove", Ref("comparable"))
                 .BlockEnd()
                 .Decrement(size);
 

@@ -58,7 +58,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.onspl
             method.Block
                 .SetProperty(saiff, "Items", OnSplitItemForge.Make(items, method, symbols, classScope))
                 .SetProperty(saiff, "First", Constant(first))
-                .Expression(ExprDotMethodChain(symbols.GetAddInitSvc(method)).Add("addReadyCallback", saiff));
+                .Expression(ExprDotMethodChain(symbols.GetAddInitSvc(method)).Add("AddReadyCallback", saiff));
         }
     }
 } // end of namespace

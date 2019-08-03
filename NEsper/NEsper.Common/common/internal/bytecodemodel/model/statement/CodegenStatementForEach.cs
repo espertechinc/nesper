@@ -13,6 +13,7 @@ using System.Text;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.core;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
+using com.espertech.esper.common.@internal.bytecodemodel.util;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.core.CodeGenerationHelper;
 
@@ -29,8 +30,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.statement
             Type type,
             string @ref,
             CodegenExpression target)
-            : base(
-                parent)
+            : base(parent)
         {
             this.type = type;
             this.@ref = @ref;
@@ -48,7 +48,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.statement
             builder.Append("foreach (");
             AppendClassName(builder, type);
             builder.Append(" ").Append(@ref).Append(" in ");
-            target.Render(builder, isInnerClass);
+            target.Render(builder, isInnerClass, level, indent);
             builder.Append(") {\n");
             Block.Render(builder, isInnerClass, level + 1, indent);
             indent.Indent(builder, level);
@@ -57,7 +57,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.statement
 
         public override void MergeClasses(ISet<Type> classes)
         {
-            classes.Add(type);
+            classes.AddToSet(type);
             Block.MergeClasses(classes);
             target.MergeClasses(classes);
         }

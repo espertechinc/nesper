@@ -11,63 +11,19 @@ using System;
 using com.espertech.esper.common.@internal.context.controller.condition;
 using com.espertech.esper.common.@internal.context.controller.core;
 using com.espertech.esper.common.@internal.epl.expression.core;
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.context.controller.initterm
 {
     public class ContextControllerDetailInitiatedTerminated : ContextControllerDetail
     {
-        private ContextConditionDescriptor startCondition;
-        private ContextConditionDescriptor endCondition;
-        private bool overlapping;
-        private ExprEvaluator distinctEval;
-        private Type[] distinctTypes;
+        public ContextConditionDescriptor StartCondition { get; set; }
 
-        public ContextConditionDescriptor StartCondition {
-            get => startCondition;
-        }
+        public ContextConditionDescriptor EndCondition { get; set; }
 
-        public void SetStartCondition(ContextConditionDescriptor startCondition)
-        {
-            this.startCondition = startCondition;
-        }
+        public bool IsOverlapping { get; set; }
 
-        public ContextConditionDescriptor EndCondition {
-            get => endCondition;
-        }
+        public ExprEvaluator DistinctEval { get; set; }
 
-        public void SetEndCondition(ContextConditionDescriptor endCondition)
-        {
-            this.endCondition = endCondition;
-        }
-
-        public bool IsOverlapping {
-            get { return overlapping; }
-        }
-
-        public void SetOverlapping(bool overlapping)
-        {
-            this.overlapping = overlapping;
-        }
-
-        public ExprEvaluator DistinctEval {
-            get => distinctEval;
-        }
-
-        public void SetDistinctEval(ExprEvaluator distinctEval)
-        {
-            this.distinctEval = distinctEval;
-        }
-
-        public Type[] GetDistinctTypes()
-        {
-            return distinctTypes;
-        }
-
-        public void SetDistinctTypes(Type[] distinctTypes)
-        {
-            this.distinctTypes = distinctTypes;
-        }
+        public Type[] DistinctTypes { get; set; }
     }
 } // end of namespace

@@ -32,7 +32,7 @@ namespace com.espertech.esper.common.@internal.epl.table.core
                 .MakeChildWithScope(typeof(TableMetadataInternalEventToPublic), generator, symbols, classScope)
                 .AddParam(typeof(EPStatementInitServices), EPStatementInitServicesConstants.REF.Ref);
             var tableResolve = MakeResolveTable(table, EPStatementInitServicesConstants.REF);
-            tableInit.Block.MethodReturn(ExprDotMethod(tableResolve, "getEventToPublic"));
+            tableInit.Block.MethodReturn(ExprDotName(tableResolve, "EventToPublic"));
             return classScope.NamespaceScope.AddFieldUnshared(
                 true,
                 typeof(TableMetadataInternalEventToPublic),

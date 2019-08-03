@@ -124,7 +124,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.reformatop
                 .MethodReturn(
                     CodegenLongInternal(
                         forge,
-                        ExprDotMethod(Ref("d"), "getTime"),
+                        ExprDotName(Ref("d"), "Time"),
                         methodNode,
                         exprSymbol,
                         codegenClassScope));
@@ -149,7 +149,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.reformatop
                 .MethodReturn(
                     CodegenLongInternal(
                         forge,
-                        ExprDotMethod(Ref("d"), "getTime"),
+                        ExprDotName(Ref("d"), "Time"),
                         methodNode,
                         exprSymbol,
                         codegenClassScope));
@@ -174,7 +174,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.reformatop
                 .MethodReturn(
                     CodegenLongInternal(
                         forge,
-                        ExprDotMethod(Ref("dateTime"), "getTimeInMillis"),
+                        ExprDotName(Ref("dateTime"), "TimeInMillis"),
                         methodNode,
                         exprSymbol,
                         codegenClassScope));

@@ -53,10 +53,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
 
             var refEPS = exprSymbol.GetAddEPS(methodNode);
             methodNode.Block
-                .DeclareVar<EventBean>("event", ArrayAtIndex(refEPS, Constant(StreamNum)))
-                .IfRefNullReturnNull("event")
+                .DeclareVar<EventBean>("@event", ArrayAtIndex(refEPS, Constant(StreamNum)))
+                .IfRefNullReturnNull("@event")
                 .MethodReturn(
-                    Cast(result, Getter.EventBeanFragmentCodegen(Ref("event"), methodNode, codegenClassScope)));
+                    Cast(result, Getter.EventBeanFragmentCodegen(Ref("@event"), methodNode, codegenClassScope)));
             return LocalMethod(methodNode);
         }
 

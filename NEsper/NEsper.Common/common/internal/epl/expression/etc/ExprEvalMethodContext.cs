@@ -71,11 +71,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
                 codegenClassScope);
             var refExprEvalCtx = exprSymbol.GetAddExprEvalCtx(methodNode);
 
-            var stmtName = ExprDotMethod(refExprEvalCtx, "getStatementName");
-            var cpid = ExprDotMethod(refExprEvalCtx, "getAgentInstanceId");
-            var runtimeURI = ExprDotMethod(refExprEvalCtx, "getRuntimeURI");
-            var userObject = ExprDotMethod(refExprEvalCtx, "getUserObjectCompileTime");
-            var eventBeanSvc = ExprDotMethod(refExprEvalCtx, "getEventBeanService");
+            var stmtName = ExprDotName(refExprEvalCtx, "StatementName");
+            var cpid = ExprDotName(refExprEvalCtx, "AgentInstanceId");
+            var runtimeURI = ExprDotName(refExprEvalCtx, "RuntimeURI");
+            var userObject = ExprDotName(refExprEvalCtx, "UserObjectCompileTime");
+            var eventBeanSvc = ExprDotName(refExprEvalCtx, "EventBeanService");
             methodNode.Block
                 .IfCondition(EqualsNull(refExprEvalCtx))
                 .BlockReturn(

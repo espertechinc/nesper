@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
+using com.espertech.esper.common.@internal.bytecodemodel.core;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 
 namespace com.espertech.esper.common.@internal.bytecodemodel.model.statement
@@ -27,7 +28,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.statement
             StringBuilder builder,
             bool isInnerClass)
         {
-            expression.Render(builder, isInnerClass);
+            expression.Render(builder, isInnerClass, 1, new CodegenIndent(true));
         }
 
         public override void MergeClasses(ISet<Type> classes)

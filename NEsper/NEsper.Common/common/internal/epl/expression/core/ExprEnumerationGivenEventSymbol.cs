@@ -48,7 +48,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
         public CodegenExpressionRef GetAddEvent(CodegenMethodScope scope)
         {
             if (optionalEventRef == null) {
-                optionalEventRef = Ref("event");
+                optionalEventRef = Ref("@event");
             }
 
             scope.AddSymbol(optionalEventRef);

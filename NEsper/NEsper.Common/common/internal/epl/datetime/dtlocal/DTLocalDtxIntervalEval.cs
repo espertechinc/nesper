@@ -47,7 +47,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
                 .AddParam(typeof(DateTimeEx), "target");
 
             methodNode.Block
-                .DeclareVar<long>("time", ExprDotMethod(Ref("target"), "getTimeInMillis"))
+                .DeclareVar<long>("time", ExprDotName(Ref("target"), "TimeInMillis"))
                 .MethodReturn(
                     forge.intervalForge.Codegen(Ref("time"), Ref("time"), methodNode, exprSymbol, codegenClassScope));
             return LocalMethod(methodNode, inner);
@@ -80,8 +80,8 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
 
             methodNode.Block.MethodReturn(
                 forge.intervalForge.Codegen(
-                    ExprDotMethod(Ref("start"), "getTimeInMillis"),
-                    ExprDotMethod(Ref("end"), "getTimeInMillis"),
+                    ExprDotName(Ref("start"), "TimeInMillis"),
+                    ExprDotName(Ref("end"), "TimeInMillis"),
                     methodNode,
                     exprSymbol,
                     codegenClassScope));

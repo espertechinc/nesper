@@ -200,11 +200,11 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
         {
             var method = codegenMethodScope
                 .MakeChild(typeof(ICollection<object>), typeof(PropertyDotScalarArrayForge), codegenClassScope)
-                .AddParam(typeof(EventBean), "event")
+                .AddParam(typeof(EventBean), "@event")
                 .AddParam(typeof(ExprEvaluatorContext), "context")
                 .Block
-                .IfRefNullReturnNull("event")
-                .MethodReturn(CodegenEvaluateGetInternal(Ref("event"), codegenMethodScope, codegenClassScope));
+                .IfRefNullReturnNull("@event")
+                .MethodReturn(CodegenEvaluateGetInternal(Ref("@event"), codegenMethodScope, codegenClassScope));
             return LocalMethodBuild(method).Pass(@event).Pass(evalctx).Call();
         }
 
@@ -235,14 +235,14 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
         {
             var block = codegenMethodScope
                 .MakeChild(typeof(ICollection<object>), typeof(PropertyDotScalarArrayForge), codegenClassScope)
-                .AddParam(typeof(EventBean), "event")
+                .AddParam(typeof(EventBean), "@event")
                 .Block
                 .DeclareVar(
                     getterReturnType,
                     "value",
                     CodegenLegoCast.CastSafeFromObjectType(
                         getterReturnType,
-                        getter.EventBeanGetCodegen(Ref("event"), codegenMethodScope, codegenClassScope)))
+                        getter.EventBeanGetCodegen(Ref("@event"), codegenMethodScope, codegenClassScope)))
                 .IfRefNullReturnNull("value");
             CodegenMethod method;
             if (ComponentTypeCollection.IsPrimitive) {

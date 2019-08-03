@@ -77,7 +77,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                 codegenClassScope);
             var refExprEvalCtx = exprSymbol.GetAddExprEvalCtx(methodNode);
             var block = methodNode.Block
-                .DeclareVar<EventBean>("props", ExprDotMethod(refExprEvalCtx, "getContextProperties"))
+                .DeclareVar<EventBean>("props", ExprDotName(refExprEvalCtx, "ContextProperties"))
                 .IfRefNullReturnNull("props");
             block.MethodReturn(
                 CodegenLegoCast.CastSafeFromObjectType(

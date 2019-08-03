@@ -143,10 +143,10 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
             CodegenClassScope codegenClassScope)
         {
             return codegenMethodScope.MakeChild(BeanPropType, GetType(), codegenClassScope)
-                .AddParam(TargetType, "object")
+                .AddParam(TargetType, "@object")
                 .AddParam(typeof(int), "index")
                 .Block
-                .DeclareVar<object>("value", ExprDotName(Ref("object"), _field.Name))
+                .DeclareVar<object>("value", ExprDotName(Ref("@object"), _field.Name))
                 .IfConditionReturnConst(
                     Relational(StaticMethod(typeof(Array), "getLength", Ref("value")), LE, Ref("index")),
                     null)

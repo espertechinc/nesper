@@ -50,10 +50,15 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
         {
             var method = parent.MakeChild(typeof(ExpressionDeclItem), GetType(), classScope);
 
-            var supplierSodaBytes = NewAnonymousClass(method.Block, typeof(Supplier<byte[]>));
-            var get = CodegenMethod.MakeParentNode(typeof(object), GetType(), classScope);
-            supplierSodaBytes.AddMethod("Get", get);
-            get.Block.MethodReturn(Constant(OptionalSodaBytes.Invoke()));
+            method.Block
+                .DeclareVar<byte[]>(
+                    "bytes",
+                    Constant(OptionalSodaBytes.Invoke()));
+
+            var supplierLambda = new CodegenExpressionLambda(method.Block);
+            supplierLambda.Block.BlockReturn(Ref("bytes"));
+
+            var supplierSodaBytes = NewInstance<Supplier<byte[]>>(supplierLambda);
 
             method.Block
                 .DeclareVar<ExpressionDeclItem>(

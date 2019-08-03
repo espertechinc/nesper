@@ -67,7 +67,7 @@ namespace com.espertech.esper.common.@internal.epl.historical.indexingstrategy
                 .SetProperty(Ref("strat"), "StreamNum", Constant(streamNum))
                 .SetProperty(Ref("strat"), "PropertyNames", Constant(propertyNames))
                 .SetProperty(Ref("strat"), "ValueGetter", valueGetter)
-                .ExprDotMethod(Ref("strat"), "init")
+                .ExprDotMethod(Ref("strat"), "Init")
                 .MethodReturn(Ref("strat"));
             return LocalMethod(method);
         }

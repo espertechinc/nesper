@@ -69,13 +69,15 @@ namespace com.espertech.esper.common.@internal.epl.resultset.order
             var ctor = new CodegenCtor(typeof(OrderByProcessorCompiler), classScope, ctorParams);
 
             var methods = new CodegenClassMethods();
-            CodegenStackGenerator.RecursiveBuildStack(instantiateMethod, "Instantiate", methods);
+            CodegenClassProperties properties = new CodegenClassProperties();
+            CodegenStackGenerator.RecursiveBuildStack(instantiateMethod, "Instantiate", methods, properties);
             var innerClass = new CodegenInnerClass(
                 CLASSNAME_ORDERBYPROCESSORFACTORY,
                 typeof(OrderByProcessorFactory),
                 ctor,
                 Collections.GetEmptyList<CodegenTypedParam>(),
-                methods);
+                methods,
+                properties);
             innerClasses.Add(innerClass);
         }
 
@@ -151,16 +153,18 @@ namespace com.espertech.esper.common.@internal.epl.resultset.order
             var ctor = new CodegenCtor(typeof(OrderByProcessorCompiler), classScope, ctorParams);
             forge.CtorCodegen(ctor, members, classScope);
 
+            CodegenClassProperties innerProperties = new CodegenClassProperties();
+
             var innerMethods = new CodegenClassMethods();
-            CodegenStackGenerator.RecursiveBuildStack(sortPlainMethod, "sortPlain", innerMethods);
-            CodegenStackGenerator.RecursiveBuildStack(sortWGroupKeysMethod, "sortWGroupKeys", innerMethods);
-            CodegenStackGenerator.RecursiveBuildStack(sortRollupMethod, "sortRollup", innerMethods);
-            CodegenStackGenerator.RecursiveBuildStack(getSortKeyMethod, "getSortKey", innerMethods);
-            CodegenStackGenerator.RecursiveBuildStack(getSortKeyRollupMethod, "getSortKeyRollup", innerMethods);
-            CodegenStackGenerator.RecursiveBuildStack(sortWOrderKeysMethod, "sortWOrderKeys", innerMethods);
-            CodegenStackGenerator.RecursiveBuildStack(sortTwoKeysMethod, "sortTwoKeys", innerMethods);
+            CodegenStackGenerator.RecursiveBuildStack(sortPlainMethod, "SortPlain", innerMethods, innerProperties);
+            CodegenStackGenerator.RecursiveBuildStack(sortWGroupKeysMethod, "SortWGroupKeys", innerMethods, innerProperties);
+            CodegenStackGenerator.RecursiveBuildStack(sortRollupMethod, "SortRollup", innerMethods, innerProperties);
+            CodegenStackGenerator.RecursiveBuildStack(getSortKeyMethod, "GetSortKey", innerMethods, innerProperties);
+            CodegenStackGenerator.RecursiveBuildStack(getSortKeyRollupMethod, "GetSortKeyRollup", innerMethods, innerProperties);
+            CodegenStackGenerator.RecursiveBuildStack(sortWOrderKeysMethod, "SortWOrderKeys", innerMethods, innerProperties);
+            CodegenStackGenerator.RecursiveBuildStack(sortTwoKeysMethod, "SortTwoKeys", innerMethods, innerProperties);
             foreach (var methodEntry in namedMethods.Methods) {
-                CodegenStackGenerator.RecursiveBuildStack(methodEntry.Value, methodEntry.Key, innerMethods);
+                CodegenStackGenerator.RecursiveBuildStack(methodEntry.Value, methodEntry.Key, innerMethods, innerProperties);
             }
 
             var innerClass = new CodegenInnerClass(
@@ -168,7 +172,8 @@ namespace com.espertech.esper.common.@internal.epl.resultset.order
                 typeof(OrderByProcessor),
                 ctor,
                 members,
-                innerMethods);
+                innerMethods,
+                innerProperties);
             innerClasses.Add(innerClass);
         }
     }

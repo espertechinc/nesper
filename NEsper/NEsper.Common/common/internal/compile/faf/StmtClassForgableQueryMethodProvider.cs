@@ -76,15 +76,17 @@ namespace com.espertech.esper.common.@internal.compile.faf
                 forge.MakeMethod(makeMethod, symbols, classScope);
 
                 // make provider methods
-                var getQueryMethod = CodegenMethod.MakeParentNode(
+                var propQueryMethod = CodegenProperty.MakeParentNode(
                     typeof(FAFQueryMethod),
                     GetType(),
                     CodegenSymbolProviderEmpty.INSTANCE,
                     classScope);
-                getQueryMethod.Block.MethodReturn(Ref(MEMBERNAME_QUERYMETHOD));
+                propQueryMethod
+                    .GetterBlock
+                    .BlockReturn(Ref(MEMBERNAME_QUERYMETHOD));
 
                 // add get-informational methods
-                var getQueryInformationals = CodegenMethod.MakeParentNode(
+                var propQueryInformationals = CodegenProperty.MakeParentNode(
                     typeof(FAFQueryInformationals),
                     GetType(),
                     CodegenSymbolProviderEmpty.INSTANCE,
@@ -92,38 +94,40 @@ namespace com.espertech.esper.common.@internal.compile.faf
                 var queryInformationals = FAFQueryInformationals.From(
                     _namespaceScope.SubstitutionParamsByNumber,
                     _namespaceScope.SubstitutionParamsByName);
-                getQueryInformationals.Block.MethodReturn(queryInformationals.Make(getQueryInformationals, classScope));
+                propQueryInformationals
+                    .GetterBlock
+                    .BlockReturn(queryInformationals.Make(
+                        propQueryInformationals, classScope));
 
                 // add get-statement-fields method
-                var getSubstitutionFieldSetter = CodegenMethod.MakeParentNode(
+                var propSubstitutionFieldSetter = CodegenProperty.MakeParentNode(
                     typeof(FAFQueryMethodAssignerSetter),
                     GetType(),
                     CodegenSymbolProviderEmpty.INSTANCE,
                     classScope);
                 StmtClassForgableStmtFields.MakeSubstitutionSetter(
                     _namespaceScope,
-                    getSubstitutionFieldSetter,
+                    propSubstitutionFieldSetter.GetterBlock,
                     classScope);
 
                 // make provider methods
                 var methods = new CodegenClassMethods();
-                CodegenStackGenerator.RecursiveBuildStack(providerCtor, "ctor", methods);
-                CodegenStackGenerator.RecursiveBuildStack(getQueryMethod, "getQueryMethod", methods);
-                CodegenStackGenerator.RecursiveBuildStack(getQueryInformationals, "getQueryInformationals", methods);
-                CodegenStackGenerator.RecursiveBuildStack(
-                    getSubstitutionFieldSetter,
-                    "getSubstitutionFieldSetter",
-                    methods);
+                var properties = new CodegenClassProperties();
+                CodegenStackGenerator.RecursiveBuildStack(providerCtor, "ctor", methods, properties);
+                CodegenStackGenerator.RecursiveBuildStack(propQueryMethod, "QueryMethod", methods, properties);
+                CodegenStackGenerator.RecursiveBuildStack(propQueryInformationals, "QueryInformationals", methods, properties);
+                CodegenStackGenerator.RecursiveBuildStack(propSubstitutionFieldSetter, "SubstitutionFieldSetter", methods, properties);
 
                 // render and compile
                 return new CodegenClass(
                     typeof(FAFQueryMethodProvider),
-                    _namespaceScope.PackageName,
+                    _namespaceScope.Namespace,
                     ClassName,
                     classScope,
                     providerExplicitMembers,
                     providerCtor,
                     methods,
+                    properties,
                     innerClasses);
             }
             catch (EPException) {

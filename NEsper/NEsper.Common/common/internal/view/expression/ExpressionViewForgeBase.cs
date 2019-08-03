@@ -252,9 +252,10 @@ namespace com.espertech.esper.common.@internal.view.expression
                 typeof(AggregationResultFuture));
             assignMethod.Block.AssignRef(field, Ref("future"));
 
+            var innerProperties = new CodegenClassProperties();
             var innerMethods = new CodegenClassMethods();
-            CodegenStackGenerator.RecursiveBuildStack(evalMethod, "evaluate", innerMethods);
-            CodegenStackGenerator.RecursiveBuildStack(assignMethod, "assign", innerMethods);
+            CodegenStackGenerator.RecursiveBuildStack(evalMethod, "Evaluate", innerMethods, innerProperties);
+            CodegenStackGenerator.RecursiveBuildStack(assignMethod, "Assign", innerMethods, innerProperties);
 
             var ctor = new CodegenCtor(
                 typeof(StmtClassForgableRSPFactoryProvider),
@@ -266,7 +267,8 @@ namespace com.espertech.esper.common.@internal.view.expression
                 typeof(AggregationResultFutureAssignableWEval),
                 ctor,
                 Collections.GetEmptyList<CodegenTypedParam>(),
-                innerMethods);
+                innerMethods,
+                innerProperties);
         }
     }
 } // end of namespace

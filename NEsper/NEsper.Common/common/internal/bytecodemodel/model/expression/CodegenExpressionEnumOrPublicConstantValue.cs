@@ -10,6 +10,9 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
+using com.espertech.esper.common.@internal.bytecodemodel.core;
+using com.espertech.esper.common.@internal.bytecodemodel.util;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.core.CodeGenerationHelper;
 
 namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
@@ -40,7 +43,9 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
 
         public void Render(
             StringBuilder builder,
-            bool isInnerClass)
+            bool isInnerClass,
+            int level,
+            CodegenIndent indent)
         {
             if (enumType != null) {
                 AppendClassName(builder, enumType);
@@ -55,7 +60,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
 
         public void MergeClasses(ISet<Type> classes)
         {
-            classes.Add(enumType);
+            classes.AddToSet(enumType);
         }
     }
 } // end of namespace

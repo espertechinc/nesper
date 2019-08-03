@@ -188,14 +188,14 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
             CodegenExpression memberCache = codegenClassScope.AddOrGetFieldSharable(_sharableCode);
             var method = parent
                 .MakeChild(typeof(object), typeof(DynamicPropertyGetterBase), codegenClassScope)
-                .AddParam(typeof(object), "object");
+                .AddParam(typeof(object), "@object");
             method.Block
                 .DeclareVar<DynamicPropertyDescriptor>(
                     "desc",
-                    GetPopulateCacheCodegen(memberCache, Ref("object"), method, codegenClassScope))
-                .IfCondition(EqualsNull(ExprDotMethod(Ref("desc"), "getMethod")))
+                    GetPopulateCacheCodegen(memberCache, Ref("@object"), method, codegenClassScope))
+                .IfCondition(EqualsNull(ExprDotName(Ref("desc"), "Method")))
                 .BlockReturn(ConstantNull())
-                .MethodReturn(CallCodegen(Ref("desc"), Ref("object"), method, codegenClassScope));
+                .MethodReturn(CallCodegen(Ref("desc"), Ref("@object"), method, codegenClassScope));
             return LocalMethod(method, underlyingExpression);
         }
 
@@ -228,12 +228,12 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
         {
             CodegenExpression memberCache = codegenClassScope.AddOrGetFieldSharable(_sharableCode);
             var method = parent.MakeChild(typeof(bool), typeof(DynamicPropertyGetterBase), codegenClassScope)
-                .AddParam(typeof(object), "object");
+                .AddParam(typeof(object), "@object");
             method.Block
                 .DeclareVar<DynamicPropertyDescriptor>(
                     "desc",
-                    GetPopulateCacheCodegen(memberCache, Ref("object"), method, codegenClassScope))
-                .IfCondition(EqualsNull(ExprDotMethod(Ref("desc"), "getMethod")))
+                    GetPopulateCacheCodegen(memberCache, Ref("@object"), method, codegenClassScope))
+                .IfCondition(EqualsNull(ExprDotName(Ref("desc"), "Method")))
                 .BlockReturn(ConstantFalse())
                 .MethodReturn(Constant(true));
             return LocalMethod(method, underlyingExpression);
@@ -286,7 +286,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
                         Ref("obj")))
                 .IfRefNotNull("desc")
                 .BlockReturn(Ref("desc"))
-                .DeclareVar<Type>("clazz", ExprDotMethod(Ref("obj"), "getClass"))
+                .DeclareVar<Type>("clazz", ExprDotName(Ref("obj"), "Class"))
                 .DeclareVar<MethodInfo>("method", DetermineMethodCodegen(Ref("clazz"), method, codegenClassScope))
                 .AssignRef(
                     "desc",

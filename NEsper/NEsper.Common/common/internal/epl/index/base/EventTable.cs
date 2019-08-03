@@ -80,7 +80,7 @@ namespace com.espertech.esper.common.@internal.epl.index.@base
         /// <summary>
         ///     Add event to table.
         /// </summary>
-        /// <param name="event">to add</param>
+        /// <param name="@event">to add</param>
         /// <param name="exprEvaluatorContext">evaluator context</param>
         void Add(
             EventBean @event,
@@ -98,7 +98,7 @@ namespace com.espertech.esper.common.@internal.epl.index.@base
         /// <summary>
         ///     Remove event from table.
         /// </summary>
-        /// <param name="event">to remove</param>
+        /// <param name="@event">to remove</param>
         /// <param name="exprEvaluatorContext">evaluator context</param>
         void Remove(
             EventBean @event,

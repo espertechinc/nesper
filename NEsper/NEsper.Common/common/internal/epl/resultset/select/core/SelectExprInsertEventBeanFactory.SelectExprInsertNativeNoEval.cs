@@ -47,7 +47,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.@select.core
                 methodNode.Block.MethodReturn(
                     CodegenExpressionBuilder.ExprDotMethod(
                         manufacturer,
-                        "make",
+                        "Make",
                         CodegenExpressionBuilder.PublicConstValue(typeof(CollectionUtil), "OBJECTARRAY_EMPTY")));
                 return methodNode;
             }

@@ -92,7 +92,7 @@ namespace com.espertech.esper.common.@internal.epl.table.compiletime
 
         public NameAccessModifier TableVisibility { get; set; }
 
-        public IDictionary<string, TableMetadataColumn> Columns { get; private set; }
+        public IDictionary<string, TableMetadataColumn> Columns { get; set; }
 
         public void Init()
         {
@@ -145,7 +145,7 @@ namespace com.espertech.esper.common.@internal.epl.table.compiletime
                     "Columns",
                     TableMetadataColumn.MakeColumns(Columns, method, symbols, classScope))
                 .SetProperty(Ref("meta"), "NumMethodAggs", Constant(NumMethodAggs))
-                .ExprDotMethod(Ref("meta"), "init")
+                .ExprDotMethod(Ref("meta"), "Init")
                 .MethodReturn(Ref("meta"));
             return LocalMethod(method);
         }

@@ -49,15 +49,25 @@ namespace com.espertech.esper.common.@internal.filterspec
                     LocalMethod(lookupable.MakeCodegen(method, symbols, classScope)))
                 .DeclareVar<FilterOperator>("op", EnumValue(filterOperator));
 
-            var param = NewAnonymousClass(
-                method.Block,
-                typeof(FilterSpecParam),
-                Arrays.AsList<CodegenExpression>(Ref("lookupable"), Ref("op")));
-            var getFilterValue = CodegenMethod.MakeParentNode(typeof(object), GetType(), classScope)
-                .AddParam(FilterSpecParam.GET_FILTER_VALUE_FP);
-            param.AddMethod("GetFilterValue", getFilterValue);
+            //var param = NewAnonymousClass(
+            //    method.Block,
+            //    typeof(FilterSpecParam),
+            //    Arrays.AsList<CodegenExpression>(Ref("lookupable"), Ref("op")));
+
+            var getFilterValue = new CodegenExpressionLambda(method.Block)
+                .WithParams(FilterSpecParam.GET_FILTER_VALUE_FP);
+            var param = NewInstance<ProxyFilterSpecParam>(
+                Ref("lookupable"),
+                Ref("op"),
+                getFilterValue);
+
+            //var getFilterValue = CodegenMethod
+            //    .MakeParentNode(typeof(object), GetType(), classScope)
+            //    .AddParam(FilterSpecParam.GET_FILTER_VALUE_FP);
+            //param.AddMethod("GetFilterValue", getFilterValue);
+
             getFilterValue.Block
-                .DeclareVar<EventBean>("props", ExprDotMethod(REF_EXPREVALCONTEXT, "getContextProperties"))
+                .DeclareVar<EventBean>("props", ExprDotName(REF_EXPREVALCONTEXT, "ContextProperties"))
                 .IfRefNullReturnNull(Ref("props"))
                 .DeclareVar<object>("result", _getter.EventBeanGetCodegen(Ref("props"), method, classScope));
             if (_numberCoercer != null) {
@@ -70,7 +80,7 @@ namespace com.espertech.esper.common.@internal.filterspec
                         classScope));
             }
 
-            getFilterValue.Block.MethodReturn(Ref("result"));
+            getFilterValue.Block.BlockReturn(Ref("result"));
 
             method.Block.MethodReturn(param);
             return method;

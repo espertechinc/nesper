@@ -104,8 +104,8 @@ namespace com.espertech.esper.common.@internal.epl.pattern.guard
                 .DeclareVar<TimerWithinOrMaxCountGuardFactory>(
                     "factory",
                     ExprDotMethodChain(symbols.GetAddInitSvc(method))
-                        .Add(EPStatementInitServicesConstants.GETPATTERNFACTORYSERVICE)
-                        .Add("guardTimerWithinOrMax"))
+                        .Get(EPStatementInitServicesConstants.PATTERNFACTORYSERVICE)
+                        .Add("GuardTimerWithinOrMax"))
                 .SetProperty(Ref("factory"), "ScheduleCallbackId", Constant(scheduleCallbackId))
                 .SetProperty(Ref("factory"), "DeltaCompute", patternDelta)
                 .SetProperty(Ref("factory"), "OptionalConvertor", convertorExpr)

@@ -56,7 +56,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.plugin
         {
             method.Block.ExprDotMethod(
                 state,
-                "applyEnter",
+                "ApplyEnter",
                 symbols.GetAddEPS(method),
                 symbols.GetAddExprEvalCtx(method));
         }
@@ -69,7 +69,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.plugin
         {
             method.Block.ExprDotMethod(
                 state,
-                "applyLeave",
+                "ApplyLeave",
                 symbols.GetAddEPS(method),
                 symbols.GetAddExprEvalCtx(method));
         }
@@ -78,7 +78,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.plugin
             CodegenMethod method,
             CodegenClassScope classScope)
         {
-            method.Block.ExprDotMethod(state, "clear");
+            method.Block.ExprDotMethod(state, "Clear");
         }
 
         public override void WriteCodegen(

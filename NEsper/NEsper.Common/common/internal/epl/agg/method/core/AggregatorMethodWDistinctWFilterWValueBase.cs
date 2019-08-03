@@ -125,7 +125,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.core
             }
 
             if (distinct != null) {
-                method.Block.IfCondition(Not(ExprDotMethod(distinct, enter ? "add" : "remove", Ref("val"))))
+                method.Block.IfCondition(Not(ExprDotMethod(distinct, enter ? "Add" : "remove", Ref("val"))))
                     .BlockReturnNoValue();
             }
         }
@@ -138,7 +138,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.core
         {
             method.Block.IfCondition(EqualsNull(value)).BlockReturnNoValue();
             if (distinct != null) {
-                method.Block.IfCondition(Not(ExprDotMethod(distinct, enter ? "add" : "remove", value)))
+                method.Block.IfCondition(Not(ExprDotMethod(distinct, enter ? "Add" : "remove", value)))
                     .BlockReturnNoValue();
             }
         }

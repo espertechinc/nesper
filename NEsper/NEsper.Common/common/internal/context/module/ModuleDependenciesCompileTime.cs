@@ -141,5 +141,22 @@ namespace com.espertech.esper.common.@internal.context.module
                 .MethodReturn(Ref("md"));
             return LocalMethod(method);
         }
+
+        public CodegenBlock Inject(CodegenBlock block)
+        {
+            return block
+                .DeclareVar<ModuleDependenciesRuntime>("md", NewInstance(typeof(ModuleDependenciesRuntime)))
+                .SetProperty(Ref("md"), "PathEventTypes", NameAndModule.MakeArray(pathEventTypes))
+                .SetProperty(Ref("md"), "PathNamedWindows", NameAndModule.MakeArray(pathNamedWindows))
+                .SetProperty(Ref("md"), "PathTables", NameAndModule.MakeArray(pathTables))
+                .SetProperty(Ref("md"), "PathVariables", NameAndModule.MakeArray(pathVariables))
+                .SetProperty(Ref("md"), "PathContexts", NameAndModule.MakeArray(pathContexts))
+                .SetProperty(Ref("md"), "PathExpressions", NameAndModule.MakeArray(pathExpressions))
+                .SetProperty(Ref("md"), "PathIndexes", ModuleIndexMeta.MakeArray(pathIndexes))
+                .SetProperty(Ref("md"), "PathScripts", NameParamNumAndModule.MakeArray(pathScripts))
+                .SetProperty(Ref("md"), "PublicEventTypes", Constant(publicEventTypes.ToArray()))
+                .SetProperty(Ref("md"), "PublicVariables", Constant(publicVariables.ToArray()))
+                .BlockReturn(Ref("md"));
+        }
     }
 } // end of namespace

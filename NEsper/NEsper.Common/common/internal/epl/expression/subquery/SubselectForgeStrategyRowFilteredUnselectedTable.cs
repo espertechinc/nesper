@@ -45,10 +45,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
             method.Block.DeclareVar<EventBean>("filtered", ConstantNull());
             CodegenBlock @foreach = method.Block.ForEach(
                 typeof(EventBean),
-                "event",
+                "@event",
                 symbols.GetAddMatchingEvents(method));
             {
-                @foreach.AssignArrayElement(REF_EVENTS_SHIFTED, Constant(0), @Ref("event"));
+                @foreach.AssignArrayElement(REF_EVENTS_SHIFTED, Constant(0), @Ref("@event"));
                 CodegenMethod filter = CodegenLegoMethodExpression.CodegenExpression(
                     subselect.FilterExpr,
                     method,
@@ -63,7 +63,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                         symbols.GetAddExprEvalCtx(method)));
                 @foreach.IfCondition(NotEqualsNull(@Ref("filtered")))
                     .BlockReturn(ConstantNull())
-                    .AssignRef("filtered", @Ref("event"));
+                    .AssignRef("filtered", @Ref("@event"));
             }
 
             method.Block.IfRefNullReturnNull("filtered")

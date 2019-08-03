@@ -59,7 +59,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
         public static StmtForgeMethodSelectResult Make(
             IContainer container,
             bool dataflowOperator,
-            string packageName,
+            string @namespace,
             string classPostfix,
             StatementBaseInfo @base,
             StatementCompileTimeServices services)
@@ -449,7 +449,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
                 joinAnalysisResult.IsUnidirectional);
 
             var namespaceScope = new CodegenNamespaceScope(
-                packageName,
+                @namespace,
                 statementFieldsClassName,
                 services.IsInstrumented);
             IList<StmtClassForgable> forgables = new List<StmtClassForgable>();

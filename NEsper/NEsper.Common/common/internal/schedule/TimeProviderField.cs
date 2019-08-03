@@ -33,8 +33,9 @@ namespace com.espertech.esper.common.@internal.schedule
 
         public CodegenExpression InitCtorScoped()
         {
-            return ExprDotMethodChain(EPStatementInitServicesConstants.REF)
-                .Add(EPStatementInitServicesConstants.GETTIMEPROVIDER);
+            return ExprDotName(
+                EPStatementInitServicesConstants.REF,
+                EPStatementInitServicesConstants.TIMEPROVIDER);
         }
     }
 } // end of namespace

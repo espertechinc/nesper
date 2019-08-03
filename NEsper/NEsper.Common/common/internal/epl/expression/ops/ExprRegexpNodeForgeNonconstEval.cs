@@ -114,7 +114,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                         "value",
                         lhs.Forge.EvaluateCodegen(typeof(object), methodNode, exprSymbol, codegenClassScope))
                     .IfRefNullReturnNull("value")
-                    .MethodReturn(GetRegexpCode(forge, Ref("pattern"), ExprDotMethod(Ref("value"), "toString")));
+                    .MethodReturn(GetRegexpCode(forge, Ref("pattern"), ExprDotMethod(Ref("value"), "ToString")));
             }
 
             return methodNode;

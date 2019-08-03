@@ -63,7 +63,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.inner
                 .BlockReturn(
                     CodegenLegoCast.CastSafeFromObjectType(
                         forge.RootForge.EvaluationType,
-                        ExprDotMethod(Cast(typeof(EventBean), @Ref("target")), "getUnderlying")))
+                        ExprDotName(Cast(typeof(EventBean), @Ref("target")), "Underlying")))
                 .MethodReturn(CodegenLegoCast.CastSafeFromObjectType(forge.RootForge.EvaluationType, @Ref("target")));
             return LocalMethod(methodNode);
         }

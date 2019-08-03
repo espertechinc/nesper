@@ -44,9 +44,9 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
                 this.GetType(),
                 codegenClassScope);
             CodegenExpressionRef refEPS = exprSymbol.GetAddEPS(methodNode);
-            CodegenExpression bean = ExprDotMethod(ArrayAtIndex(refEPS, Constant(0)), "getUnderlying");
+            CodegenExpression bean = ExprDotName(ArrayAtIndex(refEPS, Constant(0)), "Underlying");
             methodNode.Block.MethodReturn(
-                ExprDotMethod(eventBeanFactory, "adapterForTypedBean", bean, resultEventType));
+                ExprDotMethod(eventBeanFactory, "AdapterForTypedBean", bean, resultEventType));
             return methodNode;
         }
     }

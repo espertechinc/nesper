@@ -98,7 +98,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
 
             forEach.Expression(ExprDotMethod(Ref("agg"), "enter", Ref("num")))
                 .BlockEnd();
-            block.MethodReturn(ExprDotMethod(Ref("agg"), "getValue"));
+            block.MethodReturn(ExprDotName(Ref("agg"), "Value"));
             return LocalMethod(methodNode, args.Eps, args.Enumcoll, args.IsNewData, args.ExprCtx);
         }
 

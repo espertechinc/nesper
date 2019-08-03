@@ -65,7 +65,7 @@ namespace com.espertech.esper.common.@internal.epl.output.core
 
         public override IEnumerator<EventBean> GetEnumerator()
         {
-            return OutputStrategyUtil.GetIterator(joinExecutionStrategy, resultSetProcessor, parentView, false);
+            return OutputStrategyUtil.GetEnumerator(joinExecutionStrategy, resultSetProcessor, parentView, false);
         }
 
         public override void Terminated()

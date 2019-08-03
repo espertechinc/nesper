@@ -38,7 +38,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            return ExprDotMethod(eventBeanFactory, "adapterForTypedMap", props, resultEventType);
+            return ExprDotMethod(eventBeanFactory, "AdapterForTypedMap", props, resultEventType);
         }
     }
 } // end of namespace

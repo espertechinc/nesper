@@ -77,7 +77,7 @@ namespace com.espertech.esper.common.@internal.filterspec
                     NewInstance<FilterSpecLookupableAdvancedIndex>(
                         Constant(expression),
                         ConstantNull(),
-                        EnumValue(returnType, "class")))
+                        Typeof(returnType)))
                 .SetProperty(Ref("lookupable"), "QuadTreeConfig", QuadTreeConfig.Make())
                 .SetProperty(Ref("lookupable"), "X", toEval.Invoke(_x))
                 .SetProperty(Ref("lookupable"), "Y", toEval.Invoke(_y))
@@ -86,9 +86,9 @@ namespace com.espertech.esper.common.@internal.filterspec
                 .SetProperty(Ref("lookupable"), "IndexType", Constant(IndexType))
                 .Expression(
                     ExprDotMethodChain(symbols.GetAddInitSvc(method))
-                        .Add(EPStatementInitServicesConstants.GETFILTERSHAREDLOOKUPABLEREGISTERY)
+                        .Get(EPStatementInitServicesConstants.FILTERSHAREDLOOKUPABLEREGISTERY)
                         .Add(
-                            "registerLookupable",
+                            "RegisterLookupable",
                             symbols.GetAddEventType(method),
                             Ref("lookupable")))
                 .MethodReturn(Ref("lookupable"));

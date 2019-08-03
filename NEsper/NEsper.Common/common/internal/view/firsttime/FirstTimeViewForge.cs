@@ -76,7 +76,7 @@ namespace com.espertech.esper.common.@internal.view.firsttime
 
         internal override string FactoryMethod()
         {
-            return "firsttime";
+            return "Firsttime";
         }
 
         internal override void Assign(

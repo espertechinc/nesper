@@ -31,7 +31,7 @@ namespace com.espertech.esper.compat.collections
         }
 
 
-        public static IDictionary<TK, TV> WithNullSupport<TK, TV>(this IDictionary<TK, TV> dictionary)
+        public static IDictionary<TK, TV> WithNullKeySupport<TK, TV>(this IDictionary<TK, TV> dictionary)
             where TK : class
         {
             if (dictionary is NullableDictionary<TK, TV>)
@@ -89,7 +89,7 @@ namespace com.espertech.esper.compat.collections
                 if (!SafeDictionaryMethodTable.TryGetValue(type, out fastMethod))
                 {
                     var slowMethod = typeof (DictionaryExtensions)
-                        .GetMethod("WithNullSupport")
+                        .GetMethod("WithNullKeySupport")
                         .MakeGenericMethod(typeof (TK), typeof (TV));
                     fastMethod = FastClass.CreateMethod(slowMethod);
                     SafeDictionaryMethodTable[type] = fastMethod;

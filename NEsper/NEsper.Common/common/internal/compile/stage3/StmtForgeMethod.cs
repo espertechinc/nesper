@@ -6,18 +6,12 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
-
-using com.espertech.esper.common.@internal.epl.expression.core;
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
-
 namespace com.espertech.esper.common.@internal.compile.stage3
 {
     public interface StmtForgeMethod
     {
         StmtForgeMethodResult Make(
-            string packageName,
+            string @namespace,
             string classPostfix,
             StatementCompileTimeServices compileTimeServices);
     }

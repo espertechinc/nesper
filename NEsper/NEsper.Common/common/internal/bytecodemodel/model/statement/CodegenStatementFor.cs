@@ -53,11 +53,11 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.statement
             builder.Append("for (");
             AppendClassName(builder, type);
             builder.Append(" ").Append(name).Append("=");
-            initialization.Render(builder, isInnerClass);
+            initialization.Render(builder, isInnerClass, level, indent);
             builder.Append("; ");
-            termination.Render(builder, isInnerClass);
+            termination.Render(builder, isInnerClass, level, indent);
             builder.Append("; ");
-            increment.Render(builder, isInnerClass);
+            increment.Render(builder, isInnerClass, level, indent);
             builder.Append(") {\n");
             Block.Render(builder, isInnerClass, level + 1, indent);
             indent.Indent(builder, level);

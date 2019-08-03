@@ -52,12 +52,12 @@ namespace com.espertech.esper.common.@internal.context.activator
                 .DeclareVar<ViewableActivatorFilter>(
                     "activator",
                     ExprDotMethodChain(symbols.GetAddInitSvc(method))
-                        .Add(EPStatementInitServicesConstants.GETVIEWABLEACTIVATORFACTORY)
-                        .Add("createFilter"))
+                        .Get(EPStatementInitServicesConstants.VIEWABLEACTIVATORFACTORY)
+                        .Add("CreateFilter"))
                 .SetProperty(Ref("activator"), "FilterSpec", Ref("filterSpecCompiled"))
                 .SetProperty(Ref("activator"), "CanIterate", Constant(canIterate))
                 .SetProperty(Ref("activator"), "StreamNumFromClause", Constant(streamNumFromClause))
-                .SetProperty(Ref("activator"), "SubSelect", Constant(isSubSelect))
+                .SetProperty(Ref("activator"), "IsSubSelect", Constant(isSubSelect))
                 .SetProperty(Ref("activator"), "SubselectNumber", Constant(subselectNumber))
                 .MethodReturn(Ref("activator"));
             return LocalMethod(method);

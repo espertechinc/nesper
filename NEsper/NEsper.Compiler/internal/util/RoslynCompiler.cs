@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -28,6 +29,9 @@ namespace com.espertech.esper.compiler.@internal.util
             .GetValues(typeof(LanguageVersion))
             .Cast<LanguageVersion>()
             .Max();
+
+        private static readonly ISet<MetadataReference> MetadataCacheBindings = 
+            new HashSet<MetadataReference>();
 
         private IReadOnlyCollection<MetadataReference> _metadataReferences = null;
 
@@ -50,16 +54,14 @@ namespace com.espertech.esper.compiler.@internal.util
         /// <summary>
         /// Gets or sets the assembly identifier.
         /// </summary>
-        public Guid AssemblyId
-        {
+        public Guid AssemblyId {
             get => _assemblyId;
         }
 
         /// <summary>
         /// Gets or sets the name of the assembly.
         /// </summary>
-        public string AssemblyName
-        {
+        public string AssemblyName {
             get => _assemblyName;
             set => _assemblyName = value;
         }
@@ -74,8 +76,7 @@ namespace com.espertech.esper.compiler.@internal.util
         /// <summary>
         /// Gets or sets the codegen class.
         /// </summary>
-        public IList<CodegenClass> CodegenClasses
-        {
+        public IList<CodegenClass> CodegenClasses {
             get => _codegenClasses;
             set => _codegenClasses = value;
         }
@@ -83,8 +84,7 @@ namespace com.espertech.esper.compiler.@internal.util
         /// <summary>
         /// Gets or sets a value indicating whether we include code logging.
         /// </summary>
-        public bool IsCodeLogging
-        {
+        public bool IsCodeLogging {
             get => _isCodeLogging;
             set => _isCodeLogging = value;
         }
@@ -110,16 +110,21 @@ namespace com.espertech.esper.compiler.@internal.util
         /// <summary>
         /// Gets the current metadata references.  Metadata references are specific to the AppDomain.
         /// </summary>
-
         internal IReadOnlyCollection<MetadataReference> GetCurrentMetadataReferences()
         {
-            if (_metadataReferences == null)
-            {
-                _metadataReferences = AppDomain.CurrentDomain.GetAssemblies()
-                    .Where(assembly => !assembly.IsDynamic)
-                    .Select(assembly => assembly.Location)
-                    .Select(location => MetadataReference.CreateFromFile(location))
-                    .ToList();
+            if (_metadataReferences == null) {
+                var metadataReferences = new List<MetadataReference>();
+                lock (MetadataCacheBindings) {
+                    metadataReferences.AddRange(MetadataCacheBindings);
+                }
+
+                foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies()) {
+                    if (!assembly.IsDynamic && !string.IsNullOrEmpty(assembly.Location)) {
+                        metadataReferences.Add(MetadataReference.CreateFromFile(assembly.Location));
+                    }
+                }
+
+                _metadataReferences = metadataReferences;
             }
 
             return _metadataReferences;
@@ -130,13 +135,11 @@ namespace com.espertech.esper.compiler.@internal.util
             var options = new CSharpParseOptions(kind: SourceCodeKind.Regular, languageVersion: MaxLanguageVersion);
             // Convert the codegen to source
             var source = CodegenClassGenerator.Compile(codegenClass);
-            Console.WriteLine(source);
             // Convert the codegen source to syntax tree
-            var syntaxTree = CSharpSyntaxTree.ParseText(source, options);
-            Console.WriteLine(syntaxTree);
-
-            return syntaxTree;
+            return CSharpSyntaxTree.ParseText(source, options);
         }
+
+        private static int DebugSequence = 1;
 
         /// <summary>
         /// Compiles the specified code generation class into an assembly.
@@ -158,23 +161,34 @@ namespace com.espertech.esper.compiler.@internal.util
                 .AddReferences(GetCurrentMetadataReferences())
                 .AddSyntaxTrees(syntaxTrees);
 
-            using (var stream = new MemoryStream())
-            {
+            foreach (var syntaxTree in syntaxTrees) {
+                string tempClassPath = $@"C:\Src\Espertech\NEsper-master\NEsper\NEsper.Runtime.Tests\foobar\Class{DebugSequence}.cs";
+                DebugSequence++;
+                File.WriteAllText(tempClassPath, syntaxTree.ToString());
+            }
+
+            using (var stream = new MemoryStream()) {
                 var result = compilation.Emit(stream);
-                if (result.Success)
-                {
+                if (result.Success) {
                     stream.Seek(0, SeekOrigin.Begin);
+                    // When rewriting this for .NET Core, replace this with System.Runtime.Loader.AssemblyLoadContext
                     _assembly = Assembly.Load(stream.ToArray());
                 }
                 else {
+                    foreach (var error in result.Diagnostics) {
+                        Console.WriteLine(error);
+                    }
+
                     throw new RoslynCompilationException(
-                            "failure during module compilation",
-                            result.Diagnostics);
+                        "failure during module compilation",
+                        result.Diagnostics);
                 }
             }
 
-            Console.Error.WriteLine(_assembly);
-
+            lock (MetadataCacheBindings) {
+                MetadataCacheBindings.Add(compilation.ToMetadataReference());
+            }
+            
             return _assembly;
 
 #if false

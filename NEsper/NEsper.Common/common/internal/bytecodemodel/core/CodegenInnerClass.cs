@@ -18,13 +18,15 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.core
             Type interfaceImplemented,
             CodegenCtor ctor,
             IList<CodegenTypedParam> explicitMembers,
-            CodegenClassMethods methods)
+            CodegenClassMethods methods,
+            CodegenClassProperties properties)
         {
             ClassName = className;
             InterfaceImplemented = interfaceImplemented;
             Ctor = ctor;
             ExplicitMembers = explicitMembers;
             Methods = methods;
+            Properties = properties;
         }
 
         public string ClassName { get; }
@@ -32,6 +34,8 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.core
         public Type InterfaceImplemented { get; }
 
         public CodegenClassMethods Methods { get; }
+
+        public CodegenClassProperties Properties { get; }
 
         public CodegenCtor Ctor { get; }
 

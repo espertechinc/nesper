@@ -43,11 +43,11 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
         // Substitution parameters
 
         public CodegenNamespaceScope(
-            string packageName,
+            string @namespace,
             string fieldsClassNameOptional,
             bool instrumented)
         {
-            PackageName = packageName;
+            Namespace = @namespace;
             FieldsClassNameOptional = fieldsClassNameOptional;
             IsInstrumented = instrumented;
             InitMethod = CodegenMethod
@@ -59,7 +59,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
                 .WithStatic(true);
         }
 
-        public string PackageName { get; }
+        public string Namespace { get; }
 
         public CodegenMethod InitMethod { get; }
 

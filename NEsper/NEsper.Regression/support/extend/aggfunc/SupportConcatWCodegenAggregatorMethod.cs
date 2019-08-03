@@ -77,7 +77,7 @@ namespace com.espertech.esper.regressionlib.support.extend.aggfunc
             CodegenMethod method,
             CodegenClassScope classScope)
         {
-            method.Block.MethodReturn(ExprDotMethod(builder, "toString"));
+            method.Block.MethodReturn(ExprDotMethod(builder, "ToString"));
         }
 
         public void WriteCodegen(

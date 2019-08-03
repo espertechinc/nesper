@@ -252,7 +252,7 @@ namespace com.espertech.esper.common.@internal.compile.stage2
                     "eventType",
                     EventTypeUtility.ResolveTypeCodegen(FilterForEventType, EPStatementInitServicesConstants.REF))
                 .DeclareVar<FilterSpecParam[][]>(
-                    "params",
+                    "parameters",
                     LocalMethod(
                         FilterSpecParamForge.MakeParamArrayArrayCodegen(Parameters, classScope, method),
                         Ref("eventType"),
@@ -262,13 +262,13 @@ namespace com.espertech.esper.common.@internal.compile.stage2
                     NewInstance<FilterSpecActivatable>(
                         SAIFFInitializeSymbolWEventType.REF_EVENTTYPE,
                         Constant(FilterForEventType.Name),
-                        Ref("params"),
+                        Ref("parameters"),
                         propertyEval,
                         Constant(filterCallbackId)))
                 .Expression(
                     ExprDotMethodChain(symbols.GetAddInitSvc(method))
-                        .Add(EPStatementInitServicesConstants.GETFILTERSPECACTIVATABLEREGISTRY)
-                        .Add("register", Ref("activatable")))
+                        .Get(EPStatementInitServicesConstants.FILTERSPECACTIVATABLEREGISTRY)
+                        .Add("Register", Ref("activatable")))
                 .MethodReturn(Ref("activatable"));
 
             return method;

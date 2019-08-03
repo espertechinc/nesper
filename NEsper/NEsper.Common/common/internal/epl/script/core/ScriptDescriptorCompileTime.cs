@@ -78,9 +78,10 @@ namespace com.espertech.esper.common.@internal.epl.script.core
                 .SetProperty(Ref("sd"), "DefaultDialect", Constant(_defaultDialect))
                 .SetProperty(
                     Ref("sd"),
-                    "ClasspathImportService",
-                    ExprDotMethodChain(EPStatementInitServicesConstants.REF)
-                        .Add(EPStatementInitServicesConstants.GETCLASSPATHIMPORTSERVICERUNTIME))
+                    "ImportService",
+                    ExprDotName(
+                            EPStatementInitServicesConstants.REF,
+                            EPStatementInitServicesConstants.IMPORTSERVICERUNTIME))
                 .SetProperty(
                     Ref("sd"),
                     "Coercer",

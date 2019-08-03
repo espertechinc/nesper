@@ -132,7 +132,7 @@ namespace com.espertech.esper.common.@internal.@event.map
                 .DeclareVar<object>("eventBean", ExprDotMethod(Ref("map"), "get", Constant(propertyName)))
                 .IfRefNullReturnNull("eventBean")
                 .MethodReturn(
-                    Cast(underlyingType, ExprDotMethod(Cast(typeof(EventBean), Ref("eventBean")), "getUnderlying")));
+                    Cast(underlyingType, ExprDotName(Cast(typeof(EventBean), Ref("eventBean")), "Underlying")));
         }
     }
 } // end of namespace

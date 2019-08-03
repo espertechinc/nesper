@@ -57,6 +57,7 @@ namespace com.espertech.esper.common.client.module
         /// </summary>
         public Module()
         {
+            Items = new List<ModuleItem>();
         }
 
         /// <summary>Returns the name of the archive this module originated from, or null if not applicable. </summary>

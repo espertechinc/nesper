@@ -44,7 +44,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.eval
             CodegenExpression timeZoneField =
                 codegenClassScope.AddOrGetFieldSharable(RuntimeSettingsTimeZoneField.INSTANCE);
             return ExprDotMethodChain(value)
-                .Add("atZone", ExprDotMethod(timeZoneField, "toZoneId"))
+                .Add("atZone", ExprDotMethod(timeZoneField, "ToZoneId"))
                 .Add("toInstant")
                 .Add("toEpochMilli");
         }

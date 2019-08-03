@@ -123,7 +123,7 @@ namespace com.espertech.esper.common.@internal.epl.output.view
 
         public override IEnumerator<EventBean> GetEnumerator()
         {
-            return OutputStrategyUtil.GetIterator(joinExecutionStrategy, _resultSetProcessor, parentView, false);
+            return OutputStrategyUtil.GetEnumerator(joinExecutionStrategy, _resultSetProcessor, parentView, false);
         }
 
         public override void Terminated()

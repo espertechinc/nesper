@@ -78,14 +78,14 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
                         codegenClassScope,
                         "qExprStreamUndMethod",
                         Constant(ExprNodeUtilityPrint.ToExpressionStringMinPrecedence(forge))))
-                .DeclareVar<EventBean>("event", ArrayAtIndex(refEPS, Constant(forge.StreamNumber)));
+                .DeclareVar<EventBean>("@event", ArrayAtIndex(refEPS, Constant(forge.StreamNumber)));
             if (evaluationType == typeof(void)) {
-                block.IfCondition(EqualsNull(@Ref("event")))
+                block.IfCondition(EqualsNull(@Ref("@event")))
                     .Apply(Instblock(codegenClassScope, "aExprStreamUndMethod", ConstantNull()))
                     .BlockReturnNoValue();
             }
             else {
-                block.IfRefNull("event")
+                block.IfRefNull("@event")
                     .Apply(Instblock(codegenClassScope, "aExprStreamUndMethod", ConstantNull()))
                     .BlockReturn(ConstantNull());
             }
@@ -98,7 +98,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
                         codegenClassScope));
             }
 
-            block.DeclareVar(eventUndType, "inner", Cast(eventUndType, ExprDotMethod(@Ref("event"), "getUnderlying")))
+            block.DeclareVar(eventUndType, "inner", Cast(eventUndType, ExprDotName(@Ref("@event"), "Underlying")))
                 .Apply(
                     Instblock(
                         codegenClassScope,

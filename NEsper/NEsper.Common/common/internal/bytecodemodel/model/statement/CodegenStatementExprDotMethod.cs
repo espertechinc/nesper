@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
+using com.espertech.esper.common.@internal.bytecodemodel.core;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
@@ -37,11 +38,11 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.statement
             bool isInnerClass)
         {
             if (expression is CodegenExpressionRef) {
-                expression.Render(builder, isInnerClass);
+                expression.Render(builder, isInnerClass, 1, new CodegenIndent(true));
             }
             else {
                 builder.Append("(");
-                expression.Render(builder, isInnerClass);
+                expression.Render(builder, isInnerClass, 1, new CodegenIndent(true));
                 builder.Append(")");
             }
 

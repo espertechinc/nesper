@@ -77,7 +77,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.count
             }
 
             if (distinct != null) {
-                method.Block.IfCondition(Not(ExprDotMethod(distinct, "add", Ref("value")))).BlockReturnNoValue();
+                method.Block.IfCondition(Not(ExprDotMethod(distinct, "Add", Ref("value")))).BlockReturnNoValue();
             }
 
             method.Block.Apply(increment);
@@ -90,7 +90,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.count
             CodegenClassScope classScope)
         {
             if (distinct != null) {
-                method.Block.IfCondition(Not(ExprDotMethod(distinct, "add", Ref("value")))).BlockReturnNoValue();
+                method.Block.IfCondition(Not(ExprDotMethod(distinct, "Add", Ref("value")))).BlockReturnNoValue();
             }
 
             method.Block.Increment(cnt);

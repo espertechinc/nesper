@@ -165,7 +165,7 @@ namespace com.espertech.esper.common.@internal.epl.variable.core
             this.timeProvider = timeProvider;
             this.eventBeanTypedEventFactory = eventBeanTypedEventFactory;
             OptionalStateHandler = optionalStateHandler;
-            DeploymentsWithVariables = new Dictionary<string, VariableDeployment>().WithNullSupport();
+            DeploymentsWithVariables = new Dictionary<string, VariableDeployment>().WithNullKeySupport();
             ReadWriteLock = new SlimReaderWriterLock(60000);
             variableVersionsPerCP = new List<ConcurrentDictionary<int, VariableReader>>();
             changeCallbacksPerCP = new List<IDictionary<int, ICollection<VariableChangeCallback>>>();

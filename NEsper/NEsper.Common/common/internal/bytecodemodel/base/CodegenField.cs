@@ -10,6 +10,8 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
+using com.espertech.esper.common.@internal.bytecodemodel.util;
+
 namespace com.espertech.esper.common.@internal.bytecodemodel.@base
 {
     public class CodegenField
@@ -60,9 +62,9 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
 
         public void MergeClasses(ISet<Type> classes)
         {
-            classes.Add(Type);
+            classes.AddToSet(Type);
             if (OptionalTypeParam != null) {
-                classes.Add(OptionalTypeParam);
+                classes.AddToSet(OptionalTypeParam);
             }
         }
 

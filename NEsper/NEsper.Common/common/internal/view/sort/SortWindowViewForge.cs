@@ -95,7 +95,7 @@ namespace com.espertech.esper.common.@internal.view.sort
 
         internal override string FactoryMethod()
         {
-            return "sort";
+            return "Sort";
         }
 
         internal override void Assign(

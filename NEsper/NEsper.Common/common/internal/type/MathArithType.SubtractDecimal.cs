@@ -36,7 +36,7 @@ namespace com.espertech.esper.common.@internal.type
                 Type ltype,
                 Type rtype)
             {
-                return CodegenExpressionBuilder.ExprDotMethod(left, "subtract", right);
+                return CodegenExpressionBuilder.ExprDotMethod(left, "Subtract", right);
             }
         }
     }

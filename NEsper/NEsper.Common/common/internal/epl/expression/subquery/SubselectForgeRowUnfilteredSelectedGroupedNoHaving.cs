@@ -47,11 +47,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
             var evalCtx = symbols.GetAddExprEvalCtx(method);
 
             method.Block
-                .DeclareVar<int>("cpid", ExprDotMethod(evalCtx, "getAgentInstanceId"))
+                .DeclareVar<int>("cpid", ExprDotName(evalCtx, "AgentInstanceId"))
                 .DeclareVar<ICollection<object>>(
                     "groupKeys",
-                    ExprDotMethod(aggService, "getGroupKeys", evalCtx))
-                .IfCondition(Not(EqualsIdentity(ExprDotMethod(@Ref("groupKeys"), "size"), Constant(1))))
+                    ExprDotMethod(aggService, "GetGroupKeys", evalCtx))
+                .IfCondition(Not(EqualsIdentity(ExprDotMethod(@Ref("groupKeys"), "Size"), Constant(1))))
                 .BlockReturn(ConstantNull())
                 .ExprDotMethod(
                     aggService,
@@ -115,18 +115,18 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                     EPStatementInitServicesConstants.REF));
 
             method.Block
-                .DeclareVar<int>("cpid", ExprDotMethod(evalCtx, "getAgentInstanceId"))
+                .DeclareVar<int>("cpid", ExprDotName(evalCtx, "AgentInstanceId"))
                 .DeclareVar<AggregationService>(
                     "aggregationService",
-                    ExprDotMethod(aggService, "getContextPartitionAggregationService", @Ref("cpid")))
+                    ExprDotMethod(aggService, "GetContextPartitionAggregationService", @Ref("cpid")))
                 .DeclareVar<ICollection<object>>(
                     "groupKeys",
-                    ExprDotMethod(aggService, "getGroupKeys", evalCtx))
-                .IfCondition(ExprDotMethod(@Ref("groupKeys"), "isEmpty"))
+                    ExprDotMethod(aggService, "GetGroupKeys", evalCtx))
+                .IfCondition(ExprDotMethod(@Ref("groupKeys"), "IsEmpty"))
                 .BlockReturn(ConstantNull())
                 .DeclareVar<ICollection<object>>(
                     "events",
-                    NewInstance<ArrayDeque<object>>(ExprDotMethod(@Ref("groupKeys"), "size")))
+                    NewInstance<ArrayDeque<object>>(ExprDotMethod(@Ref("groupKeys"), "Size")))
                 .ForEach(typeof(object), "groupKey", @Ref("groupKeys"))
                 .ExprDotMethod(aggService, "SetCurrentAccess", @Ref("groupKey"), @Ref("cpid"), ConstantNull())
                 .DeclareVar<IDictionary<object, object>>(
@@ -137,9 +137,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                         ConstantTrue(),
                         symbols.GetAddExprEvalCtx(method)))
                 .DeclareVar<EventBean>(
-                    "event",
-                    ExprDotMethod(eventBeanSvc, "adapterForTypedMap", @Ref("row"), typeMember))
-                .ExprDotMethod(@Ref("events"), "add", @Ref("event"))
+                    "@event",
+                    ExprDotMethod(eventBeanSvc, "AdapterForTypedMap", @Ref("row"), typeMember))
+                .ExprDotMethod(@Ref("events"), "Add", @Ref("@event"))
                 .BlockEnd()
                 .MethodReturn(@Ref("events"));
             return LocalMethod(method);

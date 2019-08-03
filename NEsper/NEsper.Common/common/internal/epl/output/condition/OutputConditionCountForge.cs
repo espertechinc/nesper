@@ -55,8 +55,8 @@ namespace com.espertech.esper.common.@internal.epl.output.condition
             method.Block
                 .MethodReturn(
                     ExprDotMethodChain(symbols.GetAddInitSvc(method))
-                        .Add(EPStatementInitServicesConstants.GETRESULTSETPROCESSORHELPERFACTORY)
-                        .Add("makeOutputConditionCount", Constant(eventRate), variableExpression));
+                        .Get(EPStatementInitServicesConstants.RESULTSETPROCESSORHELPERFACTORY)
+                        .Add("MakeOutputConditionCount", Constant(eventRate), variableExpression));
             return LocalMethod(method);
         }
 

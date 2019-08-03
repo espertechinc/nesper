@@ -103,7 +103,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                     initializationEvalType,
                     "value",
                     forge.initialization.EvaluateCodegen(initializationEvalType, methodNode, scope, codegenClassScope))
-                .IfCondition(ExprDotMethod(EnumForgeCodegenNames.REF_ENUMCOLL, "isEmpty"))
+                .IfCondition(ExprDotMethod(EnumForgeCodegenNames.REF_ENUMCOLL, "IsEmpty"))
                 .BlockReturn(@Ref("value"));
             block.DeclareVar<ObjectArrayEventBean>(
                     "resultEvent",
@@ -116,8 +116,8 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                     EnumForgeCodegenNames.REF_EPS,
                     Constant(forge.streamNumLambda + 1),
                     @Ref("evalEvent"))
-                .DeclareVar<object[]>("resultProps", ExprDotMethod(@Ref("resultEvent"), "getProperties"))
-                .DeclareVar<object[]>("evalProps", ExprDotMethod(@Ref("evalEvent"), "getProperties"));
+                .DeclareVar<object[]>("resultProps", ExprDotName(@Ref("resultEvent"), "Properties"))
+                .DeclareVar<object[]>("evalProps", ExprDotName(@Ref("evalEvent"), "Properties"));
             block.ForEach(typeof(object), "next", EnumForgeCodegenNames.REF_ENUMCOLL)
                 .AssignArrayElement("resultProps", Constant(0), @Ref("value"))
                 .AssignArrayElement("evalProps", Constant(0), @Ref("next"))

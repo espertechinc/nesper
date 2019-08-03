@@ -69,8 +69,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
 
             CodegenExpressionRef refEPS = exprSymbol.GetAddEPS(methodNode);
             methodNode.Block
-                .DeclareVar<EventBean>("event", ArrayAtIndex(refEPS, Constant(forge.StreamNum)))
-                .IfRefNullReturnNull("event")
+                .DeclareVar<EventBean>("@event", ArrayAtIndex(refEPS, Constant(forge.StreamNum)))
+                .IfRefNullReturnNull("@event")
                 .DeclareVar<int?>(
                     "index",
                     forge.ExprForge.EvaluateCodegen(typeof(int?), methodNode, exprSymbol, codegenClassScope))
@@ -81,7 +81,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
                         forge.IndexedGetter.EventBeanGetIndexedCodegen(
                             methodNode,
                             codegenClassScope,
-                            @Ref("event"),
+                            @Ref("@event"),
                             @Ref("index"))));
             return LocalMethod(methodNode);
         }

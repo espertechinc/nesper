@@ -36,8 +36,8 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.statement
             int level,
             CodegenIndent indent)
         {
-            builder.Append("synchronized (");
-            expression.Render(builder, isInnerClass);
+            builder.Append("lock (");
+            expression.Render(builder, isInnerClass, level + 1, indent);
             builder.Append(") {\n");
             block.Render(builder, isInnerClass, level + 1, indent);
             indent.Indent(builder, level);

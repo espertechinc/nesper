@@ -1,4 +1,4 @@
-﻿///////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////
 // Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
@@ -101,7 +101,7 @@ namespace com.espertech.esper.common.@internal.util
                 return CodegenExpressionBuilder.StaticMethod(
                     typeof(BigInteger),
                     "valueOf",
-                    CodegenExpressionBuilder.ExprDotMethod(value, "longValue"));
+                    CodegenExpressionBuilder.ExprDotMethod(value, "LongValue"));
             }
         }
     }

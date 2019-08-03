@@ -32,8 +32,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.time.abacus
         public CodegenExpression InitCtorScoped()
         {
             return ExprDotMethodChain(EPStatementInitServicesConstants.REF)
-                .Add(EPStatementInitServicesConstants.GETCLASSPATHIMPORTSERVICERUNTIME)
-                .Add("getTimeAbacus");
+                .Get(EPStatementInitServicesConstants.IMPORTSERVICERUNTIME)
+                .Get("TimeAbacus");
         }
     }
 } // end of namespace

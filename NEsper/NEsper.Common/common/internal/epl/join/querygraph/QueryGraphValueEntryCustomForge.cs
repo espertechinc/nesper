@@ -33,7 +33,7 @@ namespace com.espertech.esper.common.@internal.epl.join.querygraph
 
             CodegenExpression map;
             if (operations.IsEmpty()) {
-                map = StaticMethod(typeof(Collections), "emptyMap");
+                map = StaticMethod(typeof(Collections), "GetEmptyMap");
             }
             else {
                 method.Block.DeclareVar<IDictionary<string, object>>(
@@ -44,7 +44,7 @@ namespace com.espertech.esper.common.@internal.epl.join.querygraph
                 foreach (var entry in operations) {
                     method.Block.ExprDotMethod(
                         Ref("map"),
-                        "put",
+                        "Put",
                         entry.Key.Make(parent, symbols, classScope),
                         entry.Value.Make(parent, symbols, classScope));
                 }

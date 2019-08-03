@@ -43,11 +43,11 @@ namespace com.espertech.esper.common.@internal.@event.core
 
     public class EventBeanTypedEventFactoryConstants
     {
-        public const string ADAPTERFORTYPEDMAP = "adapterForTypedMap";
-        public const string ADAPTERFORTYPEDOBJECTARRAY = "adapterForTypedObjectArray";
-        public const string ADAPTERFORTYPEDBEAN = "adapterForTypedBean";
-        public const string ADAPTERFORTYPEDDOM = "adapterForTypedDOM";
-        public const string ADAPTERFORTYPEDAVRO = "adapterForTypedAvro";
-        public const string ADAPTERFORTYPEDWRAPPER = "adapterForTypedWrapper";
+        public const string ADAPTERFORTYPEDMAP = "AdapterForTypedMap";
+        public const string ADAPTERFORTYPEDOBJECTARRAY = "AdapterForTypedObjectArray";
+        public const string ADAPTERFORTYPEDBEAN = "AdapterForTypedBean";
+        public const string ADAPTERFORTYPEDDOM = "AdapterForTypedDOM";
+        public const string ADAPTERFORTYPEDAVRO = "AdapterForTypedAvro";
+        public const string ADAPTERFORTYPEDWRAPPER = "AdapterForTypedWrapper";
     }
 } // end of namespace

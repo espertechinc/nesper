@@ -227,10 +227,10 @@ namespace com.espertech.esper.common.@internal.@event.core
                                 Cast(typeof(DecoratingEventBean), Ref("theEvent")))
                             .DeclareVar<IDictionary<object, object>>(
                                 "map",
-                                ExprDotMethod(Ref("wrapperEvent"), "getDecoratingProperties"))
+                                ExprDotName(Ref("wrapperEvent"), "DecoratingProperties"))
                             .DeclareVar<EventBean>(
                                 "wrapped",
-                                ExprDotMethod(factory, "adapterForTypedMap", Ref("map"), eventType))
+                                ExprDotMethod(factory, "AdapterForTypedMap", Ref("map"), eventType))
                             .MethodReturn(
                                 decoMapped.EventBeanGetMappedCodegen(
                                     codegenMethodScope,
@@ -300,10 +300,10 @@ namespace com.espertech.esper.common.@internal.@event.core
                                 Cast(typeof(DecoratingEventBean), Ref("theEvent")))
                             .DeclareVar<IDictionary<object, object>>(
                                 "map",
-                                ExprDotMethod(Ref("wrapperEvent"), "getDecoratingProperties"))
+                                ExprDotName(Ref("wrapperEvent"), "DecoratingProperties"))
                             .DeclareVar<EventBean>(
                                 "wrapped",
-                                ExprDotMethod(factory, "adapterForTypedMap", Ref("map"), eventType))
+                                ExprDotMethod(factory, "AdapterForTypedMap", Ref("map"), eventType))
                             .MethodReturn(
                                 decoIndexed.EventBeanGetIndexedCodegen(
                                     codegenMethodScope,
@@ -624,8 +624,8 @@ namespace com.espertech.esper.common.@internal.@event.core
                         parent,
                         classScope) => {
                         var decorated = Cast(typeof(DecoratingEventBean), target);
-                        var decoratingProps = ExprDotMethod(decorated, "getDecoratingProperties");
-                        return ExprDotMethod(decoratingProps, "put", Constant(propertyName), assigned);
+                        var decoratingProps = ExprDotName(decorated, "DecoratingProperties");
+                        return ExprDotMethod(decoratingProps, "Put", Constant(propertyName), assigned);
                     }
                 };
                 writerMap.Put(
@@ -660,8 +660,8 @@ namespace com.espertech.esper.common.@internal.@event.core
                             parent,
                             classScope) => {
                             var decorated = Cast(typeof(DecoratingEventBean), target);
-                            var underlyingBean = ExprDotMethod(decorated, "getUnderlyingEvent");
-                            var underlying = ExprDotMethod(underlyingBean, "getUnderlying");
+                            var underlyingBean = ExprDotName(decorated, "UnderlyingEvent");
+                            var underlying = ExprDotName(underlyingBean, "Underlying");
                             var casted = Cast(underlyingEventType.UnderlyingType, underlying);
                             return ((EventPropertyWriterSPI) innerWriter).WriteCodegen(
                                 assigned,

@@ -50,7 +50,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createtable
                     typeof(EPStatementInitServices),
                     REF_STMTINITSVC.Ref);
             method.Block
-                .ExprDotMethod(REF_STMTINITSVC, "activateTable", Constant(tableName))
+                .ExprDotMethod(REF_STMTINITSVC, "ActivateTable", Constant(tableName))
                 .MethodReturn(LocalMethod(forge.InitializeCodegen(method, saiffInitializeSymbol, classScope)));
             return method;
         }

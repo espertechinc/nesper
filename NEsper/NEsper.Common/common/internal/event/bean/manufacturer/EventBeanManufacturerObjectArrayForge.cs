@@ -90,7 +90,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.manufacturer
             manufacturer.AddMethod("Make", makeMethod);
             makeMethod.Block
                 .DeclareVar<object[]>("und", LocalMethod(makeUndMethod, Ref("properties")))
-                .MethodReturn(ExprDotMethod(factory, "adapterForTypedObjectArray", Ref("und"), eventType));
+                .MethodReturn(ExprDotMethod(factory, "AdapterForTypedObjectArray", Ref("und"), eventType));
 
             return codegenClassScope.AddFieldUnshared(true, typeof(EventBeanManufacturer), manufacturer);
         }

@@ -99,14 +99,14 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                 .AddParam(EnumForgeCodegenNames.PARAMS);
 
             CodegenBlock block = methodNode.Block
-                .IfCondition(ExprDotMethod(EnumForgeCodegenNames.REF_ENUMCOLL, "isEmpty"))
+                .IfCondition(ExprDotMethod(EnumForgeCodegenNames.REF_ENUMCOLL, "IsEmpty"))
                 .BlockReturn(ConstantNull())
                 .DeclareVar<IDictionary<object, object>>("items", NewInstance(typeof(LinkedHashMap<object, object>)))
                 .DeclareVar<ObjectArrayEventBean>(
                     "resultEvent",
                     NewInstance<ObjectArrayEventBean>(NewArrayByLength(typeof(object), Constant(1)), resultTypeMember))
                 .AssignArrayElement(EnumForgeCodegenNames.REF_EPS, Constant(forge.streamNumLambda), @Ref("resultEvent"))
-                .DeclareVar<object[]>("props", ExprDotMethod(@Ref("resultEvent"), "getProperties"));
+                .DeclareVar<object[]>("props", ExprDotName(@Ref("resultEvent"), "Properties"));
 
             block.ForEach(typeof(object), "next", EnumForgeCodegenNames.REF_ENUMCOLL)
                 .AssignArrayElement("props", Constant(0), @Ref("next"))
@@ -119,7 +119,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                 .IfElse()
                 .Increment("existing")
                 .BlockEnd()
-                .ExprDotMethod(@Ref("items"), "put", @Ref("item"), @Ref("existing"));
+                .ExprDotMethod(@Ref("items"), "Put", @Ref("item"), @Ref("existing"));
             block.MethodReturn(
                 Cast(
                     returnType,

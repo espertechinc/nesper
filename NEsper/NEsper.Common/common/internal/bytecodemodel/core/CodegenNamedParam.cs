@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Text;
 
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
+using com.espertech.esper.common.@internal.bytecodemodel.util;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.core.CodeGenerationHelper;
 
@@ -240,7 +241,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.core
 
         public void MergeClasses(ISet<Type> classes)
         {
-            classes.Add(Type);
+            classes.AddToSet(Type);
         }
 
         public static void Render(

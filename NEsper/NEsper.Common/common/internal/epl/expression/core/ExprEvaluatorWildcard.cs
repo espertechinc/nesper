@@ -51,13 +51,13 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                 codegenClassScope);
             var refEPS = exprSymbol.GetAddEPS(methodNode);
             methodNode.Block
-                .DeclareVar<EventBean>("event", ArrayAtIndex(refEPS, Constant(0)))
-                .IfRefNullReturnNull("event");
+                .DeclareVar<EventBean>("@event", ArrayAtIndex(refEPS, Constant(0)))
+                .IfRefNullReturnNull("@event");
             if (requiredType == typeof(object)) {
-                methodNode.Block.MethodReturn(ExprDotMethod(Ref("event"), "getUnderlying"));
+                methodNode.Block.MethodReturn(ExprDotName(Ref("@event"), "Underlying"));
             }
             else {
-                methodNode.Block.MethodReturn(Cast(underlyingType, ExprDotMethod(Ref("event"), "getUnderlying")));
+                methodNode.Block.MethodReturn(Cast(underlyingType, ExprDotName(Ref("@event"), "Underlying")));
             }
 
             return LocalMethod(methodNode);

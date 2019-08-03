@@ -79,18 +79,22 @@ namespace com.espertech.esper.common.@internal.compile.stage3
 
             // build methods
             var methods = new CodegenClassMethods();
-            CodegenStackGenerator.RecursiveBuildStack(initMethod, "Init", methods);
-            CodegenStackGenerator.RecursiveBuildStack(assignMethod, "Assign", methods);
-            CodegenStackGenerator.RecursiveBuildStack(unassignMethod, "Unassign", methods);
+            var properties = new CodegenClassProperties();
+
+            CodegenStackGenerator.RecursiveBuildStack(initMethod, "Init", methods, properties);
+            CodegenStackGenerator.RecursiveBuildStack(assignMethod, "Assign", methods, properties);
+            CodegenStackGenerator.RecursiveBuildStack(unassignMethod, "Unassign", methods, properties);
+
 
             return new CodegenClass(
                 typeof(StatementFields),
-                _namespaceScope.PackageName,
+                _namespaceScope.Namespace,
                 ClassName,
                 classScope,
                 members,
                 ctor,
                 methods,
+                properties,
                 Collections.GetEmptyList<CodegenInnerClass>());
         }
 
@@ -260,8 +264,19 @@ namespace com.espertech.esper.common.@internal.compile.stage3
             CodegenMethod method,
             CodegenClassScope classScope)
         {
-            var assignerSetterClass = NewAnonymousClass(method.Block, typeof(FAFQueryMethodAssignerSetter));
-            method.Block.MethodReturn(assignerSetterClass);
+            MakeSubstitutionSetter(
+                packageScope,
+                method.Block,
+                classScope);
+        }
+
+        public static void MakeSubstitutionSetter(
+            CodegenNamespaceScope packageScope,
+            CodegenBlock enclosingBlock,
+            CodegenClassScope classScope)
+        {
+            var assignerSetterClass = NewAnonymousClass(enclosingBlock, typeof(FAFQueryMethodAssignerSetter));
+            enclosingBlock.ReturnMethodOrBlock(assignerSetterClass);
 
             var assignMethod = CodegenMethod
                 .MakeParentNode(typeof(void), typeof(StmtClassForgableStmtFields), classScope)

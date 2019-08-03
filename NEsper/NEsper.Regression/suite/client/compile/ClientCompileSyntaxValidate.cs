@@ -56,7 +56,7 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
 
                 TryInvalidCompile(
                     env,
-                    "select * from pattern[A => B - C]",
+                    "select * from pattern[A -> B - C]",
                     "Incorrect syntax near '-' expecting a right angle bracket ']' but found a minus '-' at line 1 column 29, please check the from clause");
 
                 TryInvalidCompile(

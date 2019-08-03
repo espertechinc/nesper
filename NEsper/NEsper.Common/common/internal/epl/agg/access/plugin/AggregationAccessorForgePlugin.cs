@@ -33,22 +33,22 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.plugin
 
         public void GetValueCodegen(AggregationAccessorForgeGetCodegenContext context)
         {
-            MakeBlock("getValue", context.Column, context.Method, context.ClassScope);
+            MakeBlock("GetValue", context.Column, context.Method, context.ClassScope);
         }
 
         public void GetEnumerableEventsCodegen(AggregationAccessorForgeGetCodegenContext context)
         {
-            MakeBlock("getEnumerableEvents", context.Column, context.Method, context.ClassScope);
+            MakeBlock("GetEnumerableEvents", context.Column, context.Method, context.ClassScope);
         }
 
         public void GetEnumerableEventCodegen(AggregationAccessorForgeGetCodegenContext context)
         {
-            MakeBlock("getEnumerableEvent", context.Column, context.Method, context.ClassScope);
+            MakeBlock("GetEnumerableEvent", context.Column, context.Method, context.ClassScope);
         }
 
         public void GetEnumerableScalarCodegen(AggregationAccessorForgeGetCodegenContext context)
         {
-            MakeBlock("getEnumerableScalar", context.Column, context.Method, context.ClassScope);
+            MakeBlock("GetEnumerableScalar", context.Column, context.Method, context.ClassScope);
         }
 
         private void MakeBlock(
