@@ -64,7 +64,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                     .AssignArrayElement(
                         REF_EVENTS_SHIFTED, Constant(0),
                         StaticMethod(
-                            typeof(EventBeanUtility), "getNonemptyFirstEvent", symbols.GetAddMatchingEvents(method)));
+                            typeof(EventBeanUtility), "GetNonemptyFirstEvent", symbols.GetAddMatchingEvents(method)));
             }
             else {
                 CodegenExpression filter = ExprNodeUtilityCodegen.CodegenEvaluator(
@@ -73,7 +73,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                     .ApplyTri(SubselectForgeCodegenUtil.DECLARE_EVENTS_SHIFTED, method, symbols)
                     .DeclareVar<EventBean>(
 "subselectResult", StaticMethod(
-                            typeof(EventBeanUtility), "evaluateFilterExpectSingleMatch",
+                            typeof(EventBeanUtility), "EvaluateFilterExpectSingleMatch",
                             REF_EVENTS_SHIFTED, symbols.GetAddIsNewData(method), symbols.GetAddMatchingEvents(method),
                             symbols.GetAddExprEvalCtx(method),
                             filter))

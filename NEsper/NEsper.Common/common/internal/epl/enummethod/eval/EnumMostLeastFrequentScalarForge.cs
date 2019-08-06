@@ -82,7 +82,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                 .DeclareVar<IDictionary<string, object>>("items", NewInstance(typeof(LinkedHashMap<string, object>)));
             CodegenBlock forEach = block
                 .ForEach(typeof(object), "next", EnumForgeCodegenNames.REF_ENUMCOLL)
-                .DeclareVar<int>("existing", Cast(typeof(int), ExprDotMethod(@Ref("items"), "get", @Ref("next"))))
+                .DeclareVar<int>("existing", Cast(typeof(int), ExprDotMethod(@Ref("items"), "Get", @Ref("next"))))
                 .IfCondition(EqualsNull(@Ref("existing")))
                 .AssignRef("existing", Constant(1))
                 .IfElse()
@@ -94,7 +94,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                     returnType,
                     StaticMethod(
                         typeof(EnumMostLeastFrequentEventForgeEval),
-                        "getEnumMostLeastFrequentResult",
+                        "GetEnumMostLeastFrequentResult",
                         @Ref("items"),
                         Constant(isMostFrequent))));
             return LocalMethod(method, args.Expressions);

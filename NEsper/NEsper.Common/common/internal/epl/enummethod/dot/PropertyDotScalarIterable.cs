@@ -82,18 +82,18 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
         }
 
         public CodegenExpression EvaluateEventGetROCollectionScalarCodegen(
-            CodegenMethodScope codegenMethodScope,
+            CodegenMethodScope methodScope,
             ExprEnumerationGivenEventSymbol symbols,
             CodegenClassScope codegenClassScope)
         {
             if (TypeHelper.IsImplementsInterface(getterReturnType, typeof(ICollection<object>))) {
                 return getter.EventBeanGetCodegen(
-                    symbols.GetAddEvent(codegenMethodScope),
-                    codegenMethodScope,
+                    symbols.GetAddEvent(methodScope),
+                    methodScope,
                     codegenClassScope);
             }
 
-            CodegenMethod method = codegenMethodScope.MakeChild(
+            CodegenMethod method = methodScope.MakeChild(
                 typeof(ICollection<object>),
                 typeof(PropertyDotScalarIterable),
                 codegenClassScope);
@@ -102,9 +102,9 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
                     "result",
                     CodegenLegoCast.CastSafeFromObjectType(
                         typeof(IEnumerable),
-                        getter.EventBeanGetCodegen(symbols.GetAddEvent(method), codegenMethodScope, codegenClassScope)))
+                        getter.EventBeanGetCodegen(symbols.GetAddEvent(method), methodScope, codegenClassScope)))
                 .IfRefNullReturnNull("result")
-                .MethodReturn(StaticMethod(typeof(CollectionUtil), "iterableToCollection", @Ref("result")));
+                .MethodReturn(StaticMethod(typeof(CollectionUtil), "IterableToCollection", @Ref("result")));
             return LocalMethod(method);
         }
 
@@ -160,7 +160,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
                         typeof(IEnumerable),
                         getter.EventBeanGetCodegen(@Ref("@event"), codegenMethodScope, codegenClassScope)))
                 .IfRefNullReturnNull("result")
-                .MethodReturn(StaticMethod(typeof(CollectionUtil), "iterableToCollection", @Ref("result")));
+                .MethodReturn(StaticMethod(typeof(CollectionUtil), "IterableToCollection", @Ref("result")));
             return LocalMethodBuild(method).Pass(@event).Call();
         }
 
@@ -221,7 +221,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
         }
 
         public CodegenExpression EvaluateEventGetEventBeanCodegen(
-            CodegenMethodScope codegenMethodScope,
+            CodegenMethodScope methodScope,
             ExprEnumerationGivenEventSymbol symbols,
             CodegenClassScope codegenClassScope)
         {
@@ -237,7 +237,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
         }
 
         public CodegenExpression EvaluateEventGetROCollectionEventsCodegen(
-            CodegenMethodScope codegenMethodScope,
+            CodegenMethodScope methodScope,
             ExprEnumerationGivenEventSymbol symbols,
             CodegenClassScope codegenClassScope)
         {

@@ -29,7 +29,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.introspect
 
             // add 2 explicit properties, also supported
             config.AddFieldProperty("x", "fieldNested");
-            config.AddMethodProperty("y", "readLegacyBeanVal");
+            config.AddMethodProperty("y", "ReadLegacyBeanVal");
 
             builder = new PropertyListBuilderNative(config);
         }
@@ -45,7 +45,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.introspect
 
             IList<PropertyStem> expected = new List<PropertyStem>();
             expected.Add(new PropertyStem("x", typeof(SupportLegacyBean).GetField("fieldNested"), EventPropertyType.SIMPLE));
-            expected.Add(new PropertyStem("y", typeof(SupportLegacyBean).GetMethod("readLegacyBeanVal"), EventPropertyType.SIMPLE));
+            expected.Add(new PropertyStem("y", typeof(SupportLegacyBean).GetMethod("ReadLegacyBeanVal"), EventPropertyType.SIMPLE));
             EPAssertionUtil.AssertEqualsAnyOrder(expected.ToArray(), descList.ToArray());
         }
     }

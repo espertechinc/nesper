@@ -6,7 +6,6 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
@@ -15,8 +14,6 @@ using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.resultset.select.core;
-using com.espertech.esper.common.@internal.util;
-using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
@@ -59,14 +56,12 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
                 codegenClassScope);
             CodegenBlock block = methodNode.Block;
             if (this.context.ExprForges.Length == 0) {
-                block.DeclareVar<IDictionary<object, object>>("props", StaticMethod(typeof(Collections), "GetEmptyMap"));
+                block.DeclareVar<IDictionary<string, object>>(
+                    "props", StaticMethod(typeof(Collections), "GetEmptyMap"));
             }
             else {
-                block.DeclareVar<IDictionary<object, object>>(
-                    "props",
-                    NewInstance(
-                        typeof(Dictionary<object, object>),
-                        Constant(CollectionUtil.CapacityHashMap(this.context.ColumnNames.Length))));
+                block.DeclareVar<IDictionary<string, object>>(
+                    "props", NewInstance(typeof(Dictionary<string, object>)));
             }
 
             for (int i = 0; i < this.context.ColumnNames.Length; i++) {

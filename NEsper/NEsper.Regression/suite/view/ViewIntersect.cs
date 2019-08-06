@@ -592,7 +592,7 @@ namespace com.espertech.esper.regressionlib.suite.view
             {
                 var epl = "create window MyWindowOne#firstunique(TheString)#firstlength(3) as SupportBean;\n" +
                           "insert into MyWindowOne select * from SupportBean;\n" +
-                          "on SupportBean_S0 delete from MyWindowOne where TheString = p00;\n" +
+                          "on SupportBean_S0 delete from MyWindowOne where TheString = P00;\n" +
                           "@Name('s0') select irstream * from MyWindowOne";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
@@ -733,7 +733,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
                     "select * from SupportBean#time_batch(1)#length_batch(10)",
-                    "Failed to valIdate data window declaration: Cannot combined multiple batch data windows into an intersection [");
+                    "Failed to validate data window declaration: Cannot combined multiple batch data windows into an intersection [");
             }
         }
 
@@ -914,7 +914,7 @@ namespace com.espertech.esper.regressionlib.suite.view
             public void Run(RegressionEnvironment env)
             {
                 var text =
-                    "@Name('s0') select * from SupportBean_S0 where p00 in (select TheString from SupportBean#length(2)#unique(IntPrimitive) retain-intersection)";
+                    "@Name('s0') select * from SupportBean_S0 where P00 in (select TheString from SupportBean#length(2)#unique(IntPrimitive) retain-intersection)";
                 env.CompileDeployAddListenerMileZero(text, "s0");
 
                 SendEvent(env, "E1", 1);
@@ -1049,7 +1049,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 string[] fields = {"TheString"};
 
                 var text =
-                    "@Name('s0') select irstream a.p00||b.p10 as TheString from pattern [every a=SupportBean_S0 -> b=SupportBean_S1]#unique(a.Id)#unique(b.Id) retain-intersection";
+                    "@Name('s0') select irstream a.P00||b.P10 as TheString from pattern [every a=SupportBean_S0 -> b=SupportBean_S1]#unique(a.Id)#unique(b.Id) retain-intersection";
                 env.CompileDeploy(text).AddListener("s0");
 
                 env.SendEventBean(new SupportBean_S0(1, "E1"));

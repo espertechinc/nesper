@@ -285,7 +285,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
 
         public static string GetGetterMethodName(string propertyName)
         {
-            return GetGetterSetterMethodName(propertyName, "get");
+            return GetGetterSetterMethodName(propertyName, "Get");
         }
 
         public static string GetSetterMethodName(string propertyName)

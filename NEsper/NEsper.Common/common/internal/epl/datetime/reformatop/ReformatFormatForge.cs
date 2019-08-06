@@ -67,7 +67,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.reformatop
                 .MakeChild(typeof(string), typeof(ReformatFormatForge), codegenClassScope)
                 .AddParam(typeof(DateTimeEx), "dtx")
                 .Block
-                .SynchronizedOn(formatField)
+                .LockOn(formatField)
                 .BlockReturn(ExprDotMethod(formatField, "format", ExprDotMethod(Ref("dtx"), "getTime")));
             return LocalMethodBuild(blockMethod.MethodEnd()).Pass(inner).Call();
         }
@@ -102,7 +102,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.reformatop
             var blockMethod = codegenMethodScope.MakeChild(typeof(string), typeof(ReformatFormatForge), classScope)
                 .AddParam(typeof(long), "ts")
                 .Block;
-            var syncBlock = blockMethod.SynchronizedOn(formatField);
+            var syncBlock = blockMethod.LockOn(formatField);
             if (timeAbacus.OneSecond == 1000L) {
                 syncBlock.BlockReturn(ExprDotMethod(formatField, "format", Ref("ts")));
             }

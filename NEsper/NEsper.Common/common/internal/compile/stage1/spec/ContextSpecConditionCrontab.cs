@@ -62,7 +62,7 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
                     "Evaluators",
                     ExprNodeUtilityCodegen.CodegenEvaluators(forges, method, GetType(), classScope))
                 .SetProperty(Ref("condition"), "ScheduleCallbackId", Constant(ScheduleCallbackId))
-                .SetProperty(Ref("condition"), "Immediate", Constant(IsImmediate))
+                .SetProperty(Ref("condition"), "IsImmediate", Constant(IsImmediate))
                 .MethodReturn(Ref("condition"));
             return LocalMethod(method);
         }

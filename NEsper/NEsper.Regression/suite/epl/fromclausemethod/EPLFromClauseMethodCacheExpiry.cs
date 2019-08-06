@@ -19,16 +19,16 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
     {
         public void Run(RegressionEnvironment env)
         {
-            var joinStatement = "@Name('s0') select Id, p00, TheString from " +
+            var joinStatement = "@Name('s0') select Id, P00, TheString from " +
                                 "SupportBean#length(100) as s1, " +
-                                " method:SupportStaticMethodInvocations.fetchObjectLog(TheString, IntPrimitive)";
+                                " method:SupportStaticMethodInvocations.FetchObjectLog(TheString, IntPrimitive)";
             env.CompileDeploy(joinStatement).AddListener("s0");
 
             // set sleep off
             SupportStaticMethodInvocations.GetInvocationSizeReset();
 
             SendTimer(env, 1000);
-            string[] fields = {"Id", "p00", "TheString"};
+            string[] fields = {"Id", "P00", "TheString"};
             SendBeanEvent(env, "E1", 1);
             EPAssertionUtil.AssertProps(
                 env.Listener("s0").AssertOneGetNewAndReset(),

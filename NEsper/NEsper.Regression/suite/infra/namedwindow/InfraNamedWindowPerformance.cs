@@ -123,16 +123,16 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
 
                 var maxRows = 10000; // for performance testing change to int maxRows = 100000;
                 for (var i = 0; i < maxRows; i++) {
-                    env.SendEventBean(new SupportBean_S0(i, "p00_" + i));
+                    env.SendEventBean(new SupportBean_S0(i, "P00_" + i));
                 }
 
                 var eplSingleIdx =
-                    "on SupportBean_S1 select sum(mw.Id) as sumi from MyWindow mw where p00 in (p10, p11)";
-                RunOnDemandAssertion(env, path, eplSingleIdx, 1, new SupportBean_S1(0, "x", "p00_6523"), 6523);
+                    "on SupportBean_S1 select sum(mw.Id) as sumi from MyWindow mw where P00 in (P10, P11)";
+                RunOnDemandAssertion(env, path, eplSingleIdx, 1, new SupportBean_S1(0, "x", "P00_6523"), 6523);
 
                 var eplMultiIndex =
-                    "on SupportBean_S1 select sum(mw.Id) as sumi from MyWindow mw where p10 in (p00, p01)";
-                RunOnDemandAssertion(env, path, eplMultiIndex, 2, new SupportBean_S1(0, "p00_6524"), 6524);
+                    "on SupportBean_S1 select sum(mw.Id) as sumi from MyWindow mw where P10 in (P00, P01)";
+                RunOnDemandAssertion(env, path, eplMultiIndex, 2, new SupportBean_S1(0, "P00_6524"), 6524);
 
                 env.UndeployAll();
             }

@@ -311,7 +311,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 catch (InvalidContextPartitionSelector ex) {
                     Assert.IsTrue(
                         ex.Message.StartsWith(
-                            "InvalId context partition selector, expected an implementation class of any of [ContextPartitionSelectorAll, ContextPartitionSelectorFiltered, ContextPartitionSelectorById, ContextPartitionSelectorHash] interfaces but received com."),
+                            "Invalid context partition selector, expected an implementation class of any of [ContextPartitionSelectorAll, ContextPartitionSelectorFiltered, ContextPartitionSelectorById, ContextPartitionSelectorHash] interfaces but received com."),
                         "message: " + ex.Message);
                 }
 
@@ -332,7 +332,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
                     epl,
-                    "Failed to valIdate filter expression 'dummy=1': Property named 'dummy' is not valId in any stream [");
+                    "Failed to validate filter expression 'dummy=1': Property named 'dummy' is not valid in any stream [");
 
                 // invalid hash code function
                 epl = "create context ACtx coalesce hash_code_xyz(IntPrimitive) from SupportBean granularity 10";
@@ -518,7 +518,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 var fields = "c1,c2,c3,c4,c5".SplitCsv();
                 var eplStmt = "@Name('s0') context Ctx1 select IntPrimitive as c1, " +
                               "sum(LongPrimitive) as c2, prev(1, LongPrimitive) as c3, prior(1, LongPrimitive) as c4," +
-                              "(select p00 from SupportBean_S0#length(2)) as c5 " +
+                              "(select P00 from SupportBean_S0#length(2)) as c5 " +
                               "from SupportBean#length(3)";
                 env.CompileDeploy(eplStmt, path).AddListener("s0");
 
@@ -561,7 +561,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                              " as " +
                              "coalesce " +
                              " consistent_hash_crc32(TheString) from SupportBean, " +
-                             " consistent_hash_crc32(p00) from SupportBean_S0 " +
+                             " consistent_hash_crc32(P00) from SupportBean_S0 " +
                              "granularity 4 " +
                              "preallocate";
                 env.CompileDeploy(eplCtx, path);
@@ -570,7 +570,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 var eplStmt = "@Name('s0') context " +
                               ctx +
                               " " +
-                              "select context.name as c0, IntPrimitive as c1, Id as c2 from SupportBean#keepall as t1, SupportBean_S0#keepall as t2 where t1.TheString = t2.p00";
+                              "select context.name as c0, IntPrimitive as c1, Id as c2 from SupportBean#keepall as t1, SupportBean_S0#keepall as t2 where t1.TheString = t2.P00";
                 env.CompileDeploy(eplStmt, path).AddListener("s0");
 
                 var fields = "c0,c1,c2".SplitCsv();

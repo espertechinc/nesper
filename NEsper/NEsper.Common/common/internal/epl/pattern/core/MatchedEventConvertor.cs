@@ -11,6 +11,7 @@ using com.espertech.esper.common.@internal.filterspec;
 
 namespace com.espertech.esper.common.@internal.epl.pattern.core
 {
+#if DEPRECATED_INTERFACE
     /// <summary>
     ///     Converts from a map of prior matching events to a events per stream for resultion by expressions.
     /// </summary>
@@ -23,4 +24,11 @@ namespace com.espertech.esper.common.@internal.epl.pattern.core
         /// <returns>events per stream</returns>
         EventBean[] Convert(MatchedEventMap events);
     }
+#else
+    /// <summary>
+    ///     Converts from a map of prior matching events to a events per stream for resolution by expressions.
+    /// </summary>
+    /// <param name="events">pattern partial matches</param>
+    public delegate EventBean[] MatchedEventConvertor(MatchedEventMap events);
+#endif
 } // end of namespace

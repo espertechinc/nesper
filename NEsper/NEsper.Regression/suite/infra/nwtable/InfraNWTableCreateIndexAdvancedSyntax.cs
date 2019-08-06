@@ -32,25 +32,25 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 env,
                 path,
                 "create index MyIndex on MyWindow(())",
-                "InvalId empty list of index expressions");
+                "Invalid empty list of index expressions");
 
             TryInvalidCompile(
                 env,
                 path,
                 "create index MyIndex on MyWindow(IntPrimitive+1)",
-                "InvalId index expression 'IntPrimitive+1'");
+                "Invalid index expression 'IntPrimitive+1'");
 
             TryInvalidCompile(
                 env,
                 path,
                 "create index MyIndex on MyWindow((x, y))",
-                "InvalId multiple index expressions");
+                "Invalid multiple index expressions");
 
             TryInvalidCompile(
                 env,
                 path,
                 "create index MyIndex on MyWindow(x.y)",
-                "InvalId index expression 'x.y'");
+                "Invalid index expression 'x.y'");
 
             TryInvalidCompile(
                 env,

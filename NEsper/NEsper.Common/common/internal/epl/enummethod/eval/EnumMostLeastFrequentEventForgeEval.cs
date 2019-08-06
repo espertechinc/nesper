@@ -94,7 +94,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                     forge.innerExpression.EvaluateCodegen(typeof(object), methodNode, scope, codegenClassScope))
                 .DeclareVar<int?>(
                     "existing",
-                    Cast(typeof(int?), ExprDotMethod(Ref("items"), "get", Ref("item"))))
+                    Cast(typeof(int?), ExprDotMethod(Ref("items"), "Get", Ref("item"))))
                 .IfCondition(EqualsNull(Ref("existing")))
                 .AssignRef("existing", Constant(1))
                 .IfElse()
@@ -106,7 +106,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                     returnType,
                     StaticMethod(
                         typeof(EnumMostLeastFrequentEventForgeEval),
-                        "getEnumMostLeastFrequentResult",
+                        "GetEnumMostLeastFrequentResult",
                         Ref("items"),
                         Constant(forge.isMostFrequent))));
             return LocalMethod(methodNode, args.Eps, args.Enumcoll, args.IsNewData, args.ExprCtx);

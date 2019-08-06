@@ -281,7 +281,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
                     "desc",
                     StaticMethod(
                         typeof(DynamicPropertyGetterBase),
-                        "dynamicPropertyCacheCheck",
+                        "DynamicPropertyCacheCheck",
                         Ref("cache"),
                         Ref("obj")))
                 .IfRefNotNull("desc")
@@ -292,7 +292,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
                     "desc",
                     StaticMethod(
                         typeof(DynamicPropertyGetterBase),
-                        "dynamicPropertyCacheAdd",
+                        "DynamicPropertyCacheAdd",
                         Ref("clazz"),
                         Ref("method"),
                         Ref("cache")))

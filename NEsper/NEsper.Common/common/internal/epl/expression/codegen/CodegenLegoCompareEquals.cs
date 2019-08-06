@@ -33,14 +33,14 @@ namespace com.espertech.esper.common.@internal.epl.expression.codegen
             }
 
             if (lhsType.IsPrimitive && rhsType.IsPrimitive) {
-                return StaticMethod(Boxing.GetBoxedType(lhsType), "compare", lhs, rhs);
+                return StaticMethod(Boxing.GetBoxedType(lhsType), "Compare", lhs, rhs);
             }
 
             if (lhsType.IsPrimitive) {
-                return ExprDotMethod(rhs, "equals", lhs);
+                return ExprDotMethod(rhs, "Equals", lhs);
             }
 
-            return ExprDotMethod(lhs, "equals", rhs);
+            return ExprDotMethod(lhs, "Equals", rhs);
         }
     }
 } // end of namespace

@@ -17,6 +17,11 @@ using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
+
+using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
+
 namespace com.espertech.esper.common.@internal.bytecodemodel.@base
 {
     public class CodegenMethod : CodegenMethodScope
@@ -84,6 +89,18 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
             return this;
         }
 
+        public SyntaxTokenList GetModifiers()
+        {
+            var modifiers = TokenList();
+            if (IsStatic) {
+                modifiers.Add(Token(SyntaxKind.StaticKeyword));
+            }
+
+            modifiers.Add(Token(SyntaxKind.PublicKeyword));
+            return modifiers;
+        }
+
+
         public CodegenMethod MakeChild(
             Type returnType,
             Type generator,
@@ -125,10 +142,10 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
             Type generator,
             CodegenScope env)
         {
-            return MakeParentNode(typeof(T), generator, env);
+            return MakeMethod(typeof(T), generator, env);
         }
 
-        public static CodegenMethod MakeParentNode(
+        public static CodegenMethod MakeMethod(
             Type returnType,
             Type generator,
             CodegenScope env)
@@ -140,7 +157,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
             return new CodegenMethod(returnType, null, generator, CodegenSymbolProviderEmpty.INSTANCE, env);
         }
 
-        public static CodegenMethod MakeParentNode(
+        public static CodegenMethod MakeMethod(
             Type returnType,
             Type generator,
             CodegenSymbolProvider symbolProvider,
@@ -155,6 +172,15 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
             }
 
             return new CodegenMethod(returnType, null, generator, symbolProvider, env);
+        }
+
+        public static CodegenMethod MakeParentNode(
+            Type returnType,
+            Type generator,
+            CodegenSymbolProvider symbolProvider,
+            CodegenScope env)
+        {
+            return MakeParentNode(returnType.FullName, generator, symbolProvider, env);
         }
 
         public static CodegenMethod MakeParentNode(

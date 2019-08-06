@@ -51,7 +51,7 @@ namespace com.espertech.esper.common.@internal.@event.variant
         {
             var cache = codegenClassScope.AddOrGetFieldSharable(
                 new VariantPropertyGetterCacheCodegenField(variantEventType));
-            return StaticMethod(GetType(), "variantGet", beanExpression, cache, Constant(propertyName));
+            return StaticMethod(GetType(), "VariantGet", beanExpression, cache, Constant(propertyName));
         }
 
         public CodegenExpression EventBeanExistsCodegen(
@@ -61,7 +61,7 @@ namespace com.espertech.esper.common.@internal.@event.variant
         {
             var cache = codegenClassScope.AddOrGetFieldSharable(
                 new VariantPropertyGetterCacheCodegenField(variantEventType));
-            return StaticMethod(GetType(), "variantExists", beanExpression, cache, Constant(propertyName));
+            return StaticMethod(GetType(), "VariantExists", beanExpression, cache, Constant(propertyName));
         }
 
         public CodegenExpression EventBeanFragmentCodegen(

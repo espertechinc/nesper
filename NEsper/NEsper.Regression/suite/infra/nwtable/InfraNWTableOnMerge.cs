@@ -1136,7 +1136,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                     env,
                     path,
                     epl,
-                    "Failed to valIdate where-clause expression 'BoolPrimitive=true': Property named 'BoolPrimitive' is ambiguous as is valId for more then one stream [on SupportBean as up merge MergeInfra as mv where BoolPrimitive=true when not matched then insert select *]");
+                    "Failed to validate where-clause expression 'BoolPrimitive=true': Property named 'BoolPrimitive' is ambiguous as is valid for more then one stream [on SupportBean as up merge MergeInfra as mv where BoolPrimitive=true when not matched then insert select *]");
 
                 epl =
                     "on SupportBean_A as up merge MergeInfra as mv where mv.BoolPrimitive=true when not matched then insert select IntPrimitive";
@@ -1144,7 +1144,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                     env,
                     path,
                     epl,
-                    "Failed to valIdate select-clause expression 'IntPrimitive': Property named 'IntPrimitive' is not valId in any stream [on SupportBean_A as up merge MergeInfra as mv where mv.BoolPrimitive=true when not matched then insert select IntPrimitive]");
+                    "Failed to validate select-clause expression 'IntPrimitive': Property named 'IntPrimitive' is not valid in any stream [on SupportBean_A as up merge MergeInfra as mv where mv.BoolPrimitive=true when not matched then insert select IntPrimitive]");
 
                 epl =
                     "on SupportBean_A as up merge MergeInfra as mv where mv.BoolPrimitive=true when not matched then insert select * where TheString = 'A'";
@@ -1152,7 +1152,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                     env,
                     path,
                     epl,
-                    "Failed to valIdate match where-clause expression 'TheString=\"A\"': Property named 'TheString' is not valId in any stream [on SupportBean_A as up merge MergeInfra as mv where mv.BoolPrimitive=true when not matched then insert select * where TheString = 'A']");
+                    "Failed to validate match where-clause expression 'TheString=\"A\"': Property named 'TheString' is not valid in any stream [on SupportBean_A as up merge MergeInfra as mv where mv.BoolPrimitive=true when not matched then insert select * where TheString = 'A']");
 
                 env.UndeployAll();
 
@@ -1167,7 +1167,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                     env,
                     path,
                     "on MyEvent as me update AInfra set c = me.so",
-                    "InvalId assignment to property 'c' event type 'Composite' from event type 'SomeOther' [on MyEvent as me update AInfra set c = me.so]");
+                    "Invalid assignment to property 'c' event type 'Composite' from event type 'SomeOther' [on MyEvent as me update AInfra set c = me.so]");
 
                 env.UndeployAll();
             }
@@ -1350,13 +1350,13 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 epl += namedWindow
                     ? "@Name('Create') create window WinOMIS#keepall as WinOMISSchema;\n"
                     : "@Name('Create') create table WinOMIS as (v1 string primary key, v2 int);\n";
-                epl += "on SupportBean_ST0 as st0 merge WinOMIS as win where win.v1=st0.key0 " +
+                epl += "on SupportBean_ST0 as st0 merge WinOMIS as win where win.v1=st0.Key0 " +
                        "when not matched " +
                        "then insert into StreamOne select * " +
-                       "then insert into StreamTwo select st0.Id as Id, st0.key0 as key0 " +
-                       "then insert into StreamThree(Id, key0) select st0.Id, st0.key0 " +
-                       "then insert into StreamFour select Id, key0 where key0=\"K2\" " +
-                       "then insert into WinOMIS select key0 as v1, p00 as v2;\n";
+                       "then insert into StreamTwo select st0.Id as Id, st0.Key0 as Key0 " +
+                       "then insert into StreamThree(Id, Key0) select st0.Id, st0.Key0 " +
+                       "then insert into StreamFour select Id, Key0 where Key0=\"K2\" " +
+                       "then insert into WinOMIS select Key0 as v1, P00 as v2;\n";
                 epl += "@Name('s1') select * from StreamOne;\n";
                 epl += "@Name('s2') select * from StreamTwo;\n";
                 epl += "@Name('s3') select * from StreamThree;\n";
@@ -1366,15 +1366,15 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 env.SendEventBean(new SupportBean_ST0("ID1", "K1", 1));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s1").AssertOneGetNewAndReset(),
-                    "id,key0".SplitCsv(),
+                    "id,Key0".SplitCsv(),
                     new object[] {"ID1", "K1"});
                 EPAssertionUtil.AssertProps(
                     env.Listener("s2").AssertOneGetNewAndReset(),
-                    "id,key0".SplitCsv(),
+                    "id,Key0".SplitCsv(),
                     new object[] {"ID1", "K1"});
                 EPAssertionUtil.AssertProps(
                     env.Listener("s3").AssertOneGetNewAndReset(),
-                    "id,key0".SplitCsv(),
+                    "id,Key0".SplitCsv(),
                     new object[] {"ID1", "K1"});
                 Assert.IsFalse(env.Listener("s4").IsInvoked);
 
@@ -1383,7 +1383,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 env.SendEventBean(new SupportBean_ST0("ID1", "K2", 2));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s4").AssertOneGetNewAndReset(),
-                    "id,key0".SplitCsv(),
+                    "id,Key0".SplitCsv(),
                     new object[] {"ID1", "K2"});
                 EPAssertionUtil.AssertPropsPerRow(
                     env.GetEnumerator("Create"),
@@ -1412,10 +1412,10 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 env.CompileDeploy(eplCreate, path);
                 env.CompileDeploy("insert into WinMDU select TheString, IntPrimitive from SupportBean", path);
 
-                var epl = "@Name('merge') on SupportBean_ST0 as st0 merge WinMDU as win where st0.key0=win.TheString " +
+                var epl = "@Name('merge') on SupportBean_ST0 as st0 merge WinMDU as win where st0.Key0=win.TheString " +
                           "when matched " +
                           "then delete where IntPrimitive<0 " +
-                          "then update set IntPrimitive=st0.p00 where IntPrimitive=3000 or p00=3000 " +
+                          "then update set IntPrimitive=st0.P00 where IntPrimitive=3000 or P00=3000 " +
                           "then update set IntPrimitive=999 where IntPrimitive=1000 " +
                           "then delete where IntPrimitive=1000 " +
                           "then update set IntPrimitive=1999 where IntPrimitive=2000 " +
@@ -1550,7 +1550,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 epl +=
                     "insert into MyInfraUOF select TheString, IntPrimitive, IntBoxed, DoublePrimitive from SupportBean;\n";
                 epl += "@Name('Merge') on SupportBean_S0 as sb " +
-                       "merge MyInfraUOF as mywin where mywin.TheString = sb.p00 when matched then " +
+                       "merge MyInfraUOF as mywin where mywin.TheString = sb.P00 when matched then " +
                        "update set IntPrimitive=Id, IntBoxed=mywin.IntPrimitive, DoublePrimitive=initial.IntPrimitive;\n";
 
                 env.CompileDeploy(epl).AddListener("Merge");
@@ -1611,7 +1611,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                           "on MyEvent as eme\n" +
                           "  merge MyInfraIOS as MyInfraIOS where MyInfraIOS.name = eme.name\n" +
                           "   when matched then\n" +
-                          "      insert into OtherStreamOne select eme.name as event_name, MyInfraIOS.value as status\n" +
+                          "      insert into OtherStreamOne select eme.name as event_name, MyInfraIOS.Value as status\n" +
                           "   when not matched then\n" +
                           "      insert into OtherStreamOne select eme.name as event_name, 0d as status;\n" +
                           "@Name('s0') select * from OtherStreamOne;\n";

@@ -139,10 +139,10 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
             var fields = "c0".SplitCsv();
             var path = new RegressionPath();
             var eplCtx =
-                "create context MyCtx initiated by SupportBean_S0 as s0 terminated by SupportBean_S1(p10 = s0.p00)";
+                "create context MyCtx initiated by SupportBean_S0 as s0 terminated by SupportBean_S1(P10 = s0.P00)";
             env.CompileDeploy(eplCtx, path);
 
-            var epl = "@Name('S1') context MyCtx select * from SupportBean(TheString = context.s0.p00) " +
+            var epl = "@Name('S1') context MyCtx select * from SupportBean(TheString = context.s0.P00) " +
                       "match_recognize (" +
                       "  measures P2.TheString as c0" +
                       "  pattern (P1 P2) " +
@@ -201,7 +201,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
             env.CompileDeploy(namedWindow, path);
             var insert = "insert into MyWindow select * from SupportBean";
             env.CompileDeploy(insert, path);
-            var delete = "on SupportBean_S0 delete from MyWindow where TheString = p00";
+            var delete = "on SupportBean_S0 delete from MyWindow where TheString = P00";
             env.CompileDeploy(delete, path);
 
             var epl = "@Name('S1') select * from MyWindow " +
@@ -271,7 +271,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
             env.CompileDeploy(namedWindow, path);
             var insert = "insert into MyWindow select * from SupportBean";
             env.CompileDeploy(insert, path);
-            var delete = "on SupportBean_S0 delete from MyWindow where TheString = p00 and IntPrimitive = Id";
+            var delete = "on SupportBean_S0 delete from MyWindow where TheString = P00 and IntPrimitive = Id";
             env.CompileDeploy(delete, path);
 
             var epl = "@Name('S1') select * from MyWindow " +

@@ -78,7 +78,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                 .IfRefNullReturnNull("rhs");
 
             if (coercer == null) {
-                method.Block.DeclareVar<bool>("eq", ExprDotMethod(left, "equals", Ref("rhs")));
+                method.Block.DeclareVar<bool>("eq", ExprDotMethod(left, "Equals", Ref("rhs")));
                 if (isNot) {
                     method.Block.IfCondition(Ref("eq")).BlockReturn(ConstantFalse());
                 }
@@ -89,7 +89,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
             else {
                 method.Block.DeclareVar<object>("left", coercer.CoerceCodegen(left, symbols.LeftResultType))
                     .DeclareVar<object>("right", coercer.CoerceCodegen(Ref("rhs"), rightEvalType))
-                    .DeclareVar<bool>("eq", ExprDotMethod(Ref("left"), "equals", Ref("right")));
+                    .DeclareVar<bool>("eq", ExprDotMethod(Ref("left"), "Equals", Ref("right")));
                 if (isNot) {
                     method.Block.IfCondition(Ref("eq")).BlockReturn(ConstantFalse());
                 }

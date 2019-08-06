@@ -86,7 +86,7 @@ namespace com.espertech.esper.common.@internal.context.controller.keyed
                     "factory",
                     ExprDotMethodChain(symbols.GetAddInitSvc(method))
                         .Get(EPStatementInitServicesConstants.CONTEXTSERVICEFACTORY)
-                        .Get("KeyedFactory"))
+                        .Add("KeyedFactory"))
                 .SetProperty(Ref("factory"), "KeyedSpec", detail.MakeCodegen(method, symbols, classScope))
                 .MethodReturn(Ref("factory"));
             return method;

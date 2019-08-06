@@ -94,7 +94,7 @@ namespace com.espertech.esper.common.@internal.epl.output.core
         {
             method.Block.Apply(Instblock(classScope, "qOutputProcessNonBufferedJoin", REF_NEWDATA, REF_OLDDATA));
 
-            GenerateRSPCall("processJoinResult", method, classScope);
+            GenerateRSPCall("ProcessJoinResult", method, classScope);
 
             method.Block.IfRefNull("newOldEvents")
                 .Apply(Instblock(classScope, "aOutputProcessNonBufferedJoin"))

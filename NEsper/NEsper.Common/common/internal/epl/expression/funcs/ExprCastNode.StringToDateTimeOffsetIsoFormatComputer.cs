@@ -47,7 +47,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
             {
                 return CodegenExpressionBuilder.StaticMethod(
                     typeof(StringToDateTimeOffsetWStaticFormatComputer),
-                    "stringToLocalDateTimeWStaticFormatParse",
+                    "StringToLocalDateTimeWStaticFormatParse",
                     input,
                     CodegenExpressionBuilder.PublicConstValue(typeof(DateTimeFormat), "ISO_DATE_TIME"));
             }

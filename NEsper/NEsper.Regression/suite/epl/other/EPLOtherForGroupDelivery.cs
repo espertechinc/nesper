@@ -77,7 +77,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
                     "select * from SupportBean for grouped_delivery(dummy)",
-                    "Failed to valIdate for-clause expression 'dummy': Property named 'dummy' is not valId in any stream");
+                    "Failed to validate for-clause expression 'dummy': Property named 'dummy' is not valid in any stream");
 
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,

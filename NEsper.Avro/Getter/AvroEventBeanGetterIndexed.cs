@@ -124,7 +124,7 @@ namespace NEsper.Avro.Getter
                 typeof(ICollection<object>),
                 CodegenExpressionBuilder.ExprDotMethod(
                     underlyingExpression,
-                    "get",
+                    "Get",
                     CodegenExpressionBuilder.Constant(_key)));
             return CodegenExpressionBuilder.StaticMethod(
                 GetType(),

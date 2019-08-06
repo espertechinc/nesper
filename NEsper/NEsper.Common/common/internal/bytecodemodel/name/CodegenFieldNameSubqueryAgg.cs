@@ -20,7 +20,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.name
         }
 
         public string Name {
-            get => CodegenPackageScopeNames.AggregationSubquery(_subqueryNumber);
+            get => CodegenNamespaceScopeNames.AggregationSubquery(_subqueryNumber);
         }
 
         public int SubqueryNumber {

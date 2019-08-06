@@ -53,7 +53,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
                         classScope) => {
                         CodegenMethod method = parent.MakeChild(typeof(string), GetType(), classScope)
                             .AddParam(typeof(EventBean), "bean");
-                        method.Block.MethodReturn(ExprDotMethodChain(Ref("bean")).Add("getEventType").Add("getName"));
+                        method.Block.MethodReturn(ExprDotMethodChain(Ref("bean")).Get("EventType").Get("Name"));
                         return LocalMethod(method, beanExpression);
                     }
                 };

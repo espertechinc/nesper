@@ -55,7 +55,7 @@ namespace com.espertech.esper.common.@internal.@event.arr
                 true,
                 typeof(EventType),
                 EventTypeUtility.ResolveTypeCodegen(fragmentEventType, EPStatementInitServicesConstants.REF));
-            return StaticMethod(typeof(BaseNestableEventUtil), "handleBNCreateFragmentObjectArray", value, mType, mSvc);
+            return StaticMethod(typeof(BaseNestableEventUtil), "HandleBNCreateFragmentObjectArray", value, mType, mSvc);
         }
     }
 } // end of namespace

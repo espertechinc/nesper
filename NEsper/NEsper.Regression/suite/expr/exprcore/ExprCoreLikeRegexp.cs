@@ -153,7 +153,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@Name('s0') select p00 like p01 as c0, Id like p02 as c1 from SupportBean_S0";
+                var epl = "@Name('s0') select P00 like P01 as c0, Id like p02 as c1 from SupportBean_S0";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 SendS0Event(env, 413, "%XXaXX", "%a%", "%1%", null);
@@ -206,7 +206,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@Name('s0') select p00 regexp p01 as c0, Id regexp p02 as c1 from SupportBean_S0";
+                var epl = "@Name('s0') select P00 regexp P01 as c0, Id regexp p02 as c1 from SupportBean_S0";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 SendS0Event(env, 413, "XXAXX", ".*A.*", ".*1.*", null);
@@ -235,8 +235,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@Name('s0') select p00 like p01 as r1, " +
-                          " p00 like p01 escape \"!\" as r2," +
+                var epl = "@Name('s0') select P00 like P01 as r1, " +
+                          " P00 like P01 escape \"!\" as r2," +
                           " p02 regexp p03 as r3 " +
                           " from SupportBean_S0";
                 env.CompileDeploy(epl).AddListener("s0");
@@ -264,7 +264,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                 TryInvalidCompile(
                     env,
                     "select TheString regexp \"*any*\" from SupportBean",
-                    "Failed to valIdate select-clause expression 'TheString regexp \"*any*\"': Error compiling regex pattern '*any*': Dangling meta character '*' near index 0");
+                    "Failed to validate select-clause expression 'TheString regexp \"*any*\"': Error compiling regex pattern '*any*': Dangling meta character '*' near index 0");
             }
         }
 
@@ -272,7 +272,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@Name('s0') select p00 regexp '\\\\w*-ABC' as result from SupportBean_S0";
+                var epl = "@Name('s0') select P00 regexp '\\\\w*-ABC' as result from SupportBean_S0";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 env.SendEventBean(new SupportBean_S0(-1, "TBT-ABC"));
@@ -289,19 +289,19 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
         {
             public void Run(RegressionEnvironment env)
             {
-                var stmtText = "@Name('s0') select p00 like p01 as r1, " +
-                               "p00 like p01 escape \"!\" as r2, " +
+                var stmtText = "@Name('s0') select P00 like P01 as r1, " +
+                               "P00 like P01 escape \"!\" as r2, " +
                                "p02 regexp p03 as r3 " +
                                "from SupportBean_S0";
 
                 var model = new EPStatementObjectModel();
                 model.Annotations = Collections.SingletonList(AnnotationPart.NameAnnotation("s0"));
                 model.SelectClause = SelectClause.Create()
-                    .Add(Expressions.Like(Expressions.Property("p00"), Expressions.Property("p01")), "r1")
+                    .Add(Expressions.Like(Expressions.Property("P00"), Expressions.Property("P01")), "r1")
                     .Add(
                         Expressions.Like(
-                            Expressions.Property("p00"),
-                            Expressions.Property("p01"),
+                            Expressions.Property("P00"),
+                            Expressions.Property("P01"),
                             Expressions.Constant("!")),
                         "r2")
                     .Add(Expressions.Regexp(Expressions.Property("p02"), Expressions.Property("p03")), "r3");
@@ -323,8 +323,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@Name('s0') select p00 like p01 as r1, " +
-                          "p00 like p01 escape \"!\" as r2, " +
+                var epl = "@Name('s0') select P00 like P01 as r1, " +
+                          "P00 like P01 escape \"!\" as r2, " +
                           "p02 regexp p03 as r3 " +
                           "from SupportBean_S0";
 

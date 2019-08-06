@@ -37,8 +37,8 @@ namespace com.espertech.esper.common.@internal.@event.bean.instantiator
             var ctor = codegenClassScope.AddFieldUnshared(
                 true,
                 typeof(ConstructorInfo),
-                StaticMethod(typeof(BeanInstantiatorForgeByCtor), "getSunJVMCtor", Constant(underlyingType)));
-            return StaticMethod(typeof(BeanInstantiatorForgeByCtor), "instantiateSunJVMCtor", ctor);
+                StaticMethod(typeof(BeanInstantiatorForgeByCtor), "GetSunJVMCtor", Constant(underlyingType)));
+            return StaticMethod(typeof(BeanInstantiatorForgeByCtor), "InstantiateSunJVMCtor", ctor);
         }
 
         /// <summary>

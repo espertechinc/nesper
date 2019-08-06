@@ -229,7 +229,7 @@ namespace com.espertech.esper.common.@internal.view.intersect
 
         public void VisitView(ViewDataVisitor viewDataVisitor)
         {
-            throw new UnsupportedOperationException("Cannot visit as contained");
+            throw new UnsupportedOperationException("Cannot visit as Contained");
         }
 
         public void NewData(

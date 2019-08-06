@@ -167,16 +167,16 @@ namespace com.espertech.esper.common.@internal.epl.resultset.simple
             CodegenMethod method,
             CodegenInstanceAux instance)
         {
-            method.Block.DeclareVar<UniformPair<EventBean>>(
+            method.Block.DeclareVar<UniformPair<EventBean[]>>(
                     "result",
                     ExprDotMethod(
                         Ref("this"),
                         "ProcessJoinResult",
                         REF_JOINSET,
-                        StaticMethod(typeof(Collections), "emptySet"),
+                        StaticMethod(typeof(Collections), "GetEmptySet", new []{ typeof(MultiKey<EventBean>) }),
                         ConstantTrue()))
                 .IfRefNull("result")
-                .BlockReturn(StaticMethod(typeof(Collections), "emptyIterator"))
+                .BlockReturn(StaticMethod(typeof(Collections), "GetEmptyEnumerator", new[] { typeof(MultiKey<EventBean>) }))
                 .MethodReturn(
                     StaticMethod(
                         typeof(Arrays),

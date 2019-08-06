@@ -1019,12 +1019,12 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 TryInvalid(
                     env,
                     "a=SupportBean_A=>every-distinct(a.IntPrimitive) SupportBean_B",
-                    "Failed to valIdate pattern every-distinct expression 'a.IntPrimitive': Failed to resolve property 'a.IntPrimitive' to a stream or nested property in a stream");
+                    "Failed to validate pattern every-distinct expression 'a.IntPrimitive': Failed to resolve property 'a.IntPrimitive' to a stream or nested property in a stream");
 
                 TryInvalid(
                     env,
                     "every-distinct(dummy) SupportBean_A",
-                    "Failed to valIdate pattern every-distinct expression 'dummy': Property named 'dummy' is not valId in any stream ");
+                    "Failed to validate pattern every-distinct expression 'dummy': Property named 'dummy' is not valid in any stream ");
 
                 TryInvalid(
                     env,

@@ -75,7 +75,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
                            "  measures A.TheString as a" +
                            "  all matches " +
                            "  pattern (A) " +
-                           "  define A as prev(A.value, 2) = value" +
+                           "  define A as prev(A.Value, 2) = value" +
                            ")";
 
                 env.CompileDeploy(text).AddListener("s0");
@@ -122,7 +122,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
                            "  measures A.TheString as a, A.cat as cat" +
                            "  all matches " +
                            "  pattern (A) " +
-                           "  define A as prev(A.value, 2) = value" +
+                           "  define A as prev(A.Value, 2) = value" +
                            ")";
 
                 env.CompileDeploy(text).AddListener("s0");

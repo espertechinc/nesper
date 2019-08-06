@@ -132,11 +132,11 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
                     "Column 1 in subquery does not have a unique column name assigned [select (select TheString, TheString from SupportBean#lastevent as sb) from SupportBean_S0]");
 
                 epl =
-                    "select * from SupportBean_S0(p00 = (select TheString, TheString from SupportBean#lastevent as sb))";
+                    "select * from SupportBean_S0(P00 = (select TheString, TheString from SupportBean#lastevent as sb))";
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
                     epl,
-                    "Failed to valIdate subquery number 1 querying SupportBean: Subquery multi-column select is not allowed in this context. [select * from SupportBean_S0(p00 = (select TheString, TheString from SupportBean#lastevent as sb))]");
+                    "Failed to validate subquery number 1 querying SupportBean: Subquery multi-column select is not allowed in this context. [select * from SupportBean_S0(P00 = (select TheString, TheString from SupportBean#lastevent as sb))]");
 
                 epl =
                     "select exists(select sb.* as v1, IntPrimitive*2 as v3 from SupportBean#lastevent as sb) as subrow from SupportBean_S0 as s0";
@@ -160,11 +160,11 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
                     "Failed to plan subquery number 1 querying SupportBean: Subquery multi-column select does not allow wildcard or stream wildcard when selecting multiple columns. [select (select *, IntPrimitive from SupportBean#lastevent as sb) as subrow from SupportBean_S0 as s0]");
 
                 epl =
-                    "select * from SupportBean_S0(p00 in (select TheString, TheString from SupportBean#lastevent as sb))";
+                    "select * from SupportBean_S0(P00 in (select TheString, TheString from SupportBean#lastevent as sb))";
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
                     epl,
-                    "Failed to valIdate subquery number 1 querying SupportBean: Subquery multi-column select is not allowed in this context. [select * from SupportBean_S0(p00 in (select TheString, TheString from SupportBean#lastevent as sb))]");
+                    "Failed to validate subquery number 1 querying SupportBean: Subquery multi-column select is not allowed in this context. [select * from SupportBean_S0(P00 in (select TheString, TheString from SupportBean#lastevent as sb))]");
             }
         }
 
@@ -194,19 +194,19 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
         {
             public void Run(RegressionEnvironment env)
             {
-                var stmtText = "@Name('s0') select p00, " +
+                var stmtText = "@Name('s0') select P00, " +
                                "(select " +
                                "  sum(IntPrimitive) as v1, " +
                                "  sum(IntPrimitive + 1) as v2, " +
                                "  window(IntPrimitive) as v3, " +
                                "  window(sb.*) as v4 " +
                                "  from SupportBean#keepall sb " +
-                               "  where TheString = s0.p00) as subrow " +
+                               "  where TheString = s0.P00) as subrow " +
                                "from SupportBean_S0 as s0";
                 env.CompileDeployAddListenerMileZero(stmtText, "s0");
 
                 object[][] rows = {
-                    new object[] {"p00", typeof(string), false},
+                    new object[] {"P00", typeof(string), false},
                     new object[] {"subrow", typeof(IDictionary<string, object>), true}
                 };
                 for (var i = 0; i < rows.Length; i++) {
@@ -233,7 +233,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
                     Assert.AreEqual(rows[i][1], prop.PropertyType, message);
                 }
 
-                var fields = "p00,subrow.v1,subrow.v2".SplitCsv();
+                var fields = "P00,subrow.v1,subrow.v2".SplitCsv();
 
                 env.SendEventBean(new SupportBean_S0(1, "T1"));
                 var row = env.Listener("s0").AssertOneGetNewAndReset();

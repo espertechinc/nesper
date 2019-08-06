@@ -118,7 +118,7 @@ namespace com.espertech.esper.common.@internal.@event.map
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            return ExprDotMethod(underlyingExpression, "get", Constant(propertyName));
+            return ExprDotMethod(underlyingExpression, "Get", Constant(propertyName));
         }
 
         private CodegenMethod GetMapCodegen(
@@ -128,7 +128,7 @@ namespace com.espertech.esper.common.@internal.@event.map
             return codegenMethodScope.MakeChild(typeof(object), GetType(), codegenClassScope)
                 .AddParam(typeof(IDictionary<object, object>), "map")
                 .Block
-                .DeclareVar<object>("mapValue", ExprDotMethod(Ref("map"), "get", Constant(propertyName)))
+                .DeclareVar<object>("mapValue", ExprDotMethod(Ref("map"), "Get", Constant(propertyName)))
                 .MethodReturn(
                     LocalMethod(
                         BaseNestableEventUtil.GetArrayPropertyAsUnderlyingsArrayCodegen(

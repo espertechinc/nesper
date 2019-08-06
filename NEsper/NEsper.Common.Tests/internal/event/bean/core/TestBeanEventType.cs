@@ -308,10 +308,10 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
             tests.Add(new PropTestDesc("array[1].Mapped('x')", true, nestedTwo, true, objCombined.Array[1].GetMapped("x")));
             tests.Add(new PropTestDesc("array[1].Mapped('1mb')", true, nestedTwo, true, objCombined.Array[1].GetMapped("1mb")));
             tests.Add(new PropTestDesc("Indexed[1].Mapped('x')", true, nestedTwo, true, objCombined.GetIndexed(1).GetMapped("x")));
-            tests.Add(new PropTestDesc("Indexed[1].Mapped('x').value", true, typeof(string), true, null));
+            tests.Add(new PropTestDesc("Indexed[1].Mapped('x').Value", true, typeof(string), true, null));
             tests.Add(new PropTestDesc("Indexed[1].Mapped('1mb')", true, nestedTwo, true, objCombined.GetIndexed(1).GetMapped("1mb")));
             tests.Add(
-                new PropTestDesc("Indexed[1].Mapped('1mb').value", true, typeof(string), true, objCombined.GetIndexed(1).GetMapped("1mb").Value));
+                new PropTestDesc("Indexed[1].Mapped('1mb').Value", true, typeof(string), true, objCombined.GetIndexed(1).GetMapped("1mb").Value));
             tests.Add(
                 new PropTestDesc("array[1].mapprop", true, typeof(IDictionary<string, object>), true, objCombined.GetIndexed(1).GetMapprop()));
             tests.Add(
@@ -322,7 +322,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
                     true,
                     objCombined.Array[1].GetMapped("1ma")));
             tests.Add(
-                new PropTestDesc("array[1].mapprop('1ma').value", true, typeof(string), true, "1ma0"));
+                new PropTestDesc("array[1].mapprop('1ma').Value", true, typeof(string), true, "1ma0"));
             tests.Add(
                 new PropTestDesc("Indexed[1].mapprop", true, typeof(IDictionary<string, object>),
                     true, objCombined.GetIndexed(1).GetMapprop()));
@@ -332,7 +332,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
             TryInvalidIsProperty(eventTypeComplex, "dummy()");
             TryInvalidIsProperty(eventTypeComplex, "Nested.xx['a']");
             TryInvalidIsProperty(eventTypeNested, "dummy[(");
-            TryInvalidIsProperty(eventTypeNested, "array[1].mapprop[x].value");
+            TryInvalidIsProperty(eventTypeNested, "array[1].mapprop[x].Value");
         }
     }
 } // end of namespace

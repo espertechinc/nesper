@@ -53,7 +53,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
 
             var init = size == 0
                 ? StaticMethod(typeof(Collections), "GetEmptyMap")
-                : NewInstance(typeof(Dictionary<object, object>), Constant(CollectionUtil.CapacityHashMap(size)));
+                : NewInstance(typeof(Dictionary<object, object>));
             var block = methodNode.Block
                 .DeclareVar<IDictionary<object, object>>("props", init);
             var count = 0;

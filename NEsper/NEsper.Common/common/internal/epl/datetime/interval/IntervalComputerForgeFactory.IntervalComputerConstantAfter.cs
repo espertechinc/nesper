@@ -44,7 +44,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
             {
                 return CodegenExpressionBuilder.StaticMethod(
                     typeof(IntervalComputerConstantAfter),
-                    "computeIntervalAfter",
+                    "ComputeIntervalAfter",
                     leftStart,
                     rightEnd,
                     CodegenExpressionBuilder.Constant(start),

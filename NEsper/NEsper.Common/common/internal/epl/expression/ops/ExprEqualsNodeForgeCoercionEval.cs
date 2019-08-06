@@ -123,7 +123,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             block.DeclareVar<object>(
                 "right",
                 forge.NumberCoercerRHS.CoerceCodegen(Ref("r"), rhs.Forge.EvaluationType));
-            var compare = ExprDotMethod(Ref("left"), "equals", Ref("right"));
+            var compare = ExprDotMethod(Ref("left"), "Equals", Ref("right"));
             if (!forge.ForgeRenderable.IsNotEquals) {
                 block.MethodReturn(compare);
             }

@@ -171,7 +171,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
             }
 
             var staticMethodDesc = ExprNodeUtilityResolve.ResolveMethodAllowWildcardAndStream(
-                clazz.Name,
+                clazz.FullName,
                 null,
                 firstItem.Name,
                 firstItem.Parameters,

@@ -20,7 +20,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.name
         }
 
         public string Name {
-            get => CodegenPackageScopeNames.TableAccessResultFuture(_tableAccessNumber);
+            get => CodegenNamespaceScopeNames.TableAccessResultFuture(_tableAccessNumber);
         }
 
         public int TableAccessNumber {

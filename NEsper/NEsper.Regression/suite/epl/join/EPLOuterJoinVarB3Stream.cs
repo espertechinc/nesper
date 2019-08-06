@@ -347,8 +347,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                 var milestone = new AtomicLong();
                 var epl = "@Name('s0') select * from " +
                           "SupportBean_S0#length(1000) as s0 " +
-                          " left outer join SupportBean_S1#length(1000) as s1 on s0.p00 = s1.p10 " +
-                          " right outer join SupportBean_S2#length(1000) as s2 on s0.p00 = s2.p20 ";
+                          " left outer join SupportBean_S1#length(1000) as s1 on s0.P00 = s1.P10 " +
+                          " right outer join SupportBean_S2#length(1000) as s2 on s0.P00 = s2.P20 ";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 TryAssertion(env, milestone);
@@ -365,8 +365,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                 var epl = "@Name('s0') select * from " +
                           "SupportBean_S1#length(1000) as s1 " +
                           " right outer join " +
-                          "SupportBean_S0#length(1000) as s0 on s0.p00 = s1.p10 " +
-                          " right outer join SupportBean_S2#length(1000) as s2 on s0.p00 = s2.p20 ";
+                          "SupportBean_S0#length(1000) as s0 on s0.P00 = s1.P10 " +
+                          " right outer join SupportBean_S2#length(1000) as s2 on s0.P00 = s2.P20 ";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 TryAssertion(env, milestone);
@@ -383,8 +383,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                 var epl = "@Name('s0') select * from " +
                           "SupportBean_S2#length(1000) as s2 " +
                           " left outer join " +
-                          "SupportBean_S0#length(1000) as s0 on s0.p00 = s2.p20 " +
-                          " left outer join SupportBean_S1#length(1000) as s1 on s0.p00 = s1.p10 ";
+                          "SupportBean_S0#length(1000) as s0 on s0.P00 = s2.P20 " +
+                          " left outer join SupportBean_S1#length(1000) as s1 on s0.P00 = s1.P10 ";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 TryAssertion(env, milestone);

@@ -26,7 +26,7 @@ namespace com.espertech.esper.common.@internal.filterspec
                 CodegenExpressionBuilder.NewAnonymousClass(method.Block, typeof(FilterSpecParamFilterForEvalDouble));
 
             var getFilterValueDouble = CodegenMethod
-                .MakeParentNode(typeof(double), originator, classScope)
+                .MakeMethod(typeof(double), originator, classScope)
                 .AddParam(FilterSpecParam.GET_FILTER_VALUE_FP);
             anonymousClass.AddMethod("GetFilterValueDouble", getFilterValueDouble);
             getFilterValueDouble.Block.MethodReturn(
@@ -37,7 +37,7 @@ namespace com.espertech.esper.common.@internal.filterspec
                         getFilterValueDouble)));
 
             var getFilterValue = CodegenMethod
-                .MakeParentNode(typeof(object), originator, classScope)
+                .MakeMethod(typeof(object), originator, classScope)
                 .AddParam(FilterSpecParam.GET_FILTER_VALUE_FP);
             anonymousClass.AddMethod("GetFilterValue", getFilterValue);
             getFilterValue.Block.MethodReturn(

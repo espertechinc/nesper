@@ -547,12 +547,12 @@ namespace com.espertech.esper.regressionlib.suite.view
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
                     "select * from SupportBean#expr(1)",
-                    "Failed to valIdate data window declaration: InvalId return value for expiry expression, expected a boolean return value but received int [select * from SupportBean#expr(1)]");
+                    "Failed to validate data window declaration: Invalid return value for expiry expression, expected a boolean return value but received int [select * from SupportBean#expr(1)]");
 
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
                     "select * from SupportBean#expr((select * from SupportBean#lastevent))",
-                    "Failed to valIdate data window declaration: InvalId expiry expression: Sub-select, previous or prior functions are not supported in this context [select * from SupportBean#expr((select * from SupportBean#lastevent))]");
+                    "Failed to validate data window declaration: Invalid expiry expression: Sub-select, previous or prior functions are not supported in this context [select * from SupportBean#expr((select * from SupportBean#lastevent))]");
             }
         }
 

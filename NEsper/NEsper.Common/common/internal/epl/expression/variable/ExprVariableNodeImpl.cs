@@ -85,7 +85,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.variable
                 var field = classScope.AddOrGetFieldSharable(
                     new VariableReaderPerCPCodegenFieldSharable(VariableMetadata));
                 var cpid = ExprDotName(symbols.GetAddExprEvalCtx(methodNode), "AgentInstanceId");
-                readerExpression = Cast(typeof(VariableReader), ExprDotMethod(field, "get", cpid));
+                readerExpression = Cast(typeof(VariableReader), ExprDotMethod(field, "Get", cpid));
             }
 
             var block = methodNode.Block

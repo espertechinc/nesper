@@ -239,7 +239,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
             var fields = "c0,c1".SplitCsv();
 
             var epl =
-                "create context MyCtx partition by TheString from SupportBean, p00 from SupportBean_S0;\n" +
+                "create context MyCtx partition by TheString from SupportBean, P00 from SupportBean_S0;\n" +
                 "@Name('s0') context MyCtx select " +
                 "(select TheString as c0, sum(IntPrimitive) as c1 " +
                 " from SupportBean#keepall " +
@@ -543,7 +543,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
 
             // test correlated
             var eplTwo = "@Name('s0') select " +
-                         "(select TheString as c0, sum(IntPrimitive) as c1 from SBWindow where TheString = s0.p00 group by TheString).take(10) as e1 from SupportBean_S0 as s0";
+                         "(select TheString as c0, sum(IntPrimitive) as c1 from SBWindow where TheString = s0.P00 group by TheString).take(10) as e1 from SupportBean_S0 as s0";
             env.CompileDeploy(eplTwo, path).AddListener("s0");
 
             env.SendEventBean(new SupportBean_S0(1, "E1"));

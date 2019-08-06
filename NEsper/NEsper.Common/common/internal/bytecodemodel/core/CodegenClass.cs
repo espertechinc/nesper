@@ -8,18 +8,24 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.util;
 using com.espertech.esper.compat.collections;
 
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
+
+using static com.espertech.esper.common.@internal.bytecodemodel.core.CodeGenerationExtensions;
+
+using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
+
 namespace com.espertech.esper.common.@internal.bytecodemodel.core
 {
     public class CodegenClass
     {
-        private readonly CodegenClassMethods _methods;
-        private readonly CodegenClassProperties _properties;
-
         public CodegenClass(
             Type interfaceClass,
             string @namespace,
@@ -34,10 +40,10 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.core
             Namespace = @namespace;
             ClassName = className;
             InterfaceImplemented = interfaceClass;
-            ExplicitMembers = explicitMembers;
             OptionalCtor = optionalCtor;
-            _methods = methods;
-            _properties = properties;
+            ExplicitMembers = explicitMembers;
+            Methods = methods;
+            Properties = properties;
 
             IList<CodegenInnerClass> allInnerClasses = new List<CodegenInnerClass>(innerClasses);
             allInnerClasses.AddAll(codegenClassScope.AdditionalInnerClasses);
@@ -52,15 +58,17 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.core
 
         public IList<CodegenTypedParam> ExplicitMembers { get; }
 
-        public CodegenClassProperties Properties => _properties;
+        public CodegenClassProperties Properties { get; }
 
-        public IList<CodegenPropertyWGraph> PublicProperties => _properties.PublicProperties;
+        public IList<CodegenPropertyWGraph> PublicProperties => Properties.PublicProperties;
 
-        public IList<CodegenPropertyWGraph> PrivateProperties => _properties.PrivateProperties;
+        public IList<CodegenPropertyWGraph> PrivateProperties => Properties.PrivateProperties;
 
-        public IList<CodegenMethodWGraph> PublicMethods => _methods.PublicMethods;
+        public CodegenClassMethods Methods { get; }
 
-        public IList<CodegenMethodWGraph> PrivateMethods => _methods.PrivateMethods;
+        public IList<CodegenMethodWGraph> PublicMethods => Methods.PublicMethods;
+
+        public IList<CodegenMethodWGraph> PrivateMethods => Methods.PrivateMethods;
 
         public IList<CodegenInnerClass> InnerClasses { get; }
 
@@ -71,8 +79,8 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.core
             ISet<Type> classes = new HashSet<Type>();
             AddReferencedClasses(
                 InterfaceImplemented, 
-                _methods, 
-                _properties,
+                Methods, 
+                Properties,
                 classes);
             AddReferencedClasses(ExplicitMembers, classes);
             OptionalCtor?.MergeClasses(classes);
@@ -112,6 +120,125 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.core
             ISet<Type> classes)
         {
             names.ForEach(param => param.MergeClasses(classes));
+        }
+
+        private SyntaxTokenList GetModifiersSyntax()
+        {
+            var modifiers = TokenList();
+            modifiers.Add(Token(SyntaxKind.PublicKeyword));
+            return modifiers;
+        }
+
+        private BaseListSyntax GetBaseListSyntax()
+        {
+            var baseList = BaseList();
+            if (InterfaceImplemented != null)
+            {
+                var baseTypeName = GetNameForType(InterfaceImplemented);
+                baseList.Types.Add(SimpleBaseType(baseTypeName));
+            }
+            return baseList;
+        }
+
+        public ClassDeclarationSyntax CodegenSyntax()
+        {
+            return ClassDeclaration(ClassName)
+                .WithModifiers(GetModifiersSyntax())
+                .WithBaseList(GetBaseListSyntax())
+                .WithMembers(GetMembers());
+        }
+
+        /// <summary>
+        /// Creates the syntax tree for the fields.
+        /// </summary>
+        private SyntaxList<MemberDeclarationSyntax> GetFields()
+        {
+            var fieldList = List<MemberDeclarationSyntax>();
+
+            // Fields
+            foreach (var member in ExplicitMembers)
+            {
+                fieldList = fieldList.Add(member.CodegenSyntaxAsField());
+            }
+            // Add members that are captured via the optional constructor's parameters
+            OptionalCtor?.CtorParams
+                .Where(member => member.IsMemberWhenCtorParam)
+                .For(member => fieldList.Add(member.CodegenSyntaxAsField()));
+
+            return fieldList;
+        }
+
+        /// <summary>
+        /// Creates the syntax tree for the constructors.
+        /// </summary>
+        private SyntaxList<MemberDeclarationSyntax> GetConstructors()
+        {
+            var ctorList = List<MemberDeclarationSyntax>();
+            if (OptionalCtor != null) {
+                ctorList = ctorList.Add(OptionalCtor.CodegenSyntax());
+            }
+
+            return ctorList;
+        }
+
+        /// <summary>
+        /// Creates the syntax tree for the properties.
+        /// </summary>
+        private SyntaxList<MemberDeclarationSyntax> GetProperties()
+        {
+            var propertyList = List<MemberDeclarationSyntax>();
+
+            foreach (var property in PublicProperties) {
+                propertyList = propertyList.Add(property.CodegenSyntax());
+            }
+
+            foreach (var property in PrivateProperties) {
+                propertyList = propertyList.Add(property.CodegenSyntax());
+            }
+
+            return propertyList;
+        }
+
+        /// <summary>
+        /// Creates the syntax tree for the methods.
+        /// </summary>
+        private SyntaxList<MemberDeclarationSyntax> GetMethods()
+        {
+            var methodList = List<MemberDeclarationSyntax>();
+
+            foreach (var method in PublicMethods) {
+                methodList = methodList.Add(method.CodegenSyntax());
+            }
+
+            foreach (var method in PrivateMethods) {
+                methodList = methodList.Add(method.CodegenSyntax());
+            }
+
+            return methodList;
+        }
+
+        /// <summary>
+        /// Creates the syntax tree for the nested classes.
+        /// </summary>
+        private SyntaxList<MemberDeclarationSyntax> GetInnerClasses()
+        {
+            var innerClassList = List<MemberDeclarationSyntax>();
+
+            foreach (var innerClass in InnerClasses)
+            {
+            }
+
+            return innerClassList;
+        }
+
+        private SyntaxList<MemberDeclarationSyntax> GetMembers()
+        {
+            return List<MemberDeclarationSyntax>()
+                .AddRange(GetFields())
+                .AddRange(GetConstructors())
+                .AddRange(GetProperties())
+                .AddRange(GetMethods())
+                .AddRange(GetInnerClasses());
         }
     }
 } // end of namespace

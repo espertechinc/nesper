@@ -101,7 +101,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
                 .BlockReturn(ConstantNull())
                 .IfCondition(Relational(Ref("index"), GE, ExprDotMethod(events, "Size")))
                 .BlockReturn(ConstantNull())
-                .MethodReturn(Cast(typeof(EventBean), ExprDotMethod(events, "get", Ref("index"))));
+                .MethodReturn(Cast(typeof(EventBean), ExprDotMethod(events, "Get", Ref("index"))));
             return LocalMethod(method, index);
         }
 
@@ -126,7 +126,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
                         typeof(EventBean),
                         ExprDotMethod(
                             events,
-                            "get",
+                            "Get",
                             Op(Op(ExprDotMethod(events, "size"), "-", Ref("index")), "-", Constant(1)))));
             return LocalMethod(method, index);
         }
@@ -142,7 +142,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
                 classScope);
             method.Block.IfCondition(ExprDotMethod(events, "IsEmpty"))
                 .BlockReturn(ConstantNull())
-                .MethodReturn(Cast(typeof(EventBean), ExprDotMethod(events, "get", Constant(0))));
+                .MethodReturn(Cast(typeof(EventBean), ExprDotMethod(events, "Get", Constant(0))));
             return LocalMethod(method);
         }
 
@@ -161,7 +161,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
                 .MethodReturn(
                     Cast(
                         typeof(EventBean),
-                        ExprDotMethod(events, "get", Op(ExprDotMethod(events, "size"), "-", Constant(1)))));
+                        ExprDotMethod(events, "Get", Op(ExprDotMethod(events, "size"), "-", Constant(1)))));
             return LocalMethod(method);
         }
 

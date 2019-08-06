@@ -1028,8 +1028,8 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
                     "create window MyWindow#keepall as SupportBean_S0;\n" +
                     "insert into MyWindow select * from SupportBean_S0;\n" +
                     "@Name('s0') select myWindow.Id as c0, s1.Id as c1\n" +
-                    "from SupportBean_S1 as s1 unIdirectional, MyWindow as myWindow\n" +
-                    "where myWindow.p00 = s1.p10\n" +
+                    "from SupportBean_S1 as s1 unidirectional, MyWindow as myWindow\n" +
+                    "where myWindow.P00 = s1.P10\n" +
                     "output first every 1 minutes;";
                 env.CompileDeploy(epl).AddListener("s0");
 

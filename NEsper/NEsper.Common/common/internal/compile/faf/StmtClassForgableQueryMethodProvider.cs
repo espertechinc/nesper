@@ -60,7 +60,7 @@ namespace com.espertech.esper.common.@internal.compile.faf
                         typeof(EPStatementInitServices),
                         EPStatementInitServicesConstants.REF.Ref,
                         false));
-                var providerCtor = new CodegenCtor(GetType(), includeDebugSymbols, ctorParms);
+                var providerCtor = new CodegenCtor(GetType(), ClassName, includeDebugSymbols, ctorParms);
                 var classScope = new CodegenClassScope(includeDebugSymbols, _namespaceScope, ClassName);
 
                 // add query method member

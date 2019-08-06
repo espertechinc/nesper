@@ -48,7 +48,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                     "@event",
                     StaticMethod(
                         typeof(EventBeanUtility),
-                        "getNonemptyFirstEvent",
+                        "GetNonemptyFirstEvent",
                         symbols.GetAddMatchingEvents(method)))
                 .MethodReturn(
                     ExprDotMethod(

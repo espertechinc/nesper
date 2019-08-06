@@ -120,7 +120,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
             SupportMessageAssertUtil.TryInvalidCompile(
                 env,
                 "select varargsOnlyInt(1, null) from SupportBean",
-                "Failed to valIdate select-clause expression 'varargsOnlyInt(1,null)': Could not find static method");
+                "Failed to validate select-clause expression 'varargsOnlyInt(1,null)': Could not find static method");
 
             RunVarargAssertion(
                 env,
@@ -185,10 +185,10 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
             AtomicLong milestone)
         {
             var epl = "@Name('s0') select " +
-                      "java.util.Arrays.asList('a') as c0, " +
-                      "java.util.Arrays.asList({'a'}) as c1, " +
-                      "java.util.Arrays.asList('a', 'b') as c2, " +
-                      "java.util.Arrays.asList({'a', 'b'}) as c3 " +
+                      "Collections.List('a') as c0, " +
+                      "Collections.List({'a'}) as c1, " +
+                      "Collections.List('a', 'b') as c2, " +
+                      "Collections.List({'a', 'b'}) as c3 " +
                       "from SupportBean";
             env.CompileDeployAddListenerMile(epl, "s0", milestone.GetAndIncrement());
 

@@ -56,7 +56,7 @@ namespace com.espertech.esper.common.@internal.@event.arr
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            return StaticMethod(GetType(), "getOADynamicProp", beanExpression, Constant(propertyName));
+            return StaticMethod(GetType(), "GetOADynamicProp", beanExpression, Constant(propertyName));
         }
 
         public CodegenExpression EventBeanExistsCodegen(
@@ -64,7 +64,7 @@ namespace com.espertech.esper.common.@internal.@event.arr
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            return StaticMethod(GetType(), "isExistsOADynamicProp", beanExpression, Constant(propertyName));
+            return StaticMethod(GetType(), "IsExistsOADynamicProp", beanExpression, Constant(propertyName));
         }
 
         public CodegenExpression EventBeanFragmentCodegen(
@@ -111,13 +111,12 @@ namespace com.espertech.esper.common.@internal.@event.arr
             string propertyName)
         {
             var objectArrayEventType = (ObjectArrayEventType) eventBean.EventType;
-            int? index = objectArrayEventType.PropertiesIndexes[propertyName];
-            if (index == null) {
+            if (!objectArrayEventType.PropertiesIndexes.TryGetValue(propertyName, out var index)) {
                 return null;
             }
 
             var theEvent = (object[]) eventBean.Underlying;
-            return theEvent[index.Value];
+            return theEvent[index];
         }
 
         /// <summary>
@@ -131,8 +130,7 @@ namespace com.espertech.esper.common.@internal.@event.arr
             string propertyName)
         {
             var objectArrayEventType = (ObjectArrayEventType) eventBean.EventType;
-            int? index = objectArrayEventType.PropertiesIndexes[propertyName];
-            return index != null;
+            return objectArrayEventType.PropertiesIndexes.TryGetValue(propertyName, out var index);
         }
     }
 } // end of namespace

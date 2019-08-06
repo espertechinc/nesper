@@ -28,6 +28,8 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
             OutermostClassName = outermostClassName;
         }
 
+        public string ClassName { get; }
+
         public CodegenNamespaceScope NamespaceScope { get; }
 
         public string OutermostClassName { get; }

@@ -104,7 +104,7 @@ namespace com.espertech.esper.common.@internal.@event.map
         {
             return StaticMethod(
                 GetType(),
-                "getMapMappedValue",
+                "GetMapMappedValue",
                 underlyingExpression,
                 Constant(fieldName),
                 Constant(key));
@@ -117,7 +117,7 @@ namespace com.espertech.esper.common.@internal.@event.map
         {
             return StaticMethod(
                 GetType(),
-                "isMapExistsProperty",
+                "IsMapExistsProperty",
                 underlyingExpression,
                 Constant(fieldName),
                 Constant(key));
@@ -147,7 +147,7 @@ namespace com.espertech.esper.common.@internal.@event.map
         {
             return StaticMethod(
                 GetType(),
-                "getMapMappedValue",
+                "GetMapMappedValue",
                 CastUnderlying(typeof(IDictionary<object, object>), beanExpression),
                 Constant(fieldName),
                 key);

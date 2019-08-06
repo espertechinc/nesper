@@ -353,39 +353,39 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
             SupportMessageAssertUtil.TryInvalidCompile(
                 env,
                 "select cast(TheString, date, x:1) from SupportBean",
-                "Failed to valIdate select-clause expression 'cast(TheString,date,x:1)': Unexpected named parameter 'x', expecting any of the following: [dateformat]");
+                "Failed to validate select-clause expression 'cast(TheString,date,x:1)': Unexpected named parameter 'x', expecting any of the following: [dateformat]");
 
             // invalid date format
             SupportMessageAssertUtil.TryInvalidCompile(
                 env,
                 "select cast(TheString, date, dateformat:'BBBBMMDD') from SupportBean",
-                "Failed to valIdate select-clause expression 'cast(TheString,date,dateformat:\"BBB...(42 chars)': InvalId date format 'BBBBMMDD' (as obtained from new SimpleDateFormat): Illegal pattern character 'B'");
+                "Failed to validate select-clause expression 'cast(TheString,date,dateformat:\"BBB...(42 chars)': Invalid date format 'BBBBMMDD' (as obtained from new SimpleDateFormat): Illegal pattern character 'B'");
             SupportMessageAssertUtil.TryInvalidCompile(
                 env,
                 "select cast(TheString, date, dateformat:1) from SupportBean",
-                "Failed to valIdate select-clause expression 'cast(TheString,date,dateformat:1)': Failed to valIdate named parameter 'dateformat', expected a single expression returning any of the following types: string,DateFormat,DateTimeFormatter");
+                "Failed to validate select-clause expression 'cast(TheString,date,dateformat:1)': Failed to validate named parameter 'dateformat', expected a single expression returning any of the following types: string,DateFormat,DateTimeFormatter");
 
             // invalid input
             SupportMessageAssertUtil.TryInvalidCompile(
                 env,
                 "select cast(IntPrimitive, date, dateformat:'yyyyMMdd') from SupportBean",
-                "Failed to valIdate select-clause expression 'cast(IntPrimitive,date,dateformat:\"...(45 chars)': Use of the 'dateformat' named parameter requires a string-type input");
+                "Failed to validate select-clause expression 'cast(IntPrimitive,date,dateformat:\"...(45 chars)': Use of the 'dateformat' named parameter requires a string-type input");
 
             // invalid target
             SupportMessageAssertUtil.TryInvalidCompile(
                 env,
                 "select cast(TheString, int, dateformat:'yyyyMMdd') from SupportBean",
-                "Failed to valIdate select-clause expression 'cast(TheString,int,dateformat:\"yyyy...(41 chars)': Use of the 'dateformat' named parameter requires a target type of calendar, date, long, localdatetime, localdate, localtime or zoneddatetime");
+                "Failed to validate select-clause expression 'cast(TheString,int,dateformat:\"yyyy...(41 chars)': Use of the 'dateformat' named parameter requires a target type of calendar, date, long, localdatetime, localdate, localtime or zoneddatetime");
 
             // invalid parser
             SupportMessageAssertUtil.TryInvalidCompile(
                 env,
                 "select cast('xx', date, dateformat:java.time.format.DateTimeFormatter.ofPattern(\"yyyyMMddHHmmssVV\")) from SupportBean",
-                "Failed to valIdate select-clause expression 'cast(\"xx\",date,dateformat:java.time...(91 chars)': InvalId format, expected string-format or DateFormat but received java.time.format.DateTimeFormatter");
+                "Failed to validate select-clause expression 'cast(\"xx\",date,dateformat:java.time...(91 chars)': Invalid format, expected string-format or DateFormat but received java.time.format.DateTimeFormatter");
             SupportMessageAssertUtil.TryInvalidCompile(
                 env,
                 "select cast('xx', localdatetime, dateformat:SimpleDateFormat.getInstance()) from SupportBean",
-                "Failed to valIdate select-clause expression 'cast(\"xx\",localdatetime,dateformat:...(66 chars)': InvalId format, expected string-format or DateTimeFormatter but received java.text.DateFormat");
+                "Failed to validate select-clause expression 'cast(\"xx\",localdatetime,dateformat:...(66 chars)': Invalid format, expected string-format or DateTimeFormatter but received java.text.DateFormat");
         }
 
         private static void AssertResults(

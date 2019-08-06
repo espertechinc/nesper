@@ -228,7 +228,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                     "insert into MyInfra select IntPrimitive as numericKey, TheString as value from SupportBean",
                     path);
 
-                var epl = "@Name('out') on SupportBean_S0 as s0 select value from MyInfra where value = p00";
+                var epl = "@Name('out') on SupportBean_S0 as s0 select value from MyInfra where value = P00";
                 env.CompileDeploy(epl, path).AddListener("out");
 
                 SendSupportBean(env, "E1", 1);
@@ -830,14 +830,14 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
             {
                 var path = new RegressionPath();
                 var stmtTextCreate = namedWindow
-                    ? "create window MyInfraInvalId#keepall as select * from SupportBean"
-                    : "create table MyInfraInvalId (TheString string, IntPrimitive int)";
+                    ? "create window MyInfraInvalid#keepall as select * from SupportBean"
+                    : "create table MyInfraInvalid (TheString string, IntPrimitive int)";
                 env.CompileDeploy(stmtTextCreate, path);
 
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
                     path,
-                    "on SupportBean_A select * from MyInfraInvalId where sum(IntPrimitive) > 100",
+                    "on SupportBean_A select * from MyInfraInvalid where sum(IntPrimitive) > 100",
                     "Error valIdating expression: An aggregate function may not appear in a WHERE clause (use the HAVING clause) [");
 
                 SupportMessageAssertUtil.TryInvalidCompile(
@@ -849,8 +849,8 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
                     path,
-                    "on SupportBean_A select prev(1, TheString) from MyInfraInvalId",
-                    "Failed to valIdate select-clause expression 'prev(1,TheString)': Previous function cannot be used in this context [");
+                    "on SupportBean_A select prev(1, TheString) from MyInfraInvalid",
+                    "Failed to validate select-clause expression 'prev(1,TheString)': Previous function cannot be used in this context [");
 
                 env.UndeployAll();
             }
@@ -971,7 +971,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                     ? "insert into MyInfraWA select * from SupportBean"
                     : "insert into MyInfraWA select TheString, IntPrimitive from SupportBean";
                 env.CompileDeploy(eplInsert, path);
-                env.CompileDeploy("on SupportBean_S1 as s1 delete from MyInfraWA where s1.p10 = TheString", path);
+                env.CompileDeploy("on SupportBean_S1 as s1 delete from MyInfraWA where s1.P10 = TheString", path);
 
                 var epl = "@Name('select') on SupportBean_S0 as s0 " +
                           "select window(win.*) as c0," +

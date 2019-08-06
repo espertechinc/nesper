@@ -216,7 +216,7 @@ namespace com.espertech.esper.common.@internal.view.expression
             }
 
             var aggregationClassNames =
-                new AggregationClassNames(CodegenPackageScopeNames.ClassPostfixAggregationForView(streamNumber));
+                new AggregationClassNames(CodegenNamespaceScopeNames.ClassPostfixAggregationForView(streamNumber));
             var aggResult = AggregationServiceFactoryCompiler.MakeInnerClassesAndInit(
                 false,
                 aggregationServiceForgeDesc.AggregationServiceFactoryForge,
@@ -232,7 +232,7 @@ namespace com.espertech.esper.common.@internal.view.expression
         {
             var classNameExpressionEval = "exprview_eval_" + streamNumber;
 
-            var evalMethod = CodegenMethod.MakeParentNode(
+            var evalMethod = CodegenMethod.MakeMethod(
                     typeof(object),
                     GetType(),
                     CodegenSymbolProviderEmpty.INSTANCE,
@@ -245,7 +245,7 @@ namespace com.espertech.esper.common.@internal.view.expression
             evalMethod.Block.MethodReturn(LocalMethod(evalMethodCall, REF_EPS, REF_ISNEWDATA, REF_EXPREVALCONTEXT));
 
             var assignMethod = CodegenMethod
-                .MakeParentNode(typeof(void), GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope)
+                .MakeMethod(typeof(void), GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope)
                 .AddParam(typeof(AggregationResultFuture), "future");
             CodegenExpression field = classScope.NamespaceScope.AddOrGetFieldWellKnown(
                 new CodegenFieldNameViewAgg(streamNumber),

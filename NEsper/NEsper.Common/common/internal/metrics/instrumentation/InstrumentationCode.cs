@@ -36,7 +36,7 @@ namespace com.espertech.esper.common.@internal.metrics.instrumentation
         {
             block.IfCondition(PublicConstValue(InstrumentationConstants.RUNTIME_HELPER_CLASS, "ENABLED"))
                 .Expression(
-                    ExprDotMethodChain(StaticMethod(InstrumentationConstants.RUNTIME_HELPER_CLASS, "get"))
+                    ExprDotMethodChain(StaticMethod(InstrumentationConstants.RUNTIME_HELPER_CLASS, "Get"))
                         .Add(name, expressions))
                 .BlockEnd();
         }

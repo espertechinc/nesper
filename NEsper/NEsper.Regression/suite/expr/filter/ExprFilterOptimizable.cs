@@ -902,7 +902,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
             int numStatements,
             AtomicLong milestone)
         {
-            // test function returns lookup value and "equals"
+            // test function returns lookup value and "Equals"
             for (var i = 0; i < numStatements; i++) {
                 var text = "@Name('s" + i + "') " + epl.Replace("!NUM!", Convert.ToString(i));
                 env.CompileDeploy(text, path).AddListener("s" + i);
@@ -933,7 +933,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
             string epl,
             AtomicLong milestone)
         {
-            // test function returns lookup value and "equals"
+            // test function returns lookup value and "Equals"
             var count = 10;
             for (var i = 0; i < count; i++) {
                 var compiled = env.Compile("@Name('s" + i + "')" + epl, path);

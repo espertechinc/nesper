@@ -48,8 +48,8 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
                            "  measures A.TheString as a_string, B.TheString as b_string" +
                            "  all matches pattern (A B) " +
                            "  define " +
-                           "    A as PREV(A.TheString, 3) = 'P3' and PREV(A.TheString, 2) = 'P2' and PREV(A.TheString, 4) = 'P4' and Math.abs(prev(A.value, 0)) >= 0," +
-                           "    B as B.value in (PREV(B.value, 4), PREV(B.value, 2))" +
+                           "    A as PREV(A.TheString, 3) = 'P3' and PREV(A.TheString, 2) = 'P2' and PREV(A.TheString, 4) = 'P4' and Math.abs(prev(A.Value, 0)) >= 0," +
+                           "    B as B.Value in (PREV(B.Value, 4), PREV(B.Value, 2))" +
                            ")";
 
                 env.CompileDeploy(text).AddListener("s0");
@@ -154,7 +154,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
                            "  all matches pattern (A B) " +
                            "  define " +
                            "    A as PREV(A.TheString, 3) = 'P3' and PREV(A.TheString, 2) = 'P2' and PREV(A.TheString, 4) = 'P4'," +
-                           "    B as B.value in (PREV(B.value, 4), PREV(B.value, 2))" +
+                           "    B as B.Value in (PREV(B.Value, 4), PREV(B.Value, 2))" +
                            ") order by cat";
 
                 env.CompileDeploy(text).AddListener("s0");
@@ -258,7 +258,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
                            "  measures A.cat as cat, A.TheString as a_string" +
                            "  all matches pattern (A) " +
                            "  define " +
-                           "    A as PREV(A.value) = (A.value - 1)" +
+                           "    A as PREV(A.Value) = (A.Value - 1)" +
                            ") order by a_string";
 
                 env.CompileDeploy(text).AddListener("s0");
@@ -373,11 +373,11 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
                 var text = "@Name('s0') select * from SupportRecogBean#keepall " +
                            "match_recognize (" +
                            "  partition by TheString, cat" +
-                           "  measures A.TheString as a_string, A.cat as a_cat, A.value as a_value, B.value as b_value " +
+                           "  measures A.TheString as a_string, A.cat as a_cat, A.Value as a_value, B.Value as b_value " +
                            "  all matches pattern (A B) " +
                            "  define " +
-                           "    A as (A.value > PREV(A.value))," +
-                           "    B as (B.value > PREV(B.value))" +
+                           "    A as (A.Value > PREV(A.Value))," +
+                           "    B as (B.Value > PREV(B.Value))" +
                            ") order by a_string, a_cat";
 
                 env.CompileDeploy(text).AddListener("s0");
@@ -463,7 +463,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
                            "match_recognize (" +
                            "  measures A.TheString as a_string" +
                            "  all matches pattern (A) " +
-                           "  define A as (A.value > PREV(A.value))" +
+                           "  define A as (A.Value > PREV(A.Value))" +
                            ") " +
                            "order by a_string";
                 env.CompileDeploy(text).AddListener("s0");
@@ -537,7 +537,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
                        "match_recognize (" +
                        "  measures A.TheString as a_string" +
                        "  all matches pattern (A) " +
-                       "  define A as (PREV(A.value, 2) = 5)" +
+                       "  define A as (PREV(A.Value, 2) = 5)" +
                        ") " +
                        "order by a_string";
 

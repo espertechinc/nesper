@@ -156,11 +156,11 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
                     "select * from pattern [every SupportBean while ('abc')]",
-                    "InvalId parameter for pattern guard 'SupportBean while (\"abc\")': Expression pattern guard requires a single expression as a parameter returning a true or false (boolean) value [select * from pattern [every SupportBean while ('abc')]]");
+                    "Invalid parameter for pattern guard 'SupportBean while (\"abc\")': Expression pattern guard requires a single expression as a parameter returning a true or false (boolean) value [select * from pattern [every SupportBean while ('abc')]]");
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
                     "select * from pattern [every SupportBean while (abc)]",
-                    "Failed to valIdate pattern guard expression 'abc': Property named 'abc' is not valId in any stream [select * from pattern [every SupportBean while (abc)]]");
+                    "Failed to validate pattern guard expression 'abc': Property named 'abc' is not valid in any stream [select * from pattern [every SupportBean while (abc)]]");
             }
         }
     }

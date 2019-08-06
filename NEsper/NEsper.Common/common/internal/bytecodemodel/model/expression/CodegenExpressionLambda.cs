@@ -64,6 +64,12 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
             return this;
         }
 
+        public CodegenExpressionLambda WithParam<T>(string paramName)
+        {
+            ParamNames.Add(new CodegenNamedParam(typeof(T), paramName));
+            return this;
+        }
+
         public override void Render(
             StringBuilder builder,
             bool isInnerClass,

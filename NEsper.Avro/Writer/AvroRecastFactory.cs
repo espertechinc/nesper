@@ -266,7 +266,7 @@ namespace NEsper.Avro.Writer
                     typeof(Schema),
                     CodegenExpressionBuilder.StaticMethod(
                         typeof(AvroSchemaUtil),
-                        "resolveAvroSchema",
+                        "ResolveAvroSchema",
                         EventTypeUtility.ResolveTypeCodegen(ResultEventType, EPStatementInitServicesConstants.REF)));
                 var methodNode = codegenMethodScope.MakeChild(typeof(EventBean), GetType(), codegenClassScope);
                 var refEPS = exprSymbol.GetAddEPS(methodNode);
@@ -291,7 +291,7 @@ namespace NEsper.Avro.Writer
                     if (item.OptionalFromIndex != null) {
                         value = CodegenExpressionBuilder.ExprDotMethod(
                             CodegenExpressionBuilder.Ref("source"),
-                            "get",
+                            "Get",
                             CodegenExpressionBuilder.Constant(item.OptionalFromIndex));
                     }
                     else {

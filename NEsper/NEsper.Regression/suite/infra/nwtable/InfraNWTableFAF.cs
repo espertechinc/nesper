@@ -498,7 +498,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                     env,
                     path,
                     epl,
-                    "Failed to valIdate select-clause expression 'prev(1,TheString)': Previous function cannot be used in this context [select prev(1, TheString) from MyInfra]");
+                    "Failed to validate select-clause expression 'prev(1,TheString)': Previous function cannot be used in this context [select prev(1, TheString) from MyInfra]");
 
                 epl = "insert into MyInfra(IntPrimitive) select 'a'";
                 if (namedWindow) {
@@ -506,14 +506,14 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                         env,
                         path,
                         epl,
-                        "InvalId assignment of column 'IntPrimitive' of type 'System.String' to event property 'IntPrimitive' typed as 'int', column and parameter types mismatch [insert into MyInfra(IntPrimitive) select 'a']");
+                        "Invalid assignment of column 'IntPrimitive' of type 'System.String' to event property 'IntPrimitive' typed as 'int', column and parameter types mismatch [insert into MyInfra(IntPrimitive) select 'a']");
                 }
                 else {
                     TryInvalidFAFCompile(
                         env,
                         path,
                         epl,
-                        "InvalId assignment of column 'IntPrimitive' of type 'System.String' to event property 'IntPrimitive' typed as 'System.Integer', column and parameter types mismatch [insert into MyInfra(IntPrimitive) select 'a']");
+                        "Invalid assignment of column 'IntPrimitive' of type 'System.String' to event property 'IntPrimitive' typed as 'System.Integer', column and parameter types mismatch [insert into MyInfra(IntPrimitive) select 'a']");
                 }
 
                 epl = "insert into MyInfra(IntPrimitive, TheString) select 1";
@@ -722,8 +722,8 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                     "select w1.key, sum(value) from Infra1 w1, Infra2 w2 WHERE w1.keyJoin = w2.keyJoin GROUP BY w1.key order by w1.key";
                 var fieldsAgg = "w1.key,sum(value)".SplitCsv();
                 var queryNoagg =
-                    "select w1.key, w2.value from Infra1 w1, Infra2 w2 where w1.keyJoin = w2.keyJoin and value = 1 order by w1.key";
-                var fieldsNoagg = "w1.key,w2.value".SplitCsv();
+                    "select w1.key, w2.Value from Infra1 w1, Infra2 w2 where w1.keyJoin = w2.keyJoin and value = 1 order by w1.key";
+                var fieldsNoagg = "w1.key,w2.Value".SplitCsv();
 
                 var result = env.CompileExecuteFAF(queryAgg, path).Array;
                 Assert.AreEqual(0, result.Length);

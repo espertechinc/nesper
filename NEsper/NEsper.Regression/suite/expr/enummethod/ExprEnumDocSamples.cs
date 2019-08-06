@@ -397,7 +397,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
                 AssertStmt(
                     env,
                     path,
-                    "select za.items.except(zb.items) as itemsCompared from LocationReport as za unIdirectional, LocationReport#length(10) as zb");
+                    "select za.items.except(zb.items) as itemsCompared from LocationReport as za unidirectional, LocationReport#length(10) as zb");
 
                 env.UndeployAll();
             }

@@ -205,7 +205,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
             public void Run(RegressionEnvironment env)
             {
                 var stmtText =
-                    "@Name('s0') select Id from SupportBean_S0 where (select p10='X' from SupportBean_S1#length(1000))";
+                    "@Name('s0') select Id from SupportBean_S0 where (select P10='X' from SupportBean_S1#length(1000))";
 
                 env.CompileDeployAddListenerMileZero(stmtText, "s0");
 
@@ -290,12 +290,12 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
                     "select (select dummy from SupportBean_S1#lastevent) as IdS1 from SupportBean_S0",
-                    "Failed to plan subquery number 1 querying SupportBean_S1: Failed to valIdate select-clause expression 'dummy': Property named 'dummy' is not valId in any stream [select (select dummy from SupportBean_S1#lastevent) as IdS1 from SupportBean_S0]");
+                    "Failed to plan subquery number 1 querying SupportBean_S1: Failed to validate select-clause expression 'dummy': Property named 'dummy' is not valid in any stream [select (select dummy from SupportBean_S1#lastevent) as IdS1 from SupportBean_S0]");
 
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
                     "select (select (select Id from SupportBean_S1#lastevent) Id from SupportBean_S1#lastevent) as IdS1 from SupportBean_S0",
-                    "InvalId nested subquery, subquery-within-subquery is not supported [select (select (select Id from SupportBean_S1#lastevent) Id from SupportBean_S1#lastevent) as IdS1 from SupportBean_S0]");
+                    "Invalid nested subquery, subquery-within-subquery is not supported [select (select (select Id from SupportBean_S1#lastevent) Id from SupportBean_S1#lastevent) as IdS1 from SupportBean_S0]");
 
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
@@ -305,7 +305,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
                     "select * from SupportBean_S0(Id=5 and (select Id from SupportBean_S1))",
-                    "Failed to valIdate subquery number 1 querying SupportBean_S1: Subqueries require one or more views to limit the stream, consIder declaring a length or time window [select * from SupportBean_S0(Id=5 and (select Id from SupportBean_S1))]");
+                    "Failed to validate subquery number 1 querying SupportBean_S1: Subqueries require one or more views to limit the stream, consIder declaring a length or time window [select * from SupportBean_S0(Id=5 and (select Id from SupportBean_S1))]");
 
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
@@ -324,13 +324,13 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
 
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
-                    "select (select Id from SupportBean_S1#lastevent where Id = p00) from SupportBean_S0",
-                    "Failed to plan subquery number 1 querying SupportBean_S1: Failed to valIdate filter expression 'Id=p00': Property named 'p00' must be prefixed by a stream name, use the stream name itself or use the as-clause to name the stream with the property in the format \"stream.property\" [select (select Id from SupportBean_S1#lastevent where Id = p00) from SupportBean_S0]");
+                    "select (select Id from SupportBean_S1#lastevent where Id = P00) from SupportBean_S0",
+                    "Failed to plan subquery number 1 querying SupportBean_S1: Failed to validate filter expression 'Id=P00': Property named 'P00' must be prefixed by a stream name, use the stream name itself or use the as-clause to name the stream with the property in the format \"stream.property\" [select (select Id from SupportBean_S1#lastevent where Id = P00) from SupportBean_S0]");
 
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
                     "select Id in (select * from SupportBean_S1#length(1000)) as value from SupportBean_S0",
-                    "Failed to valIdate select-clause expression subquery number 1 querying SupportBean_S1: Implicit conversion from datatype 'SupportBean_S1' to 'Integer' is not allowed [select Id in (select * from SupportBean_S1#length(1000)) as value from SupportBean_S0]");
+                    "Failed to validate select-clause expression subquery number 1 querying SupportBean_S1: Implicit conversion from datatype 'SupportBean_S1' to 'Integer' is not allowed [select Id in (select * from SupportBean_S1#length(1000)) as value from SupportBean_S0]");
             }
         }
 
@@ -435,7 +435,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
             public void Run(RegressionEnvironment env)
             {
                 var stmtText =
-                    "@Name('s0') select (select Id from SupportBean_S1(p10='A')#length(1000)) as IdS1 from SupportBean_S0";
+                    "@Name('s0') select (select Id from SupportBean_S1(P10='A')#length(1000)) as IdS1 from SupportBean_S0";
 
                 env.CompileDeployAddListenerMileZero(stmtText, "s0");
 
@@ -506,7 +506,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
             {
                 var fields = "theString,col".SplitCsv();
                 var epl =
-                    "@Name('s0') select TheString, (select p00 from SupportBean_S0#lastevent()) as col from SupportBean";
+                    "@Name('s0') select TheString, (select P00 from SupportBean_S0#lastevent()) as col from SupportBean";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
                 env.SendEventBean(new SupportBean("E1", 1));
@@ -550,7 +550,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
             public void Run(RegressionEnvironment env)
             {
                 var stmtText =
-                    "@Name('s0') select (select p10 || p11 from SupportBean_S1#lastevent) as value from SupportBean_S0";
+                    "@Name('s0') select (select P10 || P11 from SupportBean_S1#lastevent) as value from SupportBean_S0";
 
                 env.CompileDeployAddListenerMileZero(stmtText, "s0");
 

@@ -127,13 +127,13 @@ namespace NEsper.Avro.Getter
                         typeof(GenericRecord),
                         CodegenExpressionBuilder.ExprDotMethod(
                             CodegenExpressionBuilder.Ref("record"),
-                            "get",
+                            "Get",
                             CodegenExpressionBuilder.Constant(_posTop))))
                 .IfRefNullReturnNull("inner")
                 .MethodReturn(
                     CodegenExpressionBuilder.ExprDotMethod(
                         CodegenExpressionBuilder.Ref("inner"),
-                        "get",
+                        "Get",
                         CodegenExpressionBuilder.Constant(_propertyName)));
         }
 
@@ -160,14 +160,14 @@ namespace NEsper.Avro.Getter
                         typeof(GenericRecord),
                         CodegenExpressionBuilder.ExprDotMethod(
                             CodegenExpressionBuilder.Ref("record"),
-                            "get",
+                            "Get",
                             CodegenExpressionBuilder.Constant(_posTop))))
                 .IfRefNullReturnFalse("inner")
                 .MethodReturn(
                     CodegenExpressionBuilder.NotEqualsNull(
                         CodegenExpressionBuilder.ExprDotMethodChain(CodegenExpressionBuilder.Ref("inner"))
-                            .Add("getSchema")
-                            .Add("getField", CodegenExpressionBuilder.Constant(_propertyName))));
+                            .Get("Schema")
+                            .Add("GetField", CodegenExpressionBuilder.Constant(_propertyName))));
         }
     }
 } // end of namespace

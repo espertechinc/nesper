@@ -19,7 +19,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
             TryInvalidCompile(
                 env,
                 "select element1 from XMLSchemaConfigTwo#length(100)",
-                "Failed to valIdate select-clause expression 'element1': Property named 'element1' is not valId in any stream [");
+                "Failed to validate select-clause expression 'element1': Property named 'element1' is not valid in any stream [");
         }
     }
 } // end of namespace

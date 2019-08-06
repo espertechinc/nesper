@@ -108,7 +108,7 @@ namespace com.espertech.esper.common.@internal.@event.arr
         {
             return StaticMethod(
                 GetType(),
-                "getOAMapValue",
+                "GetOAMapValue",
                 underlyingExpression,
                 Constant(propertyIndex),
                 Constant(key));
@@ -121,7 +121,7 @@ namespace com.espertech.esper.common.@internal.@event.arr
         {
             return StaticMethod(
                 GetType(),
-                "getOAMapExists",
+                "GetOAMapExists",
                 underlyingExpression,
                 Constant(propertyIndex),
                 Constant(key));
@@ -143,7 +143,7 @@ namespace com.espertech.esper.common.@internal.@event.arr
         {
             return StaticMethod(
                 GetType(),
-                "getOAMapValue",
+                "GetOAMapValue",
                 CastUnderlying(typeof(object[]), beanExpression),
                 Constant(propertyIndex),
                 key);

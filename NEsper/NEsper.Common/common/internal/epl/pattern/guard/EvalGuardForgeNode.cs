@@ -74,7 +74,7 @@ namespace com.espertech.esper.common.@internal.epl.pattern.guard
 
         protected override string NameOfFactory()
         {
-            return "guard";
+            return "Guard";
         }
 
         protected override void InlineCodegen(

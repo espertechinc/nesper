@@ -235,13 +235,13 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergroup
                     methodNode.Block.MethodReturn(
                         StaticMethod(
                             typeof(ResultSetProcessorUtil),
-                            "toPairNullIfAllNullSingle",
+                            "ToPairNullIfAllNullSingle",
                             @Ref("istream"),
                             @Ref("rstream")));
                 }
                 else {
                     methodNode.Block.MethodReturn(
-                        StaticMethod(typeof(ResultSetProcessorUtil), "toPairNullIfNullIStream", @Ref("istream")));
+                        StaticMethod(typeof(ResultSetProcessorUtil), "ToPairNullIfNullIStream", @Ref("istream")));
                 }
             };
 

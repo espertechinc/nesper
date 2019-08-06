@@ -75,14 +75,14 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
             RunAssertion(
                 env,
                 "bigInteger",
-                "BigInteger.valueOf(2)",
+                "BigInteger.ValueOf(2)",
                 bean => bean.BigInteger = new BigInteger(1),
                 bean => bean.BigInteger = new BigInteger(2),
                 bean => bean.BigInteger = new BigInteger(3));
             RunAssertion(
                 env,
                 "IntPrimitive",
-                "BigInteger.valueOf(2)",
+                "BigInteger.ValueOf(2)",
                 bean => bean.IntPrimitive = 1,
                 bean => bean.IntPrimitive = 2,
                 bean => bean.IntPrimitive = 3);

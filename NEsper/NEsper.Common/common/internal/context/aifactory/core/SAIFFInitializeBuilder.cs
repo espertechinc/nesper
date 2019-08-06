@@ -188,7 +188,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.core
                 var single = map.First();
                 return StaticMethod(
                     typeof(Collections),
-                    "singletonMap",
+                    "SingletonMap",
                     CodegenExpressionBuilder.Constant(single.Key),
                     BuildMapValue(single.Value));
             }

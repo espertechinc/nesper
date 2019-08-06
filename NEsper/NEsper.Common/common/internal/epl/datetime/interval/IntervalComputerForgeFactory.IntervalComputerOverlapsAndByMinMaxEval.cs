@@ -105,7 +105,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
                     block.MethodReturn(
                         CodegenExpressionBuilder.StaticMethod(
                             typeof(IntervalComputerOverlapsAndByThresholdEval),
-                            "computeIntervalOverlaps",
+                            "ComputeIntervalOverlaps",
                             IntervalForgeCodegenNames.REF_LEFTSTART,
                             IntervalForgeCodegenNames.REF_LEFTEND,
                             IntervalForgeCodegenNames.REF_RIGHTSTART,
@@ -117,7 +117,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
                     block.MethodReturn(
                         CodegenExpressionBuilder.StaticMethod(
                             typeof(IntervalComputerOverlapsAndByThresholdEval),
-                            "computeIntervalOverlaps",
+                            "ComputeIntervalOverlaps",
                             IntervalForgeCodegenNames.REF_RIGHTSTART,
                             IntervalForgeCodegenNames.REF_RIGHTEND,
                             IntervalForgeCodegenNames.REF_LEFTSTART,

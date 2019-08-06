@@ -69,7 +69,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
                             "dateFormat",
                             CodegenExpressionBuilder.StaticMethod(
                                 typeof(ExprCastNode),
-                                "stringToSimpleDateFormatSafe",
+                                "StringToSimpleDateFormatSafe",
                                 CodegenExpressionBuilder.Ref("format")));
                     format = CodegenExpressionBuilder.Ref("dateFormat");
                 }
@@ -77,7 +77,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
                 method.Block.MethodReturn(
                     CodegenExpressionBuilder.StaticMethod(
                         typeof(StringToLongWStaticFormatComputer),
-                        "stringToLongWStaticFormatParseSafe",
+                        "StringToLongWStaticFormatParseSafe",
                         format,
                         CodegenExpressionBuilder.Ref("input")));
                 return CodegenExpressionBuilder.LocalMethod(method, input);

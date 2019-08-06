@@ -57,7 +57,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.order
             string providerClassName)
         {
             var instantiateMethod = CodegenMethod
-                .MakeParentNode(
+                .MakeMethod(
                     typeof(OrderByProcessor),
                     typeof(OrderByProcessorCompiler),
                     CodegenSymbolProviderEmpty.INSTANCE,
@@ -69,7 +69,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.order
             var ctor = new CodegenCtor(typeof(OrderByProcessorCompiler), classScope, ctorParams);
 
             var methods = new CodegenClassMethods();
-            CodegenClassProperties properties = new CodegenClassProperties();
+            var properties = new CodegenClassProperties();
             CodegenStackGenerator.RecursiveBuildStack(instantiateMethod, "Instantiate", methods, properties);
             var innerClass = new CodegenInnerClass(
                 CLASSNAME_ORDERBYPROCESSORFACTORY,
@@ -89,7 +89,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.order
         {
             var namedMethods = new CodegenNamedMethods();
 
-            var sortPlainMethod = CodegenMethod.MakeParentNode(
+            var sortPlainMethod = CodegenMethod.MakeMethod(
                     typeof(EventBean[]),
                     forge.GetType(),
                     CodegenSymbolProviderEmpty.INSTANCE,
@@ -97,7 +97,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.order
                 .AddParam(SORTPLAIN_PARAMS);
             forge.SortPlainCodegen(sortPlainMethod, classScope, namedMethods);
 
-            var sortWGroupKeysMethod = CodegenMethod.MakeParentNode(
+            var sortWGroupKeysMethod = CodegenMethod.MakeMethod(
                     typeof(EventBean[]),
                     forge.GetType(),
                     CodegenSymbolProviderEmpty.INSTANCE,
@@ -105,7 +105,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.order
                 .AddParam(SORTWGROUPKEYS_PARAMS);
             forge.SortWGroupKeysCodegen(sortWGroupKeysMethod, classScope, namedMethods);
 
-            var sortRollupMethod = CodegenMethod.MakeParentNode(
+            var sortRollupMethod = CodegenMethod.MakeMethod(
                     typeof(EventBean[]),
                     forge.GetType(),
                     CodegenSymbolProviderEmpty.INSTANCE,
@@ -114,7 +114,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.order
             forge.SortRollupCodegen(sortRollupMethod, classScope, namedMethods);
 
             var getSortKeyMethod = CodegenMethod
-                .MakeParentNode(typeof(object), forge.GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope)
+                .MakeMethod(typeof(object), forge.GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope)
                 .AddParam(typeof(EventBean[]), REF_EPS.Ref)
                 .AddParam(typeof(bool), ExprForgeCodegenNames.REF_ISNEWDATA.Ref)
                 .AddParam(
@@ -123,7 +123,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.order
             forge.GetSortKeyCodegen(getSortKeyMethod, classScope, namedMethods);
 
             var getSortKeyRollupMethod = CodegenMethod
-                .MakeParentNode(typeof(object), forge.GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope)
+                .MakeMethod(typeof(object), forge.GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope)
                 .AddParam(typeof(EventBean[]), REF_EPS.Ref)
                 .AddParam(typeof(bool), ExprForgeCodegenNames.REF_ISNEWDATA.Ref)
                 .AddParam(typeof(ExprEvaluatorContext), REF_EXPREVALCONTEXT.Ref)
@@ -133,13 +133,13 @@ namespace com.espertech.esper.common.@internal.epl.resultset.order
             forge.GetSortKeyRollupCodegen(getSortKeyRollupMethod, classScope, namedMethods);
 
             var sortWOrderKeysMethod = CodegenMethod
-                .MakeParentNode(typeof(EventBean[]), forge.GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope)
+                .MakeMethod(typeof(EventBean[]), forge.GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope)
                 .AddParam(typeof(EventBean[]), REF_OUTGOINGEVENTS.Ref)
                 .AddParam(typeof(object[]), REF_ORDERKEYS.Ref)
                 .AddParam(typeof(ExprEvaluatorContext), REF_EXPREVALCONTEXT.Ref);
             forge.SortWOrderKeysCodegen(sortWOrderKeysMethod, classScope, namedMethods);
 
-            var sortTwoKeysMethod = CodegenMethod.MakeParentNode(
+            var sortTwoKeysMethod = CodegenMethod.MakeMethod(
                     typeof(EventBean[]),
                     forge.GetType(),
                     CodegenSymbolProviderEmpty.INSTANCE,

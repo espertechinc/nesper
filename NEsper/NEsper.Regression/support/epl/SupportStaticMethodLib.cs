@@ -666,7 +666,7 @@ namespace com.espertech.esper.regressionlib.support.epl
         public static LinkedHashMap<string, object> FetchTwoRows3ColsMetadata()
         {
             var values = new LinkedHashMap<string, object>();
-            values.Put("pkey0", typeof(string));
+            values.Put("pKey0", typeof(string));
             values.Put("pkey1", typeof(int?));
             values.Put("c0", typeof(long?));
             return values;
@@ -676,11 +676,11 @@ namespace com.espertech.esper.regressionlib.support.epl
         {
             IDictionary<string, object>[] result = {new Dictionary<string, object>(), new Dictionary<string, object>()};
 
-            result[0].Put("pkey0", "E1");
+            result[0].Put("pKey0", "E1");
             result[0].Put("pkey1", 10);
             result[0].Put("c0", 100L);
 
-            result[1].Put("pkey0", "E2");
+            result[1].Put("pKey0", "E2");
             result[1].Put("pkey1", 20);
             result[1].Put("c0", 200L);
 

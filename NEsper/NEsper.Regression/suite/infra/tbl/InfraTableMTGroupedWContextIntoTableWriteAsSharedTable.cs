@@ -56,7 +56,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 "create context ByStringHash\n" +
                 "  coalesce by consistent_hash_crc32(TheString) from SupportBean granularity 16 preallocate\n;" +
                 "context ByStringHash into table varTotal select TheString, sum(IntPrimitive) as total from SupportBean group by TheString;\n";
-            var eplAssert = "select varTotal[p00].total as c0 from SupportBean_S0";
+            var eplAssert = "select varTotal[P00].total as c0 from SupportBean_S0";
 
             RunAndAssert(env, eplDeclare, eplAssert, numThreads, numLoops, numGroups);
         }

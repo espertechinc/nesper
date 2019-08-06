@@ -48,7 +48,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
             CodegenExpression refEPS = exprSymbol.GetAddEPS(methodNode);
             return StaticMethod(
                 typeof(SelectEvalInsertWildcardSSWrapperRevision),
-                "selectExprInsertWildcardSSWrapRevision",
+                "SelectExprInsertWildcardSSWrapRevision",
                 refEPS,
                 evaluators == null ? Constant(0) : Constant(evaluators.Length),
                 props,

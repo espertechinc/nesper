@@ -32,7 +32,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                             EVENTS_SHIFTED,
                             StaticMethod(
                                 typeof(EventBeanUtility),
-                                "allocatePerStreamShift",
+                                "AllocatePerStreamShift",
                                 symbols.GetAddEPS(method)));
                     });
 

@@ -27,9 +27,9 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
     public class ResultSetQueryTypeLocalGroupBy
     {
         public static readonly string PLAN_CALLBACK_HOOK =
-            "@Hook(type=" +
+            "@Hook(HookType=" +
             typeof(HookType).FullName +
-            ".INTERNAL_AGGLOCALLEVEL,hook='" +
+            ".INTERNAL_AGGLOCALLEVEL,Hook='" +
             typeof(SupportAggLevelPlanHook).FullName +
             "')";
 
@@ -238,25 +238,25 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
                     "create table MyTable(approx countMinSketch(group_by:TheString) @type(SupportBean))",
-                    "Failed to valIdate table-column expression 'countMinSketch(group_by:TheString)': The 'group_by' and 'filter' parameter is not allowed in create-table statements");
+                    "Failed to validate table-column expression 'countMinSketch(group_by:TheString)': The 'group_by' and 'filter' parameter is not allowed in create-table statements");
 
                 // not allowed with tables
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
                     "create table MyTable(col sum(int, group_by:TheString) @type(SupportBean))",
-                    "Failed to valIdate table-column expression 'sum(int,group_by:TheString)': The 'group_by' and 'filter' parameter is not allowed in create-table statements");
+                    "Failed to validate table-column expression 'sum(int,group_by:TheString)': The 'group_by' and 'filter' parameter is not allowed in create-table statements");
 
                 // invalid named parameter
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
                     "select sum(IntPrimitive, xxx:TheString) from SupportBean",
-                    "Failed to valIdate select-clause expression 'sum(IntPrimitive,xxx:TheString)': InvalId named parameter 'xxx' (dId you mean 'group_by' or 'filter'?) [");
+                    "Failed to validate select-clause expression 'sum(IntPrimitive,xxx:TheString)': Invalid named parameter 'xxx' (did you mean 'group_by' or 'filter'?) [");
 
                 // invalid group-by expression
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
                     "select sum(IntPrimitive, group_by:sum(IntPrimitive)) from SupportBean",
-                    "Failed to valIdate select-clause expression 'sum(IntPrimitive,group_by:sum(intPr...(44 chars)': Group-by expressions cannot contain aggregate functions");
+                    "Failed to validate select-clause expression 'sum(IntPrimitive,group_by:sum(intPr...(44 chars)': Group-by expressions cannot contain aggregate functions");
 
                 // other functions don't accept this named parameter
                 SupportMessageAssertUtil.TryInvalidCompile(
@@ -268,7 +268,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
                     "select " +
                     typeof(SupportStaticMethodLib).Name +
                     ".staticMethod(group_by:IntPrimitive) from SupportBean",
-                    "Failed to valIdate select-clause expression 'com.espertech.esper.regressionlib.s...(104 chars)': Named parameters are not allowed");
+                    "Failed to validate select-clause expression 'com.espertech.esper.regressionlib.s...(104 chars)': Named parameters are not allowed");
 
                 // not allowed in combination with roll-up
                 SupportMessageAssertUtil.TryInvalidCompile(
@@ -419,7 +419,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
                 var cols = "theString,IntPrimitive,c0,c1".SplitCsv();
                 var epl = "create window MyWindow#keepall as SupportBean;\n" +
                           "insert into MyWindow select * from SupportBean;\n" +
-                          "on SupportBean_S0 delete from MyWindow where p00 = TheString and Id = IntPrimitive;\n" +
+                          "on SupportBean_S0 delete from MyWindow where P00 = TheString and Id = IntPrimitive;\n" +
                           "on SupportBean_S1 delete from MyWindow;\n" +
                           "@Name('s0') select TheString, IntPrimitive, sum(LongPrimitive) as c0, " +
                           "  sum(LongPrimitive, group_by:TheString) as c1 from MyWindow;\n";
@@ -481,7 +481,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
                 var cols = "theString,IntPrimitive,c0,c1".SplitCsv();
                 var epl = "create window MyWindow#keepall as SupportBean;\n" +
                           "insert into MyWindow select * from SupportBean;\n" +
-                          "on SupportBean_S0 delete from MyWindow where p00 = TheString and Id = IntPrimitive;\n" +
+                          "on SupportBean_S0 delete from MyWindow where P00 = TheString and Id = IntPrimitive;\n" +
                           "on SupportBean_S1 delete from MyWindow;\n" +
                           "@Name('s0') select TheString, IntPrimitive, sum(LongPrimitive) as c0, " +
                           "  sum(LongPrimitive, group_by:TheString) as c1 " +
@@ -1237,7 +1237,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             public void Run(RegressionEnvironment env)
             {
                 var epl =
-                    "@Name('s0') select TheString, sum(IntPrimitive, group_by:TheString) as c0 from SupportBean#keepall, SupportBean_S0 unIdirectional";
+                    "@Name('s0') select TheString, sum(IntPrimitive, group_by:TheString) as c0 from SupportBean#keepall, SupportBean_S0 unidirectional";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 MakeSendEvent(env, "E1", 10);

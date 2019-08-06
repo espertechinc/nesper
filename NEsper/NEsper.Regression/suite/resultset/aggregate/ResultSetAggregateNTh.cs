@@ -24,7 +24,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
             var milestone = new AtomicLong();
 
             var epl = "@Name('s0') select " +
-                      "theString, " +
+                      "TheString, " +
                       "nth(IntPrimitive,0) as int1, " + // current
                       "nth(IntPrimitive,1) as int2 " + // one before
                       "from SupportBean#keepall group by TheString output last every 3 events order by TheString";
@@ -44,14 +44,14 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
             TryInvalidCompile(
                 env,
                 "select nth() from SupportBean",
-                "Failed to valIdate select-clause expression 'nth(*)': The nth aggregation function requires two parameters, an expression returning aggregation values and a numeric index constant [select nth() from SupportBean]");
+                "Failed to validate select-clause expression 'nth(*)': The nth aggregation function requires two parameters, an expression returning aggregation values and a numeric index constant [select nth() from SupportBean]");
         }
 
         private static void RunAssertion(
             RegressionEnvironment env,
             AtomicLong milestone)
         {
-            var fields = "theString,int1,int2".SplitCsv();
+            var fields = "TheString,int1,int2".SplitCsv();
 
             env.SendEventBean(new SupportBean("G1", 10));
             env.SendEventBean(new SupportBean("G2", 11));

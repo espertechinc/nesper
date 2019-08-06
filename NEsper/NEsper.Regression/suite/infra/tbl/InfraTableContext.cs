@@ -94,7 +94,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                     });
 
                 env.CompileDeploy("context CtxNowTillS0 create index MyIdx on MyTable(col0)", path);
-                env.CompileDeploy("context CtxNowTillS0 select * from MyTable, SupportBean_S1 where col0 = p11", path);
+                env.CompileDeploy("context CtxNowTillS0 select * from MyTable, SupportBean_S1 where col0 = P11", path);
 
                 env.SendEventBean(new SupportBean("E3", 90));
                 env.SendEventBean(new SupportBean("E1", 30));
@@ -122,7 +122,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 var path = new RegressionPath();
                 env.CompileDeploy(
                     "create context CtxPerString " +
-                    "partition by TheString from SupportBean, p00 from SupportBean_S0",
+                    "partition by TheString from SupportBean, P00 from SupportBean_S0",
                     path);
                 env.CompileDeploy("context CtxPerString create table MyTable(thesum sum(int))", path);
                 env.CompileDeploy(

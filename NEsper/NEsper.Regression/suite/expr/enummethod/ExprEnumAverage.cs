@@ -130,8 +130,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
                 // test average with lambda
                 var fieldsLambda = "val0,val1".SplitCsv();
                 var eplLambda = "@Name('s0') select " +
-                                "strvals.average(v => extractNum(v)) as val0, " +
-                                "strvals.average(v => extractDecimal(v)) as val1 " +
+                                "Strvals.average(v => extractNum(v)) as val0, " +
+                                "Strvals.average(v => extractDecimal(v)) as val1 " +
                                 "from SupportCollection";
                 env.CompileDeploy(eplLambda).AddListener("s0");
                 LambdaAssertionUtil.AssertTypes(
@@ -173,17 +173,17 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
             {
                 string epl;
 
-                epl = "select strvals.average() from SupportCollection";
+                epl = "select Strvals.average() from SupportCollection";
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
                     epl,
-                    "Failed to valIdate select-clause expression 'strvals.average()': InvalId input for built-in enumeration method 'average' and 0-parameter footprint, expecting collection of numeric values as input, received collection of String [select strvals.average() from SupportCollection]");
+                    "Failed to validate select-clause expression 'Strvals.average()': Invalid input for built-in enumeration method 'average' and 0-parameter footprint, expecting collection of numeric values as input, received collection of String [select Strvals.average() from SupportCollection]");
 
                 epl = "select beans.average() from SupportBean_Container";
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
                     epl,
-                    "Failed to valIdate select-clause expression 'beans.average()': InvalId input for built-in enumeration method 'average' and 0-parameter footprint, expecting collection of values (typically scalar values) as input, received collection of events of type '" +
+                    "Failed to validate select-clause expression 'beans.average()': Invalid input for built-in enumeration method 'average' and 0-parameter footprint, expecting collection of values (typically scalar values) as input, received collection of events of type '" +
                     typeof(SupportBean).Name +
                     "'");
             }

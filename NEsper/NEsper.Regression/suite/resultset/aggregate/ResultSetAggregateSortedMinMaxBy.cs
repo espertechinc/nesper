@@ -232,7 +232,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
                               "from SupportBean_S0#lastevent, SupportBean#groupwin(LongPrimitive)#length(3) as sb " +
                               "group by LongPrimitive";
                 env.CompileDeploy(eplJoin).AddListener("s0");
-                env.SendEventBean(new SupportBean_S0(1, "p00"));
+                env.SendEventBean(new SupportBean_S0(1, "P00"));
                 TryAssertionGroupedSortedMinMax(env, milestone);
                 env.UndeployAll();
 
@@ -629,13 +629,13 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
             {
                 TryInvalidCompile(
                     env,
-                    "select maxBy(p00||p10) from SupportBean_S0#lastevent, SupportBean_S1#lastevent",
-                    "Failed to valIdate select-clause expression 'maxby(p00||p10)': The 'maxby' aggregation function requires that any parameter expressions evaluate properties of the same stream");
+                    "select maxBy(P00||P10) from SupportBean_S0#lastevent, SupportBean_S1#lastevent",
+                    "Failed to validate select-clause expression 'maxby(P00||P10)': The 'maxby' aggregation function requires that any parameter expressions evaluate properties of the same stream");
 
                 TryInvalidCompile(
                     env,
-                    "select sorted(p00) from SupportBean_S0",
-                    "Failed to valIdate select-clause expression 'sorted(p00)': The 'sorted' aggregation function requires that a data window is declared for the stream");
+                    "select sorted(P00) from SupportBean_S0",
+                    "Failed to validate select-clause expression 'sorted(P00)': The 'sorted' aggregation function requires that a data window is declared for the stream");
             }
         }
     }

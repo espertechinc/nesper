@@ -100,7 +100,7 @@ namespace NEsper.Avro.Getter
                     typeof(GenericRecord),
                     CodegenExpressionBuilder.ExprDotMethod(
                         underlyingExpression,
-                        "get",
+                        "Get",
                         CodegenExpressionBuilder.Constant(_top))));
         }
 
@@ -118,7 +118,7 @@ namespace NEsper.Avro.Getter
                     typeof(GenericRecord),
                     CodegenExpressionBuilder.ExprDotMethod(
                         underlyingExpression,
-                        "get",
+                        "Get",
                         CodegenExpressionBuilder.Constant(_top))));
         }
 
@@ -136,7 +136,7 @@ namespace NEsper.Avro.Getter
                     typeof(GenericRecord),
                     CodegenExpressionBuilder.ExprDotMethod(
                         underlyingExpression,
-                        "get",
+                        "Get",
                         CodegenExpressionBuilder.Constant(_top))));
         }
     }

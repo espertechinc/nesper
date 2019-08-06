@@ -34,7 +34,7 @@ namespace com.espertech.esper.common.@internal.epl.pattern.matchuntil
             int? upperbounds = null;
 
             var convertor = factoryNode.OptionalConvertor;
-            var eventsPerStream = convertor == null ? null : convertor.Convert(beginState);
+            var eventsPerStream = convertor == null ? null : convertor.Invoke(beginState);
             if (factoryNode.SingleBound != null) {
                 var bounds = (int?) factoryNode.SingleBound.Evaluate(
                     eventsPerStream,

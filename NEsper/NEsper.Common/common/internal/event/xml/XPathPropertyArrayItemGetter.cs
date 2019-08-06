@@ -160,7 +160,7 @@ namespace com.espertech.esper.common.@internal.@event.xml
                 .DeclareVar<object>(
                     "value",
                     getter.UnderlyingGetCodegen(Ref("node"), codegenMethodScope, codegenClassScope))
-                .MethodReturn(StaticMethod(GetType(), "getXPathNodeListWCheck", Ref("value"), Constant(index)));
+                .MethodReturn(StaticMethod(GetType(), "GetXPathNodeListWCheck", Ref("value"), Constant(index)));
         }
 
         private CodegenMethod GetFragmentCodegen(

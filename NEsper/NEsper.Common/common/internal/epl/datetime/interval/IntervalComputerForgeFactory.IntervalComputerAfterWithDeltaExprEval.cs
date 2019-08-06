@@ -92,7 +92,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
                     .BlockReturn(
                         CodegenExpressionBuilder.StaticMethod(
                             typeof(IntervalComputerConstantAfter),
-                            "computeIntervalAfter",
+                            "ComputeIntervalAfter",
                             IntervalForgeCodegenNames.REF_LEFTSTART,
                             IntervalForgeCodegenNames.REF_RIGHTEND,
                             CodegenExpressionBuilder.Ref("rangeEndDelta"),
@@ -100,7 +100,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
                 block.MethodReturn(
                     CodegenExpressionBuilder.StaticMethod(
                         typeof(IntervalComputerConstantAfter),
-                        "computeIntervalAfter",
+                        "ComputeIntervalAfter",
                         IntervalForgeCodegenNames.REF_LEFTSTART,
                         IntervalForgeCodegenNames.REF_RIGHTEND,
                         CodegenExpressionBuilder.Ref("rangeStartDelta"),

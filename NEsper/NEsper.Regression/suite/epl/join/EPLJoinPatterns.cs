@@ -84,10 +84,10 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
             Assert.AreEqual(s0es1Id, theEvent.Get("s0es1Id"));
             Assert.AreEqual(s1es2Id, theEvent.Get("s1es2Id"));
             Assert.AreEqual(s1es3Id, theEvent.Get("s1es3Id"));
-            Assert.AreEqual(p00, theEvent.Get("es0p00"));
-            Assert.AreEqual(p10, theEvent.Get("es1p10"));
-            Assert.AreEqual(p20, theEvent.Get("es2p20"));
-            Assert.AreEqual(p30, theEvent.Get("es3p30"));
+            Assert.AreEqual(p00, theEvent.Get("es0P00"));
+            Assert.AreEqual(p10, theEvent.Get("es1P10"));
+            Assert.AreEqual(p20, theEvent.Get("es2P20"));
+            Assert.AreEqual(p30, theEvent.Get("es3P30"));
         }
 
         private static void AssertEventData(
@@ -101,11 +101,11 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
         )
         {
             Assert.AreEqual(es0aId, theEvent.Get("es0aId"));
-            Assert.AreEqual(es0ap00, theEvent.Get("es0ap00"));
+            Assert.AreEqual(es0ap00, theEvent.Get("es0aP00"));
             Assert.AreEqual(es0bId, theEvent.Get("es0bId"));
-            Assert.AreEqual(es0bp00, theEvent.Get("es0bp00"));
+            Assert.AreEqual(es0bp00, theEvent.Get("es0bP00"));
             Assert.AreEqual(s1Id, theEvent.Get("s1Id"));
-            Assert.AreEqual(s1p10, theEvent.Get("s1p10"));
+            Assert.AreEqual(s1p10, theEvent.Get("s1P10"));
         }
 
         internal class EPLJoinPatternFilterJoin : RegressionExecution
@@ -113,14 +113,14 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
             public void Run(RegressionEnvironment env)
             {
                 var stmtText = "@Name('s0') select irstream es0a.Id as es0aId, " +
-                               "es0a.p00 as es0ap00, " +
+                               "es0a.P00 as es0aP00, " +
                                "es0b.Id as es0bId, " +
-                               "es0b.p00 as es0bp00, " +
+                               "es0b.P00 as es0bP00, " +
                                "s1.Id as s1Id, " +
-                               "s1.p10 as s1p10 " +
+                               "s1.P10 as s1P10 " +
                                " from " +
-                               " pattern [every (es0a=SupportBean_S0(p00='a') " +
-                               "or es0b=SupportBean_S0(p00='b'))]#length(5) as s0," +
+                               " pattern [every (es0a=SupportBean_S0(P00='a') " +
+                               "or es0b=SupportBean_S0(P00='b'))]#length(5) as s0," +
                                "SupportBean_S1#length(5) as s1" +
                                " where (es0a.Id = s1.Id) or (es0b.Id = s1.Id)";
                 env.CompileDeploy(stmtText).AddListener("s0");
@@ -192,10 +192,10 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                                "s0.es1.Id as s0es1Id, " +
                                "s1.es2.Id as s1es2Id, " +
                                "s1.es3.Id as s1es3Id, " +
-                               "es0.p00 as es0p00, " +
-                               "es1.p10 as es1p10, " +
-                               "es2.p20 as es2p20, " +
-                               "es3.p30 as es3p30" +
+                               "es0.P00 as es0P00, " +
+                               "es1.P10 as es1P10, " +
+                               "es2.P20 as es2P20, " +
+                               "es3.P30 as es3P30" +
                                " from " +
                                " pattern [every (es0=SupportBean_S0" +
                                " and es1=SupportBean_S1" +

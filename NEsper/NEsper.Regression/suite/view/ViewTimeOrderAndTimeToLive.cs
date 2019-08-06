@@ -993,17 +993,17 @@ namespace com.espertech.esper.regressionlib.suite.view
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
                     "select * from SupportBeanTimestamp#time_order(bump, 10 sec)",
-                    "Failed to valIdate data window declaration: InvalId parameter expression 0 for Time-Order view: Failed to valIdate view parameter expression 'bump': Property named 'bump' is not valId in any stream [");
+                    "Failed to validate data window declaration: Invalid parameter expression 0 for Time-Order view: Failed to validate view parameter expression 'bump': Property named 'bump' is not valid in any stream [");
 
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
                     "select * from SupportBeanTimestamp#time_order(10 sec)",
-                    "Failed to valIdate data window declaration: Time-Order view requires the expression supplying timestamp values, and a numeric or time period parameter for interval size [");
+                    "Failed to validate data window declaration: Time-Order view requires the expression supplying timestamp values, and a numeric or time period parameter for interval size [");
 
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
                     "select * from SupportBeanTimestamp#time_order(timestamp, abc)",
-                    "Failed to valIdate data window declaration: InvalId parameter expression 1 for Time-Order view: Failed to valIdate view parameter expression 'abc': Property named 'abc' is not valId in any stream (dId you mean 'Id'?) [");
+                    "Failed to validate data window declaration: Invalid parameter expression 1 for Time-Order view: Failed to validate view parameter expression 'abc': Property named 'abc' is not valid in any stream (did you mean 'Id'?) [");
             }
         }
 

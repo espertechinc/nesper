@@ -149,7 +149,7 @@ namespace NEsper.Avro.Getter
                         typeof(GenericRecord),
                         CodegenExpressionBuilder.ExprDotMethod(
                             CodegenExpressionBuilder.Ref("record"),
-                            "get",
+                            "Get",
                             CodegenExpressionBuilder.Constant(_top))))
                 .IfRefNullReturnNull("inner")
                 .DeclareVar<ICollection<object>>(
@@ -158,7 +158,7 @@ namespace NEsper.Avro.Getter
                         typeof(ICollection<object>),
                         CodegenExpressionBuilder.ExprDotMethod(
                             CodegenExpressionBuilder.Ref("inner"),
-                            "get",
+                            "Get",
                             CodegenExpressionBuilder.Constant(_pos))))
                 .MethodReturn(
                     CodegenExpressionBuilder.StaticMethod(

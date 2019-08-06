@@ -183,7 +183,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.time.node
                     .BlockThrow(
                         StaticMethod(
                             typeof(ExprTimePeriodForge),
-                            "makeTimePeriodParamNullException",
+                            "MakeTimePeriodParamNullException",
                             Constant(ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(ForgeRenderable))));
                 block.AssignRef("seconds", Op(@Ref("seconds"), "+", Adders[i].ComputeCodegen(@Ref("result"))));
             }

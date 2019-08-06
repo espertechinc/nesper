@@ -150,7 +150,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.order
             method.Block.MethodReturn(
                 StaticMethod(
                     typeof(OrderByProcessorUtil),
-                    "sortWOrderKeysWLimit",
+                    "SortWOrderKeysWLimit",
                     REF_OUTGOINGEVENTS,
                     REF_ORDERKEYS,
                     comparator,

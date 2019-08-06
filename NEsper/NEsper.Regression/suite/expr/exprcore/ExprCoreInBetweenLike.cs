@@ -652,10 +652,10 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
             {
                 var fields = "c0,c1,c2,c3".SplitCsv();
                 var epl = "@Name('s0') select " +
-                          "IntPrimitive between BigInteger.valueOf(1) and BigInteger.valueOf(3) as c0," +
-                          "IntPrimitive between BigDecimal.valueOf(1) and BigDecimal.valueOf(3) as c1," +
-                          "IntPrimitive in (BigInteger.valueOf(1):BigInteger.valueOf(3)) as c2," +
-                          "IntPrimitive in (BigDecimal.valueOf(1):BigDecimal.valueOf(3)) as c3" +
+                          "IntPrimitive between BigInteger.ValueOf(1) and BigInteger.ValueOf(3) as c0," +
+                          "IntPrimitive between BigDecimal.ValueOf(1) and BigDecimal.ValueOf(3) as c1," +
+                          "IntPrimitive in (BigInteger.ValueOf(1):BigInteger.ValueOf(3)) as c2," +
+                          "IntPrimitive in (BigDecimal.ValueOf(1):BigDecimal.ValueOf(3)) as c3" +
                           " from SupportBean";
                 env.CompileDeploy(epl).AddListener("s0");
 
@@ -986,7 +986,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
                     epl,
-                    "Failed to valIdate select-clause expression 'intArr in (1,2,3)': Collection or array comparison is not allowed for the IN, ANY, SOME or ALL keywords");
+                    "Failed to validate select-clause expression 'intArr in (1,2,3)': Collection or array comparison is not allowed for the IN, ANY, SOME or ALL keywords");
             }
         }
     }

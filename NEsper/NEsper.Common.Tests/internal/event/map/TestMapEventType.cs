@@ -36,7 +36,7 @@ namespace com.espertech.esper.common.@internal.@event.map
                 null,
                 EventTypeTypeClass.STREAM,
                 EventTypeApplicationType.MAP,
-                NameAccessModifier.PROTECTED,
+                NameAccessModifier.INTERNAL,
                 EventTypeBusModifier.NONBUS,
                 false,
                 EventTypeIdPair.Unassigned());
@@ -92,7 +92,7 @@ namespace com.espertech.esper.common.@internal.@event.map
                 null,
                 EventTypeTypeClass.STREAM,
                 EventTypeApplicationType.MAP,
-                NameAccessModifier.PROTECTED,
+                NameAccessModifier.INTERNAL,
                 EventTypeBusModifier.NONBUS,
                 false,
                 EventTypeIdPair.Unassigned());
@@ -276,7 +276,7 @@ namespace com.espertech.esper.common.@internal.@event.map
                 null,
                 EventTypeTypeClass.STREAM,
                 EventTypeApplicationType.MAP,
-                NameAccessModifier.PROTECTED,
+                NameAccessModifier.INTERNAL,
                 EventTypeBusModifier.NONBUS,
                 false,
                 EventTypeIdPair.Unassigned());
@@ -337,9 +337,9 @@ namespace com.espertech.esper.common.@internal.@event.map
 
             // assert access to objects nested within
             expected = new[] {
-                new object[] {"map.objOne.id", typeof(string), "B1"},
-                new object[] {"map.mapOne.objTwo.id", typeof(string), "C1"},
-                new object[] {"obj.id", typeof(string), "A1"}
+                new object[] {"map.objOne.Id", typeof(string), "B1"},
+                new object[] {"map.mapOne.objTwo.Id", typeof(string), "C1"},
+                new object[] {"obj.Id", typeof(string), "A1"}
             };
             for (var i = 0; i < expected.Length; i++)
             {

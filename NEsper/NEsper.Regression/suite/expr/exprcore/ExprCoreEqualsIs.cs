@@ -66,7 +66,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
             public void Run(RegressionEnvironment env)
             {
                 var epl =
-                    "@Name('s0') select p00 = p01 as c0, Id = Id as c1, p02 is not null as c2 from SupportBean_S0";
+                    "@Name('s0') select P00 = P01 as c0, Id = Id as c1, p02 is not null as c2 from SupportBean_S0";
                 env.CompileDeploy(epl).AddListener("s0");
                 var fields = "c0,c1,c2".SplitCsv();
 

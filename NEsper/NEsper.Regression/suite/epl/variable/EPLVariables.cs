@@ -961,7 +961,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
             public void Run(RegressionEnvironment env)
             {
                 var stmtTextSet =
-                    "@Name('s0') on SupportBean_S0 as s0str set var1SS = (select p10 from SupportBean_S1#lastevent), var2SS = (select p11||s0str.p01 from SupportBean_S1#lastevent)";
+                    "@Name('s0') on SupportBean_S0 as s0str set var1SS = (select P10 from SupportBean_S1#lastevent), var2SS = (select P11||s0str.P01 from SupportBean_S1#lastevent)";
                 env.CompileDeploy(stmtTextSet);
                 string[] fieldsVar = {"var1SS", "var2SS"};
                 EPAssertionUtil.AssertPropsPerRow(
@@ -992,7 +992,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
         {
             public void Run(RegressionEnvironment env)
             {
-                var stmtTextSet = "@Name('set') on SupportBean_S0 set var1IFB = p00, var2IFB = p01";
+                var stmtTextSet = "@Name('set') on SupportBean_S0 set var1IFB = P00, var2IFB = P01";
                 env.CompileDeploy(stmtTextSet).AddListener("set");
                 string[] fieldsVar = {"var1IFB", "var2IFB"};
                 EPAssertionUtil.AssertPropsPerRow(
@@ -1064,7 +1064,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
         {
             public void Run(RegressionEnvironment env)
             {
-                var stmtTextSet = "@Name('set') on SupportBean_S0 set var1IF = p00";
+                var stmtTextSet = "@Name('set') on SupportBean_S0 set var1IF = P00";
                 env.CompileDeploy(stmtTextSet).AddListener("set");
                 string[] fieldsVar = {"var1IF"};
                 EPAssertionUtil.AssertPropsPerRow(

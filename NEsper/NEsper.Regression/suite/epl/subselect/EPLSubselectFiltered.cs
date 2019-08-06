@@ -146,9 +146,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
             var theEvent = env.Listener("s0").AssertOneGetNewAndReset();
             Assert.AreEqual(1, theEvent.Get("s0Id"));
             Assert.AreEqual(1, theEvent.Get("s1Id"));
-            Assert.AreEqual("ab", theEvent.Get("s2p20"));
-            Assert.AreEqual(null, theEvent.Get("s2p20Prior"));
-            Assert.AreEqual(null, theEvent.Get("s2p20Prev"));
+            Assert.AreEqual("ab", theEvent.Get("s2P20"));
+            Assert.AreEqual(null, theEvent.Get("s2P20Prior"));
+            Assert.AreEqual(null, theEvent.Get("s2P20Prev"));
 
             env.SendEventBean(new SupportBean_S2(2, "qx"));
             env.SendEventBean(new SupportBean_S0(2, "q"));
@@ -156,9 +156,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
             theEvent = env.Listener("s0").AssertOneGetNewAndReset();
             Assert.AreEqual(2, theEvent.Get("s0Id"));
             Assert.AreEqual(2, theEvent.Get("s1Id"));
-            Assert.AreEqual("qx", theEvent.Get("s2p20"));
-            Assert.AreEqual("ab", theEvent.Get("s2p20Prior"));
-            Assert.AreEqual("ab", theEvent.Get("s2p20Prev"));
+            Assert.AreEqual("qx", theEvent.Get("s2P20"));
+            Assert.AreEqual("ab", theEvent.Get("s2P20Prior"));
+            Assert.AreEqual("ab", theEvent.Get("s2P20Prev"));
 
             env.UndeployAll();
         }
@@ -344,7 +344,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
 
                 // single-column constant
                 var stmtText =
-                    "@Name('s0') select (select Id from SupportBean_S1#length(1000) where p10='X') as Ids1 from SupportBean_S0";
+                    "@Name('s0') select (select Id from SupportBean_S1#length(1000) where P10='X') as Ids1 from SupportBean_S0";
                 env.CompileDeployAddListenerMile(stmtText, "s0", milestone.GetAndIncrement());
 
                 env.SendEventBean(new SupportBean_S1(-1, "Y"));
@@ -368,7 +368,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
 
                 // two-column constant
                 stmtText =
-                    "@Name('s0') select (select Id from SupportBean_S1#length(1000) where p10='X' and p11='Y') as Ids1 from SupportBean_S0";
+                    "@Name('s0') select (select Id from SupportBean_S1#length(1000) where P10='X' and P11='Y') as Ids1 from SupportBean_S0";
                 env.CompileDeployAddListenerMile(stmtText, "s0", milestone.GetAndIncrement());
 
                 env.SendEventBean(new SupportBean_S1(1, "X", "Y"));
@@ -508,7 +508,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
             public void Run(RegressionEnvironment env)
             {
                 var stmtText =
-                    "@Name('s0') select (select Id from SupportBean_S1#length(1000) where p10=s0.p00) as Ids1 from SupportBean_S0 as s0";
+                    "@Name('s0') select (select Id from SupportBean_S1#length(1000) where P10=s0.P00) as Ids1 from SupportBean_S0 as s0";
                 env.CompileDeployAddListenerMileZero(stmtText, "s0");
 
                 env.SendEventBean(new SupportBean_S0(0));
@@ -539,7 +539,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
             public void Run(RegressionEnvironment env)
             {
                 var stmtText =
-                    "@Name('s0') select (select Id from SupportBean_S0#length(1000) where p00=s1.p10 and p00=s2.p20) as Ids0 from SupportBean_S1#keepall as s1, SupportBean_S2#keepall as s2 where s1.Id = s2.Id";
+                    "@Name('s0') select (select Id from SupportBean_S0#length(1000) where P00=s1.P10 and P00=s2.P20) as Ids0 from SupportBean_S1#keepall as s1, SupportBean_S2#keepall as s2 where s1.Id = s2.Id";
                 env.CompileDeployAddListenerMileZero(stmtText, "s0");
 
                 env.SendEventBean(new SupportBean_S1(10, "s0_1"));
@@ -560,7 +560,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
             public void Run(RegressionEnvironment env)
             {
                 var stmtText =
-                    "@Name('s0') select (select Id from SupportBean_S0#length(1000) where p00=s1.p10 and p00=s3.p30) as Ids0 " +
+                    "@Name('s0') select (select Id from SupportBean_S0#length(1000) where P00=s1.P10 and P00=s3.P30) as Ids0 " +
                     "from SupportBean_S1#keepall as s1, SupportBean_S2#keepall as s2, SupportBean_S3#keepall as s3 where s1.Id = s2.Id and s2.Id = s3.Id";
                 env.CompileDeployAddListenerMileZero(stmtText, "s0");
 
@@ -600,7 +600,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
             public void Run(RegressionEnvironment env)
             {
                 var stmtText =
-                    "@Name('s0') select (select Id from SupportBean_S0#length(1000) where p00=s1.p10 and p00=s3.p30 and p00=s2.p20) as Ids0 " +
+                    "@Name('s0') select (select Id from SupportBean_S0#length(1000) where P00=s1.P10 and P00=s3.P30 and P00=s2.P20) as Ids0 " +
                     "from SupportBean_S1#keepall as s1, SupportBean_S2#keepall as s2, SupportBean_S3#keepall as s3 where s1.Id = s2.Id and s2.Id = s3.Id";
                 env.CompileDeployAddListenerMileZero(stmtText, "s0");
 
@@ -746,11 +746,11 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
             public void Run(RegressionEnvironment env)
             {
                 var stmtText = "@Name('s0') select s0.Id as s0Id, s1.Id as s1Id, " +
-                               "(select p20 from SupportBean_S2#length(1000) where Id=s0.Id) as s2p20, " +
-                               "(select prior(1, p20) from SupportBean_S2#length(1000) where Id=s0.Id) as s2p20Prior, " +
-                               "(select prev(1, p20) from SupportBean_S2#length(10) where Id=s0.Id) as s2p20Prev " +
+                               "(select P20 from SupportBean_S2#length(1000) where Id=s0.Id) as s2P20, " +
+                               "(select prior(1, P20) from SupportBean_S2#length(1000) where Id=s0.Id) as s2P20Prior, " +
+                               "(select prev(1, P20) from SupportBean_S2#length(10) where Id=s0.Id) as s2P20Prev " +
                                "from SupportBean_S0#keepall as s0, SupportBean_S1#keepall as s1 " +
-                               "where s0.Id = s1.Id and p00||p10 = (select p20 from SupportBean_S2#length(1000) where Id=s0.Id)";
+                               "where s0.Id = s1.Id and P00||P10 = (select P20 from SupportBean_S2#length(1000) where Id=s0.Id)";
                 TryJoinFiltered(env, stmtText);
             }
         }
@@ -760,11 +760,11 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
             public void Run(RegressionEnvironment env)
             {
                 var stmtText = "@Name('s0') select s0.Id as s0Id, s1.Id as s1Id, " +
-                               "(select p20 from SupportBean_S2#length(1000) where Id=s0.Id) as s2p20, " +
-                               "(select prior(1, p20) from SupportBean_S2#length(1000) where Id=s0.Id) as s2p20Prior, " +
-                               "(select prev(1, p20) from SupportBean_S2#length(10) where Id=s0.Id) as s2p20Prev " +
+                               "(select P20 from SupportBean_S2#length(1000) where Id=s0.Id) as s2P20, " +
+                               "(select prior(1, P20) from SupportBean_S2#length(1000) where Id=s0.Id) as s2P20Prior, " +
+                               "(select prev(1, P20) from SupportBean_S2#length(10) where Id=s0.Id) as s2P20Prev " +
                                "from SupportBean_S0#keepall as s0, SupportBean_S1#keepall as s1 " +
-                               "where s0.Id = s1.Id and (select s0.p00||s1.p10 = p20 from SupportBean_S2#length(1000) where Id=s0.Id)";
+                               "where s0.Id = s1.Id and (select s0.P00||s1.P10 = P20 from SupportBean_S2#length(1000) where Id=s0.Id)";
                 TryJoinFiltered(env, stmtText);
             }
         }

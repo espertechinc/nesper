@@ -107,12 +107,12 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 TryInvalidFilter(
                     env,
                     "theString = 1",
-                    "Failed to obtain operator 'Filter': Failed to valIdate filter dataflow operator expression 'TheString=1': Implicit conversion from datatype 'Integer' to 'String' is not allowed");
+                    "Failed to obtain operator 'Filter': Failed to validate filter dataflow operator expression 'TheString=1': Implicit conversion from datatype 'Integer' to 'String' is not allowed");
 
                 TryInvalidFilter(
                     env,
                     "prev(TheString, 1) = 'abc'",
-                    "Failed to obtain operator 'Filter': InvalId filter dataflow operator expression 'prev(TheString,1)=\"abc\"': Aggregation, sub-select, previous or prior functions are not supported in this context");
+                    "Failed to obtain operator 'Filter': Invalid filter dataflow operator expression 'prev(TheString,1)=\"abc\"': Aggregation, sub-select, previous or prior functions are not supported in this context");
             }
         }
 

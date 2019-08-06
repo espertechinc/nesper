@@ -18,7 +18,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
         public void Run(RegressionEnvironment env)
         {
             var epl =
-                "@Name('s0') select p00 || p01 as c1, p00 || p01 || p02 as c2, p00 || '|' || p01 as c3 from SupportBean_S0";
+                "@Name('s0') select P00 || P01 as c1, P00 || P01 || p02 as c2, P00 || '|' || P01 as c3 from SupportBean_S0";
             env.CompileDeploy(epl).AddListener("s0");
 
             env.SendEventBean(new SupportBean_S0(1, "a", "b", "c"));

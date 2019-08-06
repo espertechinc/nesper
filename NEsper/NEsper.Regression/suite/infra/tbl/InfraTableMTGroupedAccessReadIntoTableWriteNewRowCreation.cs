@@ -53,7 +53,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             var epl =
                 "create table varTotal (key string primary key, total sum(int));\n" +
                 "into table varTotal select TheString, sum(IntPrimitive) as total from SupportBean group by TheString;\n" +
-                "@Name('s0') select varTotal[p00].total as c0 from SupportBean_S0;\n";
+                "@Name('s0') select varTotal[P00].total as c0 from SupportBean_S0;\n";
             env.CompileDeploy(epl).AddListener("s0");
             env.SendEventBean(new SupportBean("A", 10));
 

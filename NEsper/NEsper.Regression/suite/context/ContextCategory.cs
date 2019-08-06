@@ -378,7 +378,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 catch (InvalidContextPartitionSelector ex) {
                     Assert.IsTrue(
                         ex.Message.StartsWith(
-                            "InvalId context partition selector, expected an implementation class of any of [ContextPartitionSelectorAll, ContextPartitionSelectorFiltered, ContextPartitionSelectorById, ContextPartitionSelectorCategory] interfaces but received com."),
+                            "Invalid context partition selector, expected an implementation class of any of [ContextPartitionSelectorAll, ContextPartitionSelectorFiltered, ContextPartitionSelectorById, ContextPartitionSelectorCategory] interfaces but received com."),
                         "message: " + ex.Message);
                 }
 
@@ -397,7 +397,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
                     epl,
-                    "Failed to valIdate filter expression 'dummy=1': Property named 'dummy' is not valId in any stream [");
+                    "Failed to validate filter expression 'dummy=1': Property named 'dummy' is not valid in any stream [");
 
                 // not a boolean expression
                 epl = "create context ACtx group IntPrimitive as grp1 from SupportBean";

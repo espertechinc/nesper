@@ -469,13 +469,13 @@ namespace com.espertech.esper.common.client.configuration
             Assert.IsTrue(byteCode.IsAttachModuleEPL);
             Assert.IsTrue(byteCode.IsInstrumented);
             Assert.IsTrue(byteCode.IsAllowSubscriber);
-            Assert.AreEqual(NameAccessModifier.PROTECTED, byteCode.AccessModifierContext);
+            Assert.AreEqual(NameAccessModifier.INTERNAL, byteCode.AccessModifierContext);
             Assert.AreEqual(NameAccessModifier.PUBLIC, byteCode.AccessModifierEventType);
-            Assert.AreEqual(NameAccessModifier.PROTECTED, byteCode.AccessModifierExpression);
+            Assert.AreEqual(NameAccessModifier.INTERNAL, byteCode.AccessModifierExpression);
             Assert.AreEqual(NameAccessModifier.PUBLIC, byteCode.AccessModifierNamedWindow);
-            Assert.AreEqual(NameAccessModifier.PROTECTED, byteCode.AccessModifierScript);
+            Assert.AreEqual(NameAccessModifier.INTERNAL, byteCode.AccessModifierScript);
             Assert.AreEqual(NameAccessModifier.PUBLIC, byteCode.AccessModifierTable);
-            Assert.AreEqual(NameAccessModifier.PROTECTED, byteCode.AccessModifierVariable);
+            Assert.AreEqual(NameAccessModifier.INTERNAL, byteCode.AccessModifierVariable);
             Assert.AreEqual(EventTypeBusModifier.BUS, byteCode.BusModifierEventType);
             Assert.AreEqual(StreamSelector.RSTREAM_ISTREAM_BOTH, compiler.StreamSelection.DefaultStreamSelector);
 

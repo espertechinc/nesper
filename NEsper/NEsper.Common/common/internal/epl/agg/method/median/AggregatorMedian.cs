@@ -109,7 +109,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.median
             CodegenMethod method,
             CodegenClassScope classScope)
         {
-            method.Block.MethodReturn(StaticMethod(typeof(AggregatorMedian), "medianCompute", vector));
+            method.Block.MethodReturn(StaticMethod(typeof(AggregatorMedian), "MedianCompute", vector));
         }
 
         protected override void WriteWODistinct(
@@ -122,7 +122,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.median
             CodegenClassScope classScope)
         {
             method.Block
-                .StaticMethod(GetType(), "writePoints", output, RowDotRef(row, vector));
+                .StaticMethod(GetType(), "WritePoints", output, RowDotRef(row, vector));
         }
 
         protected override void ReadWODistinct(
@@ -134,7 +134,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.median
             CodegenClassScope classScope)
         {
             method.Block
-                .AssignRef(RowDotRef(row, vector), StaticMethod(GetType(), "readPoints", input));
+                .AssignRef(RowDotRef(row, vector), StaticMethod(GetType(), "ReadPoints", input));
         }
 
         /// <summary>

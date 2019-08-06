@@ -243,7 +243,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
                     "select count(distinct *) from SupportMarketDataBean",
-                    "Failed to valIdate select-clause expression 'count(distinct *)': InvalId use of the 'distinct' keyword with count and wildcard");
+                    "Failed to validate select-clause expression 'count(distinct *)': Invalid use of the 'distinct' keyword with count and wildcard");
 
                 env.UndeployAll();
             }

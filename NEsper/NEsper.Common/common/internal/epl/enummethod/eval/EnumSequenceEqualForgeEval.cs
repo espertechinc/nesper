@@ -58,7 +58,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             methodNode.Block.MethodReturn(
                 StaticMethod(
                     typeof(EnumSequenceEqualForgeEval),
-                    "enumSequenceEqualsCompare",
+                    "EnumSequenceEqualsCompare",
                     EnumForgeCodegenNames.REF_ENUMCOLL,
                     forge.innerExpression.EvaluateCodegen(typeof(object), methodNode, scope, codegenClassScope)));
             return LocalMethod(methodNode, args.Eps, args.Enumcoll, args.IsNewData, args.ExprCtx);

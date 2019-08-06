@@ -9,6 +9,8 @@
 using System;
 using System.Collections.Generic;
 
+using Castle.Core.Internal;
+
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.context.aifactory.core;
@@ -59,10 +61,13 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.util
             CodegenClassScope classScope)
         {
             if (map.IsEmpty()) {
-                return StaticMethod(typeof(Collections), "GetEmptyDataMap");
+                return StaticMethod(typeof(Collections), "GetEmptyMap", new Type[] { clazzKey, clazzValue });
             }
 
-            var method = parent.MakeChild(typeof(IDictionary<string, object>), generator, classScope);
+            var interfaceType = typeof(IDictionary<,>)
+                .MakeGenericType(clazzKey, clazzValue);
+
+            var method = parent.MakeChild(interfaceType, generator, classScope);
             var count = 0;
             foreach (var entry in map) {
                 var nameKey = "key" + count;
@@ -75,12 +80,19 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.util
 
             if (map.Count == 1) {
                 method.Block.MethodReturn(
-                    StaticMethod(typeof(Collections), "SingletonDataMap", Ref("key0"), Ref("value0")));
+                    StaticMethod(
+                        typeof(Collections), 
+                        "SingletonMap",
+                        new Type[] { clazzKey, clazzValue },
+                        Ref("key0"), 
+                        Ref("value0")));
             }
             else {
-                method.Block.DeclareVar<IDictionary<object, object>>(
+                var implementationType = typeof(Dictionary<,>).MakeGenericType(clazzKey, clazzValue);
+                method.Block.DeclareVar(
+                    interfaceType,
                     name,
-                    NewInstance(typeof(LinkedHashMap<object, object>), Constant(map.Count)));
+                    NewInstance(implementationType, Constant(map.Count)));
                 for (var i = 0; i < map.Count; i++) {
                     method.Block.ExprDotMethod(Ref(name), "Put", Ref("key" + i), Ref("value" + i));
                 }

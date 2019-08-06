@@ -31,7 +31,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
             {
                 var fields = "val0".SplitCsv();
                 var eplFragment = "@Name('s0') select " +
-                                  "contained.distinctOf(x => p00) as val0 " +
+                                  "Contained.distinctOf(x => P00) as val0 " +
                                   " from SupportBean_ST0_Container";
                 env.CompileDeploy(eplFragment).AddListener("s0");
 
@@ -72,8 +72,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
             {
                 var fields = "val0,val1".SplitCsv();
                 var eplFragment = "@Name('s0') select " +
-                                  "strvals.distinctOf() as val0, " +
-                                  "strvals.distinctOf(v => extractNum(v)) as val1 " +
+                                  "Strvals.distinctOf() as val0, " +
+                                  "Strvals.distinctOf(v => extractNum(v)) as val1 " +
                                   "from SupportCollection";
                 env.CompileDeploy(eplFragment).AddListener("s0");
 

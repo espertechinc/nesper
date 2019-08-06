@@ -45,7 +45,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.declared.runtime
                     "deploymentId",
                     StaticMethod(
                         typeof(ExpressionDeployTimeResolver),
-                        "resolveDeploymentId",
+                        "ResolveDeploymentId",
                         Constant(expression.Name),
                         Constant(expression.Visibility),
                         Constant(expression.ModuleName),

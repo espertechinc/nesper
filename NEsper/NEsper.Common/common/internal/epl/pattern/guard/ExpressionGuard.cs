@@ -43,7 +43,7 @@ namespace com.espertech.esper.common.@internal.epl.pattern.guard
 
         public bool Inspect(MatchedEventMap matchEvent)
         {
-            var eventsPerStream = convertor.Convert(matchEvent);
+            var eventsPerStream = convertor.Invoke(matchEvent);
 
             try {
                 var result = expression.Evaluate(eventsPerStream, true, quitable.Context.AgentInstanceContext);

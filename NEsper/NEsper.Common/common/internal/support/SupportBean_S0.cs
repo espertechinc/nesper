@@ -92,10 +92,10 @@ namespace com.espertech.esper.common.@internal.support
             return "SupportBean_S0{" +
                    "id=" +
                    Id +
-                   ", p00='" +
+                   ", P00='" +
                    P00 +
                    '\'' +
-                   ", p01='" +
+                   ", P01='" +
                    P01 +
                    '\'' +
                    ", p02='" +

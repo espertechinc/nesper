@@ -41,13 +41,13 @@ namespace com.espertech.esper.regressionlib.suite.multithread
         {
             var path = new RegressionPath();
             env.CompileDeploy("@Name('window') create window MyWindow#keepall as (c0 string, c1 string)", path);
-            env.CompileDeploy("insert into MyWindow select p00 as c0, p01 as c1 from SupportBean_S0", path);
+            env.CompileDeploy("insert into MyWindow select P00 as c0, P01 as c1 from SupportBean_S0", path);
             env.CompileDeploy(
-                "@Priority(1) on SupportBean_S1 s1 merge MyWindow s0 where s1.p10 = c0 " +
-                "when matched then update set c1 = s1.p11",
+                "@Priority(1) on SupportBean_S1 s1 merge MyWindow s0 where s1.P10 = c0 " +
+                "when matched then update set c1 = s1.P11",
                 path);
             env.CompileDeploy(
-                "@Priority(0) on SupportBean_S1 s1 merge MyWindow s0 where s1.p10 = c0 " +
+                "@Priority(0) on SupportBean_S1 s1 merge MyWindow s0 where s1.P10 = c0 " +
                 "when matched then update set c1 = s1.p12",
                 path);
 

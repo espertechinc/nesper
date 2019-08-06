@@ -31,13 +31,13 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
         private static void TryAssertionPerformanceInKeywordAsPartOfSubquery(RegressionEnvironment env)
         {
             for (var i = 0; i < 10000; i++) {
-                env.SendEventBean(new SupportBean_S0(i, "v" + i, "p00_" + i));
+                env.SendEventBean(new SupportBean_S0(i, "v" + i, "P00_" + i));
             }
 
             var startTime = PerformanceObserver.MilliTime;
             for (var i = 0; i < 2000; i++) {
                 var index = 5000 + i % 1000;
-                env.SendEventBean(new SupportBean_S1(index, "x", "p00_" + index));
+                env.SendEventBean(new SupportBean_S1(index, "x", "P00_" + index));
                 Assert.AreEqual("v" + index, env.Listener("s0").AssertOneGetNewAndReset().Get("c0"));
             }
 
@@ -53,14 +53,14 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
             {
                 var milestone = new AtomicLong();
                 var eplSingleIndex =
-                    "@Name('s0') select (select p00 from SupportBean_S0#keepall as s0 where s0.p01 in (s1.p10, s1.p11)) as c0 from SupportBean_S1 as s1";
+                    "@Name('s0') select (select P00 from SupportBean_S0#keepall as s0 where s0.P01 in (s1.P10, s1.P11)) as c0 from SupportBean_S1 as s1";
                 env.CompileDeployAddListenerMile(eplSingleIndex, "s0", milestone.GetAndIncrement());
 
                 TryAssertionPerformanceInKeywordAsPartOfSubquery(env);
                 env.UndeployAll();
 
                 var eplMultiIdx =
-                    "@Name('s0') select (select p00 from SupportBean_S0#keepall as s0 where s1.p11 in (s0.p00, s0.p01)) as c0 from SupportBean_S1 as s1";
+                    "@Name('s0') select (select P00 from SupportBean_S0#keepall as s0 where s1.P11 in (s0.P00, s0.P01)) as c0 from SupportBean_S1 as s1";
                 env.CompileDeployAddListenerMile(eplMultiIdx, "s0", milestone.GetAndIncrement());
 
                 TryAssertionPerformanceInKeywordAsPartOfSubquery(env);
@@ -109,8 +109,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
         {
             public void Run(RegressionEnvironment env)
             {
-                var stmtText = "@Name('s0') select Id from SupportBean_S0 as s0 where p00 in (" +
-                               "select p10 from SupportBean_S1#length(10000) where s0.p00 = p10)";
+                var stmtText = "@Name('s0') select Id from SupportBean_S0 as s0 where P00 in (" +
+                               "select P10 from SupportBean_S1#length(10000) where s0.P00 = P10)";
                 env.CompileDeployAddListenerMileZero(stmtText, "s0");
 
                 // preload with 10k events

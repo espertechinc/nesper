@@ -68,7 +68,7 @@ namespace com.espertech.esper.common.@internal.@event.xml
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            return StaticMethod(GetType(), "getValueAsNode", value, Constant(propertyName));
+            return StaticMethod(GetType(), "GetValueAsNode", value, Constant(propertyName));
         }
 
         public CodegenExpression GetValueAsNodeArrayCodegen(
@@ -76,7 +76,7 @@ namespace com.espertech.esper.common.@internal.@event.xml
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            return StaticMethod(GetType(), "getValueAsNodeArray", value, Constant(propertyName));
+            return StaticMethod(GetType(), "GetValueAsNodeArray", value, Constant(propertyName));
         }
 
         public CodegenExpression GetValueAsFragmentCodegen(
@@ -160,10 +160,10 @@ namespace com.espertech.esper.common.@internal.@event.xml
             CodegenClassScope codegenClassScope)
         {
             if (!isArray) {
-                return StaticMethod(GetType(), "getValueAsNode", underlyingExpression, Constant(propertyName));
+                return StaticMethod(GetType(), "GetValueAsNode", underlyingExpression, Constant(propertyName));
             }
 
-            return StaticMethod(GetType(), "getValueAsNodeArray", underlyingExpression, Constant(propertyName));
+            return StaticMethod(GetType(), "GetValueAsNodeArray", underlyingExpression, Constant(propertyName));
         }
 
         public CodegenExpression UnderlyingExistsCodegen(
@@ -186,7 +186,7 @@ namespace com.espertech.esper.common.@internal.@event.xml
             if (!isArray) {
                 return StaticMethod(
                     GetType(),
-                    "getValueAsNodeFragment",
+                    "GetValueAsNodeFragment",
                     underlyingExpression,
                     Constant(propertyName),
                     ff);
@@ -194,7 +194,7 @@ namespace com.espertech.esper.common.@internal.@event.xml
 
             return StaticMethod(
                 GetType(),
-                "getValueAsNodeFragmentArray",
+                "GetValueAsNodeFragmentArray",
                 underlyingExpression,
                 Constant(propertyName),
                 ff);

@@ -26,18 +26,18 @@ namespace com.espertech.esper.common.@internal.util
     /// </summary>
     public class CollectionUtil
     {
-        public const string METHOD_SHRINKARRAYEVENTS = "shrinkArrayEvents";
-        public const string METHOD_SHRINKARRAYEVENTARRAY = "shrinkArrayEventArray";
-        public const string METHOD_SHRINKARRAYOBJECTS = "shrinkArrayObjects";
-        public const string METHOD_TOARRAYEVENTS = "toArrayEvents";
-        public const string METHOD_TOARRAYOBJECTS = "toArrayObjects";
-        public const string METHOD_TOARRAYEVENTSARRAY = "toArrayEventsArray";
-        public const string METHOD_TOARRAYNULLFOREMPTYEVENTS = "toArrayNullForEmptyEvents";
-        public const string METHOD_TOARRAYNULLFOREMPTYOBJECTS = "toArrayNullForEmptyObjects";
-        public const string METHOD_TOARRAYNULLFOREMPTYVALUEEVENTS = "toArrayNullForEmptyValueEvents";
-        public const string METHOD_TOARRAYNULLFOREMPTYVALUEVALUES = "toArrayNullForEmptyValueValues";
-        public const string METHOD_TOARRAYMAYNULL = "toArrayMayNull";
-        public const string METHOD_ITERATORTOARRAYEVENTS = "iteratorToArrayEvents";
+        public const string METHOD_SHRINKARRAYEVENTS = "ShrinkArrayEvents";
+        public const string METHOD_SHRINKARRAYEVENTARRAY = "ShrinkArrayEventArray";
+        public const string METHOD_SHRINKARRAYOBJECTS = "ShrinkArrayObjects";
+        public const string METHOD_TOARRAYEVENTS = "ToArrayEvents";
+        public const string METHOD_TOARRAYOBJECTS = "ToArrayObjects";
+        public const string METHOD_TOARRAYEVENTSARRAY = "ToArrayEventsArray";
+        public const string METHOD_TOARRAYNULLFOREMPTYEVENTS = "ToArrayNullForEmptyEvents";
+        public const string METHOD_TOARRAYNULLFOREMPTYOBJECTS = "ToArrayNullForEmptyObjects";
+        public const string METHOD_TOARRAYNULLFOREMPTYVALUEEVENTS = "ToArrayNullForEmptyValueEvents";
+        public const string METHOD_TOARRAYNULLFOREMPTYVALUEVALUES = "ToArrayNullForEmptyValueValues";
+        public const string METHOD_TOARRAYMAYNULL = "ToArrayMayNull";
+        public const string METHOD_ENUMERATORTOARRAYEVENTS = "EnumeratorToArrayEvents";
 
         private const int MAX_POWER_OF_TWO = 1 << 30; //(Int32.SIZE - 2);
 
@@ -54,7 +54,7 @@ namespace com.espertech.esper.common.@internal.util
 
         public static readonly object[] OBJECTARRAY_EMPTY = new object[0];
         public static readonly object[][] OBJECTARRAYARRAY_EMPTY = new object[0][];
-        public static readonly CodegenExpression EMPTY_LIST_EXPRESSION = StaticMethod(typeof(Collections), "emptyList");
+        public static readonly CodegenExpression EMPTY_LIST_EXPRESSION = StaticMethod(typeof(Collections), "EmptyList");
 
         public static readonly StopCallback STOP_CALLBACK_NONE;
 
@@ -662,10 +662,10 @@ namespace com.espertech.esper.common.@internal.util
             }
 
             var method = block.IfCondition(EqualsIdentity(ArrayLength(Ref("array")), Constant(0)))
-                .BlockReturn(StaticMethod(typeof(Collections), "emptyList"))
+                .BlockReturn(StaticMethod(typeof(Collections), "EmptyList"))
                 .IfCondition(EqualsIdentity(ArrayLength(Ref("array")), Constant(1)))
                 .BlockReturn(
-                    StaticMethod(typeof(Collections), "singletonList", ArrayAtIndex(Ref("array"), Constant(0))))
+                    StaticMethod(typeof(Collections), "SingletonList", ArrayAtIndex(Ref("array"), Constant(0))))
                 .DeclareVar<ArrayDeque<object>>(
                     "dq",
                     NewInstance<ArrayDeque<object>>(ArrayLength(Ref("array"))))
@@ -789,17 +789,17 @@ namespace com.espertech.esper.common.@internal.util
         /// <summary>
         ///     NOTE: Code-generation-invoked method, method name and parameter order matters
         /// </summary>
-        /// <param name="iterator">iterator</param>
+        /// <param name="enumerator">the enumerator</param>
         /// <returns>array of events</returns>
-        public static EventBean[] IteratorToArrayEvents(IEnumerator<EventBean> iterator)
+        public static EventBean[] EnumeratorToArrayEvents(IEnumerator<EventBean> enumerator)
         {
-            if (iterator == null) {
+            if (enumerator == null) {
                 return null;
             }
 
             var events = new List<EventBean>();
-            for (; iterator.MoveNext();) {
-                events.Add(iterator.Current);
+            while (enumerator.MoveNext()) {
+                events.Add(enumerator.Current);
             }
 
             return events.ToArray();

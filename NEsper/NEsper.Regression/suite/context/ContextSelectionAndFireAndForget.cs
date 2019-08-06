@@ -122,7 +122,7 @@ namespace com.espertech.esper.regressionlib.suite.context
             {
                 var path = new RegressionPath();
                 env.CompileDeploy("create context SegmentedSB as partition by TheString from SupportBean", path);
-                env.CompileDeploy("create context SegmentedS0 as partition by p00 from SupportBean_S0", path);
+                env.CompileDeploy("create context SegmentedS0 as partition by P00 from SupportBean_S0", path);
                 env.CompileDeploy("context SegmentedSB create window WinSB#keepall as SupportBean", path);
                 env.CompileDeploy("context SegmentedS0 create window WinS0#keepall as SupportBean_S0", path);
                 env.CompileDeploy("create window WinS1#keepall as SupportBean_S1", path);
@@ -138,7 +138,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 env.CompileDeploy("create context PartitionedByString partition by TheString from SupportBean", path);
                 env.CompileDeploy("context PartitionedByString create window MyWindowOne#keepall as SupportBean", path);
 
-                env.CompileDeploy("create context PartitionedByP00 partition by p00 from SupportBean_S0", path);
+                env.CompileDeploy("create context PartitionedByP00 partition by P00 from SupportBean_S0", path);
                 env.CompileDeploy("context PartitionedByP00 create window MyWindowTwo#keepall as SupportBean_S0", path);
 
                 env.SendEventBean(new SupportBean("G1", 10));
@@ -149,7 +149,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 TryInvalidCompileQuery(
                     env,
                     path,
-                    "select mw1.IntPrimitive as c1, mw2.Id as c2 from MyWindowOne mw1, MyWindowTwo mw2 where mw1.TheString = mw2.p00",
+                    "select mw1.IntPrimitive as c1, mw2.Id as c2 from MyWindowOne mw1, MyWindowTwo mw2 where mw1.TheString = mw2.P00",
                     "Joins against named windows that are under context are not supported");
 
                 env.UndeployAll();
@@ -241,7 +241,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 catch (InvalidContextPartitionSelector ex) {
                     Assert.IsTrue(
                         ex.Message.StartsWith(
-                            "InvalId context partition selector, expected an implementation class of any of [ContextPartitionSelectorAll, ContextPartitionSelectorFiltered, ContextPartitionSelectorById, ContextPartitionSelectorSegmented] interfaces but received com"),
+                            "Invalid context partition selector, expected an implementation class of any of [ContextPartitionSelectorAll, ContextPartitionSelectorFiltered, ContextPartitionSelectorById, ContextPartitionSelectorSegmented] interfaces but received com"),
                         "message: " + ex.Message);
                 }
 
@@ -293,7 +293,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 RunQuery(
                     env,
                     path,
-                    "context NestedContext select context.ACtx.s0.p00 as c1, context.BCtx.label as c2, TheString as c3, sum(IntPrimitive) as c4 from MyWindow group by TheString",
+                    "context NestedContext select context.ACtx.s0.P00 as c1, context.BCtx.label as c2, TheString as c3, sum(IntPrimitive) as c4 from MyWindow group by TheString",
                     "c1,c2,c3,c4",
                     new[] {new object[] {"S0_1", "grp3", "E1", 3}, new object[] {"S0_1", "grp3", "E3", 5}},
                     new ContextPartitionSelector[] {new SupportSelectorById(Collections.SingletonSet(2))});

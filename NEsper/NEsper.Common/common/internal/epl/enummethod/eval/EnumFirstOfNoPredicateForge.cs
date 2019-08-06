@@ -70,7 +70,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                         ExprDotMethod(EnumForgeCodegenNames.REF_ENUMCOLL, "IsEmpty")))
                 .BlockReturn(ConstantNull())
                 .MethodReturn(
-                    Cast(type, ExprDotMethodChain(EnumForgeCodegenNames.REF_ENUMCOLL).Add("iterator").Add("next")));
+                    Cast(type, ExprDotMethodChain(EnumForgeCodegenNames.REF_ENUMCOLL).Add("First")));
             return LocalMethod(method, args.Expressions);
         }
     }

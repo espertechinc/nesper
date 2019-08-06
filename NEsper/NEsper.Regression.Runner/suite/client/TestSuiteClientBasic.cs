@@ -6,7 +6,10 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
+
 using com.espertech.esper.common.@internal.support;
+using com.espertech.esper.compiler.@internal.util;
 using com.espertech.esper.regressionlib.suite.client.basic;
 using com.espertech.esper.regressionrun.runner;
 

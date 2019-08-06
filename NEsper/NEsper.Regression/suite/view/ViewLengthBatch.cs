@@ -329,7 +329,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
                     "select * from SupportMarketDataBean#length_batch(0)",
-                    "Failed to valIdate data window declaration: Error in view 'length_batch', Length-Batch view requires a positive integer for size but received 0");
+                    "Failed to validate data window declaration: Error in view 'length_batch', Length-Batch view requires a positive integer for size but received 0");
             }
         }
 

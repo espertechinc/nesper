@@ -29,7 +29,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@Name('s0') select contained.reverse() as val from SupportBean_ST0_Container";
+                var epl = "@Name('s0') select Contained.reverse() as val from SupportBean_ST0_Container";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 LambdaAssertionUtil.AssertTypes(
@@ -67,7 +67,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
             {
                 var fields = "val0".SplitCsv();
                 var eplFragment = "@Name('s0') select " +
-                                  "strvals.reverse() as val0 " +
+                                  "Strvals.reverse() as val0 " +
                                   "from SupportCollection";
                 env.CompileDeploy(eplFragment).AddListener("s0");
 

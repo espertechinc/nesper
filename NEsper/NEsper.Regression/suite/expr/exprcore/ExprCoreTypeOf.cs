@@ -274,7 +274,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
                     "select typeof(xx) from SupportBean",
-                    "Failed to valIdate select-clause expression 'typeof(xx)': Property named 'xx' is not valId in any stream [select typeof(xx) from SupportBean]");
+                    "Failed to validate select-clause expression 'typeof(xx)': Property named 'xx' is not valid in any stream [select typeof(xx) from SupportBean]");
             }
         }
 

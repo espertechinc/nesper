@@ -31,8 +31,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
             {
                 string[] fields = {"val0", "val1"};
                 var eplFragment = "@Name('s0') select " +
-                                  "contained.countof(x=> x.p00 = 9) as val0, " +
-                                  "contained.countof() as val1 " +
+                                  "Contained.countof(x=> x.P00 = 9) as val0, " +
+                                  "Contained.countof() as val1 " +
                                   " from SupportBean_ST0_Container";
                 env.CompileDeploy(eplFragment).AddListener("s0");
 
@@ -81,8 +81,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
             {
                 string[] fields = {"val0", "val1"};
                 var eplFragment = "@Name('s0') select " +
-                                  "strvals.countof() as val0, " +
-                                  "strvals.countof(x => x = 'E1') as val1 " +
+                                  "Strvals.countof() as val0, " +
+                                  "Strvals.countof(x => x = 'E1') as val1 " +
                                   " from SupportCollection";
                 env.CompileDeploy(eplFragment).AddListener("s0");
 

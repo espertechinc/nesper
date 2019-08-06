@@ -45,7 +45,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
             {
                 return CodegenExpressionBuilder.StaticMethod(
                     typeof(StringToDateTimeExIsoFormatComputer),
-                    "stringToCalendarWStaticISOParse",
+                    "StringToCalendarWStaticISOParse",
                     input);
             }
 

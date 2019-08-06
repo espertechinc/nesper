@@ -33,13 +33,13 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.core
 
         public Type InterfaceImplemented { get; }
 
-        public CodegenClassMethods Methods { get; }
+        public IList<CodegenTypedParam> ExplicitMembers { get; }
 
         public CodegenClassProperties Properties { get; }
 
-        public CodegenCtor Ctor { get; }
+        public CodegenClassMethods Methods { get; }
 
-        public IList<CodegenTypedParam> ExplicitMembers { get; }
+        public CodegenCtor Ctor { get; }
 
         public string InterfaceGenericClass { get; set; }
     }

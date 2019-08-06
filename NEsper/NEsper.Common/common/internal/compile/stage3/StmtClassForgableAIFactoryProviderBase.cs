@@ -43,29 +43,37 @@ namespace com.espertech.esper.common.@internal.compile.stage3
 
         public CodegenClass Forge(bool includeDebugSymbols)
         {
-            IList<CodegenTypedParam> ctorParms = new List<CodegenTypedParam>();
-            ctorParms.Add(
+            var classScope = new CodegenClassScope(includeDebugSymbols, _namespaceScope, _className);
+
+            // REGION: Constructor
+            var ctorParams = new List<CodegenTypedParam>() {
                 new CodegenTypedParam(
                     typeof(EPStatementInitServices),
                     EPStatementInitServicesConstants.REF.Ref,
-                    false));
-            var codegenCtor = new CodegenCtor(GetType(), includeDebugSymbols, ctorParms);
-            var classScope = new CodegenClassScope(includeDebugSymbols, _namespaceScope, _className);
+                    false)
+            };
 
-            IList<CodegenTypedParam> members = new List<CodegenTypedParam>();
-            members.Add(new CodegenTypedParam(TypeOfFactory(), MEMBERNAME_STATEMENTAIFACTORY));
-
-            if (_namespaceScope.FieldsClassNameOptional != null) {
-                codegenCtor.Block.StaticMethod(
+            var ctor = new CodegenCtor(GetType(), _className, includeDebugSymbols, ctorParams);
+            if (_namespaceScope.FieldsClassNameOptional != null)
+            {
+                ctor.Block.StaticMethod(
                     _namespaceScope.FieldsClassNameOptional,
                     "Init",
                     EPStatementInitServicesConstants.REF);
             }
 
-            codegenCtor.Block.AssignRef(
+            ctor.Block.AssignRef(
                 MEMBERNAME_STATEMENTAIFACTORY,
-                LocalMethod(CodegenConstructorInit(codegenCtor, classScope), SAIFFInitializeSymbol.REF_STMTINITSVC));
+                LocalMethod(
+                    CodegenConstructorInit(ctor, classScope),
+                    SAIFFInitializeSymbol.REF_STMTINITSVC));
 
+            // REGION: Members
+            var members = new List<CodegenTypedParam>();
+            members.Add(new CodegenTypedParam(TypeOfFactory(), MEMBERNAME_STATEMENTAIFACTORY));
+
+            // REGION: Properties
+            var properties = new CodegenClassProperties();
             var factoryProp = CodegenProperty.MakeParentNode(
                 typeof(StatementAgentInstanceFactory),
                 GetType(),
@@ -73,36 +81,35 @@ namespace com.espertech.esper.common.@internal.compile.stage3
                 classScope);
             factoryProp.GetterBlock.BlockReturn(Ref(MEMBERNAME_STATEMENTAIFACTORY));
 
+            // REGION: Methods
+            var methods = new CodegenClassMethods();
+
             var assignMethod = CodegenMethod
-                .MakeParentNode(typeof(void), GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope)
+                .MakeMethod(typeof(void), GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope)
                 .AddParam(typeof(StatementAIFactoryAssignments), "assignments");
             if (_namespaceScope.FieldsClassNameOptional != null) {
                 assignMethod.Block.StaticMethod(_namespaceScope.FieldsClassNameOptional, "Assign", @Ref("assignments"));
             }
 
-            var unassignMethod = CodegenMethod.MakeParentNode(
-                typeof(void),
-                GetType(),
-                CodegenSymbolProviderEmpty.INSTANCE,
-                classScope);
+            var unassignMethod = CodegenMethod
+                .MakeMethod(typeof(void), GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope);
             if (_namespaceScope.FieldsClassNameOptional != null) {
                 unassignMethod.Block.StaticMethod(_namespaceScope.FieldsClassNameOptional, "Unassign");
             }
 
             var setValueMethod = CodegenMethod
-                .MakeParentNode(typeof(void), typeof(StmtClassForgableStmtFields), classScope)
+                .MakeMethod(typeof(void), typeof(StmtClassForgableStmtFields), classScope)
                 .AddParam(typeof(int), "index")
                 .AddParam(typeof(object), "value");
-            CodegenSubstitutionParamEntry.CodegenSetterMethod(classScope, setValueMethod);
+            CodegenSubstitutionParamEntry.CodegenSetterBody(classScope, setValueMethod.Block);
 
-            var methods = new CodegenClassMethods();
-            var properties = new CodegenClassProperties();
+            // Assignment, not sure why this is being done... TBD - Burn this
 
             CodegenStackGenerator.RecursiveBuildStack(factoryProp, "Factory", methods, properties);
             CodegenStackGenerator.RecursiveBuildStack(assignMethod, "Assign", methods, properties);
             CodegenStackGenerator.RecursiveBuildStack(unassignMethod, "Unassign", methods, properties);
             CodegenStackGenerator.RecursiveBuildStack(setValueMethod, "SetValue", methods, properties);
-            CodegenStackGenerator.RecursiveBuildStack(codegenCtor, "Ctor", methods, properties);
+            CodegenStackGenerator.RecursiveBuildStack(ctor, "Ctor", methods, properties);
 
             return new CodegenClass(
                 typeof(StatementAIFactoryProvider),
@@ -110,7 +117,7 @@ namespace com.espertech.esper.common.@internal.compile.stage3
                 _className,
                 classScope,
                 members,
-                codegenCtor,
+                ctor,
                 methods,
                 properties,
                 new EmptyList<CodegenInnerClass>());

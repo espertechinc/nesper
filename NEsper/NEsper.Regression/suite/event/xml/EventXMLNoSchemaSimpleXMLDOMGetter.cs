@@ -16,11 +16,11 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
     {
         public void Run(RegressionEnvironment env)
         {
-            var stmt = "@Name('s0') select element1, invalIdelement, " +
+            var stmt = "@Name('s0') select element1, invalidelement, " +
                        "element4.element41 as nestedElement," +
                        "element2.element21('e21_2') as mappedElement," +
                        "element2.element21[1] as indexedElement," +
-                       "element3.myattribute as invalIdattribute " +
+                       "element3.myattribute as invalidattribute " +
                        "from TestXMLNoSchemaType#length(100)";
             env.CompileDeploy(stmt).AddListener("s0");
 
@@ -48,12 +48,12 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
             Assert.AreEqual("VAL21-2", theEvent.Get("indexedElement"));
 
             if (isInvalidReturnsEmptyString) {
-                Assert.AreEqual("", theEvent.Get("invalIdelement"));
-                Assert.AreEqual("", theEvent.Get("invalIdattribute"));
+                Assert.AreEqual("", theEvent.Get("invalidelement"));
+                Assert.AreEqual("", theEvent.Get("invalidattribute"));
             }
             else {
-                Assert.AreEqual(null, theEvent.Get("invalIdelement"));
-                Assert.AreEqual(null, theEvent.Get("invalIdattribute"));
+                Assert.AreEqual(null, theEvent.Get("invalidelement"));
+                Assert.AreEqual(null, theEvent.Get("invalidattribute"));
             }
         }
     }

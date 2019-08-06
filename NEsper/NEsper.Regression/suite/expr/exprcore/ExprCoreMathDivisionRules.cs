@@ -46,7 +46,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@Name('s0') select BigInteger.valueOf(4)/BigInteger.valueOf(2) as c0 from SupportBean";
+                var epl = "@Name('s0') select BigInteger.ValueOf(4)/BigInteger.ValueOf(2) as c0 from SupportBean";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 Assert.AreEqual(typeof(BigInteger), env.Statement("s0").EventType.GetPropertyType("c0"));

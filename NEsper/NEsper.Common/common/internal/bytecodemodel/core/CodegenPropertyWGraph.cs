@@ -13,7 +13,13 @@ using System.Text;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.util;
 
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.core.CodeGenerationHelper;
+
+using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
 namespace com.espertech.esper.common.@internal.bytecodemodel.core
 {
@@ -29,8 +35,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.core
             bool isPublic,
             bool isOverride)
         {
-            if (returnType == null && returnTypeName == null)
-            {
+            if (returnType == null && returnTypeName == null) {
                 throw new ArgumentException("Invalid null return type");
             }
 
@@ -119,6 +124,80 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.core
 
             indent.Indent(builder, 1 + additionalIndent);
             builder.Append("}\n");
+        }
+
+        /// <summary>
+        /// Generates the accessor for the property.
+        /// </summary>
+        /// <returns></returns>
+        private AccessorDeclarationSyntax GetAccessor()
+        {
+            return AccessorDeclaration(SyntaxKind.GetAccessorDeclaration)
+                .WithBody(GetterBlock.CodegenSyntax());
+        }
+
+        /// <summary>
+        /// Generates the mutator for the property.
+        /// </summary>
+        /// <returns></returns>
+        private AccessorDeclarationSyntax GetMutator()
+        {
+            return AccessorDeclaration(SyntaxKind.SetAccessorDeclaration)
+                .WithBody(SetterBlock.CodegenSyntax());
+        }
+
+        /// <summary>
+        /// Gets the modifiers for the property.
+        /// </summary>
+        public SyntaxTokenList GetModifiers()
+        {
+            var tokenList = TokenList();
+
+            // Access modifier
+            var token = IsPublic ? Token(SyntaxKind.PublicKeyword) : Token(SyntaxKind.InternalKeyword);
+            if (OptionalComment != null) {
+                token = token.WithLeadingTrivia(
+                    TriviaList(
+                        Comment(OptionalComment)
+                    )
+                );
+            }
+
+            tokenList = tokenList.Add(token);
+
+            // Override modifier
+            if (IsOverride) {
+                tokenList = tokenList.Add(Token(SyntaxKind.OverrideKeyword));
+            }
+
+            return tokenList;
+        }
+
+        /// <summary>
+        /// Gets the syntax for the property type.
+        /// </summary>
+        /// <returns></returns>
+        private TypeSyntax GetPropertyTypeSyntax()
+        {
+            return ParseTypeName(ReturnTypeName);
+        }
+
+        /// <summary>
+        /// Generates the syntax tree for the property.
+        /// </summary>
+        /// <returns></returns>
+        public MemberDeclarationSyntax CodegenSyntax()
+        {
+            return PropertyDeclaration(
+                    GetPropertyTypeSyntax(),
+                    Identifier(Name)
+                )
+                .WithModifiers(GetModifiers())
+                .WithAccessorList(
+                    AccessorList(
+                        List(new[] { GetAccessor(), GetMutator() })
+                    )
+                );
         }
     }
 } // end of namespace

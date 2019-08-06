@@ -29,7 +29,7 @@ namespace com.espertech.esper.common.@internal.@event.arr
         [SetUp]
         public void SetUp()
         {
-            var metadata = new EventTypeMetadata("MyType", null, EventTypeTypeClass.STREAM, EventTypeApplicationType.OBJECTARR, NameAccessModifier.PROTECTED, EventTypeBusModifier.NONBUS, false, EventTypeIdPair.Unassigned());
+            var metadata = new EventTypeMetadata("MyType", null, EventTypeTypeClass.STREAM, EventTypeApplicationType.OBJECTARR, NameAccessModifier.INTERNAL, EventTypeBusModifier.NONBUS, false, EventTypeIdPair.Unassigned());
             string[] names = { "myInt", "myIntBoxed", "myString", "mySupportBean", "myComplexBean", "myNullType" };
             object[] types = { typeof(int?), typeof(int?), typeof(string), typeof(SupportBean), typeof(SupportBeanComplexProps), null };
 

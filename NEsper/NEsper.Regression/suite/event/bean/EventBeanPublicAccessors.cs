@@ -35,13 +35,13 @@ namespace com.espertech.esper.regressionlib.suite.@event.bean
                                 "fieldMapped as fieldMap," +
                                 "fieldNested as fieldNested," +
                                 "fieldNested.ReadNestedValue as fieldNestedVal," +
-                                "readLegacyBeanVal as simple," +
-                                "readLegacyNested as nestedObject," +
-                                "readLegacyNested.ReadNestedValue as nested," +
-                                "readStringArray[0] as array," +
-                                "readStringIndexed[1] as indexed," +
-                                "readMapByKey('key1') as mapped," +
-                                "readMap as mapItself," +
+                                "ReadLegacyBeanVal as simple," +
+                                "ReadLegacyNested as nestedObject," +
+                                "ReadLegacyNested.ReadNestedValue as nested," +
+                                "ReadStringArray[0] as array," +
+                                "ReadStringIndexed[1] as indexed," +
+                                "ReadMapByKey('key1') as mapped," +
+                                "ReadMap as mapItself," +
                                 "explicitFSimple, " +
                                 "explicitFIndexed[0], " +
                                 "explicitFNested, " +

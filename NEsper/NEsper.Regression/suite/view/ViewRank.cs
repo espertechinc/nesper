@@ -835,32 +835,32 @@ namespace com.espertech.esper.regressionlib.suite.view
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
                     "select * from SupportBean#rank(1, IntPrimitive desc)",
-                    "Failed to valIdate data window declaration: Rank view requires a list of expressions provIding unique keys, a numeric size parameter and a list of expressions provIding sort keys [select * from SupportBean#rank(1, IntPrimitive desc)]");
+                    "Failed to validate data window declaration: Rank view requires a list of expressions provIding unique keys, a numeric size parameter and a list of expressions provIding sort keys [select * from SupportBean#rank(1, IntPrimitive desc)]");
 
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
                     "select * from SupportBean#rank(1, IntPrimitive, TheString desc)",
-                    "Failed to valIdate data window declaration: Failed to find unique value expressions that are expected to occur before the numeric size parameter [select * from SupportBean#rank(1, IntPrimitive, TheString desc)]");
+                    "Failed to validate data window declaration: Failed to find unique value expressions that are expected to occur before the numeric size parameter [select * from SupportBean#rank(1, IntPrimitive, TheString desc)]");
 
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
                     "select * from SupportBean#rank(TheString, IntPrimitive, 1)",
-                    "Failed to valIdate data window declaration: Failed to find sort key expressions after the numeric size parameter [select * from SupportBean#rank(TheString, IntPrimitive, 1)]");
+                    "Failed to validate data window declaration: Failed to find sort key expressions after the numeric size parameter [select * from SupportBean#rank(TheString, IntPrimitive, 1)]");
 
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
                     "select * from SupportBean#rank(TheString, IntPrimitive, TheString desc)",
-                    "Failed to valIdate data window declaration: Failed to find constant value for the numeric size parameter [select * from SupportBean#rank(TheString, IntPrimitive, TheString desc)]");
+                    "Failed to validate data window declaration: Failed to find constant value for the numeric size parameter [select * from SupportBean#rank(TheString, IntPrimitive, TheString desc)]");
 
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
                     "select * from SupportBean#rank(TheString, 1, 1, IntPrimitive, TheString desc)",
-                    "Failed to valIdate data window declaration: InvalId view parameter expression 2 for Rank view, the expression returns a constant result value, are you sure? [select * from SupportBean#rank(TheString, 1, 1, IntPrimitive, TheString desc)]");
+                    "Failed to validate data window declaration: Invalid view parameter expression 2 for Rank view, the expression returns a constant result value, are you sure? [select * from SupportBean#rank(TheString, 1, 1, IntPrimitive, TheString desc)]");
 
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
                     "select * from SupportBean#rank(TheString, IntPrimitive, 1, IntPrimitive, 1, TheString desc)",
-                    "Failed to valIdate data window declaration: InvalId view parameter expression 4 for Rank view, the expression returns a constant result value, are you sure? [select * from SupportBean#rank(TheString, IntPrimitive, 1, IntPrimitive, 1, TheString desc)]");
+                    "Failed to validate data window declaration: Invalid view parameter expression 4 for Rank view, the expression returns a constant result value, are you sure? [select * from SupportBean#rank(TheString, IntPrimitive, 1, IntPrimitive, 1, TheString desc)]");
             }
         }
     }

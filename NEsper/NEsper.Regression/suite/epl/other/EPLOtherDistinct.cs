@@ -238,7 +238,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             public void Run(RegressionEnvironment env)
             {
                 var epl = "@Name('s0') select distinct * from " +
-                          "SupportBean(IntPrimitive=0) as fooB unIdirectional " +
+                          "SupportBean(IntPrimitive=0) as fooB unidirectional " +
                           "inner join " +
                           "pattern [" +
                           "every-distinct(fooA.TheString) fooA=SupportBean(IntPrimitive=1)" +
@@ -272,7 +272,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             public void Run(RegressionEnvironment env)
             {
                 var epl = "@Name('s0') select distinct * from " +
-                          "SupportBean(IntPrimitive=0) as fooB unIdirectional " +
+                          "SupportBean(IntPrimitive=0) as fooB unidirectional " +
                           "inner join " +
                           "pattern [" +
                           "every-distinct(fooA.TheString) fooA=SupportBean(IntPrimitive=1)" +

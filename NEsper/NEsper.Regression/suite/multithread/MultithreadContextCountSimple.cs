@@ -33,9 +33,9 @@ namespace com.espertech.esper.regressionlib.suite.multithread
         {
             var path = new RegressionPath();
             env.CompileDeploy(
-                "@Name('ctx') create context HashByUserCtx as coalesce by consistent_hash_crc32(p00) from SupportBean_S0 granularity 10000000",
+                "@Name('ctx') create context HashByUserCtx as coalesce by consistent_hash_crc32(P00) from SupportBean_S0 granularity 10000000",
                 path);
-            env.CompileDeploy("@Name('select') context HashByUserCtx select p01 from SupportBean_S0", path);
+            env.CompileDeploy("@Name('select') context HashByUserCtx select P01 from SupportBean_S0", path);
 
             TrySendContextCountSimple(env, 4, 5);
 
@@ -75,7 +75,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
             var result = listener.GetNewDataListFlattened();
             ISet<string> received = new HashSet<string>();
             foreach (var @event in result) {
-                var key = (string) @event.Get("p01");
+                var key = (string) @event.Get("P01");
                 if (received.Contains(key)) {
                     Assert.Fail("key " + key + " received multiple times");
                 }

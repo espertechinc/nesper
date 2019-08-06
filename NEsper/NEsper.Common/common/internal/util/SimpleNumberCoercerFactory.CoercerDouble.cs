@@ -48,7 +48,7 @@ namespace com.espertech.esper.common.@internal.util
                 return CodegenCoerceMayNull(
                     typeof(double),
                     typeof(double?),
-                    "doubleValue",
+                    "AsDouble",
                     param,
                     valueTypeMustNumeric,
                     codegenMethodScope,
@@ -60,7 +60,7 @@ namespace com.espertech.esper.common.@internal.util
                 CodegenExpression param,
                 Type type)
             {
-                return CodegenCoerceNonNull(typeof(double), typeof(double?), "doubleValue", param, type);
+                return CodegenCoerceNonNull(typeof(double), typeof(double?), "AsDouble", param, type);
             }
 
             public static CodegenExpression CodegenDoubleMayNullBoxedIncludeBig(
@@ -76,7 +76,7 @@ namespace com.espertech.esper.common.@internal.util
                 return CodegenCoerceMayNull(
                     typeof(double),
                     typeof(double?),
-                    "doubleValue",
+                    "AsDouble",
                     value,
                     valueType,
                     codegenMethodScope,

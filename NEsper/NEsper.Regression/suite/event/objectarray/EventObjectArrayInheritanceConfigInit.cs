@@ -124,7 +124,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.objectarray
                 env,
                 path,
                 "select suba from Sub1Event",
-                "Failed to valIdate select-clause expression 'suba': Property named 'suba' is not valId in any stream (dId you mean 'sub1'?)");
+                "Failed to validate select-clause expression 'suba': Property named 'suba' is not valid in any stream (did you mean 'sub1'?)");
 
             env.UndeployAll();
         }

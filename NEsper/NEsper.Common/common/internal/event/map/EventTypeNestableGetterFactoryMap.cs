@@ -76,7 +76,7 @@ namespace com.espertech.esper.common.@internal.@event.map
             return new MapArrayPropertyGetter(propertyNameAtomic, index, eventBeanTypedEventFactory, innerType);
         }
 
-        public EventPropertyGetterSPI GetGetterIndexedPOJO(
+        public EventPropertyGetterSPI GetGetterIndexedPONO(
             string propertyNameAtomic,
             int index,
             EventBeanTypedEventFactory eventBeanTypedEventFactory,
@@ -106,7 +106,7 @@ namespace com.espertech.esper.common.@internal.@event.map
             return new MapEventBeanArrayIndexedElementPropertyGetter(propertyNameAtomic, index, nestedGetter);
         }
 
-        public EventPropertyGetterSPI GetGetterIndexedEntryPOJO(
+        public EventPropertyGetterSPI GetGetterIndexedEntryPONO(
             string propertyNameAtomic,
             int index,
             BeanEventPropertyGetter nestedGetter,
@@ -130,7 +130,7 @@ namespace com.espertech.esper.common.@internal.@event.map
             return new MapMapPropertyGetter(propertyName, getterNestedMap);
         }
 
-        public EventPropertyGetterSPI GetGetterNestedPOJOProp(
+        public EventPropertyGetterSPI GetGetterNestedPONOProp(
             string propertyName,
             BeanEventPropertyGetter nestedGetter,
             EventBeanTypedEventFactory eventBeanTypedEventFactory,

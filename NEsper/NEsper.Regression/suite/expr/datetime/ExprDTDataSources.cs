@@ -212,15 +212,15 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
 
                 env.UndeployAll();
 
-                // test POJO inheritance via create-schema
+                // test PONO inheritance via create-schema
                 path.Clear();
-                var eplPOJO = "create schema InterfaceType as " +
+                var eplPONO = "create schema InterfaceType as " +
                               typeof(SupportStartTSEndTSInterface).Name +
                               " starttimestamp startTS endtimestamp endTS;\n" +
                               "create schema DerivedType as " +
                               typeof(SupportStartTSEndTSImpl).Name +
                               " inherits InterfaceType";
-                env.CompileDeployWBusPublicType(eplPOJO, path);
+                env.CompileDeployWBusPublicType(eplPONO, path);
 
                 var compiled = env.Compile(
                     "@Name('s2') select * from DerivedType dt where dt.before(current_timestamp())",

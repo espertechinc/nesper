@@ -211,7 +211,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
                 .IfElse()
                 .DeclareVar<int>(
                     "compareResult",
-                    ExprDotMethod(comparator, "compare", currentMinMax, Ref("comparable")))
+                    ExprDotMethod(comparator, "Compare", currentMinMax, Ref("comparable")))
                 .IfCondition(Relational(Ref("compareResult"), forge.Spec.IsMax ? LT : GT, Constant(0)))
                 .AssignRef(currentMinMax, Ref("comparable"))
                 .AssignRef(currentMinMaxBean, Ref("theEvent"));

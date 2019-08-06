@@ -20,7 +20,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.name
         }
 
         public string Name {
-            get => CodegenPackageScopeNames.PreviousMatchRecognize();
+            get => CodegenNamespaceScopeNames.PreviousMatchRecognize();
         }
     }
 } // end of namespace

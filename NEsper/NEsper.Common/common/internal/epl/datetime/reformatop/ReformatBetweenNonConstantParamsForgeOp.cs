@@ -342,7 +342,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.reformatop
                 block.MethodReturn(
                     StaticMethod(
                         typeof(ReformatBetweenNonConstantParamsForgeOp),
-                        "compareTimestamps",
+                        "CompareTimestamps",
                         first,
                         ts,
                         second,

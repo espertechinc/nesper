@@ -27,4 +27,8 @@
     <ProjectReference Include="..\NEsper.Regression\NEsper.Regression.csproj" />
     <ProjectReference Include="..\NEsper.Runtime\NEsper.Runtime.csproj" />
   </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="foobar\" />
+  </ItemGroup>
 </Project>

@@ -116,7 +116,7 @@ namespace NEsper.Avro.Getter
                 _propertyType,
                 CodegenExpressionBuilder.ExprDotMethod(
                     underlyingExpression,
-                    "get",
+                    "Get",
                     CodegenExpressionBuilder.Constant(_propertyIndex)));
         }
 

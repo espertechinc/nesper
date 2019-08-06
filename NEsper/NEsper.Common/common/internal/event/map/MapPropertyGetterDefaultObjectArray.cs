@@ -49,7 +49,7 @@ namespace com.espertech.esper.common.@internal.@event.map
                 EventTypeUtility.ResolveTypeCodegen(fragmentEventType, EPStatementInitServicesConstants.REF));
             return StaticMethod(
                 typeof(BaseNestableEventUtil),
-                "handleBNCreateFragmentObjectArray",
+                "HandleBNCreateFragmentObjectArray",
                 value,
                 eventType,
                 factory);

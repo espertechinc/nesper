@@ -13,6 +13,10 @@ using System.Text;
 
 using com.espertech.esper.common.@internal.util;
 
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.core.CodeGenerationHelper;
 
 namespace com.espertech.esper.compiler.@internal.util
@@ -26,6 +30,20 @@ namespace com.espertech.esper.compiler.@internal.util
             builder.Append("namespace ");
             builder.Append(@namespace);
             builder.Append(" {\n");
+        }
+
+        public static SyntaxList<UsingDirectiveSyntax> Importsdecl(
+            ICollection<ImportDecl> imports)
+        {
+            var usingsList = SyntaxFactory.List<UsingDirectiveSyntax>();
+
+            foreach (var importDecl in imports) {
+                if (importDecl.Namespace != null) {
+                    usingsList.Add(importDecl.UsingDirective);
+                }
+            }
+
+            return usingsList;
         }
 
         public static void Importsdecl(

@@ -107,7 +107,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             public void Run(RegressionEnvironment env)
             {
                 var fields =
-                    "count,escape,every,sum,avg,max,min,coalesce,median,stddev,avedev,events,first,last,unIdirectional,pattern,sql,metadatasql,prev,prior,weekday,lastweekday,cast,snapshot,variable,window,left,right,full,outer,join";
+                    "count,escape,every,sum,avg,max,min,coalesce,median,stddev,avedev,events,first,last,unidirectional,pattern,sql,metadatasql,prev,prior,weekday,lastweekday,cast,snapshot,variable,window,left,right,full,outer,join";
                 env.CompileDeploy("@Name('s0') select " + fields + " from SupportBeanKeywords").AddListener("s0");
 
                 env.SendEventBean(new SupportBeanKeywords());

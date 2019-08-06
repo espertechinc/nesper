@@ -217,9 +217,9 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
                     CodegenExpression value;
                     if (item.OptionalPropertyName != null) {
                         value = ExprDotMethodChain(Ref("theEvent"))
-                            .Add("getProperties")
+                            .Get("Properties")
                             .Add(
-                                "get",
+                                "Get",
                                 Constant(item.OptionalPropertyName));
                     }
                     else {

@@ -149,7 +149,7 @@ namespace com.espertech.esper.regressionlib.suite.context
         {
             var s0 = new SupportBean_S0(id, p00, p01);
             env.SendEventBean(s0);
-            var fields = "p00,p01,s0,theSum".SplitCsv();
+            var fields = "P00,P01,s0,theSum".SplitCsv();
             EPAssertionUtil.AssertProps(
                 env.Listener("s0").AssertOneGetNewAndReset(),
                 fields,
@@ -307,17 +307,17 @@ namespace com.espertech.esper.regressionlib.suite.context
             {
                 var path = new RegressionPath();
                 var epl = "@Name('ctx') create context CtxPartitionInitWCorrTerm " +
-                          "partition by p20 from SupportBean_S2, p10 from SupportBean_S1, p00 from SupportBean_S0 " +
+                          "partition by P20 from SupportBean_S2, P10 from SupportBean_S1, P00 from SupportBean_S0 " +
                           "initiated by SupportBean_S0 as s0, SupportBean_S1 as s1 " +
                           "terminated by pattern[SupportBean_S0(Id=s0.Id) or SupportBean_S1(Id=s1.Id)]";
                 env.CompileDeploy(epl, path);
 
                 env.CompileDeploy(
-                    "@Name('s0') context CtxPartitionInitWCorrTerm select context.s0 as ctx0, context.s1 as ctx1, context.s0.Id as ctx0Id, context.s1.Id as ctx1Id, p20, sum(Id) as theSum from SupportBean_S2 output last when terminated",
+                    "@Name('s0') context CtxPartitionInitWCorrTerm select context.s0 as ctx0, context.s1 as ctx1, context.s0.Id as ctx0Id, context.s1.Id as ctx1Id, P20, sum(Id) as theSum from SupportBean_S2 output last when terminated",
                     path);
 
                 env.AddListener("s0");
-                var fields = "ctx0Id,ctx1Id,p20,theSum".SplitCsv();
+                var fields = "ctx0Id,ctx1Id,P20,theSum".SplitCsv();
 
                 Assert.AreEqual(typeof(SupportBean_S0), env.Statement("s0").EventType.GetPropertyType("ctx0"));
                 Assert.AreEqual(typeof(SupportBean_S1), env.Statement("s0").EventType.GetPropertyType("ctx1"));
@@ -361,11 +361,11 @@ namespace com.espertech.esper.regressionlib.suite.context
             {
                 var path = new RegressionPath();
                 var epl = "create context CtxInitS0PositiveId as " +
-                          "partition by p00 and p01 from SupportBean_S0 " +
+                          "partition by P00 and P01 from SupportBean_S0 " +
                           "initiated by SupportBean_S0(Id>0) as s0";
                 env.CompileDeploy(soda, epl, path);
                 env.CompileDeploy(
-                    "@Name('s0') context CtxInitS0PositiveId select p00, p01, context.s0 as s0, sum(Id) as theSum from SupportBean_S0",
+                    "@Name('s0') context CtxInitS0PositiveId select P00, P01, context.s0 as s0, sum(Id) as theSum from SupportBean_S0",
                     path);
                 env.AddListener("s0");
 
@@ -409,16 +409,16 @@ namespace com.espertech.esper.regressionlib.suite.context
             {
                 var path = new RegressionPath();
                 var epl = "@Name('ctx') create context CtxTwoInitTerm as " +
-                          "partition by p01 from SupportBean_S0, p11 from SupportBean_S1, p21 from SupportBean_S2 " +
-                          "initiated by SupportBean_S0(p00=\"a\"), SupportBean_S1(p10=\"b\") " +
-                          "terminated by SupportBean_S2(p20=\"z\")";
+                          "partition by P01 from SupportBean_S0, P11 from SupportBean_S1, P21 from SupportBean_S2 " +
+                          "initiated by SupportBean_S0(P00=\"a\"), SupportBean_S1(P10=\"b\") " +
+                          "terminated by SupportBean_S2(P20=\"z\")";
                 env.CompileDeploy(soda, epl, path);
                 env.CompileDeploy(
-                    "@Name('s0') context CtxTwoInitTerm select p21, count(*) as cnt from SupportBean_S2 output last when terminated",
+                    "@Name('s0') context CtxTwoInitTerm select P21, count(*) as cnt from SupportBean_S2 output last when terminated",
                     path);
 
                 env.AddListener("s0");
-                var fields = "p21,cnt".SplitCsv();
+                var fields = "P21,cnt".SplitCsv();
 
                 SendS2(env, "b", "A");
                 SendS2(env, "a", "A");
@@ -517,27 +517,27 @@ namespace com.espertech.esper.regressionlib.suite.context
                 string epl;
 
                 // invalid initiated-by type
-                epl = "create context InvalIdCtx partition by TheString from SupportBean initiated by SupportBean_S0";
+                epl = "create context InvalidCtx partition by TheString from SupportBean initiated by SupportBean_S0";
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
                     epl,
-                    "Segmented context 'InvalIdCtx' requires that all of the event types that are listed in the initialized-by also appear in the partition-by, type 'SupportBean_S0' is not one of the types listed in partition-by");
+                    "Segmented context 'InvalidCtx' requires that all of the event types that are listed in the initialized-by also appear in the partition-by, type 'SupportBean_S0' is not one of the types listed in partition-by");
 
                 // cannot assign name in different places
                 epl =
-                    "create context InvalIdCtx partition by p00 from SupportBean_S0 as n1 initiated by SupportBean_S0 as n2";
+                    "create context InvalidCtx partition by P00 from SupportBean_S0 as n1 initiated by SupportBean_S0 as n2";
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
                     epl,
-                    "Segmented context 'InvalIdCtx' requires that either partition-by or initialized-by assign stream names, but not both");
+                    "Segmented context 'InvalidCtx' requires that either partition-by or initialized-by assign stream names, but not both");
 
                 // name assigned is already used
                 var message = "Name 'a' already used for type 'SupportBean_S0'";
                 epl =
-                    "create context InvalIdCtx partition by p00 from SupportBean_S0, p10 from SupportBean_S1 initiated by SupportBean_S0 as a, SupportBean_S1 as a";
+                    "create context InvalidCtx partition by P00 from SupportBean_S0, P10 from SupportBean_S1 initiated by SupportBean_S0 as a, SupportBean_S1 as a";
                 SupportMessageAssertUtil.TryInvalidCompile(env, epl, message);
                 epl =
-                    "create context InvalIdCtx partition by p00 from SupportBean_S0 as a, p10 from SupportBean_S1 as a";
+                    "create context InvalidCtx partition by P00 from SupportBean_S0 as a, P10 from SupportBean_S1 as a";
                 SupportMessageAssertUtil.TryInvalidCompile(env, epl, message);
             }
         }
@@ -628,15 +628,15 @@ namespace com.espertech.esper.regressionlib.suite.context
                 var path = new RegressionPath();
                 env.CompileDeploy(
                     "@Name('ctx') create context Ctx3Typed as " +
-                    "partition by p00 from SupportBean_S0, p10 from SupportBean_S1, p20 from SupportBean_S2 " +
+                    "partition by P00 from SupportBean_S0, P10 from SupportBean_S1, P20 from SupportBean_S2 " +
                     "terminated by pattern[SupportBean_S1 => SupportBean_S2]",
                     path);
                 env.CompileDeploy(
-                    "@Name('s0') context Ctx3Typed select p00, count(*) as cnt from SupportBean_S0 output last when terminated",
+                    "@Name('s0') context Ctx3Typed select P00, count(*) as cnt from SupportBean_S0 output last when terminated",
                     path);
 
                 env.AddListener("s0");
-                var fields = "p00,cnt".SplitCsv();
+                var fields = "P00,cnt".SplitCsv();
 
                 env.SendEventBean(new SupportBean_S0(0, "A"));
                 env.SendEventBean(new SupportBean_S0(0, "B"));
@@ -883,10 +883,10 @@ namespace com.espertech.esper.regressionlib.suite.context
             {
                 var path = new RegressionPath();
                 env.CompileDeploy(
-                    "create context MyTermByTimeout partition by p00 from SupportBean_S0, p10 from SupportBean_S1 terminated by pattern [SupportBean_S0(Id<0) or SupportBean_S1(Id<0)]",
+                    "create context MyTermByTimeout partition by P00 from SupportBean_S0, P10 from SupportBean_S1 terminated by pattern [SupportBean_S0(Id<0) or SupportBean_S1(Id<0)]",
                     path);
                 env.CompileDeploy(
-                    "@Name('s0') context MyTermByTimeout select coalesce(s0.p00, s1.p10) as key, count(*) as cnt from pattern [every (s0=SupportBean_S0 or s1=SupportBean_S1)] output last when terminated",
+                    "@Name('s0') context MyTermByTimeout select coalesce(s0.P00, s1.P10) as key, count(*) as cnt from pattern [every (s0=SupportBean_S0 or s1=SupportBean_S1)] output last when terminated",
                     path);
 
                 env.AddListener("s0");

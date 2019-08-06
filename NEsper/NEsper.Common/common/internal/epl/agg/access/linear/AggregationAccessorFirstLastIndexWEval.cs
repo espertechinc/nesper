@@ -71,7 +71,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
                 context.NamedMethods);
             context.Method.Block.DeclareVar<EventBean>("bean", LocalMethod(getBeanFirstLastIndex))
                 .IfRefNullReturnNull("bean")
-                .MethodReturn(StaticMethod(typeof(Collections), "singletonList", @Ref("bean")));
+                .MethodReturn(StaticMethod(typeof(Collections), "SingletonList", @Ref("bean")));
         }
 
         public static void GetEnumerableScalarCodegen(
@@ -103,7 +103,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
                         ConstantTrue(),
                         ConstantNull()))
                 .IfRefNullReturnNull("value")
-                .MethodReturn(StaticMethod(typeof(Collections), "singletonList", @Ref("value")));
+                .MethodReturn(StaticMethod(typeof(Collections), "SingletonList", @Ref("value")));
         }
 
         public static void GetEnumerableEventCodegen(

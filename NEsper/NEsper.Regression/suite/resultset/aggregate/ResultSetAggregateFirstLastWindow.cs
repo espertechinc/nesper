@@ -602,45 +602,45 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
                 TryInvalidCompile(
                     env,
                     "select window(sa.IntPrimitive + sb.IntPrimitive) from SupportBean#lastevent sa, SupportBean#lastevent sb",
-                    "Failed to valIdate select-clause expression 'window(sa.IntPrimitive+sb.IntPrimitive)': The 'window' aggregation function requires that any child expressions evaluate properties of the same stream; Use 'firstever' or 'lastever' or 'nth' instead [select window(sa.IntPrimitive + sb.IntPrimitive) from SupportBean#lastevent sa, SupportBean#lastevent sb]");
+                    "Failed to validate select-clause expression 'window(sa.IntPrimitive+sb.IntPrimitive)': The 'window' aggregation function requires that any child expressions evaluate properties of the same stream; Use 'firstever' or 'lastever' or 'nth' instead [select window(sa.IntPrimitive + sb.IntPrimitive) from SupportBean#lastevent sa, SupportBean#lastevent sb]");
 
                 TryInvalidCompile(
                     env,
                     "select last(*) from SupportBean#lastevent sa, SupportBean#lastevent sb",
-                    "Failed to valIdate select-clause expression 'last(*)': The 'last' aggregation function requires that in joins or subqueries the stream-wildcard (stream-alias.*) syntax is used instead [select last(*) from SupportBean#lastevent sa, SupportBean#lastevent sb]");
+                    "Failed to validate select-clause expression 'last(*)': The 'last' aggregation function requires that in joins or subqueries the stream-wildcard (stream-alias.*) syntax is used instead [select last(*) from SupportBean#lastevent sa, SupportBean#lastevent sb]");
 
                 TryInvalidCompile(
                     env,
                     "select TheString, (select first(*) from SupportBean#lastevent sa) from SupportBean#lastevent sb",
-                    "Failed to plan subquery number 1 querying SupportBean: Failed to valIdate select-clause expression 'first(*)': The 'first' aggregation function requires that in joins or subqueries the stream-wildcard (stream-alias.*) syntax is used instead [select TheString, (select first(*) from SupportBean#lastevent sa) from SupportBean#lastevent sb]");
+                    "Failed to plan subquery number 1 querying SupportBean: Failed to validate select-clause expression 'first(*)': The 'first' aggregation function requires that in joins or subqueries the stream-wildcard (stream-alias.*) syntax is used instead [select TheString, (select first(*) from SupportBean#lastevent sa) from SupportBean#lastevent sb]");
 
                 TryInvalidCompile(
                     env,
                     "select window(x.*) from SupportBean#lastevent",
-                    "Failed to valIdate select-clause expression 'window(x.*)': Stream by name 'x' could not be found among all streams [select window(x.*) from SupportBean#lastevent]");
+                    "Failed to validate select-clause expression 'window(x.*)': Stream by name 'x' could not be found among all streams [select window(x.*) from SupportBean#lastevent]");
 
                 TryInvalidCompile(
                     env,
                     "select window(*) from SupportBean x",
-                    "Failed to valIdate select-clause expression 'window(*)': The 'window' aggregation function requires that the aggregated events provIde a remove stream; Please define a data window onto the stream or use 'firstever', 'lastever' or 'nth' instead [select window(*) from SupportBean x]");
+                    "Failed to validate select-clause expression 'window(*)': The 'window' aggregation function requires that the aggregated events provIde a remove stream; Please define a data window onto the stream or use 'firstever', 'lastever' or 'nth' instead [select window(*) from SupportBean x]");
                 TryInvalidCompile(
                     env,
                     "select window(x.*) from SupportBean x",
-                    "Failed to valIdate select-clause expression 'window(x.*)': The 'window' aggregation function requires that the aggregated events provIde a remove stream; Please define a data window onto the stream or use 'firstever', 'lastever' or 'nth' instead [select window(x.*) from SupportBean x]");
+                    "Failed to validate select-clause expression 'window(x.*)': The 'window' aggregation function requires that the aggregated events provIde a remove stream; Please define a data window onto the stream or use 'firstever', 'lastever' or 'nth' instead [select window(x.*) from SupportBean x]");
                 TryInvalidCompile(
                     env,
                     "select window(x.IntPrimitive) from SupportBean x",
-                    "Failed to valIdate select-clause expression 'window(x.IntPrimitive)': The 'window' aggregation function requires that the aggregated events provIde a remove stream; Please define a data window onto the stream or use 'firstever', 'lastever' or 'nth' instead [select window(x.IntPrimitive) from SupportBean x]");
+                    "Failed to validate select-clause expression 'window(x.IntPrimitive)': The 'window' aggregation function requires that the aggregated events provIde a remove stream; Please define a data window onto the stream or use 'firstever', 'lastever' or 'nth' instead [select window(x.IntPrimitive) from SupportBean x]");
 
                 TryInvalidCompile(
                     env,
                     "select window(x.IntPrimitive, 10) from SupportBean#keepall x",
-                    "Failed to valIdate select-clause expression 'window(x.IntPrimitive,10)': The 'window' aggregation function does not accept an index expression; Use 'first' or 'last' instead [");
+                    "Failed to validate select-clause expression 'window(x.IntPrimitive,10)': The 'window' aggregation function does not accept an index expression; Use 'first' or 'last' instead [");
 
                 TryInvalidCompile(
                     env,
                     "select first(x.*, 10d) from SupportBean#lastevent as x",
-                    "Failed to valIdate select-clause expression 'first(x.*,10.0)': The 'first' aggregation function requires an index expression that returns an integer value [select first(x.*, 10d) from SupportBean#lastevent as x]");
+                    "Failed to validate select-clause expression 'first(x.*,10.0)': The 'first' aggregation function requires an index expression that returns an integer value [select first(x.*, 10d) from SupportBean#lastevent as x]");
             }
         }
 
@@ -971,9 +971,9 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
                 var epl = "@Name('s0') select " +
                           "sa.Id as aId, " +
                           "sb.Id as bId, " +
-                          "first(sb.p10) as fb, " +
-                          "window(sb.p10) as wb, " +
-                          "last(sb.p10) as lb " +
+                          "first(sb.P10) as fb, " +
+                          "window(sb.P10) as wb, " +
+                          "last(sb.P10) as lb " +
                           "from SupportBean_S0#keepall as sa " +
                           "left outer join " +
                           "SupportBean_S1#keepall as sb " +

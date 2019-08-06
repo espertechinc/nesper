@@ -70,7 +70,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
                 .AddParam(typeof(long), "target");
 
             var block = methodNode.Block
-                .DeclareVar<DateTimeEx>("dtx", StaticMethod(typeof(DateTimeEx), "getInstance", timeZoneField))
+                .DeclareVar<DateTimeEx>("dtx", StaticMethod(typeof(DateTimeEx), "GetInstance", timeZoneField))
                 .DeclareVar<long>(
                     "startRemainder",
                     forge.timeAbacus.DateTimeSetCodegen(Ref("target"), Ref("dtx"), methodNode, codegenClassScope));
@@ -122,7 +122,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
                 .AddParam(typeof(long), "endLong");
 
             var block = methodNode.Block
-                .DeclareVar<DateTimeEx>("dtx", StaticMethod(typeof(DateTimeEx), "getInstance", timeZoneField))
+                .DeclareVar<DateTimeEx>("dtx", StaticMethod(typeof(DateTimeEx), "GetInstance", timeZoneField))
                 .DeclareVar<long>(
                     "startRemainder",
                     forge.timeAbacus.DateTimeSetCodegen(Ref("startLong"), Ref("dtx"), methodNode, codegenClassScope));

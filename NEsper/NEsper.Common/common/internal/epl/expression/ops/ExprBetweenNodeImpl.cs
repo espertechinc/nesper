@@ -324,11 +324,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                     .IfCondition(Relational(ExprDotMethod(Ref("value"), "compareTo", Ref("upper")), GT, Constant(0)))
                     .BlockReturn(ConstantFalse());
                 if (!_isLowIncluded) {
-                    block.IfCondition(ExprDotMethod(Ref("value"), "equals", Ref("lower"))).BlockReturn(ConstantFalse());
+                    block.IfCondition(ExprDotMethod(Ref("value"), "Equals", Ref("lower"))).BlockReturn(ConstantFalse());
                 }
 
                 if (!_isHighIncluded) {
-                    block.IfCondition(ExprDotMethod(Ref("value"), "equals", Ref("upper"))).BlockReturn(ConstantFalse());
+                    block.IfCondition(ExprDotMethod(Ref("value"), "Equals", Ref("upper"))).BlockReturn(ConstantFalse());
                 }
 
                 var method = block.MethodReturn(ConstantTrue());
@@ -716,7 +716,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                             Relational(ExprDotMethod(Ref("value"), "compareTo", Ref("upper")), LT, Constant(0)))
                         .BlockReturn(ConstantTrue());
                     if (_isHighIncluded) {
-                        ifValueGtLower.BlockReturn(ExprDotMethod(Ref("value"), "equals", Ref("upper")));
+                        ifValueGtLower.BlockReturn(ExprDotMethod(Ref("value"), "Equals", Ref("upper")));
                     }
                     else {
                         ifValueGtLower.BlockReturn(ConstantFalse());
@@ -724,7 +724,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                 }
                 CodegenMethod method;
                 if (_isLowIncluded) {
-                    method = block.MethodReturn(ExprDotMethod(Ref("value"), "equals", Ref("lower")));
+                    method = block.MethodReturn(ExprDotMethod(Ref("value"), "Equals", Ref("lower")));
                 }
                 else {
                     method = block.MethodReturn(ConstantFalse());

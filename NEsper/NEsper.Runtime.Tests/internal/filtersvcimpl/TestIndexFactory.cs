@@ -46,7 +46,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
             Assert.IsTrue(GetPropName(index).Equals("IntPrimitive"));
             Assert.IsTrue(index.FilterOperator == FilterOperator.GREATER);
 
-            // Create an "equals" index
+            // Create an "Equals" index
             index = IndexFactory.CreateIndex(MakeLookupable("string"), lockFactory, FilterOperator.EQUAL);
 
             Assert.IsTrue(index != null);

@@ -33,17 +33,17 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
                            "match_recognize (" +
                            "  measures A.TheString as a_string, " +
                            "       C.TheString as c_string, " +
-                           "       max(B.value) as maxb, " +
-                           "       min(B.value) as minb, " +
-                           "       2*min(B.value) as minb2x, " +
-                           "       last(B.value) as lastb, " +
-                           "       first(B.value) as firstb," +
-                           "       count(B.value) as countb " +
+                           "       max(B.Value) as maxb, " +
+                           "       min(B.Value) as minb, " +
+                           "       2*min(B.Value) as minb2x, " +
+                           "       last(B.Value) as lastb, " +
+                           "       first(B.Value) as firstb," +
+                           "       count(B.Value) as countb " +
                            "  all matches pattern (A B* C) " +
                            "  define " +
-                           "   A as (A.value = 0)," +
-                           "   B as (B.value != 1)," +
-                           "   C as (C.value = 1)" +
+                           "   A as (A.Value = 0)," +
+                           "   B as (B.Value != 1)," +
+                           "   C as (C.Value = 1)" +
                            ") " +
                            "order by a_string";
 
@@ -119,16 +119,16 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
                            "  partition by cat" +
                            "  measures A.cat as cat, A.TheString as a_string, " +
                            "       D.TheString as d_string, " +
-                           "       sum(C.value) as sumc, " +
-                           "       sum(B.value) as sumb, " +
-                           "       sum(B.value + A.value) as sumaplusb, " +
-                           "       sum(C.value + A.value) as sumaplusc " +
+                           "       sum(C.Value) as sumc, " +
+                           "       sum(B.Value) as sumb, " +
+                           "       sum(B.Value + A.Value) as sumaplusb, " +
+                           "       sum(C.Value + A.Value) as sumaplusc " +
                            "  all matches pattern (A B B C C D) " +
                            "  define " +
-                           "   A as (A.value >= 10)," +
-                           "   B as (B.value > 1)," +
-                           "   C as (C.value < -1)," +
-                           "   D as (D.value = 999)" +
+                           "   A as (A.Value >= 10)," +
+                           "   B as (B.Value > 1)," +
+                           "   C as (C.Value < -1)," +
+                           "   D as (D.Value = 999)" +
                            ") order by cat";
 
                 env.CompileDeploy(text).AddListener("s0");

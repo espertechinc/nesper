@@ -17,9 +17,9 @@ namespace com.espertech.esper.regressionlib.support.util
     public class IndexBackingTableInfo
     {
         public static readonly string INDEX_CALLBACK_HOOK =
-            "@Hook(type=" +
+            "@Hook(HookType=" +
             typeof(HookType).FullName +
-            ".INTERNAL_QUERY_PLAN,hook='" +
+            ".INTERNAL_QUERY_PLAN,Hook='" +
             SupportQueryPlanIndexHook.ResetGetClassName() +
             "')";
 

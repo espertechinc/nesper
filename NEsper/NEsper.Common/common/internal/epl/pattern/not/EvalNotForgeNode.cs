@@ -45,7 +45,7 @@ namespace com.espertech.esper.common.@internal.epl.pattern.not
 
         protected override string NameOfFactory()
         {
-            return "not";
+            return "Not";
         }
 
         protected override void InlineCodegen(

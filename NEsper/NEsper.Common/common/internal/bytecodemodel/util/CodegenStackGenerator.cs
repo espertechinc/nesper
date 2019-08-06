@@ -233,7 +233,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.util
         {
             members.Add(new CodegenTypedParam(className, memberName));
 
-            var method = CodegenMethod.MakeParentNode(
+            var method = CodegenMethod.MakeMethod(
                     typeof(void),
                     typeof(CodegenStackGenerator),
                     CodegenSymbolProviderEmpty.INSTANCE,

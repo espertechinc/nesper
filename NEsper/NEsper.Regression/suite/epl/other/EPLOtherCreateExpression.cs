@@ -127,7 +127,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 // test expression chained syntax
                 var eplExpr = "" +
                               "create expression scalarfilter {s => " +
-                              "   strvals.where(y => y != 'E1') " +
+                              "   Strvals.where(y => y != 'E1') " +
                               "}";
                 env.CompileDeploy(eplExpr, path);
                 var eplSelect =

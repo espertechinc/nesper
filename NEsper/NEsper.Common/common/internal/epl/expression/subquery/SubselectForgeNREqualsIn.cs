@@ -81,13 +81,13 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                 var ifRight = @foreach.IfCondition(NotEqualsNull(@Ref("valueRight")));
                 {
                     if (coercer == null) {
-                        ifRight.IfCondition(ExprDotMethod(left, "equals", @Ref("valueRight")))
+                        ifRight.IfCondition(ExprDotMethod(left, "Equals", @Ref("valueRight")))
                             .BlockReturn(Constant(!isNotIn));
                     }
                     else {
                         ifRight.DeclareVar<object>("left", coercer.CoerceCodegen(left, symbols.LeftResultType))
                             .DeclareVar<object>("right", coercer.CoerceCodegen(@Ref("valueRight"), valueRightType))
-                            .DeclareVar<bool>("eq", ExprDotMethod(@Ref("left"), "equals", @Ref("right")))
+                            .DeclareVar<bool>("eq", ExprDotMethod(@Ref("left"), "Equals", @Ref("right")))
                             .IfCondition(@Ref("eq"))
                             .BlockReturn(Constant(!isNotIn));
                     }

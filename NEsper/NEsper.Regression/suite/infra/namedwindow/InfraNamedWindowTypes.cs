@@ -344,7 +344,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                     TryAssertionCreateSchemaModelAfter(env, rep);
                 }
 
-                // test model-after for POJO with inheritance
+                // test model-after for PONO with inheritance
                 var path = new RegressionPath();
                 env.CompileDeploy("create window ParentWindow#keepall as select * from SupportBeanAtoFBase", path);
                 env.CompileDeploy("insert into ParentWindow select * from SupportBeanAtoFBase", path);

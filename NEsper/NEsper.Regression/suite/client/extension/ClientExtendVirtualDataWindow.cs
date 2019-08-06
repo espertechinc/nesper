@@ -116,7 +116,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
             window.Data = Collections.SingletonSet<object>(supportBean);
 
             env.CompileDeploy(
-                "@Name('s0') select (select sum(IntPrimitive) from MyVDW vdw where vdw.TheString = s0.p00) from SupportBean_S0 s0",
+                "@Name('s0') select (select sum(IntPrimitive) from MyVDW vdw where vdw.TheString = s0.P00) from SupportBean_S0 s0",
                 path);
             env.AddListener("s0");
             var spiContext = (VirtualDataWindowLookupContextSPI) window.LastRequestedLookup;
@@ -426,14 +426,14 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
             env.CompileDeploy(
                 "create context MyContext coalesce by " +
                 "consistent_hash_crc32(TheString) from SupportBean, " +
-                "consistent_hash_crc32(p00) from SupportBean_S0 " +
+                "consistent_hash_crc32(P00) from SupportBean_S0 " +
                 "granularity 4 preallocate",
                 path);
             env.CompileDeploy("context MyContext create window MyWindow.test:vdw() as SupportBean", path);
 
             // join
             var eplSubquerySameCtx = "@Name('s0') context MyContext " +
-                                     "select * from SupportBean_S0 as s0 unIdirectional, MyWindow as mw where mw.TheString = s0.p00";
+                                     "select * from SupportBean_S0 as s0 unidirectional, MyWindow as mw where mw.TheString = s0.P00";
             env.CompileDeploy(eplSubquerySameCtx, path).AddListener("s0");
 
             env.SendEventBean(new SupportBean_S0(1, "E1"));
@@ -450,14 +450,14 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
             env.CompileDeploy(
                 "create context MyContext coalesce by " +
                 "consistent_hash_crc32(TheString) from SupportBean, " +
-                "consistent_hash_crc32(p00) from SupportBean_S0 " +
+                "consistent_hash_crc32(P00) from SupportBean_S0 " +
                 "granularity 4 preallocate",
                 path);
             env.CompileDeploy("context MyContext create window MyWindow.test:vdw() as SupportBean", path);
 
             // subquery - same context
             var eplSubquerySameCtx = "context MyContext " +
-                                     "select (select IntPrimitive from MyWindow mw where mw.TheString = s0.p00) as c0 " +
+                                     "select (select IntPrimitive from MyWindow mw where mw.TheString = s0.P00) as c0 " +
                                      "from SupportBean_S0 s0";
             env.CompileDeploy("@Name('s0') " + eplSubquerySameCtx, path).AddListener("s0");
             env.CompileDeploy("@Hint('disable_window_subquery_indexshare') @name('s1') " + eplSubquerySameCtx, path);
@@ -467,13 +467,13 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
             env.UndeployModuleContaining("s0");
 
             // subquery - no context
-            var eplSubqueryNoCtx = "select (select IntPrimitive from MyWindow mw where mw.TheString = s0.p00) as c0 " +
+            var eplSubqueryNoCtx = "select (select IntPrimitive from MyWindow mw where mw.TheString = s0.P00) as c0 " +
                                    "from SupportBean_S0 s0";
             TryInvalidCompile(
                 env,
                 path,
                 eplSubqueryNoCtx,
-                "Failed to plan subquery number 1 querying MyWindow: Mismatch in context specification, the context for the named window 'MyWindow' is 'MyContext' and the query specifies no context  [select (select IntPrimitive from MyWindow mw where mw.TheString = s0.p00) as c0 from SupportBean_S0 s0]");
+                "Failed to plan subquery number 1 querying MyWindow: Mismatch in context specification, the context for the named window 'MyWindow' is 'MyContext' and the query specifies no context  [select (select IntPrimitive from MyWindow mw where mw.TheString = s0.P00) as c0 from SupportBean_S0 s0]");
 
             SupportVirtualDW.InitializationData = null;
             env.UndeployAll();
@@ -522,7 +522,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
 
             // test multi-criteria subquery
             result = env.CompileExecuteFAF(
-                "select col1 from MyVDW vdw where col1='key1' and col2>'key0' and col3 between 5 and 15",
+                "select col1 from MyVDW vdw where col1='key1' and col2>'Key0' and col3 between 5 and 15",
                 path);
             AssertIndexSpec(window.LastRequestedLookup, "col1=(String)", "col3[,](Double)|col2>(String)");
             EPAssertionUtil.AssertProps(
@@ -530,7 +530,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
                 "col1".SplitCsv(),
                 new object[] {"key1"});
             EPAssertionUtil.AssertEqualsAnyOrder(
-                new object[] {"key1", new VirtualDataWindowKeyRange(5d, 15d), "key0"},
+                new object[] {"key1", new VirtualDataWindowKeyRange(5d, 15d), "Key0"},
                 window.LastAccessKeys);
 
             env.UndeployAll();
@@ -598,11 +598,11 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
         {
             string epl;
 
-            epl = "create window ABC.invalId:invalId() as SupportBean";
+            epl = "create window ABC.invalid:invalid() as SupportBean";
             TryInvalidCompile(
                 env,
                 epl,
-                "Failed to valIdate data window declaration: Virtual data window forge class " +
+                "Failed to validate data window declaration: Virtual data window forge class " +
                 typeof(SupportBean).Name +
                 " does not implement the interface " +
                 typeof(VirtualDataWindowForge).Name);
@@ -611,12 +611,12 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
             TryInvalidCompile(
                 env,
                 epl,
-                "Failed to valIdate data window declaration: Virtual data window requires use with a named window in the create-window syntax [select * from SupportBean.test:vdw()]");
+                "Failed to validate data window declaration: Virtual data window requires use with a named window in the create-window syntax [select * from SupportBean.test:vdw()]");
 
             TryInvalidCompile(
                 env,
                 "create window ABC.test:exceptionvdw() as SupportBean",
-                "Failed to valIdate data window declaration: ValIdation exception initializing virtual data window 'ABC': This is a test exception [create window ABC.test:exceptionvdw() as SupportBean]");
+                "Failed to validate data window declaration: ValIdation exception initializing virtual data window 'ABC': This is a test exception [create window ABC.test:exceptionvdw() as SupportBean]");
         }
 
         private void RunAssertionManagementEvents(RegressionEnvironment env)
@@ -719,7 +719,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
                             "@Name('s0') select * from ";
 
             if (caseEnum == CaseEnum.UNIDIRECTIONAL) {
-                eplUnique += "SupportSimpleBeanOne as ssb1 unIdirectional ";
+                eplUnique += "SupportSimpleBeanOne as ssb1 unidirectional ";
             }
             else {
                 eplUnique += "SupportSimpleBeanOne#lastevent as ssb1 ";

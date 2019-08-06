@@ -26,7 +26,7 @@ namespace com.espertech.esper.common.@internal.epl.namedwindow.core
         {
             return StaticMethod(
                 typeof(NamedWindowDeployTimeResolver),
-                "resolveNamedWindow",
+                "ResolveNamedWindow",
                 Constant(namedWindow.EventType.Name),
                 Constant(namedWindow.EventType.Metadata.AccessModifier),
                 Constant(namedWindow.NamedWindowModuleName),

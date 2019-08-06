@@ -13,24 +13,20 @@ using System.Text;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.bytecodemodel.util;
 
+using Microsoft.CodeAnalysis.CSharp.Syntax;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.core.CodeGenerationHelper;
 
 namespace com.espertech.esper.common.@internal.bytecodemodel.core
 {
     public class CodegenNamedParam
     {
-        private readonly string typeName;
-
         public CodegenNamedParam(
             Type type,
             string name)
         {
-            if (type == null) {
-                throw new ArgumentException("Invalid null type");
-            }
-
-            Type = type;
-            typeName = null;
+            Type = type ?? throw new ArgumentException("Invalid null type");
+            TypeName = null;
             Name = name;
         }
 
@@ -38,12 +34,8 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.core
             string typeName,
             string name)
         {
-            if (typeName == null) {
-                throw new ArgumentException("Invalid null type");
-            }
-
             Type = null;
-            this.typeName = typeName;
+            TypeName = typeName ?? throw new ArgumentException("Invalid null type");
             Name = name;
         }
 
@@ -56,6 +48,8 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.core
 
         public Type Type { get; }
 
+        public string TypeName { get; }
+
         public string Name { get; }
 
         public void Render(
@@ -65,7 +59,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.core
                 AppendClassName(builder, Type);
             }
             else {
-                builder.Append(typeName);
+                builder.Append(TypeName);
             }
 
             builder.Append(" ").Append(Name);
@@ -278,9 +272,14 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.core
 
         public override int GetHashCode()
         {
-            int result = Type.GetHashCode();
+            var result = Type.GetHashCode();
             result = 31 * result + Name.GetHashCode();
             return result;
+        }
+
+        public ParameterSyntax CodegenSyntaxAsParameter()
+        {
+            throw new NotImplementedException();
         }
     }
 } // end of namespace

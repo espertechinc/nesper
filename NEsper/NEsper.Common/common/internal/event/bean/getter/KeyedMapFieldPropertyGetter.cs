@@ -160,7 +160,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
                 .DeclareVar<object>("result", ExprDotName(Ref("@object"), _field.Name))
                 .IfRefNotTypeReturnConst("result", typeof(IDictionary<object, object>), null)
                 .DeclareVarWCast(typeof(IDictionary<object, object>), "map", "result")
-                .MethodReturn(Cast(BeanPropType, ExprDotMethod(Ref("map"), "get", Ref("key"))));
+                .MethodReturn(Cast(BeanPropType, ExprDotMethod(Ref("map"), "Get", Ref("key"))));
         }
 
         public override string ToString()

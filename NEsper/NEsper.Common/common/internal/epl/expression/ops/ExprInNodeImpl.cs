@@ -152,8 +152,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
         public override void ToPrecedenceFreeEPL(TextWriter writer)
         {
             string delimiter = "";
-            IEnumerator<ExprNode> it = Arrays.AsList(this.ChildNodes).GetEnumerator();
-            it.Current.ToEPL(writer, Precedence);
+            ChildNodes[0].ToEPL(writer, Precedence);
             if (isNotIn) {
                 writer.Write(" not in (");
             }
@@ -161,12 +160,12 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                 writer.Write(" in (");
             }
 
-            do {
-                ExprNode inSetValueExpr = it.Current;
+            for (int ii = 1 ; ii < ChildNodes.Length; ii++) {
+                var inSetValueExpr = ChildNodes[ii];
                 writer.Write(delimiter);
                 inSetValueExpr.ToEPL(writer, Precedence);
                 delimiter = ",";
-            } while (it.MoveNext());
+            }
 
             writer.Write(')');
         }

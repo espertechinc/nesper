@@ -143,15 +143,15 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                     EqualsIdentity(ExprDotMethod(EnumForgeCodegenNames.REF_ENUMCOLL, "Size"), Constant(1)))
                 .DeclareVar<object>(
                     "item",
-                    ExprDotMethodChain(EnumForgeCodegenNames.REF_ENUMCOLL).Add("iterator").Add("next"))
+                    ExprDotMethodChain(EnumForgeCodegenNames.REF_ENUMCOLL).Add("First"))
                 .AssignArrayElement("evalProps", Constant(0), Ref("item"))
                 .AssignArrayElement("indexProps", Constant(0), Constant(0));
             CodegenLegoBooleanExpression.CodegenReturnValueIfNotNullAndNotPass(
                 blockSingle,
                 forge.innerExpression.EvaluationType,
                 innerValue,
-                StaticMethod(typeof(Collections), "emptyList"));
-            blockSingle.BlockReturn(StaticMethod(typeof(Collections), "singletonList", Ref("item")));
+                StaticMethod(typeof(Collections), "EmptyList"));
+            blockSingle.BlockReturn(StaticMethod(typeof(Collections), "SingletonList", Ref("item")));
 
             block.DeclareVar<ArrayDeque<object>>("result", NewInstance(typeof(ArrayDeque<object>)))
                 .DeclareVar<object[]>(

@@ -149,7 +149,7 @@ namespace com.espertech.esper.common.@internal.@event.map
                     EventTypeUtility.ResolveTypeCodegen(eventType, EPStatementInitServicesConstants.REF)));
             return StaticMethod(
                 typeof(BaseNestableEventUtil),
-                "getBNFragmentPojo",
+                "GetBNFragmentPono",
                 UnderlyingGetCodegen(underlyingExpression, codegenMethodScope, codegenClassScope),
                 mType,
                 mSvc);
@@ -163,7 +163,7 @@ namespace com.espertech.esper.common.@internal.@event.map
             var method = codegenMethodScope.MakeChild(typeof(object), typeof(MapEntryPropertyGetter), codegenClassScope)
                 .AddParam(typeof(IDictionary<object, object>), "map")
                 .Block
-                .DeclareVar<object>("value", ExprDotMethod(Ref("map"), "get", Constant(propertyName)))
+                .DeclareVar<object>("value", ExprDotMethod(Ref("map"), "Get", Constant(propertyName)))
                 .IfInstanceOf("value", typeof(EventBean))
                 .BlockReturn(ExprDotUnderlying(Cast(typeof(EventBean), Ref("value"))))
                 .MethodReturn(Ref("value"));

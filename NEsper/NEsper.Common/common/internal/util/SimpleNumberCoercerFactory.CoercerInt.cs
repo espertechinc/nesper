@@ -47,7 +47,7 @@ namespace com.espertech.esper.common.@internal.util
                 return CodegenCoerceMayNull(
                     typeof(int),
                     typeof(int),
-                    "intValue",
+                    "AsInt",
                     param,
                     valueTypeMustNumeric,
                     codegenMethodScope,
@@ -59,7 +59,7 @@ namespace com.espertech.esper.common.@internal.util
                 CodegenExpression param,
                 Type type)
             {
-                return CodegenCoerceNonNull(typeof(int), typeof(int), "intValue", param, type);
+                return CodegenCoerceNonNull(typeof(int), typeof(int), "AsInt", param, type);
             }
 
             public static CodegenExpression CoerceCodegenMayNull(
@@ -71,7 +71,7 @@ namespace com.espertech.esper.common.@internal.util
                 return CodegenCoerceMayNull(
                     typeof(int),
                     typeof(int),
-                    "intValue",
+                    "AsInt",
                     param,
                     type,
                     codegenMethodScope,

@@ -26,7 +26,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.core
         public CodegenCtor ServiceCtor { get; }
 
         public IList<CodegenTypedParam> Members =>
-            members == null ? Collections.GetEmptyList<CodegenTypedParam>() : members;
+            members ?? Collections.GetEmptyList<CodegenTypedParam>();
 
         public CodegenNamedMethods Methods { get; } = new CodegenNamedMethods();
 

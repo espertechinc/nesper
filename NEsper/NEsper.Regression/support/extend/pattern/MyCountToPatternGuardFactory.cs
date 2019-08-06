@@ -32,7 +32,7 @@ namespace com.espertech.esper.regressionlib.support.extend.pattern
             Quitable quitable,
             object guardState)
         {
-            var events = Convertor == null ? null : Convertor.Convert(beginState);
+            var events = Convertor == null ? null : Convertor.Invoke(beginState);
             var parameter = PatternExpressionUtil.EvaluateChecked(
                 "Count-to guard",
                 NumCountToExpr,

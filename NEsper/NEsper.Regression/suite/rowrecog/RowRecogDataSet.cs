@@ -264,34 +264,34 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
                             "FROM SupportRecogBean#keepall" +
                             "   MATCH_RECOGNIZE (" +
                             "       MEASURES A.TheString AS a_string," +
-                            "         A.value AS a_value," +
+                            "         A.Value AS a_value," +
                             "         B.TheString AS b_string," +
-                            "         B.value AS b_value," +
+                            "         B.Value AS b_value," +
                             "         C[0].TheString AS c0_string," +
-                            "         C[0].value AS c0_value," +
+                            "         C[0].Value AS c0_value," +
                             "         C[1].TheString AS c1_string," +
-                            "         C[1].value AS c1_value," +
+                            "         C[1].Value AS c1_value," +
                             "         C[2].TheString AS c2_string," +
-                            "         C[2].value AS c2_value," +
+                            "         C[2].Value AS c2_value," +
                             "         D.TheString AS d_string," +
-                            "         D.value AS d_value," +
+                            "         D.Value AS d_value," +
                             "         E[0].TheString AS e0_string," +
-                            "         E[0].value AS e0_value," +
+                            "         E[0].Value AS e0_value," +
                             "         E[1].TheString AS e1_string," +
-                            "         E[1].value AS e1_value," +
+                            "         E[1].Value AS e1_value," +
                             "         F[0].TheString AS f0_string," +
-                            "         F[0].value AS f0_value," +
+                            "         F[0].Value AS f0_value," +
                             "         F[1].TheString AS f1_string," +
-                            "         F[1].value AS f1_value" +
+                            "         F[1].Value AS f1_value" +
                             "       ALL MATCHES" +
                             "       after match skip to current row" +
                             "       PATTERN ( A B C* D E* F+ )" +
                             "       DEFINE /* A is unspecified, defaults to TRUE, matches any row */" +
-                            "            B AS (B.value < PREV (B.value))," +
-                            "            C AS (C.value <= PREV (C.value))," +
-                            "            D AS (D.value < PREV (D.value))," +
-                            "            E AS (E.value >= PREV (E.value))," +
-                            "            F AS (F.value >= PREV (F.value) and F.value > A.value)" +
+                            "            B AS (B.Value < PREV (B.Value))," +
+                            "            C AS (C.Value <= PREV (C.Value))," +
+                            "            D AS (D.Value < PREV (D.Value))," +
+                            "            E AS (E.Value >= PREV (E.Value))," +
+                            "            F AS (F.Value >= PREV (F.Value) and F.Value > A.Value)" +
                             ")";
 
                 env.CompileDeploy(query).AddListener("s0");

@@ -72,7 +72,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             block.MethodReturn(
                 StaticMethod(
                     typeof(EnumTakeLastForgeEval),
-                    "evaluateEnumMethodTakeLast",
+                    "EvaluateEnumMethodTakeLast",
                     EnumForgeCodegenNames.REF_ENUMCOLL,
                     SimpleNumberCoercerFactory.CoercerInt.CodegenInt(Ref("size"), sizeType)));
             return LocalMethod(methodNode, args.Eps, args.Enumcoll, args.IsNewData, args.ExprCtx);

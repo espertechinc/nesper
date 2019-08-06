@@ -76,11 +76,11 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
                 TryAssertion(env, epl, "s1.mycol1", "950");
 
                 epl =
-                    "@Name('s0') select sum(s1.mycol3) as val from SupportBean sbr unIdirectional, sql:MyDBWithLRU100000 ['select mycol1, mycol3 from mytesttable_large'] as s1 where mycol3 between 950 and 953";
+                    "@Name('s0') select sum(s1.mycol3) as val from SupportBean sbr unidirectional, sql:MyDBWithLRU100000 ['select mycol1, mycol3 from mytesttable_large'] as s1 where mycol3 between 950 and 953";
                 TryAssertion(env, epl, "val", 950 + 951 + 952 + 953);
 
                 epl =
-                    "@Name('s0') select sum(s1.mycol3) as val from SupportBean sbr unIdirectional, sql:MyDBWithLRU100000 ['select mycol1, mycol3 from mytesttable_large'] as s1 where mycol1 = '950' and mycol3 between 950 and 953";
+                    "@Name('s0') select sum(s1.mycol3) as val from SupportBean sbr unidirectional, sql:MyDBWithLRU100000 ['select mycol1, mycol3 from mytesttable_large'] as s1 where mycol1 = '950' and mycol3 between 950 and 953";
                 TryAssertion(env, epl, "val", 950);
             }
         }
@@ -306,7 +306,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
                                INDEX_CALLBACK_HOOK +
                                "select * from SupportBean_S0 s0, " +
                                " sql:MyDBWithLRU100000 ['select mycol1, mycol3 from mytesttable_large'] as s1 " +
-                               " where mycol1 in (p00, p01, p02)";
+                               " where mycol1 in (P00, P01, p02)";
                 env.CompileDeploy(stmtText).AddListener("s0");
 
                 var historical = SupportQueryPlanIndexHook.AssertHistoricalAndReset();
@@ -338,7 +338,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
                                INDEX_CALLBACK_HOOK +
                                "select * from SupportBean_S0 s0, " +
                                " sql:MyDBWithLRU100000 ['select mycol1, mycol2, mycol3 from mytesttable_large'] as s1 " +
-                               " where p00 in (mycol2, mycol1)";
+                               " where P00 in (mycol2, mycol1)";
                 env.CompileDeploy(stmtText).AddListener("s0");
 
                 var historical = SupportQueryPlanIndexHook.AssertHistoricalAndReset();

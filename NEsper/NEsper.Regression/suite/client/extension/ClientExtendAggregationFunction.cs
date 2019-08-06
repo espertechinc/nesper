@@ -234,8 +234,8 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
 
             TryInvalidCompile(
                 env,
-                "select concatstring(*) as val from SupportBean#lastevent, SupportBean unIdirectional",
-                "Failed to valIdate select-clause expression 'concatstring(*)': The 'concatstring' aggregation function requires that in joins or subqueries the stream-wildcard (stream-alias.*) syntax is used instead");
+                "select concatstring(*) as val from SupportBean#lastevent, SupportBean unidirectional",
+                "Failed to validate select-clause expression 'concatstring(*)': The 'concatstring' aggregation function requires that in joins or subqueries the stream-wildcard (stream-alias.*) syntax is used instead");
             env.UndeployAll();
 
             // test distinct
@@ -418,14 +418,14 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
             TryInvalidCompile(
                 env,
                 "select concatstring(1) from SupportBean",
-                "Failed to valIdate select-clause expression 'concatstring(1)': Plug-in aggregation function 'concatstring' failed valIdation: InvalId parameter type '");
+                "Failed to validate select-clause expression 'concatstring(1)': Plug-in aggregation function 'concatstring' failed valIdation: Invalid parameter type '");
         }
 
         private void RunAssertionInvalidUse(RegressionEnvironment env)
         {
             TryInvalidCompile(
                 env,
-                "select * from SupportBean group by invalIdAggFuncForge(1)",
+                "select * from SupportBean group by invalidAggFuncForge(1)",
                 "Error resolving aggregation: Class by name 'System.String' does not implement the AggregationFunctionForge interface");
 
             TryInvalidCompile(
@@ -439,7 +439,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
             TryInvalidCompile(
                 env,
                 "select zzz(TheString) from SupportBean",
-                "Failed to valIdate select-clause expression 'zzz(TheString)': Unknown single-row function, aggregation function or mapped or indexed property named 'zzz' could not be resolved");
+                "Failed to validate select-clause expression 'zzz(TheString)': Unknown single-row function, aggregation function or mapped or indexed property named 'zzz' could not be resolved");
         }
     }
 } // end of namespace

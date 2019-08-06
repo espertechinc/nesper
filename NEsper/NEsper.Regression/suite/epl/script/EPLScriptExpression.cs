@@ -332,7 +332,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.script
             env.SendEventBean(new SupportBean());
             EPAssertionUtil.AssertProps(
                 env.Listener("s0").AssertOneGetNewAndReset(),
-                "val0.p00".SplitCsv(),
+                "val0.P00".SplitCsv(),
                 new object[] {MyImportedClass.VALUE_P00});
 
             env.UndeployAll();
@@ -612,7 +612,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.script
                     env,
                     path,
                     "expression double @type(ItemEvent) fib(num) [] select fib(1) from SupportBean",
-                    "Failed to valIdate select-clause expression 'fib(1)': The @type annotation is only allowed when the invocation target returns EventBean instances");
+                    "Failed to validate select-clause expression 'fib(1)': The @type annotation is only allowed when the invocation target returns EventBean instances");
                 env.UndeployAll();
             }
         }
@@ -667,7 +667,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.script
                 TryInvalidCompile(
                     env,
                     "expression js:abc(p1, p1) [/* text */] select * from SupportBean",
-                    "InvalId script parameters for script 'abc', parameter 'p1' is defined more then once [expression js:abc(p1, p1) [/* text */] select * from SupportBean]");
+                    "Invalid script parameters for script 'abc', parameter 'p1' is defined more then once [expression js:abc(p1, p1) [/* text */] select * from SupportBean]");
 
                 // invalid dialect
                 TryInvalidCompile(
@@ -679,13 +679,13 @@ namespace com.espertech.esper.regressionlib.suite.epl.script
                 TryInvalidCompile(
                     env,
                     "select abc() from SupportBean",
-                    "Failed to valIdate select-clause expression 'abc': Unknown single-row function, expression declaration, script or aggregation function named 'abc' could not be resolved [select abc() from SupportBean]");
+                    "Failed to validate select-clause expression 'abc': Unknown single-row function, expression declaration, script or aggregation function named 'abc' could not be resolved [select abc() from SupportBean]");
 
                 // test incorrect number of parameters
                 TryInvalidCompile(
                     env,
                     "expression js:abc() [10] select abc(1) from SupportBean",
-                    "Failed to valIdate select-clause expression 'abc(1)': InvalId number of parameters for script 'abc', expected 0 parameters but received 1 parameters [expression js:abc() [10] select abc(1) from SupportBean]");
+                    "Failed to validate select-clause expression 'abc(1)': Invalid number of parameters for script 'abc', expected 0 parameters but received 1 parameters [expression js:abc() [10] select abc(1) from SupportBean]");
 
                 // test expression name overlap
                 TryInvalidCompile(
@@ -709,7 +709,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.script
                 TryInvalidCompile(
                     env,
                     "expression dummy js:abc() [10] select abc() from SupportBean",
-                    "Failed to valIdate select-clause expression 'abc()': Failed to resolve return type 'dummy' specified for script 'abc' [expression dummy js:abc() [10] select abc() from SupportBean]");
+                    "Failed to validate select-clause expression 'abc()': Failed to resolve return type 'dummy' specified for script 'abc' [expression dummy js:abc() [10] select abc() from SupportBean]");
             }
         }
 
@@ -725,7 +725,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.script
                 TryInvalidContains(
                     env,
                     "expression js:abc(aa) [return aa..bb(1);] select abc(1) from SupportBean",
-                    "InvalId return statement");
+                    "Invalid return statement");
 
                 TryInvalidCompile(
                     env,

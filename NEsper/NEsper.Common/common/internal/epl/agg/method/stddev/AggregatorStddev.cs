@@ -115,7 +115,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.stddev
         {
             method.Block.IfCondition(Relational(cnt, LT, Constant(2)))
                 .BlockReturn(ConstantNull())
-                .MethodReturn(StaticMethod(typeof(Math), "sqrt", Op(qn, "/", Op(cnt, "-", Constant(1)))));
+                .MethodReturn(StaticMethod(typeof(Math), "Sqrt", Op(qn, "/", Op(cnt, "-", Constant(1)))));
         }
 
         protected override void WriteWODistinct(

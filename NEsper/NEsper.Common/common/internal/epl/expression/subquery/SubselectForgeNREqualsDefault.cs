@@ -84,7 +84,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                 var ifRight = @foreach.IfCondition(NotEqualsNull(@Ref("valueRight")));
                 {
                     if (coercer == null) {
-                        ifRight.DeclareVar<bool>("eq", ExprDotMethod(left, "equals", @Ref("valueRight")));
+                        ifRight.DeclareVar<bool>("eq", ExprDotMethod(left, "Equals", @Ref("valueRight")));
                         if (isAll) {
                             ifRight.IfCondition(NotOptional(!isNot, @Ref("eq"))).BlockReturn(ConstantFalse());
                         }
@@ -95,7 +95,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                     else {
                         ifRight.DeclareVar<object>("left", coercer.CoerceCodegen(left, symbols.LeftResultType))
                             .DeclareVar<object>("right", coercer.CoerceCodegen(@Ref("valueRight"), valueRightType))
-                            .DeclareVar<bool>("eq", ExprDotMethod(@Ref("left"), "equals", @Ref("right")));
+                            .DeclareVar<bool>("eq", ExprDotMethod(@Ref("left"), "Equals", @Ref("right")));
                         if (isAll) {
                             ifRight.IfCondition(NotOptional(!isNot, @Ref("eq"))).BlockReturn(ConstantFalse());
                         }

@@ -34,7 +34,6 @@ namespace com.espertech.esper.common.@internal.epl.expression.prev
         private int assignedIndex;
         private int? constantIndexNumber;
         private CodegenFieldName previousStrategyFieldName;
-
         private int streamNumber;
 
         public override ExprForge Forge => this;
@@ -103,10 +102,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.prev
             method.Block
                 .DeclareVar<RowRecogStateRandomAccess>(
                     "access",
-                    ExprDotMethod(strategy, "getAccess", symbols.GetAddExprEvalCtx(method)))
+                    ExprDotMethod(strategy, "GetAccess", symbols.GetAddExprEvalCtx(method)))
                 .DeclareVar<EventBean>(
                     "substituteEvent",
-                    ExprDotMethod(Ref("access"), "getPreviousEvent", Constant(assignedIndex)))
+                    ExprDotMethod(Ref("access"), "GetPreviousEvent", Constant(assignedIndex)))
                 .IfRefNullReturnNull("substituteEvent")
                 .DeclareVar<EventBean>("originalEvent", ArrayAtIndex(eps, Constant(streamNumber)))
                 .AssignArrayElement(eps, Constant(streamNumber), Ref("substituteEvent"))

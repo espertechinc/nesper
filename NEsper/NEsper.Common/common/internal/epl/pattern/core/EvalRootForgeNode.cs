@@ -44,7 +44,7 @@ namespace com.espertech.esper.common.@internal.epl.pattern.core
 
         protected override string NameOfFactory()
         {
-            return "root";
+            return "Root";
         }
 
         protected override void InlineCodegen(

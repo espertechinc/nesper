@@ -49,7 +49,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
         public const string METHOD_GETSELECTJOINEVENTSNOHAVINGWITHORDERBY = "GetSelectJoinEventsNoHavingWithOrderBy";
         public const string METHOD_GETSELECTEVENTSNOHAVING = "GetSelectEventsNoHaving";
         public const string METHOD_GETSELECTEVENTSNOHAVINGWITHORDERBY = "GetSelectEventsNoHavingWithOrderBy";
-        public const string METHOD_ORDEROUTGOINGGETITERATOR = "orderOutgoingGetIterator";
+        public const string METHOD_ORDEROUTGOINGGETITERATOR = "OrderOutgoingGetIterator";
 
         public static void EvaluateHavingClauseCodegen(
             ExprForge optionalHavingClause,
@@ -78,7 +78,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
             };
             instance.Methods.AddMethod(
                 typeof(bool),
-                "evaluateHavingClause",
+                "EvaluateHavingClause",
                 CodegenNamedParam.From(
                     typeof(EventBean[]),
                     NAME_EPS,
@@ -310,7 +310,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
                     forEach.IfCondition(
                             Not(
                                 LocalMethod(
-                                    instance.Methods.GetMethod("evaluateHavingClause"),
+                                    instance.Methods.GetMethod("EvaluateHavingClause"),
                                     REF_EPS,
                                     ExprForgeCodegenNames.REF_ISNEWDATA,
                                     REF_EXPREVALCONTEXT)))
@@ -453,7 +453,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
                     forEach.IfCondition(
                             Not(
                                 LocalMethod(
-                                    instance.Methods.GetMethod("evaluateHavingClause"),
+                                    instance.Methods.GetMethod("EvaluateHavingClause"),
                                     REF_EPS,
                                     ExprForgeCodegenNames.REF_ISNEWDATA,
                                     REF_EXPREVALCONTEXT)))
@@ -644,7 +644,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
                     forEach.IfCondition(
                             Not(
                                 LocalMethod(
-                                    instance.Methods.GetMethod("evaluateHavingClause"),
+                                    instance.Methods.GetMethod("EvaluateHavingClause"),
                                     REF_EPS,
                                     ExprForgeCodegenNames.REF_ISNEWDATA,
                                     REF_EXPREVALCONTEXT)))
@@ -777,7 +777,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
                     forEach.IfCondition(
                             Not(
                                 LocalMethod(
-                                    instance.Methods.GetMethod("evaluateHavingClause"),
+                                    instance.Methods.GetMethod("EvaluateHavingClause"),
                                     REF_EPS,
                                     ExprForgeCodegenNames.REF_ISNEWDATA,
                                     REF_EXPREVALCONTEXT)))
@@ -956,7 +956,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
                     forEach.IfCondition(
                             Not(
                                 LocalMethod(
-                                    instance.Methods.GetMethod("evaluateHavingClause"),
+                                    instance.Methods.GetMethod("EvaluateHavingClause"),
                                     REF_EPS,
                                     ExprForgeCodegenNames.REF_ISNEWDATA,
                                     REF_EXPREVALCONTEXT)))
@@ -1050,7 +1050,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
                     forEach.IfCondition(
                             Not(
                                 LocalMethod(
-                                    instance.Methods.GetMethod("evaluateHavingClause"),
+                                    instance.Methods.GetMethod("EvaluateHavingClause"),
                                     REF_EPS,
                                     ExprForgeCodegenNames.REF_ISNEWDATA,
                                     REF_EXPREVALCONTEXT)))
@@ -1150,7 +1150,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
                     forEach.IfCondition(
                             Not(
                                 LocalMethod(
-                                    instance.Methods.GetMethod("evaluateHavingClause"),
+                                    instance.Methods.GetMethod("EvaluateHavingClause"),
                                     REF_EPS,
                                     ExprForgeCodegenNames.REF_ISNEWDATA,
                                     REF_EXPREVALCONTEXT)))
@@ -1240,7 +1240,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
                     forEach.IfCondition(
                             Not(
                                 LocalMethod(
-                                    instance.Methods.GetMethod("evaluateHavingClause"),
+                                    instance.Methods.GetMethod("EvaluateHavingClause"),
                                     REF_EPS,
                                     ExprForgeCodegenNames.REF_ISNEWDATA,
                                     REF_EXPREVALCONTEXT)))

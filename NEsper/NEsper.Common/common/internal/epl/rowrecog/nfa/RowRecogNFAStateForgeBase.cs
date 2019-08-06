@@ -57,10 +57,10 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.nfa
                 .SetProperty(Ref("eval"), "NodeNumNested", Constant(NodeNumNested))
                 .SetProperty(Ref("eval"), "VariableName", Constant(VariableName))
                 .SetProperty(Ref("eval"), "StreamNum", Constant(StreamNum))
-                .SetProperty(Ref("eval"), "Multiple", Constant(IsMultiple))
-                .SetProperty(Ref("eval"), "Greedy", Constant(IsGreedy))
+                .SetProperty(Ref("eval"), "IsMultiple", Constant(IsMultiple))
+                .SetProperty(Ref("eval"), "IsGreedy", Constant(IsGreedy))
                 .SetProperty(Ref("eval"), "NodeNumFlat", Constant(NodeNumFlat))
-                .SetProperty(Ref("eval"), "ExprRequiresMultimatchState", Constant(exprRequiresMultimatchState));
+                .SetProperty(Ref("eval"), "IsExprRequiresMultimatchState", Constant(exprRequiresMultimatchState));
             AssignInline(Ref("eval"), method, symbols, classScope);
             method.Block.MethodReturn(Ref("eval"));
             return LocalMethod(method);

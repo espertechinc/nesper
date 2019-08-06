@@ -60,7 +60,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
             CodegenExpressionRef refExprEvalCtx = exprSymbol.GetAddExprEvalCtx(codegenMethodScope);
             return StaticMethod(
                 typeof(ExprEvalStreamTable),
-                "evaluateConvertTableEventToUnd",
+                "EvaluateConvertTableEventToUnd",
                 Constant(streamNum),
                 eventToPublic,
                 refEPS,

@@ -49,7 +49,7 @@ namespace com.espertech.esper.regressionrun.suite.@event
             // invalid multiple supertypes
             var invalidOAConfig = new ConfigurationCommonEventTypeObjectArray();
             invalidOAConfig.SuperTypes = Collections.Set("A", "B");
-            string[] invalidOANames = {"p00"};
+            string[] invalidOANames = {"P00"};
             object[] invalidOATypes = {typeof(int)};
             try {
                 var configuration = SupportConfigFactory.GetConfiguration();
@@ -65,7 +65,7 @@ namespace com.espertech.esper.regressionrun.suite.@event
                 var configuration = SupportConfigFactory.GetConfiguration();
                 configuration.Common.AddEventType(
                     "MyInvalidEvent",
-                    new[] {"p00"},
+                    new[] {"P00"},
                     new object[] {typeof(int), typeof(string)});
                 Assert.Fail();
             }

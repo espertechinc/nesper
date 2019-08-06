@@ -98,7 +98,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                     innerBoxedType,
                     "value",
                     forge.innerExpression.EvaluateCodegen(innerBoxedType, methodNode, scope, codegenClassScope))
-                .DeclareVar<object>("entry", ExprDotMethod(Ref("sort"), "get", Ref("value")))
+                .DeclareVar<object>("entry", ExprDotMethod(Ref("sort"), "Get", Ref("value")))
                 .IfCondition(EqualsNull(Ref("entry")))
                 .Expression(ExprDotMethod(Ref("sort"), "Put", Ref("value"), Ref("next")))
                 .BlockContinue()
@@ -114,7 +114,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             block.MethodReturn(
                 StaticMethod(
                     typeof(EnumOrderByAscDescEventsForgeEval),
-                    "enumOrderBySortEval",
+                    "EnumOrderBySortEval",
                     Ref("sort"),
                     Ref("hasColl"),
                     Constant(forge.descending)));

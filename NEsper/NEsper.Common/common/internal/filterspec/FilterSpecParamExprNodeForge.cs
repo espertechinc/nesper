@@ -135,13 +135,20 @@ namespace com.espertech.esper.common.@internal.filterspec
                 .DeclareVar<FilterOperator>("op", EnumValue(typeof(FilterOperator), filterOperator.GetName()));
 
             // getFilterValue-FilterSpecParamExprNode code
+#if DEPRECATED_ANONYMOUS_CLASS
             var param = NewAnonymousClass(
                 method.Block,
                 typeof(FilterSpecParamExprNode),
                 Arrays.AsList<CodegenExpression>(Ref("lookupable"), Ref("op")));
-            var getFilterValue = CodegenMethod.MakeParentNode(typeof(object), GetType(), classScope)
+            var getFilterValue = CodegenMethod.MakeMethod(typeof(object), GetType(), classScope)
                 .AddParam(GET_FILTER_VALUE_FP);
             param.AddMethod("GetFilterValue", getFilterValue);
+#else
+            var getFilterValue = new CodegenExpressionLambda(method.Block)
+                .WithParams(GET_FILTER_VALUE_FP);
+            var param = NewInstance<ProxyFilterSpecParamExprNode>(
+                getFilterValue, Ref("lookupable"), Ref("op"));
+#endif
 
             if (TaggedEventTypes != null && !TaggedEventTypes.IsEmpty() ||
                 _arrayEventTypes != null && !_arrayEventTypes.IsEmpty()) {
@@ -157,7 +164,7 @@ namespace com.espertech.esper.common.@internal.filterspec
                         getFilterValue.Block.AssignArrayElement(
                             "events",
                             Constant(count),
-                            ExprDotMethod(REF_MATCHEDEVENTMAP, "getMatchingEventByTag", Constant(tag)));
+                            ExprDotMethod(REF_MATCHEDEVENTMAP, "GetMatchingEventByTag", Constant(tag)));
                         count++;
                     }
                 }
@@ -188,14 +195,18 @@ namespace com.espertech.esper.common.@internal.filterspec
             }
 
             getFilterValue.Block
+#if DEPRECATED_ANONYMOUS_CLASS
                 .MethodReturn(
-                    ExprDotMethod(
-                        Ref("filterBooleanExpressionFactory"),
+#else
+                .BlockReturn(
+#endif
+                  ExprDotMethod(
+                        Ref("FilterBooleanExpressionFactory"),
                         "Make",
                         Ref("this"), // FilterSpecParamExprNode filterSpecParamExprNode
                         Ref("events"), // EventBean[] events
                         REF_EXPREVALCONTEXT, // ExprEvaluatorContext exprEvaluatorContext
-                        ExprDotMethod(REF_EXPREVALCONTEXT, "getAgentInstanceId"), // int agentInstanceId
+                        ExprDotName(REF_EXPREVALCONTEXT, "AgentInstanceId"), // int agentInstanceId
                         REF_STMTCTXFILTEREVALENV));
 
             // expression evaluator

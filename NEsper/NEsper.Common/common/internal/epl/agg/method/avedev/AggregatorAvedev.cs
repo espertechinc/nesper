@@ -106,7 +106,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.avedev
             CodegenMethod method,
             CodegenClassScope classScope)
         {
-            method.Block.MethodReturn(StaticMethod(typeof(AggregatorAvedev), "computeAvedev", valueSet, sum));
+            method.Block.MethodReturn(StaticMethod(typeof(AggregatorAvedev), "ComputeAvedev", valueSet, sum));
         }
 
         protected override void WriteWODistinct(
@@ -120,7 +120,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.avedev
         {
             method.Block
                 .Apply(WriteDouble(output, row, sum))
-                .StaticMethod(GetType(), "writePoints", output, RowDotRef(row, valueSet));
+                .StaticMethod(GetType(), "WritePoints", output, RowDotRef(row, valueSet));
         }
 
         protected override void ReadWODistinct(
@@ -133,7 +133,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.avedev
         {
             method.Block
                 .Apply(ReadDouble(row, sum, input))
-                .AssignRef(RowDotRef(row, valueSet), StaticMethod(GetType(), "readPoints", input));
+                .AssignRef(RowDotRef(row, valueSet), StaticMethod(GetType(), "ReadPoints", input));
         }
 
         /// <summary>

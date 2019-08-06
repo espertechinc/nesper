@@ -61,7 +61,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
                 TableDeployTimeResolver.MakeTableEventToPublicField(tableMetadata, codegenClassScope, this.GetType());
             return StaticMethod(
                 typeof(ExprEvalStreamInsertTable),
-                "convertToTableEvent",
+                "ConvertToTableEvent",
                 Constant(streamNum),
                 eventToPublic,
                 refEPS,

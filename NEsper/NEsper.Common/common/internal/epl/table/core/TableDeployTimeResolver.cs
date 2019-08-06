@@ -45,7 +45,7 @@ namespace com.espertech.esper.common.@internal.epl.table.core
         {
             return StaticMethod(
                 typeof(TableDeployTimeResolver),
-                "resolveTable",
+                "ResolveTable",
                 Constant(table.TableName),
                 Constant(table.TableVisibility),
                 Constant(table.TableModuleName),

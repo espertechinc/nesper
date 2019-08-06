@@ -12,8 +12,10 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Security.Cryptography;
 
 using com.espertech.esper.common.@internal.bytecodemodel.core;
+using com.espertech.esper.compat;
 using com.espertech.esper.compat.logging;
 
 using Microsoft.CodeAnalysis;
@@ -30,40 +32,36 @@ namespace com.espertech.esper.compiler.@internal.util
             .Cast<LanguageVersion>()
             .Max();
 
-        private static readonly ISet<MetadataReference> MetadataCacheBindings = 
-            new HashSet<MetadataReference>();
+        private static readonly IDictionary<Assembly, PortableExecutableReference> PortableExecutionReferenceCache =
+            new Dictionary<Assembly, PortableExecutableReference>();
+        private static readonly IDictionary<Assembly, MetadataReference> MetadataCacheBindings = 
+            new Dictionary<Assembly, MetadataReference>();
 
         private IReadOnlyCollection<MetadataReference> _metadataReferences = null;
 
-        private Guid _assemblyId;
-        private String _assemblyName;
+        private IncrementalHash _codegenHash;
         private IList<CodegenClass> _codegenClasses;
         private bool _isCodeLogging;
         private Assembly _assembly;
+        private String _assemblyCachePath;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="RoslynCompiler"/> class.
         /// </summary>
         public RoslynCompiler()
         {
-            _assemblyId = Guid.NewGuid();
-            _assemblyName = $"NEsper_{_assemblyId}";
             _codegenClasses = new List<CodegenClass>();
-        }
+            _codegenHash = IncrementalHash.CreateHash(HashAlgorithmName.SHA256);
+            if (AppDomain.CurrentDomain.DynamicDirectory != null) {
+                _assemblyCachePath = AppDomain.CurrentDomain.DynamicDirectory;
+            } else if (AppDomain.CurrentDomain.RelativeSearchPath != null) {
+                _assemblyCachePath = AppDomain.CurrentDomain.RelativeSearchPath;
+            }
+            else {
+                _assemblyCachePath = AppDomain.CurrentDomain.BaseDirectory;
+            }
 
-        /// <summary>
-        /// Gets or sets the assembly identifier.
-        /// </summary>
-        public Guid AssemblyId {
-            get => _assemblyId;
-        }
-
-        /// <summary>
-        /// Gets or sets the name of the assembly.
-        /// </summary>
-        public string AssemblyName {
-            get => _assemblyName;
-            set => _assemblyName = value;
+            //Directory.CreateDirectory(_assemblyCachePath);
         }
 
         /// <summary>
@@ -115,12 +113,21 @@ namespace com.espertech.esper.compiler.@internal.util
             if (_metadataReferences == null) {
                 var metadataReferences = new List<MetadataReference>();
                 lock (MetadataCacheBindings) {
-                    metadataReferences.AddRange(MetadataCacheBindings);
+                    metadataReferences.AddRange(MetadataCacheBindings.Values);
                 }
 
                 foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies()) {
                     if (!assembly.IsDynamic && !string.IsNullOrEmpty(assembly.Location)) {
-                        metadataReferences.Add(MetadataReference.CreateFromFile(assembly.Location));
+                        lock (PortableExecutionReferenceCache) {
+                            if (!PortableExecutionReferenceCache.TryGetValue(
+                                assembly,
+                                out var portableExecutableReference)) {
+                                portableExecutableReference = MetadataReference.CreateFromFile(assembly.Location);
+                                PortableExecutionReferenceCache[assembly] = portableExecutableReference;
+                            }
+
+                            metadataReferences.Add(portableExecutableReference);
+                        }
                     }
                 }
 
@@ -134,7 +141,9 @@ namespace com.espertech.esper.compiler.@internal.util
         {
             var options = new CSharpParseOptions(kind: SourceCodeKind.Regular, languageVersion: MaxLanguageVersion);
             // Convert the codegen to source
-            var source = CodegenClassGenerator.Compile(codegenClass);
+            var source = CodegenSyntaxGenerator.Compile(codegenClass);
+            // Update the codegen hash
+            _codegenHash.AppendData(source.GetUTF8Bytes());
             // Convert the codegen source to syntax tree
             return CSharpSyntaxTree.ParseText(source, options);
         }
@@ -150,116 +159,73 @@ namespace com.espertech.esper.compiler.@internal.util
             var syntaxTrees = _codegenClasses
                 .Select(Compile)
                 .ToList();
-
+            
             // Create an in-memory representation of the compiled source.
             var options = new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary)
                 .WithOptimizationLevel(OptimizationLevel.Debug)
                 .WithAllowUnsafe(true);
 
-            var compilation = CSharpCompilation
-                .Create(_assemblyName, options: options)
-                .AddReferences(GetCurrentMetadataReferences())
-                .AddSyntaxTrees(syntaxTrees);
+            var assemblyHash = _codegenHash.GetHashAndReset().ToHexString();
+            var assemblyName = $"NEsper_{assemblyHash}";
+            var assemblyPath = Path.Combine(_assemblyCachePath, assemblyName + ".dll");
+            if (!File.Exists(assemblyPath)) {
+                var compilation = CSharpCompilation
+                    .Create(assemblyName, options: options)
+                    .AddReferences(GetCurrentMetadataReferences())
+                    .AddSyntaxTrees(syntaxTrees);
 
-            foreach (var syntaxTree in syntaxTrees) {
-                string tempClassPath = $@"C:\Src\Espertech\NEsper-master\NEsper\NEsper.Runtime.Tests\foobar\Class{DebugSequence}.cs";
-                DebugSequence++;
-                File.WriteAllText(tempClassPath, syntaxTree.ToString());
-            }
-
-            using (var stream = new MemoryStream()) {
-                var result = compilation.Emit(stream);
-                if (result.Success) {
-                    stream.Seek(0, SeekOrigin.Begin);
-                    // When rewriting this for .NET Core, replace this with System.Runtime.Loader.AssemblyLoadContext
-                    _assembly = Assembly.Load(stream.ToArray());
+                foreach (var syntaxTree in syntaxTrees) {
+                    string tempClassPath =
+                        $@"C:\Src\Espertech\NEsper-master\NEsper\NEsper.Runtime.Tests\foobar\Class{DebugSequence}.cs";
+                    DebugSequence++;
+                    File.WriteAllText(tempClassPath, syntaxTree.ToString());
                 }
-                else {
-                    foreach (var error in result.Diagnostics) {
-                        Console.WriteLine(error);
+
+                using (var stream = File.Create(assemblyPath)) {
+                    var result = compilation.Emit(stream);
+                    if (!result.Success) {
+                        foreach (var error in result.Diagnostics) {
+                            Console.WriteLine(error);
+                        }
+
+                        throw new RoslynCompilationException(
+                            "failure during module compilation",
+                            result.Diagnostics);
                     }
-
-                    throw new RoslynCompilationException(
-                        "failure during module compilation",
-                        result.Diagnostics);
                 }
             }
+
+            Console.WriteLine($"Assembly Pre-Load: {DateTime.Now}");
+
+            _assembly = Assembly.LoadFile(assemblyPath);
+
+            Console.WriteLine($"Assembly Loaded (Image): {DateTime.Now}");
+            Console.WriteLine($"\tFullName:{_assembly.FullName}");
+            Console.WriteLine($"\tName:{_assembly.GetName()}");
 
             lock (MetadataCacheBindings) {
-                MetadataCacheBindings.Add(compilation.ToMetadataReference());
+                var metadataReference = MetadataReference.CreateFromFile(assemblyPath);
+                Console.WriteLine($"MetaDataReference: {DateTime.Now}");
+                Console.WriteLine($"\tFullType: {metadataReference.GetType().FullName}");
+                Console.WriteLine($"\tDisplay: {metadataReference.Display}");
+                Console.WriteLine($"\tProperties: {metadataReference.Properties}");
+                MetadataCacheBindings[_assembly] = metadataReference;
             }
-            
+
             return _assembly;
+        }
 
-#if false
-            try
-            {
-                string optionalFileName = null;
-                if (Boolean.GetBoolean(ICookable.SYSTEM_PROPERTY_SOURCE_DEBUGGING_ENABLE))
-                {
-                    string dirName = System.GetProperty(ICookable.SYSTEM_PROPERTY_SOURCE_DEBUGGING_DIR);
-                    if (dirName == null)
-                    {
-                        dirName = System.GetProperty("java.io.tmpdir");
+        public static void DeleteAll()
+        {
+            lock (MetadataCacheBindings) {
+                foreach (var metadataAssembly in MetadataCacheBindings.Keys) {
+                    try {
+                        File.Delete(metadataAssembly.Location);
                     }
-                    var file = new FileInfo(dirName, clazz.ClassName + ".java");
-                    if (!file.Exists())
-                    {
-                        bool created = file.CreateNewFile();
-                        if (!created)
-                        {
-                            throw new RuntimeException("Failed to created file '" + file + "'");
-                        }
+                    catch {
                     }
-
-                    FileWriter writer = null;
-                    try
-                    {
-                        writer = new FileWriter(file);
-                        PrintWriter print = new PrintWriter(writer);
-                        print.Write(code);
-                        print.Close();
-                    }
-                    catch (IOException ex)
-                    {
-                        throw new RuntimeException("Failed to write to file '" + file + "'");
-                    }
-                    finally
-                    {
-                        if (writer != null)
-                        {
-                            writer.Close();
-                        }
-                    }
-
-                    file.DeleteOnExit();
-                    optionalFileName = file.AbsolutePath;
-                }
-
-                org.codehaus.janino.Scanner scanner = new Scanner(optionalFileName, new ByteArrayInputStream(
-                        code.GetBytes("UTF-8")), "UTF-8");
-
-                ByteArrayProvidingClassLoader cl = new ByteArrayProvidingClassLoader(classes);
-                UnitCompiler unitCompiler = new UnitCompiler(
-                        new Parser(scanner).ParseCompilationUnit(),
-                        new ClassLoaderClassLoader(cl));
-                ClassFile[] classFiles = unitCompiler.CompileUnit(true, true, true);
-                for (int i = 0; i < classFiles.Length; i++)
-                {
-                    classes.Put(classFiles[i].ThisClassName, classFiles[i].ToByteArray());
-                }
-
-                if (withCodeLogging)
-                {
-                    Log.Info("Code:\n" + CodeWithLineNum(code));
                 }
             }
-            catch (Exception ex)
-            {
-                Log.Error("Failed to compile: " + ex.Message + "\ncode:" + CodeWithLineNum(code));
-                throw new RuntimeException(ex);
-            }
-#endif
         }
     }
 } // end of namespace

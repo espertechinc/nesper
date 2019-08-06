@@ -101,7 +101,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
             block.MethodReturn(
                 StaticMethod(
                     typeof(ExprInstanceofNodeForgeEval),
-                    "instanceofCacheCheckOrAdd",
+                    "InstanceofCacheCheckOrAdd",
                     Constant(forge.Classes),
                     cache,
                     Ref("result")));

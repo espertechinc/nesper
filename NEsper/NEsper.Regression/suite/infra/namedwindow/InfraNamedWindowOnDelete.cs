@@ -431,11 +431,11 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                 // test single-two-field index reuse
                 path = new RegressionPath();
                 env.CompileDeploy("@Name('createTwo') create window WinOne#keepall as SupportBean", path);
-                env.CompileDeploy("on SupportBean_ST0 select * from WinOne where TheString = key0", path);
+                env.CompileDeploy("on SupportBean_ST0 select * from WinOne where TheString = Key0", path);
                 Assert.AreEqual(1, GetIndexCount(env, "createTwo", "WinOne"));
 
                 env.CompileDeploy(
-                    "on SupportBean_ST0 select * from WinOne where TheString = key0 and IntPrimitive = p00",
+                    "on SupportBean_ST0 select * from WinOne where TheString = Key0 and IntPrimitive = P00",
                     path);
                 Assert.AreEqual(2, GetIndexCount(env, "createTwo", "WinOne"));
 

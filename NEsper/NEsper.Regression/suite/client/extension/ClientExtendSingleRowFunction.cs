@@ -71,9 +71,9 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
             {
                 // test select-clause
                 string[] fields = {"c0", "c1"};
-                var text = "@Name('s0') select isNullValue(*, 'TheString') as c0," +
+                var text = "@Name('s0') select IsNullValue(*, 'TheString') as c0," +
                            typeof(ClientExtendSingleRowFunction).Name +
-                           ".localIsNullValue(*, 'TheString') as c1 from SupportBean";
+                           ".LocalIsNullValue(*, 'TheString') as c1 from SupportBean";
                 env.CompileDeploy(text).AddListener("s0");
 
                 env.SendEventBean(new SupportBean("a", 1));
@@ -210,7 +210,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
                 catch (EPException ex) {
                     Assert.AreEqual(
                         "System.Exception: Unexpected exception in statement 's0': Invocation exception when invoking method 'throwexception' of class '" +
-                        typeof(SupportSingleRowFunction).Name +
+                        typeof(SupportSingleRowFunction).FullName +
                         "' passing parameters [] for statement 's0': Exception : This is a 'throwexception' generated exception",
                         ex.Message);
                     env.UndeployAll();
@@ -225,7 +225,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
                 catch (EPException ex) {
                     Assert.AreEqual(
                         "System.Exception: Unexpected exception in statement 's0': NullPointerException invoking method 'computePower3' of class '" +
-                        typeof(SupportSingleRowFunction).Name +
+                        typeof(SupportSingleRowFunction).FullName +
                         "' in parameter 0 passing parameters [null] for statement 's0': The method expects a primitive int value but received a null value",
                         ex.Message);
                 }
@@ -241,8 +241,8 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
                 TryInvalidCompile(
                     env,
                     "select singlerow('a', 'b') from SupportBean",
-                    "Failed to valIdate select-clause expression 'singlerow(\"a\",\"b\")': Could not find static method named 'testSingleRow' in class '" +
-                    typeof(SupportSingleRowFunctionTwo).Name +
+                    "Failed to validate select-clause expression 'singlerow(\"a\",\"b\")': Could not find static method named 'testSingleRow' in class '" +
+                    typeof(SupportSingleRowFunctionTwo).FullName +
                     "' with matching parameter number and expected parameter type(s) 'String, String' (nearest match found was 'testSingleRow' taking type(s) 'String, int')");
             }
         }

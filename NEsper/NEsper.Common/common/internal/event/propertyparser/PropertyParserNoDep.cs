@@ -113,7 +113,7 @@ namespace com.espertech.esper.common.@internal.@event.propertyparser
                 endArg = indexLastDoubleQuote;
             }
 
-            var argument = property.Substring(startArg + 1, endArg);
+            var argument = property.Substring(startArg + 1, endArg - startArg - 1);
 
             // get method
             var splitDots = property.RegexSplit("[\\.]");

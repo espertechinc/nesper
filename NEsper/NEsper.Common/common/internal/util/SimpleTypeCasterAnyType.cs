@@ -114,7 +114,7 @@ namespace com.espertech.esper.common.@internal.util
                 typeToCastTo,
                 StaticMethod(
                     typeof(SimpleTypeCasterAnyType),
-                    "simpleTypeCasterCast",
+                    "SimpleTypeCasterCast",
                     input,
                     Constant(typeToCastTo),
                     cache));

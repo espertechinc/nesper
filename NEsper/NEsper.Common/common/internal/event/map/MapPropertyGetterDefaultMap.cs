@@ -47,7 +47,7 @@ namespace com.espertech.esper.common.@internal.@event.map
             CodegenExpression eventType = codegenClassScope.AddFieldUnshared<EventType>(
                 true,
                 EventTypeUtility.ResolveTypeCodegen(fragmentEventType, EPStatementInitServicesConstants.REF));
-            return StaticMethod(typeof(BaseNestableEventUtil), "handleBNCreateFragmentMap", value, eventType, factory);
+            return StaticMethod(typeof(BaseNestableEventUtil), "HandleBNCreateFragmentMap", value, eventType, factory);
         }
     }
 } // end of namespace

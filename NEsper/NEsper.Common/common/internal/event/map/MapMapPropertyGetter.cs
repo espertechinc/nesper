@@ -140,7 +140,7 @@ namespace com.espertech.esper.common.@internal.@event.map
             return codegenMethodScope.MakeChild(typeof(object), GetType(), codegenClassScope)
                 .AddParam(typeof(IDictionary<object, object>), "map")
                 .Block
-                .DeclareVar<object>("valueTopObj", ExprDotMethod(Ref("map"), "get", Constant(propertyMap)))
+                .DeclareVar<object>("valueTopObj", ExprDotMethod(Ref("map"), "Get", Constant(propertyMap)))
                 .IfRefNotTypeReturnConst("valueTopObj", typeof(IDictionary<object, object>), null)
                 .DeclareVar<IDictionary<object, object>>(
                     "value",
@@ -155,7 +155,7 @@ namespace com.espertech.esper.common.@internal.@event.map
             return codegenMethodScope.MakeChild(typeof(bool), GetType(), codegenClassScope)
                 .AddParam(typeof(IDictionary<object, object>), "map")
                 .Block
-                .DeclareVar<object>("valueTopObj", ExprDotMethod(Ref("map"), "get", Constant(propertyMap)))
+                .DeclareVar<object>("valueTopObj", ExprDotMethod(Ref("map"), "Get", Constant(propertyMap)))
                 .IfRefNotTypeReturnConst("valueTopObj", typeof(IDictionary<object, object>), false)
                 .DeclareVar<IDictionary<object, object>>(
                     "value",

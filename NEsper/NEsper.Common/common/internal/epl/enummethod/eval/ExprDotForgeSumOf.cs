@@ -262,7 +262,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
 
             public void CodegenDeclare(CodegenBlock block)
             {
-                block.DeclareVar<BigInteger>("sum", StaticMethod(typeof(BigInteger), "valueOf", Constant(0)));
+                block.DeclareVar<BigInteger>("sum", StaticMethod(typeof(BigInteger), "ValueOf", Constant(0)));
                 block.DeclareVar<long>("cnt", Constant(0));
             }
 

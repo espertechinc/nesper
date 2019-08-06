@@ -31,7 +31,7 @@ namespace com.espertech.esper.common.client.util
                 return false;
             }
 
-            if (objectVisibility == NameAccessModifier.PROTECTED) {
+            if (objectVisibility == NameAccessModifier.INTERNAL) {
                 return CompareModuleName(objectModuleName, importModuleName);
             }
 
@@ -64,7 +64,7 @@ namespace com.espertech.esper.common.client.util
             switch (value)
             {
                 case NameAccessModifier.PRIVATE:
-                case NameAccessModifier.PROTECTED:
+                case NameAccessModifier.INTERNAL:
                 case NameAccessModifier.PUBLIC:
                     return true;
                 case NameAccessModifier.TRANSIENT:
@@ -87,7 +87,7 @@ namespace com.espertech.esper.common.client.util
                 case NameAccessModifier.PRIVATE:
                 case NameAccessModifier.PRECONFIGURED:
                     return false;
-                case NameAccessModifier.PROTECTED:
+                case NameAccessModifier.INTERNAL:
                 case NameAccessModifier.PUBLIC:
                     return true;
             }
@@ -106,7 +106,7 @@ namespace com.espertech.esper.common.client.util
                 case NameAccessModifier.PRIVATE:
                     return true;
 
-                case NameAccessModifier.PROTECTED:
+                case NameAccessModifier.INTERNAL:
                 case NameAccessModifier.PUBLIC:
                 case NameAccessModifier.PRECONFIGURED:
                     return false;

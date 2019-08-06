@@ -48,7 +48,7 @@ namespace com.espertech.esper.common.@internal.epl.pattern.and
 
         protected override string NameOfFactory()
         {
-            return "and";
+            return "And";
         }
 
         protected override void InlineCodegen(

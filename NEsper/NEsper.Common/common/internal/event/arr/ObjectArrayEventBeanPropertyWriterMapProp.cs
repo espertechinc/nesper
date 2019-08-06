@@ -44,7 +44,7 @@ namespace com.espertech.esper.common.@internal.@event.arr
         {
             return StaticMethod(
                 typeof(ObjectArrayEventBeanPropertyWriterMapProp),
-                "objectArrayWriteMapProp",
+                "ObjectArrayWriteMapProp",
                 assigned,
                 und,
                 Constant(index),

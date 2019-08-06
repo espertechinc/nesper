@@ -129,7 +129,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
                 Constant(forge.OptionalStatementName),
                 Constant(forge.Method.Name),
                 Constant(forge.Method.GetParameterTypes()),
-                ExprDotMethodChain(Ref("target")).Add("getClass").Add("getName"),
+                ExprDotMethodChain(Ref("target")).Add("GetType").Get("FullName"),
                 Ref("args"),
                 Ref("t"));
             if (returnType == typeof(void)) {

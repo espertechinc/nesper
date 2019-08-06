@@ -134,7 +134,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.variant
             public void Run(RegressionEnvironment env)
             {
                 var epl = "create variant schema MyVariantWJ as *;\n" +
-                          "insert into MyVariantWJ select * from SupportBean sb unIdirectional, SupportBean_S0#keepall as s0;\n" +
+                          "insert into MyVariantWJ select * from SupportBean sb unidirectional, SupportBean_S0#keepall as s0;\n" +
                           "@Name('s0') select * from MyVariantWJ";
                 env.CompileDeploy(epl).AddListener("s0");
 
@@ -326,7 +326,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.variant
                 TryInvalidCompile(
                     env,
                     "select CharBoxed from MyVariantTwoTypedSB",
-                    "Failed to valIdate select-clause expression 'CharBoxed': Property named 'CharBoxed' is not valId in any stream");
+                    "Failed to validate select-clause expression 'CharBoxed': Property named 'CharBoxed' is not valid in any stream");
 
                 // try dynamic property: should exists but not show up as a declared property
                 fields = "v1,v2,v3";
@@ -382,7 +382,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.variant
                 env.UndeployModuleContaining("s0");
 
                 env.CompileDeploy(
-                    "@Name('s0') select p0,p1,p2,p3,p4,p5,indexed[0] as p6,indexArr[1] as p7,mappedKey('a') as p8,inneritem as p9,inneritem.val as p10 from MyVariantStreamTwo");
+                    "@Name('s0') select p0,p1,p2,p3,p4,p5,indexed[0] as p6,indexArr[1] as p7,mappedKey('a') as p8,inneritem as p9,inneritem.val as P10 from MyVariantStreamTwo");
                 env.AddListener("s0");
                 eventType = env.Statement("s0").EventType;
                 Assert.AreEqual(typeof(int?), eventType.GetPropertyType("p6"));
@@ -391,20 +391,20 @@ namespace com.espertech.esper.regressionlib.suite.@event.variant
                 Assert.AreEqual(
                     typeof(SupportBeanVariantOne.SupportBeanVariantOneInner),
                     eventType.GetPropertyType("p9"));
-                Assert.AreEqual(typeof(string), eventType.GetPropertyType("p10"));
+                Assert.AreEqual(typeof(string), eventType.GetPropertyType("P10"));
 
                 var ev1 = new SupportBeanVariantOne();
                 env.SendEventBean(ev1);
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    "p6,p7,p8,p9,p10".SplitCsv(),
+                    "p6,p7,p8,p9,P10".SplitCsv(),
                     new object[] {1, 2, "val1", ev1.Inneritem, ev1.Inneritem.Val});
 
                 var ev2 = new SupportBeanVariantTwo();
                 env.SendEventBean(ev2);
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    "p6,p7,p8,p9,p10".SplitCsv(),
+                    "p6,p7,p8,p9,P10".SplitCsv(),
                     new object[] {10, 20, "val2", ev2.Inneritem, ev2.Inneritem.Val});
 
                 env.UndeployAll();
@@ -497,12 +497,12 @@ namespace com.espertech.esper.regressionlib.suite.@event.variant
                 TryInvalidCompile(
                     env,
                     "insert into MyVariantStreamFive select * from SupportBean_A",
-                    "Selected event type is not a valId event type of the variant stream 'MyVariantStreamFive'");
+                    "Selected event type is not a valid event type of the variant stream 'MyVariantStreamFive'");
 
                 TryInvalidCompile(
                     env,
                     "insert into MyVariantStreamFive select IntPrimitive as k0 from SupportBean",
-                    "Selected event type is not a valId event type of the variant stream 'MyVariantStreamFive' ");
+                    "Selected event type is not a valid event type of the variant stream 'MyVariantStreamFive' ");
             }
         }
 

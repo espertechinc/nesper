@@ -156,7 +156,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                                    "exdate.between(LongPrimitive, LongBoxed) as c2," +
                                    "localdate.between(LongPrimitive, LongBoxed) as c3," +
                                    "zoneddate.between(LongPrimitive, LongBoxed) as c4 " +
-                                   " from SupportDateTime unIdirectional, SupportBean#lastevent";
+                                   " from SupportDateTime unidirectional, SupportBean#lastevent";
                 env.CompileDeploy(eplCurrentTS).AddListener("s0");
 
                 var bean = new SupportBean();

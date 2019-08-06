@@ -90,7 +90,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             CodegenExpression refLike,
             CodegenExpression stringExpr)
         {
-            var eval = ExprDotMethod(refLike, "compare", stringExpr);
+            var eval = ExprDotMethod(refLike, "Compare", stringExpr);
             return !forge.ForgeRenderable.IsNot ? eval : Not(eval);
         }
     }

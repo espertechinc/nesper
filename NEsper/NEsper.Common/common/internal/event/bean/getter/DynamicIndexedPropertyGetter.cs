@@ -53,7 +53,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
         {
             return StaticMethod(
                 typeof(DynamicIndexedPropertyGetter),
-                "dynamicIndexPropertyDetermineMethod",
+                "DynamicIndexPropertyDetermineMethod",
                 clazz,
                 Constant(_getterMethodName));
         }
@@ -74,7 +74,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
             var @params = codegenClassScope.AddFieldUnshared<object[]>(true, Constant(_parameters));
             return StaticMethod(
                 typeof(DynamicIndexedPropertyGetter),
-                "dynamicIndexedPropertyGet",
+                "DynamicIndexedPropertyGet",
                 desc,
                 @object,
                 @params,

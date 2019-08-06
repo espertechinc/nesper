@@ -8,7 +8,7 @@
 
 namespace com.espertech.esper.common.@internal.bytecodemodel.@base
 {
-    public static class CodegenPackageScopeNames
+    public static class CodegenNamespaceScopeNames
     {
         public const string AGG_MR = "aggTop_mr_";
 

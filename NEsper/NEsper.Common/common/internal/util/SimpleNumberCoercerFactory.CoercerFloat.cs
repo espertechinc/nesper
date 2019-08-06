@@ -47,7 +47,7 @@ namespace com.espertech.esper.common.@internal.util
                 return CodegenCoerceMayNull(
                     typeof(float),
                     typeof(float?),
-                    "floatValue",
+                    "AsFloat",
                     value,
                     valueTypeMustNumeric,
                     codegenMethodScope,
@@ -59,7 +59,7 @@ namespace com.espertech.esper.common.@internal.util
                 CodegenExpression @ref,
                 Type type)
             {
-                return CodegenCoerceNonNull(typeof(float), typeof(float?), "floatValue", @ref, type);
+                return CodegenCoerceNonNull(typeof(float), typeof(float?), "AsFloat", @ref, type);
             }
         }
     }

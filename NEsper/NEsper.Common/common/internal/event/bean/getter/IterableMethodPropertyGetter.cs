@@ -191,7 +191,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
                         beanPropType,
                         StaticMethod(
                             typeof(IterableMethodPropertyGetter),
-                            "getBeanEventIterableValue",
+                            "GetBeanEventIterableValue",
                             Ref("value"),
                             Ref("index"))));
         }

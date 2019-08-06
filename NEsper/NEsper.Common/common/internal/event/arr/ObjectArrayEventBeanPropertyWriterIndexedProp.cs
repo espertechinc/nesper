@@ -43,7 +43,7 @@ namespace com.espertech.esper.common.@internal.@event.arr
         {
             return StaticMethod(
                 typeof(ObjectArrayEventBeanPropertyWriterIndexedProp),
-                "objectArrayWriteIndexedProp",
+                "ObjectArrayWriteIndexedProp",
                 assigned,
                 und,
                 Constant(index),

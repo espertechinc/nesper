@@ -29,4 +29,58 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             EventBean @event,
             ExprEvaluatorContext context);
     }
+
+    public class ProxyExprEnumerationGivenEvent : ExprEnumerationGivenEvent
+    {
+        public delegate ICollection<EventBean> EvaluateEventGetROCollectionEventsFunc(
+            EventBean @event,
+            ExprEvaluatorContext context);
+
+        public delegate ICollection<object> EvaluateEventGetROCollectionScalarFunc(
+            EventBean @event,
+            ExprEvaluatorContext context);
+
+        public delegate EventBean EvaluateEventGetEventBeanFunc(
+            EventBean @event,
+            ExprEvaluatorContext context);
+
+        public EvaluateEventGetROCollectionEventsFunc ProcEvaluateEventGetROCollectionEvents;
+        public EvaluateEventGetROCollectionScalarFunc ProcEvaluateEventGetRoCollectionScalar;
+        public EvaluateEventGetEventBeanFunc ProcEvaluateEventGetEventBean;
+
+        public ProxyExprEnumerationGivenEvent()
+        {
+        }
+
+        public ProxyExprEnumerationGivenEvent(
+            EvaluateEventGetROCollectionEventsFunc procEvaluateEventGetROCollectionEvents,
+            EvaluateEventGetROCollectionScalarFunc procEvaluateEventGetROCollectionScalar,
+            EvaluateEventGetEventBeanFunc procEvaluateEventGetEventBean)
+        {
+            ProcEvaluateEventGetROCollectionEvents = procEvaluateEventGetROCollectionEvents;
+            ProcEvaluateEventGetRoCollectionScalar = procEvaluateEventGetROCollectionScalar;
+            ProcEvaluateEventGetEventBean = procEvaluateEventGetEventBean;
+        }
+
+        public ICollection<EventBean> EvaluateEventGetROCollectionEvents(
+            EventBean @event,
+            ExprEvaluatorContext context)
+        {
+            return ProcEvaluateEventGetROCollectionEvents(@event, context);
+        }
+
+        public ICollection<object> EvaluateEventGetROCollectionScalar(
+            EventBean @event,
+            ExprEvaluatorContext context)
+        {
+            return ProcEvaluateEventGetRoCollectionScalar(@event, context);
+        }
+
+        public EventBean EvaluateEventGetEventBean(
+            EventBean @event,
+            ExprEvaluatorContext context)
+        {
+            return ProcEvaluateEventGetEventBean(@event, context);
+        }
+    }
 } // end of namespace

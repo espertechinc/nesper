@@ -171,13 +171,13 @@ namespace NEsper.Avro.Getter
                         typeof(GenericRecord),
                         CodegenExpressionBuilder.ExprDotMethod(
                             CodegenExpressionBuilder.Ref("record"),
-                            "get",
+                            "Get",
                             CodegenExpressionBuilder.Constant(_posTop))))
                 .IfRefNullReturnNull("inner")
                 .MethodReturn(
                     CodegenExpressionBuilder.ExprDotMethod(
                         CodegenExpressionBuilder.Ref("inner"),
-                        "get",
+                        "Get",
                         CodegenExpressionBuilder.Constant(_posInner)));
         }
     }

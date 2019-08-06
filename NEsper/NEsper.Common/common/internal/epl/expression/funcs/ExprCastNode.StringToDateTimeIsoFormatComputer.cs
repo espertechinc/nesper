@@ -47,7 +47,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
             {
                 return CodegenExpressionBuilder.StaticMethod(
                     typeof(StringToDateTimeWStaticFormatComputer),
-                    "stringZonedDateTimeWStaticFormatParse",
+                    "StringZonedDateTimeWStaticFormatParse",
                     input,
                     CodegenExpressionBuilder.PublicConstValue(typeof(DateTimeFormat), "ISO_ZONED_DATE_TIME"));
             }

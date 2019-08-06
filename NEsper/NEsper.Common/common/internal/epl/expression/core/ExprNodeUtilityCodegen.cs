@@ -78,7 +78,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             return LocalMethod(method);
         }
 
-        public static CodegenExpressionNewAnonymousClass CodegenEvaluatorNoCoerce(
+        public static CodegenExpression CodegenEvaluatorNoCoerce(
             ExprForge forge,
             CodegenMethod method,
             Type generator,
@@ -87,16 +87,20 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             return CodegenEvaluatorWCoerce(forge, null, method, generator, classScope);
         }
 
-        public static CodegenExpressionNewAnonymousClass CodegenEvaluatorWCoerce(
+        public static CodegenExpression CodegenEvaluatorWCoerce(
             ExprForge forge,
             Type optCoercionType,
             CodegenMethod method,
             Type generator,
             CodegenClassScope classScope)
         {
-            var evaluator = NewAnonymousClass(method.Block, typeof(ExprEvaluator));
-            var evaluate = CodegenMethod.MakeParentNode(typeof(object), generator, classScope).AddParam(PARAMS);
-            evaluator.AddMethod("Evaluate", evaluate);
+            var evaluate = new CodegenExpressionLambda(method.Block)
+                .WithParams(PARAMS);
+            var evaluator = NewInstance<ProxyExprEvaluator>(evaluate);
+            
+            //var evaluator = NewAnonymousClass(method.Block, typeof(ExprEvaluator));
+            //var evaluate = CodegenMethod.MakeParentNode(typeof(object), generator, classScope).AddParam(PARAMS);
+            //evaluator.AddMethod("Evaluate", evaluate);
 
             var result = ConstantNull();
             if (forge.EvaluationType != null) {
@@ -112,11 +116,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                 }
             }
 
-            evaluate.Block.MethodReturn(result);
+            evaluate.Block.BlockReturn(result);
             return evaluator;
         }
 
-        public static CodegenExpressionNewAnonymousClass CodegenEvaluatorMayMultiKeyWCoerce(
+        public static CodegenExpression CodegenEvaluatorMayMultiKeyWCoerce(
             IList<ExprForge> forges,
             IList<Type> optCoercionTypes,
             CodegenMethod method,
@@ -126,14 +130,18 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             if (forges.Count == 1) {
                 return CodegenEvaluatorWCoerce(
                     forges[0],
-                    optCoercionTypes == null ? null : optCoercionTypes[0],
+                    optCoercionTypes?[0],
                     method,
                     generator,
                     classScope);
             }
 
+            //var evaluate = new CodegenExpressionLambda(method.Block)
+            //    .WithParams(PARAMS);
+            //var evaluator = NewInstance<ProxyExprEvaluator>(evaluate);
+            
             var evaluator = NewAnonymousClass(method.Block, typeof(ExprEvaluator));
-            var evaluate = CodegenMethod.MakeParentNode(typeof(object), generator, classScope).AddParam(PARAMS);
+            var evaluate = CodegenMethod.MakeParentNode<object>(generator, classScope).AddParam(PARAMS);
             evaluator.AddMethod("Evaluate", evaluate);
 
             var exprSymbol = new ExprForgeCodegenSymbol(true, null);
@@ -181,14 +189,18 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             return evaluator;
         }
 
-        public static CodegenExpressionNewAnonymousClass CodegenEvaluatorObjectArray(
+        public static CodegenExpression CodegenEvaluatorObjectArray(
             IList<ExprForge> forges,
             CodegenMethod method,
             Type generator,
             CodegenClassScope classScope)
         {
+            //var evaluate = new CodegenExpressionLambda(method.Block)
+            //    .WithParams(PARAMS);
+            //var evaluator = NewInstance<ProxyExprEvaluator>(evaluate);
+
             var evaluator = NewAnonymousClass(method.Block, typeof(ExprEvaluator));
-            var evaluate = CodegenMethod.MakeParentNode(typeof(object), generator, classScope).AddParam(PARAMS);
+            var evaluate = CodegenMethod.MakeParentNode<object>(generator, classScope).AddParam(PARAMS);
             evaluator.AddMethod("Evaluate", evaluate);
 
             var exprSymbol = new ExprForgeCodegenSymbol(true, null);
@@ -289,12 +301,14 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             var evaluator = NewAnonymousClass(method.Block, typeof(ExprEnumerationGivenEvent));
 
             var enumSymbols = new ExprEnumerationGivenEventSymbol();
+
             var evaluateEventGetROCollectionEvents = CodegenMethod
                 .MakeParentNode(typeof(ICollection<object>), generator, enumSymbols, classScope)
                 .AddParam(typeof(EventBean), "@event")
                 .AddParam(typeof(ExprEvaluatorContext), NAME_EXPREVALCONTEXT);
             evaluator.AddMethod("EvaluateEventGetROCollectionEvents", evaluateEventGetROCollectionEvents);
-            evaluateEventGetROCollectionEvents.Block.MethodReturn(
+
+            evaluateEventGetROCollectionEvents.Block.BlockReturn(
                 enumEval.EvaluateEventGetROCollectionEventsCodegen(
                     evaluateEventGetROCollectionEvents,
                     enumSymbols,
@@ -305,6 +319,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                 .AddParam(typeof(EventBean), "@event")
                 .AddParam(typeof(ExprEvaluatorContext), NAME_EXPREVALCONTEXT);
             evaluator.AddMethod("EvaluateEventGetROCollectionScalar", evaluateEventGetROCollectionScalar);
+
             evaluateEventGetROCollectionScalar.Block.MethodReturn(
                 enumEval.EvaluateEventGetROCollectionScalarCodegen(
                     evaluateEventGetROCollectionScalar,
@@ -316,8 +331,17 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                 .AddParam(typeof(EventBean), "@event")
                 .AddParam(typeof(ExprEvaluatorContext), NAME_EXPREVALCONTEXT);
             evaluator.AddMethod("EvaluateEventGetEventBean", evaluateEventGetEventBean);
-            evaluateEventGetEventBean.Block.MethodReturn(
-                enumEval.EvaluateEventGetEventBeanCodegen(evaluateEventGetEventBean, enumSymbols, classScope));
+
+            evaluateEventGetEventBean.Block.BlockReturn(
+                enumEval.EvaluateEventGetEventBeanCodegen(
+                    evaluateEventGetEventBean, 
+                    enumSymbols, 
+                    classScope));
+
+            //var evaluator = NewInstance<ProxyExprEnumerationGivenEvent>(
+            //    evaluateEventGetROCollectionEvents,
+            //    evaluateEventGetROCollectionScalar,
+            //    evaluateEventGetEventBean);
 
             return evaluator;
         }

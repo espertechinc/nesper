@@ -143,7 +143,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                             "@Name('s0') select * from ";
 
             if (caseEnum == CaseEnum.UNIDIRECTIONAL || caseEnum == CaseEnum.UNIDIRECTIONAL_3STREAM) {
-                eplUnique += "SupportSimpleBeanOne as ssb1 unIdirectional ";
+                eplUnique += "SupportSimpleBeanOne as ssb1 unidirectional ";
             }
             else {
                 eplUnique += "SupportSimpleBeanOne#lastevent as ssb1 ";

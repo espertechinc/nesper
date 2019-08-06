@@ -27,7 +27,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
         {
             IList<RegressionExecution> execs = new List<RegressionExecution>();
             execs.Add(new EPLInsertIntoThisAsColumn());
-            execs.Add(new EPLInsertIntoTransposePOJOEventPattern());
+            execs.Add(new EPLInsertIntoTransposePONOEventPattern());
             execs.Add(new EPLInsertIntoTransposeMapEventPattern());
             return execs;
         }
@@ -89,7 +89,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
             }
         }
 
-        internal class EPLInsertIntoTransposePOJOEventPattern : RegressionExecution
+        internal class EPLInsertIntoTransposePONOEventPattern : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {

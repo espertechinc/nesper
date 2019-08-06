@@ -185,7 +185,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowperevent
                             Not(
                                 ExprDotMethod(
                                     Ref("this"),
-                                    "evaluateHavingClause",
+                                    "EvaluateHavingClause",
                                     Ref("eventsPerStream"),
                                     Constant(true),
                                     REF_AGENTINSTANCECONTEXT)))
@@ -329,7 +329,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowperevent
             CodegenMethod method,
             CodegenInstanceAux instance)
         {
-            ProcessOutputLimitedLastAllNonBufferedCodegen(forge, "processView", classScope, method, instance);
+            ProcessOutputLimitedLastAllNonBufferedCodegen(forge, "ProcessView", classScope, method, instance);
         }
 
         public static void ProcessOutputLimitedLastAllNonBufferedJoinCodegen(
@@ -338,7 +338,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowperevent
             CodegenMethod method,
             CodegenInstanceAux instance)
         {
-            ProcessOutputLimitedLastAllNonBufferedCodegen(forge, "processJoin", classScope, method, instance);
+            ProcessOutputLimitedLastAllNonBufferedCodegen(forge, "ProcessJoin", classScope, method, instance);
         }
 
         private static void ProcessOutputLimitedLastAllNonBufferedCodegen(

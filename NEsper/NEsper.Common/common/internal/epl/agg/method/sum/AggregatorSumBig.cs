@@ -55,7 +55,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.sum
         protected override CodegenExpression InitOfSum()
         {
             return sumType == typeof(BigInteger)
-                ? StaticMethod(typeof(BigInteger), "valueOf", Constant(0))
+                ? StaticMethod(typeof(BigInteger), "ValueOf", Constant(0))
                 : NewInstance(typeof(decimal?), Constant(0d));
         }
 
@@ -104,14 +104,14 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.sum
             if (sumType == typeof(BigInteger)) {
                 method.Block.StaticMethod(
                     typeof(DIOSerdeBigInteger),
-                    "writeBigInt",
+                    "WriteBigInt",
                     RowDotRef(row, sum),
                     output);
             }
             else {
                 method.Block.StaticMethod(
                     typeof(DIOSerdeBigInteger),
-                    "writeBigDec",
+                    "WriteBigDec",
                     RowDotRef(row, sum),
                     output);
             }
@@ -126,12 +126,12 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.sum
             if (sumType == typeof(BigInteger)) {
                 method.Block.AssignRef(
                     RowDotRef(row, sum),
-                    StaticMethod(typeof(DIOSerdeBigInteger), "readBigInt", input));
+                    StaticMethod(typeof(DIOSerdeBigInteger), "ReadBigInt", input));
             }
             else {
                 method.Block.AssignRef(
                     RowDotRef(row, sum),
-                    StaticMethod(typeof(DIOSerdeBigInteger), "readBigDec", input));
+                    StaticMethod(typeof(DIOSerdeBigInteger), "ReadBigDec", input));
             }
         }
     }

@@ -135,7 +135,7 @@ namespace com.espertech.esper.common.@internal.@event.xml
                     "result",
                     getter.GetValueAsNodeArrayCodegen(Ref("node"), codegenMethodScope, codegenClassScope))
                 .IfRefNullReturnNull("result")
-                .MethodReturn(StaticMethod(GetType(), "getDOMArrayFromNodes", Ref("result"), mComponentType, mParser));
+                .MethodReturn(StaticMethod(GetType(), "GetDOMArrayFromNodes", Ref("result"), mComponentType, mParser));
         }
 
         /// <summary>

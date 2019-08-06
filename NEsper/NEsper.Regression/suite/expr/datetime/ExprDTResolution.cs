@@ -55,7 +55,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
         {
             env.AdvanceTime(0);
             var epl =
-                "@Name('s0') select * from MyEvent(Id='A') as a unIdirectional, MyEvent(Id='B')#lastevent as b where a.withDate(2002, 4, 30).before(b)";
+                "@Name('s0') select * from MyEvent(Id='A') as a unidirectional, MyEvent(Id='B')#lastevent as b where a.withDate(2002, 4, 30).before(b)";
             env.CompileDeploy(epl).AddListener("s0");
 
             env.SendEventObjectArray(new object[] {"B", tsB, tsB}, "MyEvent");

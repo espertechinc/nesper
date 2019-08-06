@@ -79,7 +79,7 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
                 env,
                 path,
                 "select abc from SupportBean",
-                "Failed to valIdate select-clause expression 'abc': Property named 'abc' is not valId in any stream");
+                "Failed to validate select-clause expression 'abc': Property named 'abc' is not valid in any stream");
             TryInvalidCompile(
                 env,
                 path,
@@ -94,17 +94,17 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
                 env,
                 path,
                 "into table MyTable select count(*) as c from SupportBean",
-                "InvalId into-table clause: Failed to find table by name 'MyTable'");
+                "Invalid into-table clause: Failed to find table by name 'MyTable'");
             TryInvalidCompile(
                 env,
                 path,
                 "select MyExpr() from SupportBean",
-                "Failed to valIdate select-clause expression 'MyExpr': Unknown single-row function, expression declaration, script or aggregation function named 'MyExpr' could not be resolved");
+                "Failed to validate select-clause expression 'MyExpr': Unknown single-row function, expression declaration, script or aggregation function named 'MyExpr' could not be resolved");
             TryInvalidCompile(
                 env,
                 path,
                 "select myscript(1) from SupportBean",
-                "Failed to valIdate select-clause expression 'myscript(1)': Unknown single-row function, aggregation function or mapped or indexed property named 'myscript' could not be resolved");
+                "Failed to validate select-clause expression 'myscript(1)': Unknown single-row function, aggregation function or mapped or indexed property named 'myscript' could not be resolved");
         }
 
         private static void RunAssertionDisambiguate(
@@ -167,14 +167,14 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
                     env,
                     "create context MyContext partition by TheString from SupportBean;",
                     "create context MyContext partition by Id from SupportBean_S0;",
-                    "context MyContext select p00 from SupportBean_S0",
+                    "context MyContext select P00 from SupportBean_S0",
                     () => { });
 
                 RunAssertionDisambiguate(
                     env,
                     "create window MyWindow#keepall as SupportBean",
                     "create window MyWindow#keepall as SupportBean_S0",
-                    "select p00 from MyWindow",
+                    "select P00 from MyWindow",
                     () => { });
 
                 RunAssertionDisambiguate(

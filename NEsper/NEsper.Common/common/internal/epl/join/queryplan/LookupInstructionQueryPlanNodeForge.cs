@@ -152,7 +152,7 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplan
                         classScope))
                 .StaticMethod(
                     typeof(LookupInstructionQueryPlanNodeForge),
-                    "assembleFactoriesIntoTree",
+                    "AssembleFactoriesIntoTree",
                     Ref("factories"),
                     Constant(parents),
                     Constant(children))

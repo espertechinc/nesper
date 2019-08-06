@@ -227,7 +227,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                         .IfElse();
                     forLoopElse.AssignRef("hasNonNullRow", ConstantTrue());
                     forLoopElse.IfCondition(
-                            NotOptional(!isNot, ExprDotMethod(Ref("leftCoerced"), "equals", Ref("item"))))
+                            NotOptional(!isNot, ExprDotMethod(Ref("leftCoerced"), "Equals", Ref("item"))))
                         .BlockReturn(ConstantFalse());
                 }
                 else if (reftype.IsGenericCollection()) {
@@ -286,7 +286,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                     {
                         ifRightNotNull.AssignRef("hasNonNullRow", ConstantTrue());
                         ifRightNotNull
-                            .IfCondition(NotOptional(!isNot, ExprDotMethod(Ref("leftCoerced"), "equals", Ref(refname))))
+                            .IfCondition(NotOptional(!isNot, ExprDotMethod(Ref("leftCoerced"), "Equals", Ref(refname))))
                             .BlockReturn(ConstantFalse());
                     }
                     ifRightNotNull.IfElse()

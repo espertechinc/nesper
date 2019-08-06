@@ -167,7 +167,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                     NewArrayByLength(typeof(HavingClauseEvaluator), Constant(havingForges.Length)));
                 for (var i = 0; i < havingForges.Length; i++) {
                     var impl = NewAnonymousClass(factoryCtor.Block, typeof(HavingClauseEvaluator));
-                    var evaluateHaving = CodegenMethod.MakeParentNode(typeof(bool), GetType(), classScope)
+                    var evaluateHaving = CodegenMethod.MakeMethod(typeof(bool), GetType(), classScope)
                         .AddParam(PARAMS);
                     impl.AddMethod("EvaluateHaving", evaluateHaving);
                     evaluateHaving.Block.MethodReturn(

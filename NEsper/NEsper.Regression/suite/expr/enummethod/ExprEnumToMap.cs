@@ -27,7 +27,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
             // - null key & value allowed
 
             var eplFragment =
-                "@Name('s0') select contained.toMap(c => Id, c=> p00) as val from SupportBean_ST0_Container";
+                "@Name('s0') select Contained.toMap(c => Id, c=> P00) as val from SupportBean_ST0_Container";
             env.CompileDeploy(eplFragment).AddListener("s0");
 
             LambdaAssertionUtil.AssertTypes(
@@ -64,7 +64,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
             // test scalar-coll with lambda
             var fields = "val0".SplitCsv();
             var eplLambda = "@Name('s0') select " +
-                            "strvals.toMap(c => c, c => extractNum(c)) as val0 " +
+                            "Strvals.toMap(c => c, c => extractNum(c)) as val0 " +
                             "from SupportCollection";
             env.CompileDeploy(eplLambda).AddListener("s0");
             LambdaAssertionUtil.AssertTypes(

@@ -20,7 +20,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.name
         }
 
         public string Name {
-            get => CodegenPackageScopeNames.AggregationMatchRecognize(_aggregationNumber);
+            get => CodegenNamespaceScopeNames.AggregationMatchRecognize(_aggregationNumber);
         }
 
         public override bool Equals(object o)

@@ -60,7 +60,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                 .DeclareVar<List<object>>(
                     "result",
                     NewInstance<List<object>>(EnumForgeCodegenNames.REF_ENUMCOLL))
-                .StaticMethod(typeof(Collections), "reverse", Ref("result"))
+                .StaticMethod(typeof(Collections), "Reverse", Ref("result"))
                 .MethodReturn(Ref("result"));
             return LocalMethod(method, args.Expressions);
         }

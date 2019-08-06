@@ -358,7 +358,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                             "Emitter => instream_s0<SupportBean_S0>{name: 'emitterS0'}\n" +
                             "Emitter => instream_s1<SupportBean_S1>{name: 'emitterS1'}\n" +
                             "Select(instream_s0 as S0, instream_s1 as S1) => outstream {\n" +
-                            "  select: (select p00, p10 from S0#keepall full outer join S1#keepall)\n" +
+                            "  select: (select P00, P10 from S0#keepall full outer join S1#keepall)\n" +
                             "}\n" +
                             "DefaultSupportCaptureOp(outstream) {}\n";
                 env.CompileDeploy(graph);
@@ -376,7 +376,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 captive.Emitters.Get("emitterS0").Submit(new SupportBean_S0(1, "S0_1"));
                 EPAssertionUtil.AssertProps(
                     (EventBean) capture.GetCurrentAndReset()[0],
-                    "p00,p11".SplitCsv(),
+                    "P00,P11".SplitCsv(),
                     new object[] {"S0_1", null});
 
                 instance.Cancel();

@@ -35,7 +35,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
             RegressionEnvironment env,
             string expression)
         {
-            var fields = "s0.Id, s0.p00, s1.Id, s1.p10, s2.Id, s2.p20".SplitCsv();
+            var fields = "s0.Id, s0.P00, s1.Id, s1.P10, s2.Id, s2.P20".SplitCsv();
 
             env.EplToModelCompileDeploy(expression).AddListener("s0");
 
@@ -135,9 +135,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
             {
                 var joinStatement = "@Name('s0') select * from " +
                                     "SupportBean_S1#keepall as s1 inner join " +
-                                    "SupportBean_S2#length(1000) as s2 on s1.p10 = s2.p20 " +
+                                    "SupportBean_S2#length(1000) as s2 on s1.P10 = s2.P20 " +
                                     "full outer join " +
-                                    "SupportBean_S0#length(1000) as s0 on s0.p00 = s1.p10";
+                                    "SupportBean_S0#length(1000) as s0 on s0.P00 = s1.P10";
 
                 TryAssertionFull(env, joinStatement);
             }
@@ -150,9 +150,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                 var joinStatement = "@Name('s0') select * from " +
                                     "SupportBean_S2#length(1000) as s2 " +
                                     "inner join " +
-                                    "SupportBean_S1#keepall as s1 on s1.p10 = s2.p20" +
+                                    "SupportBean_S1#keepall as s1 on s1.P10 = s2.P20" +
                                     " full outer join " +
-                                    "SupportBean_S0#length(1000) as s0 on s0.p00 = s1.p10";
+                                    "SupportBean_S0#length(1000) as s0 on s0.P00 = s1.P10";
 
                 TryAssertionFull(env, joinStatement);
             }
@@ -165,9 +165,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                 var joinStatement = "@Name('s0') select * from " +
                                     "SupportBean_S0#length(1000) as s0 " +
                                     "full outer join " +
-                                    "SupportBean_S1#length(1000) as s1 on s0.p00 = s1.p10" +
+                                    "SupportBean_S1#length(1000) as s1 on s0.P00 = s1.P10" +
                                     " inner join " +
-                                    "SupportBean_S2#length(1000) as s2 on s1.p10 = s2.p20";
+                                    "SupportBean_S2#length(1000) as s2 on s1.P10 = s2.P20";
 
                 TryAssertionFull(env, joinStatement);
             }
@@ -179,9 +179,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
             {
                 var joinStatement = "@Name('s0') select * from " +
                                     "SupportBean_S1#keepall as s1 left outer join " +
-                                    "SupportBean_S0#length(1000) as s0 on s0.p00 = s1.p10 " +
+                                    "SupportBean_S0#length(1000) as s0 on s0.P00 = s1.P10 " +
                                     "inner join " +
-                                    "SupportBean_S2#length(1000) as s2 on s1.p10 = s2.p20";
+                                    "SupportBean_S2#length(1000) as s2 on s1.P10 = s2.P20";
 
                 TryAssertionFull(env, joinStatement);
             }
@@ -194,9 +194,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                 var joinStatement = "@Name('s0') select * from " +
                                     "SupportBean_S2#length(1000) as s2 " +
                                     "inner join " +
-                                    "SupportBean_S1#keepall as s1 on s1.p10 = s2.p20" +
+                                    "SupportBean_S1#keepall as s1 on s1.P10 = s2.P20" +
                                     " left outer join " +
-                                    "SupportBean_S0#length(1000) as s0 on s0.p00 = s1.p10";
+                                    "SupportBean_S0#length(1000) as s0 on s0.P00 = s1.P10";
 
                 TryAssertionFull(env, joinStatement);
             }
@@ -209,9 +209,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                 var joinStatement = "@Name('s0') select * from " +
                                     "SupportBean_S0#length(1000) as s0 " +
                                     "right outer join " +
-                                    "SupportBean_S1#length(1000) as s1 on s0.p00 = s1.p10" +
+                                    "SupportBean_S1#length(1000) as s1 on s0.P00 = s1.P10" +
                                     " inner join " +
-                                    "SupportBean_S2#length(1000) as s2 on s1.p10 = s2.p20";
+                                    "SupportBean_S2#length(1000) as s2 on s1.P10 = s2.P20";
 
                 TryAssertionFull(env, joinStatement);
             }

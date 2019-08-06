@@ -211,7 +211,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
             IList<CodegenInnerClass> innerClasses,
             string providerClassName)
         {
-            var makeMethod = CodegenMethod.MakeParentNode(
+            var makeMethod = CodegenMethod.MakeMethod(
                 typeof(AggregationRow),
                 typeof(AggregationServiceFactoryCompiler),
                 CodegenSymbolProviderEmpty.INSTANCE,
@@ -303,7 +303,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
             var output = Ref("output");
             var unitKey = Ref("unitKey");
             var writer = Ref("writer");
-            var writeMethod = CodegenMethod.MakeParentNode(
+            var writeMethod = CodegenMethod.MakeMethod(
                     typeof(void),
                     typeof(AggregationServiceFactoryCompiler),
                     CodegenSymbolProviderEmpty.INSTANCE,
@@ -320,7 +320,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
                         writer.Ref))
                 .AddThrown(typeof(IOException));
 
-            var readMethod = CodegenMethod.MakeParentNode(
+            var readMethod = CodegenMethod.MakeMethod(
                     typeof(object),
                     typeof(AggregationServiceFactoryCompiler),
                     CodegenSymbolProviderEmpty.INSTANCE,
@@ -610,7 +610,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
             CodegenClassScope classScope)
         {
             var method = CodegenMethod
-                .MakeParentNode(
+                .MakeMethod(
                     typeof(void),
                     typeof(AggregationServiceFactoryCompiler),
                     CodegenSymbolProviderEmpty.INSTANCE,
@@ -652,7 +652,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
             CodegenNamedMethods namedMethods)
         {
             var method = CodegenMethod
-                .MakeParentNode(
+                .MakeMethod(
                     typeof(void),
                     typeof(AggregationServiceFactoryCompiler),
                     CodegenSymbolProviderEmpty.INSTANCE,
@@ -702,7 +702,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
             AggregationStateFactoryForge[] accessStateFactories,
             CodegenClassScope classScope)
         {
-            var method = CodegenMethod.MakeParentNode(
+            var method = CodegenMethod.MakeMethod(
                     typeof(object),
                     typeof(AggregationServiceFactoryCompiler),
                     CodegenSymbolProviderEmpty.INSTANCE,
@@ -736,7 +736,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
             CodegenClassScope classScope,
             CodegenNamedMethods namedMethods)
         {
-            var parent = CodegenMethod.MakeParentNode(
+            var parent = CodegenMethod.MakeMethod(
                     getType.ReturnType,
                     typeof(AggregationServiceFactoryCompiler),
                     CodegenSymbolProviderEmpty.INSTANCE,
@@ -839,7 +839,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
             var symbols = new ExprForgeCodegenSymbol(
                 true,
                 updateType == AggregationCodegenUpdateType.APPLYENTER);
-            var parent = CodegenMethod.MakeParentNode(
+            var parent = CodegenMethod.MakeMethod(
                     typeof(void),
                     typeof(AggregationServiceFactoryCompiler),
                     symbols,
@@ -998,7 +998,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
             var namedMethods = new CodegenNamedMethods();
 
             var applyEnterMethod = CodegenMethod
-                .MakeParentNode(typeof(void), forge.GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope)
+                .MakeMethod(typeof(void), forge.GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope)
                 .AddParam(typeof(EventBean[]), NAME_EPS)
                 .AddParam(typeof(object), NAME_GROUPKEY)
                 .AddParam(
@@ -1007,7 +1007,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
             forge.ApplyEnterCodegen(applyEnterMethod, classScope, namedMethods, classNames);
 
             var applyLeaveMethod = CodegenMethod
-                .MakeParentNode(typeof(void), forge.GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope)
+                .MakeMethod(typeof(void), forge.GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope)
                 .AddParam(typeof(EventBean[]), NAME_EPS)
                 .AddParam(typeof(object), NAME_GROUPKEY)
                 .AddParam(
@@ -1016,7 +1016,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
             forge.ApplyLeaveCodegen(applyLeaveMethod, classScope, namedMethods, classNames);
 
             var setCurrentAccessMethod = CodegenMethod
-                .MakeParentNode(typeof(void), forge.GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope)
+                .MakeMethod(typeof(void), forge.GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope)
                 .AddParam(typeof(object), NAME_GROUPKEY)
                 .AddParam(typeof(int), NAME_AGENTINSTANCEID)
                 .AddParam(
@@ -1025,22 +1025,22 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
             forge.SetCurrentAccessCodegen(setCurrentAccessMethod, classScope, classNames);
 
             var clearResultsMethod = CodegenMethod
-                .MakeParentNode(typeof(void), forge.GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope)
+                .MakeMethod(typeof(void), forge.GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope)
                 .AddParam(typeof(ExprEvaluatorContext), NAME_EXPREVALCONTEXT);
             forge.ClearResultsCodegen(clearResultsMethod, classScope);
 
             var setRemovedCallbackMethod = CodegenMethod
-                .MakeParentNode(typeof(void), forge.GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope)
+                .MakeMethod(typeof(void), forge.GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope)
                 .AddParam(typeof(AggregationRowRemovedCallback), NAME_CALLBACK);
             forge.SetRemovedCallbackCodegen(setRemovedCallbackMethod);
 
             var acceptMethod = CodegenMethod
-                .MakeParentNode(typeof(void), forge.GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope)
+                .MakeMethod(typeof(void), forge.GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope)
                 .AddParam(typeof(AggregationServiceVisitor), NAME_AGGVISITOR);
             forge.AcceptCodegen(acceptMethod, classScope);
 
             var acceptGroupDetailMethod = CodegenMethod
-                .MakeParentNode(typeof(void), forge.GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope)
+                .MakeMethod(typeof(void), forge.GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope)
                 .AddParam(
                     typeof(AggregationServiceVisitorWGroupDetail),
                     NAME_AGGVISITOR);
@@ -1054,7 +1054,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
             forge.IsGroupedCodegen(isGroupedProperty, classScope);
 
             var getContextPartitionAggregationServiceMethod = CodegenMethod
-                .MakeParentNode(
+                .MakeMethod(
                     typeof(AggregationService),
                     forge.GetType(),
                     CodegenSymbolProviderEmpty.INSTANCE,
@@ -1063,7 +1063,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
             getContextPartitionAggregationServiceMethod.Block.MethodReturn(Ref("this"));
 
             var getValueMethod = CodegenMethod
-                .MakeParentNode(typeof(object), forge.GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope)
+                .MakeMethod(typeof(object), forge.GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope)
                 .AddParam(typeof(int), NAME_COLUMN)
                 .AddParam(typeof(int), NAME_AGENTINSTANCEID)
                 .AddParam(typeof(EventBean[]), NAME_EPS)
@@ -1074,7 +1074,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
             forge.GetValueCodegen(getValueMethod, classScope, namedMethods);
 
             var getCollectionOfEventsMethod = CodegenMethod
-                .MakeParentNode(
+                .MakeMethod(
                     typeof(ICollection<EventBean>),
                     forge.GetType(),
                     CodegenSymbolProviderEmpty.INSTANCE,
@@ -1088,7 +1088,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
             forge.GetCollectionOfEventsCodegen(getCollectionOfEventsMethod, classScope, namedMethods);
 
             var getEventBeanMethod = CodegenMethod
-                .MakeParentNode(typeof(EventBean), forge.GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope)
+                .MakeMethod(typeof(EventBean), forge.GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope)
                 .AddParam(typeof(int), NAME_COLUMN)
                 .AddParam(typeof(EventBean[]), NAME_EPS)
                 .AddParam(typeof(bool), ExprForgeCodegenNames.NAME_ISNEWDATA)
@@ -1098,12 +1098,12 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
             forge.GetEventBeanCodegen(getEventBeanMethod, classScope, namedMethods);
 
             var getGroupKeyMethod = CodegenMethod
-                .MakeParentNode(typeof(object), forge.GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope)
+                .MakeMethod(typeof(object), forge.GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope)
                 .AddParam(typeof(int), NAME_AGENTINSTANCEID);
             forge.GetGroupKeyCodegen(getGroupKeyMethod, classScope);
 
             var getGroupKeysMethod = CodegenMethod
-                .MakeParentNode(
+                .MakeMethod(
                     typeof(ICollection<object>),
                     forge.GetType(),
                     CodegenSymbolProviderEmpty.INSTANCE,
@@ -1112,7 +1112,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
             forge.GetGroupKeysCodegen(getGroupKeysMethod, classScope);
 
             var getCollectionScalarMethod = CodegenMethod
-                .MakeParentNode(
+                .MakeMethod(
                     typeof(ICollection<object>),
                     forge.GetType(),
                     CodegenSymbolProviderEmpty.INSTANCE,
@@ -1125,7 +1125,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
                     NAME_EXPREVALCONTEXT);
             forge.GetCollectionScalarCodegen(getCollectionScalarMethod, classScope, namedMethods);
 
-            var stopMethod = CodegenMethod.MakeParentNode(
+            var stopMethod = CodegenMethod.MakeMethod(
                 typeof(void),
                 forge.GetType(),
                 CodegenSymbolProviderEmpty.INSTANCE,
@@ -1250,7 +1250,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
             string providerClassName,
             AggregationClassNames classNames)
         {
-            var makeServiceMethod = CodegenMethod.MakeParentNode(
+            var makeServiceMethod = CodegenMethod.MakeMethod(
                     typeof(AggregationService),
                     typeof(AggregationServiceFactoryCompiler),
                     CodegenSymbolProviderEmpty.INSTANCE,

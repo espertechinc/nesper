@@ -70,13 +70,13 @@ namespace com.espertech.esper.common.@internal.serde
         public class CodegenSharableSerdeName
         {
             public static readonly CodegenSharableSerdeName VALUE_NULLABLE =
-                new CodegenSharableSerdeName("valueNullable");
+                new CodegenSharableSerdeName("ValueNullable");
 
             public static readonly CodegenSharableSerdeName REFCOUNTEDSET =
-                new CodegenSharableSerdeName("refCountedSet");
+                new CodegenSharableSerdeName("RefCountedSet");
 
             public static readonly CodegenSharableSerdeName SORTEDREFCOUNTEDSET =
-                new CodegenSharableSerdeName("sortedRefCountedSet");
+                new CodegenSharableSerdeName("SortedRefCountedSet");
 
             private CodegenSharableSerdeName(string methodName)
             {

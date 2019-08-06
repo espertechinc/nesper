@@ -81,7 +81,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             block.MethodReturn(
                 StaticMethod(
                     typeof(EnumIntersectForgeEval),
-                    "enumIntersectForgeEvalSet",
+                    "EnumIntersectForgeEvalSet",
                     @Ref("other"),
                     EnumForgeCodegenNames.REF_ENUMCOLL,
                     Constant(forge.scalar)));

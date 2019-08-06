@@ -312,7 +312,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
                         forLoop.IfCondition(
                                 Not(
                                     LocalMethod(
-                                        instance.Methods.GetMethod("evaluateHavingClause"),
+                                        instance.Methods.GetMethod("EvaluateHavingClause"),
                                         ExprForgeCodegenNames.REF_EPS,
                                         REF_ISNEWDATA,
                                         REF_AGENTINSTANCECONTEXT)))
@@ -438,7 +438,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
                         forLoop.IfCondition(
                                 Not(
                                     LocalMethod(
-                                        instance.Methods.GetMethod("evaluateHavingClause"),
+                                        instance.Methods.GetMethod("EvaluateHavingClause"),
                                         ExprForgeCodegenNames.REF_EPS,
                                         REF_ISNEWDATA,
                                         REF_AGENTINSTANCECONTEXT)))
@@ -594,7 +594,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
                     forLoop.IfCondition(
                             Not(
                                 LocalMethod(
-                                    instance.Methods.GetMethod("evaluateHavingClause"),
+                                    instance.Methods.GetMethod("EvaluateHavingClause"),
                                     ExprForgeCodegenNames.REF_EPS,
                                     ConstantTrue(),
                                     REF_AGENTINSTANCECONTEXT)))
@@ -763,7 +763,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
                         forEach.IfCondition(
                                 Not(
                                     LocalMethod(
-                                        instance.Methods.GetMethod("evaluateHavingClause"),
+                                        instance.Methods.GetMethod("EvaluateHavingClause"),
                                         Ref("eventsPerStream"),
                                         REF_ISNEWDATA,
                                         REF_AGENTINSTANCECONTEXT)))
@@ -836,7 +836,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
                         .IfCondition(
                             Not(
                                 LocalMethod(
-                                    instance.Methods.GetMethod("evaluateHavingClause"),
+                                    instance.Methods.GetMethod("EvaluateHavingClause"),
                                     ExprForgeCodegenNames.REF_EPS,
                                     REF_ISNEWDATA,
                                     REF_AGENTINSTANCECONTEXT)))
@@ -897,7 +897,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
                         forEach.IfCondition(
                                 Not(
                                     LocalMethod(
-                                        instance.Methods.GetMethod("evaluateHavingClause"),
+                                        instance.Methods.GetMethod("EvaluateHavingClause"),
                                         ExprForgeCodegenNames.REF_EPS,
                                         REF_ISNEWDATA,
                                         REF_AGENTINSTANCECONTEXT)))
@@ -982,7 +982,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
                         forEach.IfCondition(
                                 Not(
                                     LocalMethod(
-                                        instance.Methods.GetMethod("evaluateHavingClause"),
+                                        instance.Methods.GetMethod("EvaluateHavingClause"),
                                         ExprForgeCodegenNames.REF_EPS,
                                         REF_ISNEWDATA,
                                         REF_AGENTINSTANCECONTEXT)))
@@ -1074,7 +1074,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
             CodegenMethod method,
             CodegenInstanceAux instance)
         {
-            ProcessOutputLimitedLastAllNonBufferedCodegen(forge, "processView", classScope, method, instance);
+            ProcessOutputLimitedLastAllNonBufferedCodegen(forge, "ProcessView", classScope, method, instance);
         }
 
         private static void ProcessOutputLimitedLastAllNonBufferedCodegen(
@@ -1134,7 +1134,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
             CodegenMethod method,
             CodegenInstanceAux instance)
         {
-            ProcessOutputLimitedLastAllNonBufferedCodegen(forge, "processJoin", classScope, method, instance);
+            ProcessOutputLimitedLastAllNonBufferedCodegen(forge, "ProcessJoin", classScope, method, instance);
         }
 
         public static void ContinueOutputLimitedLastAllNonBufferedViewCodegen(
@@ -1475,7 +1475,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
                                 .IfCondition(
                                     Not(
                                         LocalMethod(
-                                            instance.Methods.GetMethod("evaluateHavingClause"),
+                                            instance.Methods.GetMethod("EvaluateHavingClause"),
                                             Ref("eventsPerStream"),
                                             ConstantTrue(),
                                             REF_AGENTINSTANCECONTEXT)))
@@ -1520,7 +1520,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
                                 .IfCondition(
                                     Not(
                                         LocalMethod(
-                                            instance.Methods.GetMethod("evaluateHavingClause"),
+                                            instance.Methods.GetMethod("EvaluateHavingClause"),
                                             Ref("eventsPerStream"),
                                             ConstantFalse(),
                                             REF_AGENTINSTANCECONTEXT)))
@@ -2129,7 +2129,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
                                 .IfCondition(
                                     Not(
                                         LocalMethod(
-                                            instance.Methods.GetMethod("evaluateHavingClause"),
+                                            instance.Methods.GetMethod("EvaluateHavingClause"),
                                             Ref("eventsPerStream"),
                                             ConstantTrue(),
                                             REF_AGENTINSTANCECONTEXT)))
@@ -2177,7 +2177,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
                                 .IfCondition(
                                     Not(
                                         LocalMethod(
-                                            instance.Methods.GetMethod("evaluateHavingClause"),
+                                            instance.Methods.GetMethod("EvaluateHavingClause"),
                                             Ref("eventsPerStream"),
                                             ConstantFalse(),
                                             REF_AGENTINSTANCECONTEXT)))
@@ -2528,7 +2528,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
                         methodNode.Block.IfCondition(
                                 Not(
                                     LocalMethod(
-                                        instance.Methods.GetMethod("evaluateHavingClause"),
+                                        instance.Methods.GetMethod("EvaluateHavingClause"),
                                         ExprForgeCodegenNames.REF_EPS,
                                         REF_ISNEWDATA,
                                         REF_AGENTINSTANCECONTEXT)))
@@ -2608,7 +2608,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
                         forEach.IfCondition(
                                 Not(
                                     LocalMethod(
-                                        instance.Methods.GetMethod("evaluateHavingClause"),
+                                        instance.Methods.GetMethod("EvaluateHavingClause"),
                                         Ref("eventsPerStream"),
                                         REF_ISNEWDATA,
                                         REF_AGENTINSTANCECONTEXT)))
@@ -2706,7 +2706,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
                             REF_ISSYNTHESIZE));
                 if (!forge.IsSelectRStream) {
                     methodNode.Block.MethodReturn(
-                        StaticMethod(typeof(ResultSetProcessorUtil), "toPairNullIfNullIStream", Ref("istream")));
+                        StaticMethod(typeof(ResultSetProcessorUtil), "ToPairNullIfNullIStream", Ref("istream")));
                 }
                 else {
                     methodNode.Block.DeclareVar<EventBean>(
@@ -2720,7 +2720,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
                         .MethodReturn(
                             StaticMethod(
                                 typeof(ResultSetProcessorUtil),
-                                "toPairNullIfAllNullSingle",
+                                "ToPairNullIfAllNullSingle",
                                 Ref("istream"),
                                 Ref("rstream")));
                 }
@@ -2773,7 +2773,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
                             ConstantTrue(),
                             REF_ISSYNTHESIZE))
                     .MethodReturn(
-                        StaticMethod(typeof(ResultSetProcessorUtil), "toPairNullIfNullIStream", Ref("istream")));
+                        StaticMethod(typeof(ResultSetProcessorUtil), "ToPairNullIfNullIStream", Ref("istream")));
             };
 
             return instance.Methods.AddMethod(
@@ -2802,7 +2802,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
                         .IfCondition(
                             Not(
                                 LocalMethod(
-                                    instance.Methods.GetMethod("evaluateHavingClause"),
+                                    instance.Methods.GetMethod("EvaluateHavingClause"),
                                     ExprForgeCodegenNames.REF_EPS,
                                     REF_ISNEWDATA,
                                     REF_AGENTINSTANCECONTEXT)))

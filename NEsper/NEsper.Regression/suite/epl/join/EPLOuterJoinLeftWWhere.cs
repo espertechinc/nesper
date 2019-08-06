@@ -89,7 +89,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                                 "SupportBean_S0#length(5) as s0 " +
                                 "left outer join " +
                                 "SupportBean_S1#length(5) as s1" +
-                                " on s0.p00 = s1.p10 " +
+                                " on s0.P00 = s1.P10 " +
                                 whereClause;
             env.CompileDeployAddListenerMileZero(joinStatement, "s0");
         }
@@ -105,7 +105,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
         {
             public void Run(RegressionEnvironment env)
             {
-                SetupStatement(env, "where s1.p11 is not null");
+                SetupStatement(env, "where s1.P11 is not null");
                 TryWhereNotNull(env);
                 env.UndeployAll();
             }
@@ -115,7 +115,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
         {
             public void Run(RegressionEnvironment env)
             {
-                SetupStatement(env, "where s1.p11 is not null");
+                SetupStatement(env, "where s1.P11 is not null");
                 TryWhereNotNull(env);
                 env.UndeployAll();
             }
@@ -125,7 +125,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
         {
             public void Run(RegressionEnvironment env)
             {
-                SetupStatement(env, "where s1.p11 is null");
+                SetupStatement(env, "where s1.P11 is null");
                 TryWhereNull(env);
                 env.UndeployAll();
             }
@@ -135,7 +135,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
         {
             public void Run(RegressionEnvironment env)
             {
-                SetupStatement(env, "where s1.p11 is null");
+                SetupStatement(env, "where s1.P11 is null");
                 TryWhereNull(env);
                 env.UndeployAll();
             }
@@ -145,7 +145,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
         {
             public void Run(RegressionEnvironment env)
             {
-                SetupStatement(env, "where s0.p01 = s1.p11 or s1.p11 is null");
+                SetupStatement(env, "where s0.P01 = s1.P11 or s1.P11 is null");
 
                 var eventS0 = new SupportBean_S0(0, "0", "[a]");
                 SendEvent(eventS0, env);
@@ -178,7 +178,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
         {
             public void Run(RegressionEnvironment env)
             {
-                SetupStatement(env, "where s0.p01 = s1.p11");
+                SetupStatement(env, "where s0.P01 = s1.P11");
 
                 var eventsS0 = new SupportBean_S0[15];
                 var eventsS1 = new SupportBean_S1[15];

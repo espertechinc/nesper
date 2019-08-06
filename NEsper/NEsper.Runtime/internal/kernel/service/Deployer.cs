@@ -9,6 +9,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.meta;
 using com.espertech.esper.common.client.util;
@@ -406,6 +408,8 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
                 throw;
             }
             catch (Exception e) {
+                AppDomain appDomain = AppDomain.CurrentDomain;
+                Assembly[] assemblies = appDomain.GetAssemblies();
                 throw new EPException(e);
             }
 

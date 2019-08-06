@@ -97,7 +97,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                     forge.secondExpression.EvaluateCodegen(typeof(object), methodNode, scope, codegenClassScope))
                 .DeclareVar<ICollection<object>>(
                     "value",
-                    Cast(typeof(ICollection<object>), ExprDotMethod(@Ref("result"), "get", @Ref("key"))))
+                    Cast(typeof(ICollection<object>), ExprDotMethod(@Ref("result"), "Get", @Ref("key"))))
                 .IfRefNull("value")
                 .AssignRef("value", NewInstance(typeof(List<object>)))
                 .Expression(ExprDotMethod(@Ref("result"), "Put", @Ref("key"), @Ref("value")))

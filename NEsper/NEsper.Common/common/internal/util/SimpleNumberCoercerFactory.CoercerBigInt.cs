@@ -87,21 +87,10 @@ namespace com.espertech.esper.common.@internal.util
                     return value;
                 }
 
-                if (valueType == typeof(long) || valueType == typeof(long)) {
-                    return CodegenExpressionBuilder.StaticMethod(typeof(BigInteger), "valueOf", value);
-                }
-
-                if (valueType.IsPrimitive) {
-                    return CodegenExpressionBuilder.StaticMethod(
-                        typeof(BigInteger),
-                        "valueOf",
-                        CodegenExpressionBuilder.Cast(typeof(long), value));
-                }
-
                 return CodegenExpressionBuilder.StaticMethod(
-                    typeof(BigInteger),
-                    "valueOf",
-                    CodegenExpressionBuilder.ExprDotMethod(value, "LongValue"));
+                    typeof(TypeExtensions),
+                    "AsBigInteger",
+                    value);
             }
         }
     }

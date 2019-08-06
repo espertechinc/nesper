@@ -50,7 +50,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                             subselect.EvaluationType,
                             StaticMethod(
                                 typeof(EventBeanUtility),
-                                "getNonemptyFirstEventUnderlying",
+                                "GetNonemptyFirstEventUnderlying",
                                 symbols.GetAddMatchingEvents(method))));
                     return LocalMethod(method);
                 }
@@ -61,7 +61,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                             Constant(0),
                             StaticMethod(
                                 typeof(EventBeanUtility),
-                                "getNonemptyFirstEvent",
+                                "GetNonemptyFirstEvent",
                                 symbols.GetAddMatchingEvents(method)));
                 }
             }
@@ -309,7 +309,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                         Constant(0),
                         StaticMethod(
                             typeof(EventBeanUtility),
-                            "getNonemptyFirstEvent",
+                            "GetNonemptyFirstEvent",
                             symbols.GetAddMatchingEvents(method)))
                     .DeclareVar<IDictionary<object, object>>(
                         "row",
@@ -336,7 +336,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                     "subSelectResult",
                     StaticMethod(
                         typeof(EventBeanUtility),
-                        "evaluateFilterExpectSingleMatch",
+                        "EvaluateFilterExpectSingleMatch",
                         REF_EVENTS_SHIFTED,
                         symbols.GetAddIsNewData(method),
                         symbols.GetAddMatchingEvents(method),

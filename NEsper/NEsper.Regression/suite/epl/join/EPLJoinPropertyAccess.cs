@@ -36,8 +36,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                 var epl = "@Name('s0') select nested.nested, s1.indexed[0], nested.indexed[1] from " +
                           "SupportBeanComplexProps#length(3) nested, " +
                           "SupportBeanCombinedProps#length(3) s1" +
-                          " where mapped('keyOne') = indexed[2].mapped('2ma').value and" +
-                          " indexed[0].mapped('0ma').value = '0ma0'";
+                          " where mapped('keyOne') = indexed[2].mapped('2ma').Value and" +
+                          " indexed[0].mapped('0ma').Value = '0ma0'";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 env.SendEventBean(combined);
@@ -60,7 +60,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                           "SupportBeanComplexProps#length(3) s0" +
                           " left outer join " +
                           "SupportBeanCombinedProps#length(3) s1" +
-                          " on mapped('keyOne') = indexed[2].mapped('2ma').value";
+                          " on mapped('keyOne') = indexed[2].mapped('2ma').Value";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 var combined = SupportBeanCombinedProps.MakeDefaultBean();

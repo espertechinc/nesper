@@ -35,13 +35,18 @@ namespace com.espertech.esper.common.@internal.util
 
         public CodegenExpression InitCtorScoped()
         {
-            CodegenExpressionNewAnonymousClass anonymousClass = NewAnonymousClass(
-                classScope.NamespaceScope.InitMethod.Block,
-                typeof(SimpleTypeParser));
-            CodegenMethod parse = CodegenMethod.MakeParentNode(typeof(object), this.GetType(), classScope)
-                .AddParam(typeof(string), "text");
-            anonymousClass.AddMethod("Parse", parse);
-            parse.Block.MethodReturn(parser.Codegen(@Ref("text")));
+            var parse = new CodegenExpressionLambda(classScope.NamespaceScope.InitMethod.Block)
+                .WithParam<string>("text");
+            var anonymousClass = NewInstance<ProxySimpleTypeParser>(parse);
+
+            //CodegenExpressionNewAnonymousClass) anonymousClass = NewAnonymousClass(
+            //    classScope.NamespaceScope.InitMethod.Block,
+            //    typeof(SimpleTypeParser));
+            //CodegenMethod parse = CodegenMethod.MakeParentNode(typeof(object), this.GetType(), classScope)
+            //    .AddParam(typeof(string), "text");
+            //anonymousClass.AddMethod("Parse", parse);
+
+            parse.Block.BlockReturn(parser.Codegen(@Ref("text")));
             return anonymousClass;
         }
 

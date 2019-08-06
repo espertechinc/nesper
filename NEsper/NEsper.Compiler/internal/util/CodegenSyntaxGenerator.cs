@@ -8,15 +8,22 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 using com.espertech.esper.common.@internal.bytecodemodel.core;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
+
+using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
+
 namespace com.espertech.esper.compiler.@internal.util
 {
-    public class CodegenClassGenerator
+    public class CodegenSyntaxGenerator
     {
         private static readonly CodegenIndent INDENT = new CodegenIndent(true);
 
@@ -36,6 +43,7 @@ namespace com.espertech.esper.compiler.@internal.util
             imports.Add(new ImportDecl(false, typeof(Int32).Namespace));
             imports.Add(new ImportDecl(false, typeof(CompatExtensions).Namespace));
             imports.Add(new ImportDecl(false, typeof(UnsupportedOperationException).Namespace));
+            imports.Add(new ImportDecl(false, typeof(Enumerable).Namespace));
 
             foreach (var type in types) {
                 if (type != null && !type.IsPrimitive) {
@@ -69,7 +77,8 @@ namespace com.espertech.esper.compiler.@internal.util
             GenerateCodeMethods(builder, false, clazz.PublicMethods, clazz.PrivateMethods, 1);
 
             // inner classes
-            foreach (var inner in clazz.InnerClasses) {
+            foreach (var inner in clazz.InnerClasses)
+            {
                 builder.Append("\n");
                 INDENT.Indent(builder, 2);
                 CodeGenerationUtil.Classimplements(
@@ -115,6 +124,73 @@ namespace com.espertech.esper.compiler.@internal.util
             builder.Append("  }\n"); // class
             builder.Append("}\n"); // namespace
             return builder.ToString();
+        }
+
+        private static string GenerateSyntax(
+            ICollection<ImportDecl> imports,
+            CodegenClass clazz)
+        {
+            var builder = new StringBuilder();
+
+            var usingsList = CodeGenerationUtil.Importsdecl(imports);
+            var namespaceUnit = NamespaceDeclaration(ParseName(clazz.Namespace));
+
+            // Generate the class using descending construction of the class elements
+            // relative to the syntax tree.  All items should be children of the namespaceUnit.
+
+            namespaceUnit = namespaceUnit.AddMembers(clazz.CodegenSyntax());
+
+            // inner classes
+            foreach (var inner in clazz.InnerClasses) {
+                builder.Append("\n");
+                INDENT.Indent(builder, 2);
+                CodeGenerationUtil.Classimplements(
+                    builder,
+                    inner.ClassName,
+                    inner.InterfaceImplemented,
+                    inner.InterfaceGenericClass,
+                    false,
+                    false);
+
+                GenerateCodeMembers(
+                    builder,
+                    inner.ExplicitMembers,
+                    inner.Ctor,
+                    2);
+
+                GenerateCodeCtor(
+                    builder,
+                    inner.ClassName,
+                    true,
+                    inner.Ctor,
+                    1);
+
+                GenerateCodeProperties(
+                    builder,
+                    true,
+                    inner.Properties.PublicProperties,
+                    inner.Properties.PrivateProperties,
+                    1);
+
+                GenerateCodeMethods(
+                    builder,
+                    true,
+                    inner.Methods.PublicMethods,
+                    inner.Methods.PrivateMethods,
+                    1);
+
+                INDENT.Indent(builder, 1);
+                builder.Append("}\n");
+            }
+
+            var membersList = SingletonList<MemberDeclarationSyntax>(namespaceUnit);
+
+            var compilationUnit = CompilationUnit()
+                .WithUsings(usingsList)
+                .WithMembers(membersList)
+                .NormalizeWhitespace();
+
+            return compilationUnit.ToFullString();
         }
 
         internal static void GenerateCodeProperties(

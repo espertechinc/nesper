@@ -73,7 +73,7 @@ namespace com.espertech.esper.common.@internal.context.controller.hash
                 .MethodReturn(
                     StaticMethod(
                         typeof(ContextControllerHashedGetterHashSingleForge),
-                        "objectToNativeHash",
+                        "ObjectToNativeHash",
                         @Ref("code"),
                         Constant(granularity)));
 

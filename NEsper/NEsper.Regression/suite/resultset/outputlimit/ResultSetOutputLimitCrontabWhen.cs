@@ -570,7 +570,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
                     "select * from SupportMarketDataBean output when sum(Price) > 0",
-                    "Failed to valIdate output limit expression '(sum(Price))>0': Property named 'Price' is not valId in any stream [select * from SupportMarketDataBean output when sum(Price) > 0]");
+                    "Failed to validate output limit expression '(sum(Price))>0': Property named 'Price' is not valid in any stream [select * from SupportMarketDataBean output when sum(Price) > 0]");
 
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
@@ -580,12 +580,12 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
                     "select * from SupportMarketDataBean output when prev(1, count_insert) = 0",
-                    "Failed to valIdate output limit expression 'prev(1,count_insert)=0': Previous function cannot be used in this context [select * from SupportMarketDataBean output when prev(1, count_insert) = 0]");
+                    "Failed to validate output limit expression 'prev(1,count_insert)=0': Previous function cannot be used in this context [select * from SupportMarketDataBean output when prev(1, count_insert) = 0]");
 
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
                     "select TheString, count(*) from SupportBean#length(2) group by TheString output all every 0 seconds",
-                    "InvalId time period expression returns a zero or negative time interval [select TheString, count(*) from SupportBean#length(2) group by TheString output all every 0 seconds]");
+                    "Invalid time period expression returns a zero or negative time interval [select TheString, count(*) from SupportBean#length(2) group by TheString output all every 0 seconds]");
             }
         }
     }

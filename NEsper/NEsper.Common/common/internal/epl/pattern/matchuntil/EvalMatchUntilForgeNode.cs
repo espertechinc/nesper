@@ -84,7 +84,7 @@ namespace com.espertech.esper.common.@internal.epl.pattern.matchuntil
 
         protected override string NameOfFactory()
         {
-            return "matchUntil";
+            return "MatchUntil";
         }
 
         protected override void InlineCodegen(

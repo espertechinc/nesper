@@ -41,12 +41,12 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
                     "select new Dummy() from SupportBean",
-                    "Failed to valIdate select-clause expression 'new Dummy()': Failed to resolve new-operator class name 'Dummy'");
+                    "Failed to validate select-clause expression 'new Dummy()': Failed to resolve new-operator class name 'Dummy'");
 
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
                     "select new SupportPrivateCtor() from SupportBean",
-                    "Failed to valIdate select-clause expression 'new SupportPrivateCtor()': Failed to find a suitable constructor for class ");
+                    "Failed to validate select-clause expression 'new SupportPrivateCtor()': Failed to find a suitable constructor for class ");
 
                 env.UndeployAll();
             }

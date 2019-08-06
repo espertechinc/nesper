@@ -99,7 +99,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                 "pattern",
                 StaticMethod(
                     typeof(ExprRegexpNodeForgeNonconstEval),
-                    "exprRegexNodeCompilePattern",
+                    "ExprRegexNodeCompilePattern",
                     Ref("patternText")));
 
             if (!forge.IsNumericValue) {

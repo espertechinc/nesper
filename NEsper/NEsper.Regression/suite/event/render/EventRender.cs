@@ -27,7 +27,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.render
             IList<RegressionExecution> execs = new List<RegressionExecution>();
             execs.Add(new EventRenderPropertyCustomRenderer());
             execs.Add(new EventRenderObjectArray());
-            execs.Add(new EventRenderPOJOMap());
+            execs.Add(new EventRenderPONOMap());
             return execs;
         }
 
@@ -85,25 +85,25 @@ namespace com.espertech.esper.regressionlib.suite.@event.render
         {
             public void Run(RegressionEnvironment env)
             {
-                object[] values = {"abc", 1, new SupportBean_S0(1, "p00"), 2L, 3d};
+                object[] values = {"abc", 1, new SupportBean_S0(1, "P00"), 2L, 3d};
                 env.CompileDeploy("@Name('s0') select * from MyObjectArrayType");
                 env.SendEventObjectArray(values, "MyObjectArrayType");
 
                 var json = env.Runtime.RenderEventService.RenderJSON("MyEvent", env.GetEnumerator("s0").Advance());
                 var expectedJson =
-                    "{ \"MyEvent\": { \"p0\": \"abc\", \"p1\": 1, \"p3\": 2, \"p4\": 3.0, \"p2\": { \"id\": 1, \"p00\": \"p00\", \"p01\": null, \"p02\": null, \"p03\": null } } }";
+                    "{ \"MyEvent\": { \"p0\": \"abc\", \"p1\": 1, \"p3\": 2, \"p4\": 3.0, \"p2\": { \"id\": 1, \"P00\": \"P00\", \"P01\": null, \"p02\": null, \"p03\": null } } }";
                 Assert.AreEqual(RemoveNewline(expectedJson), RemoveNewline(json));
 
                 var xmlOne = env.Runtime.RenderEventService.RenderXML("MyEvent", env.GetEnumerator("s0").Advance());
                 var expected =
-                    "<?xml version=\"1.0\" encoding=\"UTF-8\"?> <MyEvent> <p0>abc</p0> <p1>1</p1> <p3>2</p3> <p4>3.0</p4> <p2> <Id>1</Id> <p00>p00</p00> </p2> </MyEvent>";
+                    "<?xml version=\"1.0\" encoding=\"UTF-8\"?> <MyEvent> <p0>abc</p0> <p1>1</p1> <p3>2</p3> <p4>3.0</p4> <p2> <Id>1</Id> <P00>P00</P00> </p2> </MyEvent>";
                 Assert.AreEqual(RemoveNewline(expected), RemoveNewline(xmlOne));
 
                 env.UndeployAll();
             }
         }
 
-        internal class EventRenderPOJOMap : RegressionExecution
+        internal class EventRenderPONOMap : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {

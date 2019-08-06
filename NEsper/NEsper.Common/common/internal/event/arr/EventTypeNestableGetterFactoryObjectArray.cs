@@ -99,7 +99,7 @@ namespace com.espertech.esper.common.@internal.@event.arr
             return new ObjectArrayArrayPropertyGetter(propertyIndex, index, eventBeanTypedEventFactory, innerType);
         }
 
-        public EventPropertyGetterSPI GetGetterIndexedPOJO(
+        public EventPropertyGetterSPI GetGetterIndexedPONO(
             string propertyNameAtomic,
             int index,
             EventBeanTypedEventFactory eventBeanTypedEventFactory,
@@ -132,7 +132,7 @@ namespace com.espertech.esper.common.@internal.@event.arr
             return new ObjectArrayEventBeanArrayIndexedElementPropertyGetter(propertyIndex, index, nestedGetter);
         }
 
-        public EventPropertyGetterSPI GetGetterIndexedEntryPOJO(
+        public EventPropertyGetterSPI GetGetterIndexedEntryPONO(
             string propertyNameAtomic,
             int index,
             BeanEventPropertyGetter nestedGetter,
@@ -158,7 +158,7 @@ namespace com.espertech.esper.common.@internal.@event.arr
             return new ObjectArrayMapPropertyGetter(index, getterNested);
         }
 
-        public EventPropertyGetterSPI GetGetterNestedPOJOProp(
+        public EventPropertyGetterSPI GetGetterNestedPONOProp(
             string propertyName,
             BeanEventPropertyGetter nestedGetter,
             EventBeanTypedEventFactory eventBeanTypedEventFactory,
@@ -167,7 +167,7 @@ namespace com.espertech.esper.common.@internal.@event.arr
             Type nestedComponentType)
         {
             var index = GetAssertIndex(propertyName);
-            return new ObjectArrayPOJOEntryPropertyGetter(
+            return new ObjectArrayPONOEntryPropertyGetter(
                 index,
                 nestedGetter,
                 eventBeanTypedEventFactory,

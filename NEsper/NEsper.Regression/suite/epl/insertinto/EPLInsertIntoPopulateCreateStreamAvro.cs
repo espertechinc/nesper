@@ -49,9 +49,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                 var epl = "@Name('s0') insert into AvroExistingType select 1 as myLong," +
                           "{1L, 2L} as myLongArray," +
                           typeof(EPLInsertIntoPopulateCreateStreamAvro).Name +
-                          ".makeByteArray() as myByteArray, " +
+                          ".MakeByteArray() as myByteArray, " +
                           typeof(EPLInsertIntoPopulateCreateStreamAvro).Name +
-                          ".makeMapStringString() as myMap " +
+                          ".MakeMapStringString() as myMap " +
                           "from SupportBean";
                 env.CompileDeploy(epl).AddListener("s0");
 

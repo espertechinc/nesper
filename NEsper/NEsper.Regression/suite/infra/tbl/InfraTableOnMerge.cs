@@ -244,7 +244,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
 
             var fields = "c0,c1,c2".SplitCsv();
             var eplRead =
-                "@Name('s0') select varaggMIUD[Id,p00].keyOne as c0, varaggMIUD[Id,p00].keyTwo as c1, varaggMIUD[Id,p00].prop as c2 from SupportBean_S0";
+                "@Name('s0') select varaggMIUD[Id,P00].keyOne as c0, varaggMIUD[Id,P00].keyTwo as c1, varaggMIUD[Id,P00].prop as c2 from SupportBean_S0";
             env.CompileDeploy(soda, eplRead, path).AddListener("s0");
 
             // assert selected column types
@@ -437,7 +437,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                     "from SupportBean#lastevent group by TheString",
                     path);
 
-                env.CompileDeploy("@Name('s0') select varaggMMR[p00].keyOne as c0 from SupportBean_S0", path)
+                env.CompileDeploy("@Name('s0') select varaggMMR[P00].keyOne as c0 from SupportBean_S0", path)
                     .AddListener("s0");
                 env.CompileDeploy("on SupportBean_S1 merge varaggMMR where cnt = 0 when matched then delete", path);
 

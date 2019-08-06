@@ -56,7 +56,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                 .ExprDotMethod(
                     aggService,
                     "SetCurrentAccess",
-                    ExprDotMethodChain(@Ref("groupKeys")).Add("iterator").Add("next"),
+                    ExprDotMethodChain(@Ref("groupKeys")).Add("First"),
                     @Ref("cpid"),
                     ConstantNull())
                 .ApplyTri(DECLARE_EVENTS_SHIFTED, method, symbols)
@@ -65,7 +65,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                     Constant(0),
                     StaticMethod(
                         typeof(EventBeanUtility),
-                        "getNonemptyFirstEvent",
+                        "GetNonemptyFirstEvent",
                         symbols.GetAddMatchingEvents(method)));
 
             if (subselect.SelectClause.Length == 1) {

@@ -118,11 +118,11 @@ namespace com.espertech.esper.regressionlib.suite.@event.bean
                 TryInvalidCompile(
                     env,
                     "select `select` from SupportBean",
-                    "Failed to valIdate select-clause expression 'select': Property named 'select' is not valId in any stream [");
+                    "Failed to validate select-clause expression 'select': Property named 'select' is not valid in any stream [");
                 TryInvalidCompile(
                     env,
                     "select `ab cd` from SupportBean",
-                    "Failed to valIdate select-clause expression 'ab cd': Property named 'ab cd' is not valId in any stream [");
+                    "Failed to validate select-clause expression 'ab cd': Property named 'ab cd' is not valid in any stream [");
 
                 // test resolution as nested property
                 var path = new RegressionPath();
@@ -194,7 +194,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.bean
                 TryInvalidCompile(
                     env,
                     "select MyProperty from SupportBeanDupProperty",
-                    "Failed to valIdate select-clause expression 'MyProperty': Property named 'MyProperty' is not valId in any stream (dId you mean 'MYPROPERTY'?)");
+                    "Failed to validate select-clause expression 'MyProperty': Property named 'MyProperty' is not valid in any stream (did you mean 'MYPROPERTY'?)");
             }
         }
 

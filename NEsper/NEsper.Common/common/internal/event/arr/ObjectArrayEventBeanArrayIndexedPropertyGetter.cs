@@ -133,7 +133,7 @@ namespace com.espertech.esper.common.@internal.@event.arr
                 .MethodReturn(
                     StaticMethod(
                         typeof(BaseNestableEventUtil),
-                        "getBNArrayPropertyUnderlying",
+                        "GetBNArrayPropertyUnderlying",
                         Ref("wrapper"),
                         Constant(index)));
         }
@@ -151,7 +151,7 @@ namespace com.espertech.esper.common.@internal.@event.arr
                 .MethodReturn(
                     StaticMethod(
                         typeof(BaseNestableEventUtil),
-                        "getBNArrayPropertyBean",
+                        "GetBNArrayPropertyBean",
                         Ref("wrapper"),
                         Constant(index)));
         }

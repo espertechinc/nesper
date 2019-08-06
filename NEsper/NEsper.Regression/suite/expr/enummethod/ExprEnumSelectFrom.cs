@@ -41,7 +41,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
             public void Run(RegressionEnvironment env)
             {
                 var eplFragment = "@Name('s0') select " +
-                                  "contained.selectFrom(x => new {c0 = Id||'x', c1 = key0||'y'}) as val0 " +
+                                  "Contained.selectFrom(x => new {c0 = Id||'x', c1 = Key0||'y'}) as val0 " +
                                   "from SupportBean_ST0_Container";
                 env.CompileDeploy(eplFragment).AddListener("s0");
 
@@ -83,7 +83,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
             public void Run(RegressionEnvironment env)
             {
                 var eplFragment = "@Name('s0') select " +
-                                  "contained.selectFrom(x => Id) as val0 " +
+                                  "Contained.selectFrom(x => Id) as val0 " +
                                   "from SupportBean_ST0_Container";
                 env.CompileDeploy(eplFragment).AddListener("s0");
 
@@ -108,7 +108,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
                 // test scalar-coll with lambda
                 var fields = "val0".SplitCsv();
                 var eplLambda = "@Name('s0') select " +
-                                "strvals.selectFrom(v => extractNum(v)) as val0 " +
+                                "Strvals.selectFrom(v => extractNum(v)) as val0 " +
                                 "from SupportCollection";
                 env.CompileDeploy(eplLambda).AddListener("s0");
                 LambdaAssertionUtil.AssertTypes(

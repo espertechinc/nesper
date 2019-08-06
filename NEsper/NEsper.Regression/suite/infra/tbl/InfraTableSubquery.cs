@@ -85,7 +85,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                     "select sum(IntPrimitive) as total from SupportBean group by TheString",
                     path);
                 env.CompileDeploy(
-                        "@Name('s0') select (select total from varagg where key = s0.p00) as value " +
+                        "@Name('s0') select (select total from varagg where key = s0.P00) as value " +
                         "from SupportBean_S0 as s0",
                         path)
                     .AddListener("s0");
@@ -110,7 +110,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
 
                 env.CompileDeploy("create table InfraOne (string string, IntPrimitive int)", path);
                 env.CompileDeploy(
-                        "@Name('s0') select (select IntPrimitive from InfraOne where string = s0.p00) as c0 from SupportBean_S0 as s0",
+                        "@Name('s0') select (select IntPrimitive from InfraOne where string = s0.P00) as c0 from SupportBean_S0 as s0",
                         path)
                     .AddListener("s0");
                 env.CompileDeploy(
@@ -145,8 +145,8 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 env.CompileDeploy(eplIndex, path);
 
                 var eplInto = "on SupportBean_S0 merge MyTable " +
-                              "where p00 = k0 and p01 = k1 " +
-                              "when not matched then insert select p00 as k0, p01 as k1, p02 as p2, Id as value " +
+                              "where P00 = k0 and P01 = k1 " +
+                              "when not matched then insert select P00 as k0, P01 as k1, p02 as p2, Id as value " +
                               "when matched then update set p2 = p02, value = Id ";
                 env.CompileDeploy(eplInto, path);
 

@@ -40,7 +40,7 @@ namespace com.espertech.esper.common.@internal.@event.xml
         {
             return StaticMethod(
                 typeof(XPathPropertyGetterCodegenFieldSharable),
-                "resolveXPathPropertyGetter",
+                "ResolveXPathPropertyGetter",
                 EventTypeUtility.ResolveTypeCodegen(baseXMLEventType, EPStatementInitServicesConstants.REF),
                 Constant(xPathPropertyGetter.Property));
         }

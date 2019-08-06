@@ -225,9 +225,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.declared.compileti
                     EvaluateCodegenNoAudit(requiredType, methodNode, exprSymbol, codegenClassScope))
                 .Expression(
                     ExprDotMethodChain(exprSymbol.GetAddExprEvalCtx(methodNode))
-                        .Add("getAuditProvider")
+                        .Get("AuditProvider")
                         .Add(
-                            "exprdef",
+                            "Exprdef",
                             Constant(parent.Prototype.Name),
                             Ref("result"),
                             exprSymbol.GetAddExprEvalCtx(methodNode)))
@@ -400,8 +400,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.declared.compileti
                 block.DeclareVar<ExpressionResultCacheForDeclaredExprLastValue>(
                         "cache",
                         ExprDotMethodChain(refExprEvalCtx)
-                            .Add("getExpressionResultCacheService")
-                            .Add("getAllocateDeclaredExprLastValue"))
+                            .Get("ExpressionResultCacheService")
+                            .Get("AllocateDeclaredExprLastValue"))
                     .DeclareVar<ExpressionResultCacheEntryEventBeanArrayAndObj>(
                         "entry",
                         ExprDotMethod(Ref("cache"), "getDeclaredExpressionLastValue", nodeObject, refEPS))
@@ -455,8 +455,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.declared.compileti
                 block.DeclareVar<ExpressionResultCacheForDeclaredExprLastColl>(
                         "cache",
                         ExprDotMethodChain(refExprEvalCtx)
-                            .Add("getExpressionResultCacheService")
-                            .Add("getAllocateDeclaredExprLastColl"))
+                            .Get("ExpressionResultCacheService")
+                            .Get("AllocateDeclaredExprLastColl"))
                     .DeclareVar<ExpressionResultCacheEntryEventBeanArrayAndCollBean>(
                         "entry",
                         ExprDotMethod(Ref("cache"), "getDeclaredExpressionLastColl", nodeObject, refEPS))
@@ -511,8 +511,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.declared.compileti
                     .DeclareVar<ExpressionResultCacheForDeclaredExprLastColl>(
                         "cache",
                         ExprDotMethodChain(refExprEvalCtx)
-                            .Add("getExpressionResultCacheService")
-                            .Add("getAllocateDeclaredExprLastColl"))
+                            .Get("ExpressionResultCacheService")
+                            .Get("AllocateDeclaredExprLastColl"))
                     .DeclareVar<ExpressionResultCacheEntryEventBeanArrayAndCollBean>(
                         "entry",
                         ExprDotMethod(Ref("cache"), "getDeclaredExpressionLastColl", nodeObject, refEPS))

@@ -8,8 +8,14 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
+
+using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
+
+using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
 namespace com.espertech.esper.common.@internal.bytecodemodel.core
 {
@@ -17,11 +23,13 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.core
     {
         public CodegenCtor(
             Type generator,
+            string className,
             bool includeDebugSymbols,
             IList<CodegenTypedParam> @params)
             : base(null, null, generator, CodegenSymbolProviderEmpty.INSTANCE, new CodegenScope(includeDebugSymbols))
         {
             CtorParams = @params;
+            ClassName = className;
         }
 
         public CodegenCtor(
@@ -31,9 +39,12 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.core
             : base(null, null, generator, CodegenSymbolProviderEmpty.INSTANCE, new CodegenScope(classScope.IsDebug))
         {
             CtorParams = @params;
+            ClassName = classScope.ClassName;
         }
 
         public IList<CodegenTypedParam> CtorParams { get; }
+
+        public string ClassName { get; }
 
         public override void MergeClasses(ISet<Type> classes)
         {
@@ -41,6 +52,53 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.core
             foreach (var param in CtorParams) {
                 param.MergeClasses(classes);
             }
+        }
+
+        public MemberDeclarationSyntax CodegenSyntax()
+        {
+            return ConstructorDeclaration(Identifier(ClassName))
+                .WithModifiers(GetModifiers())
+                .WithParameterList(GetParameterList())
+                .WithBody(GetBody());
+        }
+
+        private StatementSyntax[] AssignConstructorParametersToFields()
+        {
+            var statements = List<StatementSyntax>();
+            foreach (var ctorParam in CtorParams) {
+                if (ctorParam.IsMemberWhenCtorParam) {
+                    var paramIdentifier = IdentifierName(ctorParam.Name);
+                    var memberAccess = MemberAccessExpression(
+                        SyntaxKind.SimpleMemberAccessExpression,
+                        ThisExpression(),
+                        paramIdentifier);
+                    var assignment = AssignmentExpression(
+                        SyntaxKind.SimpleAssignmentExpression,
+                        memberAccess,
+                        paramIdentifier);
+                    statements = statements.Add(ExpressionStatement(assignment));
+                }
+            }
+
+            return statements.ToArray();
+        }
+
+        private BlockSyntax GetBody()
+        {
+            var block = Block();
+            // Assign constructor parameters to fields
+            block = block.AddStatements(AssignConstructorParametersToFields());
+            // Render the remainder of the constructor body
+            block = block.AddStatements(Block.CodegenSyntax());
+            // Done
+            return block;
+        }
+
+        private ParameterListSyntax GetParameterList()
+        {
+            return ParameterList(
+                SeparatedList<ParameterSyntax>(
+                    CtorParams.Select(param => param.CodegenSyntaxAsParameter())));
         }
     }
 } // end of namespace

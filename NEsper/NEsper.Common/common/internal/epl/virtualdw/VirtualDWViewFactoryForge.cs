@@ -147,7 +147,7 @@ namespace com.espertech.esper.common.@internal.epl.virtualdw
                     "factory",
                     ExprDotMethod(
                         factoryField,
-                        "createFactory",
+                        "CreateFactory",
                         NewInstance(typeof(VirtualDataWindowFactoryFactoryContext))))
                 .Constant("parameters", _parameterValues)
                 .Expression(

@@ -25,7 +25,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
 {
     public class EPLOuterJoin2Stream
     {
-        private static readonly string[] FIELDS = {"s0.Id", "s0.p00", "s1.Id", "s1.p10"};
+        private static readonly string[] FIELDS = {"s0.Id", "s0.P00", "s1.Id", "s1.P10"};
 
         private static readonly SupportBean_S0[] EVENTS_S0;
         private static readonly SupportBean_S1[] EVENTS_S1;
@@ -70,8 +70,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
         {
             Assert.AreEqual(idS0, receivedEvent.Get("s0.Id"));
             Assert.AreEqual(idS1, receivedEvent.Get("s1.Id"));
-            Assert.AreEqual(p00, receivedEvent.Get("s0.p00"));
-            Assert.AreEqual(p10, receivedEvent.Get("s1.p10"));
+            Assert.AreEqual(p00, receivedEvent.Get("s0.P00"));
+            Assert.AreEqual(p10, receivedEvent.Get("s1.P10"));
         }
 
         private static void SendEvent(
@@ -109,7 +109,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
 
         private static void AssertMultiColumnLeft(RegressionEnvironment env)
         {
-            var fields = "s0.Id, s0.p00, s0.p01, s1.Id, s1.p10, s1.p11".SplitCsv();
+            var fields = "s0.Id, s0.P00, s0.P01, s1.Id, s1.P10, s1.P11".SplitCsv();
             env.SendEventBean(new SupportBean_S0(1, "A_1", "B_1"));
             EPAssertionUtil.AssertProps(
                 env.Listener("s0").AssertOneGetNewAndReset(),
@@ -133,12 +133,12 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
             RegressionEnvironment env,
             string outerJoinType)
         {
-            var joinStatement = "@Name('s0') select irstream s0.Id, s0.p00, s1.Id, s1.p10 from " +
+            var joinStatement = "@Name('s0') select irstream s0.Id, s0.P00, s1.Id, s1.P10 from " +
                                 "SupportBean_S0#length(3) as s0 " +
                                 outerJoinType +
                                 " outer join " +
                                 "SupportBean_S1#length(5) as s1" +
-                                " on s0.p00 = s1.p10";
+                                " on s0.P00 = s1.P10";
             env.CompileDeployAddListenerMileZero(joinStatement, "s0");
         }
 
@@ -465,17 +465,17 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
             public void Run(RegressionEnvironment env)
             {
                 var model = new EPStatementObjectModel();
-                model.SelectClause = SelectClause.Create("s0.Id, s0.p00, s0.p01, s1.Id, s1.p10, s1.p11".SplitCsv());
+                model.SelectClause = SelectClause.Create("s0.Id, s0.P00, s0.P01, s1.Id, s1.P10, s1.P11".SplitCsv());
                 var fromClause = FromClause.Create(
                     FilterStream.Create(typeof(SupportBean_S0).Name, "s0").AddView("keepall"),
                     FilterStream.Create(typeof(SupportBean_S1).Name, "s1").AddView("keepall"));
                 fromClause.Add(
-                    OuterJoinQualifier.Create("s0.p00", OuterJoinType.LEFT, "s1.p10").Add("s1.p11", "s0.p01"));
+                    OuterJoinQualifier.Create("s0.P00", OuterJoinType.LEFT, "s1.P10").Add("s1.P11", "s0.P01"));
                 model.FromClause = fromClause;
                 model = env.CopyMayFail(model);
 
                 var stmtText =
-                    "select s0.Id, s0.p00, s0.p01, s1.Id, s1.p10, s1.p11 from SupportBean_S0#keepall as s0 left outer join SupportBean_S1#keepall as s1 on s0.p00 = s1.p10 and s1.p11 = s0.p01";
+                    "select s0.Id, s0.P00, s0.P01, s1.Id, s1.P10, s1.P11 from SupportBean_S0#keepall as s0 left outer join SupportBean_S1#keepall as s1 on s0.P00 = s1.P10 and s1.P11 = s0.P01";
                 Assert.AreEqual(stmtText, model.ToEPL());
 
                 model.Annotations = Collections.SingletonList(AnnotationPart.NameAnnotation("s0"));
@@ -494,11 +494,11 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@Name('s0') select s0.Id, s0.p00, s0.p01, s1.Id, s1.p10, s1.p11 from " +
+                var epl = "@Name('s0') select s0.Id, s0.P00, s0.P01, s1.Id, s1.P10, s1.P11 from " +
                           "SupportBean_S0#length(3) as s0 " +
                           "left outer join " +
                           "SupportBean_S1#length(5) as s1" +
-                          " on s0.p00 = s1.p10 and s0.p01 = s1.p11";
+                          " on s0.P00 = s1.P10 and s0.P01 = s1.P11";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 AssertMultiColumnLeft(env);
@@ -511,12 +511,12 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "s0.Id, s0.p00, s0.p01, s1.Id, s1.p10, s1.p11".SplitCsv();
-                var epl = "@Name('s0') select s0.Id, s0.p00, s0.p01, s1.Id, s1.p10, s1.p11 from " +
+                var fields = "s0.Id, s0.P00, s0.P01, s1.Id, s1.P10, s1.P11".SplitCsv();
+                var epl = "@Name('s0') select s0.Id, s0.P00, s0.P01, s1.Id, s1.P10, s1.P11 from " +
                           "SupportBean_S0#length(3) as s0 " +
                           "right outer join " +
                           "SupportBean_S1#length(5) as s1" +
-                          " on s0.p00 = s1.p10 and s1.p11 = s0.p01";
+                          " on s0.P00 = s1.P10 and s1.P11 = s0.P01";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 env.SendEventBean(new SupportBean_S0(1, "A_1", "B_1"));
@@ -813,9 +813,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
             {
                 SetupStatement(env, "left");
 
-                Assert.AreEqual(typeof(string), env.Statement("s0").EventType.GetPropertyType("s0.p00"));
+                Assert.AreEqual(typeof(string), env.Statement("s0").EventType.GetPropertyType("s0.P00"));
                 Assert.AreEqual(typeof(int?), env.Statement("s0").EventType.GetPropertyType("s0.Id"));
-                Assert.AreEqual(typeof(string), env.Statement("s0").EventType.GetPropertyType("s1.p10"));
+                Assert.AreEqual(typeof(string), env.Statement("s0").EventType.GetPropertyType("s1.P10"));
                 Assert.AreEqual(typeof(int?), env.Statement("s0").EventType.GetPropertyType("s1.Id"));
                 Assert.AreEqual(4, env.Statement("s0").EventType.PropertyNames.Length);
 

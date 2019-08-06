@@ -62,7 +62,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
             CodegenExpressionRef refExprEvalCtx = exprSymbol.GetAddExprEvalCtx(codegenMethodScope);
             return StaticMethod(
                 typeof(ExprDotForgeUnpackCollEventBeanTable),
-                "convertToTableUnderling",
+                "ConvertToTableUnderling",
                 inner,
                 eventToPublic,
                 refEPS,

@@ -74,9 +74,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.declared.compileti
             methodNode.Block
                 .Expression(
                     ExprDotMethodChain(exprSymbol.GetAddExprEvalCtx(methodNode))
-                        .Add("getAuditProvider")
+                        .Get("AuditProvider")
                         .Add(
-                            "exprdef",
+                            "Exprdef",
                             Constant(parent.Prototype.Name),
                             Constant(value),
                             exprSymbol.GetAddExprEvalCtx(methodNode)))

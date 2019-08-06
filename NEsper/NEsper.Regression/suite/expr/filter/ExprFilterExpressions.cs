@@ -969,7 +969,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
             {
                 var epl = "@Name('s0') select * from pattern [SupportBeanWithEnum(supportEnum=" +
                           typeof(SupportEnum).FullName +
-                          ".valueOf('ENUM_VALUE_1'))]";
+                          ".ValueOf('ENUM_VALUE_1'))]";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
                 var theEvent = new SupportBeanWithEnum("e1", SupportEnum.ENUM_VALUE_2);
@@ -1724,12 +1724,12 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
                     "select * from pattern [every a=SupportBean(prior(1, a.LongBoxed))]",
-                    "Failed to valIdate filter expression 'prior(1,a.LongBoxed)': Prior function cannot be used in this context [");
+                    "Failed to validate filter expression 'prior(1,a.LongBoxed)': Prior function cannot be used in this context [");
 
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
                     "select * from pattern [every a=SupportBean(prev(1, a.LongBoxed))]",
-                    "Failed to valIdate filter expression 'prev(1,a.LongBoxed)': Previous function cannot be used in this context [");
+                    "Failed to validate filter expression 'prev(1,a.LongBoxed)': Previous function cannot be used in this context [");
 
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
@@ -1741,19 +1741,19 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                     "select * from SupportBeanWithEnum(TheString=" +
                     typeof(SupportEnum).FullName +
                     ".ENUM_VALUE_1)",
-                    "Failed to valIdate filter expression 'TheString=ENUM_VALUE_1': Implicit conversion from datatype 'SupportEnum' to 'String' is not allowed [");
+                    "Failed to validate filter expression 'TheString=ENUM_VALUE_1': Implicit conversion from datatype 'SupportEnum' to 'String' is not allowed [");
 
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
                     "select * from SupportBeanWithEnum(supportEnum=A.b)",
-                    "Failed to valIdate filter expression 'supportEnum=A.b': Failed to resolve property 'A.b' to a stream or nested property in a stream [");
+                    "Failed to validate filter expression 'supportEnum=A.b': Failed to resolve property 'A.b' to a stream or nested property in a stream [");
 
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
                     "select * from pattern [a=SupportBean -> b=" +
                     typeof(SupportBean).Name +
                     "(DoubleBoxed not in (DoubleBoxed, x.IntBoxed, 9))]",
-                    "Failed to valIdate filter expression 'DoubleBoxed not in (DoubleBoxed,x.i...(45 chars)': Failed to find a stream named 'x' (dId you mean 'b'?) [");
+                    "Failed to validate filter expression 'DoubleBoxed not in (DoubleBoxed,x.i...(45 chars)': Failed to find a stream named 'x' (did you mean 'b'?) [");
 
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
@@ -1761,7 +1761,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                     " -> b=SupportBean(cluedo.IntPrimitive=a.IntPrimitive)" +
                     " => c=SupportBean" +
                     "]",
-                    "Failed to valIdate filter expression 'cluedo.IntPrimitive=a.IntPrimitive': Failed to resolve property 'cluedo.IntPrimitive' to a stream or nested property in a stream [");
+                    "Failed to validate filter expression 'cluedo.IntPrimitive=a.IntPrimitive': Failed to resolve property 'cluedo.IntPrimitive' to a stream or nested property in a stream [");
             }
         }
 

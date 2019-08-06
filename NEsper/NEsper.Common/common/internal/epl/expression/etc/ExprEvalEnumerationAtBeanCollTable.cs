@@ -77,7 +77,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
                 .MethodReturn(
                     StaticMethod(
                         typeof(ExprEvalEnumerationAtBeanCollTable),
-                        "convertToTableType",
+                        "ConvertToTableType",
                         @Ref("result"),
                         eventToPublic,
                         refEPS,

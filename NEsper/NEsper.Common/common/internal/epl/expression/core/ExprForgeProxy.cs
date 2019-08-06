@@ -66,7 +66,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                     method.Block.Expression(forge.EvaluateCodegen(requiredType, method, symbols, codegenClassScope))
                         .Expression(
                             ExprDotMethodChain(symbols.GetAddExprEvalCtx(method))
-                                .Add("getAuditProvider")
+                                .Get("AuditProvider")
                                 .Add(
                                     "expression",
                                     Constant(expressionToString),
@@ -81,7 +81,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                             forge.EvaluateCodegen(evaluationType, method, symbols, codegenClassScope))
                         .Expression(
                             ExprDotMethodChain(symbols.GetAddExprEvalCtx(method))
-                                .Add("getAuditProvider")
+                                .Get("AuditProvider")
                                 .Add(
                                     "expression",
                                     Constant(expressionToString),

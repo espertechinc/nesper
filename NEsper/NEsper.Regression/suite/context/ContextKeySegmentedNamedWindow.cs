@@ -81,8 +81,8 @@ namespace com.espertech.esper.regressionlib.suite.context
             TryInvalidCompile(
                 env,
                 path,
-                "context Ctx create window MyInvalIdWindow#unique(p00) as SupportBean_S0",
-                "Segmented context 'Ctx' requires that any of the event types that are listed in the segmented context also appear in any of the filter expressions of the statement, type 'SupportBean_S0' is not one of the types listed [context Ctx create window MyInvalIdWindow#unique(p00) as SupportBean_S0]");
+                "context Ctx create window MyInvalidWindow#unique(P00) as SupportBean_S0",
+                "Segmented context 'Ctx' requires that any of the event types that are listed in the segmented context also appear in any of the filter expressions of the statement, type 'SupportBean_S0' is not one of the types listed [context Ctx create window MyInvalidWindow#unique(P00) as SupportBean_S0]");
         }
 
         internal class ContextKeyedNamedWindowFAF : RegressionExecution
@@ -168,7 +168,7 @@ namespace com.espertech.esper.regressionlib.suite.context
 
                 env.CompileDeploy(
                     "@Name('s0') context SegmentedByString " +
-                    "select TheString, IntPrimitive, (select p00 from MyWindowTwo as s0 where sb.IntPrimitive = s0.Id) as val0 " +
+                    "select TheString, IntPrimitive, (select P00 from MyWindowTwo as s0 where sb.IntPrimitive = s0.Id) as val0 " +
                     "from SupportBean as sb",
                     path);
                 env.AddListener("s0");
@@ -188,7 +188,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                     "create window MyWindowThree#keepall as SupportBean_S0;\n" +
                     "insert into MyWindowThree select * from SupportBean_S0;\n" +
                     "@Name('s0') context SegmentedByString " +
-                    "select TheString, IntPrimitive, (select p00 from MyWindowThree as s0 where sb.IntPrimitive = s0.Id) as val0 " +
+                    "select TheString, IntPrimitive, (select P00 from MyWindowThree as s0 where sb.IntPrimitive = s0.Id) as val0 " +
                     "from SupportBean as sb;\n";
                 env.CompileDeploy(epl).AddListener("s0");
 

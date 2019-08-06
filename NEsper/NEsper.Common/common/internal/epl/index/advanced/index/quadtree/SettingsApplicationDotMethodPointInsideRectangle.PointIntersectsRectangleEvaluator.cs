@@ -145,7 +145,7 @@ namespace com.espertech.esper.common.@internal.epl.index.advanced.index.quadtree
                 block.MethodReturn(
                     CodegenExpressionBuilder.StaticMethod(
                         typeof(BoundingBox),
-                        "containsPoint",
+                        "ContainsPoint",
                         CodegenExpressionBuilder.Ref("x"),
                         CodegenExpressionBuilder.Ref("y"),
                         CodegenExpressionBuilder.Ref("width"),

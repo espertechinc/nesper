@@ -45,7 +45,7 @@ namespace com.espertech.esper.common.@internal.@event.map
             testValuesMap.Put("anInt", 10);
             testValuesMap.Put("myComplexBean", supportBean);
 
-            EventTypeMetadata metadata = new EventTypeMetadata("MyType", null, EventTypeTypeClass.STREAM, EventTypeApplicationType.MAP, NameAccessModifier.PROTECTED, EventTypeBusModifier.NONBUS, false, EventTypeIdPair.Unassigned());
+            EventTypeMetadata metadata = new EventTypeMetadata("MyType", null, EventTypeTypeClass.STREAM, EventTypeApplicationType.MAP, NameAccessModifier.INTERNAL, EventTypeBusModifier.NONBUS, false, EventTypeIdPair.Unassigned());
             eventType = new MapEventType(metadata, testTypesMap, null, null, null, null,
                 SupportEventTypeFactory.GetInstance(container).BEAN_EVENT_TYPE_FACTORY);
             eventBean = new MapEventBean(testValuesMap, eventType);
@@ -85,7 +85,7 @@ namespace com.espertech.esper.common.@internal.@event.map
             testTypesMap.Clear();
             testTypesMap.Put("a", typeof(SupportBean));
             testTypesMap.Put("b", typeof(SupportBean_A));
-            EventTypeMetadata metadata = new EventTypeMetadata("MyType", null, EventTypeTypeClass.STREAM, EventTypeApplicationType.MAP, NameAccessModifier.PROTECTED, EventTypeBusModifier.NONBUS, false, EventTypeIdPair.Unassigned());
+            EventTypeMetadata metadata = new EventTypeMetadata("MyType", null, EventTypeTypeClass.STREAM, EventTypeApplicationType.MAP, NameAccessModifier.INTERNAL, EventTypeBusModifier.NONBUS, false, EventTypeIdPair.Unassigned());
             EventType eventType = new MapEventType(metadata, testTypesMap, null, null, null, null,
                 SupportEventTypeFactory.GetInstance(container).BEAN_EVENT_TYPE_FACTORY);
 

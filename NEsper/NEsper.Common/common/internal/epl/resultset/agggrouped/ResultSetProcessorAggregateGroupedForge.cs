@@ -106,28 +106,28 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
         {
             instance.Methods.AddMethod(
                 typeof(SelectExprProcessor),
-                "getSelectExprProcessor",
+                "GetSelectExprProcessor",
                 Collections.GetEmptyList<CodegenNamedParam>(),
                 GetType(),
                 classScope,
                 methodNode => methodNode.Block.MethodReturn(REF_SELECTEXPRPROCESSOR));
             instance.Methods.AddMethod(
                 typeof(AggregationService),
-                "getAggregationService",
+                "GetAggregationService",
                 Collections.GetEmptyList<CodegenNamedParam>(),
                 GetType(),
                 classScope,
                 methodNode => methodNode.Block.MethodReturn(REF_AGGREGATIONSVC));
             instance.Methods.AddMethod(
                 typeof(AgentInstanceContext),
-                "getAgentInstanceContext",
+                "GetAgentInstanceContext",
                 Collections.GetEmptyList<CodegenNamedParam>(),
                 GetType(),
                 classScope,
                 methodNode => methodNode.Block.MethodReturn(REF_AGENTINSTANCECONTEXT));
             instance.Methods.AddMethod(
                 typeof(bool),
-                "hasHavingClause",
+                "HasHavingClause",
                 Collections.GetEmptyList<CodegenNamedParam>(),
                 GetType(),
                 classScope,

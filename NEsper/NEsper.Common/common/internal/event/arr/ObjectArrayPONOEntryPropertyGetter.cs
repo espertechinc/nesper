@@ -21,15 +21,15 @@ using static com.espertech.esper.common.@internal.bytecodemodel.model.expression
 namespace com.espertech.esper.common.@internal.@event.arr
 {
     /// <summary>
-    ///     A getter that works on POJO events residing within a Map as an event property.
+    ///     A getter that works on PONO events residing within a Map as an event property.
     /// </summary>
-    public class ObjectArrayPOJOEntryPropertyGetter : BaseNativePropertyGetter,
+    public class ObjectArrayPONOEntryPropertyGetter : BaseNativePropertyGetter,
         ObjectArrayEventPropertyGetter
     {
         private readonly BeanEventPropertyGetter entryGetter;
         private readonly int propertyIndex;
 
-        public ObjectArrayPOJOEntryPropertyGetter(
+        public ObjectArrayPONOEntryPropertyGetter(
             int propertyIndex,
             BeanEventPropertyGetter entryGetter,
             EventBeanTypedEventFactory eventBeanTypedEventFactory,

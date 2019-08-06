@@ -273,7 +273,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
             string patternText,
             string expectedIfDifferent)
         {
-            var hook = "@Hook(type=INTERNAL_PATTERNCOMPILE,hook='" + typeof(SupportPatternCompileHook).Name + "')";
+            var hook = "@Hook(HookType=INTERNAL_PATTERNCOMPILE,Hook='" + typeof(SupportPatternCompileHook).FullName + "')";
             epl = hook + epl;
             env.Compile(epl);
 

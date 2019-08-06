@@ -119,19 +119,19 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "pkey0,pkey1,c0".SplitCsv();
+                var fields = "pKey0,pkey1,c0".SplitCsv();
                 var path = new RegressionPath();
 
                 var eplCreateTable =
-                    "@Name('S0') create table MyTable(c0 long, pkey1 int primary key, pkey0 string primary key)";
+                    "@Name('S0') create table MyTable(c0 long, pkey1 int primary key, pKey0 string primary key)";
                 env.CompileDeploy(eplCreateTable, path);
 
                 var eplIntoTable =
-                    "@Name('Insert-Into-Table') insert into MyTable select IntPrimitive as pkey1, LongPrimitive as c0, TheString as pkey0 from SupportBean";
+                    "@Name('Insert-Into-Table') insert into MyTable select IntPrimitive as pkey1, LongPrimitive as c0, TheString as pKey0 from SupportBean";
                 env.CompileDeploy(eplIntoTable, path);
 
                 var eplDeleteTable =
-                    "@Name('Delete-Table') on SupportBean_S0 delete from MyTable where pkey1 = Id and pkey0 = p00";
+                    "@Name('Delete-Table') on SupportBean_S0 delete from MyTable where pkey1 = Id and pKey0 = P00";
                 env.CompileDeploy(eplDeleteTable, path);
 
                 env.Milestone(1);
@@ -398,12 +398,12 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 env.CompileDeploy("create window MyWindow#unique(TheString) as SupportBean", path);
                 env.CompileDeploy("insert into MyWindow select * from SupportBean", path);
                 env.CompileDeploy(
-                    "@Name('create') create table MyTableIIF(pkey0 string primary key, pkey1 int primary key)",
+                    "@Name('create') create table MyTableIIF(pKey0 string primary key, pkey1 int primary key)",
                     path);
                 env.CompileDeploy(
-                    "on SupportBean_S1 insert into MyTableIIF select TheString as pkey0, IntPrimitive as pkey1 from MyWindow",
+                    "on SupportBean_S1 insert into MyTableIIF select TheString as pKey0, IntPrimitive as pkey1 from MyWindow",
                     path);
-                var fields = "pkey0,pkey1".SplitCsv();
+                var fields = "pKey0,pkey1".SplitCsv();
 
                 env.SendEventBean(new SupportBean("E1", 10));
 
@@ -488,10 +488,10 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                           "pkey string primary key," +
                           "thesum sum(int));\n";
                 epl += "insert into MyTableIIK select TheString as pkey from SupportBean;\n";
-                epl += "into table MyTableIIK select sum(Id) as thesum from SupportBean_S0 group by p00;\n";
-                epl += "on SupportBean_S1 insert into MyTableIIK select p10 as pkey;\n";
+                epl += "into table MyTableIIK select sum(Id) as thesum from SupportBean_S0 group by P00;\n";
+                epl += "on SupportBean_S1 insert into MyTableIIK select P10 as pkey;\n";
                 epl +=
-                    "on SupportBean_S2 merge MyTableIIK where p20 = pkey when not matched then insert into MyTableIIK select p20 as pkey;\n";
+                    "on SupportBean_S2 merge MyTableIIK where P20 = pkey when not matched then insert into MyTableIIK select P20 as pkey;\n";
                 env.CompileDeploy(epl);
 
                 env.SendEventBean(new SupportBean("E1", 0));

@@ -325,7 +325,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupbylocal
                             typeof(AggregationRow),
                             ExprDotMethod(
                                 ArrayAtIndex(REF_AGGREGATORSPERLEVELANDGROUP, Constant(0)),
-                                "get",
+                                "Get",
                                 AggregationServiceCodegenNames.REF_GROUPKEY)))
                     .IfCondition(EqualsNull(REF_CURRENTROW))
                     .AssignRef(REF_CURRENTROW, NewInstance(classNames.GetRowPerLevel(indexDefault)));
@@ -469,7 +469,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupbylocal
                             typeof(AggregationRow),
                             ExprDotMethod(
                                 ArrayAtIndex(REF_AGGREGATORSPERLEVELANDGROUP, Constant(levelNum)),
-                                "get",
+                                "Get",
                                 Ref(groupKeyName))))
                     .IfCondition(EqualsNull(Ref(rowName)))
                     .AssignRef(rowName, NewInstance(classNames.GetRowPerLevel(levelNum)))
@@ -595,7 +595,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupbylocal
                                 typeof(AggregationRow),
                                 ExprDotMethod(
                                     ArrayAtIndex(REF_AGGREGATORSPERLEVELANDGROUP, Constant(col.LevelNum)),
-                                    "get",
+                                    "Get",
                                     Ref("groupByKey"))))
                         .BlockReturn(
                             ExprDotMethod(

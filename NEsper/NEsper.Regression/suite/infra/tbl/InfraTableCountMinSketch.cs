@@ -184,7 +184,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 var epl =
                     "create table MyApproxFT(wordapprox countMinSketch({topk:3}));\n" +
                     "into table MyApproxFT select countMinSketchAdd(TheString) as wordapprox from SupportBean;\n" +
-                    "@Name('frequency') select MyApproxFT.wordapprox.countMinSketchFrequency(p00) as freq from SupportBean_S0;\n" +
+                    "@Name('frequency') select MyApproxFT.wordapprox.countMinSketchFrequency(P00) as freq from SupportBean_S0;\n" +
                     "@Name('topk') select MyApproxFT.wordapprox.countMinSketchTopk() as topk from SupportBean_S1;\n";
                 env.CompileDeploy(epl, path).AddListener("frequency").AddListener("topk");
 
@@ -216,7 +216,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
 
                 // test join
                 var eplJoin =
-                    "@Name('join') select wordapprox.countMinSketchFrequency(s2.p20) as c0 from MyApproxFT, SupportBean_S2 s2 unIdirectional";
+                    "@Name('join') select wordapprox.countMinSketchFrequency(s2.P20) as c0 from MyApproxFT, SupportBean_S2 s2 unidirectional";
                 env.CompileDeploy(eplJoin, path).AddListener("join");
 
                 env.Milestone(2);
@@ -227,7 +227,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
 
                 // test subquery
                 var eplSubquery =
-                    "@Name('subq') select (select wordapprox.countMinSketchFrequency(s2.p20) from MyApproxFT) as c0 from SupportBean_S2 s2";
+                    "@Name('subq') select (select wordapprox.countMinSketchFrequency(s2.P20) from MyApproxFT) as c0 from SupportBean_S2 s2";
                 env.CompileDeploy(eplSubquery, path).AddListener("subq");
 
                 env.Milestone(3);
@@ -253,32 +253,32 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                     env,
                     path,
                     "select countMinSketch() from SupportBean",
-                    "Failed to valIdate select-clause expression 'countMinSketch()': Count-min-sketch aggregation function 'countMinSketch' can only be used in create-table statements [");
+                    "Failed to validate select-clause expression 'countMinSketch()': Count-min-sketch aggregation function 'countMinSketch' can only be used in create-table statements [");
                 TryInvalidCompile(
                     env,
                     path,
                     "create table MyTable(cms countMinSketch(5))",
-                    "Failed to valIdate table-column expression 'countMinSketch(5)': Count-min-sketch aggregation function 'countMinSketch'  expects either no parameter or a single json parameter object [");
+                    "Failed to validate table-column expression 'countMinSketch(5)': Count-min-sketch aggregation function 'countMinSketch'  expects either no parameter or a single json parameter object [");
                 TryInvalidCompile(
                     env,
                     path,
                     "create table MyTable(cms countMinSketch({xxx:3}))",
-                    "Failed to valIdate table-column expression 'countMinSketch({xxx=3})': Unrecognized parameter 'xxx' [");
+                    "Failed to validate table-column expression 'countMinSketch({xxx=3})': Unrecognized parameter 'xxx' [");
                 TryInvalidCompile(
                     env,
                     path,
                     "create table MyTable(cms countMinSketch({epsOfTotalCount:'a'}))",
-                    "Failed to valIdate table-column expression 'countMinSketch({epsOfTotalCount=a})': Property 'epsOfTotalCount' expects an System.Double but receives a value of type System.String [");
+                    "Failed to validate table-column expression 'countMinSketch({epsOfTotalCount=a})': Property 'epsOfTotalCount' expects an System.Double but receives a value of type System.String [");
                 TryInvalidCompile(
                     env,
                     path,
                     "create table MyTable(cms countMinSketch({agent:'a'}))",
-                    "Failed to valIdate table-column expression 'countMinSketch({agent=a})': Failed to instantiate agent provIder: Could not load class by name 'a', please check imports [");
+                    "Failed to validate table-column expression 'countMinSketch({agent=a})': Failed to instantiate agent provIder: Could not load class by name 'a', please check imports [");
                 TryInvalidCompile(
                     env,
                     path,
                     "create table MyTable(cms countMinSketch({agent:'System.String'}))",
-                    "Failed to valIdate table-column expression 'countMinSketch({agent=System.String})': Failed to instantiate agent provIder: Class 'System.String' does not implement interface 'com.espertech.esper.common.client.util.CountMinSketchAgentForge' [");
+                    "Failed to validate table-column expression 'countMinSketch({agent=System.String})': Failed to instantiate agent provIder: Class 'System.String' does not implement interface 'com.espertech.esper.common.client.util.CountMinSketchAgentForge' [");
 
                 // invalid "countMinSketchAdd" declarations
                 //
@@ -286,12 +286,12 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                     env,
                     path,
                     "select countMinSketchAdd(TheString) from SupportBean",
-                    "Failed to valIdate select-clause expression 'countMinSketchAdd(TheString)': Count-min-sketch aggregation function 'countMinSketchAdd' can only be used with into-table");
+                    "Failed to validate select-clause expression 'countMinSketchAdd(TheString)': Count-min-sketch aggregation function 'countMinSketchAdd' can only be used with into-table");
                 TryInvalidCompile(
                     env,
                     path,
                     "into table MyCMS select countMinSketchAdd() as wordcms from SupportBean",
-                    "Failed to valIdate select-clause expression 'countMinSketchAdd()': Count-min-sketch aggregation function 'countMinSketchAdd' requires a single parameter expression");
+                    "Failed to validate select-clause expression 'countMinSketchAdd()': Count-min-sketch aggregation function 'countMinSketchAdd' requires a single parameter expression");
                 TryInvalidCompile(
                     env,
                     path,
@@ -301,7 +301,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                     env,
                     path,
                     "into table MyCMS select countMinSketchAdd(distinct 'abc') as wordcms from SupportByteArrEventStringId",
-                    "Failed to valIdate select-clause expression 'countMinSketchAdd(distinct \"abc\")': Count-min-sketch aggregation function 'countMinSketchAdd' is not supported with distinct [");
+                    "Failed to validate select-clause expression 'countMinSketchAdd(distinct \"abc\")': Count-min-sketch aggregation function 'countMinSketchAdd' is not supported with distinct [");
 
                 // invalid "countMinSketchFrequency" declarations
                 //
@@ -309,12 +309,12 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                     env,
                     path,
                     "into table MyCMS select countMinSketchFrequency(TheString) as wordcms from SupportBean",
-                    "Failed to valIdate select-clause expression 'countMinSketchFrequency(TheString)': Count-min-sketch aggregation function 'countMinSketchFrequency' requires the use of a table-access expression [");
+                    "Failed to validate select-clause expression 'countMinSketchFrequency(TheString)': Count-min-sketch aggregation function 'countMinSketchFrequency' requires the use of a table-access expression [");
                 TryInvalidCompile(
                     env,
                     path,
                     "select countMinSketchFrequency() from SupportBean",
-                    "Failed to valIdate select-clause expression 'countMinSketchFrequency()': Count-min-sketch aggregation function 'countMinSketchFrequency' requires the use of a table-access expression");
+                    "Failed to validate select-clause expression 'countMinSketchFrequency()': Count-min-sketch aggregation function 'countMinSketchFrequency' requires the use of a table-access expression");
 
                 // invalid "countMinSketchTopk" declarations
                 //
@@ -322,12 +322,12 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                     env,
                     path,
                     "select countMinSketchTopk() from SupportBean",
-                    "Failed to valIdate select-clause expression 'countMinSketchTopk()': Count-min-sketch aggregation function 'countMinSketchTopk' requires the use of a table-access expression");
+                    "Failed to validate select-clause expression 'countMinSketchTopk()': Count-min-sketch aggregation function 'countMinSketchTopk' requires the use of a table-access expression");
                 TryInvalidCompile(
                     env,
                     path,
                     "select MyCMS.wordcms.countMinSketchTopk(TheString) from SupportBean",
-                    "Failed to valIdate select-clause expression 'MyCMS.wordcms.countMinSketchTopk(th...(43 chars)': Count-min-sketch aggregation function 'countMinSketchTopk' requires a no parameter expressions [");
+                    "Failed to validate select-clause expression 'MyCMS.wordcms.countMinSketchTopk(th...(43 chars)': Count-min-sketch aggregation function 'countMinSketchTopk' requires a no parameter expressions [");
 
                 env.UndeployAll();
             }

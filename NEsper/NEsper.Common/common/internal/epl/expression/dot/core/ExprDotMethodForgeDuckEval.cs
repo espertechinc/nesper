@@ -95,7 +95,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
                     "method",
                     StaticMethod(
                         typeof(ExprDotMethodForgeDuckEval),
-                        "dotMethodDuckGetMethod",
+                        "DotMethodDuckGetMethod",
                         ExprDotName(Ref("target"), "Class"),
                         mCache,
                         Constant(forge.MethodName),
@@ -116,7 +116,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
             block.MethodReturn(
                 StaticMethod(
                     typeof(ExprDotMethodForgeDuckEval),
-                    "dotMethodDuckInvokeMethod",
+                    "DotMethodDuckInvokeMethod",
                     Ref("method"),
                     Ref("target"),
                     Ref("args"),

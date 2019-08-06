@@ -49,7 +49,7 @@ namespace com.espertech.esper.common.@internal.epl.variable.core
         {
             return StaticMethod(
                 typeof(VariableDeployTimeResolver),
-                "resolveVariable",
+                "ResolveVariable",
                 Constant(variable.VariableName),
                 Constant(variable.VariableVisibility),
                 Constant(variable.VariableModuleName),

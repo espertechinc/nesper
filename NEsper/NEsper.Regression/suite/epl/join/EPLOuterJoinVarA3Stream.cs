@@ -493,12 +493,12 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "s0.Id, s0.p00, s0.p01, s1.Id, s1.p10, s1.p11, s2.Id, s2.p20, s2.p21".SplitCsv();
+                var fields = "s0.Id, s0.P00, s0.P01, s1.Id, s1.P10, s1.P11, s2.Id, s2.P20, s2.P21".SplitCsv();
 
                 var epl = "@Name('s0') select * from " +
                           "SupportBean_S0#length(1000) as s0 " +
-                          " left outer join SupportBean_S1#length(1000) as s1 on s0.p00 = s1.p10 and s0.p01 = s1.p11" +
-                          " left outer join SupportBean_S2#length(1000) as s2 on s0.p00 = s2.p20 and s0.p01 = s2.p21";
+                          " left outer join SupportBean_S1#length(1000) as s1 on s0.P00 = s1.P10 and s0.P01 = s1.P11" +
+                          " left outer join SupportBean_S2#length(1000) as s2 on s0.P00 = s2.P20 and s0.P01 = s2.P21";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
                 env.SendEventBean(new SupportBean_S1(10, "A_1", "B_1"));
@@ -557,13 +557,13 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                     FilterStream.Create("SupportBean_S0", "s0").AddView("keepall"),
                     FilterStream.Create("SupportBean_S1", "s1").AddView("keepall"),
                     FilterStream.Create("SupportBean_S2", "s2").AddView("keepall"));
-                fromClause.Add(OuterJoinQualifier.Create("s0.p00", OuterJoinType.LEFT, "s1.p10"));
-                fromClause.Add(OuterJoinQualifier.Create("s0.p00", OuterJoinType.LEFT, "s2.p20"));
+                fromClause.Add(OuterJoinQualifier.Create("s0.P00", OuterJoinType.LEFT, "s1.P10"));
+                fromClause.Add(OuterJoinQualifier.Create("s0.P00", OuterJoinType.LEFT, "s2.P20"));
                 model.FromClause = fromClause;
                 model = env.CopyMayFail(model);
 
                 Assert.AreEqual(
-                    "select * from SupportBean_S0#keepall as s0 left outer join SupportBean_S1#keepall as s1 on s0.p00 = s1.p10 left outer join SupportBean_S2#keepall as s2 on s0.p00 = s2.p20",
+                    "select * from SupportBean_S0#keepall as s0 left outer join SupportBean_S1#keepall as s1 on s0.P00 = s1.P10 left outer join SupportBean_S2#keepall as s2 on s0.P00 = s2.P20",
                     model.ToEPL());
 
                 model.Annotations = Collections.SingletonList(AnnotationPart.NameAnnotation("s0"));
@@ -579,8 +579,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
             {
                 var epl = "@Name('s0') select * from " +
                           "SupportBean_S0#length(1000) as s0 " +
-                          "left outer join SupportBean_S1#length(1000) as s1 on s0.p00 = s1.p10 " +
-                          "left outer join SupportBean_S2#length(1000) as s2 on s0.p00 = s2.p20";
+                          "left outer join SupportBean_S1#length(1000) as s1 on s0.P00 = s1.P10 " +
+                          "left outer join SupportBean_S2#length(1000) as s2 on s0.P00 = s2.P20";
                 env.EplToModelCompileDeploy(epl).AddListener("s0");
 
                 TryAssertion(env);
@@ -597,8 +597,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                 /// </summary>
                 var epl = "@Name('s0') select * from " +
                           "SupportBean_S0#length(1000) as s0 " +
-                          " left outer join SupportBean_S1#length(1000) as s1 on s0.p00 = s1.p10 " +
-                          " left outer join SupportBean_S2#length(1000) as s2 on s0.p00 = s2.p20 ";
+                          " left outer join SupportBean_S1#length(1000) as s1 on s0.P00 = s1.P10 " +
+                          " left outer join SupportBean_S2#length(1000) as s2 on s0.P00 = s2.P20 ";
 
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
@@ -617,8 +617,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                 var epl = "@Name('s0') select * from " +
                           "SupportBean_S2#length(1000) as s2 " +
                           " right outer join " +
-                          "SupportBean_S0#length(1000) as s0 on s0.p00 = s2.p20 " +
-                          " left outer join SupportBean_S1#length(1000) as s1 on s0.p00 = s1.p10 ";
+                          "SupportBean_S0#length(1000) as s0 on s0.P00 = s2.P20 " +
+                          " left outer join SupportBean_S1#length(1000) as s1 on s0.P00 = s1.P10 ";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
                 TryAssertion(env);
@@ -636,8 +636,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                 var epl = "@Name('s0') select * from " +
                           "SupportBean_S1#length(1000) as s1 " +
                           " right outer join " +
-                          "SupportBean_S0#length(1000) as s0 on s0.p00 = s1.p10 " +
-                          " left outer join SupportBean_S2#length(1000) as s2 on s0.p00 = s2.p20 ";
+                          "SupportBean_S0#length(1000) as s0 on s0.P00 = s1.P10 " +
+                          " left outer join SupportBean_S2#length(1000) as s2 on s0.P00 = s2.P20 ";
 
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
@@ -653,8 +653,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
 
                 epl = "@Name('s0') select * from " +
                       "SupportBean_S0#length(1000) as s0 " +
-                      " left outer join SupportBean_S1#length(1000) as s1 on s0.p00 = s1.p10 and s0.p01 = s1.p11" +
-                      " left outer join SupportBean_S2#length(1000) as s2 on s0.p00 = s2.p20 and s1.p11 = s2.p21";
+                      " left outer join SupportBean_S1#length(1000) as s1 on s0.P00 = s1.P10 and s0.P01 = s1.P11" +
+                      " left outer join SupportBean_S2#length(1000) as s2 on s0.P00 = s2.P20 and s1.P11 = s2.P21";
                 TryInvalidCompile(
                     env,
                     epl,
@@ -662,8 +662,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
 
                 epl = "@Name('s0') select * from " +
                       "SupportBean_S0#length(1000) as s0 " +
-                      " left outer join SupportBean_S1#length(1000) as s1 on s0.p00 = s1.p10 and s0.p01 = s1.p11" +
-                      " left outer join SupportBean_S2#length(1000) as s2 on s2.p20 = s0.p00 and s2.p20 = s1.p11";
+                      " left outer join SupportBean_S1#length(1000) as s1 on s0.P00 = s1.P10 and s0.P01 = s1.P11" +
+                      " left outer join SupportBean_S2#length(1000) as s2 on s2.P20 = s0.P00 and s2.P20 = s1.P11";
                 TryInvalidCompile(
                     env,
                     epl,

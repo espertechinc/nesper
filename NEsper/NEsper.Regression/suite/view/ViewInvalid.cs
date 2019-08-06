@@ -102,17 +102,17 @@ namespace com.espertech.esper.regressionlib.suite.view
             exception = GetStatementExceptionView(env, "select s0.intPrimitv from SupportBean as s0");
             SupportMessageAssertUtil.AssertMessage(
                 exception,
-                "Failed to valIdate select-clause expression 's0.intPrimitv': Property named 'intPrimitv' is not valId in stream 's0' (dId you mean 'IntPrimitive'?) [");
+                "Failed to validate select-clause expression 's0.intPrimitv': Property named 'intPrimitv' is not valid in stream 's0' (did you mean 'IntPrimitive'?) [");
 
             exception = GetStatementExceptionView(env, "select INTPRIMITIVE from SupportBean");
             SupportMessageAssertUtil.AssertMessage(
                 exception,
-                "Failed to valIdate select-clause expression 'INTPRIMITIVE': Property named 'INTPRIMITIVE' is not valId in any stream (dId you mean 'IntPrimitive'?) [");
+                "Failed to validate select-clause expression 'INTPRIMITIVE': Property named 'INTPRIMITIVE' is not valid in any stream (did you mean 'IntPrimitive'?) [");
 
             exception = GetStatementExceptionView(env, "select theStrring from SupportBean");
             SupportMessageAssertUtil.AssertMessage(
                 exception,
-                "Failed to valIdate select-clause expression 'theStrring': Property named 'theStrring' is not valId in any stream (dId you mean 'TheString'?) [");
+                "Failed to validate select-clause expression 'theStrring': Property named 'theStrring' is not valid in any stream (did you mean 'TheString'?) [");
 
             // aggregation in where clause known
             exception = GetStatementExceptionView(env, "select * from SupportBean where sum(IntPrimitive) > 10");
@@ -128,7 +128,7 @@ namespace com.espertech.esper.regressionlib.suite.view
             exception = GetStatementExceptionView(env, "select * from " + EVENT_NUM + ".dummy:dummy(10)");
             SupportMessageAssertUtil.AssertMessage(
                 exception,
-                "Failed to valIdate data window declaration: View name 'dummy:dummy' is not a known view name [");
+                "Failed to validate data window declaration: View name 'dummy:dummy' is not a known view name [");
 
             // keyword used
             exception = GetSyntaxExceptionView(env, "select order from SupportBean");
@@ -140,7 +140,7 @@ namespace com.espertech.esper.regressionlib.suite.view
             exception = GetStatementExceptionView(env, "select * from " + EVENT_NUM + "#length('s')");
             SupportMessageAssertUtil.AssertMessage(
                 exception,
-                "Failed to valIdate data window declaration: Error in view 'length', Length view requires a single integer-type parameter [");
+                "Failed to validate data window declaration: Error in view 'length', Length view requires a single integer-type parameter [");
 
             // where-clause relational op has invalid type
             exception = GetStatementExceptionView(
@@ -148,7 +148,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 "select * from " + EVENT_ALLTYPES + "#length(1) where TheString > 5");
             SupportMessageAssertUtil.AssertMessage(
                 exception,
-                "Error valIdating expression: Failed to valIdate filter expression 'TheString>5': Implicit conversion from datatype 'String' to numeric is not allowed [");
+                "Error valIdating expression: Failed to validate filter expression 'TheString>5': Implicit conversion from datatype 'String' to numeric is not allowed [");
 
             // where-clause has aggregation function
             exception = GetStatementExceptionView(
@@ -162,13 +162,13 @@ namespace com.espertech.esper.regressionlib.suite.view
             exception = GetStatementExceptionView(env, "select 2 * 's' from " + EVENT_ALLTYPES + "#length(1)");
             SupportMessageAssertUtil.AssertMessage(
                 exception,
-                "Failed to valIdate select-clause expression '2*\"s\"': Implicit conversion from datatype 'String' to numeric is not allowed [");
+                "Failed to validate select-clause expression '2*\"s\"': Implicit conversion from datatype 'String' to numeric is not allowed [");
 
             // invalid property in select
             exception = GetStatementExceptionView(env, "select a[2].m('a') from " + EVENT_ALLTYPES + "#length(1)");
             SupportMessageAssertUtil.AssertMessage(
                 exception,
-                "Failed to valIdate select-clause expression 'a[2].m('a')': Failed to resolve enumeration method, date-time method or mapped property 'a[2].m('a')': Failed to resolve 'a[2].m' to a property, single-row function, aggregation function, script, stream or class name [");
+                "Failed to validate select-clause expression 'a[2].m('a')': Failed to resolve enumeration method, date-time method or mapped property 'a[2].m('a')': Failed to resolve 'a[2].m' to a property, single-row function, aggregation function, script, stream or class name [");
 
             // select clause uses same "as" name twice
             exception = GetStatementExceptionView(env, "select 2 as m, 2 as m from " + EVENT_ALLTYPES + "#length(1)");
@@ -182,13 +182,13 @@ namespace com.espertech.esper.regressionlib.suite.view
                 "select unknownClass.method() from " + EVENT_NUM + "#length(10)");
             SupportMessageAssertUtil.AssertMessage(
                 exception,
-                "Failed to valIdate select-clause expression 'unknownClass.method()': Failed to resolve 'unknownClass.method' to a property, single-row function, aggregation function, script, stream or class name [");
+                "Failed to validate select-clause expression 'unknownClass.method()': Failed to resolve 'unknownClass.method' to a property, single-row function, aggregation function, script, stream or class name [");
 
             // method not found
             exception = GetStatementExceptionView(env, "select Math.unknownMethod() from " + EVENT_NUM + "#length(10)");
             SupportMessageAssertUtil.AssertMessage(
                 exception,
-                "Failed to valIdate select-clause expression 'Math.unknownMethod()': Failed to resolve 'Math.unknownMethod' to a property, single-row function, aggregation function, script, stream or class name [");
+                "Failed to validate select-clause expression 'Math.unknownMethod()': Failed to resolve 'Math.unknownMethod' to a property, single-row function, aggregation function, script, stream or class name [");
 
             // invalid property in group-by
             exception = GetStatementExceptionView(
@@ -196,7 +196,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 "select IntPrimitive from " + EVENT_ALLTYPES + "#length(1) group by xxx");
             SupportMessageAssertUtil.AssertMessage(
                 exception,
-                "Failed to valIdate group-by-clause expression 'xxx': Property named 'xxx' is not valId in any stream [");
+                "Failed to validate group-by-clause expression 'xxx': Property named 'xxx' is not valid in any stream [");
 
             // group-by not specifying a property
             exception = GetStatementExceptionView(
@@ -218,7 +218,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 "select 2 * 's' from " + EVENT_ALLTYPES + "#length(1) group by IntPrimitive having xxx > 5");
             SupportMessageAssertUtil.AssertMessage(
                 exception,
-                "Failed to valIdate select-clause expression '2*\"s\"': Implicit conversion from datatype 'String' to numeric is not allowed [");
+                "Failed to validate select-clause expression '2*\"s\"': Implicit conversion from datatype 'String' to numeric is not allowed [");
 
             // invalid having clause - not a symbol in the group-by (non-aggregate)
             exception = GetStatementExceptionView(
@@ -241,7 +241,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 "#length(1) on xxxx=yyyy");
             SupportMessageAssertUtil.AssertMessage(
                 exception,
-                "Error valIdating outer-join expression: Failed to valIdate on-clause join expression 'xxxx=yyyy': Property named 'xxxx' is not valId in any stream [");
+                "Error valIdating outer-join expression: Failed to validate on-clause join expression 'xxxx=yyyy': Property named 'xxxx' is not valid in any stream [");
 
             // invalid outer join for 3 streams - not a symbol
             exception = GetStatementExceptionView(
@@ -257,7 +257,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 "#length(1) as s2 on s0.IntPrimitive = s2.yyyy");
             SupportMessageAssertUtil.AssertMessage(
                 exception,
-                "Error valIdating outer-join expression: Failed to valIdate on-clause join expression 's0.IntPrimitive=s2.yyyy': Failed to resolve property 's2.yyyy' to a stream or nested property in a stream [");
+                "Error valIdating outer-join expression: Failed to validate on-clause join expression 's0.IntPrimitive=s2.yyyy': Failed to resolve property 's2.yyyy' to a stream or nested property in a stream [");
 
             // invalid outer join for 3 streams - wrong stream, the properties in on-clause don't refer to streams
             exception = GetStatementExceptionView(
@@ -289,7 +289,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 "#length(1) as s2 on s1.IntPrimitive = s2.IntPrimitive");
             SupportMessageAssertUtil.AssertMessage(
                 exception,
-                "Error valIdating outer-join expression: Outer join ON-clause invalId scope for property 'IntPrimitive', expecting the current or a prior stream scope [");
+                "Error valIdating outer-join expression: Outer join ON-clause invalid scope for property 'IntPrimitive', expecting the current or a prior stream scope [");
 
             // invalid outer join - same properties
             exception = GetStatementExceptionView(
@@ -308,7 +308,7 @@ namespace com.espertech.esper.regressionlib.suite.view
             exception = GetStatementExceptionView(env, "select * from " + EVENT_NUM + "#length(1) as aStr order by X");
             SupportMessageAssertUtil.AssertMessage(
                 exception,
-                "Failed to valIdate order-by-clause expression 'X': Property named 'X' is not valId in any stream [");
+                "Failed to validate order-by-clause expression 'X': Property named 'X' is not valid in any stream [");
 
             // insert into with wildcard - not allowed
             exception = GetStatementExceptionView(
@@ -344,7 +344,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 "select coalesce(BoolBoxed, TheString) from SupportBean#length(1) as aStr");
             SupportMessageAssertUtil.AssertMessage(
                 exception,
-                "Failed to valIdate select-clause expression 'coalesce(BoolBoxed,TheString)': Implicit conversion not allowed: Cannot coerce to Boolean type System.String [");
+                "Failed to validate select-clause expression 'coalesce(BoolBoxed,TheString)': Implicit conversion not allowed: Cannot coerce to Boolean type System.String [");
 
             // mismatched case compare type
             exception = GetStatementExceptionView(
@@ -352,7 +352,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 "select case BoolPrimitive when 1 then true end from SupportBean#length(1) as aStr");
             SupportMessageAssertUtil.AssertMessage(
                 exception,
-                "Failed to valIdate select-clause expression 'case BoolPrimitive when 1 then true end': Implicit conversion not allowed: Cannot coerce to Boolean type System.Integer [");
+                "Failed to validate select-clause expression 'case BoolPrimitive when 1 then true end': Implicit conversion not allowed: Cannot coerce to Boolean type System.Integer [");
 
             // mismatched case result type
             exception = GetStatementExceptionView(
@@ -360,7 +360,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 "select case when 1=2 then 1 when 1=3 then true end from SupportBean#length(1) as aStr");
             SupportMessageAssertUtil.AssertMessage(
                 exception,
-                "Failed to valIdate select-clause expression 'case when 1=2 then 1 when 1=3 then ...(43 chars)': Implicit conversion not allowed: Cannot coerce types System.Integer and System.Boolean [");
+                "Failed to validate select-clause expression 'case when 1=2 then 1 when 1=3 then ...(43 chars)': Implicit conversion not allowed: Cannot coerce types System.Integer and System.Boolean [");
 
             // case expression not returning bool
             exception = GetStatementExceptionView(
@@ -368,13 +368,13 @@ namespace com.espertech.esper.regressionlib.suite.view
                 "select case when 3 then 1 end from SupportBean#length(1) as aStr");
             SupportMessageAssertUtil.AssertMessage(
                 exception,
-                "Failed to valIdate select-clause expression 'case when 3 then 1 end': Case node 'when' expressions must return a boolean value [");
+                "Failed to validate select-clause expression 'case when 3 then 1 end': Case node 'when' expressions must return a boolean value [");
 
             // function not known
             exception = GetStatementExceptionView(env, "select gogglex(1) from " + EVENT_NUM + "#length(1)");
             SupportMessageAssertUtil.AssertMessage(
                 exception,
-                "Failed to valIdate select-clause expression 'gogglex(1)': Unknown single-row function, aggregation function or mapped or indexed property named 'gogglex' could not be resolved [");
+                "Failed to validate select-clause expression 'gogglex(1)': Unknown single-row function, aggregation function or mapped or indexed property named 'gogglex' could not be resolved [");
 
             // insert into column name incorrect
             exception = GetStatementExceptionView(
@@ -383,7 +383,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 "select pox from pattern[Xyz(yodo=4)]");
             SupportMessageAssertUtil.AssertMessage(
                 exception,
-                "Failed to valIdate filter expression 'yodo=4': Property named 'yodo' is not valId in any stream (dId you mean 'dodi'?) [select pox from pattern[Xyz(yodo=4)]]");
+                "Failed to validate filter expression 'yodo=4': Property named 'yodo' is not valid in any stream (did you mean 'dodi'?) [select pox from pattern[Xyz(yodo=4)]]");
             env.UndeployAll();
         }
 

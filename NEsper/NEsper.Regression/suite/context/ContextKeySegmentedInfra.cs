@@ -44,7 +44,7 @@ namespace com.espertech.esper.regressionlib.suite.context
             var path = new RegressionPath();
             env.CompileDeploy(
                 "@Name('context') create context SegmentedByString " +
-                "partition by TheString from SupportBean, p00 from SupportBean_S0",
+                "partition by TheString from SupportBean, P00 from SupportBean_S0",
                 path);
 
             var eplCreate = namedWindow
@@ -96,7 +96,7 @@ namespace com.espertech.esper.regressionlib.suite.context
             var path = new RegressionPath();
             var epl = "@Name('create-ctx') create context SegmentedByCustomer " +
                       "  initiated by SupportBean_S0 s0 " +
-                      "  terminated by SupportBean_S1(p00 = p10);" +
+                      "  terminated by SupportBean_S1(P00 = P10);" +
                       "" +
                       "@Name('create-infra') context SegmentedByCustomer\n" +
                       (namedWindow
@@ -140,7 +140,7 @@ namespace com.espertech.esper.regressionlib.suite.context
             var path = new RegressionPath();
             env.CompileDeploy(
                 "@Name('context') create context SegmentedByString " +
-                "partition by TheString from SupportBean, p00 from SupportBean_S0, p10 from SupportBean_S1",
+                "partition by TheString from SupportBean, P00 from SupportBean_S0, P10 from SupportBean_S1",
                 path);
 
             string[] fieldsNW = {"TheString", "IntPrimitive"};
@@ -296,7 +296,7 @@ namespace com.espertech.esper.regressionlib.suite.context
         {
             var epl = "";
             epl +=
-                "create context SegmentedByString partition by TheString from SupportBean, p00 from SupportBean_S0;\n";
+                "create context SegmentedByString partition by TheString from SupportBean, P00 from SupportBean_S0;\n";
             epl += namedWindow
                 ? "context SegmentedByString create window MyInfra#keepall as SupportBean;\n"
                 : "context SegmentedByString create table MyInfra (TheString string primary key, IntPrimitive int);\n";
@@ -523,7 +523,7 @@ namespace com.espertech.esper.regressionlib.suite.context
             public void Run(RegressionEnvironment env)
             {
                 var epl = "@Name('context') create context SegmentedByString " +
-                          "partition by TheString from SupportBean, p00 from SupportBean_S0, p10 from SupportBean_S1;\n";
+                          "partition by TheString from SupportBean, P00 from SupportBean_S0, P10 from SupportBean_S1;\n";
                 epl +=
                     "@Name('named window') context SegmentedByString create window MyWindow#keepall as SupportBean;\n";
                 epl += "@Name('insert') insert into MyWindow select * from SupportBean;\n";

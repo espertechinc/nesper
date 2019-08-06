@@ -76,7 +76,7 @@ namespace com.espertech.esper.common.@internal.context.controller.hash
                 .MethodReturn(
                     StaticMethod(
                         typeof(ContextControllerHashedGetterCRC32SingleForge),
-                        "stringToCRC32Hash",
+                        "StringToCRC32Hash",
                         @Ref("code"),
                         Constant(granularity)));
 

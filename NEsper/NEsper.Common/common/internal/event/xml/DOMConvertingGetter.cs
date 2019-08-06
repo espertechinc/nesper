@@ -108,7 +108,7 @@ namespace com.espertech.esper.common.@internal.@event.xml
                     GetType(),
                     codegenClassScope));
             var inner = getter.UnderlyingGetCodegen(underlyingExpression, codegenMethodScope, codegenClassScope);
-            return StaticMethod(GetType(), "getParseTextValue", inner, parserMember);
+            return StaticMethod(GetType(), "GetParseTextValue", inner, parserMember);
         }
 
         public CodegenExpression UnderlyingExistsCodegen(

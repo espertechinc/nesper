@@ -7,6 +7,10 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Linq;
+
+using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace com.espertech.esper.compiler.@internal.util
 {
@@ -15,6 +19,20 @@ namespace com.espertech.esper.compiler.@internal.util
         public bool IsStatic { get; set; }
         public string Namespace { get; set; }
 
+        // Converts the import into a using directive syntax expression
+        public UsingDirectiveSyntax UsingDirective {
+            get {
+                UsingDirectiveSyntax usingDirectiveSyntax = SyntaxFactory.UsingDirective(
+                    SyntaxFactory.ParseName(Namespace));
+                if (IsStatic) {
+                    usingDirectiveSyntax = usingDirectiveSyntax.WithStaticKeyword(
+                        SyntaxFactory.Token(SyntaxKind.StaticKeyword));
+                }
+
+                return usingDirectiveSyntax;
+            }
+        }
+
         public ImportDecl(
             bool isStatic,
             string ns)
@@ -22,9 +40,13 @@ namespace com.espertech.esper.compiler.@internal.util
             IsStatic = isStatic;
             Namespace = ns
                 .Replace(".internal.", ".@internal.")
+                .Replace(".internal", ".@internal")
                 .Replace(".base.", ".@base.")
+                .Replace(".base", ".@base")
                 .Replace(".lock.", ".@lock.")
-                .Replace(".event.", ".@event.");
+                .Replace(".lock", ".@lock")
+                .Replace(".event.", ".@event.")
+                .Replace(".event", ".@event");
         }
 
         public ImportDecl()

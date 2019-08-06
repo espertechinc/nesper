@@ -579,7 +579,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 }
 
                 var consumeEpl =
-                    "@Name('s0') select status.*, (select * from MyInfraNWT where TheString = SupportBean_S0.p00) @eventbean as details from SupportBean_S0 as status";
+                    "@Name('s0') select status.*, (select * from MyInfraNWT where TheString = SupportBean_S0.P00) @eventbean as details from SupportBean_S0 as status";
                 if (disableIndexShareConsumer) {
                     consumeEpl = "@Hint('disable_window_subquery_indexshare') " + consumeEpl;
                 }

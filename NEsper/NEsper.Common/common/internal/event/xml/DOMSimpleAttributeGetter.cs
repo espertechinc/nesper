@@ -128,7 +128,7 @@ namespace com.espertech.esper.common.@internal.@event.xml
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            return StaticMethod(GetType(), "getNodePropertyValue", underlyingExpression, Constant(propertyName));
+            return StaticMethod(GetType(), "GetNodePropertyValue", underlyingExpression, Constant(propertyName));
         }
 
         public CodegenExpression UnderlyingExistsCodegen(

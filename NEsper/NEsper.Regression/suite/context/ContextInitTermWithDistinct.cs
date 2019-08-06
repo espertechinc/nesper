@@ -74,7 +74,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
                     "create context MyContext initiated by distinct((select * from MyWindow)) SupportBean as sb terminated after 15 seconds",
-                    "InvalId context distinct-clause expression 'subselect_0': Aggregation, sub-select, previous or prior functions are not supported in this context [create context MyContext initiated by distinct((select * from MyWindow)) SupportBean as sb terminated after 15 seconds]");
+                    "Invalid context distinct-clause expression 'subselect_0': Aggregation, sub-select, previous or prior functions are not supported in this context [create context MyContext initiated by distinct((select * from MyWindow)) SupportBean as sb terminated after 15 seconds]");
 
                 // empty list of expressions
                 SupportMessageAssertUtil.TryInvalidCompile(
@@ -213,11 +213,11 @@ namespace com.espertech.esper.regressionlib.suite.context
                           "terminated SupportBean_S1"; // any S1 ends the contexts
                 env.EplToModelCompileDeploy(epl, path);
 
-                var fields = "id,p00,p01,cnt".SplitCsv();
+                var fields = "id,P00,P01,cnt".SplitCsv();
                 env.CompileDeploy(
                     "@Name('s0') context MyContext " +
-                    "select Id, p00, p01, count(*) as cnt " +
-                    "from SupportBean_S0(Id = context.sb.IntPrimitive and p00 = context.sb.TheString)",
+                    "select Id, P00, P01, count(*) as cnt " +
+                    "from SupportBean_S0(Id = context.sb.IntPrimitive and P00 = context.sb.TheString)",
                     path);
                 env.AddListener("s0");
 

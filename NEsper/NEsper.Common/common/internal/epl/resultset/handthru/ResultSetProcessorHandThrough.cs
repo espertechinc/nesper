@@ -75,15 +75,15 @@ namespace com.espertech.esper.common.@internal.epl.resultset.handthru
         internal static void GetIteratorJoinCodegen(CodegenMethod method)
         {
             method.Block
-                .DeclareVar<UniformPair<EventBean>>(
+                .DeclareVar<UniformPair<EventBean[]>>(
                     "result",
                     ExprDotMethod(
                         Ref("this"), "ProcessJoinResult", REF_JOINSET,
-                        StaticMethod(typeof(Collections), "emptySet"),
+                        StaticMethod(typeof(Collections), "GetEmptySet", new[] { typeof(MultiKey<EventBean>) }),
                         Constant(true)))
                 .MethodReturn(
                     NewInstance<ArrayEventEnumerator>(
-                        Cast(typeof(EventBean[]), ExprDotName(Ref("result"), "First"))));
+                        ExprDotName(Ref("result"), "First")));
         }
     }
 } // end of namespace

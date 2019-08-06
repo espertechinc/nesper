@@ -31,7 +31,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.introspect
 
             // add 2 explicit properties, also supported
             config.AddFieldProperty("x", "fieldNested");
-            config.AddMethodProperty("y", "readLegacyBeanVal");
+            config.AddMethodProperty("y", "ReadLegacyBeanVal");
 
             builder = new PropertyListBuilderPublic(config);
         }
@@ -47,15 +47,15 @@ namespace com.espertech.esper.common.@internal.@event.bean.introspect
             expected.Add(new PropertyStem("fieldMapped", typeof(SupportLegacyBean).GetField("fieldMapped"), EventPropertyType.SIMPLE));
             expected.Add(new PropertyStem("fieldNested", typeof(SupportLegacyBean).GetField("fieldNested"), EventPropertyType.SIMPLE));
 
-            expected.Add(new PropertyStem("readLegacyBeanVal", typeof(SupportLegacyBean).GetMethod("readLegacyBeanVal"), EventPropertyType.SIMPLE));
-            expected.Add(new PropertyStem("readStringArray", typeof(SupportLegacyBean).GetMethod("readStringArray"), EventPropertyType.SIMPLE));
-            expected.Add(new PropertyStem("readStringIndexed", typeof(SupportLegacyBean).GetMethod("readStringIndexed", new Type[] { typeof(int) }), EventPropertyType.INDEXED));
-            expected.Add(new PropertyStem("readMapByKey", typeof(SupportLegacyBean).GetMethod("readMapByKey", new Type[] { typeof(string) }), EventPropertyType.MAPPED));
-            expected.Add(new PropertyStem("readMap", typeof(SupportLegacyBean).GetMethod("readMap"), EventPropertyType.SIMPLE));
-            expected.Add(new PropertyStem("readLegacyNested", typeof(SupportLegacyBean).GetMethod("readLegacyNested"), EventPropertyType.SIMPLE));
+            expected.Add(new PropertyStem("ReadLegacyBeanVal", typeof(SupportLegacyBean).GetMethod("ReadLegacyBeanVal"), EventPropertyType.SIMPLE));
+            expected.Add(new PropertyStem("ReadStringArray", typeof(SupportLegacyBean).GetMethod("ReadStringArray"), EventPropertyType.SIMPLE));
+            expected.Add(new PropertyStem("ReadStringIndexed", typeof(SupportLegacyBean).GetMethod("ReadStringIndexed", new Type[] { typeof(int) }), EventPropertyType.INDEXED));
+            expected.Add(new PropertyStem("ReadMapByKey", typeof(SupportLegacyBean).GetMethod("ReadMapByKey", new Type[] { typeof(string) }), EventPropertyType.MAPPED));
+            expected.Add(new PropertyStem("ReadMap", typeof(SupportLegacyBean).GetMethod("ReadMap"), EventPropertyType.SIMPLE));
+            expected.Add(new PropertyStem("ReadLegacyNested", typeof(SupportLegacyBean).GetMethod("ReadLegacyNested"), EventPropertyType.SIMPLE));
 
             expected.Add(new PropertyStem("x", typeof(SupportLegacyBean).GetField("fieldNested"), EventPropertyType.SIMPLE));
-            expected.Add(new PropertyStem("y", typeof(SupportLegacyBean).GetMethod("readLegacyBeanVal"), EventPropertyType.SIMPLE));
+            expected.Add(new PropertyStem("y", typeof(SupportLegacyBean).GetMethod("ReadLegacyBeanVal"), EventPropertyType.SIMPLE));
             EPAssertionUtil.AssertEqualsAnyOrder(expected.ToArray(), descList.ToArray());
         }
 

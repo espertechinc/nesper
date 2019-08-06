@@ -152,6 +152,16 @@ namespace com.espertech.esper.compat.collections
         }
 
         /// <summary>
+        /// Returns an empty enumerator for type T.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        public static IEnumerator<T> GetEmptyEnumerator<T>()
+        {
+            return EmptyList<T>.Instance.GetEnumerator();
+        }
+
+        /// <summary>
         /// Compares two collections of objects.  The objects must share the same generic
         /// parameter, but can be of different collections.
         /// </summary>

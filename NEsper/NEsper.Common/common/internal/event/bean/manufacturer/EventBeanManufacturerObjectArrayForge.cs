@@ -80,12 +80,12 @@ namespace com.espertech.esper.common.@internal.@event.bean.manufacturer
 
             var manufacturer = NewAnonymousClass(init.Block, typeof(EventBeanManufacturer));
 
-            var makeUndMethod = CodegenMethod.MakeParentNode(typeof(object[]), GetType(), codegenClassScope)
+            var makeUndMethod = CodegenMethod.MakeMethod(typeof(object[]), GetType(), codegenClassScope)
                 .AddParam(typeof(object[]), "properties");
             manufacturer.AddMethod("MakeUnderlying", makeUndMethod);
             MakeUnderlyingCodegen(makeUndMethod, codegenClassScope);
 
-            var makeMethod = CodegenMethod.MakeParentNode(typeof(EventBean), GetType(), codegenClassScope)
+            var makeMethod = CodegenMethod.MakeMethod(typeof(EventBean), GetType(), codegenClassScope)
                 .AddParam(typeof(object[]), "properties");
             manufacturer.AddMethod("Make", makeMethod);
             makeMethod.Block

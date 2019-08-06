@@ -74,7 +74,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             {
                 var path = new RegressionPath();
                 env.CompileDeploy(
-                    "@Name('create') create table MyTableEUIV as (pkey0 string primary key, pkey1 int primary key, thecnt count(*))",
+                    "@Name('create') create table MyTableEUIV as (pKey0 string primary key, pkey1 int primary key, thecnt count(*))",
                     path);
                 env.CompileDeploy(
                     "into table MyTableEUIV select count(*) as thecnt from SupportBean group by TheString, IntPrimitive",
@@ -84,7 +84,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
 
                 // invalid index being created
                 try {
-                    var compiled = env.Compile("create unique index SecIndex on MyTableEUIV(pkey0)", path);
+                    var compiled = env.Compile("create unique index SecIndex on MyTableEUIV(pKey0)", path);
                     env.Runtime.DeploymentService.Deploy(compiled);
                     Assert.Fail();
                 }
@@ -106,7 +106,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                     // assert events are unchanged - no update actually performed
                     EPAssertionUtil.AssertPropsPerRowAnyOrder(
                         env.GetEnumerator("create"),
-                        "pkey0,pkey1".SplitCsv(),
+                        "pKey0,pkey1".SplitCsv(),
                         new[] {new object[] {"E1", 10}, new object[] {"E1", 20}});
                 }
 
@@ -123,7 +123,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                     // assert events are unchanged - no update actually performed
                     EPAssertionUtil.AssertPropsPerRowAnyOrder(
                         env.Statement("create").GetEnumerator(),
-                        "pkey0,pkey1".SplitCsv(),
+                        "pKey0,pkey1".SplitCsv(),
                         new[] {new object[] {"E1", 10}, new object[] {"E1", 20}});
                 }
 
@@ -151,7 +151,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 var path = new RegressionPath();
                 env.CompileDeploy(
                     "@Name('create') create table MyTableLUIV as (" +
-                    "pkey0 string primary key, " +
+                    "pKey0 string primary key, " +
                     "pkey1 int primary key, " +
                     "col0 int, " +
                     "thecnt count(*))",
@@ -196,7 +196,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                     // assert events are unchanged - no update actually performed
                     EPAssertionUtil.AssertPropsPerRowAnyOrder(
                         env.GetEnumerator("create"),
-                        "pkey0,pkey1".SplitCsv(),
+                        "pKey0,pkey1".SplitCsv(),
                         new[] {new object[] {"E1", 10}, new object[] {"E2", 20}});
                 }
 
@@ -212,7 +212,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             {
                 var path = new RegressionPath();
                 env.CompileDeploy(
-                    "create table MyTableFAFU as (pkey0 string primary key, col0 int, col1 int, thecnt count(*))",
+                    "create table MyTableFAFU as (pKey0 string primary key, col0 int, col1 int, thecnt count(*))",
                     path);
                 env.CompileDeploy("create index MyIndex on MyTableFAFU(col0)", path);
 
@@ -222,21 +222,21 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 env.SendEventBean(new SupportBean("E1", 0));
                 env.SendEventBean(new SupportBean("E2", 0));
 
-                env.CompileExecuteFAF("update MyTableFAFU set col0 = 1 where pkey0='E1'", path);
-                env.CompileExecuteFAF("update MyTableFAFU set col0 = 2 where pkey0='E2'", path);
+                env.CompileExecuteFAF("update MyTableFAFU set col0 = 1 where pKey0='E1'", path);
+                env.CompileExecuteFAF("update MyTableFAFU set col0 = 2 where pKey0='E2'", path);
                 AssertFAFOneRowResult(
                     env,
                     path,
-                    "select pkey0 from MyTableFAFU where col0=1",
-                    "pkey0",
+                    "select pKey0 from MyTableFAFU where col0=1",
+                    "pKey0",
                     new object[] {"E1"});
 
-                env.CompileExecuteFAF("update MyTableFAFU set col1 = 100 where pkey0='E1'", path);
+                env.CompileExecuteFAF("update MyTableFAFU set col1 = 100 where pKey0='E1'", path);
                 AssertFAFOneRowResult(
                     env,
                     path,
-                    "select pkey0 from MyTableFAFU where col1=100",
-                    "pkey0",
+                    "select pKey0 from MyTableFAFU where col1=100",
+                    "pKey0",
                     new object[] {"E1"});
 
                 env.UndeployAll();
@@ -247,15 +247,15 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "pkey0,pkey1,c0".SplitCsv();
+                var fields = "pKey0,pkey1,c0".SplitCsv();
                 var path = new RegressionPath();
                 env.CompileDeploy(
-                    "@Name('s1') create table MyTableMultiKey(pkey0 string primary key, pkey1 int primary key, c0 long)",
+                    "@Name('s1') create table MyTableMultiKey(pKey0 string primary key, pkey1 int primary key, c0 long)",
                     path);
                 env.CompileDeploy(
-                    "insert into MyTableMultiKey select TheString as pkey0, IntPrimitive as pkey1, LongPrimitive as c0 from SupportBean",
+                    "insert into MyTableMultiKey select TheString as pKey0, IntPrimitive as pkey1, LongPrimitive as c0 from SupportBean",
                     path);
-                env.CompileDeploy("on SupportBean_S0 update MyTableMultiKey set pkey0 = p01 where pkey0 = p00", path);
+                env.CompileDeploy("on SupportBean_S0 update MyTableMultiKey set pKey0 = P01 where pKey0 = P00", path);
 
                 SendSupportBean(env, "E1", 10, 100);
                 SendSupportBean(env, "E2", 20, 200);
@@ -303,13 +303,13 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "pkey0,c0".SplitCsv();
+                var fields = "pKey0,c0".SplitCsv();
                 var path = new RegressionPath();
-                env.CompileDeploy("@Name('s0') create table MyTableSingleKey(pkey0 string primary key, c0 int)", path);
+                env.CompileDeploy("@Name('s0') create table MyTableSingleKey(pKey0 string primary key, c0 int)", path);
                 env.CompileDeploy(
-                    "insert into MyTableSingleKey select TheString as pkey0, IntPrimitive as c0 from SupportBean",
+                    "insert into MyTableSingleKey select TheString as pKey0, IntPrimitive as c0 from SupportBean",
                     path);
-                env.CompileDeploy("on SupportBean_S0 update MyTableSingleKey set pkey0 = p01 where pkey0 = p00", path);
+                env.CompileDeploy("on SupportBean_S0 update MyTableSingleKey set pKey0 = P01 where pKey0 = P00", path);
 
                 SendSupportBean(env, "E1", 10);
                 SendSupportBean(env, "E2", 20);

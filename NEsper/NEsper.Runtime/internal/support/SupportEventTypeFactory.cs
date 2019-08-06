@@ -72,7 +72,7 @@ namespace com.espertech.esper.runtime.@internal.support
                 name, null,
                 EventTypeTypeClass.STREAM,
                 EventTypeApplicationType.CLASS,
-                NameAccessModifier.PROTECTED,
+                NameAccessModifier.INTERNAL,
                 EventTypeBusModifier.NONBUS,
                 false,
                 EventTypeIdPair.Unassigned());
@@ -121,7 +121,7 @@ namespace com.espertech.esper.runtime.@internal.support
 
         public EventType CreateMapType(IDictionary<string, object> map)
         {
-            var metadata = new EventTypeMetadata(UuidGenerator.Generate(), null, EventTypeTypeClass.STREAM, EventTypeApplicationType.MAP, NameAccessModifier.PROTECTED, EventTypeBusModifier.NONBUS, false, EventTypeIdPair.Unassigned());
+            var metadata = new EventTypeMetadata(UuidGenerator.Generate(), null, EventTypeTypeClass.STREAM, EventTypeApplicationType.MAP, NameAccessModifier.INTERNAL, EventTypeBusModifier.NONBUS, false, EventTypeIdPair.Unassigned());
             return new MapEventType(
                 metadata, map, null, null, null, null,
                 BEAN_EVENT_TYPE_FACTORY);

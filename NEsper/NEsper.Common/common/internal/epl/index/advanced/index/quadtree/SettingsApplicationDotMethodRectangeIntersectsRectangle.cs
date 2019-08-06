@@ -314,7 +314,7 @@ namespace com.espertech.esper.common.@internal.epl.index.advanced.index.quadtree
                 block.MethodReturn(
                     StaticMethod(
                         typeof(BoundingBox),
-                        "intersectsBoxIncludingEnd",
+                        "IntersectsBoxIncludingEnd",
                         Ref("meX"),
                         Ref("meY"),
                         Op(Ref("meX"), "+", Ref("meWidth")),

@@ -98,7 +98,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.table
                 new AggregationTableAccessAggReaderCodegenField(_tableAccessDesc.Reader, classScope, GetType()));
             return StaticMethod(
                 typeof(ExprTableIdentNodeSubpropAccessor),
-                "evaluateTableWithReaderCollectionEvents",
+                "EvaluateTableWithReaderCollectionEvents",
                 Constant(_streamNum),
                 reader,
                 Constant(_tableAccessColumn.Column),
@@ -125,7 +125,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.table
                 new AggregationTableAccessAggReaderCodegenField(_tableAccessDesc.Reader, classScope, GetType()));
             return StaticMethod(
                 typeof(ExprTableIdentNodeSubpropAccessor),
-                "evaluateTableWithReaderCollectionScalar",
+                "EvaluateTableWithReaderCollectionScalar",
                 Constant(_streamNum),
                 reader,
                 Constant(_tableAccessColumn.Column),
@@ -169,7 +169,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.table
                 requiredType,
                 StaticMethod(
                     typeof(ExprTableIdentNodeSubpropAccessor),
-                    "evaluateTableWithReader",
+                    "EvaluateTableWithReader",
                     Constant(_streamNum),
                     reader,
                     Constant(_tableAccessColumn.Column),

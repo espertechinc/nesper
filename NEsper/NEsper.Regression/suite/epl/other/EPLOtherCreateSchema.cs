@@ -48,7 +48,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             execs.Add(new EPLOtherCreateSchemaConfiguredNotRemoved());
             execs.Add(new EPLOtherCreateSchemaAvroSchemaWAnnotation());
             execs.Add(new EPLOtherCreateSchemaColDefPlain());
-            execs.Add(new EPLOtherCreateSchemaModelPOJO());
+            execs.Add(new EPLOtherCreateSchemaModelPONO());
             execs.Add(new EPLOtherCreateSchemaNestableMapArray());
             execs.Add(new EPLOtherCreateSchemaInherit());
             execs.Add(new EPLOtherCreateSchemaCopyFromOrderObjectArray());
@@ -367,12 +367,12 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
 
                 TryInvalidCompile(
                     env,
-                    "create schema InvalId (x dummy[primitive])",
-                    "Type 'dummy' is not a primitive type [create schema InvalId (x dummy[primitive])]");
+                    "create schema Invalid (x dummy[primitive])",
+                    "Type 'dummy' is not a primitive type [create schema Invalid (x dummy[primitive])]");
                 TryInvalidCompile(
                     env,
-                    "create schema InvalId (x int[dummy])",
-                    "InvalId array keyword 'dummy', expected 'primitive'");
+                    "create schema Invalid (x int[dummy])",
+                    "Invalid array keyword 'dummy', expected 'primitive'");
             }
 
             private static void TryAssertionSchemaArrayPrimitiveType(
@@ -663,7 +663,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                     env,
                     "create objectarray schema A();\n" +
                     "create objectarray schema B();\n" +
-                    "create objectarray schema InvalIdOA () inherits A, B;\n",
+                    "create objectarray schema InvalidOA () inherits A, B;\n",
                     "Object-array event types only allow a single supertype");
             }
 
@@ -748,7 +748,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             }
         }
 
-        internal class EPLOtherCreateSchemaModelPOJO : RegressionExecution
+        internal class EPLOtherCreateSchemaModelPONO : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
@@ -773,14 +773,14 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 env.SendEventBean(new SupportBean_ST0("E1", 2), "SupportBeanOne");
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    "id,p00".SplitCsv(),
+                    "id,P00".SplitCsv(),
                     new object[] {"E1", 2});
                 Assert.IsFalse(env.Listener("s1").IsInvoked);
 
                 env.SendEventBean(new SupportBean_ST0("E2", 3), "SupportBeanTwo");
                 EPAssertionUtil.AssertProps(
                     env.Listener("s1").AssertOneGetNewAndReset(),
-                    "id,p00".SplitCsv(),
+                    "id,P00".SplitCsv(),
                     new object[] {"E2", 3});
                 Assert.IsFalse(env.Listener("s0").IsInvoked);
 
@@ -791,11 +791,11 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 // test keyword
                 TryInvalidCompile(
                     env,
-                    "create schema MySchemaInvalId as com.mycompany.event.ABC",
+                    "create schema MySchemaInvalid as com.mycompany.event.ABC",
                     "Could not load class by name 'com.mycompany.event.ABC', please check imports");
                 TryInvalidCompile(
                     env,
-                    "create schema MySchemaInvalId as com.mycompany.events.ABC",
+                    "create schema MySchemaInvalid as com.mycompany.events.ABC",
                     "Could not load class by name 'com.mycompany.events.ABC', please check imports");
 
                 env.UndeployAll();
@@ -871,7 +871,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                     env,
                     path,
                     "insert into MyVariantPredef select * from MyTypeTwo",
-                    "Selected event type is not a valId event type of the variant stream 'MyVariantPredef' [insert into MyVariantPredef select * from MyTypeTwo]");
+                    "Selected event type is not a valid event type of the variant stream 'MyVariantPredef' [insert into MyVariantPredef select * from MyTypeTwo]");
 
                 // try predefined with any
                 var createText =

@@ -46,10 +46,10 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
             {
                 var fields = "val0,val1,val2,val3".SplitCsv();
                 var eplFragment = "@Name('s0') select " +
-                                  "strvals.firstOf() as val0, " +
-                                  "strvals.lastOf() as val1, " +
-                                  "strvals.firstOf(x => x like '%1%') as val2, " +
-                                  "strvals.lastOf(x => x like '%1%') as val3 " +
+                                  "Strvals.firstOf() as val0, " +
+                                  "Strvals.lastOf() as val1, " +
+                                  "Strvals.firstOf(x => x like '%1%') as val2, " +
+                                  "Strvals.lastOf(x => x like '%1%') as val3 " +
                                   " from SupportCollection";
                 env.CompileDeploy(eplFragment).AddListener("s0");
 
@@ -98,8 +98,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
             {
                 var fields = "val0,val1".SplitCsv();
                 var eplFragment = "@Name('s0') select " +
-                                  "contained.firstOf().p00 as val0, " +
-                                  "contained.lastOf().p00 as val1 " +
+                                  "Contained.firstOf().P00 as val0, " +
+                                  "Contained.lastOf().P00 as val1 " +
                                   " from SupportBean_ST0_Container";
                 env.CompileDeploy(eplFragment).AddListener("s0");
 
@@ -141,8 +141,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
             public void Run(RegressionEnvironment env)
             {
                 var eplFragment = "@Name('s0') select " +
-                                  "contained.firstOf() as val0, " +
-                                  "contained.lastOf() as val1 " +
+                                  "Contained.firstOf() as val0, " +
+                                  "Contained.lastOf() as val1 " +
                                   " from SupportBean_ST0_Container";
                 env.CompileDeploy(eplFragment).AddListener("s0");
 
@@ -178,7 +178,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
             public void Run(RegressionEnvironment env)
             {
                 var eplFragment =
-                    "@Name('s0') select contained.firstOf(x => p00 = 9) as val from SupportBean_ST0_Container";
+                    "@Name('s0') select Contained.firstOf(x => P00 = 9) as val from SupportBean_ST0_Container";
                 env.CompileDeploy(eplFragment).AddListener("s0");
 
                 LambdaAssertionUtil.AssertTypes(

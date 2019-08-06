@@ -327,8 +327,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
 
                 TryInvalidCompile(
                     env,
-                    "select UnknownClass.invalIdMethod() " + STREAM_MDB_LEN5,
-                    "Failed to valIdate select-clause expression 'UnknownClass.invalIdMethod()': Failed to resolve 'UnknownClass.invalIdMethod' to a property, single-row function, aggregation function, script, stream or class name ");
+                    "select UnknownClass.invalidMethod() " + STREAM_MDB_LEN5,
+                    "Failed to validate select-clause expression 'UnknownClass.invalidMethod()': Failed to resolve 'UnknownClass.invalidMethod' to a property, single-row function, aggregation function, script, stream or class name ");
             }
         }
 

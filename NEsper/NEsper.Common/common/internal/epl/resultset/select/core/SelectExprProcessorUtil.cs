@@ -45,7 +45,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
             };
 
             var anonymousSelect = NewAnonymousClass(method.Block, typeof(SelectExprProcessor));
-            var processMethod = CodegenMethod.MakeParentNode(
+            var processMethod = CodegenMethod.MakeMethod(
                     typeof(EventBean),
                     typeof(SelectExprProcessorUtil),
                     symbolProvider,

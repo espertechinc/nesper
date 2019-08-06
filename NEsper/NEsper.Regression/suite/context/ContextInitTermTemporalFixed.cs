@@ -112,7 +112,7 @@ namespace com.espertech.esper.regressionlib.suite.context
 
                 env.CompileDeploy("create context MyCtx as start SupportBean_S0 s0 end SupportBean_S1(Id=s0.Id)", path);
                 env.CompileDeploy(
-                    "@Name('s0') context MyCtx select context.Id as c0, context.s0.p00 as c1, TheString as c2, sum(IntPrimitive) as c3 from SupportBean#keepall group by TheString",
+                    "@Name('s0') context MyCtx select context.Id as c0, context.s0.P00 as c1, TheString as c2, sum(IntPrimitive) as c3 from SupportBean#keepall group by TheString",
                     path);
 
                 env.AdvanceTime(1000);
@@ -174,7 +174,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 catch (InvalidContextPartitionSelector ex) {
                     Assert.IsTrue(
                         ex.Message.StartsWith(
-                            "InvalId context partition selector, expected an implementation class of any of [ContextPartitionSelectorAll, ContextPartitionSelectorFiltered, ContextPartitionSelectorById] interfaces but received com."),
+                            "Invalid context partition selector, expected an implementation class of any of [ContextPartitionSelectorAll, ContextPartitionSelectorFiltered, ContextPartitionSelectorById] interfaces but received com."),
                         "message: " + ex.Message);
                 }
 
@@ -190,7 +190,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 env.CompileDeploy(
                     "create context EveryNowAndThen as " +
                     "start SupportBean_S0 as s0 " +
-                    "end SupportBean_S1(p10 = s0.p00) as s1",
+                    "end SupportBean_S1(P10 = s0.P00) as s1",
                     path);
 
                 var fields = "c1,c2,c3".SplitCsv();
@@ -250,12 +250,12 @@ namespace com.espertech.esper.regressionlib.suite.context
                 env.CompileDeploy(
                     "create context EveryNowAndThen as " +
                     "start SupportBean_S0 as s0 " +
-                    "end pattern [SupportBean_S1(p10 = s0.p00)]",
+                    "end pattern [SupportBean_S1(P10 = s0.P00)]",
                     path);
 
                 var fields = "c1,c2".SplitCsv();
                 env.CompileDeploy(
-                    "@Name('s0') context EveryNowAndThen select context.s0.p00 as c1, sum(IntPrimitive) as c2 " +
+                    "@Name('s0') context EveryNowAndThen select context.s0.P00 as c1, sum(IntPrimitive) as c2 " +
                     "from SupportBean#keepall",
                     path);
                 env.AddListener("s0");
@@ -424,7 +424,7 @@ namespace com.espertech.esper.regressionlib.suite.context
 
                 var fields = "c1,c2".SplitCsv();
                 env.CompileDeploy(
-                    "@Name('s0') context EveryNowAndThen select context.s0.p00 as c1, sum(IntPrimitive) as c2 " +
+                    "@Name('s0') context EveryNowAndThen select context.s0.P00 as c1, sum(IntPrimitive) as c2 " +
                     "from SupportBean#keepall output snapshot when terminated",
                     path);
                 env.AddListener("s0");
@@ -493,7 +493,7 @@ namespace com.espertech.esper.regressionlib.suite.context
 
                 var fields = "c1,c2".SplitCsv();
                 env.CompileDeploy(
-                    "@Name('s0') context EveryNowAndThen select context.s0.p00 as c1, sum(IntPrimitive) as c2 " +
+                    "@Name('s0') context EveryNowAndThen select context.s0.P00 as c1, sum(IntPrimitive) as c2 " +
                     "from SupportBean#keepall",
                     path);
                 env.AddListener("s0");
@@ -761,8 +761,8 @@ namespace com.espertech.esper.regressionlib.suite.context
                 var fields = "col1,col2,col3,col4".SplitCsv();
                 env.CompileDeploy(
                     "@Name('s0') context NineToFive " +
-                    "select sb.TheString as col1, sb.IntPrimitive as col2, s0.Id as col3, s0.p00 as col4 " +
-                    "from SupportBean#keepall as sb full outer join SupportBean_S0#keepall as s0 on p00 = TheString",
+                    "select sb.TheString as col1, sb.IntPrimitive as col2, s0.Id as col3, s0.P00 as col4 " +
+                    "from SupportBean#keepall as sb full outer join SupportBean_S0#keepall as s0 on P00 = TheString",
                     path);
                 env.AddListener("s0");
 
@@ -884,7 +884,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 var fields = "theString,col".SplitCsv();
 
                 env.CompileDeploy(
-                    "@Name('s0') context NineToFive select TheString, (select p00 from SupportBean_S0#lastevent) as col from SupportBean",
+                    "@Name('s0') context NineToFive select TheString, (select P00 from SupportBean_S0#lastevent) as col from SupportBean",
                     path);
                 env.AddListener("s0");
                 Assert.AreEqual(0, SupportFilterHelper.GetFilterCountApprox(env)); // from the context
@@ -975,7 +975,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 var fields = "theString,col".SplitCsv();
                 env.CompileDeploy(
                     "@Name('s0') context NineToFive select TheString, " +
-                    "(select Id from SupportBean_S0#keepall as s0 where s0.p00 = sb.TheString) as col from SupportBean as sb",
+                    "(select Id from SupportBean_S0#keepall as s0 where s0.P00 = sb.TheString) as col from SupportBean as sb",
                     path);
                 env.AddListener("s0");
 
@@ -1073,9 +1073,9 @@ namespace com.espertech.esper.regressionlib.suite.context
 
                 env.CompileDeploy(
                     "context NineToFive " +
-                    "on SupportBean_S0 s0 merge MyWindow mw where mw.TheString = s0.p00 " +
+                    "on SupportBean_S0 s0 merge MyWindow mw where mw.TheString = s0.P00 " +
                     "when matched then update set IntPrimitive = s0.Id " +
-                    "when not matched then insert select makeBean(Id, p00)",
+                    "when not matched then insert select makeBean(Id, P00)",
                     path);
 
                 env.SendEventBean(new SupportBean_S0(1, "E1"));

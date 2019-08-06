@@ -178,7 +178,7 @@ namespace com.espertech.esper.regressionrun.suite.epl
             configuration.Common.AddEventTypeAvro("AvroTwo", new ConfigurationCommonEventTypeAvro(avroOneAndTwoSchema));
 
             ConfigurationCommonEventTypeBean legacySupportBeanString = new ConfigurationCommonEventTypeBean();
-            legacySupportBeanString.FactoryMethod = "getInstance";
+            legacySupportBeanString.FactoryMethod = "GetInstance";
             configuration.Common.AddEventType("SupportBeanString", typeof(SupportBeanString), legacySupportBeanString);
 
             ConfigurationCommonEventTypeBean legacySupportSensorEvent = new ConfigurationCommonEventTypeBean();

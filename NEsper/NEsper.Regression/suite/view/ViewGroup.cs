@@ -171,25 +171,25 @@ namespace com.espertech.esper.regressionlib.suite.view
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
                     epl,
-                    "Failed to valIdate data window declaration: Multiple groupwin-declarations are not supported");
+                    "Failed to validate data window declaration: Multiple groupwin-declarations are not supported");
 
                 epl = "select avg(Price), Symbol from SupportMarketDataBean#length(100)#groupwin(Symbol)";
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
                     epl,
-                    "Failed to valIdate data window declaration: InvalId use of the 'groupwin' view, the view requires one or more child views to group, or consIder using the group-by clause");
+                    "Failed to validate data window declaration: Invalid use of the 'groupwin' view, the view requires one or more child views to group, or consIder using the group-by clause");
 
                 epl = "select * from SupportBean#keepall#groupwin(TheString)#length(2)";
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
                     epl,
-                    "Failed to valIdate data window declaration: The 'groupwin' declaration must occur in the first position");
+                    "Failed to validate data window declaration: The 'groupwin' declaration must occur in the first position");
 
                 epl = "select * from SupportBean#groupwin(TheString)#length(2)#merge(TheString)#keepall";
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
                     epl,
-                    "Failed to valIdate data window declaration: The 'merge' declaration cannot be used in conjunction with multiple data windows");
+                    "Failed to validate data window declaration: The 'merge' declaration cannot be used in conjunction with multiple data windows");
             }
         }
 

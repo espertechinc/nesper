@@ -67,7 +67,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.eval
 
         // reformat op
         public static readonly DateTimeMethodEnum GET = new DateTimeMethodEnum(
-            "get",
+            "Get",
             DatetimeMethodEnumStatics.REFORMAT_FORGE_FACTORY,
             DatetimeMethodEnumParams.CALFIELD);
 

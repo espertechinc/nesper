@@ -138,11 +138,11 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
                 TryInvalidCompile(
                     env,
                     "select rate() from SupportBean",
-                    "Failed to valIdate select-clause expression 'rate(*)': The rate aggregation function minimally requires a numeric constant or expression as a parameter. [select rate() from SupportBean]");
+                    "Failed to validate select-clause expression 'rate(*)': The rate aggregation function minimally requires a numeric constant or expression as a parameter. [select rate() from SupportBean]");
                 TryInvalidCompile(
                     env,
                     "select rate(true) from SupportBean",
-                    "Failed to valIdate select-clause expression 'rate(true)': The rate aggregation function requires a numeric constant or time period as the first parameter in the constant-value notation [select rate(true) from SupportBean]");
+                    "Failed to validate select-clause expression 'rate(true)': The rate aggregation function requires a numeric constant or time period as the first parameter in the constant-value notation [select rate(true) from SupportBean]");
             }
         }
 
@@ -185,15 +185,15 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
                 TryInvalidCompile(
                     env,
                     "select rate(LongPrimitive) as myrate from SupportBean",
-                    "Failed to valIdate select-clause expression 'rate(LongPrimitive)': The rate aggregation function in the timestamp-property notation requires data windows [select rate(LongPrimitive) as myrate from SupportBean]");
+                    "Failed to validate select-clause expression 'rate(LongPrimitive)': The rate aggregation function in the timestamp-property notation requires data windows [select rate(LongPrimitive) as myrate from SupportBean]");
                 TryInvalidCompile(
                     env,
                     "select rate(current_timestamp) as myrate from SupportBean#time(20)",
-                    "Failed to valIdate select-clause expression 'rate(current_timestamp())': The rate aggregation function does not allow the current runtime timestamp as a parameter [select rate(current_timestamp) as myrate from SupportBean#time(20)]");
+                    "Failed to validate select-clause expression 'rate(current_timestamp())': The rate aggregation function does not allow the current runtime timestamp as a parameter [select rate(current_timestamp) as myrate from SupportBean#time(20)]");
                 TryInvalidCompile(
                     env,
                     "select rate(TheString) as myrate from SupportBean#time(20)",
-                    "Failed to valIdate select-clause expression 'rate(TheString)': The rate aggregation function requires a property or expression returning a non-constant long-type value as the first parameter in the timestamp-property notation [select rate(TheString) as myrate from SupportBean#time(20)]");
+                    "Failed to validate select-clause expression 'rate(TheString)': The rate aggregation function requires a property or expression returning a non-constant long-type value as the first parameter in the timestamp-property notation [select rate(TheString) as myrate from SupportBean#time(20)]");
 
                 env.UndeployAll();
             }

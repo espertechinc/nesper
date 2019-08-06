@@ -53,7 +53,7 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
                     TimePeriod.TimePeriodComputeForge.MakeEvaluator(method, classScope))
                 .SetProperty(Ref("condition"), "TimePeriodCompute", Ref("eval"))
                 .SetProperty(Ref("condition"), "ScheduleCallbackId", Constant(ScheduleCallbackId))
-                .SetProperty(Ref("condition"), "Immediate", Constant(IsImmediate))
+                .SetProperty(Ref("condition"), "IsImmediate", Constant(IsImmediate))
                 .MethodReturn(Ref("condition"));
             return LocalMethod(method);
         }

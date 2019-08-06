@@ -29,10 +29,15 @@ using com.espertech.esper.common.@internal.view.core;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
+using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 using static com.espertech.esper.common.@internal.epl.annotation.AnnotationUtil;
 using static com.espertech.esper.common.@internal.epl.expression.codegen.ExprForgeCodegenNames;
 using static com.espertech.esper.common.@internal.epl.resultset.codegen.ResultSetProcessorCodegenNames;
+
+using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
 namespace com.espertech.esper.common.@internal.context.module
 {
@@ -240,7 +245,7 @@ namespace com.espertech.esper.common.@internal.context.module
             var method = parent.MakeChild(typeof(IDictionary<string, int>), GetType(), classScope);
             method.Block.DeclareVar<IDictionary<string, int>>(
                 "names",
-                NewInstance(typeof(Dictionary<string, int>), Constant(CollectionUtil.CapacityHashMap(named.Count))));
+                NewInstance(typeof(Dictionary<string, int>)));
             var count = 1;
             foreach (var entry in named) {
                 method.Block.ExprDotMethod(Ref("names"), "Put", Constant(entry.Key), Constant(count++));
@@ -262,7 +267,7 @@ namespace com.espertech.esper.common.@internal.context.module
                 method.Block,
                 typeof(InstrumentationCommon));
 
-            var activated = CodegenMethod.MakeParentNode(typeof(bool), GetType(), classScope);
+            var activated = CodegenMethod.MakeMethod(typeof(bool), GetType(), classScope);
             anonymousClass.AddMethod("Activated", activated);
             activated.Block.MethodReturn(ConstantTrue());
 
@@ -286,7 +291,7 @@ namespace com.espertech.esper.common.@internal.context.module
                     num++;
                 }
 
-                var m = CodegenMethod.MakeParentNode(typeof(void), GetType(), classScope)
+                var m = CodegenMethod.MakeMethod(typeof(void), GetType(), classScope)
                     .AddParam(@params);
                 anonymousClass.AddMethod(forwarded.Name, m);
                 m.Block.Apply(InstrumentationCode.Instblock(classScope, forwarded.Name, expressions));
@@ -305,11 +310,11 @@ namespace com.espertech.esper.common.@internal.context.module
 
             var anonymousClass = NewAnonymousClass(method.Block, typeof(AuditProvider));
 
-            var activated = CodegenMethod.MakeParentNode(typeof(bool), GetType(), classScope);
+            var activated = CodegenMethod.MakeMethod(typeof(bool), GetType(), classScope);
             anonymousClass.AddMethod("Activated", activated);
             activated.Block.MethodReturn(ConstantTrue());
 
-            var view = CodegenMethod.MakeParentNode(typeof(void), GetType(), classScope)
+            var view = CodegenMethod.MakeMethod(typeof(void), GetType(), classScope)
                 .AddParam(typeof(EventBean[]), "newData")
                 .AddParam(typeof(EventBean[]), "oldData")
                 .AddParam(typeof(AgentInstanceContext), REF_AGENTINSTANCECONTEXT.Ref)
@@ -318,19 +323,19 @@ namespace com.espertech.esper.common.@internal.context.module
             if (AuditEnum.VIEW.GetAudit(_annotations) != null) {
                 view.Block.StaticMethod(
                     typeof(AuditPath),
-                    "auditView",
+                    "AuditView",
                     Ref("newData"),
                     Ref("oldData"),
                     REF_AGENTINSTANCECONTEXT,
                     Ref("viewFactory"));
             }
 
-            var streamOne = CodegenMethod.MakeParentNode(typeof(void), GetType(), classScope)
+            var streamOne = CodegenMethod.MakeMethod(typeof(void), GetType(), classScope)
                 .AddParam(typeof(EventBean), "@event")
                 .AddParam(typeof(ExprEvaluatorContext), REF_EXPREVALCONTEXT.Ref)
                 .AddParam(typeof(string), "filterText");
             anonymousClass.AddMethod("Stream", streamOne);
-            var streamTwo = CodegenMethod.MakeParentNode(typeof(void), GetType(), classScope)
+            var streamTwo = CodegenMethod.MakeMethod(typeof(void), GetType(), classScope)
                 .AddParam(typeof(EventBean[]), "newData")
                 .AddParam(typeof(EventBean[]), "oldData")
                 .AddParam(typeof(ExprEvaluatorContext), REF_EXPREVALCONTEXT.Ref)
@@ -339,31 +344,31 @@ namespace com.espertech.esper.common.@internal.context.module
             if (AuditEnum.STREAM.GetAudit(_annotations) != null) {
                 streamOne.Block.StaticMethod(
                     typeof(AuditPath),
-                    "auditStream",
+                    "AuditStream",
                     Ref("@event"),
                     REF_EXPREVALCONTEXT,
                     Ref("filterText"));
                 streamTwo.Block.StaticMethod(
                     typeof(AuditPath),
-                    "auditStream",
+                    "AuditStream",
                     Ref("newData"),
                     Ref("oldData"),
                     REF_EXPREVALCONTEXT,
                     Ref("filterText"));
             }
 
-            var scheduleAdd = CodegenMethod.MakeParentNode(typeof(void), GetType(), classScope)
+            var scheduleAdd = CodegenMethod.MakeMethod(typeof(void), GetType(), classScope)
                 .AddParam(typeof(long), "time")
                 .AddParam(typeof(AgentInstanceContext), REF_AGENTINSTANCECONTEXT.Ref)
                 .AddParam(typeof(ScheduleHandle), "scheduleHandle")
                 .AddParam(typeof(ScheduleObjectType), "type")
                 .AddParam(typeof(string), "name");
-            var scheduleRemove = CodegenMethod.MakeParentNode(typeof(void), GetType(), classScope)
+            var scheduleRemove = CodegenMethod.MakeMethod(typeof(void), GetType(), classScope)
                 .AddParam(typeof(AgentInstanceContext), REF_AGENTINSTANCECONTEXT.Ref)
                 .AddParam(typeof(ScheduleHandle), "scheduleHandle")
                 .AddParam(typeof(ScheduleObjectType), "type")
                 .AddParam(typeof(string), "name");
-            var scheduleFire = CodegenMethod.MakeParentNode(typeof(void), GetType(), classScope)
+            var scheduleFire = CodegenMethod.MakeMethod(typeof(void), GetType(), classScope)
                 .AddParam(typeof(AgentInstanceContext), REF_AGENTINSTANCECONTEXT.Ref)
                 .AddParam(typeof(ScheduleObjectType), "type")
                 .AddParam(typeof(string), "name");
@@ -373,7 +378,7 @@ namespace com.espertech.esper.common.@internal.context.module
             if (AuditEnum.SCHEDULE.GetAudit(_annotations) != null) {
                 scheduleAdd.Block.StaticMethod(
                     typeof(AuditPath),
-                    "auditScheduleAdd",
+                    "AuditScheduleAdd",
                     Ref("time"),
                     REF_AGENTINSTANCECONTEXT,
                     Ref("scheduleHandle"),
@@ -381,20 +386,20 @@ namespace com.espertech.esper.common.@internal.context.module
                     Ref("name"));
                 scheduleRemove.Block.StaticMethod(
                     typeof(AuditPath),
-                    "auditScheduleRemove",
+                    "AuditScheduleRemove",
                     REF_AGENTINSTANCECONTEXT,
                     Ref("scheduleHandle"),
                     Ref("type"),
                     Ref("name"));
                 scheduleFire.Block.StaticMethod(
                     typeof(AuditPath),
-                    "auditScheduleFire",
+                    "AuditScheduleFire",
                     REF_AGENTINSTANCECONTEXT,
                     Ref("type"),
                     Ref("name"));
             }
 
-            var property = CodegenMethod.MakeParentNode(typeof(void), GetType(), classScope)
+            var property = CodegenMethod.MakeMethod(typeof(void), GetType(), classScope)
                 .AddParam(typeof(string), "name")
                 .AddParam(typeof(object), "value")
                 .AddParam(
@@ -404,21 +409,21 @@ namespace com.espertech.esper.common.@internal.context.module
             if (AuditEnum.PROPERTY.GetAudit(_annotations) != null) {
                 property.Block.StaticMethod(
                     typeof(AuditPath),
-                    "auditProperty",
+                    "AuditProperty",
                     Ref("name"),
                     Ref("value"),
                     REF_EXPREVALCONTEXT);
             }
 
-            var insert = CodegenMethod.MakeParentNode(typeof(void), GetType(), classScope)
+            var insert = CodegenMethod.MakeMethod(typeof(void), GetType(), classScope)
                 .AddParam(typeof(EventBean), "@event")
                 .AddParam(typeof(ExprEvaluatorContext), REF_EXPREVALCONTEXT.Ref);
             anonymousClass.AddMethod("insert", insert);
             if (AuditEnum.INSERT.GetAudit(_annotations) != null) {
-                insert.Block.StaticMethod(typeof(AuditPath), "auditInsert", Ref("@event"), REF_EXPREVALCONTEXT);
+                insert.Block.StaticMethod(typeof(AuditPath), "AuditInsert", Ref("@event"), REF_EXPREVALCONTEXT);
             }
 
-            var expression = CodegenMethod.MakeParentNode(typeof(void), GetType(), classScope)
+            var expression = CodegenMethod.MakeMethod(typeof(void), GetType(), classScope)
                 .AddParam(typeof(string), "text")
                 .AddParam(typeof(object), "value")
                 .AddParam(
@@ -429,13 +434,13 @@ namespace com.espertech.esper.common.@internal.context.module
                 AuditEnum.EXPRESSION_NESTED.GetAudit(_annotations) != null) {
                 expression.Block.StaticMethod(
                     typeof(AuditPath),
-                    "auditExpression",
+                    "AuditExpression",
                     Ref("text"),
                     Ref("value"),
                     REF_EXPREVALCONTEXT);
             }
 
-            var patternTrue = CodegenMethod.MakeParentNode(typeof(void), GetType(), classScope)
+            var patternTrue = CodegenMethod.MakeMethod(typeof(void), GetType(), classScope)
                 .AddParam(typeof(EvalFactoryNode), "factoryNode")
                 .AddParam(typeof(object), "from")
                 .AddParam(typeof(MatchedEventMapMinimal), "matchEvent")
@@ -443,7 +448,7 @@ namespace com.espertech.esper.common.@internal.context.module
                 .AddParam(
                     typeof(AgentInstanceContext),
                     NAME_AGENTINSTANCECONTEXT);
-            var patternFalse = CodegenMethod.MakeParentNode(typeof(void), GetType(), classScope)
+            var patternFalse = CodegenMethod.MakeMethod(typeof(void), GetType(), classScope)
                 .AddParam(typeof(EvalFactoryNode), "factoryNode")
                 .AddParam(typeof(object), "from")
                 .AddParam(
@@ -454,7 +459,7 @@ namespace com.espertech.esper.common.@internal.context.module
             if (AuditEnum.PATTERN.GetAudit(_annotations) != null) {
                 patternTrue.Block.StaticMethod(
                     typeof(AuditPath),
-                    "auditPatternTrue",
+                    "AuditPatternTrue",
                     Ref("factoryNode"),
                     Ref("from"),
                     Ref("matchEvent"),
@@ -462,13 +467,13 @@ namespace com.espertech.esper.common.@internal.context.module
                     REF_AGENTINSTANCECONTEXT);
                 patternFalse.Block.StaticMethod(
                     typeof(AuditPath),
-                    "auditPatternFalse",
+                    "AuditPatternFalse",
                     Ref("factoryNode"),
                     Ref("from"),
                     REF_AGENTINSTANCECONTEXT);
             }
 
-            var patternInstance = CodegenMethod.MakeParentNode(typeof(void), GetType(), classScope)
+            var patternInstance = CodegenMethod.MakeMethod(typeof(void), GetType(), classScope)
                 .AddParam(typeof(bool), "increase")
                 .AddParam(typeof(EvalFactoryNode), "factoryNode")
                 .AddParam(
@@ -478,13 +483,13 @@ namespace com.espertech.esper.common.@internal.context.module
             if (AuditEnum.PATTERNINSTANCES.GetAudit(_annotations) != null) {
                 patternInstance.Block.StaticMethod(
                     typeof(AuditPath),
-                    "auditPatternInstance",
+                    "AuditPatternInstance",
                     Ref("increase"),
                     Ref("factoryNode"),
                     REF_AGENTINSTANCECONTEXT);
             }
 
-            var exprdef = CodegenMethod.MakeParentNode(typeof(void), GetType(), classScope)
+            var exprdef = CodegenMethod.MakeMethod(typeof(void), GetType(), classScope)
                 .AddParam(typeof(string), "name")
                 .AddParam(typeof(object), "value")
                 .AddParam(
@@ -494,13 +499,13 @@ namespace com.espertech.esper.common.@internal.context.module
             if (AuditEnum.EXPRDEF.GetAudit(_annotations) != null) {
                 exprdef.Block.StaticMethod(
                     typeof(AuditPath),
-                    "auditExprDef",
+                    "AuditExprDef",
                     Ref("name"),
                     Ref("value"),
                     REF_EXPREVALCONTEXT);
             }
 
-            var dataflowTransition = CodegenMethod.MakeParentNode(typeof(void), GetType(), classScope)
+            var dataflowTransition = CodegenMethod.MakeMethod(typeof(void), GetType(), classScope)
                 .AddParam(typeof(string), "name")
                 .AddParam(typeof(string), "instance")
                 .AddParam(typeof(EPDataFlowState), "state")
@@ -512,7 +517,7 @@ namespace com.espertech.esper.common.@internal.context.module
             if (AuditEnum.DATAFLOW_TRANSITION.GetAudit(_annotations) != null) {
                 dataflowTransition.Block.StaticMethod(
                     typeof(AuditPath),
-                    "auditDataflowTransition",
+                    "AuditDataflowTransition",
                     Ref("name"),
                     Ref("instance"),
                     Ref("state"),
@@ -520,7 +525,7 @@ namespace com.espertech.esper.common.@internal.context.module
                     REF_AGENTINSTANCECONTEXT);
             }
 
-            var dataflowSource = CodegenMethod.MakeParentNode(typeof(void), GetType(), classScope)
+            var dataflowSource = CodegenMethod.MakeMethod(typeof(void), GetType(), classScope)
                 .AddParam(typeof(string), "name")
                 .AddParam(typeof(string), "instance")
                 .AddParam(typeof(string), "operatorName")
@@ -532,7 +537,7 @@ namespace com.espertech.esper.common.@internal.context.module
             if (AuditEnum.DATAFLOW_SOURCE.GetAudit(_annotations) != null) {
                 dataflowSource.Block.StaticMethod(
                     typeof(AuditPath),
-                    "auditDataflowSource",
+                    "AuditDataflowSource",
                     Ref("name"),
                     Ref("instance"),
                     Ref("operatorName"),
@@ -540,7 +545,7 @@ namespace com.espertech.esper.common.@internal.context.module
                     REF_AGENTINSTANCECONTEXT);
             }
 
-            var dataflowOp = CodegenMethod.MakeParentNode(typeof(void), GetType(), classScope)
+            var dataflowOp = CodegenMethod.MakeMethod(typeof(void), GetType(), classScope)
                 .AddParam(typeof(string), "name")
                 .AddParam(typeof(string), "instance")
                 .AddParam(typeof(string), "operatorName")
@@ -553,7 +558,7 @@ namespace com.espertech.esper.common.@internal.context.module
             if (AuditEnum.DATAFLOW_OP.GetAudit(_annotations) != null) {
                 dataflowOp.Block.StaticMethod(
                     typeof(AuditPath),
-                    "auditDataflowOp",
+                    "AuditDataflowOp",
                     Ref("name"),
                     Ref("instance"),
                     Ref("operatorName"),
@@ -562,7 +567,7 @@ namespace com.espertech.esper.common.@internal.context.module
                     REF_AGENTINSTANCECONTEXT);
             }
 
-            var contextPartition = CodegenMethod.MakeParentNode(typeof(void), GetType(), classScope)
+            var contextPartition = CodegenMethod.MakeMethod(typeof(void), GetType(), classScope)
                 .AddParam(typeof(bool), "allocate")
                 .AddParam(
                     typeof(AgentInstanceContext),
@@ -571,7 +576,7 @@ namespace com.espertech.esper.common.@internal.context.module
             if (AuditEnum.CONTEXTPARTITION.GetAudit(_annotations) != null) {
                 contextPartition.Block.StaticMethod(
                     typeof(AuditPath),
-                    "auditContextPartition",
+                    "AuditContextPartition",
                     Ref("allocate"),
                     REF_AGENTINSTANCECONTEXT);
             }

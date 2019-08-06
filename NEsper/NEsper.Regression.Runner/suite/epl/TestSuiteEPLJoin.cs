@@ -334,7 +334,7 @@ namespace com.espertech.esper.regressionrun.suite.epl
 
             IDictionary<string, object> typeInfo = new Dictionary<string, object>();
             typeInfo.Put("id", typeof(string));
-            typeInfo.Put("p00", typeof(int));
+            typeInfo.Put("P00", typeof(int));
             configuration.Common.AddEventType("MapS0", typeInfo);
             configuration.Common.AddEventType("MapS1", typeInfo);
 
@@ -347,11 +347,11 @@ namespace com.espertech.esper.regressionrun.suite.epl
 
             IDictionary<string, object> typeInfoS0S0 = new Dictionary<string, object>();
             typeInfoS0S0.Put("id", typeof(string));
-            typeInfoS0S0.Put("p00", typeof(int));
+            typeInfoS0S0.Put("P00", typeof(int));
             configuration.Common.AddEventType("S0_" + EventUnderlyingType.MAP.GetName(), typeInfoS0S0);
             configuration.Common.AddEventType("S1_" + EventUnderlyingType.MAP.GetName(), typeInfoS0S0);
 
-            string[] names = "id,p00".SplitCsv();
+            string[] names = "id,P00".SplitCsv();
             object[] types = new object[] { typeof(string), typeof(int) };
             configuration.Common.AddEventType("S0_" + EventUnderlyingType.OBJECTARRAY.GetName(), names, types);
             configuration.Common.AddEventType("S1_" + EventUnderlyingType.OBJECTARRAY.GetName(), names, types);
@@ -359,7 +359,7 @@ namespace com.espertech.esper.regressionrun.suite.epl
             var schema = SchemaBuilder.Record("name",
                     TypeBuilder.Field("id", TypeBuilder.StringType(
                             TypeBuilder.Property(AvroConstant.PROP_STRING_KEY, AvroConstant.PROP_STRING_VALUE))),
-                    TypeBuilder.RequiredInt("p00"));
+                    TypeBuilder.RequiredInt("P00"));
             configuration.Common.AddEventTypeAvro("S0_" + EventUnderlyingType.AVRO.GetName(), new ConfigurationCommonEventTypeAvro().SetAvroSchema(schema));
             configuration.Common.AddEventTypeAvro("S1_" + EventUnderlyingType.AVRO.GetName(), new ConfigurationCommonEventTypeAvro().SetAvroSchema(schema));
 

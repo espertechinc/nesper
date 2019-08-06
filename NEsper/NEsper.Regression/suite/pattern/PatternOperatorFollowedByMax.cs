@@ -111,11 +111,11 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
                     "select * from pattern[a=SupportBean_A -[a.IntPrimitive]> SupportBean_B]",
-                    "InvalId maximum expression in followed-by, event properties are not allowed within the expression [select * from pattern[a=SupportBean_A -[a.IntPrimitive]> SupportBean_B]]");
+                    "Invalid maximum expression in followed-by, event properties are not allowed within the expression [select * from pattern[a=SupportBean_A -[a.IntPrimitive]> SupportBean_B]]");
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
                     "select * from pattern[a=SupportBean_A -[false]> SupportBean_B]",
-                    "InvalId maximum expression in followed-by, the expression must return an integer value [select * from pattern[a=SupportBean_A -[false]> SupportBean_B]]");
+                    "Invalid maximum expression in followed-by, the expression must return an integer value [select * from pattern[a=SupportBean_A -[false]> SupportBean_B]]");
             }
         }
 

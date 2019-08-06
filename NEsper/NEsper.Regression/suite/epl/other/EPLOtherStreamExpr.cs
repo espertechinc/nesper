@@ -328,14 +328,14 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 TryInvalidCompile(
                     env,
                     "select s0.abc() from SupportBean as s0",
-                    "Failed to valIdate select-clause expression 's0.abc()': Failed to solve 'abc' to either an date-time or enumeration method, an event property or a method on the event underlying object: Failed to resolve method 'abc': Could not find enumeration method, date-time method or instance method named 'abc' in class '" +
+                    "Failed to validate select-clause expression 's0.abc()': Failed to solve 'abc' to either an date-time or enumeration method, an event property or a method on the event underlying object: Failed to resolve method 'abc': Could not find enumeration method, date-time method or instance method named 'abc' in class '" +
                     typeof(SupportBean).Name +
                     "' taking no parameters [");
 
                 TryInvalidCompile(
                     env,
                     "select s.TheString from pattern [every [2] s=SupportBean] ee",
-                    "Failed to valIdate select-clause expression 's.TheString': Failed to resolve property 's.TheString' (property 's' is an indexed property and requires an index or enumeration method to access values)");
+                    "Failed to validate select-clause expression 's.TheString': Failed to resolve property 's.TheString' (property 's' is an indexed property and requires an index or enumeration method to access values)");
             }
         }
 

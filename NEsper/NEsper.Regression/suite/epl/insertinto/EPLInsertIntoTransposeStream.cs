@@ -37,8 +37,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
             execs.Add(new EPLInsertIntoTransposeFunctionToStream());
             execs.Add(new EPLInsertIntoTransposeSingleColumnInsert());
             execs.Add(new EPLInsertIntoTransposeEventJoinMap());
-            execs.Add(new EPLInsertIntoTransposeEventJoinPOJO());
-            execs.Add(new EPLInsertIntoTransposePOJOPropertyStream());
+            execs.Add(new EPLInsertIntoTransposeEventJoinPONO());
+            execs.Add(new EPLInsertIntoTransposePONOPropertyStream());
             execs.Add(new EPLInsertIntoInvalidTranspose());
             return execs;
         }
@@ -263,7 +263,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                 TryInvalidCompile(
                     env,
                     "select transpose(customOne('O', 10), customOne('O', 10)) from SupportBean",
-                    "Failed to valIdate select-clause expression 'transpose(customOne(\"O\",10),customO...(46 chars)': The transpose function requires a single parameter expression [select transpose(customOne('O', 10), customOne('O', 10)) from SupportBean]");
+                    "Failed to validate select-clause expression 'transpose(customOne(\"O\",10),customO...(46 chars)': The transpose function requires a single parameter expression [select transpose(customOne('O', 10), customOne('O', 10)) from SupportBean]");
 
                 // test not a top-level function or used in where-clause (possible but not useful)
                 env.CompileDeploy("select * from SupportBean where transpose(customOne('O', 10)) is not null");
@@ -273,7 +273,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                 TryInvalidCompile(
                     env,
                     "insert into SomeOther select transpose(generateOA('a', 1)) from SupportBean",
-                    "InvalId expression return type '[LSystem.Object;' for transpose function [insert into SomeOther select transpose(generateOA('a', 1)) from SupportBean]");
+                    "Invalid expression return type '[LSystem.Object;' for transpose function [insert into SomeOther select transpose(generateOA('a', 1)) from SupportBean]");
 
                 env.UndeployAll();
             }
@@ -305,7 +305,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
             }
         }
 
-        internal class EPLInsertIntoTransposeEventJoinPOJO : RegressionExecution
+        internal class EPLInsertIntoTransposeEventJoinPONO : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
@@ -328,7 +328,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
             }
         }
 
-        internal class EPLInsertIntoTransposePOJOPropertyStream : RegressionExecution
+        internal class EPLInsertIntoTransposePONOPropertyStream : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
@@ -361,7 +361,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                     env,
                     path,
                     "select inneritem.NestedValue as result from MyStreamComplexMap",
-                    "Failed to valIdate select-clause expression 'inneritem.NestedValue': Failed to resolve property 'inneritem.NestedValue' (property 'inneritem' is a mapped property and requires keyed access) [select inneritem.NestedValue as result from MyStreamComplexMap]");
+                    "Failed to validate select-clause expression 'inneritem.NestedValue': Failed to resolve property 'inneritem.NestedValue' (property 'inneritem' is a mapped property and requires keyed access) [select inneritem.NestedValue as result from MyStreamComplexMap]");
 
                 // test invalid unwrap-properties
                 TryInvalidCompile(

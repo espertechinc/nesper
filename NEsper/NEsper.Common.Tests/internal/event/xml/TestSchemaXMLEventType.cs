@@ -88,8 +88,8 @@ namespace com.espertech.esper.common.@internal.@event.xml
             Assert.AreEqual(true, eventSchemaOne.Get("prop4.attr2"));
             Assert.AreEqual(typeof(bool?), eventSchemaOne.EventType.GetPropertyType("prop4.attr2"));
 
-            Assert.AreEqual("c", eventSchemaOne.Get("Nested3.Nested4[2].id"));
-            Assert.AreEqual(typeof(string), eventSchemaOne.EventType.GetPropertyType("Nested3.Nested4[1].id"));
+            Assert.AreEqual("c", eventSchemaOne.Get("Nested3.Nested4[2].Id"));
+            Assert.AreEqual(typeof(string), eventSchemaOne.EventType.GetPropertyType("Nested3.Nested4[1].Id"));
         }
 
         [Test]
@@ -97,7 +97,7 @@ namespace com.espertech.esper.common.@internal.@event.xml
         {
             try
             {
-                var prop = "Nested3.Nested4.id";
+                var prop = "Nested3.Nested4.Id";
                 eventSchemaOne.EventType.GetGetter(prop);
                 Assert.Fail("Invalid collection access: " + prop + " accepted");
             }

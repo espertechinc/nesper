@@ -270,7 +270,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                     env,
                     path,
                     "create gugu index IndexTwo on MyInfraOne(f2)",
-                    "InvalId keyword 'gugu' in create-index encountered, expected 'unique' [create gugu index IndexTwo on MyInfraOne(f2)]");
+                    "Invalid keyword 'gugu' in create-index encountered, expected 'unique' [create gugu index IndexTwo on MyInfraOne(f2)]");
 
                 TryInvalidCompile(
                     env,

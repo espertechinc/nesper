@@ -45,7 +45,7 @@ namespace com.espertech.esper.common.@internal.epl.pattern.core
             ExprEvaluator expression,
             AgentInstanceContext agentInstanceContext)
         {
-            var eventsPerStream = convertor.Convert(matchEvent);
+            var eventsPerStream = convertor.Invoke(matchEvent);
             return expression.Evaluate(eventsPerStream, true, agentInstanceContext);
         }
 

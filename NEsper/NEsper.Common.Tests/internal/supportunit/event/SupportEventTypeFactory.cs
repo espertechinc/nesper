@@ -54,7 +54,7 @@ namespace com.espertech.esper.common.@internal.supportunit.@event
                 null,
                 EventTypeTypeClass.STREAM,
                 EventTypeApplicationType.CLASS,
-                NameAccessModifier.PROTECTED,
+                NameAccessModifier.INTERNAL,
                 EventTypeBusModifier.NONBUS,
                 false,
                 EventTypeIdPair.Unassigned());
@@ -173,7 +173,7 @@ namespace com.espertech.esper.common.@internal.supportunit.@event
                 UuidGenerator.Generate(), null,
                 EventTypeTypeClass.STREAM,
                 EventTypeApplicationType.MAP,
-                NameAccessModifier.PROTECTED,
+                NameAccessModifier.INTERNAL,
                 EventTypeBusModifier.NONBUS, false,
                 EventTypeIdPair.Unassigned());
             return new MapEventType(metadata, map, null, null, null, null, BEAN_EVENT_TYPE_FACTORY);

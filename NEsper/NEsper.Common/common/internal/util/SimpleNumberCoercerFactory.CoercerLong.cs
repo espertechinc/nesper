@@ -51,7 +51,7 @@ namespace com.espertech.esper.common.@internal.util
                 CodegenExpression param,
                 Type type)
             {
-                return CodegenCoerceNonNull(typeof(long), typeof(long), "longValue", param, type);
+                return CodegenCoerceNonNull(typeof(long), typeof(long), "AsLong", param, type);
             }
 
             public static CodegenExpression CodegenLongMayNullBox(
@@ -63,7 +63,7 @@ namespace com.espertech.esper.common.@internal.util
                 return CodegenCoerceMayNull(
                     typeof(long),
                     typeof(long),
-                    "longValue",
+                    "AsLong",
                     param,
                     type,
                     codegenMethodScope,

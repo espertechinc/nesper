@@ -133,13 +133,13 @@ namespace NEsper.Avro.Getter
                         typeof(IDictionary<string, object>),
                         CodegenExpressionBuilder.ExprDotMethod(
                             CodegenExpressionBuilder.Ref("record"),
-                            "get",
+                            "Get",
                             CodegenExpressionBuilder.Constant(_pos))))
                 .IfRefNullReturnNull("values")
                 .MethodReturn(
                     CodegenExpressionBuilder.ExprDotMethod(
                         CodegenExpressionBuilder.Ref("values"),
-                        "get",
+                        "Get",
                         CodegenExpressionBuilder.Constant(_key)));
         }
 

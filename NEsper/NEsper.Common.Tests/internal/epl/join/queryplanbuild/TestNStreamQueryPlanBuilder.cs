@@ -47,11 +47,11 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanbuild
             };
 
             queryGraph = new QueryGraphForge(5, null, false);
-            queryGraph.AddStrictEquals(0, "p00", Make(0, "p00"), 1, "p10", Make(1, "p10"));
-            queryGraph.AddStrictEquals(0, "p01", Make(0, "p01"), 2, "p20", Make(2, "p20"));
-            queryGraph.AddStrictEquals(4, "p40", Make(4, "p40"), 3, "p30", Make(3, "p30"));
+            queryGraph.AddStrictEquals(0, "P00", Make(0, "P00"), 1, "P10", Make(1, "P10"));
+            queryGraph.AddStrictEquals(0, "P01", Make(0, "P01"), 2, "P20", Make(2, "P20"));
+            queryGraph.AddStrictEquals(4, "P40", Make(4, "P40"), 3, "P30", Make(3, "P30"));
             queryGraph.AddStrictEquals(4, "p41", Make(4, "p41"), 3, "p31", Make(3, "p31"));
-            queryGraph.AddStrictEquals(4, "p42", Make(4, "p42"), 2, "p21", Make(2, "p21"));
+            queryGraph.AddStrictEquals(4, "p42", Make(4, "p42"), 2, "P21", Make(2, "P21"));
 
             dependencyGraph = new DependencyGraph(5, false);
         }
@@ -83,7 +83,7 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanbuild
 
             // Check lookup strategy for first lookup
             IndexedTableLookupPlanHashedOnlyForge lookupStrategySpec = (IndexedTableLookupPlanHashedOnlyForge) tableLookupSpec.LookupStrategySpec;
-            Assert.AreEqual("p01", ((ExprIdentNode) (lookupStrategySpec.HashKeys[0]).KeyExpr).ResolvedPropertyName);
+            Assert.AreEqual("P01", ((ExprIdentNode) (lookupStrategySpec.HashKeys[0]).KeyExpr).ResolvedPropertyName);
             Assert.AreEqual(0, lookupStrategySpec.LookupStream);
             Assert.AreEqual(2, lookupStrategySpec.IndexedStream);
             Assert.IsNotNull(lookupStrategySpec.IndexNum);
@@ -118,8 +118,8 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanbuild
         public void TestComputeNavigableDepth()
         {
             ExprIdentNode fake = supportExprNodeFactory.MakeIdentNode("TheString", "s0");
-            queryGraph.AddStrictEquals(3, "p30", fake, 2, "p20", fake);
-            queryGraph.AddStrictEquals(2, "p30", fake, 1, "p20", fake);
+            queryGraph.AddStrictEquals(3, "P30", fake, 2, "P20", fake);
+            queryGraph.AddStrictEquals(2, "P30", fake, 1, "P20", fake);
 
             int depth = NStreamQueryPlanBuilder.ComputeNavigableDepth(0, new int[] { 1, 2, 3, 4 }, queryGraph);
             Assert.AreEqual(4, depth);

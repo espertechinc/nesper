@@ -73,10 +73,10 @@ namespace com.espertech.esper.common.@internal.metrics.instrumentation
                 methodX.Block
                     .IfCondition(PublicConstValue(InstrumentationConstants.RUNTIME_HELPER_CLASS, "ENABLED"))
                     .Expression(
-                        ExprDotMethodChain(StaticMethod(InstrumentationConstants.RUNTIME_HELPER_CLASS, "get"))
+                        ExprDotMethodChain(StaticMethod(InstrumentationConstants.RUNTIME_HELPER_CLASS, "Get"))
                             .Add("q" + qname, qParams.ToArray()))
                     .Expression(
-                        ExprDotMethodChain(StaticMethod(InstrumentationConstants.RUNTIME_HELPER_CLASS, "get"))
+                        ExprDotMethodChain(StaticMethod(InstrumentationConstants.RUNTIME_HELPER_CLASS, "Get"))
                             .Add("a" + qname, ConstantNull()))
                     .BlockEnd()
                     .MethodReturn(ConstantNull());
@@ -92,11 +92,11 @@ namespace com.espertech.esper.common.@internal.metrics.instrumentation
             method.Block
                 .IfCondition(PublicConstValue(InstrumentationConstants.RUNTIME_HELPER_CLASS, "ENABLED"))
                 .Expression(
-                    ExprDotMethodChain(StaticMethod(InstrumentationConstants.RUNTIME_HELPER_CLASS, "get"))
+                    ExprDotMethodChain(StaticMethod(InstrumentationConstants.RUNTIME_HELPER_CLASS, "Get"))
                         .Add("q" + qname, qParams.ToArray()))
                 .DeclareVar(evaluationType, "result", expr)
                 .Expression(
-                    ExprDotMethodChain(StaticMethod(InstrumentationConstants.RUNTIME_HELPER_CLASS, "get"))
+                    ExprDotMethodChain(StaticMethod(InstrumentationConstants.RUNTIME_HELPER_CLASS, "Get"))
                         .Add("a" + qname, @Ref("result")))
                 .BlockReturn(@Ref("result"))
                 .MethodReturn(expr);

@@ -251,7 +251,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 TryInvalidCompile(
                     env,
                     "select context.sb.TheString from SupportBean as sb",
-                    "Failed to valIdate select-clause expression 'context.sb.TheString': Failed to resolve property 'context.sb.TheString' to a stream or nested property in a stream");
+                    "Failed to validate select-clause expression 'context.sb.TheString': Failed to resolve property 'context.sb.TheString' to a stream or nested property in a stream");
 
                 env.UndeployAll();
             }

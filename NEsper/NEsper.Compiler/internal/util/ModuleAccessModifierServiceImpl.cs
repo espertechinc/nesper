@@ -159,7 +159,7 @@ namespace com.espertech.esper.compiler.@internal.util
             }
 
             if (isProtected) {
-                return NameAccessModifier.PROTECTED;
+                return NameAccessModifier.INTERNAL;
             }
 
             if (isPublic) {

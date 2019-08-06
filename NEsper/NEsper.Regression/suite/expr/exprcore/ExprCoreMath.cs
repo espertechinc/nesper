@@ -204,10 +204,10 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
             public void Run(RegressionEnvironment env)
             {
                 var epl = "@Name('s0') select " +
-                          "10+BigDecimal.valueOf(5,0) as c0," +
-                          "10-BigDecimal.valueOf(5,0) as c1," +
-                          "10*BigDecimal.valueOf(5,0) as c2," +
-                          "10/BigDecimal.valueOf(5,0) as c3" +
+                          "10+BigDecimal.ValueOf(5,0) as c0," +
+                          "10-BigDecimal.ValueOf(5,0) as c1," +
+                          "10*BigDecimal.ValueOf(5,0) as c2," +
+                          "10/BigDecimal.ValueOf(5,0) as c3" +
                           " from SupportBean";
 
                 env.CompileDeploy(epl).AddListener("s0");
@@ -239,10 +239,10 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
             public void Run(RegressionEnvironment env)
             {
                 var epl = "@Name('s0') select " +
-                          "10+BigInteger.valueOf(5) as c0," +
-                          "10-BigInteger.valueOf(5) as c1," +
-                          "10*BigInteger.valueOf(5) as c2," +
-                          "10/BigInteger.valueOf(5) as c3" +
+                          "10+BigInteger.ValueOf(5) as c0," +
+                          "10-BigInteger.ValueOf(5) as c1," +
+                          "10*BigInteger.ValueOf(5) as c2," +
+                          "10/BigInteger.ValueOf(5) as c3" +
                           " from SupportBean";
 
                 env.CompileDeploy(epl).AddListener("s0");
@@ -271,10 +271,10 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
             public void Run(RegressionEnvironment env)
             {
                 var epl = "@Name('s0') select " +
-                          "BigInteger.valueOf(10)+BigInteger.valueOf(5) as c0," +
-                          "BigInteger.valueOf(10)-BigInteger.valueOf(5) as c1," +
-                          "BigInteger.valueOf(10)*BigInteger.valueOf(5) as c2," +
-                          "BigInteger.valueOf(10)/BigInteger.valueOf(5) as c3" +
+                          "BigInteger.ValueOf(10)+BigInteger.ValueOf(5) as c0," +
+                          "BigInteger.ValueOf(10)-BigInteger.ValueOf(5) as c1," +
+                          "BigInteger.ValueOf(10)*BigInteger.ValueOf(5) as c2," +
+                          "BigInteger.ValueOf(10)/BigInteger.ValueOf(5) as c3" +
                           " from SupportBean";
 
                 env.CompileDeploy(epl).AddListener("s0");
@@ -303,10 +303,10 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
             public void Run(RegressionEnvironment env)
             {
                 var epl = "@Name('s0') select " +
-                          "BigDecimal.valueOf(10,0)+BigDecimal.valueOf(5,0) as c0," +
-                          "BigDecimal.valueOf(10,0)-BigDecimal.valueOf(5,0) as c1," +
-                          "BigDecimal.valueOf(10,0)*BigDecimal.valueOf(5,0) as c2," +
-                          "BigDecimal.valueOf(10,0)/BigDecimal.valueOf(5,0) as c3" +
+                          "BigDecimal.ValueOf(10,0)+BigDecimal.ValueOf(5,0) as c0," +
+                          "BigDecimal.ValueOf(10,0)-BigDecimal.ValueOf(5,0) as c1," +
+                          "BigDecimal.ValueOf(10,0)*BigDecimal.ValueOf(5,0) as c2," +
+                          "BigDecimal.ValueOf(10,0)/BigDecimal.ValueOf(5,0) as c3" +
                           " from SupportBean";
 
                 env.CompileDeploy(epl).AddListener("s0");

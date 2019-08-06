@@ -89,7 +89,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.table
                 "result",
                 StaticMethod(
                     typeof(ExprTableIdentNode),
-                    "tableColumnAggValue",
+                    "TableColumnAggValue",
                     Constant(streamNum),
                     Constant(columnNum),
                     symbols.GetAddEPS(method),

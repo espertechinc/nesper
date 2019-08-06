@@ -118,7 +118,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.rate
                     "leave",
                     StaticMethod(
                         typeof(AggregatorRateEver),
-                        "removeFromHead",
+                        "RemoveFromHead",
                         points,
                         Ref("newest"),
                         Constant(factory.IntervalTime)))
@@ -149,7 +149,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.rate
         {
             method.Block
                 .Apply(WriteBoolean(output, row, hasLeave))
-                .StaticMethod(GetType(), "writePoints", output, RowDotRef(row, points));
+                .StaticMethod(GetType(), "WritePoints", output, RowDotRef(row, points));
         }
 
         protected override void ReadWODistinct(
@@ -192,7 +192,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.rate
                     "leave",
                     StaticMethod(
                         typeof(AggregatorRateEver),
-                        "removeFromHead",
+                        "RemoveFromHead",
                         points,
                         Ref("timestamp"),
                         Constant(factory.IntervalTime)))

@@ -310,7 +310,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 var epl =
                     "create window MyWindowOne#firstunique(TheString)#firstlength(3) retain-union as SupportBean;\n" +
                     "insert into MyWindowOne select * from SupportBean;\n" +
-                    "on SupportBean_S0 delete from MyWindowOne where TheString = p00;\n" +
+                    "on SupportBean_S0 delete from MyWindowOne where TheString = P00;\n" +
                     "@Name('s0') select irstream * from MyWindowOne;\n";
                 env.CompileDeploy(epl).AddListener("s0");
                 string[] fields = {"TheString", "IntPrimitive"};
@@ -664,7 +664,7 @@ namespace com.espertech.esper.regressionlib.suite.view
             public void Run(RegressionEnvironment env)
             {
                 var text =
-                    "@Name('s0') select * from SupportBean_S0 where p00 in (select TheString from SupportBean#length(2)#unique(IntPrimitive) retain-union)";
+                    "@Name('s0') select * from SupportBean_S0 where P00 in (select TheString from SupportBean#length(2)#unique(IntPrimitive) retain-union)";
                 env.CompileDeployAddListenerMileZero(text, "s0");
 
                 SendEvent(env, "E1", 1);
@@ -770,7 +770,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 string[] fields = {"string"};
 
                 var text =
-                    "@Name('s0') select irstream a.p00||b.p10 as string from pattern [every a=SupportBean_S0 -> b=SupportBean_S1]#unique(a.Id)#unique(b.Id) retain-union";
+                    "@Name('s0') select irstream a.P00||b.P10 as string from pattern [every a=SupportBean_S0 -> b=SupportBean_S1]#unique(a.Id)#unique(b.Id) retain-union";
                 env.CompileDeployAddListenerMileZero(text, "s0");
 
                 env.SendEventBean(new SupportBean_S0(1, "E1"));
@@ -1267,14 +1267,14 @@ namespace com.espertech.esper.regressionlib.suite.view
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
                     text,
-                    "Failed to valIdate data window declaration: Mismatching parameters between 'group' and 'merge'");
+                    "Failed to validate data window declaration: Mismatching parameters between 'group' and 'merge'");
 
                 text =
                     "select TheString from SupportBean#groupwin(TheString)#groupwin(IntPrimitive)#unique(TheString)#unique(IntPrimitive) retain-union";
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
                     text,
-                    "Failed to valIdate data window declaration: Multiple groupwin-declarations are not supported [select TheString from SupportBean#groupwin(TheString)#groupwin(IntPrimitive)#unique(TheString)#unique(IntPrimitive) retain-union]");
+                    "Failed to validate data window declaration: Multiple groupwin-declarations are not supported [select TheString from SupportBean#groupwin(TheString)#groupwin(IntPrimitive)#unique(TheString)#unique(IntPrimitive) retain-union]");
             }
         }
     }

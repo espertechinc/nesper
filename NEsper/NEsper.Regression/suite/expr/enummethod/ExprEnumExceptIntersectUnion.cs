@@ -123,9 +123,9 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
             public void Run(RegressionEnvironment env)
             {
                 var epl = "@Name('s0') select " +
-                          "contained.except(containedTwo) as val0," +
-                          "contained.intersect(containedTwo) as val1, " +
-                          "contained.union(containedTwo) as val2 " +
+                          "Contained.except(ContainedTwo) as val0," +
+                          "Contained.intersect(ContainedTwo) as val1, " +
+                          "Contained.union(ContainedTwo) as val2 " +
                           " from SupportBean_ST0_Container";
                 env.CompileDeploy(epl).AddListener("s0");
                 LambdaAssertionUtil.AssertTypes(
@@ -151,10 +151,10 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
             {
                 var epl =
                     "@Name('s0') expression last10A {" +
-                    " (select * from SupportBean_ST0(key0 like 'A%')#length(2)) " +
+                    " (select * from SupportBean_ST0(Key0 like 'A%')#length(2)) " +
                     "}" +
                     "expression last10NonZero {" +
-                    " (select * from SupportBean_ST0(p00 > 0)#length(2)) " +
+                    " (select * from SupportBean_ST0(P00 > 0)#length(2)) " +
                     "}" +
                     "select " +
                     "last10A().except(last10NonZero()) as val0," +
@@ -219,9 +219,9 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
             public void Run(RegressionEnvironment env)
             {
                 var epl = "@Name('s0') select " +
-                          "strvals.except(strvalstwo) as val0," +
-                          "strvals.intersect(strvalstwo) as val1, " +
-                          "strvals.union(strvalstwo) as val2 " +
+                          "Strvals.except(Strvalstwo) as val0," +
+                          "Strvals.intersect(Strvalstwo) as val1, " +
+                          "Strvals.union(Strvalstwo) as val2 " +
                           " from SupportCollection as bean";
                 env.CompileDeploy(epl).AddListener("s0");
                 LambdaAssertionUtil.AssertTypes(
@@ -263,32 +263,32 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
             {
                 string epl;
 
-                epl = "select contained.union(true) from SupportBean_ST0_Container";
+                epl = "select Contained.union(true) from SupportBean_ST0_Container";
                 TryInvalidCompile(
                     env,
                     epl,
-                    "Failed to valIdate select-clause expression 'contained.union(true)': Enumeration method 'union' requires an expression yielding a collection of events of type");
+                    "Failed to validate select-clause expression 'Contained.union(true)': Enumeration method 'union' requires an expression yielding a collection of events of type");
 
                 epl =
-                    "select contained.union(prevwindow(s1)) from SupportBean_ST0_Container#lastevent, SupportBean#keepall s1";
+                    "select Contained.union(prevwindow(s1)) from SupportBean_ST0_Container#lastevent, SupportBean#keepall s1";
                 TryInvalidCompile(
                     env,
                     epl,
-                    "Failed to valIdate select-clause expression 'contained.union(prevwindow(s1))': Enumeration method 'union' expects event type '" +
+                    "Failed to validate select-clause expression 'Contained.union(prevwindow(s1))': Enumeration method 'union' expects event type '" +
                     typeof(SupportBean_ST0).Name +
                     "' but receives event type 'SupportBean'");
 
-                epl = "select (select * from SupportBean#keepall).union(strvals) from SupportCollection";
+                epl = "select (select * from SupportBean#keepall).union(Strvals) from SupportCollection";
                 TryInvalidCompile(
                     env,
                     epl,
-                    "Failed to valIdate select-clause expression 'subselect_1.union(strvals)': Enumeration method 'union' requires an expression yielding a collection of events of type 'SupportBean' as input parameter");
+                    "Failed to validate select-clause expression 'subselect_1.union(Strvals)': Enumeration method 'union' requires an expression yielding a collection of events of type 'SupportBean' as input parameter");
 
-                epl = "select strvals.union((select * from SupportBean#keepall)) from SupportCollection";
+                epl = "select Strvals.union((select * from SupportBean#keepall)) from SupportCollection";
                 TryInvalidCompile(
                     env,
                     epl,
-                    "Failed to valIdate select-clause expression 'strvals.union(subselect_1)': Enumeration method 'union' requires an expression yielding a collection of values of type 'String' as input parameter");
+                    "Failed to validate select-clause expression 'Strvals.union(subselect_1)': Enumeration method 'union' requires an expression yielding a collection of values of type 'String' as input parameter");
             }
         }
 
@@ -297,11 +297,11 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
             public void Run(RegressionEnvironment env)
             {
                 var epl = "@Name('s0') expression one {" +
-                          "  x => x.contained.where(y => p00 = 10)" +
+                          "  x => x.Contained.where(y => P00 = 10)" +
                           "} " +
                           "" +
                           "expression two {" +
-                          "  x => x.contained.where(y => p00 = 11)" +
+                          "  x => x.Contained.where(y => P00 = 11)" +
                           "} " +
                           "" +
                           "select one(bean).union(two(bean)) as val0 from SupportBean_ST0_Container as bean";

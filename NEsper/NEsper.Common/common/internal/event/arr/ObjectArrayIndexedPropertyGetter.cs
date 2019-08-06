@@ -98,7 +98,7 @@ namespace com.espertech.esper.common.@internal.@event.arr
         {
             return StaticMethod(
                 GetType(),
-                "getObjectArrayIndexValue",
+                "GetObjectArrayIndexValue",
                 underlyingExpression,
                 Constant(propertyIndex),
                 Constant(index));
@@ -111,7 +111,7 @@ namespace com.espertech.esper.common.@internal.@event.arr
         {
             return StaticMethod(
                 GetType(),
-                "isObjectArrayExistsProperty",
+                "IsObjectArrayExistsProperty",
                 underlyingExpression,
                 Constant(propertyIndex),
                 Constant(index));

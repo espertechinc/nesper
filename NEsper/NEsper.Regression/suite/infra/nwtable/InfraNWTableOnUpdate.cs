@@ -81,7 +81,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 
                 // create onUpdate
                 var stmtTextOnUpdate =
-                    "@Name('update') on SupportBean_S0 update MyInfra set TheString = p00 where IntPrimitive = Id";
+                    "@Name('update') on SupportBean_S0 update MyInfra set TheString = P00 where IntPrimitive = Id";
                 env.CompileDeploy(stmtTextOnUpdate, path).AddListener("update");
                 Assert.AreEqual(
                     StatementType.ON_UPDATE,
@@ -165,7 +165,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 epl += "@Name('update') on SupportBean_S0 as sb " +
                        "update MyInfra as mywin" +
                        " set IntPrimitive=Id, IntBoxed=mywin.IntPrimitive, DoublePrimitive=initial.IntPrimitive" +
-                       " where mywin.TheString = sb.p00;\n";
+                       " where mywin.TheString = sb.P00;\n";
                 env.CompileDeploy(epl).AddListener("update");
                 var fields = "IntPrimitive,IntBoxed,DoublePrimitive".SplitCsv();
 

@@ -165,7 +165,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
                 .MethodReturn(
                     Cast(
                         beanPropType,
-                        ExprDotMethod(Cast(typeof(IDictionary<object, object>), Ref("result")), "get", Ref("key"))));
+                        ExprDotMethod(Cast(typeof(IDictionary<object, object>), Ref("result")), "Get", Ref("key"))));
         }
 
         public override string ToString()

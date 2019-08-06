@@ -132,22 +132,22 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                     "item",
                     Cast(
                         typeof(EventBean),
-                        ExprDotMethodChain(EnumForgeCodegenNames.REF_ENUMCOLL).Add("iterator").Add("next")))
+                        ExprDotMethodChain(EnumForgeCodegenNames.REF_ENUMCOLL).Add("First")))
                 .AssignArrayElement("props", Constant(0), Constant(0))
                 .AssignArrayElement(EnumForgeCodegenNames.REF_EPS, Constant(forge.streamNumLambda), @Ref("item"));
             CodegenLegoBooleanExpression.CodegenReturnValueIfNotNullAndNotPass(
                 blockSingle,
                 forge.innerExpression.EvaluationType,
                 innerValue,
-                StaticMethod(typeof(Collections), "emptyList"));
-            blockSingle.BlockReturn(StaticMethod(typeof(Collections), "singletonList", @Ref("item")));
+                StaticMethod(typeof(Collections), "EmptyList"));
+            blockSingle.BlockReturn(StaticMethod(typeof(Collections), "SingletonList", @Ref("item")));
 
             block.DeclareVar<ArrayDeque<object>>("result", NewInstance(typeof(ArrayDeque<object>)))
                 .DeclareVar<EventBean[]>(
                     "all",
                     StaticMethod(
                         typeof(EnumTakeWhileLastEventsForgeEval),
-                        "takeWhileLastEventBeanToArray",
+                        "TakeWhileLastEventBeanToArray",
                         EnumForgeCodegenNames.REF_ENUMCOLL))
                 .DeclareVar<int>("index", Constant(0));
             CodegenBlock forEach = block.ForLoop(

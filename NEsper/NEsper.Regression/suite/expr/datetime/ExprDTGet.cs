@@ -63,7 +63,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
 
                 env.UndeployAll();
 
-                // test "get" method on object is preferred
+                // test "Get" method on object is preferred
                 epl = "@Name('s0') select e.Get() as c0, e.Get('abc') as c1 from SupportEventWithJustGet as e";
                 env.CompileDeployAddListenerMile(epl, "s0", 1);
                 env.SendEventBean(new SupportEventWithJustGet());

@@ -144,7 +144,7 @@ namespace com.espertech.esper.common.@internal.@event.arr
                 .IfInstanceOf("value", typeof(EventBean[]))
                 .BlockReturn(Ref("value"))
                 .MethodReturn(
-                    StaticMethod(typeof(BaseNestableEventUtil), "getBNFragmentArray", Ref("value"), mType, mSvc));
+                    StaticMethod(typeof(BaseNestableEventUtil), "GetBNFragmentArray", Ref("value"), mType, mSvc));
         }
     }
 } // end of namespace

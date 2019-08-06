@@ -47,7 +47,7 @@ namespace com.espertech.esper.common.@internal.util
                 return CodegenCoerceMayNull(
                     typeof(short),
                     typeof(short?),
-                    "shortValue",
+                    "AsShort",
                     value,
                     valueTypeMustNumeric,
                     codegenMethodScope,
@@ -59,7 +59,7 @@ namespace com.espertech.esper.common.@internal.util
                 CodegenExpression input,
                 Type inputType)
             {
-                return CodegenCoerceNonNull(typeof(short), typeof(short?), "shortValue", input, inputType);
+                return CodegenCoerceNonNull(typeof(short), typeof(short?), "AsShort", input, inputType);
             }
         }
     }

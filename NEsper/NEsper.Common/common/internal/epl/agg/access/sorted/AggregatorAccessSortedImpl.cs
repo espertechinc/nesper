@@ -125,7 +125,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
                 .MethodReturn(
                     StaticMethod(
                         typeof(AggregatorAccessSortedImpl),
-                        "checkedPayloadMayDeque",
+                        "CheckedPayloadMayDeque",
                         ExprDotName(Ref("max"), "Value")));
             return LocalMethod(method);
         }
@@ -145,7 +145,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
                 .MethodReturn(
                     StaticMethod(
                         typeof(AggregatorAccessSortedImpl),
-                        "checkedPayloadMayDeque",
+                        "CheckedPayloadMayDeque",
                         ExprDotName(Ref("min"), "Value")));
             return LocalMethod(method);
         }
@@ -319,7 +319,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
             method.Block.DeclareVar<object>(
                     "comparable",
                     LocalMethod(getComparable, REF_EPS, ConstantTrue(), REF_EXPREVALCONTEXT))
-                .DeclareVar<object>("existing", ExprDotMethod(sorted, "get", Ref("comparable")))
+                .DeclareVar<object>("existing", ExprDotMethod(sorted, "Get", Ref("comparable")))
                 .IfRefNull("existing")
                 .ExprDotMethod(sorted, "Put", Ref("comparable"), Ref("theEvent"))
                 .IfElseIf(InstanceOf(Ref("existing"), typeof(EventBean)))
@@ -353,10 +353,10 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
             method.Block.DeclareVar<object>(
                     "comparable",
                     LocalMethod(getComparable, REF_EPS, ConstantTrue(), REF_EXPREVALCONTEXT))
-                .DeclareVar<object>("existing", ExprDotMethod(sorted, "get", Ref("comparable")))
+                .DeclareVar<object>("existing", ExprDotMethod(sorted, "Get", Ref("comparable")))
                 .IfRefNull("existing")
                 .BlockReturnNoValue()
-                .IfCondition(ExprDotMethod(Ref("existing"), "equals", Ref("theEvent")))
+                .IfCondition(ExprDotMethod(Ref("existing"), "Equals", Ref("theEvent")))
                 .ExprDotMethod(sorted, "Remove", Ref("comparable"))
                 .Decrement(size)
                 .IfElseIf(InstanceOf(Ref("existing"), typeof(ArrayDeque<EventBean>)))

@@ -79,7 +79,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                     forge.EvaluateCodegen(requiredType, methodNode, exprSymbol, codegenClassScope));
             if (!evaluationType.IsPrimitive) {
                 block.IfRefNull("value")
-                    .BlockReturn(StaticMethod(typeof(ExprNumberSetFrequency), "handleNumberSetFreqNullValue"));
+                    .BlockReturn(StaticMethod(typeof(ExprNumberSetFrequency), "HandleNumberSetFreqNullValue"));
             }
 
             block.MethodReturn(

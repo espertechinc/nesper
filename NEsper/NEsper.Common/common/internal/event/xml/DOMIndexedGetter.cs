@@ -164,7 +164,7 @@ namespace com.espertech.esper.common.@internal.@event.xml
         {
             return StaticMethod(
                 GetType(),
-                "getNodeValue",
+                "GetNodeValue",
                 underlyingExpression,
                 Constant(propertyName),
                 Constant(index));
@@ -177,7 +177,7 @@ namespace com.espertech.esper.common.@internal.@event.xml
         {
             return StaticMethod(
                 GetType(),
-                "getNodeValueExists",
+                "GetNodeValueExists",
                 underlyingExpression,
                 Constant(propertyName),
                 Constant(index));
@@ -210,7 +210,7 @@ namespace com.espertech.esper.common.@internal.@event.xml
                     "result",
                     StaticMethod(
                         typeof(DOMIndexedGetter),
-                        "getNodeValue",
+                        "GetNodeValue",
                         Ref("node"),
                         Constant(propertyName),
                         Constant(index)))

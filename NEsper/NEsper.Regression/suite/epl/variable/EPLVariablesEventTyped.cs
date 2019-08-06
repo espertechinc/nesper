@@ -98,7 +98,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
 
                 var fields = "c0,c1,c2,c3,c4,c5,c6".SplitCsv();
                 var stmtSelectText =
-                    "@Name('Select') select varbean.TheString as c0,varbean.IntPrimitive as c1,vars0.Id as c2,vars0.p00 as c3,varobj as c4,varbeannull.TheString as c5, varobjnull as c6 from SupportBean_A";
+                    "@Name('Select') select varbean.TheString as c0,varbean.IntPrimitive as c1,vars0.Id as c2,vars0.P00 as c3,varobj as c4,varbeannull.TheString as c5, varobjnull as c6 from SupportBean_A";
                 env.CompileDeploy(stmtSelectText, path).AddListener("Select");
 
                 env.SendEventBean(new SupportBean_A("A1"));
@@ -326,7 +326,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
                 // test on-set for Object and EventType
                 var fieldsTop = "varobject,vartype,varbean".SplitCsv();
                 env.CompileDeploy(
-                    "@Name('set') on SupportBean_S0(p00='X') arrival set varobject=1, vartype=arrival, varbean=null",
+                    "@Name('set') on SupportBean_S0(P00='X') arrival set varobject=1, vartype=arrival, varbean=null",
                     path);
                 env.AddListener("set");
 

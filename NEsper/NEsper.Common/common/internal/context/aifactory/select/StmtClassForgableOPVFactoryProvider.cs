@@ -82,6 +82,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
                         false));
                 var providerCtor = new CodegenCtor(
                     typeof(StmtClassForgableOPVFactoryProvider),
+                    ClassName,
                     includeDebugSymbols,
                     ctorParms);
                 var classScope = new CodegenClassScope(includeDebugSymbols, _packageScope, ClassName);
@@ -171,7 +172,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
             CodegenCtor providerCtor,
             string providerClassName)
         {
-            var makeViewMethod = CodegenMethod.MakeParentNode(
+            var makeViewMethod = CodegenMethod.MakeMethod(
                     typeof(OutputProcessView),
                     typeof(StmtClassForgableOPVFactoryProvider),
                     CodegenSymbolProviderEmpty.INSTANCE,
@@ -232,7 +233,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
 
             // Process-View-Result Method
             var updateMethod = CodegenMethod
-                .MakeParentNode(typeof(void), forge.GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope)
+                .MakeMethod(typeof(void), forge.GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope)
                 .WithOverride()
                 .AddParam(typeof(EventBean[]), NAME_NEWDATA)
                 .AddParam(typeof(EventBean[]), NAME_OLDDATA);
@@ -245,7 +246,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
 
             // Process-Join-Result Method
             var processMethod = CodegenMethod
-                .MakeParentNode(typeof(void), forge.GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope)
+                .MakeMethod(typeof(void), forge.GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope)
                 .WithOverride()
                 .AddParam(typeof(ISet<MultiKey<EventBean>>), NAME_NEWDATA)
                 .AddParam(typeof(ISet<MultiKey<EventBean>>), NAME_OLDDATA)
@@ -261,7 +262,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
 
             // Stop-Method (generates last as other methods may allocate members)
             var enumeratorMethod = CodegenMethod
-                .MakeParentNode(
+                .MakeMethod(
                     typeof(IEnumerator<EventBean>),
                     forge.GetType(),
                     CodegenSymbolProviderEmpty.INSTANCE,
@@ -283,13 +284,13 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
 
             // Stop-Method (no action for generated code)
             CodegenMethod stopMethod = CodegenMethod
-                .MakeParentNode(typeof(void), forge.GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope)
+                .MakeMethod(typeof(void), forge.GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope)
                 .WithOverride()
                 .AddParam(typeof(AgentInstanceStopServices), "svc");
 
             // Terminate-Method (no action for generated code)
             CodegenMethod terminatedMethod = CodegenMethod
-                .MakeParentNode(typeof(void), forge.GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope)
+                .MakeMethod(typeof(void), forge.GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope)
                 .WithOverride();
 
             var innerProperties = new CodegenClassProperties();

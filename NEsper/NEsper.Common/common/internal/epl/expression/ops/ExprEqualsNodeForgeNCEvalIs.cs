@@ -77,7 +77,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                 .IfElse()
                 .AssignRef(
                     "result",
-                    And(NotEqualsNull(Ref("right")), ExprDotMethod(Ref("left"), "equals", Ref("right"))))
+                    And(NotEqualsNull(Ref("right")), ExprDotMethod(Ref("left"), "Equals", Ref("right"))))
                 .BlockEnd();
             if (!forge.ForgeRenderable.IsNotEquals) {
                 block.MethodReturn(Ref("result"));

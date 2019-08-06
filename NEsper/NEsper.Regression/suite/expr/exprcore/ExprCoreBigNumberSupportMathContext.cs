@@ -31,7 +31,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@Name('s0') select 10/BigDecimal.valueOf(5,0) as c0 from SupportBean";
+                var epl = "@Name('s0') select 10/BigDecimal.ValueOf(5,0) as c0 from SupportBean";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 var fields = "c0".SplitCsv();

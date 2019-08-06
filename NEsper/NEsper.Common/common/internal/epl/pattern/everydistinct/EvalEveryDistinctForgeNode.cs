@@ -71,7 +71,7 @@ namespace com.espertech.esper.common.@internal.epl.pattern.everydistinct
 
         protected override string NameOfFactory()
         {
-            return "everyDistinct";
+            return "EveryDistinct";
         }
 
         protected override void InlineCodegen(

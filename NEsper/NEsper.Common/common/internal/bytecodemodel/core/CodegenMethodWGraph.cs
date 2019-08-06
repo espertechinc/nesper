@@ -8,11 +8,18 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.core.CodeGenerationHelper;
+
+using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
 namespace com.espertech.esper.common.@internal.bytecodemodel.core
 {
@@ -50,6 +57,24 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.core
         {
             Footprint.MergeClasses(classes);
             Block.MergeClasses(classes);
+        }
+
+        public CodegenMethodWGraph WithOverride(bool isOverride)
+        {
+            IsPublic = isOverride;
+            return this;
+        }
+
+        public CodegenMethodWGraph WithPublic(bool isPublic)
+        {
+            IsPublic = isPublic;
+            return this;
+        }
+
+        public CodegenMethodWGraph WithStatic(bool isStatic)
+        {
+            IsStatic = isStatic;
+            return this;
         }
 
         public void Render(
@@ -108,10 +133,80 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.core
             builder.Append("}\n");
         }
 
-        public CodegenMethodWGraph SetStatic(bool aStatic)
+        /// <summary>
+        /// Gets the modifiers for the method.
+        /// </summary>
+        public SyntaxTokenList GetModifiers()
         {
-            IsStatic = aStatic;
-            return this;
+            var tokenList = TokenList();
+
+            // Access modifier
+            var token = IsPublic ? Token(SyntaxKind.PublicKeyword) : Token(SyntaxKind.InternalKeyword);
+
+            var optionalComment = Footprint.OptionalComment;
+            if (optionalComment != null) {
+                token = token.WithLeadingTrivia(
+                    TriviaList(
+                        Comment(optionalComment)
+                    )
+                );
+            }
+
+            tokenList = tokenList.Add(token);
+
+            // Static modifier
+            if (IsStatic) {
+                tokenList = tokenList.Add(Token(SyntaxKind.StaticKeyword));
+            }
+
+            // Override modifier
+            if (IsOverride) {
+                tokenList = tokenList.Add(Token(SyntaxKind.OverrideKeyword));
+            }
+
+            return tokenList;
+        }
+
+        /// <summary>
+        /// Gets the syntax for the return type.
+        /// </summary>
+        private TypeSyntax GetReturnTypeSyntax()
+        {
+            return ParseTypeName(Footprint.ReturnTypeName);
+        }
+
+        /// <summary>
+        /// Generates the syntax for the parameter list.
+        /// </summary>
+        private ParameterListSyntax GetParameterListSyntax()
+        {
+            var parameters = Footprint.Params
+                .Select(param => param.CodegenSyntaxAsParameter())
+                .ToArray();
+            return ParameterList(SeparatedList<ParameterSyntax>(parameters));
+        }
+
+        /// <summary>
+        /// Gets the syntax tree for the body.
+        /// </summary>
+        /// <returns></returns>
+        /// <exception cref="NotImplementedException"></exception>
+        private BlockSyntax GetBody()
+        {
+            return Block.CodegenSyntax();
+        }
+
+        /// <summary>
+        /// Generates the syntax tree for the property.
+        /// </summary>
+        public MemberDeclarationSyntax CodegenSyntax()
+        {
+            return MethodDeclaration(
+                    GetReturnTypeSyntax(),
+                    Identifier(Name))
+                .WithModifiers(GetModifiers())
+                .WithParameterList(GetParameterListSyntax())
+                .WithBody(GetBody());
         }
     }
 } // end of namespace

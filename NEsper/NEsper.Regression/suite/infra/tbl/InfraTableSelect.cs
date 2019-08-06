@@ -252,7 +252,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             object[][] expectedType,
             object[] rowValues)
         {
-            var joinEpl = "@Name('s0') select mt.* from MyTable as mt, SupportBean_S2 where key = p20";
+            var joinEpl = "@Name('s0') select mt.* from MyTable as mt, SupportBean_S2 where key = P20";
             env.CompileDeploy(joinEpl, path).AddListener("s0");
             var subscriber = new SupportSubscriberMultirowObjectArrayNStmt();
             env.Statement("s0").SetSubscriber(subscriber);
@@ -277,7 +277,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             object[][] expectedType,
             object[] rowValues)
         {
-            var joinEpl = "@Name('s0') select mt.* as mymt from MyTable as mt, SupportBean_S2 where key = p20";
+            var joinEpl = "@Name('s0') select mt.* as mymt from MyTable as mt, SupportBean_S2 where key = P20";
             env.CompileDeploy(joinEpl, path).AddListener("s0");
             var subscriber = new SupportSubscriberMultirowObjectArrayNStmt();
             env.Statement("s0").SetSubscriber(subscriber);
@@ -306,7 +306,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             object[][] expectedType,
             object[] rowValues)
         {
-            var joinEpl = "@Name('s0') select mt from MyTable as mt, SupportBean_S2 where key = p20";
+            var joinEpl = "@Name('s0') select mt from MyTable as mt, SupportBean_S2 where key = P20";
             env.CompileDeploy(joinEpl, path).AddListener("s0");
 
             AssertEventType(env.Statement("s0").EventType.GetFragmentType("mt").FragmentType, expectedType);
@@ -328,7 +328,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             object[][] expectedType,
             object[] rowValues)
         {
-            var joinEpl = "@Name('s0') select * from MyTable, SupportBean_S2 where key = p20";
+            var joinEpl = "@Name('s0') select * from MyTable, SupportBean_S2 where key = P20";
             env.CompileDeploy(joinEpl, path).AddListener("s0");
             var subscriber = new SupportSubscriberMultirowObjectArrayNStmt();
             env.Statement("s0").SetSubscriber(subscriber);
@@ -464,12 +464,12 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                     path);
                 env.CompileDeploy(
                     "into table MyTable " +
-                    "select window(*) as winsb0 from SupportBean_S0#keepall group by p00",
+                    "select window(*) as winsb0 from SupportBean_S0#keepall group by P00",
                     path);
                 env.CompileDeploy(
                     "on SupportBean_S1 " +
-                    "merge MyTable where p10 = key when matched then " +
-                    "update set p0 = p11, p1 = p12",
+                    "merge MyTable where P10 = key when matched then " +
+                    "update set p0 = P11, p1 = p12",
                     path);
 
                 var e1Sb = MakeSupportBean("G1", 10, 100);

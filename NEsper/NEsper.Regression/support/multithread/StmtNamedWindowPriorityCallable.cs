@@ -40,7 +40,7 @@ namespace com.espertech.esper.regressionlib.support.multithread
                 var offset = threadNum + 1000000;
                 for (var i = 0; i < numRepeats; i++) {
                     runtime.EventService.SendEventBean(
-                        new SupportBean_S0(i + offset, "c0_" + i + offset, "p01_" + i + offset),
+                        new SupportBean_S0(i + offset, "c0_" + i + offset, "P01_" + i + offset),
                         "SupportBean_S0");
                     runtime.EventService.SendEventBean(
                         new SupportBean_S1(i + offset, "c0_" + i + offset, "x", "y"),

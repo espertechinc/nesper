@@ -296,7 +296,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
                         continue;
                     }
 
-                    if (chainElement.Name.Equals("get", StringComparison.InvariantCultureIgnoreCase) &&
+                    if (chainElement.Name.Equals("Get", StringComparison.InvariantCultureIgnoreCase) &&
                         paramTypes.Length == 1 &&
                         Boxing.GetBoxedType(paramTypes[0]) == typeof(int?)) {
                         Type componentType = Boxing.GetBoxedType(type.Component);

@@ -196,7 +196,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
 
         private static void RunAssertionCorrAggWhereGreater(RegressionEnvironment env)
         {
-            var fields = "p00".SplitCsv();
+            var fields = "P00".SplitCsv();
 
             env.SendEventBean(new SupportBean_S0(1, "T1"));
             Assert.IsFalse(env.Listener("s0").IsInvoked);
@@ -336,11 +336,11 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
 
                 // having-clause cannot aggregate over properties from other streams
                 stmtText =
-                    "select (select TheString from SupportBean#keepall having sum(s0.p00) = 1) as c0 from SupportBean_S0 as s0";
+                    "select (select TheString from SupportBean#keepall having sum(s0.P00) = 1) as c0 from SupportBean_S0 as s0";
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
                     stmtText,
-                    "Failed to plan subquery number 1 querying SupportBean: Failed to valIdate having-clause expression '(sum(s0.p00))=1': Implicit conversion from datatype 'String' to numeric is not allowed for aggregation function 'sum' [");
+                    "Failed to plan subquery number 1 querying SupportBean: Failed to validate having-clause expression '(sum(s0.P00))=1': Implicit conversion from datatype 'String' to numeric is not allowed for aggregation function 'sum' [");
 
                 // having-clause properties must be aggregated
                 stmtText =
@@ -409,7 +409,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
             {
                 var epl =
                     "create table MyTableWith2Keys(k1 string primary key, k2 string primary key, total sum(int));\n" +
-                    "into table MyTableWith2Keys select p10 as k1, p11 as k2, sum(Id) as total from SupportBean_S1 group by p10, p11;\n" +
+                    "into table MyTableWith2Keys select P10 as k1, P11 as k2, sum(Id) as total from SupportBean_S1 group by P10, P11;\n" +
                     "@Name('s0') @name('s0')select (select sum(total) from MyTableWith2Keys group by k1 having sum(total) > 100) as c0 from SupportBean_S0;\n";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
@@ -508,7 +508,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
             public void Run(RegressionEnvironment env)
             {
                 var epl =
-                    "@Name('s0') @name('s0')select (select sum(IntPrimitive) from SupportBean#keepall where TheString = s0.p00 having sum(IntPrimitive) > 10) as c0 from SupportBean_S0 as s0";
+                    "@Name('s0') @name('s0')select (select sum(IntPrimitive) from SupportBean#keepall where TheString = s0.P00 having sum(IntPrimitive) > 10) as c0 from SupportBean_S0 as s0";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
                 SendEventS0Assert(env, "G1", null);
@@ -560,7 +560,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
             public void Run(RegressionEnvironment env)
             {
                 var epl =
-                    "@Name('s0') select p00 as c0, (select sum(IntPrimitive) from SupportBean) as c1 from SupportBean_S0";
+                    "@Name('s0') select P00 as c0, (select sum(IntPrimitive) from SupportBean) as c1 from SupportBean_S0";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
                 var fields = "c0,c1".SplitCsv();
@@ -630,7 +630,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
             {
                 string[] fields = {"Id", "mycount"};
                 var text =
-                    "@Name('s0') select Id, (select count(*) from SupportBean_S1#length(3) s1 where s1.p10 = s0.p00) as mycount from SupportBean_S0 s0";
+                    "@Name('s0') select Id, (select count(*) from SupportBean_S1#length(3) s1 where s1.P10 = s0.P00) as mycount from SupportBean_S0 s0";
                 env.CompileDeploy(text).AddListener("s0");
 
                 env.SendEventBean(new SupportBean_S0(1, "G1"));
@@ -699,12 +699,12 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
                 string epl;
                 var milestone = new AtomicLong();
 
-                epl = "@Name('s0') select p00, " +
-                      "(select sum(IntPrimitive) from SupportBean#keepall where TheString = s0.p00) as sump00 " +
+                epl = "@Name('s0') select P00, " +
+                      "(select sum(IntPrimitive) from SupportBean#keepall where TheString = s0.P00) as sumP00 " +
                       "from SupportBean_S0 as s0";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
-                var fields = "p00,sump00".SplitCsv();
+                var fields = "P00,sumP00".SplitCsv();
 
                 env.SendEventBean(new SupportBean_S0(1, "T1"));
                 EPAssertionUtil.AssertProps(
@@ -786,17 +786,17 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
                 var milestone = new AtomicLong();
 
                 var epl = "@Name('s0') @name('s0')select (" +
-                          "select sum(IntPrimitive) as sumi from SupportBean#keepall where TheString = st2.key2 and IntPrimitive between s0.p01Long and s1.p11Long) " +
+                          "select sum(IntPrimitive) as sumi from SupportBean#keepall where TheString = st2.key2 and IntPrimitive between s0.P01Long and s1.P11Long) " +
                           "from SupportBean_ST2#lastevent st2, SupportBean_ST0#lastevent s0, SupportBean_ST1#lastevent s1";
                 TryAssertion3StreamKeyRangeCoercion(env, milestone, epl, true);
 
                 epl = "@Name('s0') select (" +
-                      "select sum(IntPrimitive) as sumi from SupportBean#keepall where TheString = st2.key2 and s1.p11Long >= IntPrimitive and s0.p01Long <= IntPrimitive) " +
+                      "select sum(IntPrimitive) as sumi from SupportBean#keepall where TheString = st2.key2 and s1.P11Long >= IntPrimitive and s0.P01Long <= IntPrimitive) " +
                       "from SupportBean_ST2#lastevent st2, SupportBean_ST0#lastevent s0, SupportBean_ST1#lastevent s1";
                 TryAssertion3StreamKeyRangeCoercion(env, milestone, epl, false);
 
                 epl = "@Name('s0') select (" +
-                      "select sum(IntPrimitive) as sumi from SupportBean#keepall where TheString = st2.key2 and s1.p11Long > IntPrimitive) " +
+                      "select sum(IntPrimitive) as sumi from SupportBean#keepall where TheString = st2.key2 and s1.P11Long > IntPrimitive) " +
                       "from SupportBean_ST2#lastevent st2, SupportBean_ST0#lastevent s0, SupportBean_ST1#lastevent s1";
                 env.CompileDeployAddListenerMile(epl, "s0", milestone.GetAndIncrement());
 
@@ -809,7 +809,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
 
                 env.UndeployAll();
                 epl = "@Name('s0') select (" +
-                      "select sum(IntPrimitive) as sumi from SupportBean#keepall where TheString = st2.key2 and s1.p11Long < IntPrimitive) " +
+                      "select sum(IntPrimitive) as sumi from SupportBean#keepall where TheString = st2.key2 and s1.P11Long < IntPrimitive) " +
                       "from SupportBean_ST2#lastevent st2, SupportBean_ST0#lastevent s0, SupportBean_ST1#lastevent s1";
                 env.CompileDeployAddListenerMile(epl, "s0", milestone.GetAndIncrement());
 
@@ -832,18 +832,18 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
 
                 // between and 'in' automatically revert the range (20 to 10 is the same as 10 to 20)
                 var epl = "@Name('s0') select (" +
-                          "select sum(IntPrimitive) as sumi from SupportBean#keepall where IntPrimitive between s0.p01Long and s1.p11Long) " +
+                          "select sum(IntPrimitive) as sumi from SupportBean#keepall where IntPrimitive between s0.P01Long and s1.P11Long) " +
                           "from SupportBean_ST0#lastevent s0, SupportBean_ST1#lastevent s1";
                 TryAssertion2StreamRangeCoercion(env, milestone, epl, true);
 
                 epl = "@Name('s0') select (" +
-                      "select sum(IntPrimitive) as sumi from SupportBean#keepall where IntPrimitive between s1.p11Long and s0.p01Long) " +
+                      "select sum(IntPrimitive) as sumi from SupportBean#keepall where IntPrimitive between s1.P11Long and s0.P01Long) " +
                       "from SupportBean_ST1#lastevent s1, SupportBean_ST0#lastevent s0";
                 TryAssertion2StreamRangeCoercion(env, milestone, epl, true);
 
                 // >= and <= should not automatically revert the range
                 epl = "@Name('s0') select (" +
-                      "select sum(IntPrimitive) as sumi from SupportBean#keepall where IntPrimitive >= s0.p01Long and IntPrimitive <= s1.p11Long) " +
+                      "select sum(IntPrimitive) as sumi from SupportBean#keepall where IntPrimitive >= s0.P01Long and IntPrimitive <= s1.P11Long) " +
                       "from SupportBean_ST0#lastevent s0, SupportBean_ST1#lastevent s1";
                 TryAssertion2StreamRangeCoercion(env, milestone, epl, false);
             }
@@ -853,15 +853,15 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@Name('s0') select p00 from SupportBean_S0 as s0 where Id > " +
-                          "(select sum(IntPrimitive) from SupportBean#keepall where TheString = s0.p00)";
+                var epl = "@Name('s0') select P00 from SupportBean_S0 as s0 where Id > " +
+                          "(select sum(IntPrimitive) from SupportBean#keepall where TheString = s0.P00)";
                 env.CompileDeployAddListenerMile(epl, "s0", 0);
 
                 RunAssertionCorrAggWhereGreater(env);
                 env.UndeployAll();
 
-                epl = "@Name('s0') select p00 from SupportBean_S0 as s0 where Id > " +
-                      "(select sum(IntPrimitive) from SupportBean#keepall where TheString||'X' = s0.p00||'X')";
+                epl = "@Name('s0') select P00 from SupportBean_S0 as s0 where Id > " +
+                      "(select sum(IntPrimitive) from SupportBean#keepall where TheString||'X' = s0.P00||'X')";
                 env.CompileDeployAddListenerMile(epl, "s0", 1);
 
                 RunAssertionCorrAggWhereGreater(env);

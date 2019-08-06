@@ -86,7 +86,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupby
                     ExprDotMethodChain(EPStatementInitServicesConstants.REF)
                         .Get(EPStatementInitServicesConstants.AGGREGATIONSERVICEFACTORYSERVICE)
                         .Add(
-                            "groupBy",
+                            "GroupBy",
                             Ref("svcFactory"),
                             Ref("rowFactory"),
                             aggGroupByDesc.RowStateForgeDescs.UseFlags.ToExpression(),
@@ -252,7 +252,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupby
 
             var block = method.Block.AssignRef(
                 REF_CURRENTROW,
-                Cast(classNames.RowTop, ExprDotMethod(REF_AGGREGATORSPERGROUP, "get", REF_GROUPKEY)));
+                Cast(classNames.RowTop, ExprDotMethod(REF_AGGREGATORSPERGROUP, "Get", REF_GROUPKEY)));
             block.IfCondition(EqualsNull(REF_CURRENTROW))
                 .AssignRef(REF_CURRENTROW, NewInstance(classNames.RowTop))
                 .ExprDotMethod(REF_AGGREGATORSPERGROUP, "Put", REF_GROUPKEY, REF_CURRENTROW);
@@ -286,7 +286,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupby
                         REF_GROUPKEY))
                 .AssignRef(
                     REF_CURRENTROW,
-                    Cast(classNames.RowTop, ExprDotMethod(REF_AGGREGATORSPERGROUP, "get", REF_GROUPKEY)))
+                    Cast(classNames.RowTop, ExprDotMethod(REF_AGGREGATORSPERGROUP, "Get", REF_GROUPKEY)))
                 .IfCondition(EqualsNull(REF_CURRENTROW))
                 .AssignRef(REF_CURRENTROW, NewInstance(classNames.RowTop))
                 .ExprDotMethod(REF_AGGREGATORSPERGROUP, "Put", REF_GROUPKEY, REF_CURRENTROW);
@@ -299,7 +299,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupby
                 method.Block.SetProperty(
                     REF_CURRENTROW,
                     "LastUpdateTime",
-                    ExprDotMethodChain(REF_EXPREVALCONTEXT).Add("getTimeProvider").Add("getTime"));
+                    ExprDotMethodChain(REF_EXPREVALCONTEXT).Get("TimeProvider").Get("Time"));
             }
 
             method.Block.ExprDotMethod(REF_CURRENTROW, "ApplyLeave", REF_EPS, REF_EXPREVALCONTEXT);
@@ -334,7 +334,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupby
             method.Block.AssignRef(REF_CURRENTGROUPKEY, REF_GROUPKEY)
                 .AssignRef(
                     REF_CURRENTROW,
-                    Cast(classNames.RowTop, ExprDotMethod(REF_AGGREGATORSPERGROUP, "get", REF_GROUPKEY)))
+                    Cast(classNames.RowTop, ExprDotMethod(REF_AGGREGATORSPERGROUP, "Get", REF_GROUPKEY)))
                 .IfCondition(EqualsNull(REF_CURRENTROW))
                 .AssignRef(REF_CURRENTROW, NewInstance(classNames.RowTop));
         }

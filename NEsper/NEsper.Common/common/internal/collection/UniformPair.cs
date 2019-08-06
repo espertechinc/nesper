@@ -18,6 +18,8 @@ namespace com.espertech.esper.common.@internal.collection
     [Serializable]
     public sealed class UniformPair<T>
     {
+        public static UniformPair<T> EMPTY_PAIR = new UniformPair<T>(default(T), default(T));
+
         /// <summary>
         /// Gets or sets the first value within pair.
         /// </summary>

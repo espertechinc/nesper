@@ -222,7 +222,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.prev
                     "result",
                     EvaluateCodegenPrevAndTail(method, exprSymbol, codegenClassScope))
                 .IfRefNullReturnNull("result")
-                .MethodReturn(StaticMethod(typeof(Collections), "singletonList", Ref("result")));
+                .MethodReturn(StaticMethod(typeof(Collections), "SingletonList", Ref("result")));
             return LocalMethod(method);
         }
 

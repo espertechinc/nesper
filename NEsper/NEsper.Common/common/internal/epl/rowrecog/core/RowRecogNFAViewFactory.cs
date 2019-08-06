@@ -31,21 +31,12 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
         private bool trackMaxStates;
         private RowRecogNFAState[] startStates;
         private RowRecogNFAState[] allStates;
-        protected DataInputOutputSerdeWCollation<object> partitionKeySerde;
-        protected int scheduleCallbackId;
-
-        public void SetDesc(RowRecogDesc desc)
-        {
-            this.desc = desc;
-        }
-
-        public void SetScheduleCallbackId(int scheduleCallbackId)
-        {
-            this.scheduleCallbackId = scheduleCallbackId;
-        }
+        private DataInputOutputSerdeWCollation<object> partitionKeySerde;
+        private int scheduleCallbackId;
 
         public RowRecogDesc Desc {
             get => desc;
+            set => desc = value;
         }
 
         public EventType EventType {
@@ -128,6 +119,7 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
 
         public int ScheduleCallbackId {
             get => scheduleCallbackId;
+            set => scheduleCallbackId = value;
         }
 
         public string ViewName {

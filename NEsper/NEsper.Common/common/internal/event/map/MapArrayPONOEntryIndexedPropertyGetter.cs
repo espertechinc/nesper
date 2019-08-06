@@ -146,11 +146,11 @@ namespace com.espertech.esper.common.@internal.@event.map
                 .AddParam(typeof(IDictionary<string, object>), "map")
                 .AddParam(typeof(int), "index")
                 .Block
-                .DeclareVar<object>("value", ExprDotMethod(Ref("map"), "get", Constant(propertyMap)))
+                .DeclareVar<object>("value", ExprDotMethod(Ref("map"), "Get", Constant(propertyMap)))
                 .MethodReturn(
                     StaticMethod(
                         typeof(BaseNestableEventUtil),
-                        "getBNArrayValueAtIndexWithNullCheck",
+                        "GetBNArrayValueAtIndexWithNullCheck",
                         Ref("value"),
                         Ref("index")));
         }

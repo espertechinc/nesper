@@ -54,7 +54,7 @@ namespace com.espertech.esper.common.@internal.compile.stage3
                     .WithFinal(false));
 
             // ctor
-            var ctor = new CodegenCtor(GetType(), includeDebugSymbols, Collections.GetEmptyList<CodegenTypedParam>());
+            var ctor = new CodegenCtor(GetType(), ClassName, includeDebugSymbols, Collections.GetEmptyList<CodegenTypedParam>());
             var classScope = new CodegenClassScope(includeDebugSymbols, _namespaceScope, ClassName);
             ctor.Block.AssignRef(MEMBERNAME_INFORMATION, _statementInformationals.Make(ctor, classScope));
 
@@ -108,7 +108,7 @@ namespace com.espertech.esper.common.@internal.compile.stage3
         private CodegenMethod MakeInitialize(CodegenClassScope classScope)
         {
             var method = CodegenMethod
-                .MakeParentNode(typeof(void), typeof(StmtClassForgableStmtProvider), classScope)
+                .MakeMethod(typeof(void), typeof(StmtClassForgableStmtProvider), classScope)
                 .AddParam(
                     typeof(EPStatementInitServices),
                     SAIFFInitializeSymbol.REF_STMTINITSVC.Ref);

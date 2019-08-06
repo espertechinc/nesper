@@ -59,7 +59,6 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
                     methodNode,
                     exprSymbol,
                     codegenClassScope);
-                Console.WriteLine("{0} => {1}", selectContext.ColumnNames[i], expression.GetType().Name);
                 methodNode.Block.Expression(
                     ExprDotMethod(@Ref("props"), "Put", Constant(selectContext.ColumnNames[i]), expression));
             }

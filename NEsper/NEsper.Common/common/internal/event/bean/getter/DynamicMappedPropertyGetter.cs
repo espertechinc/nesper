@@ -74,7 +74,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
             var @params = codegenClassScope.AddFieldUnshared<object[]>(true, Constant(_parameters));
             return StaticMethod(
                 typeof(DynamicMappedPropertyGetter),
-                "dynamicMappedPropertyGet",
+                "DynamicMappedPropertyGet",
                 desc,
                 @object,
                 @params);

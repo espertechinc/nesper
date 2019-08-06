@@ -117,7 +117,7 @@ namespace NEsper.Avro.SelectExprRep
                 typeof(Schema),
                 CodegenExpressionBuilder.StaticMethod(
                     typeof(AvroSchemaUtil),
-                    "resolveAvroSchema",
+                    "ResolveAvroSchema",
                     EventTypeUtility.ResolveTypeCodegen(_resultEventTypeAvro, EPStatementInitServicesConstants.REF)));
             var methodNode = codegenMethodScope.MakeChild(typeof(EventBean), GetType(), codegenClassScope);
             var block = methodNode.Block

@@ -156,16 +156,15 @@ namespace com.espertech.esper.common.@internal.epl.expression.time.node
             CodegenClassScope classScope)
         {
             var timeClass = NewAnonymousClass(method.Block, typeof(TimePeriodEval));
-            var evalMethod = CodegenMethod.MakeParentNode(typeof(TimePeriod), GetType(), classScope).AddParam(PARAMS);
+            var evalMethod = CodegenMethod.MakeMethod(typeof(TimePeriod), GetType(), classScope).AddParam(PARAMS);
             timeClass.AddMethod("timePeriodEval", evalMethod);
 
             //var evalMethod = new CodegenExpressionLambda(method.Block).WithParams(PARAMS);
-            //var timeClass = NewInstance<ProxyTimePeriodEval>();
+            //var timeClass = NewInstance<ProxyTimePeriodEval>(evalMethod);
 
             var exprSymbol = new ExprForgeCodegenSymbol(true, true);
             var exprMethod = evalMethod.MakeChildWithScope(typeof(TimePeriod), GetType(), exprSymbol, classScope)
                 .AddParam(PARAMS);
-
 
             CodegenExpression expression = forge.EvaluateGetTimePeriodCodegen(exprMethod, exprSymbol, classScope);
             exprSymbol.DerivedSymbolsCodegen(evalMethod, exprMethod.Block, classScope);

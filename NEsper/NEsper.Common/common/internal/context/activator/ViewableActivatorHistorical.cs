@@ -16,9 +16,8 @@ namespace com.espertech.esper.common.@internal.context.activator
     {
         private HistoricalEventViewableFactory factory;
 
-        public void SetFactory(HistoricalEventViewableFactory factory)
-        {
-            this.factory = factory;
+        public HistoricalEventViewableFactory Factory {
+            set { this.factory = value; }
         }
 
         public EventType EventType {

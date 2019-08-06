@@ -169,11 +169,11 @@ namespace com.espertech.esper.common.@internal.@event.map
                 .AddParam(typeof(IDictionary<object, object>), "map")
                 .AddParam(typeof(int), "index")
                 .Block
-                .DeclareVar<object>("value", ExprDotMethod(Ref("map"), "get", Constant(propertyName)))
+                .DeclareVar<object>("value", ExprDotMethod(Ref("map"), "Get", Constant(propertyName)))
                 .MethodReturn(
                     StaticMethod(
                         typeof(BaseNestableEventUtil),
-                        "getBNArrayValueAtIndexWithNullCheck",
+                        "GetBNArrayValueAtIndexWithNullCheck",
                         Ref("value"),
                         Ref("index")));
         }
@@ -194,7 +194,7 @@ namespace com.espertech.esper.common.@internal.@event.map
                 .MethodReturn(
                     StaticMethod(
                         typeof(BaseNestableEventUtil),
-                        "getBNFragmentNonPojo",
+                        "GetBNFragmentNonPojo",
                         Ref("value"),
                         eventType,
                         factory));

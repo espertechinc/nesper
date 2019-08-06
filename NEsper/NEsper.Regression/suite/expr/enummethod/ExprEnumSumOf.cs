@@ -55,7 +55,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
             {
                 var epl = "@Name('s0') select " +
                           "{1d, 2d}.sumOf() as c0," +
-                          "{BigInteger.valueOf(1), BigInteger.valueOf(2)}.sumOf() as c1, " +
+                          "{BigInteger.ValueOf(1), BigInteger.ValueOf(2)}.sumOf() as c1, " +
                           "{1L, 2L}.sumOf() as c2, " +
                           "{1L, 2L, null}.sumOf() as c3 " +
                           " from SupportBean";
@@ -173,8 +173,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
                 // lambda with string-array input
                 var fieldsLambda = "val0,val1".SplitCsv();
                 var eplLambda = "@Name('s0') select " +
-                                "strvals.sumOf(v => extractNum(v)) as val0, " +
-                                "strvals.sumOf(v => extractBigDecimal(v)) as val1 " +
+                                "Strvals.sumOf(v => extractNum(v)) as val0, " +
+                                "Strvals.sumOf(v => extractBigDecimal(v)) as val1 " +
                                 "from SupportCollection";
                 env.CompileDeploy(eplLambda).AddListener("s0");
                 LambdaAssertionUtil.AssertTypes(
@@ -220,7 +220,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
                 TryInvalidCompile(
                     env,
                     epl,
-                    "Failed to valIdate select-clause expression 'beans.sumof()': InvalId input for built-in enumeration method 'sumof' and 0-parameter footprint, expecting collection of values (typically scalar values) as input, received collection of events of type '");
+                    "Failed to validate select-clause expression 'beans.sumof()': Invalid input for built-in enumeration method 'sumof' and 0-parameter footprint, expecting collection of values (typically scalar values) as input, received collection of events of type '");
             }
         }
     }

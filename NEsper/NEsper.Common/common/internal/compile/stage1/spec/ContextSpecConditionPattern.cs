@@ -62,7 +62,7 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
                     Constant(PatternCompiled.TaggedEventTypes.Keys.ToArray()))
                 .SetProperty(Ref("condition"), "ArrayEvents", Constant(PatternCompiled.ArrayEventTypes.Keys.ToArray()))
                 .SetProperty(Ref("condition"), "Inclusive", Constant(IsInclusive))
-                .SetProperty(Ref("condition"), "Immediate", Constant(IsImmediate))
+                .SetProperty(Ref("condition"), "IsImmediate", Constant(IsImmediate))
                 .MethodReturn(Ref("condition"));
             return LocalMethod(method);
         }

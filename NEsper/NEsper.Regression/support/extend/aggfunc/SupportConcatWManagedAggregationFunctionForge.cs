@@ -25,7 +25,7 @@ namespace com.espertech.esper.regressionlib.support.extend.aggfunc
         {
             var paramType = validationContext.ParameterTypes[0];
             if (paramType != typeof(string) && paramType != typeof(SupportBean)) {
-                throw new ExprValidationException("InvalId parameter type '" + paramType.Name + "'");
+                throw new ExprValidationException("Invalid parameter type '" + paramType.Name + "'");
             }
         }
 

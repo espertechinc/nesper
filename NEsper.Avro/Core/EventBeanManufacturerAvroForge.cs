@@ -69,13 +69,13 @@ namespace NEsper.Avro.Core
 
             var manufacturer = CodegenExpressionBuilder.NewAnonymousClass(init.Block, typeof(EventBeanManufacturer));
 
-            var makeUndMethod = CodegenMethod.MakeParentNode(typeof(GenericRecord), GetType(), codegenClassScope)
+            var makeUndMethod = CodegenMethod.MakeMethod(typeof(GenericRecord), GetType(), codegenClassScope)
                 .AddParam(typeof(object[]), "properties");
             manufacturer.AddMethod("MakeUnderlying", makeUndMethod);
             MakeUnderlyingCodegen(makeUndMethod, codegenClassScope);
 
             var makeMethod = CodegenMethod
-                .MakeParentNode(typeof(EventBean), GetType(), codegenClassScope)
+                .MakeMethod(typeof(EventBean), GetType(), codegenClassScope)
                 .AddParam(typeof(object[]), "properties");
             manufacturer
                 .AddMethod("Make", makeMethod);
@@ -102,7 +102,7 @@ namespace NEsper.Avro.Core
                 typeof(Schema),
                 CodegenExpressionBuilder.StaticMethod(
                     typeof(AvroSchemaUtil),
-                    "resolveAvroSchema",
+                    "ResolveAvroSchema",
                     EventTypeUtility.ResolveTypeCodegen(_eventType, EPStatementInitServicesConstants.REF)));
             method.Block
                 .DeclareVar<GenericRecord>(

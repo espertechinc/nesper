@@ -63,7 +63,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.core
                 throw new IllegalStateException("Method by name '" + methodName + "' already registered");
             }
 
-            var method = CodegenMethod.MakeParentNode(returnType, generator, symbolProvider, classScope)
+            var method = CodegenMethod.MakeMethod(returnType, generator, symbolProvider, classScope)
                 .AddParam(@params);
             methods.Put(methodName, method);
             code.Invoke(method);

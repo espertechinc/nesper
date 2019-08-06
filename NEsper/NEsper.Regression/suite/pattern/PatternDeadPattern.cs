@@ -18,7 +18,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
     {
         public void Run(RegressionEnvironment env)
         {
-            var pattern = "select * from pattern[(SupportBean_A => SupportBean_B) and not SupportBean_C]";
+            var pattern = "select * from pattern[(SupportBean_A -> SupportBean_B) and not SupportBean_C]";
             // Adjust to 20000 to better test the limit
             var compiled = env.Compile(pattern);
             for (var i = 0; i < 1000; i++) {

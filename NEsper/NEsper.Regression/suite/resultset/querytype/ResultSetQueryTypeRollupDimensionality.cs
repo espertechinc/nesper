@@ -1780,11 +1780,11 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
                     prefix + "rollup(TheString, TheString)",
-                    "Failed to valIdate the group-by clause, found duplicate specification of expressions (TheString) [select TheString, sum(IntPrimitive) from SupportBean group by rollup(TheString, TheString)]");
+                    "Failed to validate the group-by clause, found duplicate specification of expressions (TheString) [select TheString, sum(IntPrimitive) from SupportBean group by rollup(TheString, TheString)]");
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
                     prefix + "rollup(x)",
-                    "Failed to valIdate group-by-clause expression 'x': Property named 'x' is not valId in any stream [select TheString, sum(IntPrimitive) from SupportBean group by rollup(x)]");
+                    "Failed to validate group-by-clause expression 'x': Property named 'x' is not valid in any stream [select TheString, sum(IntPrimitive) from SupportBean group by rollup(x)]");
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
                     prefix + "rollup(LongPrimitive)",
@@ -1792,27 +1792,27 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
                     prefix + "rollup((TheString, LongPrimitive), (TheString, LongPrimitive))",
-                    "Failed to valIdate the group-by clause, found duplicate specification of expressions (TheString, LongPrimitive) [select TheString, sum(IntPrimitive) from SupportBean group by rollup((TheString, LongPrimitive), (TheString, LongPrimitive))]");
+                    "Failed to validate the group-by clause, found duplicate specification of expressions (TheString, LongPrimitive) [select TheString, sum(IntPrimitive) from SupportBean group by rollup((TheString, LongPrimitive), (TheString, LongPrimitive))]");
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
                     prefix + "rollup((TheString, LongPrimitive), (LongPrimitive, TheString))",
-                    "Failed to valIdate the group-by clause, found duplicate specification of expressions (TheString, LongPrimitive) [select TheString, sum(IntPrimitive) from SupportBean group by rollup((TheString, LongPrimitive), (LongPrimitive, TheString))]");
+                    "Failed to validate the group-by clause, found duplicate specification of expressions (TheString, LongPrimitive) [select TheString, sum(IntPrimitive) from SupportBean group by rollup((TheString, LongPrimitive), (LongPrimitive, TheString))]");
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
                     prefix + "grouping sets((TheString, TheString))",
-                    "Failed to valIdate the group-by clause, found duplicate specification of expressions (TheString) [select TheString, sum(IntPrimitive) from SupportBean group by grouping sets((TheString, TheString))]");
+                    "Failed to validate the group-by clause, found duplicate specification of expressions (TheString) [select TheString, sum(IntPrimitive) from SupportBean group by grouping sets((TheString, TheString))]");
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
                     prefix + "grouping sets(TheString, TheString)",
-                    "Failed to valIdate the group-by clause, found duplicate specification of expressions (TheString) [select TheString, sum(IntPrimitive) from SupportBean group by grouping sets(TheString, TheString)]");
+                    "Failed to validate the group-by clause, found duplicate specification of expressions (TheString) [select TheString, sum(IntPrimitive) from SupportBean group by grouping sets(TheString, TheString)]");
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
                     prefix + "grouping sets((), ())",
-                    "Failed to valIdate the group-by clause, found duplicate specification of the overall grouping '()' [select TheString, sum(IntPrimitive) from SupportBean group by grouping sets((), ())]");
+                    "Failed to validate the group-by clause, found duplicate specification of the overall grouping '()' [select TheString, sum(IntPrimitive) from SupportBean group by grouping sets((), ())]");
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
                     prefix + "grouping sets(())",
-                    "Failed to valIdate the group-by clause, the overall grouping '()' cannot be the only grouping [select TheString, sum(IntPrimitive) from SupportBean group by grouping sets(())]");
+                    "Failed to validate the group-by clause, the overall grouping '()' cannot be the only grouping [select TheString, sum(IntPrimitive) from SupportBean group by grouping sets(())]");
 
                 // invalid select clause for this type of query
                 SupportMessageAssertUtil.TryInvalidCompile(

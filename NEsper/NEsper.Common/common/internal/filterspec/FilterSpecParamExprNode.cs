@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.@event.core;
 
@@ -41,7 +42,7 @@ namespace com.espertech.esper.common.@internal.filterspec
 
         public ExprEvaluator ExprNode { get; set; }
 
-        public int FilterBoolExprId { get; private set; }
+        public int FilterBoolExprId { get; set; }
 
         public EventBeanTypedEventFactory EventBeanTypedEventFactory { get; set; }
 
@@ -67,10 +68,31 @@ namespace com.espertech.esper.common.@internal.filterspec
         public bool UseLargeThreadingProfile {
             set => IsUseLargeThreadingProfile = value;
         }
+    }
 
-        public void SetFilterBoolExprId(int filterBoolExprId)
+    public class ProxyFilterSpecParamExprNode : FilterSpecParamExprNode
+    {
+        public delegate object GetFilterValueFunc(
+            MatchedEventMap matchedEvents,
+            ExprEvaluatorContext exprEvaluatorContext,
+            StatementContextFilterEvalEnv filterEvalEnv);
+
+        
+        public ProxyFilterSpecParamExprNode(
+            GetFilterValueFunc getFilterValue,
+            ExprFilterSpecLookupable lookupable,
+            FilterOperator filterOperator) : base(lookupable, filterOperator)
         {
-            FilterBoolExprId = filterBoolExprId;
+            ProcGetFilterValue = getFilterValue;
+        }
+
+        public GetFilterValueFunc ProcGetFilterValue { get; set; }
+        public override object GetFilterValue(
+            MatchedEventMap matchedEvents,
+            ExprEvaluatorContext exprEvaluatorContext,
+            StatementContextFilterEvalEnv filterEvalEnv)
+        {
+            return ProcGetFilterValue(matchedEvents, exprEvaluatorContext, filterEvalEnv);
         }
     }
 } // end of namespace

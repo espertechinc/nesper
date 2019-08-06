@@ -31,10 +31,10 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                             "SupportBean_S2#length(100000) as s2," +
                             "SupportBean_S3#length(100000) as s3," +
                             "SupportBean_S4#length(100000) as s4" +
-                            " where s0.p00 = s1.p10 " +
-                            "and s1.p10 = s2.p20 " +
-                            "and s2.p20 = s3.p30 " +
-                            "and s3.p30 = s4.p40 ";
+                            " where s0.P00 = s1.P10 " +
+                            "and s1.P10 = s2.P20 " +
+                            "and s2.P20 = s3.P30 " +
+                            "and s3.P30 = s4.P40 ";
             env.CompileDeployAddListenerMileZero(statement, "s0");
 
             log.Info(".testPerfAllProps Preloading events");

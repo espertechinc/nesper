@@ -129,7 +129,7 @@ namespace com.espertech.esper.common.@internal.epl.pattern.filter
 
         protected override string NameOfFactory()
         {
-            return "filter";
+            return "Filter";
         }
 
         protected override void InlineCodegen(

@@ -31,7 +31,7 @@ namespace com.espertech.esper.common.@internal.epl.pattern.core
             CodegenClassScope classScope)
         {
             var compute = NewAnonymousClass(method.Block, typeof(PatternDeltaCompute));
-            var computeDelta = CodegenMethod.MakeParentNode(typeof(long), typeof(PatternDeltaComputeUtil), classScope)
+            var computeDelta = CodegenMethod.MakeMethod(typeof(long), typeof(PatternDeltaComputeUtil), classScope)
                 .AddParam(
                     CodegenNamedParam.From(
                         typeof(MatchedEventMap),

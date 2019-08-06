@@ -28,7 +28,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                       "SupportBean_S0#keepall s0, " +
                       "SupportBean_S1#keepall s1, " +
                       "SupportBean_S2#keepall s2 " +
-                      "where p00 in (p10, p20)";
+                      "where P00 in (P10, P20)";
             var fields = "val".SplitCsv();
             env.CompileDeployAddListenerMileZero(epl, "s0");
 

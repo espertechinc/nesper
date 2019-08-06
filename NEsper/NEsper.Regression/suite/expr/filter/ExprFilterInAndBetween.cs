@@ -205,7 +205,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                 env.UndeployAll();
 
                 epl =
-                    "@Name('s0') select * from pattern [a=SupportBean_S0 => every b=SupportBean(TheString in (a.p00, a.p01, a.p02))]";
+                    "@Name('s0') select * from pattern [a=SupportBean_S0 => every b=SupportBean(TheString in (a.P00, a.P01, a.p02))]";
                 env.CompileDeployAddListenerMile(epl, "s0", 1);
 
                 env.SendEventBean(new SupportBean_S0(1, "a", "b", "c", "d"));

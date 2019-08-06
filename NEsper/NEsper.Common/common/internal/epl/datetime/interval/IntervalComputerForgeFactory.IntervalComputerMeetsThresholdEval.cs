@@ -84,7 +84,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
                         forge.thresholdExpr.Codegen(
                             CodegenExpressionBuilder.StaticMethod(
                                 typeof(Math),
-                                "min",
+                                "Min",
                                 IntervalForgeCodegenNames.REF_LEFTEND,
                                 IntervalForgeCodegenNames.REF_RIGHTSTART),
                             methodNode,
@@ -101,7 +101,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
                         "delta",
                         CodegenExpressionBuilder.StaticMethod(
                             typeof(Math),
-                            "abs",
+                            "Abs",
                             CodegenExpressionBuilder.Op(
                                 IntervalForgeCodegenNames.REF_RIGHTSTART,
                                 "-",

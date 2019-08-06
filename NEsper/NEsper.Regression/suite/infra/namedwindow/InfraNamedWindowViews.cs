@@ -165,7 +165,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
             env.SendEventBean(new SupportBean_S0(1, "E1"));
             EPAssertionUtil.AssertProps(
                 env.Listener("create").AssertOneGetNewAndReset(),
-                "bean.p00".SplitCsv(),
+                "bean.P00".SplitCsv(),
                 new object[] {"E1"});
 
             env.UndeployAll();
@@ -433,7 +433,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
 
         public static Schema GetSupportBeanS0Schema()
         {
-            return SchemaBuilder.Record("SupportBean_S0", TypeBuilder.RequiredString("p00"));
+            return SchemaBuilder.Record("SupportBean_S0", TypeBuilder.RequiredString("P00"));
         }
 
         public class InfraKeepAllSimple : RegressionExecution
@@ -677,7 +677,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                 catch (EPCompileExceptionItem ex) {
                     AssertMessage(
                         ex,
-                        "Error starting statement: Avro event type does not allow contained beans");
+                        "Error starting statement: Avro event type does not allow Contained beans");
                 }
             }
         }
@@ -5422,7 +5422,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                 TryInvalidCompile(
                     env,
                     "create window MyWindowI3#keepall as select innermap.abc from OuterMap",
-                    "Failed to valIdate select-clause expression 'innermap.abc': Failed to resolve property 'innermap.abc' to a stream or nested property in a stream");
+                    "Failed to validate select-clause expression 'innermap.abc': Failed to resolve property 'innermap.abc' to a stream or nested property in a stream");
 
                 env.UndeployAll();
             }
@@ -5670,7 +5670,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                 // This replays into MyWindow
                 var stmtTextSelectTwo = "@Name('s2') select key, value, Symbol from MyWindowLCJ as s0" +
                                         " left outer join SupportMarketDataBean#keepall as s1" +
-                                        " on s0.value = s1.Volume";
+                                        " on s0.Value = s1.Volume";
                 env.CompileDeploy(stmtTextSelectTwo, path).AddListener("s2");
                 Assert.IsFalse(env.Listener("s2").IsInvoked);
                 EPAssertionUtil.AssertPropsPerRowAnyOrder(
@@ -5740,7 +5740,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
             {
                 var fields = new[] {"key", "value"};
                 var epl = "@Name('create') create window MyWindowPAT#keepall as MySimpleKeyValueMap;\n" +
-                          "@Name('s0') select a.key as key, a.value as value from pattern [every a=MyWindowPAT(key='S1') or a=MyWindowPAT(key='S2')];\n" +
+                          "@Name('s0') select a.key as key, a.Value as value from pattern [every a=MyWindowPAT(key='S1') or a=MyWindowPAT(key='S2')];\n" +
                           "insert into MyWindowPAT select TheString as key, LongBoxed as value from SupportBean;\n";
                 env.CompileDeploy(epl).AddListener("s0");
 

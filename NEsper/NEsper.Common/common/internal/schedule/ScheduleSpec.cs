@@ -276,7 +276,7 @@ namespace com.espertech.esper.common.@internal.schedule
                 }
 
                 method.Block.Expression(
-                    ExprDotMethodChain(spec).Add("getUnitValues").Add("Put", Constant(unit), valuesExpr));
+                    ExprDotMethodChain(spec).Get("UnitValues").Add("Put", Constant(unit), valuesExpr));
             }
 
             if (OptionalDayOfWeekOperator != null) {

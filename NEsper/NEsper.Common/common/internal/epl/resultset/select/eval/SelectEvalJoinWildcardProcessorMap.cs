@@ -58,12 +58,8 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
                 this.GetType(),
                 codegenClassScope);
             CodegenExpressionRef refEPS = exprSymbol.GetAddEPS(methodNode);
-            methodNode.Block
-                .DeclareVar<IDictionary<object, object>>(
-                    "tuple",
-                    NewInstance(
-                        typeof(Dictionary<object, object>),
-                        Constant(CollectionUtil.CapacityHashMap(streamNames.Length))));
+            methodNode.Block.DeclareVar<IDictionary<string, object>>(
+                "tuple", NewInstance(typeof(Dictionary<string, object>)));
             for (int i = 0; i < streamNames.Length; i++) {
                 methodNode.Block.Expression(
                     ExprDotMethod(@Ref("tuple"), "Put", Constant(streamNames[i]), ArrayAtIndex(refEPS, Constant(i))));

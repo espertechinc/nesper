@@ -180,7 +180,7 @@ namespace com.espertech.esper.common.@internal.filterspec
             getFilterValue.Block
                 .DeclareVar<EventBean>(
                     "@event",
-                    ExprDotMethod(Ref("matchedEvents"), "getMatchingEventByTag", Constant(ResultEventAsName)))
+                    ExprDotMethod(Ref("matchedEvents"), "GetMatchingEventByTag", Constant(ResultEventAsName)))
                 .DeclareVar<object>("value", ConstantNull())
                 .IfRefNotNull("@event")
                 .AssignRef("value", get)

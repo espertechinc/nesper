@@ -86,6 +86,7 @@ namespace com.espertech.esper.common.@internal.compile.stage3
                         false));
                 var providerCtor = new CodegenCtor(
                     typeof(StmtClassForgableRSPFactoryProvider),
+                    ClassName,
                     includeDebugSymbols,
                     ctorParms);
                 var classScope = new CodegenClassScope(includeDebugSymbols, _namespaceScope, ClassName);
@@ -254,7 +255,7 @@ namespace com.espertech.esper.common.@internal.compile.stage3
             CodegenCtor providerCtor,
             string providerClassName)
         {
-            var instantiateMethod = CodegenMethod.MakeParentNode(
+            var instantiateMethod = CodegenMethod.MakeMethod(
                     typeof(ResultSetProcessor),
                     typeof(StmtClassForgableRSPFactoryProvider),
                     CodegenSymbolProviderEmpty.INSTANCE,
@@ -275,7 +276,10 @@ namespace com.espertech.esper.common.@internal.compile.stage3
             CodegenStackGenerator.RecursiveBuildStack(instantiateMethod, "Instantiate", methods, properties);
 
             var ctorParams = Collections.SingletonList(new CodegenTypedParam(providerClassName, "o"));
-            var ctor = new CodegenCtor(typeof(StmtClassForgableRSPFactoryProvider), classScope, ctorParams);
+            var ctor = new CodegenCtor(
+                typeof(StmtClassForgableRSPFactoryProvider), 
+                classScope,
+                ctorParams);
 
             var innerClass = new CodegenInnerClass(
                 CLASSNAME_RESULTSETPROCESSORFACTORY,
@@ -307,7 +311,10 @@ namespace com.espertech.esper.common.@internal.compile.stage3
             ctorParams.Add(new CodegenTypedParam(typeof(AgentInstanceContext), "agentInstanceContext"));
 
             // make ctor code
-            var serviceCtor = new CodegenCtor(typeof(StmtClassForgableRSPFactoryProvider), classScope, ctorParams);
+            var serviceCtor = new CodegenCtor(
+                typeof(StmtClassForgableRSPFactoryProvider), 
+                classScope,
+                ctorParams);
 
             // Get-Result-Type Method
             var forge = spec.ResultSetProcessorFactoryForge;
@@ -323,7 +330,7 @@ namespace com.espertech.esper.common.@internal.compile.stage3
             forge.InstanceCodegen(instance, classScope, factoryCtor, factoryExplicitMembers);
 
             // Process-View-Result Method
-            var processViewResultMethod = CodegenMethod.MakeParentNode(
+            var processViewResultMethod = CodegenMethod.MakeMethod(
                     typeof(UniformPair<EventBean[]>),
                     forge.GetType(),
                     CodegenSymbolProviderEmpty.INSTANCE,
@@ -340,7 +347,7 @@ namespace com.espertech.esper.common.@internal.compile.stage3
 
             // Process-Join-Result Method
             var processJoinResultMethod = CodegenMethod
-                .MakeParentNode(
+                .MakeMethod(
                     typeof(UniformPair<EventBean[]>),
                     forge.GetType(),
                     CodegenSymbolProviderEmpty.INSTANCE,
@@ -357,12 +364,12 @@ namespace com.espertech.esper.common.@internal.compile.stage3
 
             // Clear-Method
             var clearMethod = CodegenMethod
-                .MakeParentNode(typeof(void), forge.GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope);
+                .MakeMethod(typeof(void), forge.GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope);
             forge.ClearMethodCodegen(classScope, clearMethod);
 
             // Get-Iterator-View
             var getEnumeratorMethodView = CodegenMethod
-                .MakeParentNode(
+                .MakeMethod(
                     typeof(IEnumerator<EventBean>),
                     forge.GetType(),
                     CodegenSymbolProviderEmpty.INSTANCE,
@@ -377,7 +384,7 @@ namespace com.espertech.esper.common.@internal.compile.stage3
 
             // Get-Iterator-Join
             var getEnumeratorMethodJoin = CodegenMethod
-                .MakeParentNode(
+                .MakeMethod(
                     typeof(IEnumerator<EventBean>),
                     forge.GetType(),
                     CodegenSymbolProviderEmpty.INSTANCE,
@@ -392,7 +399,7 @@ namespace com.espertech.esper.common.@internal.compile.stage3
 
             // Process-output-rate-buffered-view
             var processOutputLimitedViewMethod = CodegenMethod
-                .MakeParentNode(
+                .MakeMethod(
                     typeof(UniformPair<EventBean[]>),
                     forge.GetType(),
                     CodegenSymbolProviderEmpty.INSTANCE,
@@ -408,7 +415,7 @@ namespace com.espertech.esper.common.@internal.compile.stage3
 
             // Process-output-rate-buffered-join
             var processOutputLimitedJoinMethod = CodegenMethod
-                .MakeParentNode(
+                .MakeMethod(
                     typeof(UniformPair<EventBean[]>),
                     forge.GetType(),
                     CodegenSymbolProviderEmpty.INSTANCE,
@@ -430,7 +437,7 @@ namespace com.espertech.esper.common.@internal.compile.stage3
 
             // Apply-view
             var applyViewResultMethod = CodegenMethod
-                .MakeParentNode(typeof(void), forge.GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope)
+                .MakeMethod(typeof(void), forge.GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope)
                 .AddParam(typeof(EventBean[]), NAME_NEWDATA)
                 .AddParam(typeof(EventBean[]), NAME_OLDDATA);
             if (!spec.IsJoin && spec.HasOutputLimit && spec.HasOutputLimitSnapshot) {
@@ -442,7 +449,7 @@ namespace com.espertech.esper.common.@internal.compile.stage3
 
             // Apply-join
             var applyJoinResultMethod = CodegenMethod
-                .MakeParentNode(typeof(void), forge.GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope)
+                .MakeMethod(typeof(void), forge.GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope)
                 .AddParam(typeof(ISet<MultiKey<EventBean>>), NAME_NEWDATA)
                 .AddParam(typeof(ISet<MultiKey<EventBean>>), NAME_OLDDATA);
             if (!spec.IsJoin || !spec.HasOutputLimit || !spec.HasOutputLimitSnapshot) {
@@ -454,7 +461,7 @@ namespace com.espertech.esper.common.@internal.compile.stage3
 
             // Process-output-unbuffered-view
             var processOutputLimitedLastAllNonBufferedViewMethod = CodegenMethod
-                .MakeParentNode(typeof(void), forge.GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope)
+                .MakeMethod(typeof(void), forge.GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope)
                 .AddParam(typeof(EventBean[]), NAME_NEWDATA)
                 .AddParam(typeof(EventBean[]), NAME_OLDDATA)
                 .AddParam(typeof(bool), NAME_ISSYNTHESIZE);
@@ -470,7 +477,7 @@ namespace com.espertech.esper.common.@internal.compile.stage3
 
             // Process-output-unbuffered-join
             var processOutputLimitedLastAllNonBufferedJoinMethod = CodegenMethod
-                .MakeParentNode(typeof(void), forge.GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope)
+                .MakeMethod(typeof(void), forge.GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope)
                 .AddParam(typeof(ISet<MultiKey<EventBean>>), NAME_NEWDATA)
                 .AddParam(typeof(ISet<MultiKey<EventBean>>), NAME_OLDDATA)
                 .AddParam(typeof(bool), NAME_ISSYNTHESIZE);
@@ -486,7 +493,7 @@ namespace com.espertech.esper.common.@internal.compile.stage3
 
             // Continue-output-unbuffered-view
             var continueOutputLimitedLastAllNonBufferedViewMethod = CodegenMethod
-                .MakeParentNode(
+                .MakeMethod(
                     typeof(UniformPair<EventBean[]>),
                     forge.GetType(),
                     CodegenSymbolProviderEmpty.INSTANCE,
@@ -504,7 +511,7 @@ namespace com.espertech.esper.common.@internal.compile.stage3
 
             // Continue-output-unbuffered-join
             var continueOutputLimitedLastAllNonBufferedJoinMethod = CodegenMethod
-                .MakeParentNode(
+                .MakeMethod(
                     typeof(UniformPair<EventBean[]>),
                     forge.GetType(),
                     CodegenSymbolProviderEmpty.INSTANCE,
@@ -522,12 +529,12 @@ namespace com.espertech.esper.common.@internal.compile.stage3
 
             // Accept-Helper-Visitor
             var acceptHelperVisitorMethod = CodegenMethod
-                .MakeParentNode(typeof(void), forge.GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope)
+                .MakeMethod(typeof(void), forge.GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope)
                 .AddParam(typeof(ResultSetProcessorOutputHelperVisitor), NAME_RESULTSETVISITOR);
             forge.AcceptHelperVisitorCodegen(classScope, acceptHelperVisitorMethod, instance);
 
             // Stop-Method (generates last as other methods may allocate members)
-            var stopMethod = CodegenMethod.MakeParentNode(
+            var stopMethod = CodegenMethod.MakeMethod(
                 typeof(void),
                 forge.GetType(),
                 CodegenSymbolProviderEmpty.INSTANCE,
@@ -764,7 +771,7 @@ namespace com.espertech.esper.common.@internal.compile.stage3
                 "factory",
                 ExprDotName(EPStatementInitServicesConstants.REF, "EventBeanTypedEventFactory"));
 
-            var processMethod = CodegenMethod.MakeParentNode(
+            var processMethod = CodegenMethod.MakeMethod(
                     typeof(EventBean),
                     typeof(StmtClassForgableRSPFactoryProvider),
                     symbolProvider,

@@ -35,7 +35,7 @@ namespace com.espertech.esper.common.@internal.epl.pattern.observer
             TimeZoneInfo timeZone,
             TimeAbacus timeAbacus)
         {
-            EventBean[] events = optionalConvertor == null ? null : optionalConvertor.Convert(beginState);
+            EventBean[] events = optionalConvertor == null ? null : optionalConvertor.Invoke(beginState);
             return Compute(parameter, events, exprEvaluatorContext);
         }
 

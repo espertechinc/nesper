@@ -13,7 +13,7 @@ using com.espertech.esper.common.@internal.@event.core;
 namespace com.espertech.esper.common.@internal.@event.bean.core
 {
     /// <summary>
-    ///     Shortcut-evaluator for use with POJO-backed events only.
+    ///     Shortcut-evaluator for use with PONO-backed events only.
     /// </summary>
     public interface BeanEventPropertyGetter : EventPropertyGetterSPI
     {

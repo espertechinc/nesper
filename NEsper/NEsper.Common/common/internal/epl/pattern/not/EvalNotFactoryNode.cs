@@ -22,9 +22,8 @@ namespace com.espertech.esper.common.@internal.epl.pattern.not
 
         public override bool IsStateful => true;
 
-        public void SetChildNode(EvalFactoryNode childNode)
-        {
-            this.childNode = childNode;
+        public EvalFactoryNode ChildNode {
+            set => this.childNode = value;
         }
 
         public override EvalNode MakeEvalNode(

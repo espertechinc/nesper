@@ -20,7 +20,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.name
         }
 
         public string Name {
-            get => CodegenPackageScopeNames.Prior(_streamNumber);
+            get => CodegenNamespaceScopeNames.Prior(_streamNumber);
         }
 
         public int StreamNumber {

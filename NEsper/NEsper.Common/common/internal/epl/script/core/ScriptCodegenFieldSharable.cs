@@ -41,7 +41,7 @@ namespace com.espertech.esper.common.@internal.epl.script.core
         {
             return StaticMethod(
                 typeof(ScriptEvaluatorCompilerRuntime),
-                "compileScriptEval",
+                "CompileScriptEval",
                 _scriptDescriptor.Make(_classScope.NamespaceScope.InitMethod, _classScope));
         }
 

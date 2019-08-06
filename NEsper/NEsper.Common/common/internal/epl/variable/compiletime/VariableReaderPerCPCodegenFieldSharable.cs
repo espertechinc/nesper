@@ -36,7 +36,7 @@ namespace com.espertech.esper.common.@internal.epl.variable.compiletime
         {
             return StaticMethod(
                 typeof(VariableDeployTimeResolver),
-                "resolveVariableReaderPerCP",
+                "ResolveVariableReaderPerCP",
                 Constant(metaWVisibility.VariableName),
                 Constant(metaWVisibility.VariableVisibility),
                 Constant(metaWVisibility.VariableModuleName),

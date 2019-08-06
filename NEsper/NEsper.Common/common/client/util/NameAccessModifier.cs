@@ -24,9 +24,9 @@ namespace com.espertech.esper.common.client.util
         PRIVATE,
 
         /// <summary>
-        /// Protected is used for objects that may be used with the modules of the same module name.
+        /// Internal is used for objects that may be used with the modules of the same module name.
         /// </summary>
-        PROTECTED,
+        INTERNAL,
 
         /// <summary>
         /// Public is used for objects that may be used by other modules irrespective of module names.

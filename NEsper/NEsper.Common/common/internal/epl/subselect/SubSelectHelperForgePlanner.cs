@@ -554,7 +554,7 @@ namespace com.espertech.esper.common.@internal.epl.subselect
                 var namedSpec = (NamedWindowConsumerStreamSpec) filterStreamSpec;
                 if (namedSpec.OptPropertyEvaluator != null) {
                     throw new ExprValidationException(
-                        "Failed to validate named window use in subquery, contained-event is only allowed for named windows when not correlated");
+                        "Failed to validate named window use in subquery, Contained-event is only allowed for named windows when not correlated");
                 }
             }
 

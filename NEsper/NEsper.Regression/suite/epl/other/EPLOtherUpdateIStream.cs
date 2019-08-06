@@ -493,7 +493,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                     env,
                     path,
                     "update istream SupportBeanStream set IntPrimitive=LongPrimitive",
-                    "InvalId assignment of column 'LongPrimitive' of type 'System.Long' to event property 'IntPrimitive' typed as 'int', column and parameter types mismatch [update istream SupportBeanStream set IntPrimitive=LongPrimitive]");
+                    "Invalid assignment of column 'LongPrimitive' of type 'System.Long' to event property 'IntPrimitive' typed as 'int', column and parameter types mismatch [update istream SupportBeanStream set IntPrimitive=LongPrimitive]");
                 TryInvalidCompile(
                     env,
                     path,
@@ -503,7 +503,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                     env,
                     path,
                     "update istream SupportBeanStream set IntPrimitive=null",
-                    "InvalId assignment of column 'null' of null type to event property 'IntPrimitive' typed as 'int', nullable type mismatch [update istream SupportBeanStream set IntPrimitive=null]");
+                    "Invalid assignment of column 'null' of null type to event property 'IntPrimitive' typed as 'int', nullable type mismatch [update istream SupportBeanStream set IntPrimitive=null]");
                 TryInvalidCompile(
                     env,
                     path,
@@ -543,7 +543,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                     env,
                     path,
                     "update istream SupportBean set LongPrimitive=(select p0 from MyMapTypeInv#lastevent where TheString=p3)",
-                    "Failed to plan subquery number 1 querying MyMapTypeInv: Failed to valIdate filter expression 'TheString=p3': Property named 'TheString' must be prefixed by a stream name, use the stream name itself or use the as-clause to name the stream with the property in the format \"stream.property\" [update istream SupportBean set LongPrimitive=(select p0 from MyMapTypeInv#lastevent where TheString=p3)]");
+                    "Failed to plan subquery number 1 querying MyMapTypeInv: Failed to validate filter expression 'TheString=p3': Property named 'TheString' must be prefixed by a stream name, use the stream name itself or use the as-clause to name the stream with the property in the format \"stream.property\" [update istream SupportBean set LongPrimitive=(select p0 from MyMapTypeInv#lastevent where TheString=p3)]");
                 TryInvalidCompile(
                     env,
                     path,

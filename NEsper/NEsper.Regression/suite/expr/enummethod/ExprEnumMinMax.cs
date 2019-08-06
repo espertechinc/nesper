@@ -62,10 +62,10 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
             {
                 var fields = "val0,val1,val2,val3".SplitCsv();
                 var eplFragment = "@Name('s0') select " +
-                                  "strvals.min(v => extractNum(v)) as val0, " +
-                                  "strvals.max(v => extractNum(v)) as val1, " +
-                                  "strvals.min(v => v) as val2, " +
-                                  "strvals.max(v => v) as val3 " +
+                                  "Strvals.min(v => extractNum(v)) as val0, " +
+                                  "Strvals.max(v => extractNum(v)) as val1, " +
+                                  "Strvals.min(v => v) as val2, " +
+                                  "Strvals.max(v => v) as val3 " +
                                   "from SupportCollection";
                 env.CompileDeploy(eplFragment).AddListener("s0");
 
@@ -108,8 +108,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
             {
                 var fields = "val0,val1".SplitCsv();
                 var eplFragment = "@Name('s0') select " +
-                                  "contained.min(x => p00) as val0, " +
-                                  "contained.max(x => p00) as val1 " +
+                                  "Contained.min(x => P00) as val0, " +
+                                  "Contained.max(x => P00) as val1 " +
                                   "from SupportBean_ST0_Container";
                 env.CompileDeploy(eplFragment).AddListener("s0");
 
@@ -152,8 +152,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
             {
                 var fields = "val0,val1".SplitCsv();
                 var eplFragment = "@Name('s0') select " +
-                                  "strvals.min() as val0, " +
-                                  "strvals.max() as val1 " +
+                                  "Strvals.min() as val0, " +
+                                  "Strvals.max() as val1 " +
                                   "from SupportCollection";
                 env.CompileDeploy(eplFragment).AddListener("s0");
 
@@ -196,11 +196,11 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
             {
                 string epl;
 
-                epl = "select contained.min() from SupportBean_ST0_Container";
+                epl = "select Contained.min() from SupportBean_ST0_Container";
                 TryInvalidCompile(
                     env,
                     epl,
-                    "Failed to valIdate select-clause expression 'contained.min()': InvalId input for built-in enumeration method 'min' and 0-parameter footprint, expecting collection of values (typically scalar values) as input, received collection of events of type '" +
+                    "Failed to validate select-clause expression 'Contained.min()': Invalid input for built-in enumeration method 'min' and 0-parameter footprint, expecting collection of values (typically scalar values) as input, received collection of events of type '" +
                     typeof(SupportBean_ST0).Name +
                     "'");
             }

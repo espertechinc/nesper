@@ -33,11 +33,11 @@ namespace com.espertech.esper.common.@internal.epl.join.querygraph
         {
             queryGraph = new QueryGraphForge(3, null, false);
             types = new EventType[] {
-                supportEventTypeFactory.CreateMapType(CreateType("p0,p00,p01,p02")),
-                supportEventTypeFactory.CreateMapType(CreateType("p1,p10,p11,p12")),
-                supportEventTypeFactory.CreateMapType(CreateType("p2,p20,p21")),
-                supportEventTypeFactory.CreateMapType(CreateType("p3,p30,p31")),
-                supportEventTypeFactory.CreateMapType(CreateType("p4,p40,p41,p42")),
+                supportEventTypeFactory.CreateMapType(CreateType("p0,P00,P01,p02")),
+                supportEventTypeFactory.CreateMapType(CreateType("p1,P10,P11,p12")),
+                supportEventTypeFactory.CreateMapType(CreateType("p2,P20,P21")),
+                supportEventTypeFactory.CreateMapType(CreateType("p3,P30,p31")),
+                supportEventTypeFactory.CreateMapType(CreateType("p4,P40,p41,p42")),
             };
         }
 
@@ -45,8 +45,8 @@ namespace com.espertech.esper.common.@internal.epl.join.querygraph
         public void TestFillEquivalency()
         {
             // test with just 3 streams
-            queryGraph.AddStrictEquals(0, "p00", Make(0, "p00"), 1, "p10", Make(1, "p10"));
-            queryGraph.AddStrictEquals(1, "p10", Make(1, "p10"), 2, "p20", Make(2, "p20"));
+            queryGraph.AddStrictEquals(0, "P00", Make(0, "P00"), 1, "P10", Make(1, "P10"));
+            queryGraph.AddStrictEquals(1, "P10", Make(1, "P10"), 2, "P20", Make(2, "P20"));
 
             Assert.IsFalse(queryGraph.IsNavigableAtAll(0, 2));
             Assert.AreEqual(0, SupportQueryGraphTestUtil.GetStrictKeyProperties(queryGraph, 0, 2).Length);
@@ -55,8 +55,8 @@ namespace com.espertech.esper.common.@internal.epl.join.querygraph
             QueryGraphForge.FillEquivalentNav(types, queryGraph);
 
             Assert.IsTrue(queryGraph.IsNavigableAtAll(0, 2));
-            string[] expectedOne = new string[] { "p00" };
-            string[] expectedTwo = new string[] { "p20" };
+            string[] expectedOne = new string[] { "P00" };
+            string[] expectedTwo = new string[] { "P20" };
             Assert.IsTrue(Arrays.Equals(expectedOne, SupportQueryGraphTestUtil.GetStrictKeyProperties(queryGraph, 0, 2)));
             Assert.IsTrue(Arrays.Equals(expectedTwo, SupportQueryGraphTestUtil.GetIndexProperties(queryGraph, 0, 2)));
 
@@ -108,7 +108,7 @@ namespace com.espertech.esper.common.@internal.epl.join.querygraph
             }
 
             // Try :        s1.p11 = s2.p21  and  s2.p22 = s3.p31
-            Assert.IsTrue(queryGraph.AddStrictEquals(1, "p11", Make(1, "p11"), 2, "p21", Make(2, "p21")));
+            Assert.IsTrue(queryGraph.AddStrictEquals(1, "P11", Make(1, "P11"), 2, "P21", Make(2, "P21")));
 
             try
             {
@@ -179,12 +179,12 @@ namespace com.espertech.esper.common.@internal.epl.join.querygraph
         public void TestGetProperties()
         {
             // s1.p11 = s0.p01 and s0.p02 = s1.p12
-            queryGraph.AddStrictEquals(1, "p11", Make(1, "p11"), 0, "p01", Make(0, "p01"));
+            queryGraph.AddStrictEquals(1, "P11", Make(1, "P11"), 0, "P01", Make(0, "P01"));
             queryGraph.AddStrictEquals(0, "p02", Make(0, "p02"), 1, "p12", Make(1, "p12"));
             log.Debug(queryGraph.ToString());
 
-            string[] expectedOne = new string[] { "p11", "p12" };
-            string[] expectedTwo = new string[] { "p01", "p02" };
+            string[] expectedOne = new string[] { "P11", "p12" };
+            string[] expectedTwo = new string[] { "P01", "p02" };
             Assert.IsTrue(Arrays.Equals(expectedTwo, SupportQueryGraphTestUtil.GetIndexProperties(queryGraph, 1, 0)));
             Assert.IsTrue(Arrays.Equals(expectedOne, SupportQueryGraphTestUtil.GetIndexProperties(queryGraph, 0, 1)));
             Assert.IsTrue(Arrays.Equals(expectedOne, SupportQueryGraphTestUtil.GetStrictKeyProperties(queryGraph, 1, 0)));

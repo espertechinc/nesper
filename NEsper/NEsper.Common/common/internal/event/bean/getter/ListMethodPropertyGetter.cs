@@ -162,7 +162,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
                 .IfRefNotTypeReturnConst("value", typeof(IList<object>), null)
                 .DeclareVar<IList<object>>("l", Cast(typeof(IList<object>), Ref("value")))
                 .IfConditionReturnConst(Relational(ExprDotMethod(Ref("l"), "Size"), LE, Ref("index")), null)
-                .MethodReturn(Cast(beanPropType, ExprDotMethod(Ref("l"), "get", Ref("index"))));
+                .MethodReturn(Cast(beanPropType, ExprDotMethod(Ref("l"), "Get", Ref("index"))));
         }
 
         public override string ToString()

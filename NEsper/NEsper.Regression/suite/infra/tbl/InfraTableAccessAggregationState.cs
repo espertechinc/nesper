@@ -236,7 +236,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             public void Run(RegressionEnvironment env)
             {
                 var path = new RegressionPath();
-                var eplDeclare = "create table varTotal (key0 string primary key, key1 int primary key," +
+                var eplDeclare = "create table varTotal (Key0 string primary key, key1 int primary key," +
                                  "key2 long primary key, total sum(double), cnt count(*))";
                 env.CompileDeploy(eplDeclare, path);
 
@@ -249,7 +249,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
 
                 var fields = "c0,c1".SplitCsv();
                 var eplUse =
-                    "@Name('s0') select varTotal[p00, Id, 100L].total as c0, varTotal[p00, Id, 100L].cnt as c1 from SupportBean_S0";
+                    "@Name('s0') select varTotal[P00, Id, 100L].total as c0, varTotal[P00, Id, 100L].cnt as c1 from SupportBean_S0";
                 env.CompileDeploy(eplUse, path).AddListener("s0");
 
                 MakeSendBean(env, "E1", 10, 100, 1000);
@@ -308,10 +308,10 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
 
                 // create query for state
                 var eplSelect = "@Name('s0') select " +
-                                "varMyAgg[p00].c0 as c0, " +
-                                "varMyAgg[p00].c1 as c1, " +
-                                "varMyAgg[p00].c2 as c2, " +
-                                "varMyAgg[p00].c3 as c3" +
+                                "varMyAgg[P00].c0 as c0, " +
+                                "varMyAgg[P00].c1 as c1, " +
+                                "varMyAgg[P00].c2 as c2, " +
+                                "varMyAgg[P00].c3 as c3" +
                                 " from SupportBean_S0";
                 env.CompileDeploy(eplSelect, path).AddListener("s0");
                 var fields = "c0,c1,c2,c3".SplitCsv();

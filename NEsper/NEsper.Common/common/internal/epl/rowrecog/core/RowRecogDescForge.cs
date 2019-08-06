@@ -182,17 +182,17 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
                         : Constant(ExprNodeUtilityQuery.GetExprResultTypes(_partitionBy)))
                 .SetProperty(desc, "VariableStreams", MakeVariableStreams(method, symbols, classScope))
                 .SetProperty(desc, "HasInterval", Constant(_hasInterval))
-                .SetProperty(desc, "IterateOnly", Constant(_iterateOnly))
-                .SetProperty(desc, "Unbound", Constant(_unbound))
-                .SetProperty(desc, "OrTerminated", Constant(_orTerminated))
-                .SetProperty(desc, "CollectMultimatches", Constant(_collectMultimatches))
-                .SetProperty(desc, "DefineAsksMultimatches", Constant(_defineAsksMultimatches))
+                .SetProperty(desc, "IsIterateOnly", Constant(_iterateOnly))
+                .SetProperty(desc, "IsUnbound", Constant(_unbound))
+                .SetProperty(desc, "IsOrTerminated", Constant(_orTerminated))
+                .SetProperty(desc, "IsCollectMultimatches", Constant(_collectMultimatches))
+                .SetProperty(desc, "IsDefineAsksMultimatches", Constant(_defineAsksMultimatches))
                 .SetProperty(desc, "NumEventsEventsPerStreamDefine", Constant(_numEventsEventsPerStreamDefine))
                 .SetProperty(desc, "MultimatchVariablesArray", Constant(_multimatchVariablesArray))
                 .SetProperty(desc, "StatesOrdered", MakeStates(method, symbols, classScope))
                 .SetProperty(desc, "NextStatesPerState", MakeNextStates(method, classScope))
                 .SetProperty(desc, "StartStates", Constant(startStateNums))
-                .SetProperty(desc, "AllMatches", Constant(_allMatches))
+                .SetProperty(desc, "IsAllMatches", Constant(_allMatches))
                 .SetProperty(desc, "Skip", Constant(_skip))
                 .SetProperty(
                     desc,
@@ -225,10 +225,14 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
 
             for (var i = 0; i < _aggregationServices.Length; i++) {
                 if (_aggregationServices[i] != null) {
-                    var anonymousClass = NewAnonymousClass(method.Block, typeof(AggregationResultFutureAssignable));
-                    var assign = CodegenMethod.MakeParentNode(typeof(void), GetType(), classScope)
-                        .AddParam(typeof(AggregationResultFuture), "future");
-                    anonymousClass.AddMethod("assign", assign);
+                    var assign = new CodegenExpressionLambda(method.Block)
+                        .WithParam<AggregationResultFuture>("future");
+                    var anonymousClass = NewInstance<ProxyAggregationResultFutureAssignable>(assign);
+
+                    //var anonymousClass = NewAnonymousClass(method.Block, typeof(AggregationResultFutureAssignable));
+                    //var assign = CodegenMethod.MakeParentNode(typeof(void), GetType(), classScope)
+                    //    .AddParam(typeof(AggregationResultFuture), "future");
+                    //anonymousClass.AddMethod("assign", assign);
 
                     CodegenExpression field = classScope.NamespaceScope.AddOrGetFieldWellKnown(
                         new CodegenFieldNameMatchRecognizeAgg(i),
@@ -298,15 +302,13 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
             method.Block
                 .DeclareVar<LinkedHashMap<string, Pair<int, bool>>>(
                     "vars",
-                    NewInstance(
-                        typeof(LinkedHashMap<string, Pair<int, bool>>),
-                        Constant(CollectionUtil.CapacityHashMap(_variableStreams.Count))));
+                    NewInstance<LinkedHashMap<string, Pair<int, bool>>>());
             foreach (var entry in _variableStreams) {
                 method.Block.ExprDotMethod(
                     Ref("vars"),
                     "Put",
                     Constant(entry.Key),
-                    NewInstance(typeof(Pair<int, bool>), Constant(entry.Value.First), Constant(entry.Value.Second)));
+                    NewInstance<Pair<int, bool>>(Constant(entry.Value.First), Constant(entry.Value.Second)));
             }
 
             method.Block.MethodReturn(Ref("vars"));

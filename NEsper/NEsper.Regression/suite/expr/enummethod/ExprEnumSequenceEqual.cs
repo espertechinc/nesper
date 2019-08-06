@@ -35,7 +35,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
             {
                 var fields = "val0".SplitCsv();
                 var eplFragment =
-                    "@Name('s0') select contained.selectFrom(x => key0).sequenceEqual(contained.selectFrom(y => Id)) as val0 " +
+                    "@Name('s0') select Contained.selectFrom(x => Key0).sequenceEqual(Contained.selectFrom(y => Id)) as val0 " +
                     "from SupportBean_ST0_Container";
                 env.CompileDeploy(eplFragment).AddListener("s0");
 
@@ -78,7 +78,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
             {
                 var fields = "val0".SplitCsv();
                 var eplFragment = "@Name('s0') select " +
-                                  "strvals.sequenceEqual(strvalstwo) as val0 " +
+                                  "Strvals.sequenceEqual(Strvalstwo) as val0 " +
                                   "from SupportCollection";
                 env.CompileDeploy(eplFragment).AddListener("s0");
 
@@ -181,11 +181,11 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
             {
                 string epl;
 
-                epl = "select window(*).sequenceEqual(strvals) from SupportCollection#lastevent";
+                epl = "select window(*).sequenceEqual(Strvals) from SupportCollection#lastevent";
                 TryInvalidCompile(
                     env,
                     epl,
-                    "Failed to valIdate select-clause expression 'window(*).sequenceEqual(strvals)': InvalId input for built-in enumeration method 'sequenceEqual' and 1-parameter footprint, expecting collection of values (typically scalar values) as input, received collection of events of type 'SupportCollection'");
+                    "Failed to validate select-clause expression 'window(*).sequenceEqual(Strvals)': Invalid input for built-in enumeration method 'sequenceEqual' and 1-parameter footprint, expecting collection of values (typically scalar values) as input, received collection of events of type 'SupportCollection'");
             }
         }
     }

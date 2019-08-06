@@ -64,7 +64,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
             {
                 return CodegenExpressionBuilder.StaticMethod(
                     typeof(StringToLongWStaticFormatComputer),
-                    "stringToLongWStaticFormatParseSafe",
+                    "StringToLongWStaticFormatParseSafe",
                     FormatField(dateFormatString, codegenClassScope),
                     input);
             }

@@ -21,7 +21,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
             var text = "@Name('s0') select * from SupportRecogBean#length(10) " +
                        "match_recognize (" +
                        "  partition by value" +
-                       "  measures E1.value as value" +
+                       "  measures E1.Value as value" +
                        "  pattern (E1 E2 | E2 E1 ) " +
                        "  define " +
                        "    E1 as E1.TheString = 'A', " +

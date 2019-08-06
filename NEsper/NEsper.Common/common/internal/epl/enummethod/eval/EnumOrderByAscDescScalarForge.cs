@@ -79,12 +79,12 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             if (descending) {
                 block.StaticMethod(
                     typeof(Collections),
-                    "sort",
+                    "Sort",
                     @Ref("list"),
-                    StaticMethod(typeof(Collections), "reverseOrder"));
+                    StaticMethod(typeof(Collections), "ReverseOrder"));
             }
             else {
-                block.StaticMethod(typeof(Collections), "sort", @Ref("list"));
+                block.StaticMethod(typeof(Collections), "Sort", @Ref("list"));
             }
 
             CodegenMethod method = block.MethodReturn(@Ref("list"));

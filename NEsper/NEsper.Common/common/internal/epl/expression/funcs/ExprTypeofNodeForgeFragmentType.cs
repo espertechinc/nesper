@@ -112,8 +112,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
                 .IfRefNullReturnNull("fragment")
                 .IfInstanceOf("fragment", typeof(EventBean))
                 .BlockReturn(
-                    ExprDotMethodChain(Cast(typeof(EventBean), Ref("fragment"))).Add("getEventType").Add("getName"))
-                .IfCondition(ExprDotMethodChain(Ref("fragment")).Add("getClass").Add("isArray"))
+                    ExprDotMethodChain(Cast(typeof(EventBean), Ref("fragment"))).Get("EventType").Get("Name"))
+                .IfCondition(ExprDotMethodChain(Ref("fragment")).Add("GetType").Get("IsArray"))
                 .BlockReturn(Constant(fragmentType + "[]"))
                 .MethodReturn(ConstantNull());
             return LocalMethod(methodNode);

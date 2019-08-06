@@ -186,7 +186,7 @@ namespace com.espertech.esper.regressionlib.framework
             }
             catch (PropertyAccessException ex) {
                 // expected
-                AssertMessage(ex, "Property named '" + propertyName + "' is not a valId property name for this type");
+                AssertMessage(ex, "Property named '" + propertyName + "' is not a valid property name for this type");
             }
         }
 
@@ -200,7 +200,7 @@ namespace com.espertech.esper.regressionlib.framework
             }
             catch (PropertyAccessException ex) {
                 // expected
-                AssertMessage(ex, "Property named '" + propertyName + "' is not a valId property name for this type");
+                AssertMessage(ex, "Property named '" + propertyName + "' is not a valid property name for this type");
             }
         }
 

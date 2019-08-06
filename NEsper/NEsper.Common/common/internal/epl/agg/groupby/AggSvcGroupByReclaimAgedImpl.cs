@@ -92,13 +92,13 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupby
             var timeAbacus = classScope.AddOrGetFieldSharable(TimeAbacusField.INSTANCE);
             method.Block.DeclareVar<long>(
                     "currentTime",
-                    ExprDotMethodChain(REF_EXPREVALCONTEXT).Add("getTimeProvider").Add("getTime"))
+                    ExprDotMethodChain(REF_EXPREVALCONTEXT).Get("TimeProvider").Get("Time"))
                 .IfCondition(Or(EqualsNull(REF_NEXTSWEEPTIME), Relational(REF_NEXTSWEEPTIME, LE, Ref("currentTime"))))
                 .AssignRef(
                     REF_CURRENTMAXAGE,
                     StaticMethod(
                         typeof(AggSvcGroupByReclaimAgedImpl),
-                        "computeTimeReclaimAgeFreq",
+                        "ComputeTimeReclaimAgeFreq",
                         REF_CURRENTMAXAGE,
                         REF_EVALUATORFUNCTIONMAXAGE,
                         timeAbacus))
@@ -106,7 +106,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupby
                     REF_CURRENTRECLAIMFREQUENCY,
                     StaticMethod(
                         typeof(AggSvcGroupByReclaimAgedImpl),
-                        "computeTimeReclaimAgeFreq",
+                        "ComputeTimeReclaimAgeFreq",
                         REF_CURRENTRECLAIMFREQUENCY,
                         REF_EVALUATIONFUNCTIONFREQUENCY,
                         timeAbacus))

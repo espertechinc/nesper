@@ -21,9 +21,9 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
     public class ResultSetQueryTypeRollupPlanningAndSODA : RegressionExecution
     {
         public static readonly string PLAN_CALLBACK_HOOK =
-            "@Hook(type=" +
+            "@Hook(HookType=" +
             typeof(HookType).FullName +
-            ".INTERNAL_GROUPROLLUP_PLAN,hook='" +
+            ".INTERNAL_GROUPROLLUP_PLAN,Hook='" +
             typeof(SupportGroupRollupPlanHook).FullName +
             "')";
 

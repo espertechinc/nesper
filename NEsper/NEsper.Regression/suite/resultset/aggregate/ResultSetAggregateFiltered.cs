@@ -476,12 +476,12 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
                 TryInvalidCompile(
                     env,
                     "select count(*, IntPrimitive) from SupportBean",
-                    "Failed to valIdate select-clause expression 'count(*,IntPrimitive)': InvalId filter expression parameter to the aggregation function 'count' is expected to return a boolean value but returns System.Integer [select count(*, IntPrimitive) from SupportBean]");
+                    "Failed to validate select-clause expression 'count(*,IntPrimitive)': Invalid filter expression parameter to the aggregation function 'count' is expected to return a boolean value but returns System.Integer [select count(*, IntPrimitive) from SupportBean]");
 
                 TryInvalidCompile(
                     env,
                     "select fmin(IntPrimitive) from SupportBean",
-                    "Failed to valIdate select-clause expression 'min(IntPrimitive)': MIN-filtered aggregation function must have a filter expression as a second parameter [select fmin(IntPrimitive) from SupportBean]");
+                    "Failed to validate select-clause expression 'min(IntPrimitive)': MIN-filtered aggregation function must have a filter expression as a second parameter [select fmin(IntPrimitive) from SupportBean]");
             }
         }
     }

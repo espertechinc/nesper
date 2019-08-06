@@ -94,7 +94,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 env,
                 path,
                 "into table varagg select last(*) as lasteveru from SupportBean#length(2)",
-                "Failed to valIdate select-clause expression 'last(*)': For into-table use 'window(*)' or 'window(stream.*)' instead");
+                "Failed to validate select-clause expression 'last(*)': For into-table use 'window(*)' or 'window(stream.*)' instead");
             // invalid: unbound aggregation into bound max
             SupportMessageAssertUtil.TryInvalidCompile(
                 env,
@@ -153,7 +153,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 env,
                 path,
                 "into table varagg select maxby(IntPrimitive) as maxbyeveru from SupportBean#length(2)",
-                "Failed to valIdate select-clause expression 'maxby(IntPrimitive)': When specifying into-table a sort expression cannot be provIded [");
+                "Failed to validate select-clause expression 'maxby(IntPrimitive)': When specifying into-table a sort expression cannot be provIded [");
             // invalid: unbound aggregation into bound max
             SupportMessageAssertUtil.TryInvalidCompile(
                 env,
@@ -481,7 +481,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 env.CompileDeploy(eplIntoTable, path);
 
                 var eplQueryTable =
-                    "@Name('s0') select (select sumint from MyTable where pkey = s0.p00) as c0 from SupportBean_S0 as s0";
+                    "@Name('s0') select (select sumint from MyTable where pkey = s0.P00) as c0 from SupportBean_S0 as s0";
                 env.CompileDeploy(eplQueryTable, path).AddListener("s0");
 
                 env.Milestone(1);

@@ -158,15 +158,19 @@ namespace com.espertech.esper.common.@internal.util
             Type originator,
             CodegenClassScope classScope)
         {
-            var anonymousClass =
-                NewAnonymousClass(method.Block, typeof(SimpleTypeParser));
-            var parse = CodegenMethod
-                .MakeParentNode<object>(originator, classScope)
-                .AddParam<string>("value");
-            anonymousClass.AddMethod("Parse", parse);
-            parse.Block.MethodReturn(
-                parser.Codegen(Ref("value")));
-            return anonymousClass;
+            var parse = new CodegenExpressionLambda(method.Block)
+                .WithParam<string>("value");
+            var typeParser = NewInstance<ProxySimpleTypeParser>(parse);
+
+            //var anonymousClass =
+            //    NewAnonymousClass(method.Block, typeof(SimpleTypeParser));
+            //var parse = CodegenMethod
+            //    .MakeParentNode<object>(originator, classScope)
+            //    .AddParam<string>("value");
+            //anonymousClass.AddMethod("Parse", parse);
+
+            parse.Block.BlockReturn(parser.Codegen(Ref("value")));
+            return typeParser;
         }
     }
 }

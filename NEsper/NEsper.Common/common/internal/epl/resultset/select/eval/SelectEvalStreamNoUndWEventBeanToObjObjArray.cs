@@ -53,7 +53,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
         {
             return StaticMethod(
                 typeof(SelectEvalStreamNoUndWEventBeanToObjObjArray),
-                "processSelectExprbeanToObjArray",
+                "ProcessSelectExprbeanToObjArray",
                 props,
                 Constant(eventBeanToObjectIndexesArray),
                 eventBeanFactory,

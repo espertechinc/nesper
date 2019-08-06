@@ -7,10 +7,17 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Linq;
 using System.Numerics;
 using System.Text;
 
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.core.CodeGenerationHelper;
+
+using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
 namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
 {
@@ -20,51 +27,35 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
             StringBuilder builder,
             object constant)
         {
-            if (constant is string) {
-                builder.Append('"');
-                builder.Append(constant); // StringEscapeUtils.EscapeJava((string) constant));
-                builder.Append('"');
+            if (constant is string stringConstant) {
+                // StringEscapeUtils.EscapeJava((string) constant));
+                builder.Append(Literal(stringConstant).ToFullString());
             }
             else if (constant is char) {
-                var c = (char) constant;
-                if (c == '\'') {
-                    builder.Append('\'');
-                    builder.Append('\\');
-                    builder.Append('\'');
-                    builder.Append('\'');
-                }
-                else if (c == '\\') {
-                    builder.Append('\'');
-                    builder.Append('\\');
-                    builder.Append('\\');
-                    builder.Append('\'');
-                }
-                else {
-                    builder.Append('\'');
-                    builder.Append(c);
-                    builder.Append('\'');
-                }
+                builder.Append(Literal((char) constant).ToFullString());
             }
             else if (constant == null) {
                 builder.Append("null");
             }
             else if (constant is long) {
-                builder.Append(constant).Append("L");
+                builder.Append(Literal((long) constant).ToFullString());
             }
             else if (constant is float) {
-                builder.Append(constant).Append("F");
+                builder.Append(Literal((float) constant).ToFullString());
             }
             else if (constant is double) {
-                builder.Append(constant).Append("d");
+                builder.Append(Literal((double) constant).ToFullString());
             }
             else if (constant is decimal) {
-                builder.Append(constant).Append("m");
+                builder.Append(Literal((decimal) constant).ToFullString());
             }
             else if (constant is short) {
-                builder.Append("(short) ").Append(constant);
+                builder.Append("(short) ");
+                builder.Append(Literal((short) constant).ToFullString());
             }
             else if (constant is byte) {
-                builder.Append("(byte)").Append(constant);
+                builder.Append("(byte)");
+                builder.Append(Literal((byte) constant).ToFullString());
             }
             else if (constant is bool booleanConstant) {
                 builder.Append(booleanConstant ? "true" : "false");
@@ -104,10 +95,64 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
             }
         }
 
+        private static CastExpressionSyntax ToSyntax(byte byteValue)
+        {
+            return CastExpression(
+                PredefinedType(
+                    Token(SyntaxKind.ByteKeyword)),
+                LiteralExpression(
+                    SyntaxKind.NumericLiteralExpression,
+                    Literal(byteValue)));
+        }
+
+        private static SeparatedSyntaxList<ExpressionSyntax> ToSyntax(byte[] byteArray)
+        {
+            return SeparatedList<ExpressionSyntax>(
+                byteArray
+                    .Select(b => (SyntaxNodeOrToken) ToSyntax(b))
+                    .ToArray());
+        }
+
+        private static ArrayTypeSyntax DeclareByteArray()
+        {
+            return ArrayType(
+                    PredefinedType(
+                        Token(SyntaxKind.ByteKeyword)))
+                .WithRankSpecifiers(
+                    SingletonList<ArrayRankSpecifierSyntax>(
+                        ArrayRankSpecifier(
+                            SingletonSeparatedList<ExpressionSyntax>(
+                                OmittedArraySizeExpression()
+                            ))));
+        }
+
+        private static InitializerExpressionSyntax InitializeByteArray(byte[] byteArray)
+        {
+            return InitializerExpression(
+                SyntaxKind.ArrayInitializerExpression,
+                ToSyntax(byteArray));
+        }
+
         private static void RenderBigInteger(
             BigInteger constant,
             StringBuilder builder)
         {
+            var argumentList = ArgumentList(
+                SingletonSeparatedList<ArgumentSyntax>(
+                    Argument(
+                        ArrayCreationExpression(DeclareByteArray())
+                            .WithInitializer(InitializeByteArray(constant.ToByteArray())))));
+
+            var typeName = QualifiedName(
+                QualifiedName(
+                    IdentifierName("System"),
+                    IdentifierName("Numeric")),
+                IdentifierName("BigInteger"));
+
+            var newValueExpression = SyntaxFactory.ObjectCreationExpression(
+                    IdentifierName(typeof(BigInteger).FullName))
+                .WithArgumentList(argumentList);
+
             builder
                 .Append("new ")
                 .Append(typeof(BigInteger).FullName)

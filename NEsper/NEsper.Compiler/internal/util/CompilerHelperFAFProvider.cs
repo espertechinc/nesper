@@ -235,7 +235,7 @@ namespace com.espertech.esper.compiler.@internal.util
 
             // initialize-query
             var initializeQueryMethod = CodegenMethod
-                .MakeParentNode(
+                .MakeMethod(
                     typeof(void),
                     typeof(EPCompilerImpl),
                     CodegenSymbolProviderEmpty.INSTANCE,
@@ -248,7 +248,7 @@ namespace com.espertech.esper.compiler.@internal.util
                 NewInstance(queryMethodProviderClassName, EPStatementInitServicesConstants.REF));
 
             // get-execute
-            var getQueryMethodProviderMethod = CodegenMethod.MakeParentNode(
+            var getQueryMethodProviderMethod = CodegenMethod.MakeMethod(
                 typeof(FAFQueryMethodProvider),
                 typeof(EPCompilerImpl),
                 CodegenSymbolProviderEmpty.INSTANCE,

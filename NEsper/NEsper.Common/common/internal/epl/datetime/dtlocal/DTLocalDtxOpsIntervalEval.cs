@@ -110,7 +110,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
             var block = methodNode.Block
                 .DeclareVar<long>("startLong", ExprDotName(Ref("startTimestamp"), "TimeInMillis"))
                 .DeclareVar<long>("endLong", ExprDotName(Ref("endTimestamp"), "TimeInMillis"))
-                .DeclareVar<DateTimeEx>("dtx", StaticMethod(typeof(DateTimeEx), "getInstance", timeZoneField))
+                .DeclareVar<DateTimeEx>("dtx", StaticMethod(typeof(DateTimeEx), "GetInstance", timeZoneField))
                 .Expression(SetProperty(Ref("dtx"), "TimeInMillis", Ref("startLong")));
             EvaluateCalOpsCalendarCodegen(
                 block,

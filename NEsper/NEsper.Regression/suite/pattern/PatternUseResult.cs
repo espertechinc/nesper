@@ -329,26 +329,26 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 var testCaseList = new CaseList();
                 EventExpressionCase testCase;
 
-                testCase = new EventExpressionCase("X1=SupportBean_S0() -> X2=SupportBean_S0(p00=X1.p00)");
+                testCase = new EventExpressionCase("X1=SupportBean_S0() -> X2=SupportBean_S0(P00=X1.P00)");
                 testCaseList.AddTest(testCase);
 
-                testCase = new EventExpressionCase("X1=SupportBean_S0(p00='B') -> X2=SupportBean_S0(p00=X1.p00)");
+                testCase = new EventExpressionCase("X1=SupportBean_S0(P00='B') -> X2=SupportBean_S0(P00=X1.P00)");
                 testCase.Add("e6", "X1", events.GetEvent("e2"), "X2", events.GetEvent("e6"));
                 testCaseList.AddTest(testCase);
 
-                testCase = new EventExpressionCase("X1=SupportBean_S0(p00='B') -> every X2=SupportBean_S0(p00=X1.p00)");
+                testCase = new EventExpressionCase("X1=SupportBean_S0(P00='B') -> every X2=SupportBean_S0(P00=X1.P00)");
                 testCase.Add("e6", "X1", events.GetEvent("e2"), "X2", events.GetEvent("e6"));
                 testCase.Add("e11", "X1", events.GetEvent("e2"), "X2", events.GetEvent("e11"));
                 testCaseList.AddTest(testCase);
 
                 testCase = new EventExpressionCase(
-                    "every X1=SupportBean_S0(p00='B') -> every X2=SupportBean_S0(p00=X1.p00)");
+                    "every X1=SupportBean_S0(P00='B') -> every X2=SupportBean_S0(P00=X1.P00)");
                 testCase.Add("e6", "X1", events.GetEvent("e2"), "X2", events.GetEvent("e6"));
                 testCase.Add("e11", "X1", events.GetEvent("e2"), "X2", events.GetEvent("e11"));
                 testCase.Add("e11", "X1", events.GetEvent("e6"), "X2", events.GetEvent("e11"));
                 testCaseList.AddTest(testCase);
 
-                testCase = new EventExpressionCase("every X1=SupportBean_S0() -> X2=SupportBean_S0(p00=X1.p00)");
+                testCase = new EventExpressionCase("every X1=SupportBean_S0() -> X2=SupportBean_S0(P00=X1.P00)");
                 testCase.Add("e6", "X1", events.GetEvent("e2"), "X2", events.GetEvent("e6"));
                 testCase.Add("e8", "X1", events.GetEvent("e3"), "X2", events.GetEvent("e8"));
                 testCase.Add("e10", "X1", events.GetEvent("e9"), "X2", events.GetEvent("e10"));
@@ -356,7 +356,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 testCase.Add("e12", "X1", events.GetEvent("e7"), "X2", events.GetEvent("e12"));
                 testCaseList.AddTest(testCase);
 
-                testCase = new EventExpressionCase("every X1=SupportBean_S0() -> every X2=SupportBean_S0(p00=X1.p00)");
+                testCase = new EventExpressionCase("every X1=SupportBean_S0() -> every X2=SupportBean_S0(P00=X1.P00)");
                 testCase.Add("e6", "X1", events.GetEvent("e2"), "X2", events.GetEvent("e6"));
                 testCase.Add("e8", "X1", events.GetEvent("e3"), "X2", events.GetEvent("e8"));
                 testCase.Add("e10", "X1", events.GetEvent("e9"), "X2", events.GetEvent("e10"));

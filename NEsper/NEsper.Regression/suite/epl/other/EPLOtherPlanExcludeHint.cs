@@ -86,7 +86,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 SupportQueryPlanIndexHook.Reset();
                 env.CompileDeploy(
                     INDEX_CALLBACK_HOOK +
-                    "@hint('exclude_plan(true)') select (select * from SupportBean_S0#unique(p00) as s0 where s1.p10 = p00) from SupportBean_S1 as s1",
+                    "@hint('exclude_plan(true)') select (select * from SupportBean_S0#unique(P00) as s0 where s1.P10 = P00) from SupportBean_S1 as s1",
                     path);
                 var subq = SupportQueryPlanIndexHook.GetAndResetSubqueries()[0];
                 Assert.AreEqual(typeof(SubordFullTableScanLookupStrategyFactoryForge).Name, subq.TableLookupStrategy);
@@ -95,7 +95,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 env.CompileDeploy("create window S0Window#keepall as SupportBean_S0", path);
                 env.CompileDeploy(
                     INDEX_CALLBACK_HOOK +
-                    "@hint('exclude_plan(true)') on SupportBean_S1 as s1 select * from S0Window as s0 where s1.p10 = s0.p00",
+                    "@hint('exclude_plan(true)') on SupportBean_S1 as s1 select * from S0Window as s0 where s1.P10 = s0.P00",
                     path);
                 var onExpr = SupportQueryPlanIndexHook.GetAndResetOnExpr();
                 Assert.AreEqual(typeof(SubordWMatchExprLookupStrategyAllFilteredForge).Name, onExpr.StrategyName);
@@ -123,27 +123,27 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 // test "any"
                 var excludeAny = "@hint('exclude_plan(true)')";
                 TryAssertionJoin(env, epl, planFullTableScan);
-                TryAssertionJoin(env, excludeAny + epl + " where p00 = p10", planFullTableScan);
-                TryAssertionJoin(env, excludeAny + epl + " where p00 = 'abc'", planFullTableScan);
-                TryAssertionJoin(env, excludeAny + epl + " where p00 = (p10 || 'A')", planFullTableScan);
-                TryAssertionJoin(env, excludeAny + epl + " where p10 = 'abc'", planFullTableScan);
-                TryAssertionJoin(env, excludeAny + epl + " where p00 > p10", planFullTableScan);
-                TryAssertionJoin(env, excludeAny + epl + " where p00 > 'A'", planFullTableScan);
-                TryAssertionJoin(env, excludeAny + epl + " where p10 > 'A'", planFullTableScan);
-                TryAssertionJoin(env, excludeAny + epl + " where p10 > 'A'", planFullTableScan);
-                TryAssertionJoin(env, excludeAny + epl + " where p00 > (p10 || 'A')", planFullTableScan);
-                TryAssertionJoin(env, excludeAny + epl + " where p00 between p10 and p11", planFullTableScan);
-                TryAssertionJoin(env, excludeAny + epl + " where p00 between 'a' and p11", planFullTableScan);
-                TryAssertionJoin(env, excludeAny + epl + " where p00 between 'a' and 'c'", planFullTableScan);
-                TryAssertionJoin(env, excludeAny + epl + " where p00 between p10 and 'c'", planFullTableScan);
-                TryAssertionJoin(env, excludeAny + epl + " where p00 in (p10, p11)", planFullTableScan);
-                TryAssertionJoin(env, excludeAny + epl + " where p00 in ('a', p11)", planFullTableScan);
-                TryAssertionJoin(env, excludeAny + epl + " where p00 in ('a', 'b')", planFullTableScan);
-                TryAssertionJoin(env, excludeAny + epl + " where p10 in (p00, p01)", planFullTableScan);
+                TryAssertionJoin(env, excludeAny + epl + " where P00 = P10", planFullTableScan);
+                TryAssertionJoin(env, excludeAny + epl + " where P00 = 'abc'", planFullTableScan);
+                TryAssertionJoin(env, excludeAny + epl + " where P00 = (P10 || 'A')", planFullTableScan);
+                TryAssertionJoin(env, excludeAny + epl + " where P10 = 'abc'", planFullTableScan);
+                TryAssertionJoin(env, excludeAny + epl + " where P00 > P10", planFullTableScan);
+                TryAssertionJoin(env, excludeAny + epl + " where P00 > 'A'", planFullTableScan);
+                TryAssertionJoin(env, excludeAny + epl + " where P10 > 'A'", planFullTableScan);
+                TryAssertionJoin(env, excludeAny + epl + " where P10 > 'A'", planFullTableScan);
+                TryAssertionJoin(env, excludeAny + epl + " where P00 > (P10 || 'A')", planFullTableScan);
+                TryAssertionJoin(env, excludeAny + epl + " where P00 between P10 and P11", planFullTableScan);
+                TryAssertionJoin(env, excludeAny + epl + " where P00 between 'a' and P11", planFullTableScan);
+                TryAssertionJoin(env, excludeAny + epl + " where P00 between 'a' and 'c'", planFullTableScan);
+                TryAssertionJoin(env, excludeAny + epl + " where P00 between P10 and 'c'", planFullTableScan);
+                TryAssertionJoin(env, excludeAny + epl + " where P00 in (P10, P11)", planFullTableScan);
+                TryAssertionJoin(env, excludeAny + epl + " where P00 in ('a', P11)", planFullTableScan);
+                TryAssertionJoin(env, excludeAny + epl + " where P00 in ('a', 'b')", planFullTableScan);
+                TryAssertionJoin(env, excludeAny + epl + " where P10 in (P00, P01)", planFullTableScan);
 
                 // test EQUALS
                 var planEquals = SupportQueryPlanBuilder.Start(2)
-                    .AddIndexHashSingleNonUnique(0, "i1", "p00")
+                    .AddIndexHashSingleNonUnique(0, "i1", "P00")
                     .SetIndexFullTableScan(1, "i2")
                     .SetLookupPlanInner(0, new FullTableScanLookupPlanForge(0, 1, false, types, GetIndexKey("i2")))
                     .SetLookupPlanInner(
@@ -154,11 +154,11 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                             false,
                             types,
                             GetIndexKey("i1"),
-                            new[] {SupportExprNodeFactory.MakeKeyed("p10")},
+                            new[] {SupportExprNodeFactory.MakeKeyed("P10")},
                             null,
                             null))
                     .Get();
-                var eplWithWhereEquals = epl + " where p00 = p10";
+                var eplWithWhereEquals = epl + " where P00 = P10";
                 TryAssertionJoin(env, "@hint('exclude_plan(from_streamnum=0)')" + eplWithWhereEquals, planEquals);
                 TryAssertionJoin(env, "@hint('exclude_plan(from_streamname=\"s0\")')" + eplWithWhereEquals, planEquals);
                 TryAssertionJoin(
@@ -192,16 +192,16 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                     planFullTableScan);
                 TryAssertionJoin(
                     env,
-                    "@hint('exclude_plan(exprs.anyOf(v=> v=\"p00\"))')" + eplWithWhereEquals,
+                    "@hint('exclude_plan(exprs.anyOf(v=> v=\"P00\"))')" + eplWithWhereEquals,
                     planFullTableScan);
                 TryAssertionJoin(
                     env,
-                    "@hint('exclude_plan(\"p10\" in (exprs))')" + eplWithWhereEquals,
+                    "@hint('exclude_plan(\"P10\" in (exprs))')" + eplWithWhereEquals,
                     planFullTableScan);
 
                 // test greater (relop)
                 var planGreater = SupportQueryPlanBuilder.Start(2)
-                    .AddIndexBtreeSingle(0, "i1", "p00")
+                    .AddIndexBtreeSingle(0, "i1", "P00")
                     .SetIndexFullTableScan(1, "i2")
                     .SetLookupPlanInner(0, new FullTableScanLookupPlanForge(0, 1, false, types, GetIndexKey("i2")))
                     .SetLookupPlanInner(
@@ -212,10 +212,10 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                             false,
                             types,
                             GetIndexKey("i1"),
-                            SupportExprNodeFactory.MakeRangeLess("p10"),
+                            SupportExprNodeFactory.MakeRangeLess("P10"),
                             null))
                     .Get();
-                var eplWithWhereGreater = epl + " where p00 > p10";
+                var eplWithWhereGreater = epl + " where P00 > P10";
                 TryAssertionJoin(env, "@hint('exclude_plan(from_streamnum=0)')" + eplWithWhereGreater, planGreater);
                 TryAssertionJoin(
                     env,
@@ -224,7 +224,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
 
                 // test range (relop)
                 var planRange = SupportQueryPlanBuilder.Start(2)
-                    .AddIndexBtreeSingle(0, "i1", "p00")
+                    .AddIndexBtreeSingle(0, "i1", "P00")
                     .SetIndexFullTableScan(1, "i2")
                     .SetLookupPlanInner(0, new FullTableScanLookupPlanForge(0, 1, false, types, GetIndexKey("i2")))
                     .SetLookupPlanInner(
@@ -235,16 +235,16 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                             false,
                             types,
                             GetIndexKey("i1"),
-                            SupportExprNodeFactory.MakeRangeIn("p10", "p11"),
+                            SupportExprNodeFactory.MakeRangeIn("P10", "P11"),
                             null))
                     .Get();
-                var eplWithWhereRange = epl + " where p00 between p10 and p11";
+                var eplWithWhereRange = epl + " where P00 between P10 and P11";
                 TryAssertionJoin(env, "@hint('exclude_plan(from_streamnum=0)')" + eplWithWhereRange, planRange);
                 TryAssertionJoin(env, "@hint('exclude_plan(opname=\"relop\")')" + eplWithWhereRange, planFullTableScan);
 
                 // test in (relop)
                 var planIn = SupportQueryPlanBuilder.Start(2)
-                    .AddIndexHashSingleNonUnique(0, "i1", "p00")
+                    .AddIndexHashSingleNonUnique(0, "i1", "P00")
                     .SetIndexFullTableScan(1, "i2")
                     .SetLookupPlanInner(0, new FullTableScanLookupPlanForge(0, 1, false, types, GetIndexKey("i2")))
                     .SetLookupPlanInner(
@@ -255,9 +255,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                             false,
                             types,
                             GetIndexKey("i1"),
-                            SupportExprNodeFactory.MakeIdentExprNodes("p10", "p11")))
+                            SupportExprNodeFactory.MakeIdentExprNodes("P10", "P11")))
                     .Get();
-                var eplWithIn = epl + " where p00 in (p10, p11)";
+                var eplWithIn = epl + " where P00 in (P10, P11)";
                 TryAssertionJoin(env, "@hint('exclude_plan(from_streamnum=0)')" + eplWithIn, planIn);
                 TryAssertionJoin(env, "@hint('exclude_plan(opname=\"inkw\")')" + eplWithIn, planFullTableScan);
 
@@ -269,7 +269,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "select * from SupportBean_S0 unIdirectional, SupportBean_S1#keepall";
+                var epl = "select * from SupportBean_S0 unidirectional, SupportBean_S1#keepall";
                 // no params
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
@@ -290,7 +290,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
                     "@hint('exclude_plan(dummy = 1)') " + epl,
-                    "Failed to valIdate hint expression 'dummy=1': Property named 'dummy' is not valId in any stream");
+                    "Failed to validate hint expression 'dummy=1': Property named 'dummy' is not valid in any stream");
 
                 env.UndeployAll();
             }

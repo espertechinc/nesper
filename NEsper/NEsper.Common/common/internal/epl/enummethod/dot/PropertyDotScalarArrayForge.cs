@@ -154,23 +154,23 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
         }
 
         public CodegenExpression EvaluateEventGetROCollectionScalarCodegen(
-            CodegenMethodScope codegenMethodScope,
+            CodegenMethodScope methodScope,
             ExprEnumerationGivenEventSymbol symbols,
             CodegenClassScope codegenClassScope)
         {
-            var method = codegenMethodScope.MakeChild(
+            var method = methodScope.MakeChild(
                 typeof(ICollection<object>),
                 typeof(PropertyDotScalarArrayForge),
                 codegenClassScope);
             method.Block
                 .IfRefNullReturnNull(symbols.GetAddEvent(method))
                 .MethodReturn(
-                    CodegenEvaluateGetInternal(symbols.GetAddEvent(method), codegenMethodScope, codegenClassScope));
+                    CodegenEvaluateGetInternal(symbols.GetAddEvent(method), methodScope, codegenClassScope));
             return LocalMethod(method);
         }
 
         public CodegenExpression EvaluateEventGetEventBeanCodegen(
-            CodegenMethodScope codegenMethodScope,
+            CodegenMethodScope methodScope,
             ExprEnumerationGivenEventSymbol symbols,
             CodegenClassScope codegenClassScope)
         {
@@ -178,7 +178,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
         }
 
         public CodegenExpression EvaluateEventGetROCollectionEventsCodegen(
-            CodegenMethodScope codegenMethodScope,
+            CodegenMethodScope methodScope,
             ExprEnumerationGivenEventSymbol symbols,
             CodegenClassScope codegenClassScope)
         {

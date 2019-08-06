@@ -101,7 +101,7 @@ namespace com.espertech.esper.common.@internal.@event.map
         {
             return StaticMethod(
                 GetType(),
-                "getMapIndexedValue",
+                "GetMapIndexedValue",
                 underlyingExpression,
                 Constant(fieldName),
                 Constant(index));
@@ -114,7 +114,7 @@ namespace com.espertech.esper.common.@internal.@event.map
         {
             return StaticMethod(
                 GetType(),
-                "getMapIndexedExists",
+                "GetMapIndexedExists",
                 underlyingExpression,
                 Constant(fieldName),
                 Constant(index));

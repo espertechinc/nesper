@@ -51,7 +51,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             var refExprEvalCtx = exprSymbol.GetAddExprEvalCtx(codegenMethodScope);
             return StaticMethod(
                 typeof(ExprCurrentEvaluationContextNode),
-                "exprCurrentEvaluationContextMake",
+                "ExprCurrentEvaluationContextMake",
                 refExprEvalCtx);
         }
 

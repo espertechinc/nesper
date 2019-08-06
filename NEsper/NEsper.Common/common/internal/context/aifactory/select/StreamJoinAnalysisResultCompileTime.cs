@@ -172,7 +172,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
                 .DeclareVar<StreamJoinAnalysisResultRuntime>(
                     "ar",
                     NewInstance(typeof(StreamJoinAnalysisResultRuntime)))
-                .SetProperty(Ref("ar"), "PureSelfJoin", Constant(IsPureSelfJoin))
+                .SetProperty(Ref("ar"), "IsPureSelfJoin", Constant(IsPureSelfJoin))
                 .SetProperty(Ref("ar"), "Unidirectional", Constant(UnidirectionalInd))
                 .SetProperty(Ref("ar"), "UnidirectionalNonDriving", Constant(unidirectionalNonDriving))
                 .SetProperty(Ref("ar"), "NamedWindows", MakeNamedWindows(method, symbols))

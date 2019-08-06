@@ -605,11 +605,11 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
                     "select intArr = all (1, 2, 3) as r1 from SupportBeanArrayCollMap",
-                    "Failed to valIdate select-clause expression 'intArr=all(1,2,3)': Collection or array comparison is not allowed for the IN, ANY, SOME or ALL keywords");
+                    "Failed to validate select-clause expression 'intArr=all(1,2,3)': Collection or array comparison is not allowed for the IN, ANY, SOME or ALL keywords");
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
                     "select intArr > all (1, 2, 3) as r1 from SupportBeanArrayCollMap",
-                    "Failed to valIdate select-clause expression 'intArr>all(1,2,3)': Collection or array comparison is not allowed for the IN, ANY, SOME or ALL keywords");
+                    "Failed to validate select-clause expression 'intArr>all(1,2,3)': Collection or array comparison is not allowed for the IN, ANY, SOME or ALL keywords");
             }
         }
     }

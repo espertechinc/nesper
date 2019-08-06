@@ -6,11 +6,14 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
+
 namespace com.espertech.esper.common.client.configuration.common
 {
     /// <summary>
     ///     Configuration object for Map-based event types.
     /// </summary>
+    [Serializable]
     public class ConfigurationCommonEventTypeMap : ConfigurationCommonEventTypeWithSupertype
     {
     }

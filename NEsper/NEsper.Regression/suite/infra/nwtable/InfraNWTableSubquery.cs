@@ -107,7 +107,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 
                 // create subquery
                 var stmtSubquery =
-                    "@Name('Subq') select (select IntPrimitive from MyInfra where TheString = s0.p00) as c0 from SupportBean_S0 as s0";
+                    "@Name('Subq') select (select IntPrimitive from MyInfra where TheString = s0.P00) as c0 from SupportBean_S0 as s0";
                 env.CompileDeploy(stmtSubquery, path).AddListener("Subq");
 
                 env.Milestone(0);

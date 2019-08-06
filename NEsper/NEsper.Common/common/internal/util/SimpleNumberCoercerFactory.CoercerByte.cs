@@ -47,7 +47,7 @@ namespace com.espertech.esper.common.@internal.util
                 return CodegenCoerceMayNull(
                     typeof(byte),
                     typeof(byte),
-                    "bteValue",
+                    "AsByte",
                     value,
                     valueTypeMustNumeric,
                     codegenMethodScope,
@@ -59,7 +59,7 @@ namespace com.espertech.esper.common.@internal.util
                 CodegenExpression input,
                 Type inputType)
             {
-                return CodegenCoerceNonNull(typeof(byte), typeof(byte), "byteValue", input, inputType);
+                return CodegenCoerceNonNull(typeof(byte), typeof(byte), "AsByte", input, inputType);
             }
         }
     }

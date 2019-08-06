@@ -85,7 +85,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
                 block.AssignArrayElement(
                     @Ref("row"),
                     Constant(index),
-                    ExprDotMethod(@Ref("map"), "get", Constant(entry.Key)));
+                    ExprDotMethod(@Ref("map"), "Get", Constant(entry.Key)));
             }
 
             block.MethodReturn(@Ref("row"));

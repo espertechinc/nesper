@@ -213,7 +213,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.avg
         {
             method.Block
                 .Apply(WriteLong(output, row, cnt))
-                .StaticMethod(typeof(DIOSerdeBigInteger), "writeBigDec", RowDotRef(row, sum), output);
+                .StaticMethod(typeof(DIOSerdeBigInteger), "WriteBigDec", RowDotRef(row, sum), output);
         }
 
         protected override void ReadWODistinct(
@@ -228,7 +228,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.avg
                 .Apply(ReadLong(row, cnt, input))
                 .AssignRef(
                     RowDotRef(row, sum),
-                    StaticMethod(typeof(DIOSerdeBigInteger), "readBigDec", input));
+                    StaticMethod(typeof(DIOSerdeBigInteger), "ReadBigDec", input));
         }
 
         /// <summary>

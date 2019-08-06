@@ -31,12 +31,12 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
             {
                 var fields = "val0,val1,val2,val3,val4,val5".SplitCsv();
                 var epl = "@Name('s0') select " +
-                          "contained.take(2) as val0," +
-                          "contained.take(1) as val1," +
-                          "contained.take(0) as val2," +
-                          "contained.take(-1) as val3," +
-                          "contained.takeLast(2) as val4," +
-                          "contained.takeLast(1) as val5" +
+                          "Contained.take(2) as val0," +
+                          "Contained.take(1) as val1," +
+                          "Contained.take(0) as val2," +
+                          "Contained.take(-1) as val3," +
+                          "Contained.takeLast(2) as val4," +
+                          "Contained.takeLast(1) as val5" +
                           " from SupportBean_ST0_Container";
                 env.CompileDeploy(epl).AddListener("s0");
 
@@ -99,10 +99,10 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
             {
                 var fields = "val0,val1,val2,val3".SplitCsv();
                 var epl = "@Name('s0') select " +
-                          "strvals.take(2) as val0," +
-                          "strvals.take(1) as val1," +
-                          "strvals.takeLast(2) as val2," +
-                          "strvals.takeLast(1) as val3" +
+                          "Strvals.take(2) as val0," +
+                          "Strvals.take(1) as val1," +
+                          "Strvals.takeLast(2) as val2," +
+                          "Strvals.takeLast(1) as val3" +
                           " from SupportCollection";
                 env.CompileDeploy(epl).AddListener("s0");
 

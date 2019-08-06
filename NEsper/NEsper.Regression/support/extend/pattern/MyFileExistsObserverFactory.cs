@@ -30,7 +30,7 @@ namespace com.espertech.esper.regressionlib.support.extend.pattern
             object observerState,
             bool isFilterChildNonQuitting)
         {
-            var events = convertor == null ? null : convertor.Convert(beginState);
+            var events = convertor == null ? null : convertor.Invoke(beginState);
             var filename = PatternExpressionUtil.EvaluateChecked(
                 "File-exists observer ",
                 filenameExpression,

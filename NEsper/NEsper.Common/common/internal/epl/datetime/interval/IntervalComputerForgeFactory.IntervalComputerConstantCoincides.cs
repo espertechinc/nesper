@@ -53,7 +53,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
             {
                 return CodegenExpressionBuilder.StaticMethod(
                     typeof(IntervalComputerConstantCoincides),
-                    "computeIntervalCoincides",
+                    "ComputeIntervalCoincides",
                     leftStart,
                     leftEnd,
                     rightStart,

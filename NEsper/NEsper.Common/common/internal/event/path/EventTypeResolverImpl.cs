@@ -79,12 +79,12 @@ namespace com.espertech.esper.common.@internal.@event.path
                 }
             }
             else if (metadata.AccessModifier == NameAccessModifier.PUBLIC ||
-                     metadata.AccessModifier == NameAccessModifier.PROTECTED) {
+                     metadata.AccessModifier == NameAccessModifier.INTERNAL) {
                 // path-visibility can be provided as local
                 var local = locals.Get(metadata.Name);
                 if (local != null) {
                     if (local.Metadata.AccessModifier == NameAccessModifier.PUBLIC ||
-                        local.Metadata.AccessModifier == NameAccessModifier.PROTECTED) {
+                        local.Metadata.AccessModifier == NameAccessModifier.INTERNAL) {
                         return local;
                     }
                 }

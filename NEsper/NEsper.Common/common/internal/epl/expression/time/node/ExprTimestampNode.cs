@@ -72,7 +72,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.time.node
             CodegenClassScope codegenClassScope)
         {
             CodegenExpressionRef refExprEvalCtx = exprSymbol.GetAddExprEvalCtx(codegenMethodScope);
-            return ExprDotMethodChain(refExprEvalCtx).Add("getTimeProvider").Add("getTime");
+            return ExprDotMethodChain(refExprEvalCtx).Get("TimeProvider").Get("Time");
         }
 
         public ExprForgeConstantType ForgeConstantType {

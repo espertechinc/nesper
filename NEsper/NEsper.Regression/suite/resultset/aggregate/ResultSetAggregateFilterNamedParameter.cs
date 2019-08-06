@@ -244,7 +244,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
             {
                 var epl = "create table WordCountTable(wordcms countMinSketch());\n" +
                           "into table WordCountTable select countMinSketchAdd(TheString, filter:IntPrimitive > 0) as wordcms from SupportBean;\n" +
-                          "@Name('s0') select WordCountTable.wordcms.countMinSketchFrequency(p00) as c0 from SupportBean_S0;\n";
+                          "@Name('s0') select WordCountTable.wordcms.countMinSketchFrequency(P00) as c0 from SupportBean_S0;\n";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 SendEvent(env, "hello", 0);
@@ -521,30 +521,30 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
                     "select sum(IntPrimitive, filter:(IntPrimitive, DoublePrimitive)) from SupportBean",
-                    "Failed to valIdate select-clause expression 'sum(IntPrimitive,filter:(intPrimiti...(55 chars)': Filter named parameter requires a single expression returning a boolean-typed value");
+                    "Failed to validate select-clause expression 'sum(IntPrimitive,filter:(intPrimiti...(55 chars)': Filter named parameter requires a single expression returning a boolean-typed value");
 
                 // multiple filter expressions
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
                     "select sum(IntPrimitive, IntPrimitive > 0, filter:IntPrimitive < 0) from SupportBean",
-                    "Failed to valIdate select-clause expression 'sum(IntPrimitive,IntPrimitive>0,fil...(54 chars)': Only a single filter expression can be provIded");
+                    "Failed to validate select-clause expression 'sum(IntPrimitive,IntPrimitive>0,fil...(54 chars)': Only a single filter expression can be provIded");
 
                 // invalid filter expression name parameter: not returning boolean
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
                     "select sum(IntPrimitive, filter:IntPrimitive) from SupportBean",
-                    "Failed to valIdate select-clause expression 'sum(IntPrimitive,filter:IntPrimitive)': Filter named parameter requires a single expression returning a boolean-typed value");
+                    "Failed to validate select-clause expression 'sum(IntPrimitive,filter:IntPrimitive)': Filter named parameter requires a single expression returning a boolean-typed value");
 
                 // create-table does not allow filters
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
                     "create table MyTable(totals sum(int, filter:true))",
-                    "Failed to valIdate table-column expression 'sum(int,filter:true)': The 'group_by' and 'filter' parameter is not allowed in create-table statements");
+                    "Failed to validate table-column expression 'sum(int,filter:true)': The 'group_by' and 'filter' parameter is not allowed in create-table statements");
 
                 // invalid correlated subquery
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
-                    "select (select sum(IntPrimitive, filter:s0.p00='a') from SupportBean) from SupportBean_S0 as s0",
+                    "select (select sum(IntPrimitive, filter:s0.P00='a') from SupportBean) from SupportBean_S0 as s0",
                     "Failed to plan subquery number 1 querying SupportBean: Subselect aggregation functions cannot aggregate across correlated properties");
             }
         }

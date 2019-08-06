@@ -61,8 +61,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
         {
             Assert.AreEqual(idA, eventBean.Get("idA"));
             Assert.AreEqual(idB, eventBean.Get("idB"));
-            Assert.AreEqual(p00, eventBean.Get("p00A"));
-            Assert.AreEqual(p00, eventBean.Get("p00B"));
+            Assert.AreEqual(p00, eventBean.Get("P00A"));
+            Assert.AreEqual(p00, eventBean.Get("P00B"));
         }
 
         private static void SendEvent(
@@ -257,8 +257,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             public void Run(RegressionEnvironment env)
             {
                 var stmtText = "@Name('s0') select irstream a.Id as IdA, b.Id as IdB, " +
-                               "a.p00 as p00A, b.p00 as p00B from pattern [every a=SupportBean_S0" +
-                               " => every b=SupportBean_S0(p00=a.p00)]#time(1)";
+                               "a.P00 as P00A, b.P00 as P00B from pattern [every a=SupportBean_S0" +
+                               " => every b=SupportBean_S0(P00=a.P00)]#time(1)";
                 env.CompileDeploy(stmtText).AddListener("s0");
                 env.AdvanceTime(0);
 

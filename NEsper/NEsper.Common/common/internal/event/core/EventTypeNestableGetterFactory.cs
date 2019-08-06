@@ -73,7 +73,7 @@ namespace com.espertech.esper.common.@internal.@event.core
             EventBeanTypedEventFactory eventBeanTypedEventFactory,
             EventType innerType);
 
-        EventPropertyGetterSPI GetGetterIndexedPOJO(
+        EventPropertyGetterSPI GetGetterIndexedPONO(
             string propertyNameAtomic,
             int index,
             EventBeanTypedEventFactory eventBeanTypedEventFactory,
@@ -96,7 +96,7 @@ namespace com.espertech.esper.common.@internal.@event.core
             int index,
             EventPropertyGetterSPI nestedGetter);
 
-        EventPropertyGetterSPI GetGetterIndexedEntryPOJO(
+        EventPropertyGetterSPI GetGetterIndexedEntryPONO(
             string propertyNameAtomic,
             int index,
             BeanEventPropertyGetter nestedGetter,
@@ -108,7 +108,7 @@ namespace com.espertech.esper.common.@internal.@event.core
             string propertyName,
             MapEventPropertyGetter getterNestedMap);
 
-        EventPropertyGetterSPI GetGetterNestedPOJOProp(
+        EventPropertyGetterSPI GetGetterNestedPONOProp(
             string propertyName,
             BeanEventPropertyGetter nestedGetter,
             EventBeanTypedEventFactory eventBeanTypedEventFactory,

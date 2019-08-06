@@ -348,7 +348,7 @@ namespace com.espertech.esper.common.@internal.@event.core
                 generator);
             return LocalMethod(
                 method,
-                StaticMethod(typeof(BaseNestableEventUtil), "getBNArrayValueAtIndex", @ref, Constant(index)));
+                StaticMethod(typeof(BaseNestableEventUtil), "GetBNArrayValueAtIndex", @ref, Constant(index)));
         }
 
         public static object HandleBNNestedValueArrayWithMapFragment(
@@ -393,7 +393,7 @@ namespace com.espertech.esper.common.@internal.@event.core
                 generator);
             return LocalMethod(
                 method,
-                StaticMethod(typeof(BaseNestableEventUtil), "getBNArrayValueAtIndex", @ref, Constant(index)));
+                StaticMethod(typeof(BaseNestableEventUtil), "GetBNArrayValueAtIndex", @ref, Constant(index)));
         }
 
         public static bool HandleNestedValueArrayWithMapExists(
@@ -432,7 +432,7 @@ namespace com.espertech.esper.common.@internal.@event.core
                 generator);
             return LocalMethod(
                 method,
-                StaticMethod(typeof(BaseNestableEventUtil), "getBNArrayValueAtIndex", @ref, Constant(index)));
+                StaticMethod(typeof(BaseNestableEventUtil), "GetBNArrayValueAtIndex", @ref, Constant(index)));
         }
 
         public static object HandleNestedValueArrayWithObjectArray(
@@ -469,7 +469,7 @@ namespace com.espertech.esper.common.@internal.@event.core
                 generator);
             return LocalMethod(
                 method,
-                StaticMethod(typeof(BaseNestableEventUtil), "getBNArrayValueAtIndex", @ref, Constant(index)));
+                StaticMethod(typeof(BaseNestableEventUtil), "GetBNArrayValueAtIndex", @ref, Constant(index)));
         }
 
         public static bool HandleNestedValueArrayWithObjectArrayExists(
@@ -506,7 +506,7 @@ namespace com.espertech.esper.common.@internal.@event.core
                 generator);
             return LocalMethod(
                 method,
-                StaticMethod(typeof(BaseNestableEventUtil), "getBNArrayValueAtIndex", @ref, Constant(index)));
+                StaticMethod(typeof(BaseNestableEventUtil), "GetBNArrayValueAtIndex", @ref, Constant(index)));
         }
 
         public static object HandleNestedValueArrayWithObjectArrayFragment(
@@ -548,7 +548,7 @@ namespace com.espertech.esper.common.@internal.@event.core
                 generator);
             return LocalMethod(
                 method,
-                StaticMethod(typeof(BaseNestableEventUtil), "getBNArrayValueAtIndex", @ref, Constant(index)));
+                StaticMethod(typeof(BaseNestableEventUtil), "GetBNArrayValueAtIndex", @ref, Constant(index)));
         }
 
         public static object GetMappedPropertyValue(
@@ -741,13 +741,13 @@ namespace com.espertech.esper.common.@internal.@event.core
                 .AddParam(typeof(object), "value")
                 .Block
                 .IfRefNullReturnNull("value")
-                .IfConditionReturnConst(Not(ExprDotMethodChain(Ref("value")).Add("getClass").Add("isArray")), null)
+                .IfConditionReturnConst(Not(ExprDotMethodChain(Ref("value")).Add("GetType").Get("IsArray")), null)
                 .IfConditionReturnConst(
-                    Relational(StaticMethod(typeof(Array), "getLength", Ref("value")), LE, Constant(index)),
+                    Relational(StaticMethod(typeof(Array), "GetLength", Ref("value")), LE, Constant(index)),
                     null)
                 .DeclareVar<object>(
                     "arrayItem",
-                    StaticMethod(typeof(Array), "get", Ref("value"), Constant(index)))
+                    StaticMethod(typeof(Array), "Get", Ref("value"), Constant(index)))
                 .IfRefNullReturnNull("arrayItem")
                 .MethodReturn(
                     nestedGetter.UnderlyingGetCodegen(

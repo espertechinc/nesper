@@ -65,7 +65,7 @@ namespace com.espertech.esper.common.@internal.filterspec
             method.Block
                 .DeclareVar<EventBean>(
                     "@event",
-                    ExprDotMethod(Ref("matchedEvents"), "getMatchingEventByTag", Constant(_resultEventAsName)))
+                    ExprDotMethod(Ref("matchedEvents"), "GetMatchingEventByTag", Constant(_resultEventAsName)))
                 .IfRefNull(Ref("@event"))
                 .BlockThrow(
                     NewInstance<IllegalStateException>(

@@ -64,7 +64,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.@base
             CodegenExpression getGroupKey = ExprDotMethod(
                 future,
                 "GetGroupKey",
-                ExprDotMethod(symbol.GetAddExprEvalCtx(method), "getAgentInstanceId"));
+                ExprDotName(symbol.GetAddExprEvalCtx(method), "AgentInstanceId"));
             if (numGroupKeys == 1) {
                 method.Block.MethodReturn(CodegenLegoCast.CastSafeFromObjectType(returnType, getGroupKey));
             }

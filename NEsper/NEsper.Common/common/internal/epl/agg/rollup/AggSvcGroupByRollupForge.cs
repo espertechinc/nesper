@@ -223,7 +223,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.rollup
                             ArrayAtIndex(
                                 REF_AGGREGATORSPERGROUP,
                                 ExprDotMethod(AggregationServiceCodegenNames.REF_ROLLUPLEVEL, "getAggregationOffset")),
-                            "get",
+                            "Get",
                             AggregationServiceCodegenNames.REF_GROUPKEY)))
                 .IfCondition(EqualsNull(REF_CURRENTROW))
                 .AssignRef(REF_CURRENTROW, NewInstance(classNames.RowTop))
@@ -352,7 +352,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.rollup
 
                 if (level.IsAggregationTop) {
                     method.Block.AssignRef(REF_CURRENTROW, REF_AGGREGATORTOPGROUP)
-                        .ExprDotMethod(REF_CURRENTROW, enter ? "increaseRefcount" : "decreaseRefcount");
+                        .ExprDotMethod(REF_CURRENTROW, enter ? "IncreaseRefcount" : "DecreaseRefcount");
                 }
                 else {
                     if (enter) {
@@ -362,7 +362,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.rollup
                                     typeof(AggregationRow),
                                     ExprDotMethod(
                                         ArrayAtIndex(REF_AGGREGATORSPERGROUP, Constant(level.AggregationOffset)),
-                                        "get",
+                                        "Get",
                                         Ref(groupKeyName))))
                             .IfCondition(EqualsNull(REF_CURRENTROW))
                             .AssignRef(REF_CURRENTROW, NewInstance(classNames.RowTop))
@@ -381,7 +381,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.rollup
                                     typeof(AggregationRow),
                                     ExprDotMethod(
                                         ArrayAtIndex(REF_AGGREGATORSPERGROUP, Constant(level.AggregationOffset)),
-                                        "get",
+                                        "Get",
                                         Ref(groupKeyName))))
                             .IfCondition(EqualsNull(REF_CURRENTROW))
                             .AssignRef(REF_CURRENTROW, NewInstance(classNames.RowTop))

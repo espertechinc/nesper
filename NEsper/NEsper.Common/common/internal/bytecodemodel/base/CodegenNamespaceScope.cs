@@ -51,7 +51,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
             FieldsClassNameOptional = fieldsClassNameOptional;
             IsInstrumented = instrumented;
             InitMethod = CodegenMethod
-                .MakeParentNode(
+                .MakeMethod(
                     typeof(void),
                     typeof(CodegenNamespaceScope),
                     new CodegenClassScope(true, this, null))
@@ -137,7 +137,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
             CodegenExpression initCtorScoped)
         {
             var memberNumber = _currentMemberNumber++;
-            var name = CodegenPackageScopeNames.AnyField(memberNumber);
+            var name = CodegenNamespaceScopeNames.AnyField(memberNumber);
             var member = new CodegenField(FieldsClassNameOptional, name, type, null, isFinal);
             _fieldsUnshared.Put(member, initCtorScoped);
             return member;
@@ -178,7 +178,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
             CodegenField member;
             if (name == null) {
                 var assigned = ++_currentSubstitutionParamNumber;
-                var fieldName = CodegenPackageScopeNames.AnySubstitutionParam(assigned);
+                var fieldName = CodegenNamespaceScopeNames.AnySubstitutionParam(assigned);
                 member = new CodegenField(FieldsClassNameOptional, fieldName, type, null, false);
                 SubstitutionParamsByNumber.Add(new CodegenSubstitutionParamEntry(member, name, type));
             }
@@ -186,7 +186,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
                 var existing = _substitutionParamsByName.Get(name);
                 if (existing == null) {
                     var assigned = ++_currentSubstitutionParamNumber;
-                    var fieldName = CodegenPackageScopeNames.AnySubstitutionParam(assigned);
+                    var fieldName = CodegenNamespaceScopeNames.AnySubstitutionParam(assigned);
                     member = new CodegenField(FieldsClassNameOptional, fieldName, type, null, false);
                     _substitutionParamsByName.Put(name, new CodegenSubstitutionParamEntry(member, name, type));
                 }

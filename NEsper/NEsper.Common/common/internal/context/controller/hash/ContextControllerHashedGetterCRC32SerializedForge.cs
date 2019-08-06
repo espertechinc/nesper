@@ -85,7 +85,7 @@ namespace com.espertech.esper.common.@internal.context.controller.hash
                 typeof(Serializer[]),
                 StaticMethod(
                     typeof(SerializerFactory),
-                    "getSerializers",
+                    "GetSerializers",
                     Constant(ExprNodeUtilityQuery.GetExprResultTypes(nodes))));
 
             CodegenMethod method = parent.MakeChild(typeof(object), this.GetType(), classScope)
@@ -132,7 +132,7 @@ namespace com.espertech.esper.common.@internal.context.controller.hash
                 .MethodReturn(
                     StaticMethod(
                         typeof(ContextControllerHashedGetterCRC32SerializedForge),
-                        "serializeAndCRC32Hash",
+                        "SerializeAndCRC32Hash",
                         @Ref("values"),
                         Constant(granularity),
                         serializers));

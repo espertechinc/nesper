@@ -153,7 +153,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
             SupportMessageAssertUtil.TryInvalidCompile(
                 env,
                 template.Replace("REPLACE", "A{}"),
-                "InvalId match-recognize quantifier '{}', expecting an expression");
+                "Invalid match-recognize quantifier '{}', expecting an expression");
             SupportMessageAssertUtil.TryInvalidCompile(
                 env,
                 template.Replace("REPLACE", "A{null}"),
@@ -165,9 +165,9 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
             SupportMessageAssertUtil.TryInvalidCompile(
                 env,
                 template.Replace("REPLACE", "A{prev(A)}"),
-                "InvalId match-recognize pattern expression 'prev(A)': Aggregation, sub-select, previous or prior functions are not supported in this context");
+                "Invalid match-recognize pattern expression 'prev(A)': Aggregation, sub-select, previous or prior functions are not supported in this context");
 
-            var expected = "InvalId pattern quantifier value -1, expecting a minimum of 1";
+            var expected = "Invalid pattern quantifier value -1, expecting a minimum of 1";
             SupportMessageAssertUtil.TryInvalidCompile(env, template.Replace("REPLACE", "A{-1}"), expected);
             SupportMessageAssertUtil.TryInvalidCompile(env, template.Replace("REPLACE", "A{,-1}"), expected);
             SupportMessageAssertUtil.TryInvalidCompile(env, template.Replace("REPLACE", "A{-1,10}"), expected);
@@ -175,7 +175,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
             SupportMessageAssertUtil.TryInvalidCompile(
                 env,
                 template.Replace("REPLACE", "A{5,3}"),
-                "InvalId pattern quantifier value 5, expecting a minimum of 1 and maximum of 3");
+                "Invalid pattern quantifier value 5, expecting a minimum of 1 and maximum of 3");
 
             env.UndeployAll();
         }
@@ -762,9 +762,9 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
             string before,
             string after)
         {
-            var hook = "@Hook(type=" +
+            var hook = "@Hook(HookType=" +
                        typeof(HookType).Name +
-                       ".INTERNAL_COMPILE,hook='" +
+                       ".INTERNAL_COMPILE,Hook='" +
                        SupportStatementCompileHook.ResetGetClassName() +
                        "')";
             var epl = hook +

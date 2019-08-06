@@ -110,10 +110,28 @@ namespace com.espertech.esper.regressionrun.suite.client
                 ConfigurationCompilerPlugInSingleRowFunction.ValueCacheEnum.DISABLED,
                 ConfigurationCompilerPlugInSingleRowFunction.FilterOptimizableEnum.ENABLED,
                 true);
-            foreach (var method in (
-                "surroundx,isNullValue,getValueAsString,eventsCheckStrings,varargsOnlyInt,varargsOnlyString,varargsOnlyObject,varargsOnlyNumber,varargsOnlyISupportBaseAB,varargsW1Param,varargsW2Param," +
-                "varargsOnlyWCtx,varargsW1ParamWCtx,varargsW2ParamWCtx,varargsObjectsWCtx,varargsW1ParamObjectsWCtx,varargsOnlyBoxedFloat,varargsOnlyBoxedShort,varargsOnlyBoxedByte," +
-                "varargOverload").SplitCsv()) {
+            foreach (var method in Collections.List(
+                "Surroundx",
+                "IsNullValue",
+                "GetValueAsString",
+                "EventsCheckStrings",
+                "VarargsOnlyInt",
+                "VarargsOnlyString",
+                "VarargsOnlyObject",
+                "VarargsOnlyNumber",
+                "VarargsOnlyISupportBaseAB",
+                "VarargsW1Param",
+                "VarargsW2Param",
+                "VarargsOnlyWCtx",
+                "VarargsW1ParamWCtx",
+                "VarargsW2ParamWCtx",
+                "VarargsObjectsWCtx",
+                "VarargsW1ParamObjectsWCtx",
+                "VarargsOnlyBoxedFloat",
+                "VarargsOnlyBoxedShort",
+                "VarargsOnlyBoxedByte",
+                "VarargOverload")
+            ) {
                 configurationCompiler.AddPlugInSingleRowFunction(method, typeof(SupportSingleRowFunction), method);
             }
 

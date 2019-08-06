@@ -10,6 +10,8 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
+using Castle.Core.Internal;
+
 using com.espertech.esper.common.@internal.bytecodemodel.core;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.bytecodemodel.model.statement;
@@ -17,6 +19,8 @@ using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.function;
+
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
@@ -28,7 +32,10 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
         private readonly CodegenMethod parentMethodNode;
         private readonly CodegenStatementWBlockBase parentWBlock;
         private bool closed;
+
         protected IList<CodegenStatement> statements = new List<CodegenStatement>(4);
+
+        //private BlockSyntax blockSyntax;
 
         private CodegenBlock(
             CodegenCtor parentCtor,
@@ -63,16 +70,19 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
         public bool IsEmpty()
         {
             return statements.IsEmpty();
+            //return blockSyntax.Statements.IsNullOrEmpty();
         }
 
         public bool IsNotEmpty()
         {
-            return !statements.IsEmpty();
+            return statements.IsNotEmpty();
+            //return !blockSyntax.Statements.IsNullOrEmpty();
         }
 
         public CodegenBlock Expression(CodegenExpression expression)
         {
             CheckClosed();
+
             statements.Add(new CodegenStatementExpression(expression));
             return this;
         }
@@ -159,7 +169,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
             return builder.IfBlock(condition);
         }
 
-        public CodegenBlock SynchronizedOn(CodegenExpression expression)
+        public CodegenBlock LockOn(CodegenExpression expression)
         {
             CheckClosed();
             var builder = new CodegenStatementSynchronized(this, expression);
@@ -767,6 +777,11 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
             CheckClosed();
             AssignRef(GetProperty(@ref, propertyName), value);
             return this;
+        }
+
+        public BlockSyntax CodegenSyntax()
+        {
+            throw new NotImplementedException();
         }
     }
 } // end of namespace

@@ -25,13 +25,15 @@ namespace com.espertech.esper.common.@internal.util
 
     public class ProxySimpleTypeParser : SimpleTypeParser
     {
-        public Func<string, object> ProcParse;
+        public delegate object ParseFunc(string text);
+
+        public ParseFunc ProcParse;
 
         public ProxySimpleTypeParser()
         {
         }
 
-        public ProxySimpleTypeParser(Func<string, object> procParse)
+        public ProxySimpleTypeParser(ParseFunc procParse)
         {
             ProcParse = procParse;
         }

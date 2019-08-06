@@ -128,11 +128,11 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                 var path = new RegressionPath();
                 var epl = "create window MyWindowWUJ#keepall as SupportBean;\n" +
                           "insert into MyWindowWUJ select * from SupportBean;\n" +
-                          "on SupportBean_S1 as s1 delete from MyWindowWUJ where s1.p10 = TheString;\n" +
+                          "on SupportBean_S1 as s1 delete from MyWindowWUJ where s1.P10 = TheString;\n" +
                           "@Name('s0') select window(win.*) as c0," +
                           "window(win.*).where(v => v.IntPrimitive < 2) as c1, " +
                           "window(win.*).toMap(k=>k.TheString,v=>v.IntPrimitive) as c2 " +
-                          "from SupportBean_S0 as s0 unIdirectional, MyWindowWUJ as win";
+                          "from SupportBean_S0 as s0 unidirectional, MyWindowWUJ as win";
                 env.CompileDeploy(epl, path).AddListener("s0");
 
                 var beans = new SupportBean[3];
@@ -299,7 +299,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                     var epl = INDEX_CALLBACK_HOOK +
                               (assertion.Hint == null ? "" : assertion.Hint) +
                               "select * " +
-                              "from SupportSimpleBeanTwo as ssb2 unIdirectional, MyWindow as ssb1 " +
+                              "from SupportSimpleBeanTwo as ssb2 unidirectional, MyWindow as ssb1 " +
                               "where " +
                               assertion.WhereClause;
 
@@ -365,7 +365,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                 sendPortfolio(env, eventRepresentationEnum, "Portfolio", "productA");
 
                 var stmtText = "@Name(\"Query2\") select portfolio, ProductWin.product, size " +
-                               "from PortfolioWin unIdirectional inner join ProductWin on PortfolioWin.product=ProductWin.product";
+                               "from PortfolioWin unidirectional inner join ProductWin on PortfolioWin.product=ProductWin.product";
                 env.CompileDeploy(stmtText, path).AddListener("Query2");
 
                 sendPortfolio(env, eventRepresentationEnum, "Portfolio", "productB");
@@ -854,7 +854,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
             {
                 var epl = "create window MyWindowU#keepall select * from SupportBean;\n" +
                           "insert into MyWindowU select * from SupportBean;\n" +
-                          "@Name('select') select w.* from MyWindowU w unIdirectional, SupportBean_A#lastevent s where s.Id = w.TheString;\n";
+                          "@Name('select') select w.* from MyWindowU w unidirectional, SupportBean_A#lastevent s where s.Id = w.TheString;\n";
                 env.CompileDeploy(epl).AddListener("select");
 
                 env.SendEventBean(new SupportBean("E1", 1));

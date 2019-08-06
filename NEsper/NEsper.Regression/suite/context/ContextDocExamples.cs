@@ -57,13 +57,13 @@ namespace com.espertech.esper.regressionlib.suite.context
                 env,
                 path,
                 "context ByCust\n" +
-                "select * from BankTxn as t1 unIdirectional, BankTxn#time(30) t2\n" +
+                "select * from BankTxn as t1 unidirectional, BankTxn#time(30) t2\n" +
                 "where t1.amount = t2.amount");
             Create(
                 env,
                 path,
                 "context ByCust\n" +
-                "select * from SecurityEvent as t1 unIdirectional, BankTxn#time(30) t2\n" +
+                "select * from SecurityEvent as t1 unidirectional, BankTxn#time(30) t2\n" +
                 "where t1.customerName = t2.customerName");
             UndeployClearPath(env, path);
             Create(

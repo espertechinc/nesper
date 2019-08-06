@@ -97,11 +97,11 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
         }
 
         public CodegenExpression EvaluateEventGetROCollectionEventsCodegen(
-            CodegenMethodScope codegenMethodScope,
+            CodegenMethodScope methodScope,
             ExprEnumerationGivenEventSymbol symbols,
             CodegenClassScope codegenClassScope)
         {
-            var methodNode = codegenMethodScope.MakeChild(
+            var methodNode = methodScope.MakeChild(
                 typeof(ICollection<object>),
                 typeof(PropertyDotEventCollectionForge),
                 codegenClassScope);
@@ -143,7 +143,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
         }
 
         public CodegenExpression EvaluateEventGetROCollectionScalarCodegen(
-            CodegenMethodScope codegenMethodScope,
+            CodegenMethodScope methodScope,
             ExprEnumerationGivenEventSymbol symbols,
             CodegenClassScope codegenClassScope)
         {
@@ -174,7 +174,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
         }
 
         public CodegenExpression EvaluateEventGetEventBeanCodegen(
-            CodegenMethodScope codegenMethodScope,
+            CodegenMethodScope methodScope,
             ExprEnumerationGivenEventSymbol symbols,
             CodegenClassScope codegenClassScope)
         {
@@ -244,11 +244,11 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
                 .DeclareVar<ExpressionResultCacheForPropUnwrap>(
                     "cache",
                     ExprDotMethodChain(refExprEvalCtx)
-                        .Add("getExpressionResultCacheService")
-                        .Add("getAllocateUnwrapProp"))
+                        .Get("ExpressionResultCacheService")
+                        .Get("AllocateUnwrapProp"))
                 .DeclareVar<ExpressionResultCacheEntryBeanAndCollBean>(
                     "cacheEntry",
-                    ExprDotMethod(Ref("cache"), "getPropertyColl", Constant(propertyNameCache), Ref("@event")))
+                    ExprDotMethod(Ref("cache"), "GetPropertyColl", Constant(propertyNameCache), Ref("@event")))
                 .IfCondition(NotEqualsNull(Ref("cacheEntry")))
                 .BlockReturn(ExprDotName(Ref("cacheEntry"), "Result"))
                 .DeclareVar<EventBean[]>(
@@ -265,7 +265,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
                 .Expression(
                     ExprDotMethod(
                         Ref("cache"),
-                        "savePropertyColl",
+                        "SavePropertyColl",
                         Constant(propertyNameCache),
                         Ref("@event"),
                         Ref("coll")))

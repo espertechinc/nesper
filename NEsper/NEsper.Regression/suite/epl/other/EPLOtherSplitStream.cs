@@ -502,8 +502,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             {
                 var path = new RegressionPath();
                 var stmtOrigText = "@Name('split') on SupportBean " +
-                                   "insert into AStreamSub select (select p00 from SupportBean_S0#lastevent) as string where IntPrimitive=(select Id from SupportBean_S0#lastevent) " +
-                                   "insert into BStreamSub select (select p01 from SupportBean_S0#lastevent) as string where IntPrimitive<>(select Id from SupportBean_S0#lastevent) or (select Id from SupportBean_S0#lastevent) is null";
+                                   "insert into AStreamSub select (select P00 from SupportBean_S0#lastevent) as string where IntPrimitive=(select Id from SupportBean_S0#lastevent) " +
+                                   "insert into BStreamSub select (select P01 from SupportBean_S0#lastevent) as string where IntPrimitive<>(select Id from SupportBean_S0#lastevent) or (select Id from SupportBean_S0#lastevent) is null";
                 env.CompileDeploy(stmtOrigText, path).AddListener("split");
 
                 env.CompileDeploy("@Name('s0') select * from AStreamSub", path).AddListener("s0");

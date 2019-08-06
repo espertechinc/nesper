@@ -67,7 +67,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
 
                 var epl = "@Name('s0') select * from SupportBean#time(1) as sb, " +
                           " SupportBean_S0#keepall as s0 " +
-                          " where myStaticEvaluator(sb.TheString, s0.p00)";
+                          " where myStaticEvaluator(sb.TheString, s0.P00)";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
                 env.SendEventBean(new SupportBean_S0(1, "x"));

@@ -18,7 +18,11 @@ using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
+using Microsoft.CodeAnalysis.CSharp.Syntax;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
+
+using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
 namespace com.espertech.esper.common.@internal.epl.pattern.core
 {
@@ -81,7 +85,7 @@ namespace com.espertech.esper.common.@internal.epl.pattern.core
                         Cast(typeof(EventBean[]), ArrayAtIndex(Ref("buf"), Constant(indexTag))))
                     .DeclareVar<IDictionary<object, object>>(
                         "map" + count,
-                        StaticMethod(typeof(Collections), "singletonMap", Constant(entry.Key), Ref("arr" + count)))
+                        StaticMethod(typeof(Collections), "SingletonMap", Constant(entry.Key), Ref("arr" + count)))
                     .AssignArrayElement(
                         Ref("events"),
                         Constant(count),
@@ -113,11 +117,24 @@ namespace com.espertech.esper.common.@internal.epl.pattern.core
             CodegenMethod method,
             CodegenClassScope classScope)
         {
-            var clazz = NewAnonymousClass(method.Block, typeof(MatchedEventConvertor));
-            var convert = CodegenMethod.MakeParentNode(typeof(EventBean[]), GetType(), classScope)
-                .AddParam(typeof(MatchedEventMap), "events");
-            clazz.AddMethod("convert", convert);
-            convert.Block.MethodReturn(LocalMethod(Make(convert, classScope), Ref("events")));
+            //var lambda = ParenthesizedLambdaExpression(Block())
+            //    .WithParameterList(
+            //        ParameterList(
+            //            SingletonSeparatedList<ParameterSyntax>(
+            //                Parameter(Identifier("events")))))
+            //    .WithBody();
+
+            var convert = new CodegenExpressionLambda(method.Block)
+                .WithParam<MatchedEventMap>("events");
+            var clazz = NewInstance<MatchedEventConvertor>(convert);
+
+            //var clazz = NewAnonymousClass(method.Block, typeof(MatchedEventConvertor));
+            //var convert = CodegenMethod.MakeMethod(typeof(EventBean[]), GetType(), classScope)
+            //    .AddParam(typeof(MatchedEventMap), "events");
+            //clazz.AddMethod("Convert", convert);
+            //convert.Block.MethodReturn(LocalMethod(Make(convert, classScope), Ref("events")));
+
+            convert.Block.BlockReturn(LocalMethod(Make(method, classScope), Ref("events")));
             return clazz;
         }
     }

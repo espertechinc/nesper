@@ -34,7 +34,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 "on SupportBean merge varagg where TheString = keyOne and " +
                 "IntPrimitive = keyTwo when not matched then insert select TheString as keyOne, IntPrimitive as keyTwo, 1 as p0",
                 path);
-            env.CompileDeploy("@Name('s0') select varagg[p00, Id].p0 as value from SupportBean_S0", path)
+            env.CompileDeploy("@Name('s0') select varagg[P00, Id].p0 as value from SupportBean_S0", path)
                 .AddListener("s0");
             env.CompileDeploy(
                     "@Name('update') on SupportTwoKeyEvent update varagg set p0 = newValue " +

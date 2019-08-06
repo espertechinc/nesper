@@ -113,7 +113,7 @@ namespace com.espertech.esper.common.@internal.epl.updatehelper
 
             var clazz = NewAnonymousClass(method.Block, typeof(EventBeanUpdateHelperNoCopy));
 
-            var updateNoCopy = CodegenMethod.MakeParentNode(typeof(void), GetType(), classScope)
+            var updateNoCopy = CodegenMethod.MakeMethod(typeof(void), GetType(), classScope)
                 .AddParam(typeof(EventBean), "matchingEvent")
                 .AddParam(typeof(EventBean[]), NAME_EPS)
                 .AddParam(typeof(ExprEvaluatorContext), NAME_EXPREVALCONTEXT);
@@ -130,11 +130,11 @@ namespace com.espertech.esper.common.@internal.epl.updatehelper
                 .InstanceMethod(updateInternal, REF_EPS, REF_EXPREVALCONTEXT, Ref("matchingEvent"))
                 .Apply(Instblock(classScope, "aInfraUpdate", Ref("matchingEvent")));
 
-            var getUpdatedProperties = CodegenMethod.MakeParentNode(typeof(string[]), GetType(), classScope);
+            var getUpdatedProperties = CodegenMethod.MakeMethod(typeof(string[]), GetType(), classScope);
             clazz.AddMethod("GetUpdatedProperties", getUpdatedProperties);
             getUpdatedProperties.Block.MethodReturn(Constant(UpdateItemsPropertyNames));
 
-            var isRequiresStream2InitialValueEvent = CodegenMethod.MakeParentNode(typeof(bool), GetType(), classScope);
+            var isRequiresStream2InitialValueEvent = CodegenMethod.MakeMethod(typeof(bool), GetType(), classScope);
             clazz.AddMethod("isRequiresStream2InitialValueEvent", isRequiresStream2InitialValueEvent);
             isRequiresStream2InitialValueEvent.Block.MethodReturn(Constant(IsRequiresStream2InitialValueEvent));
 
@@ -217,7 +217,7 @@ namespace com.espertech.esper.common.@internal.epl.updatehelper
                         .IfRefNull(@ref)
                         .StaticMethod(
                             typeof(EventBeanUpdateHelperForge),
-                            "logWarnWhenNullAndNotNullable",
+                            "LogWarnWhenNullAndNotNullable",
                             Constant(updateItem.OptionalPropertyName))
                         .IfElse()
                         .Expression(

@@ -202,12 +202,16 @@ namespace com.espertech.esper.common.@internal.util
             Type originator,
             CodegenClassScope classScope)
         {
-            var anonymousClass = NewAnonymousClass(method.Block, typeof(TypeWidener));
-            var widen = CodegenMethod.MakeParentNode(typeof(object), originator, classScope)
-                .AddParam(typeof(object), "input");
-            anonymousClass.AddMethod("widen", widen);
+            var widen = new CodegenExpressionLambda(method.Block).WithParam<object>("input");
+            var anonymousClass = NewInstance<ProxyTypeWidener>(widen);
+
+            //var anonymousClass = NewAnonymousClass(method.Block, typeof(TypeWidener));
+            //var widen = CodegenMethod.MakeParentNode(typeof(object), originator, classScope)
+            //    .AddParam(typeof(object), "input");
+            //anonymousClass.AddMethod("widen", widen);
+
             var widenResult = widener.WidenCodegen(Ref("input"), method, classScope);
-            widen.Block.MethodReturn(widenResult);
+            widen.Block.BlockReturn(widenResult);
             return anonymousClass;
         }
 

@@ -177,7 +177,7 @@ namespace NEsper.Avro.Getter
                         typeof(ICollection<object>),
                         CodegenExpressionBuilder.ExprDotMethod(
                             CodegenExpressionBuilder.Ref("record"),
-                            "get",
+                            "Get",
                             CodegenExpressionBuilder.Constant(_posTop))))
                 .DeclareVar<object>(
                     "value",

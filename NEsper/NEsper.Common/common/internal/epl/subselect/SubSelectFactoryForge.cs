@@ -72,7 +72,7 @@ namespace com.espertech.esper.common.@internal.epl.subselect
             method.Block
                 .DeclareVar<IDictionary<object, object>>(
                     "subselects",
-                    NewInstance(typeof(LinkedHashMap<object, object>), Constant(subselects.Count + 2)));
+                    NewInstance(typeof(LinkedHashMap<object, object>)));
             foreach (var entry in subselects) {
                 method.Block.ExprDotMethod(
                     Ref("subselects"),

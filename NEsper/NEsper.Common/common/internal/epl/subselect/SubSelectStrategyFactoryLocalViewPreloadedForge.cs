@@ -164,7 +164,7 @@ namespace com.espertech.esper.common.@internal.epl.subselect
             }
 
             var aggregationClassNames = new AggregationClassNames(
-                CodegenPackageScopeNames.ClassPostfixAggregationForSubquery(subqueryNumber));
+                CodegenNamespaceScopeNames.ClassPostfixAggregationForSubquery(subqueryNumber));
             var aggResult = AggregationServiceFactoryCompiler.MakeInnerClassesAndInit(
                 false,
                 aggregationServiceForgeDesc.AggregationServiceFactoryForge,

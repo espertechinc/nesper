@@ -264,7 +264,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
                     classScope)
                 .AddParam(typeof(EventBean), "theEvent");
             method.Block.AssignRef(array, ConstantNull())
-                .DeclareVar<int>("value", Cast(typeof(int), ExprDotMethod(refSet, "get", Ref("theEvent"))))
+                .DeclareVar<int>("value", Cast(typeof(int), ExprDotMethod(refSet, "Get", Ref("theEvent"))))
                 .IfRefNull("value")
                 .ExprDotMethod(refSet, "Put", Ref("theEvent"), Constant(1))
                 .BlockReturnNoValue()
@@ -284,7 +284,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
                     classScope)
                 .AddParam(typeof(EventBean), "theEvent");
             method.Block.AssignRef(array, ConstantNull())
-                .DeclareVar<int>("value", Cast(typeof(int), ExprDotMethod(refSet, "get", Ref("theEvent"))))
+                .DeclareVar<int>("value", Cast(typeof(int), ExprDotMethod(refSet, "Get", Ref("theEvent"))))
                 .IfRefNull("value")
                 .BlockReturnNoValue()
                 .IfCondition(EqualsIdentity(Ref("value"), Constant(1)))

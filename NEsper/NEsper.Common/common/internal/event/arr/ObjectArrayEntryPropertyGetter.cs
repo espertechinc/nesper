@@ -142,7 +142,7 @@ namespace com.espertech.esper.common.@internal.@event.arr
                     EventTypeUtility.ResolveTypeCodegen(eventType, EPStatementInitServicesConstants.REF)));
             return StaticMethod(
                 typeof(BaseNestableEventUtil),
-                "getBNFragmentPojo",
+                "GetBNFragmentPono",
                 UnderlyingGetCodegen(underlyingExpression, codegenMethodScope, codegenClassScope),
                 type,
                 svc);

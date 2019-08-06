@@ -62,7 +62,7 @@ namespace com.espertech.esper.common.@internal.epl.output.core
         {
             var method = parent.MakeChild(typeof(void), typeof(OutputStrategyPostProcessForge), classScope)
                 .AddParam(typeof(bool), "forceUpdate")
-                .AddParam(typeof(UniformPair<EventBean>), "result");
+                .AddParam(typeof(UniformPair<EventBean[]>), "result");
 
             var ifChild = method.Block.IfCondition(NotEqualsNull(REF_CHILD));
 
@@ -87,14 +87,14 @@ namespace com.espertech.esper.common.@internal.epl.output.core
                     .ExprDotMethod(
                         REF_CHILD,
                         "NewResult",
-                        NewInstance<UniformPair<EventBean>>(
+                        NewInstance<UniformPair<EventBean[]>>(
                             ExprDotName(Ref("result"), "Second"),
                             ConstantNull()))
                     .IfElseIf(Ref("forceUpdate"))
                     .ExprDotMethod(
                         REF_CHILD,
                         "NewResult",
-                        PublicConstValue(typeof(UniformPair<EventBean>), "EMPTY_PAIR"));
+                        PublicConstValue(typeof(UniformPair<EventBean[]>), "EMPTY_PAIR"));
             }
             else if (selectStreamSelector == SelectClauseStreamSelectorEnum.RSTREAM_ISTREAM_BOTH) {
                 ifResultNotNull.IfCondition(
@@ -106,27 +106,27 @@ namespace com.espertech.esper.common.@internal.epl.output.core
                     .ExprDotMethod(
                         REF_CHILD,
                         "NewResult",
-                        PublicConstValue(typeof(UniformPair<EventBean>), "EMPTY_PAIR"));
+                        PublicConstValue(typeof(UniformPair<EventBean[]>), "EMPTY_PAIR"));
             }
             else {
                 ifResultNotNull.IfCondition(NotEqualsNull(ExprDotName(Ref("result"), "First")))
                     .ExprDotMethod(
                         REF_CHILD,
                         "NewResult",
-                        NewInstance<UniformPair<EventBean>>(
+                        NewInstance<UniformPair<EventBean[]>>(
                             ExprDotName(Ref("result"), "First"),
                             ConstantNull()))
                     .IfElseIf(Ref("forceUpdate"))
                     .ExprDotMethod(
                         REF_CHILD,
                         "NewResult",
-                        PublicConstValue(typeof(UniformPair<EventBean>), "EMPTY_PAIR"));
+                        PublicConstValue(typeof(UniformPair<EventBean[]>), "EMPTY_PAIR"));
             }
 
             // handle null-result (force-update)
             var ifResultNull = ifResultNotNull.IfElse();
             ifResultNull.IfCondition(Ref("forceUpdate"))
-                .ExprDotMethod(REF_CHILD, "NewResult", PublicConstValue(typeof(UniformPair<EventBean>), "EMPTY_PAIR"));
+                .ExprDotMethod(REF_CHILD, "NewResult", PublicConstValue(typeof(UniformPair<EventBean[]>), "EMPTY_PAIR"));
 
             return method;
         }
@@ -145,18 +145,18 @@ namespace com.espertech.esper.common.@internal.epl.output.core
             if (audit) {
                 forEach.Expression(
                     ExprDotMethodChain(Ref(NAME_AGENTINSTANCECONTEXT))
-                        .Add("getAuditProvider")
+                        .Get("AuditProvider")
                         .Add(
-                            "insert",
+                            "Insert",
                             Ref("routed"),
                             Ref(NAME_AGENTINSTANCECONTEXT)));
             }
 
             forEach.Expression(
                 ExprDotMethodChain(Ref(NAME_AGENTINSTANCECONTEXT))
-                    .Add("getInternalEventRouter")
+                    .Get("InternalEventRouter")
                     .Add(
-                        "route",
+                        "Route",
                         Ref("routed"),
                         Ref(NAME_AGENTINSTANCECONTEXT),
                         Constant(routeToFront)));

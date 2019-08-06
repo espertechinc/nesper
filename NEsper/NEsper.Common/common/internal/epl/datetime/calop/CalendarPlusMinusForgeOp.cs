@@ -92,7 +92,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
                     evaluationType);
                 return StaticMethod(
                     typeof(CalendarPlusMinusForgeOp),
-                    "actionCalendarPlusMinusNumber",
+                    "ActionCalendarPlusMinusNumber",
                     dtx,
                     Constant(forge.factor),
                     longDuration);
@@ -100,7 +100,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
 
             return StaticMethod(
                 typeof(CalendarPlusMinusForgeOp),
-                "actionCalendarPlusMinusTimePeriod",
+                "ActionCalendarPlusMinusTimePeriod",
                 dtx,
                 Constant(forge.factor),
                 forge.param.EvaluateCodegen(evaluationType, codegenMethodScope, exprSymbol, codegenClassScope));
@@ -122,7 +122,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
                     codegenClassScope);
                 return StaticMethod(
                     typeof(CalendarPlusMinusForgeOp),
-                    "actionLDTPlusMinusNumber",
+                    "ActionLDTPlusMinusNumber",
                     dto,
                     Constant(forge.factor),
                     longDuration);
@@ -130,7 +130,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
 
             return StaticMethod(
                 typeof(CalendarPlusMinusForgeOp),
-                "actionLDTPlusMinusTimePeriod",
+                "ActionLDTPlusMinusTimePeriod",
                 dto,
                 Constant(forge.factor),
                 forge.param.EvaluateCodegen(evaluationType, codegenMethodScope, exprSymbol, codegenClassScope));
@@ -152,7 +152,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
                     codegenClassScope);
                 return StaticMethod(
                     typeof(CalendarPlusMinusForgeOp),
-                    "actionZDTPlusMinusNumber",
+                    "ActionZDTPlusMinusNumber",
                     dateTime,
                     Constant(forge.factor),
                     longDuration);
@@ -160,7 +160,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
 
             return StaticMethod(
                 typeof(CalendarPlusMinusForgeOp),
-                "actionZDTPlusMinusTimePeriod",
+                "ActionZDTPlusMinusTimePeriod",
                 dateTime,
                 Constant(forge.factor),
                 forge.param.EvaluateCodegen(evaluationType, codegenMethodScope, exprSymbol, codegenClassScope));

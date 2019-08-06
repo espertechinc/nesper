@@ -54,7 +54,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
                     "bean",
                     stateForge.AggregatorLinear.GetFirstValueCodegen(context.ClassScope, context.Method))
                 .IfRefNullReturnNull("bean")
-                .MethodReturn(StaticMethod(typeof(Collections), "singletonList", @Ref("bean")));
+                .MethodReturn(StaticMethod(typeof(Collections), "SingletonList", @Ref("bean")));
         }
 
         public static void GetEnumerableScalarCodegen(
@@ -78,7 +78,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
                     "value",
                     LocalMethod(childExpr, @Ref("eventsPerStreamBuf"), Constant(true), ConstantNull()))
                 .IfRefNullReturnNull("value")
-                .MethodReturn(StaticMethod(typeof(Collections), "singletonList", @Ref("value")));
+                .MethodReturn(StaticMethod(typeof(Collections), "SingletonList", @Ref("value")));
         }
 
         public static void GetEnumerableEventCodegen(

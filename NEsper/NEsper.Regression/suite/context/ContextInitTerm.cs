@@ -75,7 +75,7 @@ namespace com.espertech.esper.regressionlib.suite.context
             env.CompileDeploy(
                 soda,
                 "@Name('s0') context SupportBeanInstanceCtx " +
-                "select Id, context.sb.IntPrimitive as sbint, context.startTime as starttime, context.endTime as endtime from SupportBean_S0(p00=context.sb.TheString)",
+                "select Id, context.sb.IntPrimitive as sbint, context.startTime as starttime, context.endTime as endtime from SupportBean_S0(P00=context.sb.TheString)",
                 path);
             env.AddListener("s0");
             var fields = "id,sbint,starttime,endtime".SplitCsv();
@@ -120,7 +120,7 @@ namespace com.espertech.esper.regressionlib.suite.context
             env.CompileDeploy(
                 soda,
                 "@Name('s0') context SupportBeanInstanceCtx " +
-                "select Id, context.sb.IntPrimitive as sbint, context.startTime as starttime, context.endTime as endtime from SupportBean_S0(p00=context.sb.TheString)",
+                "select Id, context.sb.IntPrimitive as sbint, context.startTime as starttime, context.endTime as endtime from SupportBean_S0(P00=context.sb.TheString)",
                 path);
             env.AddListener("s0");
             var fields = "id,sbint,starttime,endtime".SplitCsv();
@@ -485,7 +485,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                     "@Name('ctx') create context MyCtx as initiated by SupportBean_S0 s0 terminated by SupportBean_S1(Id=s0.Id)",
                     path);
                 env.CompileDeploy(
-                    "@Name('s0') context MyCtx select context.Id as c0, context.s0.p00 as c1, TheString as c2, sum(IntPrimitive) as c3 from SupportBean#keepall group by TheString",
+                    "@Name('s0') context MyCtx select context.Id as c0, context.s0.P00 as c1, TheString as c2, sum(IntPrimitive) as c3 from SupportBean#keepall group by TheString",
                     path);
 
                 env.AdvanceTime(1000);
@@ -579,7 +579,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 catch (InvalidContextPartitionSelector ex) {
                     Assert.IsTrue(
                         ex.Message.StartsWith(
-                            "InvalId context partition selector, expected an implementation class of any of [ContextPartitionSelectorAll, ContextPartitionSelectorFiltered, ContextPartitionSelectorById] interfaces but received com."),
+                            "Invalid context partition selector, expected an implementation class of any of [ContextPartitionSelectorAll, ContextPartitionSelectorFiltered, ContextPartitionSelectorById] interfaces but received com."),
                         "message: " + ex.Message);
                 }
 
@@ -656,12 +656,12 @@ namespace com.espertech.esper.regressionlib.suite.context
                 env.CompileDeploy(
                     "create context EveryNowAndThen as " +
                     "initiated by SupportBean_S0 as s0 " +
-                    "terminated by SupportBean_S1(p10 = s0.p00)",
+                    "terminated by SupportBean_S1(P10 = s0.P00)",
                     path);
 
                 var fields = "c1,c2".SplitCsv();
                 env.CompileDeploy(
-                    "@Name('s0') context EveryNowAndThen select context.s0.p00 as c1, sum(IntPrimitive) as c2 " +
+                    "@Name('s0') context EveryNowAndThen select context.s0.P00 as c1, sum(IntPrimitive) as c2 " +
                     "from SupportBean#keepall output snapshot when terminated",
                     path);
                 env.AddListener("s0");
@@ -732,7 +732,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                                  "initiated by SupportBean_S0 as sb0 " +
                                  "terminated after 1 minute;\n";
                 var eplGrouped =
-                    "@Name('S1') context CtxInitiated select TheString as c1, sum(IntPrimitive) as c2, context.sb0.p00 as c3 from SupportBean;\n";
+                    "@Name('S1') context CtxInitiated select TheString as c1, sum(IntPrimitive) as c2, context.sb0.P00 as c3 from SupportBean;\n";
                 env.CompileDeploy(eplContext + eplGrouped).AddListener("S1");
                 var fields = "c1,c2,c3".SplitCsv();
 
@@ -796,9 +796,9 @@ namespace com.espertech.esper.regressionlib.suite.context
 
                 var eplContext = "@Name('CTX') create context CtxInitiated " +
                                  "initiated by SupportBean sb " +
-                                 "terminated by pattern [SupportBean_S0(p00=sb.TheString) => SupportBean_S1(p10=sb.TheString)];\n";
+                                 "terminated by pattern [SupportBean_S0(P00=sb.TheString) => SupportBean_S1(P10=sb.TheString)];\n";
                 var eplSelect = "@Name('S1') context CtxInitiated " +
-                                "select Id from SupportBean_S2(p20 = context.sb.TheString)";
+                                "select Id from SupportBean_S2(P20 = context.sb.TheString)";
                 env.CompileDeploy(eplContext + eplSelect).AddListener("S1");
 
                 // start context for G1
@@ -876,7 +876,7 @@ namespace com.espertech.esper.regressionlib.suite.context
 
                 var fields = "c1,c2,c3,c4".SplitCsv();
                 var eplGrouped = "@Name('S1') context CtxInitiated " +
-                                 "select TheString as c1, sum(IntPrimitive) as c2, context.s0.p00 as c3, context.s1.p10 as c4 from SupportBean";
+                                 "select TheString as c1, sum(IntPrimitive) as c2, context.s0.P00 as c3, context.s1.P10 as c4 from SupportBean";
                 env.CompileDeploy(eplGrouped, path).AddListener("S1");
 
                 env.SendEventBean(new SupportBean_S0(10, "S0_1"));
@@ -1348,7 +1348,7 @@ namespace com.espertech.esper.regressionlib.suite.context
             {
                 env.CompileDeploy(
                     "@Name('s0') context EverySupportBean " +
-                    "select TheString as c0,IntPrimitive as c1,context.sb.p00 as c2 " +
+                    "select TheString as c0,IntPrimitive as c1,context.sb.P00 as c2 " +
                     "from SupportBean(" +
                     @operator +
                     ")",
@@ -1396,7 +1396,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 var fields = "c0,c1,c2".SplitCsv();
                 env.CompileDeploy(
                     "@Name('s0') context EverySupportBean " +
-                    "select TheString as c0,IntPrimitive as c1,context.sb.p00 as c2 " +
+                    "select TheString as c0,IntPrimitive as c1,context.sb.P00 as c2 " +
                     "from SupportBean(IntPrimitive + context.sb.Id = 5)",
                     path);
                 env.AddListener("s0");
@@ -1458,7 +1458,7 @@ namespace com.espertech.esper.regressionlib.suite.context
 
                 var fields = "c1,c2,c3".SplitCsv();
                 var eplGrouped =
-                    "@Name('s0') context CtxInitiated select TheString as c1, sum(IntPrimitive) as c2, context.sb0.p00 as c3 from SupportBean";
+                    "@Name('s0') context CtxInitiated select TheString as c1, sum(IntPrimitive) as c2, context.sb0.P00 as c3 from SupportBean";
                 env.CompileDeploy(eplGrouped, path).AddListener("s0");
 
                 env.SendEventBean(new SupportBean("G1", 1));
@@ -2041,21 +2041,21 @@ namespace com.espertech.esper.regressionlib.suite.context
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
                     "create context CtxMonthly4 start (0) end(*,*,*,*,*)",
-                    "InvalId schedule specification: InvalId number of crontab parameters, expecting between 5 and 7 parameters, received 1 [create context CtxMonthly4 start (0) end(*,*,*,*,*)]");
+                    "Invalid schedule specification: Invalid number of crontab parameters, expecting between 5 and 7 parameters, received 1 [create context CtxMonthly4 start (0) end(*,*,*,*,*)]");
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
                     "create context CtxMonthly4 start (*,*,*,*,*) end(*,*,*,*,*,*,*,*)",
-                    "InvalId schedule specification: InvalId number of crontab parameters, expecting between 5 and 7 parameters, received 8 [create context CtxMonthly4 start (*,*,*,*,*) end(*,*,*,*,*,*,*,*)]");
+                    "Invalid schedule specification: Invalid number of crontab parameters, expecting between 5 and 7 parameters, received 8 [create context CtxMonthly4 start (*,*,*,*,*) end(*,*,*,*,*,*,*,*)]");
 
                 // test invalid -after
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
                     "create context CtxMonthly4 start after 1 second end after -1 seconds",
-                    "InvalId negative time period expression '-1 seconds' [create context CtxMonthly4 start after 1 second end after -1 seconds]");
+                    "Invalid negative time period expression '-1 seconds' [create context CtxMonthly4 start after 1 second end after -1 seconds]");
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
                     "create context CtxMonthly4 start after -1 second end after 1 seconds",
-                    "InvalId negative time period expression '-1 seconds' [create context CtxMonthly4 start after -1 second end after 1 seconds]");
+                    "Invalid negative time period expression '-1 seconds' [create context CtxMonthly4 start after -1 second end after 1 seconds]");
 
                 env.UndeployAll();
             }

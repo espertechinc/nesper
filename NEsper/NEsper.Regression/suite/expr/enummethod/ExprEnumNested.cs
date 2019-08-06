@@ -60,7 +60,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
             public void Run(RegressionEnvironment env)
             {
                 var eplFragment =
-                    "@Name('s0') select contained.where(x => (x.p00 = contained.min(y => y.p00))) as val from SupportBean_ST0_Container";
+                    "@Name('s0') select Contained.where(x => (x.P00 = Contained.min(y => y.P00))) as val from SupportBean_ST0_Container";
                 env.CompileDeploy(eplFragment).AddListener("s0");
 
                 var bean = SupportBean_ST0_Container.Make2Value("E1,2", "E2,1", "E3,2");
@@ -95,7 +95,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
             public void Run(RegressionEnvironment env)
             {
                 var eplFragment =
-                    "@Name('s0') select contained.where(x => x = (contained.firstOf(y => y.p00 = x.p00 ))) as val from SupportBean_ST0_Container";
+                    "@Name('s0') select Contained.where(x => x = (Contained.firstOf(y => y.P00 = x.P00 ))) as val from SupportBean_ST0_Container";
                 env.CompileDeploy(eplFragment).AddListener("s0");
 
                 var bean = SupportBean_ST0_Container.Make2Value("E1,2", "E2,1", "E3,3");

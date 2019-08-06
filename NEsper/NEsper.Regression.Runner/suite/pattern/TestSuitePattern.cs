@@ -12,6 +12,7 @@ using com.espertech.esper.common.client.configuration;
 using com.espertech.esper.common.client.configuration.common;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.suite.pattern;
 using com.espertech.esper.regressionlib.support.bean;
 using com.espertech.esper.regressionlib.support.client;
@@ -261,7 +262,14 @@ namespace com.espertech.esper.regressionrun.suite.pattern
                 configuration.Common.AddEventType(clazz.Name, clazz);
             }
 
-            foreach (string name in "computeISO8601String,getThe1980Calendar,getThe1980Date,getThe1980Long,getTheSeconds,getThe1980LocalDateTime,getThe1980ZonedDateTime".SplitCsv())
+            foreach (string name in Collections.List(
+                "computeISO8601String",
+                "getThe1980Calendar",
+                "getThe1980Date",
+                "getThe1980Long",
+                "getTheSeconds",
+                "getThe1980LocalDateTime",
+                "getThe1980ZonedDateTime"))
             {
                 configuration.Compiler.AddPlugInSingleRowFunction(name, typeof(PatternObserverTimerSchedule), name);
             }

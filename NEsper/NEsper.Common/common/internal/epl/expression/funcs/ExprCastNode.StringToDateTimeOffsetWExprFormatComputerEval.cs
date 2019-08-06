@@ -60,7 +60,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
                         "formatter",
                         CodegenExpressionBuilder.StaticMethod(
                             typeof(ExprCastNode),
-                            "stringToDateTimeFormatterSafe",
+                            "StringToDateTimeFormatterSafe",
                             dateFormatForge.EvaluateCodegen(typeof(object), method, exprSymbol, codegenClassScope)));
                     formatter = CodegenExpressionBuilder.Ref("formatter");
                 }

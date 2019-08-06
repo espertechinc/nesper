@@ -46,7 +46,7 @@ namespace com.espertech.esper.common.@internal.@event.arr
 
             testValues = new object[] { "test", 10, supportBean };
 
-            EventTypeMetadata metadata = new EventTypeMetadata("MyType", null, EventTypeTypeClass.STREAM, EventTypeApplicationType.OBJECTARR, NameAccessModifier.PROTECTED, EventTypeBusModifier.NONBUS, false, EventTypeIdPair.Unassigned());
+            EventTypeMetadata metadata = new EventTypeMetadata("MyType", null, EventTypeTypeClass.STREAM, EventTypeApplicationType.OBJECTARR, NameAccessModifier.INTERNAL, EventTypeBusModifier.NONBUS, false, EventTypeIdPair.Unassigned());
             eventType = new ObjectArrayEventType(metadata, typeRep, null, null, null, null,
                 SupportEventTypeFactory.GetInstance(container).BEAN_EVENT_TYPE_FACTORY);
             eventBean = new ObjectArrayEventBean(testValues, eventType);

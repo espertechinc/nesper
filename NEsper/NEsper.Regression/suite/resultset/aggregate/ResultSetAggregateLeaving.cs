@@ -36,7 +36,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
             TryInvalidCompile(
                 env,
                 "select leaving(1) from SupportBean",
-                "Failed to valIdate select-clause expression 'leaving(1)': The 'leaving' function expects no parameters");
+                "Failed to validate select-clause expression 'leaving(1)': The 'leaving' function expects no parameters");
         }
 
         private static void RunAssertion(

@@ -199,7 +199,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                         forge.IsSorting ? NewInstance<List<object>>(Constant(1)) : ConstantNull())
                     .DeclareVar<AggregationGroupByRollupLevel[]>(
                         "levels",
-                        ExprDotMethodChain(Ref("this")).Add("getGroupByRollupDesc").Add("getLevels"));
+                        ExprDotMethodChain(Ref("this")).Get("GroupByRollupDesc").Get("Levels"));
 
                 {
                     var forLevels = methodNode.Block.ForEach(
@@ -320,7 +320,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                         forge.IsSorting ? NewInstance<List<object>>(Constant(1)) : ConstantNull())
                     .DeclareVar<AggregationGroupByRollupLevel[]>(
                         "levels",
-                        ExprDotMethodChain(Ref("this")).Add("getGroupByRollupDesc").Add("getLevels"));
+                        ExprDotMethodChain(Ref("this")).Get("GroupByRollupDesc").Get("Levels"));
 
                 {
                     var forLevels = methodNode.Block.ForEach(
@@ -446,7 +446,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                     NewArrayByLength(typeof(object), Constant(forge.GroupByRollupDesc.Levels.Length)))
                 .DeclareVar<AggregationGroupByRollupLevel[]>(
                     "levels",
-                    ExprDotMethodChain(Ref("this")).Add("getGroupByRollupDesc").Add("getLevels"));
+                    ExprDotMethodChain(Ref("this")).Get("GroupByRollupDesc").Get("Levels"));
             {
                 method.Block.WhileLoop(ExprDotMethod(Ref("it"), "HasNext"))
                     .AssignArrayElement(
@@ -459,7 +459,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                     .ForLoopIntSimple("j", ArrayLength(Ref("levels")))
                     .DeclareVar<object>(
                         "subkey",
-                        ExprDotMethod(ArrayAtIndex(Ref("levels"), Ref("j")), "computeSubkey", Ref("groupKeyComplete")))
+                        ExprDotMethod(ArrayAtIndex(Ref("levels"), Ref("j")), "ComputeSubkey", Ref("groupKeyComplete")))
                     .AssignArrayElement("groupKeys", Ref("j"), Ref("subkey"))
                     .BlockEnd()
                     .ExprDotMethod(
@@ -500,7 +500,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                     "events",
                     StaticMethod(
                         typeof(CollectionUtil),
-                        METHOD_ITERATORTOARRAYEVENTS,
+                        METHOD_ENUMERATORTOARRAYEVENTS,
                         ExprDotMethod(REF_VIEWABLE, "GetEnumerator")))
                 .InstanceMethod(generateGroupKeysView, Ref("events"), Ref(NAME_EVENTPERGROUPBUFVIEW), ConstantTrue())
                 .DeclareVar<EventBean[]>(
@@ -520,7 +520,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
             CodegenMethod method,
             CodegenInstanceAux instance)
         {
-            ProcessOutputLimitedLastAllNonBufferedCodegen(forge, "processView", classScope, method, instance);
+            ProcessOutputLimitedLastAllNonBufferedCodegen(forge, "ProcessView", classScope, method, instance);
         }
 
         protected internal static void GetIteratorJoinCodegen(
@@ -757,10 +757,10 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                                 forNew.ForEach(
                                         typeof(AggregationGroupByRollupLevel),
                                         "level",
-                                        ExprDotMethodChain(Ref("this")).Add("getGroupByRollupDesc").Add("getLevels"))
+                                        ExprDotMethodChain(Ref("this")).Get("GroupByRollupDesc").Get("Levels"))
                                     .DeclareVar<object>(
                                         "groupKey",
-                                        ExprDotMethod(Ref("level"), "computeSubkey", Ref("groupKeyComplete")))
+                                        ExprDotMethod(Ref("level"), "ComputeSubkey", Ref("groupKeyComplete")))
                                     .AssignArrayElement(Ref("groupKeysPerLevel"), levelNumber, Ref("groupKey"));
                             }
                             forNew.ExprDotMethod(
@@ -782,10 +782,10 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                                 forOld.ForEach(
                                         typeof(AggregationGroupByRollupLevel),
                                         "level",
-                                        ExprDotMethodChain(Ref("this")).Add("getGroupByRollupDesc").Add("getLevels"))
+                                        ExprDotMethodChain(Ref("this")).Get("GroupByRollupDesc").Get("Levels"))
                                     .DeclareVar<object>(
                                         "groupKey",
-                                        ExprDotMethod(Ref("level"), "computeSubkey", Ref("groupKeyComplete")))
+                                        ExprDotMethod(Ref("level"), "ComputeSubkey", Ref("groupKeyComplete")))
                                     .AssignArrayElement(Ref("groupKeysPerLevel"), levelNumber, Ref("groupKey"));
                             }
                             forOld.ExprDotMethod(
@@ -807,10 +807,10 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                                 var eachlvl = forNewFirst.ForEach(
                                         typeof(AggregationGroupByRollupLevel),
                                         "level",
-                                        ExprDotMethodChain(Ref("this")).Add("getGroupByRollupDesc").Add("getLevels"))
+                                        ExprDotMethodChain(Ref("this")).Get("GroupByRollupDesc").Get("Levels"))
                                     .DeclareVar<object>(
                                         "groupKey",
-                                        ExprDotMethod(Ref("level"), "computeSubkey", Ref("groupKeyComplete")))
+                                        ExprDotMethod(Ref("level"), "ComputeSubkey", Ref("groupKeyComplete")))
                                     .ExprDotMethod(
                                         REF_AGGREGATIONSVC,
                                         "SetCurrentAccess",
@@ -878,10 +878,10 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                                 var eachlvl = forOldFirst.ForEach(
                                         typeof(AggregationGroupByRollupLevel),
                                         "level",
-                                        ExprDotMethodChain(Ref("this")).Add("getGroupByRollupDesc").Add("getLevels"))
+                                        ExprDotMethodChain(Ref("this")).Get("GroupByRollupDesc").Get("Levels"))
                                     .DeclareVar<object>(
                                         "groupKey",
-                                        ExprDotMethod(Ref("level"), "computeSubkey", Ref("groupKeyComplete")))
+                                        ExprDotMethod(Ref("level"), "ComputeSubkey", Ref("groupKeyComplete")))
                                     .ExprDotMethod(
                                         REF_AGGREGATIONSVC,
                                         "SetCurrentAccess",
@@ -1010,10 +1010,10 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                                 var forLvl = forNew.ForEach(
                                         typeof(AggregationGroupByRollupLevel),
                                         "level",
-                                        ExprDotMethodChain(Ref("this")).Add("getGroupByRollupDesc").Add("getLevels"))
+                                        ExprDotMethodChain(Ref("this")).Get("GroupByRollupDesc").Get("Levels"))
                                     .DeclareVar<object>(
                                         "groupKey",
-                                        ExprDotMethod(Ref("level"), "computeSubkey", Ref("groupKeyComplete")))
+                                        ExprDotMethod(Ref("level"), "ComputeSubkey", Ref("groupKeyComplete")))
                                     .AssignArrayElement(Ref("groupKeysPerLevel"), levelNumber, Ref("groupKey"))
                                     .DeclareVar<OutputConditionPolled>(
                                         "outputStateGroup",
@@ -1073,10 +1073,10 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                                 var forLvl = forOld.ForEach(
                                         typeof(AggregationGroupByRollupLevel),
                                         "level",
-                                        ExprDotMethodChain(Ref("this")).Add("getGroupByRollupDesc").Add("getLevels"))
+                                        ExprDotMethodChain(Ref("this")).Get("GroupByRollupDesc").Get("Levels"))
                                     .DeclareVar<object>(
                                         "groupKey",
-                                        ExprDotMethod(Ref("level"), "computeSubkey", Ref("groupKeyComplete")))
+                                        ExprDotMethod(Ref("level"), "ComputeSubkey", Ref("groupKeyComplete")))
                                     .AssignArrayElement(Ref("groupKeysPerLevel"), levelNumber, Ref("groupKey"))
                                     .DeclareVar<OutputConditionPolled>(
                                         "outputStateGroup",
@@ -1194,10 +1194,10 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                                 forNew.ForEach(
                                         typeof(AggregationGroupByRollupLevel),
                                         "level",
-                                        ExprDotMethodChain(Ref("this")).Add("getGroupByRollupDesc").Add("getLevels"))
+                                        ExprDotMethodChain(Ref("this")).Get("GroupByRollupDesc").Get("Levels"))
                                     .DeclareVar<object>(
                                         "groupKey",
-                                        ExprDotMethod(Ref("level"), "computeSubkey", Ref("groupKeyComplete")))
+                                        ExprDotMethod(Ref("level"), "ComputeSubkey", Ref("groupKeyComplete")))
                                     .AssignArrayElement(Ref("groupKeysPerLevel"), levelNumber, Ref("groupKey"));
                             }
                             forNew.ExprDotMethod(
@@ -1221,10 +1221,10 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                                 forOld.ForEach(
                                         typeof(AggregationGroupByRollupLevel),
                                         "level",
-                                        ExprDotMethodChain(Ref("this")).Add("getGroupByRollupDesc").Add("getLevels"))
+                                        ExprDotMethodChain(Ref("this")).Get("GroupByRollupDesc").Get("Levels"))
                                     .DeclareVar<object>(
                                         "groupKey",
-                                        ExprDotMethod(Ref("level"), "computeSubkey", Ref("groupKeyComplete")))
+                                        ExprDotMethod(Ref("level"), "ComputeSubkey", Ref("groupKeyComplete")))
                                     .AssignArrayElement(Ref("groupKeysPerLevel"), levelNumber, Ref("groupKey"));
                             }
                             forOld.ExprDotMethod(
@@ -1251,10 +1251,10 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                                 var eachlvl = forNewFirst.ForEach(
                                         typeof(AggregationGroupByRollupLevel),
                                         "level",
-                                        ExprDotMethodChain(Ref("this")).Add("getGroupByRollupDesc").Add("getLevels"))
+                                        ExprDotMethodChain(Ref("this")).Get("GroupByRollupDesc").Get("Levels"))
                                     .DeclareVar<object>(
                                         "groupKey",
-                                        ExprDotMethod(Ref("level"), "computeSubkey", Ref("groupKeyComplete")))
+                                        ExprDotMethod(Ref("level"), "ComputeSubkey", Ref("groupKeyComplete")))
                                     .ExprDotMethod(
                                         REF_AGGREGATIONSVC,
                                         "SetCurrentAccess",
@@ -1327,10 +1327,10 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                                 var eachlvl = forOldFirst.ForEach(
                                         typeof(AggregationGroupByRollupLevel),
                                         "level",
-                                        ExprDotMethodChain(Ref("this")).Add("getGroupByRollupDesc").Add("getLevels"))
+                                        ExprDotMethodChain(Ref("this")).Get("GroupByRollupDesc").Get("Levels"))
                                     .DeclareVar<object>(
                                         "groupKey",
-                                        ExprDotMethod(Ref("level"), "computeSubkey", Ref("groupKeyComplete")))
+                                        ExprDotMethod(Ref("level"), "ComputeSubkey", Ref("groupKeyComplete")))
                                     .ExprDotMethod(
                                         REF_AGGREGATIONSVC,
                                         "SetCurrentAccess",
@@ -1460,10 +1460,10 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                                 var forLvl = forNew.ForEach(
                                         typeof(AggregationGroupByRollupLevel),
                                         "level",
-                                        ExprDotMethodChain(Ref("this")).Add("getGroupByRollupDesc").Add("getLevels"))
+                                        ExprDotMethodChain(Ref("this")).Get("GroupByRollupDesc").Get("Levels"))
                                     .DeclareVar<object>(
                                         "groupKey",
-                                        ExprDotMethod(Ref("level"), "computeSubkey", Ref("groupKeyComplete")))
+                                        ExprDotMethod(Ref("level"), "ComputeSubkey", Ref("groupKeyComplete")))
                                     .AssignArrayElement(Ref("groupKeysPerLevel"), levelNumber, Ref("groupKey"))
                                     .DeclareVar<OutputConditionPolled>(
                                         "outputStateGroup",
@@ -1521,10 +1521,10 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                                 var forLvl = forOld.ForEach(
                                         typeof(AggregationGroupByRollupLevel),
                                         "level",
-                                        ExprDotMethodChain(Ref("this")).Add("getGroupByRollupDesc").Add("getLevels"))
+                                        ExprDotMethodChain(Ref("this")).Get("GroupByRollupDesc").Get("Levels"))
                                     .DeclareVar<object>(
                                         "groupKey",
-                                        ExprDotMethod(Ref("level"), "computeSubkey", Ref("groupKeyComplete")))
+                                        ExprDotMethod(Ref("level"), "ComputeSubkey", Ref("groupKeyComplete")))
                                     .AssignArrayElement(Ref("groupKeysPerLevel"), levelNumber, Ref("groupKey"))
                                     .DeclareVar<OutputConditionPolled>(
                                         "outputStateGroup",
@@ -2008,10 +2008,10 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                             var forLevel = forNew.ForEach(
                                     typeof(AggregationGroupByRollupLevel),
                                     "level",
-                                    ExprDotMethodChain(Ref("this")).Add("getGroupByRollupDesc").Add("getLevels"))
+                                    ExprDotMethodChain(Ref("this")).Get("GroupByRollupDesc").Get("Levels"))
                                 .DeclareVar<object>(
                                     "groupKey",
-                                    ExprDotMethod(Ref("level"), "computeSubkey", Ref("groupKeyComplete")))
+                                    ExprDotMethod(Ref("level"), "ComputeSubkey", Ref("groupKeyComplete")))
                                 .AssignArrayElement(Ref("groupKeysPerLevel"), levelNumber, Ref("groupKey"));
                             var ifNullPut = forLevel.IfCondition(
                                 EqualsNull(
@@ -2053,10 +2053,10 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                             var forLevel = forOld.ForEach(
                                     typeof(AggregationGroupByRollupLevel),
                                     "level",
-                                    ExprDotMethodChain(Ref("this")).Add("getGroupByRollupDesc").Add("getLevels"))
+                                    ExprDotMethodChain(Ref("this")).Get("GroupByRollupDesc").Get("Levels"))
                                 .DeclareVar<object>(
                                     "groupKey",
-                                    ExprDotMethod(Ref("level"), "computeSubkey", Ref("groupKeyComplete")))
+                                    ExprDotMethod(Ref("level"), "ComputeSubkey", Ref("groupKeyComplete")))
                                 .AssignArrayElement(Ref("groupKeysPerLevel"), levelNumber, Ref("groupKey"));
                             var ifNullPut = forLevel.IfCondition(
                                 EqualsNull(
@@ -2147,10 +2147,10 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                             var forLevel = forNew.ForEach(
                                     typeof(AggregationGroupByRollupLevel),
                                     "level",
-                                    ExprDotMethodChain(Ref("this")).Add("getGroupByRollupDesc").Add("getLevels"))
+                                    ExprDotMethodChain(Ref("this")).Get("GroupByRollupDesc").Get("Levels"))
                                 .DeclareVar<object>(
                                     "groupKey",
-                                    ExprDotMethod(Ref("level"), "computeSubkey", Ref("groupKeyComplete")))
+                                    ExprDotMethod(Ref("level"), "ComputeSubkey", Ref("groupKeyComplete")))
                                 .AssignArrayElement(Ref("groupKeysPerLevel"), levelNumber, Ref("groupKey"));
                             var ifNullPut = forLevel.IfCondition(
                                 EqualsNull(
@@ -2194,10 +2194,10 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                             var forLevel = forOld.ForEach(
                                     typeof(AggregationGroupByRollupLevel),
                                     "level",
-                                    ExprDotMethodChain(Ref("this")).Add("getGroupByRollupDesc").Add("getLevels"))
+                                    ExprDotMethodChain(Ref("this")).Get("GroupByRollupDesc").Get("Levels"))
                                 .DeclareVar<object>(
                                     "groupKey",
-                                    ExprDotMethod(Ref("level"), "computeSubkey", Ref("groupKeyComplete")))
+                                    ExprDotMethod(Ref("level"), "ComputeSubkey", Ref("groupKeyComplete")))
                                 .AssignArrayElement(Ref("groupKeysPerLevel"), levelNumber, Ref("groupKey"));
                             var ifNullPut = forLevel.IfCondition(
                                 EqualsNull(
@@ -2259,7 +2259,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                 method.Block.ForEach(
                         typeof(AggregationGroupByRollupLevel),
                         "level",
-                        ExprDotMethodChain(Ref("this")).Add("getGroupByRollupDesc").Add("getLevels"))
+                        ExprDotMethodChain(Ref("this")).Get("GroupByRollupDesc").Get("Levels"))
                     .DeclareVar<IDictionary<object, object>>(
                         "groupGenerators",
                         ArrayAtIndex(Ref(NAME_GROUPREPSPERLEVELBUF), ExprDotName(Ref("level"), "LevelNumber")))
@@ -2305,10 +2305,10 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                             var forLevel = forNew.ForEach(
                                     typeof(AggregationGroupByRollupLevel),
                                     "level",
-                                    ExprDotMethodChain(Ref("this")).Add("getGroupByRollupDesc").Add("getLevels"))
+                                    ExprDotMethodChain(Ref("this")).Get("GroupByRollupDesc").Get("Levels"))
                                 .DeclareVar<object>(
                                     "groupKey",
-                                    ExprDotMethod(Ref("level"), "computeSubkey", Ref("groupKeyComplete")))
+                                    ExprDotMethod(Ref("level"), "ComputeSubkey", Ref("groupKeyComplete")))
                                 .AssignArrayElement(Ref("groupKeysPerLevel"), levelNumber, Ref("groupKey"));
                             var ifNullPut = forLevel.IfCondition(
                                 EqualsNull(
@@ -2350,10 +2350,10 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                             var forLevel = forOld.ForEach(
                                     typeof(AggregationGroupByRollupLevel),
                                     "level",
-                                    ExprDotMethodChain(Ref("this")).Add("getGroupByRollupDesc").Add("getLevels"))
+                                    ExprDotMethodChain(Ref("this")).Get("GroupByRollupDesc").Get("Levels"))
                                 .DeclareVar<object>(
                                     "groupKey",
-                                    ExprDotMethod(Ref("level"), "computeSubkey", Ref("groupKeyComplete")))
+                                    ExprDotMethod(Ref("level"), "ComputeSubkey", Ref("groupKeyComplete")))
                                 .AssignArrayElement(Ref("groupKeysPerLevel"), levelNumber, Ref("groupKey"));
                             var ifNullPut = forLevel.IfCondition(
                                 EqualsNull(
@@ -2415,7 +2415,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                 method.Block.ForEach(
                         typeof(AggregationGroupByRollupLevel),
                         "level",
-                        ExprDotMethodChain(Ref("this")).Add("getGroupByRollupDesc").Add("getLevels"))
+                        ExprDotMethodChain(Ref("this")).Get("GroupByRollupDesc").Get("Levels"))
                     .DeclareVar<IDictionary<object, object>>(
                         "groupGenerators",
                         ArrayAtIndex(Ref(NAME_GROUPREPSPERLEVELBUF), ExprDotName(Ref("level"), "LevelNumber")))
@@ -2463,10 +2463,10 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                             var forLevel = forNew.ForEach(
                                     typeof(AggregationGroupByRollupLevel),
                                     "level",
-                                    ExprDotMethodChain(Ref("this")).Add("getGroupByRollupDesc").Add("getLevels"))
+                                    ExprDotMethodChain(Ref("this")).Get("GroupByRollupDesc").Get("Levels"))
                                 .DeclareVar<object>(
                                     "groupKey",
-                                    ExprDotMethod(Ref("level"), "computeSubkey", Ref("groupKeyComplete")))
+                                    ExprDotMethod(Ref("level"), "ComputeSubkey", Ref("groupKeyComplete")))
                                 .AssignArrayElement(Ref("groupKeysPerLevel"), levelNumber, Ref("groupKey"));
                             var ifNullPut = forLevel.IfCondition(
                                 EqualsNull(
@@ -2510,10 +2510,10 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                             var forLevel = forOld.ForEach(
                                     typeof(AggregationGroupByRollupLevel),
                                     "level",
-                                    ExprDotMethodChain(Ref("this")).Add("getGroupByRollupDesc").Add("getLevels"))
+                                    ExprDotMethodChain(Ref("this")).Get("GroupByRollupDesc").Get("Levels"))
                                 .DeclareVar<object>(
                                     "groupKey",
-                                    ExprDotMethod(Ref("level"), "computeSubkey", Ref("groupKeyComplete")))
+                                    ExprDotMethod(Ref("level"), "ComputeSubkey", Ref("groupKeyComplete")))
                                 .AssignArrayElement(Ref("groupKeysPerLevel"), levelNumber, Ref("groupKey"));
                             var ifNullPut = forLevel.IfCondition(
                                 EqualsNull(
@@ -2560,7 +2560,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
             Consumer<CodegenMethod> code = methodNode => {
                 methodNode.Block.DeclareVar<AggregationGroupByRollupLevel[]>(
                     "levels",
-                    ExprDotMethodChain(Ref("this")).Add("getGroupByRollupDesc").Add("getLevels"));
+                    ExprDotMethodChain(Ref("this")).Get("GroupByRollupDesc").Get("Levels"));
 
                 var forLevels = methodNode.Block.ForEach(typeof(AggregationGroupByRollupLevel), "level", Ref("levels"));
                 {
@@ -2619,7 +2619,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
             Consumer<CodegenMethod> code = methodNode => {
                 methodNode.Block.DeclareVar<AggregationGroupByRollupLevel[]>(
                     "levels",
-                    ExprDotMethodChain(Ref("this")).Add("getGroupByRollupDesc").Add("getLevels"));
+                    ExprDotMethodChain(Ref("this")).Get("GroupByRollupDesc").Get("Levels"));
 
                 var forLevels = methodNode.Block.ForEach(typeof(AggregationGroupByRollupLevel), "level", Ref("levels"));
                 {
@@ -2699,7 +2699,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                         NewArrayByLength(typeof(EventBean), Constant(1)))
                     .DeclareVar<AggregationGroupByRollupLevel[]>(
                         "levels",
-                        ExprDotMethodChain(Ref("this")).Add("getGroupByRollupDesc").Add("getLevels"));
+                        ExprDotMethodChain(Ref("this")).Get("GroupByRollupDesc").Get("Levels"));
                 {
                     var forLoop = methodNode.Block.ForLoopIntSimple("i", ArrayLength(Ref("events")));
                     forLoop.AssignArrayElement("eventsPerStream", Constant(0), ArrayAtIndex(Ref("events"), Ref("i")))
@@ -2719,7 +2719,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                                 "subkey",
                                 ExprDotMethod(
                                     ArrayAtIndex(Ref("levels"), Ref("j")),
-                                    "computeSubkey",
+                                    "ComputeSubkey",
                                     Ref("groupKeyComplete")))
                             .AssignArrayElement2Dim("result", Ref("i"), Ref("j"), Ref("subkey"))
                             .ExprDotMethod(
@@ -2767,7 +2767,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                         NewArrayByLength(typeof(object[]), ExprDotMethod(Ref("events"), "Size")))
                     .DeclareVar<AggregationGroupByRollupLevel[]>(
                         "levels",
-                        ExprDotMethodChain(Ref("this")).Add("getGroupByRollupDesc").Add("getLevels"))
+                        ExprDotMethodChain(Ref("this")).Get("GroupByRollupDesc").Get("Levels"))
                     .DeclareVar<int>("count", Constant(-1));
                 {
                     var forLoop = methodNode.Block.ForEach(typeof(MultiKey<EventBean>), "eventrow", Ref("events"));
@@ -2791,7 +2791,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                                 "subkey",
                                 ExprDotMethod(
                                     ArrayAtIndex(Ref("levels"), Ref("j")),
-                                    "computeSubkey",
+                                    "ComputeSubkey",
                                     Ref("groupKeyComplete")))
                             .AssignArrayElement2Dim("result", Ref("count"), Ref("j"), Ref("subkey"))
                             .ExprDotMethod(
@@ -2856,7 +2856,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                 methodNode.Block.ForEach(
                         typeof(AggregationGroupByRollupLevel),
                         "level",
-                        ExprDotMethodChain(Ref("this")).Add("getGroupByRollupDesc").Add("getLevels"))
+                        ExprDotMethodChain(Ref("this")).Get("GroupByRollupDesc").Get("Levels"))
                     .DeclareVar<IDictionary<object, object>>(
                         "groupGenerators",
                         ArrayAtIndex(
@@ -3074,7 +3074,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
             CodegenMethod method,
             CodegenInstanceAux instance)
         {
-            ProcessOutputLimitedLastAllNonBufferedCodegen(forge, "processJoin", classScope, method, instance);
+            ProcessOutputLimitedLastAllNonBufferedCodegen(forge, "ProcessJoin", classScope, method, instance);
         }
 
         protected internal static void ContinueOutputLimitedLastAllNonBufferedViewCodegen(
@@ -3146,12 +3146,12 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                         ResultSetProcessorCodegenNames.REF_ISNEWDATA))
                 .DeclareVar<AggregationGroupByRollupLevel[]>(
                     "levels",
-                    ExprDotMethodChain(Ref("this")).Add("getGroupByRollupDesc").Add("getLevels"))
+                    ExprDotMethodChain(Ref("this")).Get("GroupByRollupDesc").Get("Levels"))
                 .DeclareVar<object[]>("result", NewArrayByLength(typeof(object), ArrayLength(Ref("levels"))))
                 .ForLoopIntSimple("j", ArrayLength(Ref("levels")))
                 .DeclareVar<object>(
                     "subkey",
-                    ExprDotMethod(ArrayAtIndex(Ref("levels"), Ref("j")), "computeSubkey", Ref("groupKeyComplete")))
+                    ExprDotMethod(ArrayAtIndex(Ref("levels"), Ref("j")), "ComputeSubkey", Ref("groupKeyComplete")))
                 .AssignArrayElement("result", Ref("j"), Ref("subkey"))
                 .BlockEnd()
                 .MethodReturn(Ref("result"));
@@ -3213,7 +3213,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                     NAME_OUTPUTFIRSTHELPERS,
                     StaticMethod(
                         typeof(ResultSetProcessorRowPerGroupRollupUtil),
-                        "initializeOutputFirstHelpers",
+                        "InitializeOutputFirstHelpers",
                         factory,
                         REF_AGENTINSTANCECONTEXT,
                         Constant(forge.GroupKeyTypes),

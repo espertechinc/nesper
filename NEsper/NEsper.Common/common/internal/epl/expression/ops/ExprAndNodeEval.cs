@@ -75,7 +75,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                         .IfCondition(EqualsNull(Ref(refname)))
                         .AssignRef("result", ConstantNull())
                         .IfElse()
-                        .IfCondition(Not(Ref(refname)))
+                        .IfCondition(Not(ExprDotName(Ref(refname), "Value")))
                         .BlockReturn(ConstantFalse());
                 }
             }

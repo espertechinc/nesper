@@ -135,7 +135,7 @@ namespace com.espertech.esper.common.@internal.@event.map
                 .Block
                 .DeclareVar<EventBean[]>(
                     "wrapper",
-                    Cast(typeof(EventBean[]), ExprDotMethod(Ref("map"), "get", Constant(propertyName))))
+                    Cast(typeof(EventBean[]), ExprDotMethod(Ref("map"), "Get", Constant(propertyName))))
                 .MethodReturn(
                     LocalMethod(
                         BaseNestableEventUtil.GetArrayPropertyValueCodegen(
@@ -155,7 +155,7 @@ namespace com.espertech.esper.common.@internal.@event.map
                 .Block
                 .DeclareVar<EventBean[]>(
                     "wrapper",
-                    Cast(typeof(EventBean[]), ExprDotMethod(Ref("map"), "get", Constant(propertyName))))
+                    Cast(typeof(EventBean[]), ExprDotMethod(Ref("map"), "Get", Constant(propertyName))))
                 .MethodReturn(
                     LocalMethod(
                         BaseNestableEventUtil.GetArrayPropertyFragmentCodegen(

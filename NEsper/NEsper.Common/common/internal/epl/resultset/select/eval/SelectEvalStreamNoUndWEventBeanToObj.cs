@@ -47,7 +47,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
         {
             return StaticMethod(
                 typeof(SelectEvalStreamNoUndWEventBeanToObj),
-                "processSelectExprbeanToMap",
+                "ProcessSelectExprbeanToMap",
                 props,
                 Constant(eventBeanToObjectProps),
                 eventBeanFactory,

@@ -93,7 +93,7 @@ namespace NEsper.Avro.Getter
         {
             return CodegenExpressionBuilder.ExprDotMethod(
                 underlyingExpression,
-                "get",
+                "Get",
                 CodegenExpressionBuilder.Constant(_propertyName));
         }
 
@@ -104,8 +104,8 @@ namespace NEsper.Avro.Getter
         {
             return CodegenExpressionBuilder.NotEqualsNull(
                 CodegenExpressionBuilder.ExprDotMethodChain(underlyingExpression)
-                    .Add("getSchema")
-                    .Add("getField", CodegenExpressionBuilder.Constant(_propertyName)));
+                    .Get("Schema")
+                    .Add("GetField", CodegenExpressionBuilder.Constant(_propertyName)));
         }
 
         public CodegenExpression UnderlyingFragmentCodegen(

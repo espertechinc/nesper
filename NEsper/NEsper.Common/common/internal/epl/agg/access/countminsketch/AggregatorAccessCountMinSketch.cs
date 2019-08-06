@@ -80,7 +80,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.countminsketch
             method.Block.Expression(
                 StaticMethod(
                     typeof(AggregationStateSerdeCountMinSketch),
-                    "writeCountMinSketch",
+                    "WriteCountMinSketch",
                     output,
                     RowDotRef(row, state)));
         }
@@ -95,7 +95,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.countminsketch
         {
             method.Block.AssignRef(
                 RowDotRef(row, state),
-                StaticMethod(typeof(AggregationStateSerdeCountMinSketch), "readCountMinSketch", input, spec));
+                StaticMethod(typeof(AggregationStateSerdeCountMinSketch), "ReadCountMinSketch", input, spec));
         }
 
         public static CodegenExpression CodegenGetAccessTableState(

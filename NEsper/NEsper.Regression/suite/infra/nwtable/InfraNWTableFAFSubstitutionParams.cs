@@ -345,12 +345,12 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                     env,
                     compiled,
                     query => query.SetObject(0, "a"),
-                    "InvalId substitution parameter index, expected an index between 1 and 1");
+                    "Invalid substitution parameter index, expected an index between 1 and 1");
                 TryInvalidSetObject(
                     env,
                     compiled,
                     query => query.SetObject(2, "a"),
-                    "InvalId substitution parameter index, expected an index between 1 and 1");
+                    "Invalid substitution parameter index, expected an index between 1 and 1");
 
                 // named, untyped, casted at eventService
                 compiled = env.CompileFAF("select * from MyWindow where TheString=cast(?:p0, String)", path);

@@ -83,24 +83,24 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
             public void Run(RegressionEnvironment env)
             {
                 var path = new RegressionPath();
-                env.CompileDeploy("create window MyWindowInvalId#lastevent as select * from SupportBean_S0", path);
+                env.CompileDeploy("create window MyWindowInvalid#lastevent as select * from SupportBean_S0", path);
 
                 TryInvalidCompile(
                     env,
                     "select * from SupportBean_S0(exists (select * from SupportBean_S1))",
-                    "Failed to valIdate subquery number 1 querying SupportBean_S1: Subqueries require one or more views to limit the stream, consIder declaring a length or time window [select * from SupportBean_S0(exists (select * from SupportBean_S1))]");
+                    "Failed to validate subquery number 1 querying SupportBean_S1: Subqueries require one or more views to limit the stream, consIder declaring a length or time window [select * from SupportBean_S0(exists (select * from SupportBean_S1))]");
 
                 TryInvalidCompile(
                     env,
                     path,
-                    "select * from SupportBean_S0(exists (select * from MyWindowInvalId#lastevent))",
-                    "Failed to valIdate subquery number 1 querying MyWindowInvalId: Consuming statements to a named window cannot declare a data window view onto the named window [select * from SupportBean_S0(exists (select * from MyWindowInvalId#lastevent))]");
+                    "select * from SupportBean_S0(exists (select * from MyWindowInvalid#lastevent))",
+                    "Failed to validate subquery number 1 querying MyWindowInvalid: Consuming statements to a named window cannot declare a data window view onto the named window [select * from SupportBean_S0(exists (select * from MyWindowInvalid#lastevent))]");
 
                 TryInvalidCompile(
                     env,
                     path,
-                    "select * from SupportBean_S0(Id in ((select p00 from MyWindowInvalId)))",
-                    "Failed to valIdate filter expression 'Id in (subselect_1)': Implicit conversion not allowed: Cannot coerce types System.Integer and System.String [select * from SupportBean_S0(Id in ((select p00 from MyWindowInvalId)))]");
+                    "select * from SupportBean_S0(Id in ((select P00 from MyWindowInvalid)))",
+                    "Failed to validate filter expression 'Id in (subselect_1)': Implicit conversion not allowed: Cannot coerce types System.Integer and System.String [select * from SupportBean_S0(Id in ((select P00 from MyWindowInvalid)))]");
 
                 env.UndeployAll();
             }
@@ -110,7 +110,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "create window MyWindowSNW#unique(p00)#keepall as SupportBean_S0;\n" +
+                var epl = "create window MyWindowSNW#unique(P00)#keepall as SupportBean_S0;\n" +
                           "@Name('s0') select * from pattern[SupportBean_S1(supportSingleRowFunction((select * from MyWindowSNW)))];\n";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
@@ -127,7 +127,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
             {
                 // subselect in pattern
                 var stmtTextOne =
-                    "@Name('s0') select s.Id as myId from pattern [every s=SupportBean_S0(p00 in (select p10 from SupportBean_S1#lastevent))]";
+                    "@Name('s0') select s.Id as myId from pattern [every s=SupportBean_S0(P00 in (select P10 from SupportBean_S1#lastevent))]";
                 env.CompileDeployAddListenerMileZero(stmtTextOne, "s0");
 
                 TryAssertion(env);
@@ -135,7 +135,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
 
                 // subselect in filter
                 var stmtTextTwo =
-                    "@Name('s0') select Id as myId from SupportBean_S0(p00 in (select p10 from SupportBean_S1#lastevent))";
+                    "@Name('s0') select Id as myId from SupportBean_S0(P00 in (select P10 from SupportBean_S1#lastevent))";
                 env.CompileDeployAddListenerMile(stmtTextTwo, "s0", 1);
                 TryAssertion(env);
                 env.UndeployAll();
@@ -143,7 +143,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
                 // subselect in filter with named window
                 var epl = "create window MyS1Window#lastevent as select * from SupportBean_S1;\n" +
                           "insert into MyS1Window select * from SupportBean_S1;\n" +
-                          "@Name('s0') select Id as myId from SupportBean_S0(p00 in (select p10 from MyS1Window))";
+                          "@Name('s0') select Id as myId from SupportBean_S0(P00 in (select P10 from MyS1Window))";
                 env.CompileDeployAddListenerMile(epl, "s0", 2);
                 TryAssertion(env);
                 env.UndeployAll();
@@ -151,7 +151,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
                 // subselect in pattern with named window
                 epl = "create window MyS1Window#lastevent as select * from SupportBean_S1;\n" +
                       "insert into MyS1Window select * from SupportBean_S1;\n" +
-                      "@Name('s0') select s.Id as myId from pattern [every s=SupportBean_S0(p00 in (select p10 from MyS1Window))];\n";
+                      "@Name('s0') select s.Id as myId from pattern [every s=SupportBean_S0(P00 in (select P10 from MyS1Window))];\n";
                 env.CompileDeployAddListenerMile(epl, "s0", 3);
                 TryAssertion(env);
                 env.UndeployAll();
@@ -165,19 +165,19 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
                 string epl;
 
                 epl =
-                    "@Name('s0') select sp1.Id as myId from pattern[every sp1=SupportBean_S0(exists (select * from SupportBean_S1#keepall as stream1 where stream1.p10 = sp1.p00))]";
+                    "@Name('s0') select sp1.Id as myId from pattern[every sp1=SupportBean_S0(exists (select * from SupportBean_S1#keepall as stream1 where stream1.P10 = sp1.P00))]";
                 env.CompileDeployAddListenerMile(epl, "s0", 0);
                 TryAssertionCorrelated(env);
                 env.UndeployAll();
 
                 epl =
-                    "@Name('s0') select Id as myId from SupportBean_S0(exists (select stream1.Id from SupportBean_S1#keepall as stream1 where stream1.p10 = stream0.p00)) as stream0";
+                    "@Name('s0') select Id as myId from SupportBean_S0(exists (select stream1.Id from SupportBean_S1#keepall as stream1 where stream1.P10 = stream0.P00)) as stream0";
                 env.CompileDeployAddListenerMile(epl, "s0", 1);
                 TryAssertionCorrelated(env);
                 env.UndeployAll();
 
-                epl = "@Name('s0') select sp0.p00||'+'||sp1.p10 as myId from pattern[" +
-                      "every sp0=SupportBean_S0 => sp1=SupportBean_S1(p11 = (select stream2.p21 from SupportBean_S2#keepall as stream2 where stream2.p20 = sp0.p00))]";
+                epl = "@Name('s0') select sp0.P00||'+'||sp1.P10 as myId from pattern[" +
+                      "every sp0=SupportBean_S0 => sp1=SupportBean_S1(P11 = (select stream2.P21 from SupportBean_S2#keepall as stream2 where stream2.P20 = sp0.P00))]";
                 env.CompileDeployAddListenerMile(epl, "s0", 2);
 
                 env.SendEventBean(new SupportBean_S2(21, "X", "A"));

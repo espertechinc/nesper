@@ -66,7 +66,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
                     "result",
                     parent.ChildNodes[0].Forge.EvaluateCodegen(requiredType, methodNode, exprSymbol, codegenClassScope))
                 .IfRefNullReturnNull("result")
-                .MethodReturn(ExprDotMethodChain(Ref("result")).Add("getClass").Add("getSimpleName"));
+                .MethodReturn(ExprDotMethodChain(Ref("result")).Add("GetType").Get("Name"));
             return LocalMethod(methodNode);
         }
 

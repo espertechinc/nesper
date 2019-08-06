@@ -224,7 +224,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowforall
             CodegenMethod method,
             CodegenInstanceAux instance)
         {
-            ProcessOutputLimitedLastAllNonBufferedCodegen("processView", forge, classScope, method, instance);
+            ProcessOutputLimitedLastAllNonBufferedCodegen("ProcessView", forge, classScope, method, instance);
         }
 
         public static void ProcessOutputLimitedLastAllNonBufferedJoinCodegen(
@@ -233,7 +233,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowforall
             CodegenMethod method,
             CodegenInstanceAux instance)
         {
-            ProcessOutputLimitedLastAllNonBufferedCodegen("processJoin", forge, classScope, method, instance);
+            ProcessOutputLimitedLastAllNonBufferedCodegen("ProcessJoin", forge, classScope, method, instance);
         }
 
         protected internal static void ProcessOutputLimitedLastAllNonBufferedCodegen(
@@ -634,7 +634,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowforall
                     method.Block.IfCondition(
                             Not(
                                 LocalMethod(
-                                    instance.Methods.GetMethod("evaluateHavingClause"),
+                                    instance.Methods.GetMethod("EvaluateHavingClause"),
                                     ConstantNull(),
                                     REF_ISNEWDATA,
                                     REF_AGENTINSTANCECONTEXT)))
@@ -712,7 +712,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowforall
                     method.Block.IfCondition(
                             Not(
                                 LocalMethod(
-                                    instance.Methods.GetMethod("evaluateHavingClause"),
+                                    instance.Methods.GetMethod("EvaluateHavingClause"),
                                     ConstantNull(),
                                     REF_ISNEWDATA,
                                     REF_AGENTINSTANCECONTEXT)))
@@ -734,7 +734,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowforall
             };
             return instance.Methods.AddMethod(
                 typeof(EventBean[]),
-                "getSelectListEventsAsArray",
+                "GetSelectListEventsAsArray",
                 CodegenNamedParam.From(
                     typeof(bool),
                     NAME_ISNEWDATA,

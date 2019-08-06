@@ -44,7 +44,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
             {
                 return CodegenExpressionBuilder.StaticMethod(
                     typeof(StringToLongWStaticISOFormatComputer),
-                    "stringToLongWStaticISOParse",
+                    "StringToLongWStaticISOParse",
                     input);
             }
 

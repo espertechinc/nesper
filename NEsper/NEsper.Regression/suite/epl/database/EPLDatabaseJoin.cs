@@ -428,7 +428,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
                 TryInvalidCompile(
                     env,
                     stmtText,
-                    "Failed to valIdate from-clause database-access parameter expression 's1.xxx[0]': Failed to resolve property 's1.xxx[0]' to a stream or nested property in a stream");
+                    "Failed to validate from-clause database-access parameter expression 's1.xxx[0]': Failed to resolve property 's1.xxx[0]' to a stream or nested property in a stream");
 
                 stmtText = "@Name('s0') select myvarchar from " +
                            " sql:MyDBWithRetain ['select mychar from mytesttable where ${} = mytesttable.mybigint'] as s0," +
@@ -450,7 +450,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
                 TryInvalidCompile(
                     env,
                     stmtText,
-                    "InvalId expression 'myvarchar' resolves to the historical data itself");
+                    "Invalid expression 'myvarchar' resolves to the historical data itself");
             }
         }
 
@@ -464,7 +464,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
                 TryInvalidCompile(
                     env,
                     stmtText,
-                    "InvalId expression 'mybigint' resolves to the historical data itself");
+                    "Invalid expression 'mybigint' resolves to the historical data itself");
             }
         }
 
@@ -481,7 +481,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
                 TryInvalidCompile(
                     env,
                     stmtText,
-                    "Historical data joins do not allow views onto the data, view 'time' is not valId in this context");
+                    "Historical data joins do not allow views onto the data, view 'time' is not valid in this context");
             }
         }
 

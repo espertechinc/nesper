@@ -460,7 +460,7 @@ namespace com.espertech.esper.common.magic
                 }
             }
 
-            // Start by removing the "get" from the front of the accessorMethod name
+            // Start by removing the "Get" from the front of the accessorMethod name
             string inferredName = accessorMethod.Name.Substring(3);
             string newInferredName = null;
             // Leave uppercase inferred names such as URL

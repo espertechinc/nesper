@@ -49,7 +49,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
                     "select countever(distinct IntPrimitive) from SupportBean",
-                    "Failed to valIdate select-clause expression 'countever(distinct IntPrimitive)': Aggregation function 'countever' does now allow distinct [");
+                    "Failed to validate select-clause expression 'countever(distinct IntPrimitive)': Aggregation function 'countever' does now allow distinct [");
             }
         }
 

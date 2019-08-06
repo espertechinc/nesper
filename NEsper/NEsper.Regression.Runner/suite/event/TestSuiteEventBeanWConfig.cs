@@ -77,10 +77,10 @@ namespace com.espertech.esper.regressionrun.suite.@event
             anotherLegacyEvent.AddFieldProperty("explicitFSimple", "fieldLegacyVal");
             anotherLegacyEvent.AddFieldProperty("explicitFIndexed", "fieldStringArray");
             anotherLegacyEvent.AddFieldProperty("explicitFNested", "fieldNested");
-            anotherLegacyEvent.AddMethodProperty("explicitMSimple", "readLegacyBeanVal");
-            anotherLegacyEvent.AddMethodProperty("explicitMArray", "readStringArray");
-            anotherLegacyEvent.AddMethodProperty("explicitMIndexed", "readStringIndexed");
-            anotherLegacyEvent.AddMethodProperty("explicitMMapped", "readMapByKey");
+            anotherLegacyEvent.AddMethodProperty("explicitMSimple", "ReadLegacyBeanVal");
+            anotherLegacyEvent.AddMethodProperty("explicitMArray", "ReadStringArray");
+            anotherLegacyEvent.AddMethodProperty("explicitMIndexed", "ReadStringIndexed");
+            anotherLegacyEvent.AddMethodProperty("explicitMMapped", "ReadMapByKey");
             session.Configuration.Common.AddEventType("AnotherLegacyEvent", typeof(SupportLegacyBean), anotherLegacyEvent);
 
             RegressionRunner.Run(session, new EventBeanPublicAccessors());

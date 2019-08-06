@@ -977,11 +977,11 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 TryInvalidPattern(
                     env,
                     "[1] a=SupportBean_A(a[0].Id='a')",
-                    "Failed to valIdate filter expression 'a[0].Id=\"a\"': Property named 'a[0].Id' is not valId in any stream");
+                    "Failed to validate filter expression 'a[0].Id=\"a\"': Property named 'a[0].Id' is not valid in any stream");
                 TryInvalidPattern(
                     env,
                     "a=SupportBean_A => SupportBean_B(a[0].Id='a')",
-                    "Failed to valIdate filter expression 'a[0].Id=\"a\"': Property named 'a[0].Id' is not valId in any stream");
+                    "Failed to validate filter expression 'a[0].Id=\"a\"': Property named 'a[0].Id' is not valid in any stream");
                 TryInvalidPattern(
                     env,
                     "(a=SupportBean_A until c=SupportBean_B) => c=SupportBean_C",

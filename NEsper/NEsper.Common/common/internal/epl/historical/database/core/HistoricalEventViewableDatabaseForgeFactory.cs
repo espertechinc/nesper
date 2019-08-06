@@ -335,7 +335,7 @@ namespace com.espertech.esper.common.@internal.epl.historical.database.core
 
                 default:
                     throw new ArgumentException(
-                        "MetaOriginPolicy contained an unhandled value: #" + metaOriginPolicy);
+                        "MetaOriginPolicy Contained an unhandled value: #" + metaOriginPolicy);
             }
 
             return queryMetaData;

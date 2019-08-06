@@ -238,10 +238,10 @@ namespace com.espertech.esper.regressionlib.suite.expr.define
             {
                 var path = new RegressionPath();
                 env.CompileDeploy("create window WindowOne#keepall as (col1 string, col2 string)", path);
-                env.CompileDeploy("insert into WindowOne select p00 as col1, p01 as col2 from SupportBean_S0", path);
+                env.CompileDeploy("insert into WindowOne select P00 as col1, P01 as col2 from SupportBean_S0", path);
 
                 env.CompileDeploy("create window WindowTwo#keepall as (col1 string, col2 string)", path);
-                env.CompileDeploy("insert into WindowTwo select p10 as col1, p11 as col2 from SupportBean_S1", path);
+                env.CompileDeploy("insert into WindowTwo select P10 as col1, P11 as col2 from SupportBean_S1", path);
 
                 env.SendEventBean(new SupportBean_S0(1, "A", "B1"));
                 env.SendEventBean(new SupportBean_S0(2, "A", "B2"));
@@ -367,7 +367,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.define
                              "expression mini {" +
                              " (select min(IntPrimitive) from SupportBean#keepall)" +
                              "} " +
-                             "select p00/maxi() as val0, p00/mini() as val1 " +
+                             "select P00/maxi() as val0, P00/mini() as val1 " +
                              "from SupportBean_ST0#lastevent";
                 TryAssertionMultiResult(env, eplOne);
 
@@ -375,7 +375,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.define
                              "expression subq {" +
                              " (select max(IntPrimitive) as maxi, min(IntPrimitive) as mini from SupportBean#keepall)" +
                              "} " +
-                             "select p00/subq().maxi as val0, p00/subq().mini as val1 " +
+                             "select P00/subq().maxi as val0, P00/subq().mini as val1 " +
                              "from SupportBean_ST0#lastevent";
                 TryAssertionMultiResult(env, eplTwo);
 
@@ -383,7 +383,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.define
                                   "expression subq alias for " +
                                   " { (select max(IntPrimitive) as maxi, min(IntPrimitive) as mini from SupportBean#keepall) }" +
                                   " " +
-                                  "select p00/subq().maxi as val0, p00/subq().mini as val1 " +
+                                  "select P00/subq().maxi as val0, P00/subq().mini as val1 " +
                                   "from SupportBean_ST0#lastevent";
                 TryAssertionMultiResult(env, eplTwoAlias);
             }
@@ -420,14 +420,14 @@ namespace com.espertech.esper.regressionlib.suite.expr.define
             public void Run(RegressionEnvironment env)
             {
                 var eplDeclare = "@Name('s0') expression subq {" +
-                                 " (x, y) => (select TheString from SupportBean#keepall where TheString = x.Id and IntPrimitive = y.p10)" +
+                                 " (x, y) => (select TheString from SupportBean#keepall where TheString = x.Id and IntPrimitive = y.P10)" +
                                  "} " +
                                  "select subq(one, two) as val1 " +
                                  "from SupportBean_ST0#lastevent as one, SupportBean_ST1#lastevent as two";
                 TryAssertionSubqueryCross(env, eplDeclare);
 
                 var eplAlias =
-                    "@Name('s0') expression subq alias for { (select TheString from SupportBean#keepall where TheString = one.Id and IntPrimitive = two.p10) }" +
+                    "@Name('s0') expression subq alias for { (select TheString from SupportBean#keepall where TheString = one.Id and IntPrimitive = two.P10) }" +
                     "select subq as val1 " +
                     "from SupportBean_ST0#lastevent as one, SupportBean_ST1#lastevent as two";
                 TryAssertionSubqueryCross(env, eplAlias);
@@ -480,7 +480,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.define
                 TryInvalidCompile(
                     env,
                     eplAlias,
-                    "Failed to plan subquery number 1 querying SupportBean: Failed to valIdate filter expression 'TheString=pcommon': Property named 'pcommon' is ambiguous as is valId for more then one stream");
+                    "Failed to plan subquery number 1 querying SupportBean: Failed to validate filter expression 'TheString=pcommon': Property named 'pcommon' is ambiguous as is valid for more then one stream");
             }
 
             private void TryAssertionSubqueryJoinSameField(
@@ -524,13 +524,13 @@ namespace com.espertech.esper.regressionlib.suite.expr.define
             public void Run(RegressionEnvironment env)
             {
                 var eplDeclare = "@Name('s0') expression subqOne {" +
-                                 " x => (select Id from SupportBean_ST0#keepall where p00 = x.IntPrimitive)" +
+                                 " x => (select Id from SupportBean_ST0#keepall where P00 = x.IntPrimitive)" +
                                  "} " +
                                  "select TheString as val0, subqOne(t) as val1 from SupportBean as t";
                 TryAssertionSubqueryCorrelated(env, eplDeclare);
 
                 var eplAlias =
-                    "@Name('s0') expression subqOne alias for {(select Id from SupportBean_ST0#keepall where p00 = t.IntPrimitive)} " +
+                    "@Name('s0') expression subqOne alias for {(select Id from SupportBean_ST0#keepall where P00 = t.IntPrimitive)} " +
                     "select TheString as val0, subqOne(t) as val1 from SupportBean as t";
                 TryAssertionSubqueryCorrelated(env, eplAlias);
             }
@@ -709,28 +709,28 @@ namespace com.espertech.esper.regressionlib.suite.expr.define
             public void Run(RegressionEnvironment env)
             {
                 var epl = "@Name('s0') expression subqnamedwin {" +
-                          "  x => MyWindow(val0 = x.key0).where(y => val1 > 10)" +
+                          "  x => MyWindow(val0 = x.Key0).where(y => val1 > 10)" +
                           "} " +
                           "select subqnamedwin(t) as c0 from SupportBean_ST0 as t";
                 TryAssertionSubqNWCorrelated(env, epl);
 
                 // more or less prefixes
                 epl = "@Name('s0') expression subqnamedwin {" +
-                      "  x => MyWindow(val0 = x.key0).where(y => y.val1 > 10)" +
+                      "  x => MyWindow(val0 = x.Key0).where(y => y.val1 > 10)" +
                       "} " +
                       "select subqnamedwin(t) as c0 from SupportBean_ST0 as t";
                 TryAssertionSubqNWCorrelated(env, epl);
 
                 // with property-explicit stream name
                 epl = "@Name('s0') expression subqnamedwin {" +
-                      "  x => MyWindow(MyWindow.val0 = x.key0).where(y => y.val1 > 10)" +
+                      "  x => MyWindow(MyWindow.val0 = x.Key0).where(y => y.val1 > 10)" +
                       "} " +
                       "select subqnamedwin(t) as c0 from SupportBean_ST0 as t";
                 TryAssertionSubqNWCorrelated(env, epl);
 
                 // with alias
                 epl =
-                    "@Name('s0') expression subqnamedwin alias for {MyWindow(MyWindow.val0 = t.key0).where(y => y.val1 > 10)}" +
+                    "@Name('s0') expression subqnamedwin alias for {MyWindow(MyWindow.val0 = t.Key0).where(y => y.val1 > 10)}" +
                     "select subqnamedwin as c0 from SupportBean_ST0 as t";
                 TryAssertionSubqNWCorrelated(env, epl);
 
@@ -738,13 +738,13 @@ namespace com.espertech.esper.regressionlib.suite.expr.define
                 var path = new RegressionPath();
                 env.CompileDeploy(
                     EventRepresentationChoice.MAP.GetAnnotationText() +
-                    " create window MyWindowTwo#keepall as (Id string, p00 int)",
+                    " create window MyWindowTwo#keepall as (Id string, P00 int)",
                     path);
                 env.CompileDeploy(
-                    "insert into MyWindowTwo (Id, p00) select TheString, IntPrimitive from SupportBean",
+                    "insert into MyWindowTwo (Id, P00) select TheString, IntPrimitive from SupportBean",
                     path);
                 epl = "expression subqnamedwin {" +
-                      "  x => MyWindowTwo(MyWindowTwo.Id = x.Id).where(y => y.p00 > 10)" +
+                      "  x => MyWindowTwo(MyWindowTwo.Id = x.Id).where(y => y.P00 > 10)" +
                       "} " +
                       "select subqnamedwin(t) as c0 from SupportBean_ST0 as t";
                 env.CompileDeploy(epl, path);
@@ -912,11 +912,11 @@ namespace com.espertech.esper.regressionlib.suite.expr.define
         {
             public void Run(RegressionEnvironment env)
             {
-                var eplScalarDeclare = "@Name('s0') expression scalarfilter {s => strvals.where(y => y != 'E1') } " +
+                var eplScalarDeclare = "@Name('s0') expression scalarfilter {s => Strvals.where(y => y != 'E1') } " +
                                        "select scalarfilter(t).where(x => x != 'E2') as val1 from SupportCollection as t";
                 TryAssertionScalarReturn(env, eplScalarDeclare);
 
-                var eplScalarAlias = "@Name('s0') expression scalarfilter alias for {strvals.where(y => y != 'E1')}" +
+                var eplScalarAlias = "@Name('s0') expression scalarfilter alias for {Strvals.where(y => y != 'E1')}" +
                                      "select scalarfilter.where(x => x != 'E2') as val1 from SupportCollection";
                 TryAssertionScalarReturn(env, eplScalarAlias);
 
@@ -1066,20 +1066,20 @@ namespace com.espertech.esper.regressionlib.suite.expr.define
             public void Run(RegressionEnvironment env)
             {
                 var eplDeclare = "" +
-                                 "@Name('s0') expression one {x1 => x1.contained.where(y => y.p00 < 10) } " +
-                                 "expression two {x2 => one(x2).where(y => y.p00 > 1)  } " +
+                                 "@Name('s0') expression one {x1 => x1.Contained.where(y => y.P00 < 10) } " +
+                                 "expression two {x2 => one(x2).where(y => y.P00 > 1)  } " +
                                  "select one(s0c) as val1, two(s0c) as val2 from SupportBean_ST0_Container as s0c";
                 TryAssertionOneParameterLambdaReturn(env, eplDeclare);
 
                 var eplAliasWParen = "" +
-                                     "@Name('s0') expression one alias for {contained.where(y => y.p00 < 10)}" +
-                                     "expression two alias for {one().where(y => y.p00 > 1)}" +
+                                     "@Name('s0') expression one alias for {Contained.where(y => y.P00 < 10)}" +
+                                     "expression two alias for {one().where(y => y.P00 > 1)}" +
                                      "select one as val1, two as val2 from SupportBean_ST0_Container as s0c";
                 TryAssertionOneParameterLambdaReturn(env, eplAliasWParen);
 
                 var eplAliasNoParen = "" +
-                                      "@Name('s0') expression one alias for {contained.where(y => y.p00 < 10)}" +
-                                      "expression two alias for {one.where(y => y.p00 > 1)}" +
+                                      "@Name('s0') expression one alias for {Contained.where(y => y.P00 < 10)}" +
+                                      "expression two alias for {one.where(y => y.P00 > 1)}" +
                                       "select one as val1, two as val2 from SupportBean_ST0_Container as s0c";
                 TryAssertionOneParameterLambdaReturn(env, eplAliasNoParen);
             }
@@ -1240,48 +1240,48 @@ namespace com.espertech.esper.regressionlib.suite.expr.define
             public void Run(RegressionEnvironment env)
             {
                 var epl =
-                    "expression abc {(select * from SupportBean_ST0#lastevent as st0 where p00=IntPrimitive)} select abc() from SupportBean";
+                    "expression abc {(select * from SupportBean_ST0#lastevent as st0 where P00=IntPrimitive)} select abc() from SupportBean";
                 TryInvalidCompile(
                     env,
                     epl,
-                    "Failed to plan subquery number 1 querying SupportBean_ST0: Failed to valIdate filter expression 'p00=IntPrimitive': Property named 'IntPrimitive' is not valId in any stream [expression abc {(select * from SupportBean_ST0#lastevent as st0 where p00=IntPrimitive)} select abc() from SupportBean]");
+                    "Failed to plan subquery number 1 querying SupportBean_ST0: Failed to validate filter expression 'P00=IntPrimitive': Property named 'IntPrimitive' is not valid in any stream [expression abc {(select * from SupportBean_ST0#lastevent as st0 where P00=IntPrimitive)} select abc() from SupportBean]");
 
-                epl = "expression abc {x=>strvals.where(x=> x != 'E1')} select abc(str) from SupportCollection str";
+                epl = "expression abc {x=>Strvals.where(x=> x != 'E1')} select abc(str) from SupportCollection str";
                 TryInvalidCompile(
                     env,
                     epl,
-                    "Failed to valIdate select-clause expression 'abc(str)': Error valIdating expression declaration 'abc': Failed to valIdate declared expression body expression 'strvals.where()': Error valIdating enumeration method 'where', the lambda-parameter name 'x' has already been declared in this context [expression abc {x=>strvals.where(x=> x != 'E1')} select abc(str) from SupportCollection str]");
+                    "Failed to validate select-clause expression 'abc(str)': Error valIdating expression declaration 'abc': Failed to validate declared expression body expression 'Strvals.where()': Error valIdating enumeration method 'where', the lambda-parameter name 'x' has already been declared in this context [expression abc {x=>Strvals.where(x=> x != 'E1')} select abc(str) from SupportCollection str]");
 
                 epl = "expression abc {avg(IntPrimitive)} select abc() from SupportBean";
                 TryInvalidCompile(
                     env,
                     epl,
-                    "Failed to valIdate select-clause expression 'abc()': Error valIdating expression declaration 'abc': Failed to valIdate declared expression body expression 'avg(IntPrimitive)': Property named 'IntPrimitive' is not valId in any stream [expression abc {avg(IntPrimitive)} select abc() from SupportBean]");
+                    "Failed to validate select-clause expression 'abc()': Error valIdating expression declaration 'abc': Failed to validate declared expression body expression 'avg(IntPrimitive)': Property named 'IntPrimitive' is not valid in any stream [expression abc {avg(IntPrimitive)} select abc() from SupportBean]");
 
                 epl =
-                    "expression abc {(select * from SupportBean_ST0#lastevent as st0 where p00=sb.IntPrimitive)} select abc() from SupportBean sb";
+                    "expression abc {(select * from SupportBean_ST0#lastevent as st0 where P00=sb.IntPrimitive)} select abc() from SupportBean sb";
                 TryInvalidCompile(
                     env,
                     epl,
-                    "Failed to plan subquery number 1 querying SupportBean_ST0: Failed to valIdate filter expression 'p00=sb.IntPrimitive': Failed to find a stream named 'sb' (dId you mean 'st0'?) [expression abc {(select * from SupportBean_ST0#lastevent as st0 where p00=sb.IntPrimitive)} select abc() from SupportBean sb]");
+                    "Failed to plan subquery number 1 querying SupportBean_ST0: Failed to validate filter expression 'P00=sb.IntPrimitive': Failed to find a stream named 'sb' (did you mean 'st0'?) [expression abc {(select * from SupportBean_ST0#lastevent as st0 where P00=sb.IntPrimitive)} select abc() from SupportBean sb]");
 
                 epl = "expression abc {window(*)} select abc() from SupportBean";
                 TryInvalidCompile(
                     env,
                     epl,
-                    "Failed to valIdate select-clause expression 'abc()': Error valIdating expression declaration 'abc': Failed to valIdate declared expression body expression 'window(*)': The 'window' aggregation function requires that at least one stream is provIded [expression abc {window(*)} select abc() from SupportBean]");
+                    "Failed to validate select-clause expression 'abc()': Error valIdating expression declaration 'abc': Failed to validate declared expression body expression 'window(*)': The 'window' aggregation function requires that at least one stream is provIded [expression abc {window(*)} select abc() from SupportBean]");
 
                 epl = "expression abc {x => IntPrimitive} select abc() from SupportBean";
                 TryInvalidCompile(
                     env,
                     epl,
-                    "Failed to valIdate select-clause expression 'abc()': Parameter count mismatches for declared expression 'abc', expected 1 parameters but received 0 parameters [expression abc {x => IntPrimitive} select abc() from SupportBean]");
+                    "Failed to validate select-clause expression 'abc()': Parameter count mismatches for declared expression 'abc', expected 1 parameters but received 0 parameters [expression abc {x => IntPrimitive} select abc() from SupportBean]");
 
                 epl = "expression abc {IntPrimitive} select abc(sb) from SupportBean sb";
                 TryInvalidCompile(
                     env,
                     epl,
-                    "Failed to valIdate select-clause expression 'abc(sb)': Parameter count mismatches for declared expression 'abc', expected 0 parameters but received 1 parameters [expression abc {IntPrimitive} select abc(sb) from SupportBean sb]");
+                    "Failed to validate select-clause expression 'abc(sb)': Parameter count mismatches for declared expression 'abc', expected 0 parameters but received 1 parameters [expression abc {IntPrimitive} select abc(sb) from SupportBean sb]");
 
                 epl = "expression abc {x=>} select abc(sb) from SupportBean sb";
                 TryInvalidCompile(
@@ -1293,13 +1293,13 @@ namespace com.espertech.esper.regressionlib.suite.expr.define
                 TryInvalidCompile(
                     env,
                     epl,
-                    "Failed to valIdate select-clause expression 'abc()': Error valIdating expression declaration 'abc': Failed to valIdate declared expression body expression 'IntPrimitive': Property named 'IntPrimitive' is not valId in any stream [expression abc {IntPrimitive} select abc() from SupportBean sb]");
+                    "Failed to validate select-clause expression 'abc()': Error valIdating expression declaration 'abc': Failed to validate declared expression body expression 'IntPrimitive': Property named 'IntPrimitive' is not valid in any stream [expression abc {IntPrimitive} select abc() from SupportBean sb]");
 
                 epl = "expression abc {x=>x} select abc(1) from SupportBean sb";
                 TryInvalidCompile(
                     env,
                     epl,
-                    "Failed to valIdate select-clause expression 'abc(1)': Expression 'abc' requires a stream name as a parameter [expression abc {x=>x} select abc(1) from SupportBean sb]");
+                    "Failed to validate select-clause expression 'abc(1)': Expression 'abc' requires a stream name as a parameter [expression abc {x=>x} select abc(1) from SupportBean sb]");
 
                 epl = "expression abc {x=>IntPrimitive} select * from SupportBean sb where abc(sb)";
                 TryInvalidCompile(
@@ -1312,7 +1312,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.define
                 TryInvalidCompile(
                     env,
                     epl,
-                    "Error valIdating expression: Failed to valIdate filter expression 'abc(*)': Expression 'abc' only allows a wildcard parameter if there is a single stream available, please use a stream or tag name instead [expression abc {x=>x.IntPrimitive = 0} select * from SupportBean#lastevent sb1, SupportBean#lastevent sb2 where abc(*)]");
+                    "Error valIdating expression: Failed to validate filter expression 'abc(*)': Expression 'abc' only allows a wildcard parameter if there is a single stream available, please use a stream or tag name instead [expression abc {x=>x.IntPrimitive = 0} select * from SupportBean#lastevent sb1, SupportBean#lastevent sb2 where abc(*)]");
             }
         }
     }

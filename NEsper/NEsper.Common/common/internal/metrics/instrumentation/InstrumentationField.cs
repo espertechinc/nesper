@@ -30,7 +30,7 @@ namespace com.espertech.esper.common.@internal.metrics.instrumentation
 
         public CodegenExpression InitCtorScoped()
         {
-            return StaticMethod(InstrumentationConstants.RUNTIME_HELPER_CLASS, "get");
+            return StaticMethod(InstrumentationConstants.RUNTIME_HELPER_CLASS, "Get");
         }
     }
 } // end of namespace

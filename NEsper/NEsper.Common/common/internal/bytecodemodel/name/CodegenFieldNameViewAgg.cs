@@ -20,7 +20,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.name
         }
 
         public string Name {
-            get => CodegenPackageScopeNames.AggView(_streamNumber);
+            get => CodegenNamespaceScopeNames.AggView(_streamNumber);
         }
 
         public override bool Equals(object o)

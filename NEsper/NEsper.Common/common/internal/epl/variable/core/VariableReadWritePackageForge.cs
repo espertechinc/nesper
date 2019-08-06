@@ -251,7 +251,7 @@ namespace com.espertech.esper.common.@internal.epl.variable.core
                 if (variables[i].OptionalContextName == null) {
                     var resolve = StaticMethod(
                         typeof(VariableDeployTimeResolver),
-                        "resolveVariableReader",
+                        "ResolveVariableReader",
                         Constant(variables[i].VariableName),
                         Constant(variables[i].VariableVisibility),
                         Constant(variables[i].VariableModuleName),

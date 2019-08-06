@@ -65,7 +65,7 @@ namespace com.espertech.esper.common.@internal.epl.pattern.observer
 
         protected override string NameOfFactory()
         {
-            return "observer";
+            return "Observer";
         }
 
         protected override void InlineCodegen(

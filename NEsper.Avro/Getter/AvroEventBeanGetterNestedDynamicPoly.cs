@@ -124,7 +124,7 @@ namespace NEsper.Avro.Getter
                         typeof(GenericRecord),
                         CodegenExpressionBuilder.ExprDotMethod(
                             CodegenExpressionBuilder.Ref("record"),
-                            "get",
+                            "Get",
                             CodegenExpressionBuilder.Constant(_fieldTop))))
                 .MethodReturn(
                     CodegenExpressionBuilder.Conditional(
@@ -161,14 +161,14 @@ namespace NEsper.Avro.Getter
                 .DeclareVar<Field>(
                     "field",
                     CodegenExpressionBuilder.ExprDotMethodChain(CodegenExpressionBuilder.Ref("record"))
-                        .Add("getSchema")
-                        .Add("getField", CodegenExpressionBuilder.Constant(_fieldTop)))
+                        .Get("Schema")
+                        .Add("GetField", CodegenExpressionBuilder.Constant(_fieldTop)))
                 .IfRefNullReturnFalse("field")
                 .DeclareVar<object>(
                     "inner",
                     CodegenExpressionBuilder.ExprDotMethod(
                         CodegenExpressionBuilder.Ref("record"),
-                        "get",
+                        "Get",
                         CodegenExpressionBuilder.Constant(_fieldTop)))
                 .IfRefNotTypeReturnConst("inner", typeof(GenericRecord), false)
                 .MethodReturn(

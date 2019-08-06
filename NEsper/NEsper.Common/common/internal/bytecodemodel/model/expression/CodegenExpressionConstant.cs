@@ -8,10 +8,12 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 using com.espertech.esper.common.@internal.bytecodemodel.core;
 using com.espertech.esper.common.@internal.bytecodemodel.util;
+using com.espertech.esper.compat.collections;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionUtil;
 
@@ -40,12 +42,20 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
             if (_constant == null) {
                 return;
             }
-
-            if (_constant.GetType().IsArray) {
+            else if (_constant is Array constantArray) {
                 classes.AddToSet(_constant.GetType().GetElementType());
+                // Add elements from type arrays to the set
+                if (constantArray is Type[] typeArray) {
+                    typeArray.ForEach(t => classes.AddToSet(t));
+                } else if (constantArray is object[] objectArray) {
+                    objectArray.OfType<Type>().For(t => classes.AddToSet(t));
+                }
             }
             else if (_constant.GetType().IsEnum) {
                 classes.AddToSet(_constant.GetType());
+            }
+            else if (_constant is Type constantType) {
+                classes.AddToSet(constantType);
             }
         }
     }

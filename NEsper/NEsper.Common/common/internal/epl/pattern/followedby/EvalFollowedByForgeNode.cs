@@ -75,7 +75,7 @@ namespace com.espertech.esper.common.@internal.epl.pattern.followedby
 
         protected override string NameOfFactory()
         {
-            return "followedby";
+            return "Followedby";
         }
 
         protected override void InlineCodegen(

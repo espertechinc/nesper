@@ -54,7 +54,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
             CodegenExpressionRef refEPS = exprSymbol.GetAddEPS(methodNode);
             return StaticMethod(
                 this.GetType(),
-                "wildcardNestedWrapper",
+                "WildcardNestedWrapper",
                 ArrayAtIndex(refEPS, Constant(0)),
                 innerType,
                 resultEventType,

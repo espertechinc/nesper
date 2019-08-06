@@ -29,44 +29,32 @@ namespace com.espertech.esper.common.@internal.epl.subselect
 
         public int SubqueryNumber {
             get => subqueryNumber;
-        }
-
-        public void SetSubqueryNumber(int subqueryNumber)
-        {
-            this.subqueryNumber = subqueryNumber;
+            set => subqueryNumber = value;
         }
 
         public ViewableActivator Activator {
             get => activator;
-        }
-
-        public void SetActivator(ViewableActivator activator)
-        {
-            this.activator = activator;
+            set => activator = value;
         }
 
         public SubSelectStrategyFactory StrategyFactory {
             get => strategyFactory;
+            set => strategyFactory = value;
         }
 
-        public void SetStrategyFactory(SubSelectStrategyFactory strategyFactory)
-        {
-            this.strategyFactory = strategyFactory;
+        public bool HasAggregation {
+            get => this.hasAggregation;
+            set => this.hasAggregation = value;
         }
 
-        public void SetHasAggregation(bool hasAggregation)
-        {
-            this.hasAggregation = hasAggregation;
+        public bool HasPrior {
+            get => this.hasPrior;
+            set => this.hasPrior = value;
         }
 
-        public void SetHasPrior(bool hasPrior)
-        {
-            this.hasPrior = hasPrior;
-        }
-
-        public void SetHasPrevious(bool hasPrevious)
-        {
-            this.hasPrevious = hasPrevious;
+        public bool HasPrevious {
+            get => this.hasPrevious;
+            set => this.hasPrevious = value;
         }
 
         public void Ready(

@@ -58,7 +58,7 @@ namespace com.espertech.esper.common.@internal.compile.stage3
             GenerateSubstitutionParamMembers(members);
 
             // ctor
-            var ctor = new CodegenCtor(GetType(), includeDebugSymbols, Collections.GetEmptyList<CodegenTypedParam>());
+            var ctor = new CodegenCtor(GetType(), ClassName, includeDebugSymbols, Collections.GetEmptyList<CodegenTypedParam>());
             var classScope = new CodegenClassScope(includeDebugSymbols, _namespaceScope, ClassName);
 
             //_namespaceScope
@@ -69,11 +69,11 @@ namespace com.espertech.esper.common.@internal.compile.stage3
 
             // assignment methods
             CodegenMethod assignMethod = CodegenMethod
-                .MakeParentNode(typeof(void), GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope)
+                .MakeMethod(typeof(void), GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope)
                 .AddParam(typeof(StatementAIFactoryAssignments), "assignments")
                 .WithStatic(true);
             CodegenMethod unassignMethod = CodegenMethod
-                .MakeParentNode(typeof(void), GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope)
+                .MakeMethod(typeof(void), GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope)
                 .WithStatic(true);
             GenerateAssignAndUnassign(_numStreams, assignMethod, unassignMethod, _namespaceScope.FieldsNamed);
 
@@ -194,7 +194,7 @@ namespace com.espertech.esper.common.@internal.compile.stage3
                     var subq = (CodegenFieldNameSubqueryResult) name;
                     var subqueryLookupStrategy = ExprDotMethod(
                         Ref("assignments"),
-                        "getSubqueryLookup",
+                        "GetSubqueryLookup",
                         Constant(subq.SubqueryNumber));
                     Generate(subqueryLookupStrategy, name, assign, unassign, true);
                     continue;
@@ -275,21 +275,28 @@ namespace com.espertech.esper.common.@internal.compile.stage3
             CodegenBlock enclosingBlock,
             CodegenClassScope classScope)
         {
-            var assignerSetterClass = NewAnonymousClass(enclosingBlock, typeof(FAFQueryMethodAssignerSetter));
+            var assignMethod = new CodegenExpressionLambda(enclosingBlock)
+                .WithParam<StatementAIFactoryAssignments>("assignments");
+
+            //var assignMethod = CodegenMethod
+            //    .MakeParentNode(typeof(void), typeof(StmtClassForgableStmtFields), classScope)
+            //    .AddParam(typeof(StatementAIFactoryAssignments), "assignments");
+            //assignerSetterClass.AddMethod("Assign", assignMethod);
+
+            assignMethod.Block.StaticMethod(packageScope.FieldsClassNameOptional, "Assign", Ref("assignments"));
+
+            var setValueMethod = new CodegenExpressionLambda(enclosingBlock)
+                .WithParam(typeof(int), "index")
+                .WithParam(typeof(object), "value");
+            //assignerSetterClass.AddMethod("SetValue", setValueMethod);
+
+            var assignerSetterClass = NewInstance<ProxyFAFQueryMethodAssignerSetter>(
+                assignMethod, setValueMethod);
+
+            //var assignerSetterClass = NewAnonymousClass(enclosingBlock, typeof(FAFQueryMethodAssignerSetter));
             enclosingBlock.ReturnMethodOrBlock(assignerSetterClass);
 
-            var assignMethod = CodegenMethod
-                .MakeParentNode(typeof(void), typeof(StmtClassForgableStmtFields), classScope)
-                .AddParam(typeof(StatementAIFactoryAssignments), "assignments");
-            assignerSetterClass.AddMethod("Assign", assignMethod);
-            assignMethod.Block.StaticMethod(packageScope.FieldsClassNameOptional, "assign", Ref("assignments"));
-
-            var setValueMethod = CodegenMethod
-                .MakeParentNode(typeof(void), typeof(StmtClassForgableStmtFields), classScope)
-                .AddParam(typeof(int), "index")
-                .AddParam(typeof(object), "value");
-            assignerSetterClass.AddMethod("SetValue", setValueMethod);
-            CodegenSubstitutionParamEntry.CodegenSetterMethod(classScope, setValueMethod);
+            CodegenSubstitutionParamEntry.CodegenSetterBody(classScope, setValueMethod.Block);
         }
 
         private static void Generate(

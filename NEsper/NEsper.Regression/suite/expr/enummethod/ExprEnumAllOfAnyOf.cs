@@ -32,8 +32,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
             {
                 var fields = "val0,val1".SplitCsv();
                 var eplFragment = "@Name('s0') select " +
-                                  "contained.allof(x => p00 = 12) as val0," +
-                                  "contained.anyof(x => p00 = 12) as val1 " +
+                                  "Contained.allof(x => P00 = 12) as val0," +
+                                  "Contained.anyof(x => P00 = 12) as val1 " +
                                   "from SupportBean_ST0_Container";
                 env.CompileDeploy(eplFragment).AddListener("s0");
 
@@ -82,8 +82,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
             {
                 var fields = "val0,val1".SplitCsv();
                 var eplFragment = "@Name('s0') select " +
-                                  "strvals.allof(x => x='E2') as val0," +
-                                  "strvals.anyof(x => x='E2') as val1 " +
+                                  "Strvals.allof(x => x='E2') as val0," +
+                                  "Strvals.anyof(x => x='E2') as val1 " +
                                   "from SupportCollection";
                 env.CompileDeploy(eplFragment).AddListener("s0");
 

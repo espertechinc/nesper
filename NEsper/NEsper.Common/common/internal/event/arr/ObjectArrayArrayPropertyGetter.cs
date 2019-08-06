@@ -120,7 +120,7 @@ namespace com.espertech.esper.common.@internal.@event.arr
         {
             return StaticMethod(
                 typeof(BaseNestableEventUtil),
-                "getBNArrayValueAtIndexWithNullCheck",
+                "GetBNArrayValueAtIndexWithNullCheck",
                 ArrayAtIndex(underlyingExpression, Constant(propertyIndex)),
                 Constant(index));
         }
@@ -145,7 +145,7 @@ namespace com.espertech.esper.common.@internal.@event.arr
                 EventTypeUtility.ResolveTypeCodegen(fragmentType, EPStatementInitServicesConstants.REF));
             return StaticMethod(
                 typeof(BaseNestableEventUtil),
-                "getBNFragmentNonPojo",
+                "GetBNFragmentNonPojo",
                 UnderlyingGetCodegen(underlyingExpression, codegenMethodScope, codegenClassScope),
                 mType,
                 mSvc);
@@ -159,7 +159,7 @@ namespace com.espertech.esper.common.@internal.@event.arr
         {
             return StaticMethod(
                 typeof(BaseNestableEventUtil),
-                "getBNArrayValueAtIndexWithNullCheck",
+                "GetBNArrayValueAtIndexWithNullCheck",
                 ArrayAtIndex(CastUnderlying(typeof(object[]), beanExpression), Constant(propertyIndex)),
                 key);
         }

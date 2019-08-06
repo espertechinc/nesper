@@ -18,19 +18,19 @@ using com.espertech.esper.compat.collections;
 namespace com.espertech.esper.common.client.configuration.common
 {
     /// <summary>
-    ///     Configuration object for enabling the runtimeto process events represented as XML DOM document nodes.
+    ///     Configuration object for enabling the runtime to process events represented as XML DOM document nodes.
     ///     <para />
-    ///     Use this class to configure the runtimefor processing of XML DOM objects that represent events
+    ///     Use this class to configure the runtime for processing of XML DOM objects that represent events
     ///     and contain all the data for event properties used by statements.
     ///     <para />
-    ///     Minimally required is the root element name which allows the runtimeto map the document
+    ///     Minimally required is the root element name which allows the runtime to map the document
     ///     to the event type that has been named in an EPL or pattern statement.
     ///     <para />
-    ///     Event properties that are results of XPath expressions can be made known to the runtimevia this class.
+    ///     Event properties that are results of XPath expressions can be made known to the runtime via this class.
     ///     For XPath expressions that must refer to namespace prefixes those prefixes and their
     ///     namespace name must be supplied to the runtime. A default namespace can be supplied as well.
     ///     <para />
-    ///     By supplying a schema resource the runtimecan interrogate the schema, allowing the runtimeto
+    ///     By supplying a schema resource the runtime can interrogate the schema, allowing the runtime to
     ///     verify event properties and return event properties in the type defined by the schema.
     ///     When a schema resource is supplied, the optional root element namespace defines the namespace in case the
     ///     root element name occurs in multiple namespaces.
@@ -159,7 +159,7 @@ namespace com.espertech.esper.common.client.configuration.common
         public string EndTimestampPropertyName { get; set; }
 
         /// <summary>
-        ///     Adds an event property for which the runtimeuses the supplied XPath expression against
+        ///     Adds an event property for which the runtime uses the supplied XPath expression against
         ///     a DOM document node to resolve a property value.
         /// </summary>
         /// <param name="name">of the event property</param>
@@ -175,7 +175,7 @@ namespace com.espertech.esper.common.client.configuration.common
         }
 
         /// <summary>
-        ///     Adds an event property for which the runtimeuses the supplied XPath expression against
+        ///     Adds an event property for which the runtime uses the supplied XPath expression against
         ///     a DOM document node to resolve a property value.
         /// </summary>
         /// <param name="name">of the event property</param>
@@ -213,7 +213,7 @@ namespace com.espertech.esper.common.client.configuration.common
         }
 
         /// <summary>
-        ///     Adds an event property for which the runtimeuses the supplied XPath expression against
+        ///     Adds an event property for which the runtime uses the supplied XPath expression against
         ///     a DOM document node to resolve a property value.
         /// </summary>
         /// <param name="name">of the event property</param>
@@ -297,7 +297,7 @@ namespace com.espertech.esper.common.client.configuration.common
             /// </summary>
             /// <param name="name">is the event property name</param>
             /// <param name="xPath">is an arbitrary XPath expression</param>
-            /// <param name="type">is a javax.xml.xpath.XPathConstants constant</param>
+            /// <param name="type">a constant obtained from System.Xml.XPath.XPathResultType.</param>
             public XPathPropertyDesc(
                 string name,
                 string xPath,
@@ -313,7 +313,7 @@ namespace com.espertech.esper.common.client.configuration.common
             /// </summary>
             /// <param name="name">is the event property name</param>
             /// <param name="xPath">is an arbitrary XPath expression</param>
-            /// <param name="type">is a javax.xml.xpath.XPathConstants constant</param>
+            /// <param name="type">a constant obtained from System.Xml.XPath.XPathResultType.</param>
             /// <param name="optionalCastToType">if non-null then the return value of the xpath expression is cast to this value</param>
             public XPathPropertyDesc(
                 string name,
@@ -332,7 +332,7 @@ namespace com.espertech.esper.common.client.configuration.common
             /// </summary>
             /// <param name="name">is the event property name</param>
             /// <param name="xPath">is an arbitrary XPath expression</param>
-            /// <param name="type">is a javax.xml.xpath.XPathConstants constant</param>
+            /// <param name="type">a constant obtained from System.Xml.XPath.XPathResultType.</param>
             /// <param name="eventTypeName">the name of an event type that represents the fragmented property value</param>
             public XPathPropertyDesc(
                 string name,
@@ -361,7 +361,7 @@ namespace com.espertech.esper.common.client.configuration.common
             /// <summary>
             ///     Returns the XPathResultType representing the event property type.
             /// </summary>
-            /// <returns>type infomation</returns>
+            /// <returns>type information</returns>
             public XPathResultType Type { get; }
 
             /// <summary>

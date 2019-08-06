@@ -107,7 +107,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                     .IfElse();
                 {
                     if (coercer == null) {
-                        ifRightNotNull.DeclareVar<bool>("eq", ExprDotMethod(left, "equals", Ref("valueRight")));
+                        ifRightNotNull.DeclareVar<bool>("eq", ExprDotMethod(left, "Equals", Ref("valueRight")));
                     }
                     else {
                         ifRightNotNull.DeclareVar<object>(
@@ -116,7 +116,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                             .DeclareVar<object>(
                                 "right",
                                 coercer.CoerceCodegen(Ref("valueRight"), valueRightType))
-                            .DeclareVar<bool>("eq", ExprDotMethod(Ref("left"), "equals", Ref("right")));
+                            .DeclareVar<bool>("eq", ExprDotMethod(Ref("left"), "Equals", Ref("right")));
                     }
 
                     ifRightNotNull.IfCondition(Ref("eq")).BlockReturn(Constant(!isNotIn));

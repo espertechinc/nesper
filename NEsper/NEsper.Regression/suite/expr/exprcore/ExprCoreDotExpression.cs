@@ -178,13 +178,13 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
                     "select abc.noSuchMethod() from SupportBean abc",
-                    "Failed to valIdate select-clause expression 'abc.noSuchMethod()': Failed to solve 'noSuchMethod' to either an date-time or enumeration method, an event property or a method on the event underlying object: Failed to resolve method 'noSuchMethod': Could not find enumeration method, date-time method or instance method named 'noSuchMethod' in class '" +
+                    "Failed to validate select-clause expression 'abc.noSuchMethod()': Failed to solve 'noSuchMethod' to either an date-time or enumeration method, an event property or a method on the event underlying object: Failed to resolve method 'noSuchMethod': Could not find enumeration method, date-time method or instance method named 'noSuchMethod' in class '" +
                     typeof(SupportBean).Name +
                     "' taking no parameters [select abc.noSuchMethod() from SupportBean abc]");
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
                     "select abc.getChildOne(\"abc\", 10).noSuchMethod() from SupportChainTop abc",
-                    "Failed to valIdate select-clause expression 'abc.getChildOne(\"abc\",10).noSuchMethod()': Failed to solve 'getChildOne' to either an date-time or enumeration method, an event property or a method on the event underlying object: Failed to resolve method 'noSuchMethod': Could not find enumeration method, date-time method or instance method named 'noSuchMethod' in class '" +
+                    "Failed to validate select-clause expression 'abc.getChildOne(\"abc\",10).noSuchMethod()': Failed to solve 'getChildOne' to either an date-time or enumeration method, an event property or a method on the event underlying object: Failed to resolve method 'noSuchMethod': Could not find enumeration method, date-time method or instance method named 'noSuchMethod' in class '" +
                     typeof(SupportChainChildOne).Name +
                     "' taking no parameters [select abc.getChildOne(\"abc\", 10).noSuchMethod() from SupportChainTop abc]");
             }
@@ -225,7 +225,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                 epl += "insert into NodeWithDataWindow " +
                        "select node, data from NodeWindow node join NodeDataWindow as data on node.Id = data.nodeId;\n";
                 epl +=
-                    "@Name('s0') select node.Id, data.nodeId, data.value, node.compute(data) from NodeWithDataWindow;\n";
+                    "@Name('s0') select node.Id, data.nodeId, data.Value, node.compute(data) from NodeWithDataWindow;\n";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 env.SendEventBean(new SupportEventNode("1"));

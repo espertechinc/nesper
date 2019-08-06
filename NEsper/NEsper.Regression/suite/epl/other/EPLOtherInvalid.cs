@@ -79,12 +79,12 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 TryInvalidCompile(
                     env,
                     "select count(TheString, TheString, TheString) from SupportBean",
-                    "Failed to valIdate select-clause expression 'count(TheString,TheString,TheString)': The 'count' function expects at least 1 and up to 2 parameters");
+                    "Failed to validate select-clause expression 'count(TheString,TheString,TheString)': The 'count' function expects at least 1 and up to 2 parameters");
 
                 TryInvalidCompile(
                     env,
                     "select leaving(TheString) from SupportBean",
-                    "Failed to valIdate select-clause expression 'leaving(TheString)': The 'leaving' function expects no parameters");
+                    "Failed to validate select-clause expression 'leaving(TheString)': The 'leaving' function expects no parameters");
             }
         }
 
@@ -107,7 +107,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 TryInvalidCompile(
                     env,
                     "select * from SupportBean(1=2=3)",
-                    "Failed to valIdate filter expression '1=2': InvalId use of equals, expecting left-hand sIde and right-hand sIde but received 3 expressions");
+                    "Failed to validate filter expression '1=2': Invalid use of equals, expecting left-hand sIde and right-hand sIde but received 3 expressions");
             }
         }
 

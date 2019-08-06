@@ -272,7 +272,7 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
             public void Run(RegressionEnvironment env)
             {
                 var epl = "@Name('s0') select * from SupportBean_S0(Id=?:subs_1:int);\n" +
-                          "@Name('s1') select * from SupportBean_S1(p10=?:subs_2:string);\n";
+                          "@Name('s1') select * from SupportBean_S1(P10=?:subs_2:string);\n";
                 var compiled = env.Compile(epl);
 
                 var options = new DeploymentOptions().WithStatementSubstitutionParameter(
@@ -724,11 +724,11 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
                         TryInvalidSetObject(
                             prepared,
                             stmt => stmt.SetObject(0, "a"),
-                            "InvalId substitution parameter index, expected an index between 1 and 1");
+                            "Invalid substitution parameter index, expected an index between 1 and 1");
                         TryInvalidSetObject(
                             prepared,
                             stmt => stmt.SetObject(2, "a"),
-                            "InvalId substitution parameter index, expected an index between 1 and 1");
+                            "Invalid substitution parameter index, expected an index between 1 and 1");
                         prepared.SetObject(1, "xxx");
                     });
                 DeployWithOptionsWUndeploy(env, compiled, options);

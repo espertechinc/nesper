@@ -6,6 +6,7 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
 using System.Collections.Generic;
 
 namespace com.espertech.esper.common.client.configuration.common
@@ -13,6 +14,7 @@ namespace com.espertech.esper.common.client.configuration.common
     /// <summary>
     ///     Configuration object for Object array-based event types.
     /// </summary>
+    [Serializable]
     public class ConfigurationCommonEventTypeObjectArray : ConfigurationCommonEventTypeWithSupertype
     {
         /// <summary>

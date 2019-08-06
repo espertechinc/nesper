@@ -296,7 +296,7 @@ namespace com.espertech.esper.common.@internal.@event.core
                 result = coercer.CoerceCodegen(Ref("prop"), getterType);
             }
 
-            get.Block.MethodReturn(result);
+            get.Block.BlockReturn(result);
             return anonymous;
         }
 
@@ -310,7 +310,7 @@ namespace com.espertech.esper.common.@internal.@event.core
             CodegenClassScope classScope)
         {
             var anonymous = NewAnonymousClass(method.Block, typeof(EventPropertyWriter));
-            var write = CodegenMethod.MakeParentNode(typeof(void), generator, classScope)
+            var write = CodegenMethod.MakeMethod(typeof(void), generator, classScope)
                 .AddParam(
                     CodegenNamedParam.From(typeof(object), "value", typeof(EventBean), "bean"));
             anonymous.AddMethod("Write", write);
@@ -1448,7 +1448,7 @@ namespace com.espertech.esper.common.@internal.@event.core
 
                     // its an array
                     var componentType = ((Type) type).GetElementType();
-                    var indexedGetter = factory.GetGetterIndexedPOJO(
+                    var indexedGetter = factory.GetGetterIndexedPONO(
                         indexedProp.PropertyNameAtomic,
                         indexedProp.Index,
                         eventBeanTypedEventFactory,
@@ -1550,7 +1550,7 @@ namespace com.espertech.esper.common.@internal.@event.core
 
                         var propertyTypeGetter = nestedEventType.GetPropertyType(propertyNested);
                         // construct getter for nested property
-                        var indexGetter = factory.GetGetterIndexedEntryPOJO(
+                        var indexGetter = factory.GetGetterIndexedEntryPONO(
                             indexedProp.PropertyNameAtomic,
                             indexedProp.Index,
                             nestedGetter,
@@ -1645,7 +1645,7 @@ namespace com.espertech.esper.common.@internal.@event.core
                 }
 
                 // construct getter for nested property
-                var getter = factory.GetGetterNestedPOJOProp(
+                var getter = factory.GetGetterNestedPONOProp(
                     propertyMap,
                     nestedGetter,
                     eventBeanTypedEventFactory,

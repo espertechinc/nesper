@@ -289,7 +289,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
             public void Run(RegressionEnvironment env)
             {
                 var stmtText =
-                    "@Name('s0') select Id from SupportBean_S0 as s0 where p00 in (select p10 from SupportBean_S1#length(1000))";
+                    "@Name('s0') select Id from SupportBean_S0 as s0 where P00 in (select P10 from SupportBean_S1#length(1000))";
 
                 env.CompileDeployAddListenerMileZero(stmtText, "s0");
 
@@ -386,18 +386,18 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
             public void Run(RegressionEnvironment env)
             {
                 var epl =
-                    "@Name('s0') select (select p00 from SupportBean_S0#keepall() as s0 where s0.p01 in (s1.p10, s1.p11)) as c0 from SupportBean_S1 as s1";
+                    "@Name('s0') select (select P00 from SupportBean_S0#keepall() as s0 where s0.P01 in (s1.P10, s1.P11)) as c0 from SupportBean_S1 as s1";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 for (var i = 0; i < 10; i++) {
-                    env.SendEventBean(new SupportBean_S0(i, "v" + i, "p00_" + i));
+                    env.SendEventBean(new SupportBean_S0(i, "v" + i, "P00_" + i));
                 }
 
                 env.Milestone(0);
 
                 for (var i = 0; i < 5; i++) {
                     var index = i + 4;
-                    env.SendEventBean(new SupportBean_S1(index, "x", "p00_" + index));
+                    env.SendEventBean(new SupportBean_S1(index, "x", "P00_" + index));
                     Assert.AreEqual("v" + index, env.Listener("s0").AssertOneGetNewAndReset().Get("c0"));
                 }
 
@@ -410,18 +410,18 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
             public void Run(RegressionEnvironment env)
             {
                 var epl =
-                    "@Name('s0') select (select p00 from SupportBean_S0#keepall() as s0 where s1.p11 in (s0.p00, s0.p01)) as c0 from SupportBean_S1 as s1";
+                    "@Name('s0') select (select P00 from SupportBean_S0#keepall() as s0 where s1.P11 in (s0.P00, s0.P01)) as c0 from SupportBean_S1 as s1";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 for (var i = 0; i < 10; i++) {
-                    env.SendEventBean(new SupportBean_S0(i, "v" + i, "p00_" + i));
+                    env.SendEventBean(new SupportBean_S0(i, "v" + i, "P00_" + i));
                 }
 
                 env.Milestone(0);
 
                 for (var i = 0; i < 5; i++) {
                     var index = i + 4;
-                    env.SendEventBean(new SupportBean_S1(index, "x", "p00_" + index));
+                    env.SendEventBean(new SupportBean_S1(index, "x", "P00_" + index));
                     Assert.AreEqual("v" + index, env.Listener("s0").AssertOneGetNewAndReset().Get("c0"));
                 }
 
@@ -538,7 +538,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
                 TryInvalidCompile(
                     env,
                     "@Name('s0') select intArr in (select IntPrimitive from SupportBean#keepall) as r1 from SupportBeanArrayCollMap",
-                    "Failed to valIdate select-clause expression subquery number 1 querying SupportBean: Collection or array comparison is not allowed for the IN, ANY, SOME or ALL keywords");
+                    "Failed to validate select-clause expression subquery number 1 querying SupportBean: Collection or array comparison is not allowed for the IN, ANY, SOME or ALL keywords");
             }
         }
     }

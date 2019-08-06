@@ -12,4 +12,25 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
     {
         void Assign(AggregationResultFuture future);
     }
+
+    public class ProxyAggregationResultFutureAssignable : AggregationResultFutureAssignable
+    {
+        public delegate void AssignFunc(AggregationResultFuture future);
+
+        public AssignFunc ProcAssign { get; set; }
+
+        public ProxyAggregationResultFutureAssignable()
+        {
+        }
+
+        public ProxyAggregationResultFutureAssignable(AssignFunc procAssign)
+        {
+            ProcAssign = procAssign;
+        }
+
+        public void Assign(AggregationResultFuture future)
+        {
+            ProcAssign(future);
+        }
+    }
 } // end of namespace

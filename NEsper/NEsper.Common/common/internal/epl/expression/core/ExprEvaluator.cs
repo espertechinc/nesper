@@ -23,7 +23,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
         /// <param name="eventsPerStream">event tuple</param>
         /// <param name="isNewData">indicates whether we are dealing with new data (istream) or old data (rstream)</param>
         /// <param name="context">context for expression evaluation</param>
-        /// <returns>evaluation result, a boolean value for OR/AND-type evalution nodes.</returns>
+        /// <returns>evaluation result, a boolean value for OR/AND-type evaluation nodes.</returns>
         object Evaluate(
             EventBean[] eventsPerStream,
             bool isNewData,
@@ -32,7 +32,12 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
 
     public class ProxyExprEvaluator : ExprEvaluator
     {
-        public Func<EventBean[], bool, ExprEvaluatorContext, object> ProcEvaluate;
+        public delegate object EvaluateFunc(
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext context);
+
+        public EvaluateFunc ProcEvaluate;
 
         public object Evaluate(
             EventBean[] eventsPerStream,
@@ -42,7 +47,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             return ProcEvaluate(eventsPerStream, isNewData, context);
         }
 
-        public ProxyExprEvaluator(Func<EventBean[], bool, ExprEvaluatorContext, object> procEvaluate)
+        public ProxyExprEvaluator(EvaluateFunc procEvaluate)
         {
             ProcEvaluate = procEvaluate;
         }

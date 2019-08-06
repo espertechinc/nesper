@@ -84,7 +84,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             {
                 var path = new RegressionPath();
                 env.CompileDeploy(
-                    "create table agg_srcdst as (key0 string primary key, key1 string primary key, cnt count(*))",
+                    "create table agg_srcdst as (Key0 string primary key, key1 string primary key, cnt count(*))",
                     path);
                 env.CompileDeploy("create schema IPAddressFirewallAlert(ip_src string, ip_dst string)", path);
                 env.CompileDeploy("select agg_srcdst[ip_src, ip_dst].cnt from IPAddressFirewallAlert", path);

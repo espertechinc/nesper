@@ -89,7 +89,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                     "into table varaggRCM select referenceCountedMap(TheString) as wordCount from SupportBean#length(3)",
                     path);
                 env.CompileDeploy(
-                        "@Name('s0') select varaggRCM.wordCount.referenceCountLookup(p00) as c0 from SupportBean_S0",
+                        "@Name('s0') select varaggRCM.wordCount.referenceCountLookup(P00) as c0 from SupportBean_S0",
                         path)
                     .AddListener("s0");
 

@@ -109,7 +109,7 @@ namespace com.espertech.esper.common.@internal.@event.map
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            return ExprDotMethod(underlyingExpression, "get", Constant(propertyName));
+            return ExprDotMethod(underlyingExpression, "Get", Constant(propertyName));
         }
 
         public CodegenExpression UnderlyingExistsCodegen(
@@ -146,7 +146,7 @@ namespace com.espertech.esper.common.@internal.@event.map
                 .IfInstanceOf("value", typeof(EventBean[]))
                 .BlockReturn(Ref("value"))
                 .MethodReturn(
-                    StaticMethod(typeof(BaseNestableEventUtil), "getBNFragmentArray", Ref("value"), mType, mSvc));
+                    StaticMethod(typeof(BaseNestableEventUtil), "GetBNFragmentArray", Ref("value"), mType, mSvc));
         }
     }
 } // end of namespace

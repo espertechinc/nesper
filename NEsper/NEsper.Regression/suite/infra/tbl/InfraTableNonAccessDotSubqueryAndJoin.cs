@@ -60,7 +60,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                             "col2.sorted().firstOf() as c2_5, mt.col2.sorted().firstOf() as c2_6, " +
                             "col3.mostFrequent() as c3_1, mt.col3.mostFrequent() as c3_2, " +
                             "col4 as c4_1 " +
-                            "from SupportBean unIdirectional, MyTable as mt";
+                            "from SupportBean unidirectional, MyTable as mt";
             env.CompileDeploy(soda, eplSelect, path).AddListener("s0");
 
             object[][] expectedType = {
@@ -107,7 +107,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
 
             // unnamed column
             var eplSelectUnnamed = "@Name('s1') select col2.sorted().firstOf(), mt.col2.sorted().firstOf()" +
-                                   " from SupportBean unIdirectional, MyTable mt";
+                                   " from SupportBean unidirectional, MyTable mt";
             env.CompileDeploy(eplSelectUnnamed, path);
             object[][] expectedTypeUnnamed = {
                 new object[] {"col2.sorted().firstOf()", typeof(SupportBean)},
@@ -125,7 +125,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 path,
                 "" +
                 "select col0 from SupportBean#lastevent, MyTable, MyTable",
-                "Failed to valIdate select-clause expression 'col0': Ambiguous table column 'col0' should be prefixed by a stream name [");
+                "Failed to validate select-clause expression 'col0': Ambiguous table column 'col0' should be prefixed by a stream name [");
 
             env.UndeployAll();
         }

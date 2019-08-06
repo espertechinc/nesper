@@ -52,7 +52,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.reformatop
             var method = codegenMethodScope.MakeChild(typeof(int), typeof(ReformatEvalForge), codegenClassScope)
                 .AddParam(typeof(long), "ts");
             method.Block
-                .DeclareVar<DateTimeEx>("dtx", StaticMethod(typeof(DateTimeEx), "getInstance", timeZoneField))
+                .DeclareVar<DateTimeEx>("dtx", StaticMethod(typeof(DateTimeEx), "GetInstance", timeZoneField))
                 .Expression(timeAbacus.DateTimeSetCodegen(Ref("ts"), Ref("dtx"), method, codegenClassScope))
                 .MethodReturn(_dateTimeExEval.Codegen(Ref("dtx")));
             return LocalMethodBuild(method).Pass(inner).Call();
@@ -70,7 +70,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.reformatop
                 .AddParam(typeof(DateTime), "d");
 
             methodNode.Block
-                .DeclareVar<DateTimeEx>("dtx", StaticMethod(typeof(DateTimeEx), "getInstance", timeZoneField))
+                .DeclareVar<DateTimeEx>("dtx", StaticMethod(typeof(DateTimeEx), "GetInstance", timeZoneField))
                 .Expression(SetProperty(Ref("dtx"), "TimeInMillis", ExprDotName(Ref("d"), "Time")))
                 .MethodReturn(_dateTimeExEval.Codegen(Ref("dtx")));
             return LocalMethod(methodNode, inner);
@@ -88,7 +88,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.reformatop
                 .AddParam(typeof(DateTimeOffset), "d");
 
             methodNode.Block
-                .DeclareVar<DateTimeEx>("dtx", StaticMethod(typeof(DateTimeEx), "getInstance", timeZoneField))
+                .DeclareVar<DateTimeEx>("dtx", StaticMethod(typeof(DateTimeEx), "GetInstance", timeZoneField))
                 .Expression(SetProperty(Ref("dtx"), "TimeInMillis", ExprDotName(Ref("d"), "Time")))
                 .MethodReturn(_dateTimeExEval.Codegen(Ref("dtx")));
             return LocalMethod(methodNode, inner);

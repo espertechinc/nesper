@@ -70,7 +70,7 @@ namespace com.espertech.esper.common.@internal.@event.variant
                 new VariantPropertyGetterCacheCodegenField(variantEventType));
             return StaticMethod(
                 typeof(VariantEventPropertyGetterAny),
-                "variantExists",
+                "VariantExists",
                 beanExpression,
                 cache,
                 Constant(propertyName));
@@ -121,7 +121,7 @@ namespace com.espertech.esper.common.@internal.@event.variant
                     "value",
                     StaticMethod(
                         typeof(VariantEventPropertyGetterAny),
-                        "variantGet",
+                        "VariantGet",
                         Ref("eventBean"),
                         cache,
                         Constant(propertyName)))

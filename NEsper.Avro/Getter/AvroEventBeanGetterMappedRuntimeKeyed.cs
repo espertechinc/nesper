@@ -62,7 +62,7 @@ namespace NEsper.Avro.Getter
                         typeof(IDictionary<string, object>),
                         CodegenExpressionBuilder.ExprDotMethod(
                             CodegenExpressionBuilder.Ref("record"),
-                            "get",
+                            "Get",
                             CodegenExpressionBuilder.Constant(_pos))))
                 .MethodReturn(
                     CodegenExpressionBuilder.StaticMethod(

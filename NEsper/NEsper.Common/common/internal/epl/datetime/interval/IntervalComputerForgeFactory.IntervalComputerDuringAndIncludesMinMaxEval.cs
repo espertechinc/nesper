@@ -84,7 +84,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
                 block.MethodReturn(
                     CodegenExpressionBuilder.StaticMethod(
                         typeof(IntervalComputerDuringAndIncludesMinMaxEval),
-                        forge.during ? "computeIntervalDuring" : "computeIntervalIncludes",
+                        forge.during ? "ComputeIntervalDuring" : "ComputeIntervalIncludes",
                         IntervalForgeCodegenNames.REF_LEFTSTART,
                         IntervalForgeCodegenNames.REF_LEFTEND,
                         IntervalForgeCodegenNames.REF_RIGHTSTART,

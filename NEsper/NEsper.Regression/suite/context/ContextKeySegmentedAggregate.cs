@@ -610,7 +610,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 env.CompileDeploy(
                     "@Name('s0') context SegmentedByString " +
                     "select IntPrimitive, count(*) as col1 " +
-                    "from SupportBean unIdirectional, SupportBean_S0#keepall " +
+                    "from SupportBean unidirectional, SupportBean_S0#keepall " +
                     "group by IntPrimitive order by IntPrimitive asc",
                     path);
                 env.AddListener("s0");

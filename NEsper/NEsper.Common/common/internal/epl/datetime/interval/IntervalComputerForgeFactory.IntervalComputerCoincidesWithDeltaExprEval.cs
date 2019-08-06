@@ -86,7 +86,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
                         forge.start.Codegen(
                             CodegenExpressionBuilder.StaticMethod(
                                 typeof(Math),
-                                "min",
+                                "Min",
                                 IntervalForgeCodegenNames.REF_LEFTSTART,
                                 IntervalForgeCodegenNames.REF_RIGHTSTART),
                             methodNode,
@@ -97,7 +97,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
                         forge.finish.Codegen(
                             CodegenExpressionBuilder.StaticMethod(
                                 typeof(Math),
-                                "min",
+                                "Min",
                                 IntervalForgeCodegenNames.REF_LEFTEND,
                                 IntervalForgeCodegenNames.REF_RIGHTEND),
                             methodNode,
@@ -120,7 +120,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
                 block.MethodReturn(
                     CodegenExpressionBuilder.StaticMethod(
                         typeof(IntervalComputerConstantCoincides),
-                        "computeIntervalCoincides",
+                        "ComputeIntervalCoincides",
                         IntervalForgeCodegenNames.REF_LEFTSTART,
                         IntervalForgeCodegenNames.REF_LEFTEND,
                         IntervalForgeCodegenNames.REF_RIGHTSTART,

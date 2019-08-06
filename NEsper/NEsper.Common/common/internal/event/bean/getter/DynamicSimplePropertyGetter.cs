@@ -51,7 +51,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
             CodegenMethodScope parent,
             CodegenClassScope codegenClassScope)
         {
-            return StaticMethod(GetType(), "dynamicSimplePropertyCall", desc, @object);
+            return StaticMethod(GetType(), "DynamicSimplePropertyCall", desc, @object);
         }
 
         internal override MethodInfo DetermineMethod(Type clazz)
@@ -66,7 +66,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
         {
             return StaticMethod(
                 GetType(),
-                "dynamicSimplePropertyDetermineMethod",
+                "DynamicSimplePropertyDetermineMethod",
                 Constant(_getterMethodName),
                 Constant(_isMethodName),
                 clazz);

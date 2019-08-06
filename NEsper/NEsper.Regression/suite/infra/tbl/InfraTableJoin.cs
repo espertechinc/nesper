@@ -187,7 +187,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 var fields = "theString, p1".SplitCsv();
                 var path = new RegressionPath();
                 var epl = "create table MyTable as (p0 string primary key, p1 int);\n" +
-                          "@Name('s0') select TheString, p1 from SupportBean unIdirectional left outer join MyTable on TheString = p0;\n";
+                          "@Name('s0') select TheString, p1 from SupportBean unidirectional left outer join MyTable on TheString = p0;\n";
                 env.CompileDeploy(epl, path).AddListener("s0");
                 env.CompileExecuteFAF("insert into MyTable select 'a' as p0, 10 as p1", path);
 
@@ -222,7 +222,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                     path);
                 env.CompileDeploy(
                         "@Name('s0') select total as value from SupportBean_S0 as s0, varaggFC as va " +
-                        "where va.key = s0.p00",
+                        "where va.key = s0.P00",
                         path)
                     .AddListener("s0");
 
@@ -244,7 +244,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                     "create table varagg as (k0 string primary key, k1 int primary key, v1 string, total sum(long))";
                 var eplPopulate =
                     "into table varagg select sum(LongPrimitive) as total from SupportBean group by TheString, IntPrimitive";
-                var eplQuery = "select total as value from SupportBean_S0 as s0 unIdirectional";
+                var eplQuery = "select total as value from SupportBean_S0 as s0 unidirectional";
 
                 string[] createIndexEmpty = { };
                 object[] preloadedEventsTwo = {
@@ -284,17 +284,17 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                     new[] {
                         // primary index found
                         new IndexAssertion(
-                            "k1 = Id and k0 = p00",
+                            "k1 = Id and k0 = P00",
                             "varagg",
                             typeof(IndexedTableLookupPlanHashedOnlyForge),
                             eventSendAssertionHash),
                         new IndexAssertion(
-                            "k0 = p00 and k1 = Id",
+                            "k0 = P00 and k1 = Id",
                             "varagg",
                             typeof(IndexedTableLookupPlanHashedOnlyForge),
                             eventSendAssertionHash),
                         new IndexAssertion(
-                            "k0 = p00 and k1 = Id and v1 is null",
+                            "k0 = P00 and k1 = Id and v1 is null",
                             "varagg",
                             typeof(IndexedTableLookupPlanHashedOnlyForge),
                             eventSendAssertionHash),
@@ -320,7 +320,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                     new[] {
                         // primary index found
                         new IndexAssertion(
-                            "k1 = Id and k0 = p00",
+                            "k1 = Id and k0 = P00",
                             "varagg",
                             typeof(IndexedTableLookupPlanHashedOnlyForge),
                             eventSendAssertionHash),
@@ -337,7 +337,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                             eventSendAssertionHash),
                         // no index found
                         new IndexAssertion(
-                            "k0 = p00",
+                            "k0 = P00",
                             "varagg",
                             typeof(FullTableScanUniquePerKeyLookupPlanForge),
                             eventSendAssertionHash)
@@ -358,13 +358,13 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                     new[] {
                         // primary index found
                         new IndexAssertion(
-                            "k1 = Id and k0 = p00",
+                            "k1 = Id and k0 = P00",
                             "varagg",
                             typeof(IndexedTableLookupPlanHashedOnlyForge),
                             eventSendAssertionHash),
                         // secondary index found
                         new IndexAssertion(
-                            "k0 = p00",
+                            "k0 = P00",
                             "idx_k0",
                             typeof(IndexedTableLookupPlanHashedOnlyForge),
                             eventSendAssertionHash),
@@ -531,7 +531,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 var eplDeclare = "create table varagg as (k0 int primary key, total sum(long))";
                 var eplPopulate =
                     "into table varagg select sum(LongPrimitive) as total from SupportBean group by IntPrimitive";
-                var eplQuery = "select total as value from SupportBeanRange unIdirectional";
+                var eplQuery = "select total as value from SupportBeanRange unidirectional";
 
                 string[] createIndexEmpty = { };
                 object[] preloadedEvents = {

@@ -136,8 +136,8 @@ namespace com.espertech.esper.common.@internal.view.timebatch
                 .DeclareVar<TimePeriodCompute>("eval", timePeriodCompute.MakeEvaluator(method, classScope))
                 .SetProperty(factory, "TimePeriodCompute", Ref("eval"))
                 .SetProperty(factory, "ScheduleCallbackId", Constant(scheduleCallbackId))
-                .SetProperty(factory, "ForceUpdate", Constant(isForceUpdate))
-                .SetProperty(factory, "StartEager", Constant(isStartEager))
+                .SetProperty(factory, "IsForceUpdate", Constant(isForceUpdate))
+                .SetProperty(factory, "IsStartEager", Constant(isStartEager))
                 .SetProperty(factory, "OptionalReferencePoint", Constant(optionalReferencePoint));
         }
     }

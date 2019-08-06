@@ -89,8 +89,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 // failed op factory
                 TryInvalidCompile(
                     env,
-                    "create dataflow MyGraph MyInvalIdOp {}",
-                    "Failed to obtain operator 'MyInvalIdOp': Failed-Here");
+                    "create dataflow MyGraph MyInvalidOp {}",
+                    "Failed to obtain operator 'MyInvalidOp': Failed-Here");
 
                 // inject properties: property not found
                 TryInvalidCompile(
@@ -142,7 +142,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 TryInvalidCompile(
                     env,
                     epl,
-                    "Failed to valIdate operator 'DefaultSupportSourceOp': Multiple output types for a single stream 'out1' are not supported [");
+                    "Failed to validate operator 'DefaultSupportSourceOp': Multiple output types for a single stream 'out1' are not supported [");
 
                 // same output stream declared twice
                 epl = "create dataflow MyGraph " +

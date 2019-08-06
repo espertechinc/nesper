@@ -45,7 +45,7 @@ namespace com.espertech.esper.common.@internal.epl.pattern.every
 
         protected override string NameOfFactory()
         {
-            return "every";
+            return "Every";
         }
 
         protected override void InlineCodegen(
