@@ -111,7 +111,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
             RegressionEnvironment env,
             string expr)
         {
-            var statement = "select " + expr + " from " + typeof(SupportBean).Name;
+            var statement = "select " + expr + " from " + typeof(SupportBean).FullName;
             TryInvalidCompile(env, statement, "skip");
         }
 

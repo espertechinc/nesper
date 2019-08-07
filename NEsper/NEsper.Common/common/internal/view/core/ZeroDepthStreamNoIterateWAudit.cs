@@ -45,7 +45,7 @@ namespace com.espertech.esper.common.@internal.view.core
                 _agentInstanceContext,
                 _subselect,
                 _subselectNumber);
-            Insert(theEvent);
+            base.Insert(theEvent);
             _agentInstanceContext.InstrumentationProvider.AFilterActivationStream(
                 _agentInstanceContext,
                 _subselect,

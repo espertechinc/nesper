@@ -33,7 +33,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
 
             // test exception by graph source
             env.CompileDeploy(
-                "@Name('flow') create dataflow MyDataFlow DefaultSupportSourceOp => outstream<SupportBean> {}");
+                "@Name('flow') create dataflow MyDataFlow DefaultSupportSourceOp -> outstream<SupportBean> {}");
 
             var op = new DefaultSupportSourceOp(new object[] {new EPException("My-Exception-Is-Here")});
             var options = new EPDataFlowInstantiationOptions();
@@ -51,7 +51,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
             Assert.AreEqual("MyDataFlow", context.DataFlowName);
             Assert.AreEqual("DefaultSupportSourceOp", context.OperatorName);
             Assert.AreEqual(0, context.OperatorNumber);
-            Assert.AreEqual("DefaultSupportSourceOp#0() => outstream<SupportBean>", context.OperatorPrettyPrint);
+            Assert.AreEqual("DefaultSupportSourceOp#0() -> outstream<SupportBean>", context.OperatorPrettyPrint);
             Assert.AreEqual(
                 "Support-graph-source generated exception: My-Exception-Is-Here",
                 context.Exception.Message);
@@ -61,7 +61,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
 
             // test exception by operator
             env.CompileDeploy(
-                "@Name('flow') create dataflow MyDataFlow DefaultSupportSourceOp => outstream<SupportBean> {}" +
+                "@Name('flow') create dataflow MyDataFlow DefaultSupportSourceOp -> outstream<SupportBean> {}" +
                 "MyExceptionOp(outstream) {}");
 
             var opTwo = new DefaultSupportSourceOp(new object[] {new SupportBean("E1", 1)});

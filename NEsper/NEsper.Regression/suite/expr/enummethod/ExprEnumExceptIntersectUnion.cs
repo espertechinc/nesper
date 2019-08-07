@@ -46,7 +46,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
             epl += eventRepresentationEnum.GetAnnotationText() +
                    " create schema OuterEvent as (bases BaseEvent[], subs SubEvent[]);\n";
             epl += eventRepresentationEnum.GetAnnotationText() +
-                   " @name('s0') select bases.union(subs) as val from OuterEvent;\n";
+                   " @Name('s0') select bases.union(subs) as val from OuterEvent;\n";
             env.CompileDeployWBusPublicType(epl, new RegressionPath()).AddListener("s0");
 
             if (eventRepresentationEnum.IsObjectArrayEvent()) {

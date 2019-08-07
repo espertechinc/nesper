@@ -55,7 +55,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
             epl += eventRepresentationEnum.GetAnnotationText() +
                    " create schema MySchema as (col1 string, col2 int);\n";
             epl += eventRepresentationEnum.GetAnnotationText() +
-                   " @name('create') create window MyWindowSS#lastevent as MySchema;\n";
+                   " @Name('create') create window MyWindowSS#lastevent as MySchema;\n";
             epl += "on SupportBean_A delete from MyWindowSS;\n";
             epl += "on MyEvent me " +
                    "merge MyWindowSS mw " +

@@ -174,7 +174,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.contained
             // test property returning untyped collection
             if (eventRepresentationEnum.IsObjectArrayEvent()) {
                 stmtText = eventRepresentationEnum.GetAnnotationText() +
-                           " @name('s0') select * from SupportObjectArrayEvent[someObjectArray@type(WordEvent)]";
+                           " @Name('s0') select * from SupportObjectArrayEvent[someObjectArray@type(WordEvent)]";
                 env.CompileDeploy(stmtText, path).AddListener("s0");
                 Assert.AreEqual("WordEvent", env.Statement("s0").EventType.Name);
 
@@ -196,7 +196,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.contained
             }
             else if (eventRepresentationEnum.IsMapEvent()) {
                 stmtText = eventRepresentationEnum.GetAnnotationText() +
-                           " @name('s0') select * from SupportCollectionEvent[someCollection@type(WordEvent)]";
+                           " @Name('s0') select * from SupportCollectionEvent[someCollection@type(WordEvent)]";
                 env.CompileDeploy(stmtText, path).AddListener("s0");
                 Assert.AreEqual("WordEvent", env.Statement("s0").EventType.Name);
 

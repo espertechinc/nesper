@@ -23,6 +23,8 @@ namespace com.espertech.esper.regressionrun.runner
 
         public static Configuration GetConfiguration()
         {
+            var container = SupportContainer.Reset();
+
             Configuration config;
             string configFactoryClass = Environment.GetEnvironmentVariable(TEST_CONFIG_FACTORY_CLASS);
             if (configFactoryClass != null)
@@ -32,8 +34,9 @@ namespace com.espertech.esper.regressionrun.runner
                     var clazz = TypeHelper.ResolveType(configFactoryClass);
                     var instance = TypeHelper.Instantiate(clazz);
                     var m = clazz.GetMethod("GetConfigurationEsperRegression");
-                    var result = m.Invoke(instance, new object[0] { });
+                    var result = m.Invoke(instance, new object[] { });
                     config = (Configuration) result;
+                    config.Container = container;
                 }
                 catch (Exception e)
                 {
@@ -42,7 +45,7 @@ namespace com.espertech.esper.regressionrun.runner
             }
             else
             {
-                config = new Configuration();
+                config = new Configuration(container);
                 config.Runtime.Threading.IsInternalTimerEnabled = false;
                 config.Runtime.ExceptionHandling.AddClass(typeof(SupportExceptionHandlerFactoryRethrow));
                 config.Runtime.ExceptionHandling.UndeployRethrowPolicy = UndeployRethrowPolicy.RETHROW_FIRST;

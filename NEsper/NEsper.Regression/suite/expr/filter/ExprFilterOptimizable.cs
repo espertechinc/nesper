@@ -252,7 +252,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
             AtomicLong milestone)
         {
             var epl =
-                "@Hint('MAX_FILTER_WIDTH=0') @name('s0') select * from SupportBean_IntAlphabetic((b=1 or c=1) and (d=1 or e=1))";
+                "@Hint('MAX_FILTER_WIDTH=0') @Name('s0') select * from SupportBean_IntAlphabetic((b=1 or c=1) and (d=1 or e=1))";
             env.CompileDeployAddListenerMile(epl, "s0", milestone.GetAndIncrement());
             AssertFilterSingle(env.Statement("s0"), epl, ".boolean_expression", FilterOperator.BOOLEAN_EXPRESSION);
             env.UndeployAll();

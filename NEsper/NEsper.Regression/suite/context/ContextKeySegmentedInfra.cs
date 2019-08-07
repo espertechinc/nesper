@@ -302,7 +302,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 : "context SegmentedByString create table MyInfra (TheString string primary key, IntPrimitive int);\n";
             epl +=
                 "@Name('insert') context SegmentedByString insert into MyInfra select TheString, IntPrimitive from SupportBean;\n";
-            epl += "@Audit @name('s0') context SegmentedByString " +
+            epl += "@Audit @Name('s0') context SegmentedByString " +
                    "select *, (select max(IntPrimitive) from MyInfra) as mymax from SupportBean_S0;\n";
             env.CompileDeploy(epl).AddListener("s0");
 

@@ -56,7 +56,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
             string priorIndex,
             AtomicLong milestone)
         {
-            var text = "create constant variable int NUM_PRIOR = 1;\n @name('s0') select prior(" +
+            var text = "create constant variable int NUM_PRIOR = 1;\n @Name('s0') select prior(" +
                        priorIndex +
                        ", s0) as result from SupportBean_S0#length(2) as s0";
             env.CompileDeploy(text, path).AddListener("s0");

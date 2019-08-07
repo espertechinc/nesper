@@ -26,7 +26,7 @@ namespace com.espertech.esper.regressionlib.suite.client.instrument
             SendTimer(env, 1000);
 
             statements[0] =
-                env.CompileDeploy("@Name('MyStatement@METRIC') select * from " + typeof(StatementMetric).Name)
+                env.CompileDeploy("@Name('MyStatement@METRIC') select * from " + typeof(StatementMetric).FullName)
                     .Statement("MyStatement@METRIC");
             statements[0].AddListener(env.ListenerNew());
 

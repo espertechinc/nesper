@@ -89,7 +89,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
 
             // create window two
             var stmtTextCreateTwo = outputType.GetAnnotationText() +
-                                    " @name('createTwo') create window MyWindowSTAGTwo#keepall as select TheString as a2, IntPrimitive as b2 from SupportBean";
+                                    " @Name('createTwo') create window MyWindowSTAGTwo#keepall as select TheString as a2, IntPrimitive as b2 from SupportBean";
             env.CompileDeploy(stmtTextCreateTwo, path).AddListener("createTwo");
             Assert.AreEqual(0, GetCount(env, "createTwo", "MyWindowSTAGTwo"));
             Assert.IsTrue(outputType.MatchesClass(env.Statement("createTwo").EventType.UnderlyingType));

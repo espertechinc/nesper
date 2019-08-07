@@ -104,9 +104,9 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
             public void Run(RegressionEnvironment env)
             {
                 var epl = eventRepresentationEnum.GetAnnotationText() +
-                          " @name('schema') create schema SchemaOne(col1 int, col2 int);\n";
+                          " @Name('schema') create schema SchemaOne(col1 int, col2 int);\n";
                 epl += eventRepresentationEnum.GetAnnotationText() +
-                       " @name('create') create window SchemaWindow#lastevent as (s1 SchemaOne);\n";
+                       " @Name('create') create window SchemaWindow#lastevent as (s1 SchemaOne);\n";
                 epl += "insert into SchemaWindow (s1) select sone from SchemaOne as sone;\n";
                 env.CompileDeployWBusPublicType(epl, new RegressionPath()).AddListener("create");
 
@@ -159,7 +159,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
             {
                 // create window
                 var epl = eventRepresentationEnum.GetAnnotationText() +
-                          " @name('create') create window MyWindowMT#keepall as select one, two from OuterType;\n" +
+                          " @Name('create') create window MyWindowMT#keepall as select one, two from OuterType;\n" +
                           "insert into MyWindowMT select one, two from OuterType;\n";
                 env.CompileDeploy(epl).AddListener("create");
 
@@ -369,7 +369,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                           eventRepresentationEnum.GetAnnotationText() +
                           " create schema EventTypeTwo (event EventTypeOne);\n" +
                           eventRepresentationEnum.GetAnnotationText() +
-                          " @name('create') create window NamedWindow#unique(event.hsi) as EventTypeTwo;\n" +
+                          " @Name('create') create window NamedWindow#unique(event.hsi) as EventTypeTwo;\n" +
                           "on EventTypeOne as ev insert into NamedWindow select ev as event;\n";
                 env.CompileDeployWBusPublicType(epl, new RegressionPath());
 

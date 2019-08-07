@@ -593,7 +593,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             public void Run(RegressionEnvironment env)
             {
                 var text = "select " +
-                           "SupportStaticMethodLib.sleep(100) as val" +
+                           "SupportStaticMethodLib.Sleep(100) as val" +
                            " from SupportTemperatureBean as temp";
                 env.CompileDeploy(text);
 
@@ -615,7 +615,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             public void Run(RegressionEnvironment env)
             {
                 var text = "select " +
-                           "SupportStaticMethodLib.sleep(SupportStaticMethodLib.passthru(100)) as val" +
+                           "SupportStaticMethodLib.Sleep(SupportStaticMethodLib.passthru(100)) as val" +
                            " from SupportTemperatureBean as temp";
                 env.CompileDeploy(text);
 

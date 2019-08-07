@@ -64,7 +64,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.service
                         "Event type named '" +
                         eventTypeName +
                         "' has already been declared with differing underlying type information: Class " +
-                        existingType.UnderlyingType.Name +
+                        existingType.UnderlyingType.FullName +
                         " versus " +
                         clazz.Name);
                 }
@@ -75,7 +75,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.service
                         "Event type named '" +
                         eventTypeName +
                         "' has already been declared with differing underlying type information: Class " +
-                        existingType.UnderlyingType.Name +
+                        existingType.UnderlyingType.FullName +
                         " versus " +
                         beanEventType.UnderlyingType);
                 }
@@ -191,18 +191,19 @@ namespace com.espertech.esper.common.@internal.@event.bean.service
             Type clazz,
             IDictionary<string, Type> resolvedBeanEventTypes)
         {
-            var existing = resolvedBeanEventTypes.Get(clazz.Name);
+            var clazzFullName = clazz.FullName;
+            var existing = resolvedBeanEventTypes.Get(clazzFullName);
             if (existing != null && existing != clazz) {
                 throw new ConfigurationException(
                     "Predefined event type " +
-                    clazz.Name +
+                    clazzFullName +
                     " expected class " +
-                    clazz.Name +
+                    clazzFullName +
                     " but is already defined to another class " +
                     existing.Name);
             }
 
-            resolvedBeanEventTypes.Put(clazz.Name, clazz);
+            resolvedBeanEventTypes.Put(clazzFullName, clazz);
         }
     }
 } // end of namespace

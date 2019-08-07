@@ -142,7 +142,7 @@ namespace com.espertech.esper.common.@internal.epl.annotation
         {
             var annotations = new Attribute[desc.Count];
             for (var i = 0; i < desc.Count; i++) {
-                annotations[i] = CreateProxy(desc[i], importService);
+                annotations[i] = CreateAttributeInstance(desc[i], importService);
                 if (annotations[i] is HintAttribute) {
                     HintEnumExtensions.ValidateGetListed(annotations[i]);
                 }
@@ -151,7 +151,7 @@ namespace com.espertech.esper.common.@internal.epl.annotation
             return annotations;
         }
 
-        private static Attribute CreateProxy(
+        private static Attribute CreateAttributeInstance(
             AnnotationDesc desc,
             ImportServiceCompileTime importService)
         {
@@ -231,9 +231,8 @@ namespace com.espertech.esper.common.@internal.epl.annotation
                     "'");
             }
 
-            // return handler
-            var handler = new EPLAnnotationInvocationHandler(annotationClass, properties);
-            return handler.NewProxyInstance(importService.ClassLoader, annotationClass);
+            // Create a proxy of the attribute
+            return (new EPLAnnotationInvocationHandler(annotationClass, properties)).CreateProxyInstance();
         }
 
         private static object GetFinalValue(
@@ -280,9 +279,9 @@ namespace com.espertech.esper.common.@internal.epl.annotation
 
                         throw new AnnotationException(
                             "Annotation '" +
-                            annotationClass.GetSimpleName() +
+                            annotationClass.Name +
                             "' requires an enum-value '" +
-                            annotationAttribute.AnnotationType.Name +
+                            annotationAttribute.AnnotationType.FullName +
                             "' for attribute '" +
                             annotationAttribute.Name +
                             "' but received '" +
@@ -296,14 +295,14 @@ namespace com.espertech.esper.common.@internal.epl.annotation
                     if (finalValue == null) {
                         throw new AnnotationException(
                             "Annotation '" +
-                            annotationClass.GetSimpleName() +
+                            annotationClass.Name +
                             "' requires a " +
-                            annotationAttribute.AnnotationType.GetSimpleName() +
+                            annotationAttribute.AnnotationType.Name +
                             "-typed value for attribute '" +
                             annotationAttribute.Name +
                             "' but received " +
                             "a " +
-                            value.GetType().GetSimpleName() +
+                            value.GetType().Name +
                             "-typed value");
                     }
 
@@ -325,7 +324,7 @@ namespace com.espertech.esper.common.@internal.epl.annotation
                         "-typed value");
                 }
 
-                return CreateProxy((AnnotationDesc) value, importService);
+                return CreateAttributeInstance((AnnotationDesc) value, importService);
             }
 
             if (!(value is Array valueAsArray)) {
@@ -359,7 +358,7 @@ namespace com.espertech.esper.common.@internal.epl.annotation
 
                 object finalValue;
                 if (arrayValue is AnnotationDesc) {
-                    var inner = CreateProxy((AnnotationDesc) arrayValue, importService);
+                    var inner = CreateAttributeInstance((AnnotationDesc) arrayValue, importService);
                     if (inner.GetType() != componentType) {
                         throw MakeArrayMismatchException(
                             annotationClass,

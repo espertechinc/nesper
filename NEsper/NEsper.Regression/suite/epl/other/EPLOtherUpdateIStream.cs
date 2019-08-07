@@ -84,7 +84,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             // test update-istream with map
             var path = new RegressionPath();
             var eplType = eventRepresentationEnum.GetAnnotationText() +
-                          " @name('type') create schema MyInfraTypeWithMapProp(simple String, myarray int[], mymap java.util.Map)";
+                          " @Name('type') create schema MyInfraTypeWithMapProp(simple String, myarray int[], mymap java.util.Map)";
             env.CompileDeployWBusPublicType(eplType, path);
 
             env.CompileDeploy(
@@ -131,7 +131,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             // test named-window update
             var path = new RegressionPath();
             var eplTypes = eventRepresentationEnum.GetAnnotationText() +
-                           " @name('type') create schema MyNWInfraTypeWithMapProp(simple String, myarray int[], mymap java.util.Map)";
+                           " @Name('type') create schema MyNWInfraTypeWithMapProp(simple String, myarray int[], mymap java.util.Map)";
             env.CompileDeployWBusPublicType(eplTypes, path);
 
             env.CompileDeploy(
@@ -1037,7 +1037,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                     fields,
                     new object[] {"a", "E3"});
 
-                env.CompileDeploy("@Drop @name('drop') update istream MyMapTypeSR set p0='a'");
+                env.CompileDeploy("@Drop @Name('drop') update istream MyMapTypeSR set p0='a'");
                 env.SendEventMap(MakeMap("p0", "E4", "p1", "E4"), "MyMapTypeSR");
                 env.SendEventMap(MakeMap("p0", "E5", "p1", "E5"), "MyMapTypeSR");
                 env.SendEventBean(new SupportBean());

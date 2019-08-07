@@ -49,7 +49,7 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
             var countStatements = 100;
             var listener = new SupportListenerTimerHRes();
             var compiled = env.Compile(
-                "select SupportStaticMethodLib.sleep(10) from pattern[every MyMap => timer:interval(1)]");
+                "select SupportStaticMethodLib.Sleep(10) from pattern[every MyMap -> timer:interval(1)]");
             for (var i = 0; i < countStatements; i++) {
                 var stmtName = "s" + i;
                 env.Deploy(compiled, new DeploymentOptions().WithStatementNameRuntime(ctx => stmtName));

@@ -595,7 +595,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.spatial
                     "@Audit create index MyIndex on MyPointTable( (my_x, my_y) pointregionquadtree(0, 0, 100, 100));\n" +
                     "on SupportSpatialPoint ssp merge MyPointTable where ssp.px = my_x and ssp.py = my_y when not matched then insert select px as my_x, py as my_y, Id as my_Id;\n" +
                     IndexBackingTableInfo.INDEX_CALLBACK_HOOK +
-                    "@Audit @name('s0') on SupportSpatialAABB select my_Id as c0 from MyPointTable as c0 where point(my_x, my_y).insIde(rectangle(x, y, width, height))";
+                    "@Audit @Name('s0') on SupportSpatialAABB select my_Id as c0 from MyPointTable as c0 where point(my_x, my_y).insIde(rectangle(x, y, width, height))";
                 env.CompileDeploy(epl, path).AddListener("s0");
 
                 SupportQueryPlanIndexHook.AssertOnExprTableAndReset(

@@ -76,7 +76,7 @@ namespace com.espertech.esper.compat
             foreach (var pathElement in SearchPath)
             {
                 var fileInfo = ResolveResourceFile(name, pathElement);
-                if ( fileInfo != null )
+                if (fileInfo != null)
                 {
                     return fileInfo;
                 }

@@ -252,7 +252,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
             {
                 var path = new RegressionPath();
                 var stmtTextCreateOne = eventRepresentationEnum.GetAnnotationText() +
-                                        " @name('window') create window MyWindowIWOM#keepall as select a, b from MyMapAB";
+                                        " @Name('window') create window MyWindowIWOM#keepall as select a, b from MyMapAB";
                 env.CompileDeploy(stmtTextCreateOne, path);
                 Assert.IsTrue(eventRepresentationEnum.MatchesClass(env.Statement("window").EventType.UnderlyingType));
                 env.AddListener("window");
@@ -293,7 +293,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                 // test select individual fields and from an insert-from named window
                 env.CompileDeploy(
                     eventRepresentationEnum.GetAnnotationText() +
-                    " @name('windowThree') create window MyWindowIWOMThree#keepall as select a from MyWindowIWOMTwo insert where a = 'E2'",
+                    " @Name('windowThree') create window MyWindowIWOMThree#keepall as select a from MyWindowIWOMTwo insert where a = 'E2'",
                     path);
                 EPAssertionUtil.AssertPropsPerRow(
                     env.GetEnumerator("windowThree"),

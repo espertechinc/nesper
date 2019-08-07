@@ -479,7 +479,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                 var fields = "s0.Id, s0.P00, s0.P01, s1.Id, s1.P10, s1.P11, s2.Id, s2.P20, s2.P21".SplitCsv();
 
                 var epl = eventRepresentationEnum.GetAnnotationText() +
-                          " @name('s0') select * from " +
+                          " @Name('s0') select * from " +
                           "SupportBean_S0#length(1000) as s0 " +
                           " full outer join SupportBean_S1#length(1000) as s1 on s0.P00 = s1.P10 and s0.P01 = s1.P11" +
                           " full outer join SupportBean_S2#length(1000) as s2 on s0.P00 = s2.P20 and s0.P01 = s2.P21";

@@ -306,7 +306,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
             string prefix,
             AtomicLong milestone)
         {
-            var epl = prefix + " @name('s0') select * from SupportBean as A0 where A0.IntPrimitive = 3";
+            var epl = prefix + " @Name('s0') select * from SupportBean as A0 where A0.IntPrimitive = 3";
             env.CompileDeployAddListenerMile(epl, "s0", milestone.GetAndIncrement());
 
             SendSupportBean(env, new SupportBean("E1", 3));

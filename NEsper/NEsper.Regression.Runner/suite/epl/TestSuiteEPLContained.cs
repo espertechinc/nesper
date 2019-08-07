@@ -136,8 +136,7 @@ namespace com.espertech.esper.regressionrun.suite.epl
 
             var config = new ConfigurationCommonEventTypeXMLDOM();
             var resourceManager = configuration.ResourceManager;
-            var schemaUri = resourceManager.ResolveResourceURL("regression/mediaOrderSchema.xsd").ToString();
-            config.SchemaResource = schemaUri;
+            config.SchemaResource = resourceManager.ResolveResourceURL("regression/mediaOrderSchema.xsd").ToString();
             config.RootElementName = "mediaorder";
             configuration.Common.AddEventType("MediaOrder", config);
             configuration.Common.AddEventType("Cancel", config);

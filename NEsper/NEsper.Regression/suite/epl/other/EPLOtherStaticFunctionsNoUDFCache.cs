@@ -19,7 +19,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
         public void Run(RegressionEnvironment env)
         {
             var text =
-                "@Name('s0') select SupportStaticMethodLib.sleep(100) as val from SupportTemperatureBean as temp";
+                "@Name('s0') select SupportStaticMethodLib.Sleep(100) as val from SupportTemperatureBean as temp";
             env.CompileDeploy(text).AddListener("s0");
 
             var startTime = PerformanceObserver.MilliTime;

@@ -32,7 +32,7 @@ namespace com.espertech.esper.common.@internal.metrics.stmtmetrics
         {
             GroupNum = -1;
             Index = -1;
-            IsEnabled = true;
+            IsEnabled = isEnabled;
         }
 
         /// <summary>Returns group number for statement. </summary>

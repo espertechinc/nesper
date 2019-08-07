@@ -151,7 +151,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                       eventRepresentationEnum.GetAnnotationText() +
                       " create schema MySchema as (insIde InnerSchema, insIdearr InnerSchema[]);\n" +
                       eventRepresentationEnum.GetAnnotationText() +
-                      " @name('s0') select typeof(s0.insIde) as t0, typeof(s0.insIdearr) as t1 from MySchema as s0;\n";
+                      " @Name('s0') select typeof(s0.insIde) as t0, typeof(s0.insIdearr) as t1 from MySchema as s0;\n";
             string[] fields = {"t0", "t1"};
             env.CompileDeployWBusPublicType(epl, new RegressionPath()).AddListener("s0");
             var deploymentId = env.DeploymentId("s0");

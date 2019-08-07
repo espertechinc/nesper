@@ -792,7 +792,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
                 env.CompileDeploy(epl, path);
 
                 epl =
-                    "@Hint('DISABLE_RECLAIM_GROUP') @name('s0') select TheString, sum(IntPrimitive) as mysum from MyWindow group by TheString order by TheString";
+                    "@Hint('DISABLE_RECLAIM_GROUP') @Name('s0') select TheString, sum(IntPrimitive) as mysum from MyWindow group by TheString order by TheString";
                 env.CompileDeploy(epl, path).AddListener("s0");
                 var fields = "theString,mysum".SplitCsv();
 

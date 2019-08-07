@@ -744,7 +744,7 @@ namespace com.espertech.esper.regressionlib.suite.context
             {
                 var path = new RegressionPath();
                 env.CompileDeploy(
-                    "@audit @name('ctx') create context MyTermByUnrelated partition by TheString from SupportBean(IntPrimitive=0) terminated by SupportBean",
+                    "@audit @Name('ctx') create context MyTermByUnrelated partition by TheString from SupportBean(IntPrimitive=0) terminated by SupportBean",
                     path);
                 env.CompileDeploy(
                     "@Name('s0') context MyTermByUnrelated select TheString, count(*) as cnt from SupportBean output last when terminated",
@@ -794,7 +794,7 @@ namespace com.espertech.esper.regressionlib.suite.context
             {
                 var path = new RegressionPath();
                 env.CompileDeploy(
-                    "@audit @name('ctx') create context MyTermByUnrelated partition by TheString from SupportBean(IntPrimitive=0) terminated by SupportBean(IntPrimitive=1)",
+                    "@audit @Name('ctx') create context MyTermByUnrelated partition by TheString from SupportBean(IntPrimitive=0) terminated by SupportBean(IntPrimitive=1)",
                     path);
                 env.CompileDeploy(
                     "@Name('s0') context MyTermByUnrelated select TheString, count(*) as cnt from SupportBean output last when terminated",

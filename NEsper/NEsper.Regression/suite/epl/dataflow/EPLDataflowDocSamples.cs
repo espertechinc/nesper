@@ -45,7 +45,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
             public void Run(RegressionEnvironment env)
             {
                 var epl = "@Name('flow') create dataflow HelloWorldDataFlow\n" +
-                          "BeaconSource => helloworldStream { text: 'hello world', iterations : 1 }\n" +
+                          "BeaconSource -> helloworldStream { text: 'hello world', iterations : 1 }\n" +
                           "LogSink(helloworldStream) {}";
                 env.CompileDeploy(epl);
 
@@ -60,7 +60,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                     env,
                     "create dataflow MyDataFlow2\n" +
                     "create schema MyEvent as (Id string, Price double),\n" +
-                    "MyOperator => myOutStream<MyEvent> {\n" +
+                    "MyOperator -> myOutStream<MyEvent> {\n" +
                     "myParameter : 10\n" +
                     "}");
                 TryEpl(
@@ -78,25 +78,25 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 TryEpl(
                     env,
                     "create dataflow MyDataFlow6\n" +
-                    "MyOperator(abc) => my.out.stream {}");
+                    "MyOperator(abc) -> my.out.stream {}");
                 TryEpl(
                     env,
                     "create dataflow MyDataFlow7\n" +
-                    "MyOperator => my.out.one, my.out.two {}");
+                    "MyOperator -> my.out.one, my.out.two {}");
                 TryEpl(
                     env,
                     "create dataflow MyDataFlow8\n" +
                     "create objectarray schema RFIDSchema (tagId string, locX double, locy double),\n" +
-                    "MyOperator => rfId.stream<RFIDSchema> {}");
+                    "MyOperator -> rfId.stream<RFIDSchema> {}");
                 TryEpl(
                     env,
                     "create dataflow MyDataFlow9\n" +
                     "create objectarray schema RFIDSchema (tagId string, locX double, locy double),\n" +
-                    "MyOperator => rfId.stream<eventbean<RFIDSchema>> {}");
+                    "MyOperator -> rfId.stream<eventbean<RFIDSchema>> {}");
                 TryEpl(
                     env,
                     "create dataflow MyDataFlow10\n" +
-                    "MyOperator => my.stream<eventbean<?>> {}");
+                    "MyOperator -> my.stream<eventbean<?>> {}");
                 TryEpl(
                     env,
                     "create dataflow MyDataFlow11\n" +
@@ -143,10 +143,10 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                            "create dataflow DFFull\n" +
                            "create map schema ABC1 as (col1 int, col2 int),\n" +
                            "create map schema ABC2 as (col1 int, col2 int),\n" +
-                           "MyOperatorOne(instream.one) => outstream.one {}\n" +
-                           "MyOperatorTwo(instream.two as IN1, input.three as IN2) => outstream.one<Test>, outstream.two<EventBean<TestTwo>> {}\n" +
+                           "MyOperatorOne(instream.one) -> outstream.one {}\n" +
+                           "MyOperatorTwo(instream.two as IN1, input.three as IN2) -> outstream.one<Test>, outstream.two<EventBean<TestTwo>> {}\n" +
                            "MyOperatorThree((instream.two, input.three) as IN1) {}\n" +
-                           "MyOperatorFour => teststream {}\n" +
+                           "MyOperatorFour -> teststream {}\n" +
                            "MyOperatorFive {\n" +
                            "const_str: \"abc\",\n" +
                            "somevalue: def*2,\n" +

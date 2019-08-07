@@ -122,7 +122,7 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
             var path = new RegressionPath();
             path.Add(first);
             path.Add(second);
-            env.CompileDeploy("uses b;\n @name('s0') " + useEpl + "\n", path).AddListener("s0");
+            env.CompileDeploy("uses b;\n @Name('s0') " + useEpl + "\n", path).AddListener("s0");
 
             assertion.Invoke();
 

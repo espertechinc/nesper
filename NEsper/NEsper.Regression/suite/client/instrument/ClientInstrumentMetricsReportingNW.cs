@@ -26,7 +26,7 @@ namespace com.espertech.esper.regressionlib.suite.client.instrument
         {
             var path = new RegressionPath();
             env.AdvanceTime(0);
-            env.CompileDeploy("@Name('0') create schema StatementMetric as " + typeof(StatementMetric).Name);
+            env.CompileDeploy("@Name('0') create schema StatementMetric as " + typeof(StatementMetric).FullName);
             env.CompileDeploy("@Name('A') create window MyWindow#lastevent as select * from SupportBean", path);
             env.CompileDeploy("@Name('B1') insert into MyWindow select * from SupportBean", path);
             env.CompileDeploy("@Name('B2') insert into MyWindow select * from SupportBean", path);
@@ -46,7 +46,7 @@ namespace com.espertech.esper.regressionlib.suite.client.instrument
                                "    then update set pw.IntPrimitive = oe.IntPrimitive";
             env.CompileDeploy(appModuleTwo, path);
 
-            env.CompileDeploy("@Name('X') select * from " + typeof(StatementMetric).Name).AddListener("X");
+            env.CompileDeploy("@Name('X') select * from " + typeof(StatementMetric).FullName).AddListener("X");
             var fields = "statementName,numInput".SplitCsv();
 
             env.SendEventBean(new SupportBean("E1", 1));

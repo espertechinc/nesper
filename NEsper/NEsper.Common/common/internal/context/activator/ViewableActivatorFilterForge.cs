@@ -54,6 +54,7 @@ namespace com.espertech.esper.common.@internal.context.activator
                     ExprDotMethodChain(symbols.GetAddInitSvc(method))
                         .Get(EPStatementInitServicesConstants.VIEWABLEACTIVATORFACTORY)
                         .Add("CreateFilter"))
+                .SetProperty(Ref("activator"), "Container", ExprDotName(Ref("stmtInitSvc"), "Container"))
                 .SetProperty(Ref("activator"), "FilterSpec", Ref("filterSpecCompiled"))
                 .SetProperty(Ref("activator"), "CanIterate", Constant(canIterate))
                 .SetProperty(Ref("activator"), "StreamNumFromClause", Constant(streamNumFromClause))

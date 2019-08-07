@@ -17,7 +17,7 @@ namespace com.espertech.esper.regressionlib.suite.client.basic
     {
         public void Run(RegressionEnvironment env)
         {
-            var epl = "@Name('abc') @Tag(name='a', value='b') @Priority(1) @Drop select * from SupportBean";
+            var epl = "@Name('abc') @Tag(Name='a', Value='b') @Priority(1) @Drop select * from SupportBean";
             env.CompileDeployAddListenerMileZero(epl, "abc");
 
             var annotations = env.Statement("abc").Annotations;

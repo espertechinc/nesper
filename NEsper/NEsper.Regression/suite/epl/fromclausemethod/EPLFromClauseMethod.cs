@@ -1064,7 +1064,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
                     typeof(SupportStaticMethodLib).Name +
                     "', expecting a Java class [select * from SupportBean, method:" +
                     typeof(SupportStaticMethodLib).Name +
-                    ".sleep(100) where 1=2]");
+                    ".Sleep(100) where 1=2]");
 
                 TryInvalidCompile(
                     env,

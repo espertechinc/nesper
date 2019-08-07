@@ -45,7 +45,7 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
             log.Debug("Creating statements");
             var countStatements = 100;
             var listener = new SupportListenerTimerHRes();
-            var compiled = env.Compile("select SupportStaticMethodLib.sleep(10) from SupportBean");
+            var compiled = env.Compile("select SupportStaticMethodLib.Sleep(10) from SupportBean");
             for (var i = 0; i < countStatements; i++) {
                 var stmtName = "s" + i;
                 env.Deploy(compiled, new DeploymentOptions().WithStatementNameRuntime(ctx => stmtName));
@@ -72,7 +72,7 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
             // destroy all statements
             env.UndeployAll();
 
-            env.CompileDeploy("@Name('s0') select SupportStaticMethodLib.sleep(10) from SupportBean, SupportBean");
+            env.CompileDeploy("@Name('s0') select SupportStaticMethodLib.Sleep(10) from SupportBean, SupportBean");
             env.Statement("s0").AddListener(listener);
             env.SendEventBean(new SupportBean());
             try {

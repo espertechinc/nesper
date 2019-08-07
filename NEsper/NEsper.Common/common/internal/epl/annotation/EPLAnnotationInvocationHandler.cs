@@ -48,30 +48,35 @@ namespace com.espertech.esper.common.@internal.epl.annotation
         public void Intercept(IInvocation invocation)
         {
             var methodName = invocation.Method.Name;
-            if (methodName == "Equals") {
-                if (invocation.Arguments.Length != 0) {
-                    invocation.ReturnValue = HandleEquals(invocation.Arguments[0]);
+            if (invocation.Method.IsSpecialName) {
+                if (methodName.StartsWith("get_")) {
+                    var propertyName = methodName.Substring(4);
+                    if (Attributes.TryGetValue(propertyName, out var propertyValue)) {
+                        invocation.ReturnValue = propertyValue;
+                    }
                 }
             }
-            else if (methodName == "GetHashCode") {
-                invocation.ReturnValue = HandleHashCode();
-            }
-            else if (methodName == "ToString") {
-                invocation.ReturnValue = HandleToString();
-            }
-            else if (methodName == "AnnotationType") {
-                invocation.ReturnValue = AnnotationClass;
-            }
-            else if (Attributes.ContainsKey(methodName)) {
-                invocation.ReturnValue = Attributes.Get(methodName);
+            else {
+                if (methodName == "Equals") {
+                    if (invocation.Arguments.Length != 0) {
+                        invocation.ReturnValue = HandleEquals(invocation.Arguments[0]);
+                    }
+                }
+                else if (methodName == "GetHashCode") {
+                    invocation.ReturnValue = HandleHashCode();
+                }
+                else if (methodName == "ToString") {
+                    invocation.ReturnValue = HandleToString();
+                }
+                else if (methodName == "AnnotationType") {
+                    invocation.ReturnValue = AnnotationClass;
+                }
             }
         }
 
-        public Attribute NewProxyInstance(
-            ClassLoader classLoader,
-            Type attributeType)
+        public Attribute CreateProxyInstance()
         {
-            return (Attribute) Generator.CreateClassProxy(attributeType, ProxyGenerationOptions.Default, this);
+            return (Attribute) Generator.CreateClassProxy(AnnotationClass, ProxyGenerationOptions.Default, this);
         }
 
         private string HandleToString()

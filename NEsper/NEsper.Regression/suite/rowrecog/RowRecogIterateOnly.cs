@@ -38,7 +38,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
                            "  measures A.TheString as a" +
                            "  all matches " +
                            "  pattern (A) " +
-                           "  define A as SupportStaticMethodLib.sleepReturnTrue(mySleepDuration)" +
+                           "  define A as SupportStaticMethodLib.SleepReturnTrue(mySleepDuration)" +
                            ")";
 
                 env.CompileDeploy(text).AddListener("s0");
@@ -70,7 +70,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
             public void Run(RegressionEnvironment env)
             {
                 var fields = "a".SplitCsv();
-                var text = "@Hint('iterate_only') @name('s0') select * from SupportRecogBean#lastevent " +
+                var text = "@Hint('iterate_only') @Name('s0') select * from SupportRecogBean#lastevent " +
                            "match_recognize (" +
                            "  measures A.TheString as a" +
                            "  all matches " +

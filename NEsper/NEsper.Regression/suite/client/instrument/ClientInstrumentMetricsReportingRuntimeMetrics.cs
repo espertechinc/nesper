@@ -10,6 +10,7 @@ using com.espertech.esper.common.client.metric;
 using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.diagnostics;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.client;
@@ -22,10 +23,10 @@ namespace com.espertech.esper.regressionlib.suite.client.instrument
     {
         public void Run(RegressionEnvironment env)
         {
-            var fields = "runtimeURI,timestamp,inputCount,inputCountDelta,scheduleDepth".SplitCsv();
+            var fields = Collections.Array("runtimeURI", "timestamp", "inputCount", "inputCountDelta", "scheduleDepth");
             SendTimer(env, 1000);
 
-            var text = "@Name('s0') select * from " + typeof(RuntimeMetric).Name;
+            var text = "@Name('s0') select * from " + typeof(RuntimeMetric).FullName;
             env.CompileDeploy(text).AddListener("s0");
 
             env.SendEventBean(new SupportBean());

@@ -460,7 +460,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
                                      "select (select IntPrimitive from MyWindow mw where mw.TheString = s0.P00) as c0 " +
                                      "from SupportBean_S0 s0";
             env.CompileDeploy("@Name('s0') " + eplSubquerySameCtx, path).AddListener("s0");
-            env.CompileDeploy("@Hint('disable_window_subquery_indexshare') @name('s1') " + eplSubquerySameCtx, path);
+            env.CompileDeploy("@Hint('disable_window_subquery_indexshare') @Name('s1') " + eplSubquerySameCtx, path);
 
             env.SendEventBean(new SupportBean_S0(0, "E1"));
             Assert.AreEqual(1, env.Listener("s0").AssertOneGetNewAndReset().Get("c0"));

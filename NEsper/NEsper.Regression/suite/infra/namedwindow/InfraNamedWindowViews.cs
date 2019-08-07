@@ -156,7 +156,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
         {
             var path = new RegressionPath();
             env.CompileDeploy(
-                rep.GetAnnotationText() + " @name('create') create window MyWindowBC#keepall as (bean SupportBean_S0)",
+                rep.GetAnnotationText() + " @Name('create') create window MyWindowBC#keepall as (bean SupportBean_S0)",
                 path);
             env.AddListener("create");
             Assert.IsTrue(rep.MatchesClass(env.Statement("create").EventType.UnderlyingType));
@@ -384,7 +384,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
             // Test create from class
             env.CompileDeploy(
                 eventRepresentationEnum.GetAnnotationText() +
-                " @name('create') create window MyWindowBB#keepall as SupportBean",
+                " @Name('create') create window MyWindowBB#keepall as SupportBean",
                 path);
             env.AddListener("create");
             env.CompileDeploy("insert into MyWindowBB select * from SupportBean", path);
@@ -693,7 +693,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                 }
 
                 var epl = EventRepresentationChoice.AVRO.GetAnnotationText() +
-                          " @name('create') create window MyWindowBC#keepall as (bean SupportBean_S0)";
+                          " @Name('create') create window MyWindowBC#keepall as (bean SupportBean_S0)";
                 TryInvalidCompile(
                     env,
                     epl,

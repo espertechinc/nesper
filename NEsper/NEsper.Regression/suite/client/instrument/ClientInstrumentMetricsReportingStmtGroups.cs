@@ -28,7 +28,7 @@ namespace com.espertech.esper.regressionlib.suite.client.instrument
             env.Statement("GroupTwo").Subscriber = new SupportSubscriber();
             env.CompileDeploy("@Name('Default') select * from SupportBean(IntPrimitive = 3)#keepall"); // no listener
 
-            env.CompileDeploy("@Name('StmtMetrics') select * from " + typeof(StatementMetric).Name)
+            env.CompileDeploy("@Name('StmtMetrics') select * from " + typeof(StatementMetric).FullName)
                 .AddListener("StmtMetrics");
 
             SendTimer(env, 6000);

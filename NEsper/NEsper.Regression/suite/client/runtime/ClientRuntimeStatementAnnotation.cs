@@ -93,7 +93,7 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
             Assert.AreEqual(typeof(TagAttribute), annotations[2].GetType());
             Assert.AreEqual("UserId", ((TagAttribute) annotations[2]).Name);
             Assert.AreEqual("value", ((TagAttribute) annotations[2]).Value);
-            Assert.AreEqual("@Tag(name=\"UserId\", value=\"value\")", annotations[2].ToString());
+            Assert.AreEqual("@Tag(Name=\"UserId\", Value=\"value\")", annotations[2].ToString());
 
             Assert.IsFalse(annotations[2].Equals(annotations[1]));
             Assert.IsTrue(annotations[1].Equals(annotations[1]));
@@ -176,7 +176,7 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
 
                 // test array
                 stmtText =
-                    "@MyAnnotationValueArray(value={1,2,3},intArray={4,5},doubleArray={},stringArray={'X'}) @name('s0') select * from SupportBean";
+                    "@MyAnnotationValueArray(value={1,2,3},intArray={4,5},doubleArray={},stringArray={'X'}) @Name('s0') select * from SupportBean";
                 env.CompileDeploy(stmtText);
 
                 Assert.That(() => env.Statement("s0").Annotations, Throws.Nothing);
@@ -360,7 +360,7 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
             private void RunNestedArray(RegressionEnvironment env)
             {
                 var stmtText =
-                    "@MyAnnotationWArrayAndClass(priorities = {@Priority(1), @Priority(3)}, classOne = System.String.class, classTwo = Integer.class) @name('s0') select * from SupportBean";
+                    "@MyAnnotationWArrayAndClass(priorities = {@Priority(1), @Priority(3)}, classOne = System.String.class, classTwo = Integer.class) @Name('s0') select * from SupportBean";
                 env.CompileDeploy(stmtText);
 
                 var annotations = env.Statement("s0").Annotations;
@@ -384,7 +384,7 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
                 string epl;
 
                 epl =
-                    "@Name('MyTestStmt') @Description('MyTestStmt description') @Tag(name=\"UserId\", value=\"value\") select * from SupportBean";
+                    "@Name('MyTestStmt') @Description('MyTestStmt description') @Tag(Name=\"UserId\", Value=\"value\") select * from SupportBean";
                 env.CompileDeploy(epl).AddListener("MyTestStmt");
                 TryAssertion(env.Statement("MyTestStmt"));
                 var name = (NameAttribute) AnnotationUtil.FindAnnotation(
@@ -395,7 +395,7 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
 
                 // try lowercase
                 epl =
-                    "@Name('MyTestStmt') @description('MyTestStmt description') @tag(name=\"UserId\", value=\"value\") select * from SupportBean";
+                    "@Name('MyTestStmt') @description('MyTestStmt description') @tag(Name=\"UserId\", Value=\"value\") select * from SupportBean";
                 env.CompileDeploy(epl).AddListener("MyTestStmt");
                 TryAssertion(env.Statement("MyTestStmt"));
                 env.UndeployAll();
@@ -403,7 +403,7 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
                 // try fully-qualified
                 epl = "@" +
                       typeof(NameAttribute).Name +
-                      "('MyTestStmt') @Description('MyTestStmt description') @Tag(name=\"UserId\", value=\"value\") select * from SupportBean";
+                      "('MyTestStmt') @Description('MyTestStmt description') @Tag(Name=\"UserId\", Value=\"value\") select * from SupportBean";
                 env.CompileDeploy(epl).AddListener("MyTestStmt");
                 TryAssertion(env.Statement("MyTestStmt"));
                 env.UndeployAll();
@@ -416,13 +416,13 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
                 env.CompileDeploy("@Hint('ITERATE_ONLY,DISABLE_RECLAIM_GROUP,ITERATE_ONLY') select * from SupportBean");
                 env.CompileDeploy("@Hint('  iterate_only ') select * from SupportBean");
 
-                var annos = env.CompileDeploy("@Hint('DISABLE_RECLAIM_GROUP') @name('s0') select * from SupportBean")
+                var annos = env.CompileDeploy("@Hint('DISABLE_RECLAIM_GROUP') @Name('s0') select * from SupportBean")
                     .Statement("s0")
                     .Annotations;
                 Assert.AreEqual("DISABLE_RECLAIM_GROUP", HintEnum.DISABLE_RECLAIM_GROUP.GetHint(annos).Value);
 
                 annos = env.CompileDeploy(
-                        "@Hint('ITERATE_ONLY,ITERATE_ONLY,DISABLE_RECLAIM_GROUP,ITERATE_ONLY') @name('s1') select * from SupportBean")
+                        "@Hint('ITERATE_ONLY,ITERATE_ONLY,DISABLE_RECLAIM_GROUP,ITERATE_ONLY') @Name('s1') select * from SupportBean")
                     .Statement("s1")
                     .Annotations;
                 Assert.AreEqual(
@@ -430,19 +430,19 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
                     HintEnum.DISABLE_RECLAIM_GROUP.GetHint(annos).Value);
 
                 annos = env.CompileDeploy(
-                        "@Hint('ITERATE_ONLY,reclaim_group_aged=10') @name('s2') select * from SupportBean")
+                        "@Hint('ITERATE_ONLY,reclaim_group_aged=10') @Name('s2') select * from SupportBean")
                     .Statement("s2")
                     .Annotations;
                 var hint = HintEnum.RECLAIM_GROUP_AGED.GetHint(annos);
                 Assert.AreEqual("10", HintEnum.RECLAIM_GROUP_AGED.GetHintAssignedValue(hint));
 
-                annos = env.CompileDeploy("@Hint('reclaim_group_aged=11') @name('s3') select * from SupportBean")
+                annos = env.CompileDeploy("@Hint('reclaim_group_aged=11') @Name('s3') select * from SupportBean")
                     .Statement("s3")
                     .Annotations;
                 hint = HintEnum.RECLAIM_GROUP_AGED.GetHint(annos);
                 Assert.AreEqual("11", HintEnum.RECLAIM_GROUP_AGED.GetHintAssignedValue(hint));
 
-                annos = env.CompileDeploy("@Hint('index(one, two)') @name('s4') select * from SupportBean")
+                annos = env.CompileDeploy("@Hint('index(one, two)') @Name('s4') select * from SupportBean")
                     .Statement("s4")
                     .Annotations;
                 Assert.AreEqual("one, two", HintEnum.INDEX.GetHintAssignedValues(annos)[0]);
@@ -475,7 +475,7 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
                 string text)
             {
                 env.CompileDeploy(
-                    "@MyAnnotationValueEnum(supportEnum = " + text + ") @name('s0') select * from SupportBean");
+                    "@MyAnnotationValueEnum(supportEnum = " + text + ") @Name('s0') select * from SupportBean");
                 var anno = (MyAnnotationValueEnumAttribute) env.Statement("s0").Annotations[0];
                 Assert.AreEqual(expected, anno.SupportEnum);
                 env.UndeployAll();

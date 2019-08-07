@@ -6,6 +6,9 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
+using System.IO;
+
 using com.espertech.esper.compat;
 using com.espertech.esper.container;
 
@@ -33,13 +36,15 @@ namespace com.espertech.esper.regressionlib.support.util
 
         private static IContainer CreateContainer()
         {
-            var container = ContainerExtensions.CreateDefaultContainer(false);
+            var baseDirectory = AppDomain.CurrentDomain.BaseDirectory;
+
+                var container = ContainerExtensions.CreateDefaultContainer(false);
             container.Register<IResourceManager>(
                 xx => new DefaultResourceManager(
                     true,
-                    @"..\..\..\etc",
-                    @"..\..\..\..\etc",
-                    @"..\..\..\..\..\etc"),
+                    Path.GetFullPath(Path.Combine(baseDirectory, "..", "..", "..", "etc")),
+                    Path.GetFullPath(Path.Combine(baseDirectory, "..", "..", "..", "..", "etc")),
+                    Path.GetFullPath(Path.Combine(baseDirectory, "..", "..", "..", "..", "..", "etc"))),
                 Lifespan.Singleton);
 
             //SupportEventTypeFactory.RegisterSingleton(container);

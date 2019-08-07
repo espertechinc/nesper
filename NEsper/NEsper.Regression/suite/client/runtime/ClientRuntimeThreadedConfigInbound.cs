@@ -100,13 +100,13 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
             var listenerOne = new SupportListenerTimerHRes();
             var listenerTwo = new SupportListenerTimerHRes();
             var listenerThree = new SupportListenerTimerHRes();
-            env.CompileDeploy("@Name('s0') select SupportStaticMethodLib.sleep(100) from MyMap")
+            env.CompileDeploy("@Name('s0') select SupportStaticMethodLib.Sleep(100) from MyMap")
                 .Statement("s0")
                 .AddListener(listenerOne);
-            env.CompileDeploy("@Name('s1') select SupportStaticMethodLib.sleep(100) from SupportBean")
+            env.CompileDeploy("@Name('s1') select SupportStaticMethodLib.Sleep(100) from SupportBean")
                 .Statement("s1")
                 .AddListener(listenerTwo);
-            env.CompileDeploy("@Name('s2') select SupportStaticMethodLib.sleep(100) from XMLType")
+            env.CompileDeploy("@Name('s2') select SupportStaticMethodLib.Sleep(100) from XMLType")
                 .Statement("s2")
                 .AddListener(listenerThree);
 

@@ -208,7 +208,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
         {
             var fields = "c0,c1".SplitCsv();
             var epl =
-                "@Name('s0') @name('s0')select (select TheString as c0, sum(IntPrimitive) as c1 from SupportBean#keepall group by TheString having sum(IntPrimitive) > 10) as subq from SupportBean_S0";
+                "@Name('s0') @Name('s0')select (select TheString as c0, sum(IntPrimitive) as c1 from SupportBean#keepall group by TheString having sum(IntPrimitive) > 10) as subq from SupportBean_S0";
             env.CompileDeployAddListenerMileZero(epl, "s0");
 
             SendSBEventAndTrigger(env, "E1", 10);
