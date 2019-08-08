@@ -51,7 +51,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
                 // - duplicate key allowed, creates a list of values
                 // - null key & value allowed
 
-                var eplFragment = "@Name('s0') select Contained.groupBy(c => Id) as val from SupportBean_ST0_Container";
+                var eplFragment = "@Name('s0') select Contained.groupBy(c -> Id) as val from SupportBean_ST0_Container";
                 env.CompileDeploy(eplFragment).AddListener("s0");
 
                 LambdaAssertionUtil.AssertTypes(
@@ -81,7 +81,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 
                 // test scalar
                 var eplScalar =
-                    "@Name('s0') select Strvals.groupBy(c => extractAfterUnderscore(c)) as val from SupportCollection";
+                    "@Name('s0') select Strvals.groupBy(c -> extractAfterUnderscore(c)) as val from SupportCollection";
                 env.CompileDeploy(eplScalar).AddListener("s0");
                 LambdaAssertionUtil.AssertTypes(
                     env.Statement("s0").EventType,
@@ -112,7 +112,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
             public void Run(RegressionEnvironment env)
             {
                 var eplFragment =
-                    "@Name('s0') select Contained.groupBy(k => Id, v => P00) as val from SupportBean_ST0_Container";
+                    "@Name('s0') select Contained.groupBy(k => Id, v -> P00) as val from SupportBean_ST0_Container";
                 env.CompileDeploy(eplFragment).AddListener("s0");
 
                 EPAssertionUtil.AssertionCollectionValueString extractor = collectionItem => {
@@ -139,7 +139,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 
                 // test scalar
                 var eplScalar =
-                    "@Name('s0') select Strvals.groupBy(k => extractAfterUnderscore(k), v => v) as val from SupportCollection";
+                    "@Name('s0') select Strvals.groupBy(k => extractAfterUnderscore(k), v -> v) as val from SupportCollection";
                 env.CompileDeploy(eplScalar).AddListener("s0");
                 LambdaAssertionUtil.AssertTypes(
                     env.Statement("s0").EventType,

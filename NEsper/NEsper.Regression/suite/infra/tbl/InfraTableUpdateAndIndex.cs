@@ -137,7 +137,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 catch (EPCompileException ex) {
                     SupportMessageAssertUtil.AssertMessage(
                         ex.InnerException,
-                        "ValIdation failed in when-matched (clause 1): On-merge statements may not update unique keys of tables");
+                        "Validation failed in when-matched (clause 1): On-merge statements may not update unique keys of tables");
                 }
 
                 env.UndeployAll();

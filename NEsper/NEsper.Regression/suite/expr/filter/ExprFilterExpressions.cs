@@ -754,8 +754,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                 env.EplToModelCompileDeploy(epl);
                 EPAssertionUtil.AssertEqualsExactOrder(
                     new[] {
-                        "intBoxed is null", "intBoxed is not null",
-                        "intBoxed=1", "intBoxed!=1"
+                        "IntBoxed is null", "IntBoxed is not null",
+                        "IntBoxed=1", "IntBoxed!=1"
                     },
                     env.Statement("s0").EventType.PropertyNames);
                 env.UndeployAll();
@@ -769,7 +769,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                 var epl = "@Name('s0') select * from \n" +
                           "pattern [ \n" +
                           " every start_load=SupportBeanArrayCollMap \n" +
-                          " => \n" +
+                          " -> \n" +
                           " single_load=SupportBean(TheString in (start_load.setOfString)) \n" +
                           "]";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
@@ -967,7 +967,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@Name('s0') select * from pattern [SupportBeanWithEnum(supportEnum=" +
+                var epl = "@Name('s0') select * from pattern [SupportBeanWithEnum(SupportEnum=" +
                           typeof(SupportEnum).FullName +
                           ".ValueOf('ENUM_VALUE_1'))]";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
@@ -988,7 +988,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@Name('s0') select * from pattern [SupportBeanWithEnum(supportEnum=" +
+                var epl = "@Name('s0') select * from pattern [SupportBeanWithEnum(SupportEnum=" +
                           typeof(SupportEnum).FullName +
                           ".ENUM_VALUE_2)]";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
@@ -1004,7 +1004,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                 env.UndeployAll();
 
                 // test where clause
-                epl = "@Name('s0') select * from SupportBeanWithEnum where supportEnum=" +
+                epl = "@Name('s0') select * from SupportBeanWithEnum where SupportEnum=" +
                       typeof(SupportEnum).FullName +
                       ".ENUM_VALUE_2";
                 env.CompileDeployAddListenerMile(epl, "s0", 1);
@@ -1029,8 +1029,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                 var milestone = new AtomicLong();
 
                 text = "select * from pattern [" +
-                       "a=SupportBean => " +
-                       "b=SupportBean => " +
+                       "a=SupportBean -> " +
+                       "b=SupportBean -> " +
                        "c=SupportBean(IntBoxed=a.IntBoxed, IntBoxed=b.IntBoxed and IntBoxed != null)]";
                 TryPattern3Stream(
                     env,
@@ -1045,8 +1045,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                     new[] {false, false, false, false, false, false, false});
 
                 text = "select * from pattern [" +
-                       "a=SupportBean => " +
-                       "b=SupportBean => " +
+                       "a=SupportBean -> " +
+                       "b=SupportBean -> " +
                        "c=SupportBean(IntBoxed is a.IntBoxed, IntBoxed is b.IntBoxed and IntBoxed is not null)]";
                 TryPattern3Stream(
                     env,
@@ -1061,8 +1061,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                     new[] {false, false, true, false, false, false, false});
 
                 text = "select * from pattern [" +
-                       "a=SupportBean => " +
-                       "b=SupportBean => " +
+                       "a=SupportBean -> " +
+                       "b=SupportBean -> " +
                        "c=SupportBean(IntBoxed=a.IntBoxed or IntBoxed=b.IntBoxed)]";
                 TryPattern3Stream(
                     env,
@@ -1077,8 +1077,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                     new[] {false, true, true, true, false, false, false});
 
                 text = "select * from pattern [" +
-                       "a=SupportBean => " +
-                       "b=SupportBean => " +
+                       "a=SupportBean -> " +
+                       "b=SupportBean -> " +
                        "c=SupportBean(IntBoxed=a.IntBoxed, IntBoxed=b.IntBoxed)]";
                 TryPattern3Stream(
                     env,
@@ -1093,8 +1093,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                     new[] {false, false, true, false, false, false, false});
 
                 text = "select * from pattern [" +
-                       "a=SupportBean => " +
-                       "b=SupportBean => " +
+                       "a=SupportBean -> " +
+                       "b=SupportBean -> " +
                        "c=SupportBean(IntBoxed!=a.IntBoxed, IntBoxed!=b.IntBoxed)]";
                 TryPattern3Stream(
                     env,
@@ -1109,8 +1109,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                     new[] {false, false, false, false, false, true, false});
 
                 text = "select * from pattern [" +
-                       "a=SupportBean => " +
-                       "b=SupportBean => " +
+                       "a=SupportBean -> " +
+                       "b=SupportBean -> " +
                        "c=SupportBean(IntBoxed!=a.IntBoxed)]";
                 TryPattern3Stream(
                     env,
@@ -1125,8 +1125,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                     new[] {false, false, false, true, false, false, true});
 
                 text = "select * from pattern [" +
-                       "a=SupportBean => " +
-                       "b=SupportBean => " +
+                       "a=SupportBean -> " +
+                       "b=SupportBean -> " +
                        "c=SupportBean(IntBoxed is not a.IntBoxed)]";
                 TryPattern3Stream(
                     env,
@@ -1141,8 +1141,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                     new[] {true, true, false, true, false, true, true});
 
                 text = "select * from pattern [" +
-                       "a=SupportBean => " +
-                       "b=SupportBean => " +
+                       "a=SupportBean -> " +
+                       "b=SupportBean -> " +
                        "c=SupportBean(IntBoxed=a.IntBoxed, DoubleBoxed=b.DoubleBoxed)]";
                 TryPattern3Stream(
                     env,
@@ -1157,8 +1157,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                     new[] {true, false, false, true, false, true, false});
 
                 text = "select * from pattern [" +
-                       "a=SupportBean => " +
-                       "b=SupportBean => " +
+                       "a=SupportBean -> " +
+                       "b=SupportBean -> " +
                        "c=SupportBean(IntBoxed in (a.IntBoxed, b.IntBoxed))]";
                 TryPattern3Stream(
                     env,
@@ -1173,8 +1173,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                     new[] {true, true, false, false, true, false, false});
 
                 text = "select * from pattern [" +
-                       "a=SupportBean => " +
-                       "b=SupportBean => " +
+                       "a=SupportBean -> " +
+                       "b=SupportBean -> " +
                        "c=SupportBean(IntBoxed in [a.IntBoxed:b.IntBoxed])]";
                 TryPattern3Stream(
                     env,
@@ -1189,8 +1189,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                     new[] {true, true, false, false, false, false, false});
 
                 text = "select * from pattern [" +
-                       "a=SupportBean => " +
-                       "b=SupportBean => " +
+                       "a=SupportBean -> " +
+                       "b=SupportBean -> " +
                        "c=SupportBean(IntBoxed not in [a.IntBoxed:b.IntBoxed])]";
                 TryPattern3Stream(
                     env,
@@ -1626,11 +1626,11 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
             {
                 var milestone = new AtomicLong();
 
-                var text = "@Name('s0') select * from pattern [every a=SupportBean => " +
+                var text = "@Name('s0') select * from pattern [every a=SupportBean -> " +
                            "b=SupportMarketDataBean(a.LongBoxed=Volume*2)]";
                 TryPatternWithExpr(env, text, milestone);
 
-                text = "@Name('s0') select * from pattern [every a=SupportBean => " +
+                text = "@Name('s0') select * from pattern [every a=SupportBean -> " +
                        "b=SupportMarketDataBean(Volume*2=a.LongBoxed)]";
                 TryPatternWithExpr(env, text, milestone);
             }
@@ -1717,7 +1717,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
             {
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
-                    "select * from pattern [every a=SupportBean => " +
+                    "select * from pattern [every a=SupportBean -> " +
                     "b=SupportMarketDataBean(sum(a.LongBoxed) = 2)]",
                     "Aggregation functions not allowed within filters [");
 
@@ -1745,8 +1745,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
 
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
-                    "select * from SupportBeanWithEnum(supportEnum=A.b)",
-                    "Failed to validate filter expression 'supportEnum=A.b': Failed to resolve property 'A.b' to a stream or nested property in a stream [");
+                    "select * from SupportBeanWithEnum(SupportEnum=A.b)",
+                    "Failed to validate filter expression 'SupportEnum=A.b': Failed to resolve property 'A.b' to a stream or nested property in a stream [");
 
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
@@ -1759,7 +1759,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                     env,
                     "select * from pattern [a=SupportBean" +
                     " -> b=SupportBean(cluedo.IntPrimitive=a.IntPrimitive)" +
-                    " => c=SupportBean" +
+                    " -> c=SupportBean" +
                     "]",
                     "Failed to validate filter expression 'cluedo.IntPrimitive=a.IntPrimitive': Failed to resolve property 'cluedo.IntPrimitive' to a stream or nested property in a stream [");
             }
@@ -1804,7 +1804,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
             {
                 var text = "@Name('s0') select * from SupportBeanComplexProps(simpleProperty='1')#keepall as s0" +
                            ", SupportBeanComplexProps(simpleProperty='2')#keepall as s1" +
-                           " where s0.nested = s1.nested";
+                           " where s0.Nested = s1.Nested";
                 env.CompileDeploy(text).AddListener("s0");
 
                 var eventOne = SupportBeanComplexProps.MakeDefaultBean();

@@ -622,15 +622,15 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
                 TryInvalidCompile(
                     env,
                     "select window(*) from SupportBean x",
-                    "Failed to validate select-clause expression 'window(*)': The 'window' aggregation function requires that the aggregated events provIde a remove stream; Please define a data window onto the stream or use 'firstever', 'lastever' or 'nth' instead [select window(*) from SupportBean x]");
+                    "Failed to validate select-clause expression 'window(*)': The 'window' aggregation function requires that the aggregated events provide a remove stream; Please define a data window onto the stream or use 'firstever', 'lastever' or 'nth' instead [select window(*) from SupportBean x]");
                 TryInvalidCompile(
                     env,
                     "select window(x.*) from SupportBean x",
-                    "Failed to validate select-clause expression 'window(x.*)': The 'window' aggregation function requires that the aggregated events provIde a remove stream; Please define a data window onto the stream or use 'firstever', 'lastever' or 'nth' instead [select window(x.*) from SupportBean x]");
+                    "Failed to validate select-clause expression 'window(x.*)': The 'window' aggregation function requires that the aggregated events provide a remove stream; Please define a data window onto the stream or use 'firstever', 'lastever' or 'nth' instead [select window(x.*) from SupportBean x]");
                 TryInvalidCompile(
                     env,
                     "select window(x.IntPrimitive) from SupportBean x",
-                    "Failed to validate select-clause expression 'window(x.IntPrimitive)': The 'window' aggregation function requires that the aggregated events provIde a remove stream; Please define a data window onto the stream or use 'firstever', 'lastever' or 'nth' instead [select window(x.IntPrimitive) from SupportBean x]");
+                    "Failed to validate select-clause expression 'window(x.IntPrimitive)': The 'window' aggregation function requires that the aggregated events provide a remove stream; Please define a data window onto the stream or use 'firstever', 'lastever' or 'nth' instead [select window(x.IntPrimitive) from SupportBean x]");
 
                 TryInvalidCompile(
                     env,

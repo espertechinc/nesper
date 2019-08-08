@@ -133,7 +133,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                     path);
                 env.CompileDeploy("insert into PositionW select * from SupportBean", path);
                 env.CompileDeploy(
-                    "@Name('s1') insert into Foo select * from pattern[every a = PositionW => every b = PositionW]",
+                    "@Name('s1') insert into Foo select * from pattern[every a = PositionW -> every b = PositionW]",
                     path);
                 env.AddListener("s1").Milestone(0);
 

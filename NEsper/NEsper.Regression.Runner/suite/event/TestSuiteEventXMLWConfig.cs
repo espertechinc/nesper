@@ -9,7 +9,7 @@
 using System.Xml.XPath;
 
 using com.espertech.esper.common.client.configuration.common;
-using com.espertech.esper.regressionrun.runner;
+using com.espertech.esper.regressionrun.Runner;
 
 using NUnit.Framework;
 

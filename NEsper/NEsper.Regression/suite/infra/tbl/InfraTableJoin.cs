@@ -222,7 +222,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                     path);
                 env.CompileDeploy(
                         "@Name('s0') select total as value from SupportBean_S0 as s0, varaggFC as va " +
-                        "where va.key = s0.P00",
+                        "where va.Key = s0.P00",
                         path)
                     .AddListener("s0");
 

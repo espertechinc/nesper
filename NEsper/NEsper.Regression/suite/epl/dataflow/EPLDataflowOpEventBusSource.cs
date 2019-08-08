@@ -43,7 +43,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
         {
             env.CompileDeploy(
                 "@Name('flow') create dataflow MyDataFlowOne " +
-                "EventBusSource => ReceivedStream<" +
+                "EventBusSource -> ReceivedStream<" +
                 typeName +
                 "> {} " +
                 "DefaultSupportCaptureOp(ReceivedStream) {}");
@@ -92,7 +92,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
         {
             env.CompileDeploy(
                 "@Name('flow') create dataflow MyDataFlowOne " +
-                "EventBusSource => ReceivedStream<" +
+                "EventBusSource -> ReceivedStream<" +
                 (underlying ? "MyEventOA" : "EventBean<MyEventOA>") +
                 "> {} " +
                 "DefaultSupportCaptureOp(ReceivedStream) {}",
@@ -152,7 +152,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 // invalid: type not found
                 TryInvalidCompile(
                     env,
-                    "create dataflow DF1 EventBusSource => ABC {}",
+                    "create dataflow DF1 EventBusSource -> ABC {}",
                     "Failed to obtain operator 'EventBusSource': EventBusSource operator requires an event type declated for the output stream");
 
                 // test doc samples
@@ -162,17 +162,17 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                           "\n" +
                           "  // Receive all SampleSchema events from the event bus.\n" +
                           "  // No transformation.\n" +
-                          "  EventBusSource => stream.one<SampleSchema> {}\n" +
+                          "  EventBusSource -> stream.one<SampleSchema> {}\n" +
                           "  \n" +
                           "  // Receive all SampleSchema events with tag Id '001' from the event bus.\n" +
                           "  // No transformation.\n" +
-                          "  EventBusSource => stream.one<SampleSchema> {\n" +
+                          "  EventBusSource -> stream.one<SampleSchema> {\n" +
                           "    filter : tagId = '001'\n" +
                           "  }\n" +
                           "\n" +
                           "  // Receive all SampleSchema events from the event bus.\n" +
                           "  // With collector that performs transformation.\n" +
-                          "  EventBusSource => stream.two<SampleSchema> {\n" +
+                          "  EventBusSource -> stream.two<SampleSchema> {\n" +
                           "    collector : {\n" +
                           "      class : '" +
                           typeof(MyDummyCollector).Name +
@@ -201,7 +201,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 // test collector
                 env.CompileDeploy(
                     "@Name('flow') create dataflow MyDataFlowOne " +
-                    "EventBusSource => ReceivedStream<MyEventOA> {filter: p0 like 'A%'} " +
+                    "EventBusSource -> ReceivedStream<MyEventOA> {filter: p0 like 'A%'} " +
                     "DefaultSupportCaptureOp(ReceivedStream) {}",
                     path);
 

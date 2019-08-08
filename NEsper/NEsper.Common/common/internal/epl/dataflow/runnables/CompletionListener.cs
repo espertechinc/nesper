@@ -6,7 +6,7 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-namespace com.espertech.esper.common.@internal.epl.dataflow.runnables
+namespace com.espertech.esper.common.@internal.epl.dataflow.Runnables
 {
     public delegate void CompletionListener();
 }

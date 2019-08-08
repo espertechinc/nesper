@@ -6,32 +6,20 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
-
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
-
 namespace com.espertech.esper.common.@internal.epl.pattern.pool
 {
     public class PatternSubexpressionPoolStmtSvc
     {
-        private readonly PatternSubexpressionPoolRuntimeSvc runtimeSvc;
-        private readonly PatternSubexpressionPoolStmtHandler stmtHandler;
-
         public PatternSubexpressionPoolStmtSvc(
             PatternSubexpressionPoolRuntimeSvc runtimeSvc,
             PatternSubexpressionPoolStmtHandler stmtHandler)
         {
-            this.runtimeSvc = runtimeSvc;
-            this.stmtHandler = stmtHandler;
+            RuntimeSvc = runtimeSvc;
+            StmtHandler = stmtHandler;
         }
 
-        public PatternSubexpressionPoolRuntimeSvc RuntimeSvc {
-            get => runtimeSvc;
-        }
+        public PatternSubexpressionPoolRuntimeSvc RuntimeSvc { get; }
 
-        public PatternSubexpressionPoolStmtHandler StmtHandler {
-            get => stmtHandler;
-        }
+        public PatternSubexpressionPoolStmtHandler StmtHandler { get; }
     }
 } // end of namespace

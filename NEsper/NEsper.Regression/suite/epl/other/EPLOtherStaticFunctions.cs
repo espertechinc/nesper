@@ -400,10 +400,10 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
         {
             public void Run(RegressionEnvironment env)
             {
-                var statementText = "@Name('s0') select Math.max(2,3) " + STREAM_MDB_LEN5;
+                var statementText = "@Name('s0') select Math.Max(2,3) " + STREAM_MDB_LEN5;
                 env.CompileDeploy(statementText).AddListener("s0");
 
-                Assert.AreEqual(3, AssertStatementAndGetProperty(env, true, "Math.max(2,3)")[0]);
+                Assert.AreEqual(3, AssertStatementAndGetProperty(env, true, "Math.Max(2,3)")[0]);
                 env.UndeployAll();
 
                 statementText = "@Name('s0') select System.Math.Max(2,3d) " + STREAM_MDB_LEN5;
@@ -492,10 +492,10 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
         {
             public void Run(RegressionEnvironment env)
             {
-                var statementText = "@Name('s0') select Math.max(2d,Price), Math.max(Volume,4d)" + STREAM_MDB_LEN5;
+                var statementText = "@Name('s0') select Math.Max(2d,Price), Math.Max(Volume,4d)" + STREAM_MDB_LEN5;
                 env.CompileDeploy(statementText).AddListener("s0");
 
-                var props = AssertStatementAndGetProperty(env, true, "Math.max(2.0,Price)", "Math.max(Volume,4.0)");
+                var props = AssertStatementAndGetProperty(env, true, "Math.Max(2.0,Price)", "Math.Max(Volume,4.0)");
                 Assert.AreEqual(10d, props[0]);
                 Assert.AreEqual(4d, props[1]);
                 env.UndeployAll();

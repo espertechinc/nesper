@@ -210,7 +210,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                 env.SendEventBean(new SupportBean("Z", 0));
 
                 var epl =
-                    "@Name('s0') on pattern[every e = SupportBean(TheString = 'A') => SupportBean(IntPrimitive = e.IntPrimitive)] select * from MyWindow";
+                    "@Name('s0') on pattern[every e = SupportBean(TheString = 'A') -> SupportBean(IntPrimitive = e.IntPrimitive)] select * from MyWindow";
                 env.CompileDeploy(epl, path).AddListener("s0");
 
                 env.Milestone(0);

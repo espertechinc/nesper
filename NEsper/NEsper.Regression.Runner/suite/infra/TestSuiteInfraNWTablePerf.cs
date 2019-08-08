@@ -11,7 +11,7 @@ using System;
 using com.espertech.esper.common.client.configuration;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.regressionlib.suite.infra.nwtable;
-using com.espertech.esper.regressionrun.runner;
+using com.espertech.esper.regressionrun.Runner;
 
 using NUnit.Framework;
 
@@ -48,7 +48,7 @@ namespace com.espertech.esper.regressionrun.suite.infra
             {
                 configuration.Common.AddEventType(clazz);
             }
-            configuration.Compiler.AddPlugInSingleRowFunction("justCount", typeof(InfraNWTableFAFIndexPerfWNoQueryPlanLog.InvocationCounter), "justCount");
+            configuration.Compiler.AddPlugInSingleRowFunction("justCount", typeof(InfraNWTableFAFIndexPerfWNoQueryPlanLog.InvocationCounter), "JustCount");
         }
     }
 } // end of namespace

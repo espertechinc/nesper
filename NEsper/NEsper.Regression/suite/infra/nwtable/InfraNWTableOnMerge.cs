@@ -771,7 +771,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 }
                 else if (useColumnNames) {
                     epl =
-                        "@Name('on') on SupportBean as provIder merge InsertOnlyInfra insert(p0, p1) select provIder.TheString, IntPrimitive";
+                        "@Name('on') on SupportBean as provider merge InsertOnlyInfra insert(p0, p1) select provider.TheString, IntPrimitive";
                 }
                 else {
                     epl =
@@ -876,7 +876,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                     ? "create window MyInfraTwo#unique(Id) as select * from TypeOne;\n"
                     : "create table MyInfraTwo (Id long, mylong long, mystring long);\n";
                 // The "and not matched" should not complain if "mystring" is ambiguous.
-                // The "insert" should not complain as column names have been provIded.
+                // The "insert" should not complain as column names have been provided.
                 epl += "on TypeOne as t1 merge MyInfraTwo nm where nm.Id = t1.Id\n" +
                        "  when not matched and mystring = 0 then insert select *\n" +
                        "  when not matched then insert (Id, mylong, mystring) select 0L, 0L, 0L\n";
@@ -1069,7 +1069,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                     env,
                     path,
                     epl,
-                    "On-Merge not-matched filter expression may not use properties that are provIded by the named window event [on SupportBean_A merge MergeInfra as windowevent where Id = TheString when not matched and exists(select * from MergeInfra mw where mw.TheString = windowevent.TheString) is not null then insert into ABC select '1']");
+                    "On-Merge not-matched filter expression may not use properties that are provided by the named window event [on SupportBean_A merge MergeInfra as windowevent where Id = TheString when not matched and exists(select * from MergeInfra mw where mw.TheString = windowevent.TheString) is not null then insert into ABC select '1']");
 
                 epl = "on SupportBean_A as up merge ABCInfra as mv when not matched then insert (col) select 1";
                 if (namedWindow) {
@@ -1077,14 +1077,14 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                         env,
                         path,
                         epl,
-                        "ValIdation failed in when-not-matched (clause 1): Event type named 'ABCInfra' has already been declared with differing column name or type information: The property 'val' is not provIded but required [on SupportBean_A as up merge ABCInfra as mv when not matched then insert (col) select 1]");
+                        "Validation failed in when-not-matched (clause 1): Event type named 'ABCInfra' has already been declared with differing column name or type information: The property 'val' is not provided but required [on SupportBean_A as up merge ABCInfra as mv when not matched then insert (col) select 1]");
                 }
                 else {
                     SupportMessageAssertUtil.TryInvalidCompile(
                         env,
                         path,
                         epl,
-                        "ValIdation failed in when-not-matched (clause 1): Column 'col' could not be assigned to any of the properties of the underlying type (missing column names, event property, setter method or constructor?) [");
+                        "Validation failed in when-not-matched (clause 1): Column 'col' could not be assigned to any of the properties of the underlying type (missing column names, event property, setter method or constructor?) [");
                 }
 
                 epl =
@@ -1093,7 +1093,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                     env,
                     path,
                     epl,
-                    "Incorrect syntax near 'update' (a reserved keyword) expecting 'insert' but found 'update' at line 1 column 9");
+                    "Incorrect syntax near 'Update' (a reserved keyword) expecting 'insert' but found 'Update' at line 1 column 9");
 
                 if (namedWindow) {
                     epl =
@@ -1102,7 +1102,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                         env,
                         path,
                         epl,
-                        "ValIdation failed in when-not-matched (clause 1): Expression-returned event type 'SupportBean_A' with underlying type '" +
+                        "Validation failed in when-not-matched (clause 1): Expression-returned event type 'SupportBean_A' with underlying type '" +
                         typeof(SupportBean_A).Name +
                         "' cannot be converted to target event type 'MergeInfra' with underlying type '" +
                         typeof(SupportBean).Name +

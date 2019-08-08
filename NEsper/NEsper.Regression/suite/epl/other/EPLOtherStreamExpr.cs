@@ -58,8 +58,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
 
                 // test property hosts a method
                 env.CompileDeploy(
-                        "@Name('s0') select insIde.getMyString() as val," +
-                        "insIde.insIdeTwo.getMyOtherString() as val2 " +
+                        "@Name('s0') select inside.getMyString() as val," +
+                        "inside.insideTwo.getMyOtherString() as val2 " +
                         "from SupportBeanStaticOuter")
                     .AddListener("s0");
 
@@ -296,7 +296,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             public void Run(RegressionEnvironment env)
             {
                 // try with alias
-                var textOne = "@Name('s0') select * from pattern [every e1=SupportMarketDataBean => e2=" +
+                var textOne = "@Name('s0') select * from pattern [every e1=SupportMarketDataBean -> e2=" +
                               "SupportBean(" +
                               typeof(SupportStaticMethodLib).Name +
                               ".compareEvents(e1, e2))]";

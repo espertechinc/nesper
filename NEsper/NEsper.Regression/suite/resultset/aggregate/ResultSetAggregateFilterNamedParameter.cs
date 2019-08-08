@@ -527,7 +527,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
                     "select sum(IntPrimitive, IntPrimitive > 0, filter:IntPrimitive < 0) from SupportBean",
-                    "Failed to validate select-clause expression 'sum(IntPrimitive,IntPrimitive>0,fil...(54 chars)': Only a single filter expression can be provIded");
+                    "Failed to validate select-clause expression 'sum(IntPrimitive,IntPrimitive>0,fil...(54 chars)': Only a single filter expression can be provided");
 
                 // invalid filter expression name parameter: not returning boolean
                 SupportMessageAssertUtil.TryInvalidCompile(

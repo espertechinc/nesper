@@ -78,7 +78,7 @@ namespace com.espertech.esper.compat
         public static Type GetBoxedType(this Type type)
         {
             if (type == null) return null;
-            if (type == typeof(void)) return null;
+            if (type == typeof(void)) return typeof(void);
             if (type == typeof(int) || type == typeof(int?)) return typeof(int?);
             if (type == typeof(long) || type == typeof(long?)) return typeof(long?);
             if (type == typeof(bool) || type == typeof(bool?)) return typeof(bool?);

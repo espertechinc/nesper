@@ -49,7 +49,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
                 var stmtText = "@Name('s0') select TheString as c0, sum(IntPrimitive) as c1 " +
                                "from SupportBean#groupwin(TheString)#length(2) as sb " +
                                "group by TheString " +
-                               "having sum(IntPrimitive) > (select maxAmount from MyInfra as mw where sb.TheString = mw.key)";
+                               "having sum(IntPrimitive) > (select maxAmount from MyInfra as mw where sb.TheString = mw.Key)";
                 env.CompileDeploy(stmtText, path).AddListener("s0");
 
                 var fields = "c0,c1".SplitCsv();

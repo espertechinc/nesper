@@ -258,7 +258,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             {
                 var stmtText = "@Name('s0') select irstream a.Id as IdA, b.Id as IdB, " +
                                "a.P00 as P00A, b.P00 as P00B from pattern [every a=SupportBean_S0" +
-                               " => every b=SupportBean_S0(P00=a.P00)]#time(1)";
+                               " -> every b=SupportBean_S0(P00=a.P00)]#time(1)";
                 env.CompileDeploy(stmtText).AddListener("s0");
                 env.AdvanceTime(0);
 

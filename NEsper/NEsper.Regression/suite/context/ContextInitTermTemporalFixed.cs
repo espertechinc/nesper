@@ -487,8 +487,8 @@ namespace com.espertech.esper.regressionlib.suite.context
 
                 env.CompileDeploy(
                     "create context EveryNowAndThen as " +
-                    "start pattern [s0=SupportBean_S0 => timer:interval(1 sec)] " +
-                    "end pattern [s1=SupportBean_S1 => timer:interval(1 sec)]",
+                    "start pattern [s0=SupportBean_S0 -> timer:interval(1 sec)] " +
+                    "end pattern [s1=SupportBean_S1 -> timer:interval(1 sec)]",
                     path);
 
                 var fields = "c1,c2".SplitCsv();

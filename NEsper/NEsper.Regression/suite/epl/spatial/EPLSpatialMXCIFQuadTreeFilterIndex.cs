@@ -122,7 +122,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.spatial
             public void Run(RegressionEnvironment env)
             {
                 var epl = "@Name('out') expression myindex {mxcifquadtree(0, 0, 100, 100)}" +
-                          "select p.Id as c0 from pattern [every p=SupportSpatialEventRectangle => every SupportSpatialAABB(rectangle(p.x, p.y, p.width, p.height, filterindex:myindex).intersects(rectangle(x, y, width, height)))]";
+                          "select p.Id as c0 from pattern [every p=SupportSpatialEventRectangle -> every SupportSpatialAABB(rectangle(p.x, p.y, p.width, p.height, filterindex:myindex).intersects(rectangle(x, y, width, height)))]";
                 env.CompileDeploy(epl).AddListener("out");
                 env.Milestone(0);
 
@@ -149,7 +149,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.spatial
             {
                 env.CompileDeploy(
                     "@Name('s0') expression myindex {mxcifquadtree(0, 0, 100, 100)}" +
-                    "select * from pattern [every p=SupportSpatialEventRectangle => SupportSpatialAABB(rectangle(p.x, p.y, p.width, p.height, filterindex:myindex).intersects(rectangle(x, y, width, height)))]");
+                    "select * from pattern [every p=SupportSpatialEventRectangle -> SupportSpatialAABB(rectangle(p.x, p.y, p.width, p.height, filterindex:myindex).intersects(rectangle(x, y, width, height)))]");
                 env.AddListener("s0");
 
                 SendSpatialEventRectanges(env, 100, 50);

@@ -39,7 +39,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
             env.CompileDeploy("insert into MyWindow select * from SupportBean_S0", path);
 
             var epl =
-                "select * from pattern[SupportBean_S0 => SupportBean(not exists (select * from MyWindow mw where mw.P00 = 'E'))]";
+                "select * from pattern[SupportBean_S0 -> SupportBean(not exists (select * from MyWindow mw where mw.P00 = 'E'))]";
             env.CompileDeploy(epl, path);
             env.SendEventBean(new SupportBean_S0(1));
 

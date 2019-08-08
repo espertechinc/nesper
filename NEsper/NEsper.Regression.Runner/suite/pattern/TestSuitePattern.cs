@@ -17,7 +17,7 @@ using com.espertech.esper.regressionlib.suite.pattern;
 using com.espertech.esper.regressionlib.support.bean;
 using com.espertech.esper.regressionlib.support.client;
 using com.espertech.esper.regressionlib.support.epl;
-using com.espertech.esper.regressionrun.runner;
+using com.espertech.esper.regressionrun.Runner;
 
 using NUnit.Framework;
 
@@ -271,7 +271,7 @@ namespace com.espertech.esper.regressionrun.suite.pattern
                 "getThe1980LocalDateTime",
                 "getThe1980ZonedDateTime"))
             {
-                configuration.Compiler.AddPlugInSingleRowFunction(name, typeof(PatternObserverTimerSchedule), name);
+                configuration.Compiler.AddPlugInSingleRowFunction(name, typeof(PatternObserverTimerSchedule), char.ToUpper(name[0]) + name.Substring(1));
             }
 
             ConfigurationCommon common = configuration.Common;

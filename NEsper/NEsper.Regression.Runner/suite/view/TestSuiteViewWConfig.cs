@@ -15,7 +15,7 @@ using com.espertech.esper.compat.datetime;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.suite.view;
 using com.espertech.esper.regressionlib.support.bean;
-using com.espertech.esper.regressionrun.runner;
+using com.espertech.esper.regressionrun.Runner;
 
 using NUnit.Framework;
 

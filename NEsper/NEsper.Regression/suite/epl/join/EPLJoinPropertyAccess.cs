@@ -33,7 +33,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                 var complex = SupportBeanComplexProps.MakeDefaultBean();
                 Assert.AreEqual("0ma0", combined.GetIndexed(0).GetMapped("0ma").Value);
 
-                var epl = "@Name('s0') select nested.nested, s1.indexed[0], nested.indexed[1] from " +
+                var epl = "@Name('s0') select nested.Nested, s1.indexed[0], nested.indexed[1] from " +
                           "SupportBeanComplexProps#length(3) nested, " +
                           "SupportBeanCombinedProps#length(3) s1" +
                           " where mapped('keyOne') = indexed[2].mapped('2ma').Value and" +
@@ -44,7 +44,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                 env.SendEventBean(complex);
 
                 var theEvent = env.Listener("s0").GetAndResetLastNewData()[0];
-                Assert.AreSame(complex.Nested, theEvent.Get("nested.nested"));
+                Assert.AreSame(complex.Nested, theEvent.Get("nested.Nested"));
                 Assert.AreSame(combined.GetIndexed(0), theEvent.Get("s1.indexed[0]"));
                 Assert.AreEqual(complex.GetIndexed(1), theEvent.Get("nested.indexed[1]"));
 

@@ -23,9 +23,9 @@ namespace com.espertech.esper.regressionlib.suite.pattern
             EventExpressionCase testCase;
 
             testCase = new EventExpressionCase(
-                "(b=SupportBean_B => d=SupportBean_D) " +
+                "(b=SupportBean_B -> d=SupportBean_D) " +
                 " and " +
-                "(a=SupportBean_A => e=SupportBean_E)"
+                "(a=SupportBean_A -> e=SupportBean_E)"
             );
             testCase.Add(
                 "E1",
@@ -39,7 +39,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 events.GetEvent("E1"));
             testCaseList.AddTest(testCase);
 
-            testCase = new EventExpressionCase("b=SupportBean_B => (d=SupportBean_D() or a=SupportBean_A)");
+            testCase = new EventExpressionCase("b=SupportBean_B -> (d=SupportBean_D() or a=SupportBean_A)");
             testCase.Add("A2", "b", events.GetEvent("B1"), "a", events.GetEvent("A2"));
             testCaseList.AddTest(testCase);
 
@@ -50,17 +50,17 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 Patterns.Or(Patterns.Filter("SupportBean_D", "d"), Patterns.Filter("SupportBean_A", "a")));
             model.FromClause = FromClause.Create(PatternStream.Create(pattern));
             model = env.CopyMayFail(model);
-            var text = "select * from pattern [b=SupportBean_B => d=SupportBean_D or a=SupportBean_A]";
+            var text = "select * from pattern [b=SupportBean_B -> d=SupportBean_D or a=SupportBean_A]";
             Assert.AreEqual(text, model.ToEPL());
             testCase = new EventExpressionCase(model);
             testCase.Add("A2", "b", events.GetEvent("B1"), "a", events.GetEvent("A2"));
             testCaseList.AddTest(testCase);
 
             testCase = new EventExpressionCase(
-                "b=SupportBean_B() => (" +
-                "(d=SupportBean_D() => a=SupportBean_A())" +
+                "b=SupportBean_B() -> (" +
+                "(d=SupportBean_D() -> a=SupportBean_A())" +
                 " or " +
-                "(a=SupportBean_A() => e=SupportBean_E()))"
+                "(a=SupportBean_A() -> e=SupportBean_E()))"
             );
             testCase.Add("E1", "b", events.GetEvent("B1"), "a", events.GetEvent("A2"), "e", events.GetEvent("E1"));
             testCaseList.AddTest(testCase);
@@ -69,7 +69,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
             testCase.Add("A1", "a", events.GetEvent("A1"));
             testCaseList.AddTest(testCase);
 
-            testCase = new EventExpressionCase("(b=SupportBean_B() => d=SupportBean_D()) or a=SupportBean_A");
+            testCase = new EventExpressionCase("(b=SupportBean_B() -> d=SupportBean_D()) or a=SupportBean_A");
             testCase.Add("A1", "a", events.GetEvent("A1"));
             testCaseList.AddTest(testCase);
 

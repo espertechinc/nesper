@@ -33,7 +33,7 @@ namespace com.espertech.esper.common.@internal.epl.join.querygraph
         {
             queryGraph = new QueryGraphForge(3, null, false);
             types = new EventType[] {
-                supportEventTypeFactory.CreateMapType(CreateType("p0,P00,P01,p02")),
+                supportEventTypeFactory.CreateMapType(CreateType("p0,P00,P01,P02")),
                 supportEventTypeFactory.CreateMapType(CreateType("p1,P10,P11,p12")),
                 supportEventTypeFactory.CreateMapType(CreateType("p2,P20,P21")),
                 supportEventTypeFactory.CreateMapType(CreateType("p3,P30,p31")),
@@ -180,11 +180,11 @@ namespace com.espertech.esper.common.@internal.epl.join.querygraph
         {
             // s1.p11 = s0.p01 and s0.p02 = s1.p12
             queryGraph.AddStrictEquals(1, "P11", Make(1, "P11"), 0, "P01", Make(0, "P01"));
-            queryGraph.AddStrictEquals(0, "p02", Make(0, "p02"), 1, "p12", Make(1, "p12"));
+            queryGraph.AddStrictEquals(0, "P02", Make(0, "P02"), 1, "p12", Make(1, "p12"));
             log.Debug(queryGraph.ToString());
 
             string[] expectedOne = new string[] { "P11", "p12" };
-            string[] expectedTwo = new string[] { "P01", "p02" };
+            string[] expectedTwo = new string[] { "P01", "P02" };
             Assert.IsTrue(Arrays.Equals(expectedTwo, SupportQueryGraphTestUtil.GetIndexProperties(queryGraph, 1, 0)));
             Assert.IsTrue(Arrays.Equals(expectedOne, SupportQueryGraphTestUtil.GetIndexProperties(queryGraph, 0, 1)));
             Assert.IsTrue(Arrays.Equals(expectedOne, SupportQueryGraphTestUtil.GetStrictKeyProperties(queryGraph, 1, 0)));

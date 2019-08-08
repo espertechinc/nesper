@@ -30,7 +30,7 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
 {
     public class ClientRuntimeSubscriber : RegressionExecution
     {
-        private static readonly string[] FIELDS = "theString,IntPrimitive".SplitCsv();
+        private static readonly string[] FIELDS = "TheString,IntPrimitive".SplitCsv();
 
         public void Run(RegressionEnvironment env)
         {
@@ -65,14 +65,14 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
 
             // nested
             var stmtNested =
-                env.CompileDeploy("@Name('s0') select nested, nested.nestedNested from SupportBeanComplexProps")
+                env.CompileDeploy("@Name('s0') select Nested, Nested.NestedNested from SupportBeanComplexProps")
                     .Statement("s0");
             TryAssertionNested(env, stmtNested, new SupportSubscriberRowByRowSpecificNStmt());
             TryAssertionNested(env, stmtNested, new SupportSubscriberRowByRowSpecificWStmt());
             env.UndeployAll();
 
             // enum
-            var stmtEnum = env.CompileDeploy("@Name('s0') select TheString, supportEnum from SupportBeanWithEnum")
+            var stmtEnum = env.CompileDeploy("@Name('s0') select TheString, SupportEnum from SupportBeanWithEnum")
                 .Statement("s0");
             TryAssertionEnum(env, stmtEnum, new SupportSubscriberRowByRowSpecificNStmt());
             TryAssertionEnum(env, stmtEnum, new SupportSubscriberRowByRowSpecificWStmt());
@@ -690,27 +690,27 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
         private void RunAssertionBindWildcardJoin(RegressionEnvironment env)
         {
             var stmtOne = env.CompileDeploy("@Name('s0') select * from SupportBean").Statement("s0");
-            TryInvalid(this, stmtOne, "Subscriber object does not provIde a public method by name 'update'");
+            TryInvalid(this, stmtOne, "Subscriber object does not provide a public method by name 'Update'");
             TryInvalid(
                 new DummySubscriberEmptyUpd(),
                 stmtOne,
-                "No suitable subscriber method named 'update' found, expecting a method that takes 1 parameter of type SupportBean");
+                "No suitable subscriber method named 'Update' found, expecting a method that takes 1 parameter of type SupportBean");
             TryInvalid(
                 new DummySubscriberMultipleUpdate(),
                 stmtOne,
-                "No suitable subscriber method named 'update' found, expecting a method that takes 1 parameter of type SupportBean");
+                "No suitable subscriber method named 'Update' found, expecting a method that takes 1 parameter of type SupportBean");
             TryInvalid(
                 new DummySubscriberUpdate(),
                 stmtOne,
-                "Subscriber method named 'update' for parameter number 1 is not assignable, expecting type 'SupportBean' but found type 'SupportMarketDataBean'");
+                "Subscriber method named 'Update' for parameter number 1 is not assignable, expecting type 'SupportBean' but found type 'SupportMarketDataBean'");
             TryInvalid(
                 new DummySubscriberPrivateUpd(),
                 stmtOne,
-                "Subscriber object does not provIde a public method by name 'update'");
+                "Subscriber object does not provide a public method by name 'Update'");
             env.UndeployModuleContaining("s0");
 
             var stmtTwo = env.CompileDeploy("@Name('s0') select IntPrimitive from SupportBean").Statement("s0");
-            var message = "Subscriber 'updateRStream' method footprint must match 'update' method footprint";
+            var message = "Subscriber 'updateRStream' method footprint must match 'Update' method footprint";
             TryInvalid(new DummySubscriberMismatchUpdateRStreamOne(), stmtTwo, message);
             TryInvalid(new DummySubscriberMismatchUpdateRStreamTwo(), stmtTwo, message);
 
@@ -832,7 +832,7 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
             // test on-delete
             var subscriberDelete = new SubscriberMap();
             var stmtTextDelete =
-                "@Name('ondelete') on SupportMarketDataBean s0 delete from MyWindow s1 where s0.Symbol = s1.key";
+                "@Name('ondelete') on SupportMarketDataBean s0 delete from MyWindow s1 where s0.Symbol = s1.Key";
             stmt = env.CompileDeploy(stmtTextDelete, path).Statement("ondelete");
             stmt.SetSubscriber(subscriberDelete);
 

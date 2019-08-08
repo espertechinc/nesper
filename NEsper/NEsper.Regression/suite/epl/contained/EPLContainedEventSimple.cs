@@ -85,8 +85,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.contained
                                "OrderBean as orderEvent unidirectional, " +
                                "OrderBean[select * from books] as book, " +
                                "OrderBean[select * from orderdetail.items] as item " +
-                               "where book.bookId=item.productId " +
-                               "order by book.bookId, item.amount";
+                               "where book.BookId=item.productId " +
+                               "order by book.BookId, item.amount";
                 var stmtTextFormatted = "@Name('s0')" +
                                         NEWLINE +
                                         "select *" +
@@ -97,9 +97,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.contained
                                         NEWLINE +
                                         "OrderBean[select * from orderdetail.items] as item" +
                                         NEWLINE +
-                                        "where book.bookId=item.productId" +
+                                        "where book.BookId=item.productId" +
                                         NEWLINE +
-                                        "order by book.bookId, item.amount";
+                                        "order by book.BookId, item.amount";
                 env.CompileDeploy(stmtText).AddListener("s0");
 
                 TryAssertionUnidirectionalJoin(env);
@@ -118,7 +118,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.contained
 
             private void TryAssertionUnidirectionalJoin(RegressionEnvironment env)
             {
-                var fields = "orderEvent.orderdetail.orderId,book.bookId,book.title,item.amount".SplitCsv();
+                var fields = "orderEvent.orderdetail.orderId,book.BookId,book.title,item.amount".SplitCsv();
                 env.SendEventBean(MakeEventOne());
                 Assert.AreEqual(3, env.Listener("s0").LastNewData.Length);
                 EPAssertionUtil.AssertPropsPerRow(
@@ -156,7 +156,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.contained
                                "OrderBean OrderBean unidirectional, " +
                                "OrderBean[books] as book, " +
                                "OrderBean[orderdetail.items] item " +
-                               "where book.bookId = item.productId order by book.bookId asc, item.amount asc";
+                               "where book.BookId = item.productId order by book.BookId asc, item.amount asc";
                 env.CompileDeploy(stmtText).AddListener("s0");
 
                 env.SendEventBean(MakeEventOne());
@@ -192,7 +192,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.contained
                 var stmtText = "@Name('s0') select count(*) from " +
                                "OrderBean[books]#unique(bookId) book, " +
                                "OrderBean[orderdetail.items]#keepall item " +
-                               "where book.bookId = item.productId";
+                               "where book.BookId = item.productId";
                 env.CompileDeploy(stmtText).AddListener("s0");
 
                 env.SendEventBean(MakeEventOne());
@@ -246,12 +246,12 @@ namespace com.espertech.esper.regressionlib.suite.epl.contained
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "book.bookId,item.itemId,amount".SplitCsv();
-                var stmtText = "@Name('s0') select book.bookId,item.itemId,amount from " +
+                var fields = "book.BookId,item.itemId,amount".SplitCsv();
+                var stmtText = "@Name('s0') select book.BookId,item.itemId,amount from " +
                                "OrderBean[books]#firstunique(bookId) book, " +
                                "OrderBean[orderdetail.items]#keepall item " +
-                               "where book.bookId = item.productId " +
-                               "order by book.bookId, item.itemId";
+                               "where book.BookId = item.productId " +
+                               "order by book.BookId, item.itemId";
                 env.CompileDeploy(stmtText).AddListener("s0");
 
                 env.SendEventBean(MakeEventOne());
@@ -346,7 +346,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.contained
             {
                 env.CompileDeploy("@Name('s0') @IterableUnbound select bookId from OrderBean[books]").AddListener("s0");
                 env.CompileDeploy(
-                    "@Name('s1') @IterableUnbound select books[0].author as val from OrderBean(books[0].bookId = '10020')");
+                    "@Name('s1') @IterableUnbound select books[0].author as val from OrderBean(books[0].BookId = '10020')");
 
                 env.SendEventBean(MakeEventOne());
                 EPAssertionUtil.AssertPropsPerRow(

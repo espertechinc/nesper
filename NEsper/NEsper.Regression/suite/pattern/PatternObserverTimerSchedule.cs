@@ -99,7 +99,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
             SupportMessageAssertUtil.TryInvalidCompile(
                 env,
                 "select * from pattern[timer:schedule()]",
-                "Invalid parameter for pattern observer 'timer:schedule()': No parameters provIded");
+                "Invalid parameter for pattern observer 'timer:schedule()': No parameters provided");
             SupportMessageAssertUtil.TryInvalidCompile(
                 env,
                 "select * from pattern[timer:schedule(x:1)]",

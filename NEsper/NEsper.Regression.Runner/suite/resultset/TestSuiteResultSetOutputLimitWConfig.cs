@@ -9,7 +9,7 @@
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.compat;
 using com.espertech.esper.regressionlib.suite.resultset.outputlimit;
-using com.espertech.esper.regressionrun.runner;
+using com.espertech.esper.regressionrun.Runner;
 
 using NUnit.Framework;
 

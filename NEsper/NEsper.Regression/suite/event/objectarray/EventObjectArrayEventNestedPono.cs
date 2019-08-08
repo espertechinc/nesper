@@ -26,9 +26,9 @@ namespace com.espertech.esper.regressionlib.suite.@event.objectarray
         {
             var statementText = "@Name('s0') select " +
                                 "simple, object, nodefmap, map, " +
-                                "object.Id as a1, nodefmap.key1? as a2, nodefmap.key2? as a3, nodefmap.key3?.key4 as a4, " +
-                                "map.objectOne as b1, map.simpleOne as b2, map.nodefmapOne.key2? as b3, map.mapOne.simpleTwo? as b4, " +
-                                "map.objectOne.indexed[1] as c1, map.objectOne.nested.NestedValue as c2," +
+                                "object.Id as a1, nodefmap.Key1? as a2, nodefmap.Key2? as a3, nodefmap.Key3?.Key4 as a4, " +
+                                "map.objectOne as b1, map.simpleOne as b2, map.nodefmapOne.Key2? as b3, map.mapOne.simpleTwo? as b4, " +
+                                "map.objectOne.indexed[1] as c1, map.objectOne.Nested.NestedValue as c2," +
                                 "map.mapOne.simpleTwo as d1, map.mapOne.objectTwo as d2, map.mapOne.nodefmapTwo as d3, " +
                                 "map.mapOne.mapTwo as e1, map.mapOne.mapTwo.simpleThree as e2, map.mapOne.mapTwo.objectThree as e3, " +
                                 "map.mapOne.objectTwo.array[1].mapped('1ma').Value as f1, map.mapOne.mapTwo.objectThree.Id as f2" +
@@ -91,7 +91,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.objectarray
 
             // nested PONO with generic return type
             env.UndeployModuleContaining("s0");
-            env.CompileDeploy("@Name('s0') select * from MyNested(bean.insIdes.anyOf(i=>Id = 'A'))").AddListener("s0");
+            env.CompileDeploy("@Name('s0') select * from MyNested(bean.insides.anyOf(i->Id = 'A'))").AddListener("s0");
 
             env.SendEventObjectArray(new object[] {new MyNested(Arrays.AsList(new MyInside("A")))}, "MyNested");
             Assert.IsTrue(env.Listener("s0").IsInvoked);

@@ -375,7 +375,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                           "select s0.Id as c0," +
                           "(select * from SupportBean_S1#keepall as s1 " +
                           "  where s0.P00 in (s1.P10, SupportBean_S1.P11) and s0.P01 in (s1.p12, SupportBean_S1.p13))" +
-                          ".selectFrom(a=>SupportBean_S1.Id) as c1 " +
+                          ".selectFrom(a->SupportBean_S1.Id) as c1 " +
                           "from SupportBean_S0 as s0";
                 env.CompileDeploy(epl).AddListener("s0");
 
@@ -492,7 +492,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 // assert table
                 path.Clear();
                 env.CompileDeploy(
-                    "create table S0Table(Id int primary key, P00 string primary key, P01 string primary key, p02 string primary key, p03 string primary key)",
+                    "create table S0Table(Id int primary key, P00 string primary key, P01 string primary key, P02 string primary key, p03 string primary key)",
                     path);
                 env.CompileDeploy("insert into S0Table select * from SupportBean_S0", path);
                 env.CompileDeploy("create index S0Idx1 on S0Table(P00)", path);
@@ -525,7 +525,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                           "select s1.Id as c0," +
                           "(select * from SupportBean_S0#keepall as s0 " +
                           "  where s0.P00 in (s1.P10, SupportBean_S1.P11) and s0.P01 in (s1.p12, SupportBean_S1.p13))" +
-                          ".selectFrom(a=>SupportBean_S0.Id) as c1 " +
+                          ".selectFrom(a->SupportBean_S0.Id) as c1 " +
                           " from SupportBean_S1 as s1";
                 env.CompileDeploy(epl).AddListener("s0");
 

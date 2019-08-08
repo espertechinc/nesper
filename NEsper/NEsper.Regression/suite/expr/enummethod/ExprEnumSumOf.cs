@@ -77,11 +77,11 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
             {
                 var fields = "val0,val1,val2,val3,val4".SplitCsv();
                 var eplFragment = "@Name('s0') select " +
-                                  "beans.sumOf(x => IntBoxed) as val0," +
-                                  "beans.sumOf(x => DoubleBoxed) as val1," +
-                                  "beans.sumOf(x => LongBoxed) as val2," +
-                                  "beans.sumOf(x => bigDecimal) as val3, " +
-                                  "beans.sumOf(x => bigInteger) as val4 " +
+                                  "beans.sumOf(x -> IntBoxed) as val0," +
+                                  "beans.sumOf(x -> DoubleBoxed) as val1," +
+                                  "beans.sumOf(x -> LongBoxed) as val2," +
+                                  "beans.sumOf(x -> DecimalBoxedimal) as val3, " +
+                                  "beans.sumOf(x -> BigInteger) as val4 " +
                                   "from SupportBean_Container";
                 env.CompileDeploy(eplFragment).AddListener("s0");
 
@@ -173,8 +173,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
                 // lambda with string-array input
                 var fieldsLambda = "val0,val1".SplitCsv();
                 var eplLambda = "@Name('s0') select " +
-                                "Strvals.sumOf(v => extractNum(v)) as val0, " +
-                                "Strvals.sumOf(v => extractBigDecimal(v)) as val1 " +
+                                "Strvals.sumOf(v -> extractNum(v)) as val0, " +
+                                "Strvals.sumOf(v -> extractBigDecimal(v)) as val1 " +
                                 "from SupportCollection";
                 env.CompileDeploy(eplLambda).AddListener("s0");
                 LambdaAssertionUtil.AssertTypes(

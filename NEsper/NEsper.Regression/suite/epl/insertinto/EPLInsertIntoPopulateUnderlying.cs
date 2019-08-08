@@ -79,7 +79,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
             // Test valid case of array insert
             var validEpl =
                 "@Name('s0') INSERT INTO FinalEventValId SELECT s as startEvent, e as endEvent FROM PATTERN [" +
-                "every s=EventOne => e=EventTwo(Id=s.Id) until timer:interval(10 sec)]";
+                "every s=EventOne -> e=EventTwo(Id=s.Id) until timer:interval(10 sec)]";
             env.CompileDeploy(validEpl, path).AddListener("s0");
 
             SendEventOne(env, eventRepresentationEnum, "G1");
@@ -120,7 +120,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
             // Test invalid case of non-array destination insert
             var invalidEpl =
                 "INSERT INTO FinalEventInvalidNonArray SELECT s as startEvent, e as endEvent FROM PATTERN [" +
-                "every s=EventOne => e=EventTwo(Id=s.Id) until timer:interval(10 sec)]";
+                "every s=EventOne -> e=EventTwo(Id=s.Id) until timer:interval(10 sec)]";
             try {
                 env.CompileWCheckedEx(invalidEpl, path);
                 Assert.Fail();
@@ -141,7 +141,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
 
             // Test invalid case of array destination insert from non-array var
             invalidEpl = "INSERT INTO FinalEventInvalidArray SELECT s as startEvent, e as endEvent FROM PATTERN [" +
-                         "every s=EventOne => e=EventTwo(Id=s.Id) until timer:interval(10 sec)]";
+                         "every s=EventOne -> e=EventTwo(Id=s.Id) until timer:interval(10 sec)]";
             try {
                 env.CompileWCheckedEx(invalidEpl, path);
                 Assert.Fail();
@@ -370,7 +370,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
             {
                 // Test valid case of array insert
                 var epl = "@Name('s0') insert into SupportBeanCtorThree select s, e FROM PATTERN [" +
-                          "every s=SupportBean_ST0 => [2] e=SupportBean_ST1]";
+                          "every s=SupportBean_ST0 -> [2] e=SupportBean_ST1]";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 env.SendEventBean(new SupportBean_ST0("E0", 1));
@@ -753,7 +753,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
 
                 // object to Object
                 stmtTextOne =
-                    "@Name('s0') insert into SupportBeanArrayCollMap(anyObject) select nested from SupportBeanComplexProps";
+                    "@Name('s0') insert into SupportBeanArrayCollMap(AnyObject) select nested from SupportBeanComplexProps";
                 env.CompileDeploy(stmtTextOne).AddListener("s0");
 
                 env.SendEventBean(SupportBeanComplexProps.MakeDefaultBean());
@@ -868,7 +868,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                 // Test valid case of array insert
                 var validEpl =
                     "@Name('s0') INSERT INTO FinalEventValId SELECT s as startEvent, e as endEvent FROM PATTERN [" +
-                    "every s=SupportBean_S0 => e=SupportBean(TheString=s.P00) until timer:interval(10 sec)]";
+                    "every s=SupportBean_S0 -> e=SupportBean(TheString=s.P00) until timer:interval(10 sec)]";
                 env.CompileDeploy(validEpl, path).AddListener("s0");
 
                 env.SendEventBean(new SupportBean_S0(1, "G1"));
@@ -886,7 +886,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                 // Test invalid case of non-array destination insert
                 var invalidEpl =
                     "INSERT INTO FinalEventInvalidNonArray SELECT s as startEvent, e as endEvent FROM PATTERN [" +
-                    "every s=SupportBean_S0 => e=SupportBean(TheString=s.P00) until timer:interval(10 sec)]";
+                    "every s=SupportBean_S0 -> e=SupportBean(TheString=s.P00) until timer:interval(10 sec)]";
                 TryInvalidCompile(
                     env,
                     path,
@@ -895,12 +895,12 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                     typeof(SupportBean).Name +
                     "[]' to event property 'endEvent' typed as '" +
                     typeof(SupportBean).Name +
-                    "', column and parameter types mismatch [INSERT INTO FinalEventInvalidNonArray SELECT s as startEvent, e as endEvent FROM PATTERN [every s=SupportBean_S0 => e=SupportBean(TheString=s.P00) until timer:interval(10 sec)]]");
+                    "', column and parameter types mismatch [INSERT INTO FinalEventInvalidNonArray SELECT s as startEvent, e as endEvent FROM PATTERN [every s=SupportBean_S0 -> e=SupportBean(TheString=s.P00) until timer:interval(10 sec)]]");
 
                 // Test invalid case of array destination insert from non-array var
                 var invalidEplTwo =
                     "INSERT INTO FinalEventInvalidArray SELECT s as startEvent, e as endEvent FROM PATTERN [" +
-                    "every s=SupportBean_S0 => e=SupportBean(TheString=s.P00) until timer:interval(10 sec)]";
+                    "every s=SupportBean_S0 -> e=SupportBean(TheString=s.P00) until timer:interval(10 sec)]";
                 TryInvalidCompile(
                     env,
                     path,
@@ -909,7 +909,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                     typeof(SupportBean_S0).Name +
                     "' to event property 'startEvent' typed as '" +
                     typeof(SupportBean_S0).Name +
-                    "[]', column and parameter types mismatch [INSERT INTO FinalEventInvalidArray SELECT s as startEvent, e as endEvent FROM PATTERN [every s=SupportBean_S0 => e=SupportBean(TheString=s.P00) until timer:interval(10 sec)]]");
+                    "[]', column and parameter types mismatch [INSERT INTO FinalEventInvalidArray SELECT s as startEvent, e as endEvent FROM PATTERN [every s=SupportBean_S0 -> e=SupportBean(TheString=s.P00) until timer:interval(10 sec)]]");
 
                 env.UndeployAll();
             }

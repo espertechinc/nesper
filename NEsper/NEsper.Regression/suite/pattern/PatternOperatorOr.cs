@@ -98,8 +98,8 @@ namespace com.espertech.esper.regressionlib.suite.pattern
         {
             public void Run(RegressionEnvironment env)
             {
-                TryOrAndNot(env, "(a=SupportBean_A -> b=SupportBean_B) or (a=SupportBean_A => not b=SupportBean_B)");
-                TryOrAndNot(env, "a=SupportBean_A => (b=SupportBean_B or not SupportBean_B)");
+                TryOrAndNot(env, "(a=SupportBean_A -> b=SupportBean_B) or (a=SupportBean_A -> not b=SupportBean_B)");
+                TryOrAndNot(env, "a=SupportBean_A -> (b=SupportBean_B or not SupportBean_B)");
 
                 // try zero-time start
                 env.AdvanceTime(0);

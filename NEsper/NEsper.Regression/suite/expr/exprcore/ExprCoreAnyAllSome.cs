@@ -193,10 +193,10 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
             {
                 var fields = "c0,c1,c2,c3".SplitCsv();
                 var epl = "@Name('s0') select " +
-                          "bigInteger = any (null, 1) as c0," +
-                          "bigInteger = any (2, 3) as c1," +
-                          "bigDecimal = any (null, 1) as c2," +
-                          "bigDecimal = any (2, 3) as c3" +
+                          "BigInteger = any (null, 1) as c0," +
+                          "BigInteger = any (2, 3) as c1," +
+                          "DecimalBoxedimal = any (null, 1) as c2," +
+                          "DecimalBoxedimal = any (2, 3) as c3" +
                           " from SupportBean";
                 env.CompileDeploy(epl).AddListener("s0");
 
@@ -325,8 +325,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                 string epl;
 
                 epl = "@Name('s0') select " +
-                      "intBoxed >= all ({DoubleBoxed, LongBoxed}) as vall, " +
-                      "intBoxed >= any ({DoubleBoxed, LongBoxed}) as vany " +
+                      "IntBoxed >= all ({DoubleBoxed, LongBoxed}) as vall, " +
+                      "IntBoxed >= any ({DoubleBoxed, LongBoxed}) as vany " +
                       " from SupportBean(TheString like 'E%')";
                 env.CompileDeploy(epl).AddListener("s0");
 
@@ -362,8 +362,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                 // test fields
                 fields = "vall,vany".SplitCsv();
                 epl = "@Name('s0') select " +
-                      "intBoxed >= all (DoubleBoxed, LongBoxed) as vall, " +
-                      "intBoxed >= any (DoubleBoxed, LongBoxed) as vany " +
+                      "IntBoxed >= all (DoubleBoxed, LongBoxed) as vall, " +
+                      "IntBoxed >= any (DoubleBoxed, LongBoxed) as vany " +
                       " from SupportBean(TheString like 'E%')";
                 env.CompileDeployAddListenerMile(epl, "s0", 1);
 
@@ -519,11 +519,11 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 
                 fields = "eall,eany,neall,neany,isin".SplitCsv();
                 epl = "@Name('s0') select " +
-                      "intBoxed = all ({DoubleBoxed, LongBoxed}) as eall, " +
-                      "intBoxed = any ({DoubleBoxed, LongBoxed}) as eany, " +
-                      "intBoxed != all ({DoubleBoxed, LongBoxed}) as neall, " +
-                      "intBoxed != any ({DoubleBoxed, LongBoxed}) as neany, " +
-                      "intBoxed in ({DoubleBoxed, LongBoxed}) as isin " +
+                      "IntBoxed = all ({DoubleBoxed, LongBoxed}) as eall, " +
+                      "IntBoxed = any ({DoubleBoxed, LongBoxed}) as eany, " +
+                      "IntBoxed != all ({DoubleBoxed, LongBoxed}) as neall, " +
+                      "IntBoxed != any ({DoubleBoxed, LongBoxed}) as neany, " +
+                      "IntBoxed in ({DoubleBoxed, LongBoxed}) as isin " +
                       " from SupportBean";
                 env.CompileDeploy(epl).AddListener("s0");
 
@@ -559,11 +559,11 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                 // test non-array case
                 fields = "eall,eany,neall,neany,isin".SplitCsv();
                 epl = "@Name('s0') select " +
-                      "intBoxed = all (DoubleBoxed, LongBoxed) as eall, " +
-                      "intBoxed = any (DoubleBoxed, LongBoxed) as eany, " +
-                      "intBoxed != all (DoubleBoxed, LongBoxed) as neall, " +
-                      "intBoxed != any (DoubleBoxed, LongBoxed) as neany, " +
-                      "intBoxed in (DoubleBoxed, LongBoxed) as isin " +
+                      "IntBoxed = all (DoubleBoxed, LongBoxed) as eall, " +
+                      "IntBoxed = any (DoubleBoxed, LongBoxed) as eany, " +
+                      "IntBoxed != all (DoubleBoxed, LongBoxed) as neall, " +
+                      "IntBoxed != any (DoubleBoxed, LongBoxed) as neany, " +
+                      "IntBoxed in (DoubleBoxed, LongBoxed) as isin " +
                       " from SupportBean";
                 env.CompileDeployAddListenerMile(epl, "s0", 1);
 

@@ -94,12 +94,12 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                           " exists(item?.item.IntBoxed) as t2, " +
                           " exists(item?.indexed[0]?) as t3, " +
                           " exists(item?.mapped('keyOne')?) as t4, " +
-                          " exists(item?.nested?) as t5, " +
-                          " exists(item?.nested.NestedValue?) as t6, " +
-                          " exists(item?.nested.nestedNested?) as t7, " +
-                          " exists(item?.nested.nestedNested.nestedNestedValue?) as t8, " +
-                          " exists(item?.nested.nestedNested.nestedNestedValue.dummy?) as t9, " +
-                          " exists(item?.nested.nestedNested.dummy?) as t10 " +
+                          " exists(item?.Nested?) as t5, " +
+                          " exists(item?.Nested.NestedValue?) as t6, " +
+                          " exists(item?.Nested.NestedNested?) as t7, " +
+                          " exists(item?.Nested.NestedNested.NestedNestedValue?) as t8, " +
+                          " exists(item?.Nested.NestedNested.NestedNestedValue.dummy?) as t9, " +
+                          " exists(item?.Nested.NestedNested.dummy?) as t10 " +
                           " from SupportMarkerInterface";
                 env.CompileDeploy(epl).AddListener("s0");
 

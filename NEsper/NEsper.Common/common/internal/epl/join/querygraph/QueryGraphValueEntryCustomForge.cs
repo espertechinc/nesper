@@ -38,9 +38,7 @@ namespace com.espertech.esper.common.@internal.epl.join.querygraph
             else {
                 method.Block.DeclareVar<IDictionary<string, object>>(
                     "map",
-                    NewInstance(
-                        typeof(LinkedHashMap<string, object>),
-                        Constant(CollectionUtil.CapacityHashMap(operations.Count))));
+                    NewInstance(typeof(LinkedHashMap<string, object>)));
                 foreach (var entry in operations) {
                     method.Block.ExprDotMethod(
                         Ref("map"),

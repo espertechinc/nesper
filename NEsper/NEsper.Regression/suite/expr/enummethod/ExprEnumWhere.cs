@@ -30,8 +30,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
             public void Run(RegressionEnvironment env)
             {
                 var epl = "@Name('s0') select " +
-                          "Contained.where(x => P00 = 9) as val0," +
-                          "Contained.where((x, i) => x.P00 = 9 and i >= 1) as val1 from SupportBean_ST0_Container";
+                          "Contained.where(x -> P00 = 9) as val0," +
+                          "Contained.where((x, i) -> x.P00 = 9 and i >= 1) as val1 from SupportBean_ST0_Container";
                 env.CompileDeploy(epl).AddListener("s0");
                 LambdaAssertionUtil.AssertTypes(
                     env.Statement("s0").EventType,
@@ -73,8 +73,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
             {
                 var fields = "val0,val1".SplitCsv();
                 var eplFragment = "@Name('s0') select " +
-                                  "Strvals.where(x => x not like '%1%') as val0, " +
-                                  "Strvals.where((x, i) => x not like '%1%' and i > 1) as val1 " +
+                                  "Strvals.where(x -> x not like '%1%') as val0, " +
+                                  "Strvals.where((x, i) -> x not like '%1%' and i > 1) as val1 " +
                                   "from SupportCollection";
                 env.CompileDeploy(eplFragment).AddListener("s0");
 
@@ -102,7 +102,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 
                 // test boolean
                 eplFragment = "@Name('s0') select " +
-                              "boolvals.where(x => x) as val0 " +
+                              "boolvals.where(x -> x) as val0 " +
                               "from SupportCollection";
                 env.CompileDeploy(eplFragment).AddListener("s0");
 

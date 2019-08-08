@@ -231,7 +231,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
                           " measures A[0].TheString as a0, A[1].TheString as a1, A[2].TheString as a2, B.TheString as b" +
                           " pattern (A* B)" +
                           " define" +
-                          " B as (coalesce(A.sumOf(v => v.IntPrimitive), 0) + B.IntPrimitive) > 100" +
+                          " B as (coalesce(A.sumOf(v -> v.IntPrimitive), 0) + B.IntPrimitive) > 100" +
                           ")";
                 env.CompileDeploy(epl).AddListener("s0");
 
@@ -285,7 +285,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
                              " pattern (A+ B)" +
                              " define" +
                              " A as TheString like 'A%', " +
-                             " B as TheString like 'B%' and B.IntPrimitive > A.sumOf(v => v.IntPrimitive)" +
+                             " B as TheString like 'B%' and B.IntPrimitive > A.sumOf(v -> v.IntPrimitive)" +
                              ")";
 
                 env.CompileDeploy(eplTwo).AddListener("s0");

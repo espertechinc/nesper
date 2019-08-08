@@ -12,7 +12,7 @@ using com.espertech.esper.common.client.configuration;
 using com.espertech.esper.regressionlib.suite.expr.define;
 using com.espertech.esper.regressionlib.support.bean;
 using com.espertech.esper.regressionlib.support.epl;
-using com.espertech.esper.regressionrun.runner;
+using com.espertech.esper.regressionrun.Runner;
 
 using NUnit.Framework;
 
@@ -43,7 +43,7 @@ namespace com.espertech.esper.regressionrun.suite.expr
             {
                 configuration.Common.AddEventType(clazz);
             }
-            configuration.Compiler.AddPlugInSingleRowFunction("alwaysTrue", typeof(SupportStaticMethodLib), "alwaysTrue");
+            configuration.Compiler.AddPlugInSingleRowFunction("alwaysTrue", typeof(SupportStaticMethodLib), "AlwaysTrue");
 
             RegressionRunner.Run(session, exec);
             session.Destroy();

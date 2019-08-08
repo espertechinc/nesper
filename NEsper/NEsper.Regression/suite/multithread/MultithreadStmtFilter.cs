@@ -42,7 +42,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
             };
 
             var enumFilter =
-                "@Name('s0') select count(*) as mycount from SupportCollection(Strvals.anyOf(v => v = 'j'))";
+                "@Name('s0') select count(*) as mycount from SupportCollection(Strvals.anyOf(v -> v = 'j'))";
             tryCount(env, 4, 1000, enumFilter, enumCallback);
         }
 

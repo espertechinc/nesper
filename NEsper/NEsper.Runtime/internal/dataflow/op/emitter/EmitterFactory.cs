@@ -16,19 +16,18 @@ namespace com.espertech.esper.runtime.@internal.dataflow.op.emitter
     {
         private ExprEvaluator name;
 
+        public ExprEvaluator Name {
+            set => name = value;
+        }
+
         public void InitializeFactory(DataFlowOpFactoryInitializeContext context)
         {
         }
 
         public DataFlowOperator Operator(DataFlowOpInitializeContext context)
         {
-            string nameText = DataFlowParameterResolution.ResolveStringOptional("name", name, context);
+            var nameText = DataFlowParameterResolution.ResolveStringOptional("name", name, context);
             return new EmitterOp(nameText);
-        }
-
-        public void SetName(ExprEvaluator name)
-        {
-            this.name = name;
         }
     }
 } // end of namespace

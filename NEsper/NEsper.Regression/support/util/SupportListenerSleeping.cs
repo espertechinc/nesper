@@ -23,7 +23,7 @@ namespace com.espertech.esper.regressionlib.support.util
 
         public SupportListenerSleeping(int sleepTime)
         {
-            this.SleepTime = sleepTime;
+            this.sleepTime = sleepTime;
         }
 
         public IList<Pair<long, EventBean[]>> NewEvents { get; } = new List<Pair<long, EventBean[]>>().AsSyncList();

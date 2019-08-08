@@ -54,7 +54,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
             {
                 env.CompileDeploy(
                     "@Name('flow') create dataflow MyDataFlowOne " +
-                    "DefaultSupportSourceOp => outstream<SupportBean> {}" +
+                    "DefaultSupportSourceOp -> outstream<SupportBean> {}" +
                     "MySupportBeanOutputOp(outstream) {}" +
                     "SupportGenericOutputOpWPort(outstream) {}");
 
@@ -94,7 +94,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 env.CompileDeploy("create map schema MyMap (p0 String, p1 int)", path);
                 env.CompileDeploy(
                     "@Name('flow') create dataflow MyDataFlowOne " +
-                    "DefaultSupportSourceOp => outstream<MyMap> {}" +
+                    "DefaultSupportSourceOp -> outstream<MyMap> {}" +
                     "MyMapOutputOp(outstream) {}" +
                     "DefaultSupportCaptureOp(outstream) {}",
                     path);

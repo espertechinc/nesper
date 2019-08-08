@@ -16,7 +16,7 @@ namespace com.espertech.esper.runtime.client
         /// <summary>
         /// Advance time by jumping to the given time in milliseconds (or nanoseconds if so configured).
         /// <para />For externally controlling the time within a runtime.
-        /// <para />External clocking must be first be enabled by configuration {@link com.espertech.esper.common.client.configuration.runtime.ConfigurationRuntimeThreading#setInternalTimerEnabled(boolean)} passing false
+        /// <para />External clocking must be first be enabled by configuration {@link com.espertech.esper.common.client.configuration.Runtime.ConfigurationRuntimeThreading.IsInternalTimerEnabled} passing false
         /// or by calling {@link #clockExternal()}.
         /// <para />Time should never move backwards (unless for testing purposes where previous results can be thrown away)
         /// </summary>
@@ -26,7 +26,7 @@ namespace com.espertech.esper.runtime.client
         /// <summary>
         /// Advance time by continually-sliding to the given time in milliseconds (or nanoseconds if so configured) at the smallest resolution (non-hopping).
         /// <para />For externally controlling the time within a runtime.
-        /// <para />External clocking must be first be enabled by configuration {@link com.espertech.esper.common.client.configuration.runtime.ConfigurationRuntimeThreading#setInternalTimerEnabled(boolean)} passing false
+        /// <para />External clocking must be first be enabled by configuration {@link com.espertech.esper.common.client.configuration.Runtime.ConfigurationRuntimeThreading.IsInternalTimerEnabled} passing false
         /// or by calling {@link #clockExternal()}.
         /// <para />Time should never move backwards (unless for testing purposes where previous results can be thrown away)
         /// </summary>
@@ -36,7 +36,7 @@ namespace com.espertech.esper.runtime.client
         /// <summary>
         /// Advance time by continually-sliding to the given time in milliseconds (or nanoseconds if so configured) at the provided resolution (hopping).
         /// <para />For externally controlling the time within a runtime.
-        /// <para />External clocking must be first be enabled by configuration {@link com.espertech.esper.common.client.configuration.runtime.ConfigurationRuntimeThreading#setInternalTimerEnabled(boolean)} passing false
+        /// <para />External clocking must be first be enabled by configuration {@link com.espertech.esper.common.client.configuration.Runtime.ConfigurationRuntimeThreading.IsInternalTimerEnabled} passing false
         /// or by calling {@link #clockExternal()}.
         /// <para />Time should never move backwards (unless for testing purposes where previous results can be thrown away)
         /// </summary>
@@ -71,7 +71,7 @@ namespace com.espertech.esper.runtime.client
         /// on external internal time.
         /// <para />Your application may want to use {@link #advanceTime(long)}, {@link #advanceTimeSpan(long)} or {@link #advanceTimeSpan(long, long)}
         /// after calling this method to set or advance time.
-        /// <para />Its generally preferable to turn off internal clocking (and thus turn on external clocking) by configuration {@link com.espertech.esper.common.client.configuration.runtime.ConfigurationRuntimeThreading#setInternalTimerEnabled(boolean)} passing false.
+        /// <para />Its generally preferable to turn off internal clocking (and thus turn on external clocking) by configuration {@link com.espertech.esper.common.client.configuration.Runtime.ConfigurationRuntimeThreading.IsInternalTimerEnabled} passing false.
         /// </summary>
         void ClockExternal();
 

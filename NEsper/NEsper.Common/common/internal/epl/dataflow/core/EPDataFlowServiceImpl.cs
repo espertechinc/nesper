@@ -22,7 +22,7 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.core
 {
     public class EPDataFlowServiceImpl : EPDataFlowService
     {
-        public const string OP_PACKAGE_NAME = "com.espertech.esper.runtime.internal.dataflow.op";
+        public const string OP_PACKAGE_NAME = "com.espertech.esper.runtime.@internal.dataflow.op";
 
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 

@@ -382,7 +382,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 var fieldsOne = "IntPrimitive,col1,col2,col3".SplitCsv();
                 env.CompileDeploy(
                     "@Name('s0') context SegmentedByString " +
-                    "select IntPrimitive, count(*) as col1, toArray(window(*).selectFrom(v=>v.LongPrimitive)) as col2, first().LongPrimitive as col3 " +
+                    "select IntPrimitive, count(*) as col1, toArray(window(*).selectFrom(v->v.LongPrimitive)) as col2, first().LongPrimitive as col3 " +
                     "from SupportBean#keepall as sb " +
                     "group by IntPrimitive order by IntPrimitive asc",
                     path);
@@ -496,7 +496,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 var fieldsTwo = "col1,col2".SplitCsv();
                 env.CompileDeploy(
                     "@Name('s0') context SegmentedByString " +
-                    "select sum(IntPrimitive) as col1, toArray(window(*).selectFrom(v=>v.IntPrimitive)) as col2 " +
+                    "select sum(IntPrimitive) as col1, toArray(window(*).selectFrom(v->v.IntPrimitive)) as col2 " +
                     "from SupportBean#keepall",
                     path);
                 env.AddListener("s0");
@@ -543,7 +543,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 var fieldsThree = "col1".SplitCsv();
                 env.CompileDeploy(
                     "@Name('s0') context SegmentedByString " +
-                    "select toArray(window(*).selectFrom(v=>v.IntPrimitive)) as col1 " +
+                    "select toArray(window(*).selectFrom(v->v.IntPrimitive)) as col1 " +
                     "from SupportBean#keepall",
                     path);
                 env.AddListener("s0");

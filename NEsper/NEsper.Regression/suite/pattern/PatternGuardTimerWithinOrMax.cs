@@ -88,13 +88,13 @@ namespace com.espertech.esper.regressionlib.suite.pattern
             testCaseList.AddTest(testCase);
 
             testCase = new EventExpressionCase(
-                "every b=SupportBean_B => d=SupportBean_D where timer:withinmax(4000 msec, 1)");
+                "every b=SupportBean_B -> d=SupportBean_D where timer:withinmax(4000 msec, 1)");
             testCase.Add("D1", "b", events.GetEvent("B2"), "d", events.GetEvent("D1"));
             testCase.Add("D3", "b", events.GetEvent("B3"), "d", events.GetEvent("D3"));
             testCaseList.AddTest(testCase);
 
             testCase = new EventExpressionCase(
-                "every b=SupportBean_B() => every d=SupportBean_D where timer:withinmax(4000 msec, 1)");
+                "every b=SupportBean_B() -> every d=SupportBean_D where timer:withinmax(4000 msec, 1)");
             testCase.Add("D1", "b", events.GetEvent("B1"), "d", events.GetEvent("D1"));
             testCase.Add("D1", "b", events.GetEvent("B2"), "d", events.GetEvent("D1"));
             testCase.Add("D2", "b", events.GetEvent("B1"), "d", events.GetEvent("D2"));
@@ -105,7 +105,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
             testCaseList.AddTest(testCase);
 
             testCase = new EventExpressionCase(
-                "every b=SupportBean_B() => (every d=SupportBean_D) where timer:withinmax(1 day, 3)");
+                "every b=SupportBean_B() -> (every d=SupportBean_D) where timer:withinmax(1 day, 3)");
             testCase.Add("D1", "b", events.GetEvent("B1"), "d", events.GetEvent("D1"));
             testCase.Add("D1", "b", events.GetEvent("B2"), "d", events.GetEvent("D1"));
             testCase.Add("D2", "b", events.GetEvent("B1"), "d", events.GetEvent("D2"));
@@ -116,7 +116,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
             testCaseList.AddTest(testCase);
 
             testCase = new EventExpressionCase(
-                "every b=SupportBean_B() => (every d=SupportBean_D) where timer:withinmax(1 day, 2)");
+                "every b=SupportBean_B() -> (every d=SupportBean_D) where timer:withinmax(1 day, 2)");
             testCase.Add("D1", "b", events.GetEvent("B1"), "d", events.GetEvent("D1"));
             testCase.Add("D1", "b", events.GetEvent("B2"), "d", events.GetEvent("D1"));
             testCase.Add("D2", "b", events.GetEvent("B1"), "d", events.GetEvent("D2"));
@@ -125,7 +125,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
             testCaseList.AddTest(testCase);
 
             testCase = new EventExpressionCase(
-                "every b=SupportBean_B() => (every d=SupportBean_D) where timer:withinmax(1 day, 1)");
+                "every b=SupportBean_B() -> (every d=SupportBean_D) where timer:withinmax(1 day, 1)");
             testCase.Add("D1", "b", events.GetEvent("B1"), "d", events.GetEvent("D1"));
             testCase.Add("D1", "b", events.GetEvent("B2"), "d", events.GetEvent("D1"));
             testCase.Add("D3", "b", events.GetEvent("B3"), "d", events.GetEvent("D3"));

@@ -165,7 +165,7 @@ namespace com.espertech.esper.regressionlib.suite.client.instrument
                 // pattern-instances
                 AUDITLOG.Info("*** Pattern-Lifecycle: ");
                 env.CompileDeploy(
-                        "@Name('ABC') @Audit('pattern-instances') select a.IntPrimitive as val0 from pattern [every a=SupportBean => (b=SupportBean_ST0 and not SupportBean_ST1)]")
+                        "@Name('ABC') @Audit('pattern-instances') select a.IntPrimitive as val0 from pattern [every a=SupportBean -> (b=SupportBean_ST0 and not SupportBean_ST1)]")
                     .AddListener("ABC");
                 log.Info("Sending E1");
                 env.SendEventBean(new SupportBean("E1", 1));
@@ -181,8 +181,8 @@ namespace com.espertech.esper.regressionlib.suite.client.instrument
                 env.CompileDeploy(
                         "@Name('ABC') @Audit('exprdef') " +
                         "expression DEF { 1 } " +
-                        "expression INN {  x => x.TheString }" +
-                        "expression OUT { x => INN(x) } " +
+                        "expression INN {  x -> x.TheString }" +
+                        "expression OUT { x -> INN(x) } " +
                         "select DEF(), OUT(sb) from SupportBean sb")
                     .AddListener("ABC");
                 env.SendEventBean(new SupportBean("E1", 1));
@@ -192,8 +192,8 @@ namespace com.espertech.esper.regressionlib.suite.client.instrument
                 // data flow
                 env.CompileDeploy(
                     "@Audit @Name('df') create dataflow MyFlow " +
-                    "EventBusSource => a<SupportBean> {filter:TheString like 'I%'} " +
-                    "Filter(a) => b {filter: true}" +
+                    "EventBusSource -> a<SupportBean> {filter:TheString like 'I%'} " +
+                    "Filter(a) -> b {filter: true}" +
                     "LogSink(b) {log:false}");
                 var df = env.Runtime.DataFlowService.Instantiate(env.DeploymentId("df"), "MyFlow");
                 df.Start();

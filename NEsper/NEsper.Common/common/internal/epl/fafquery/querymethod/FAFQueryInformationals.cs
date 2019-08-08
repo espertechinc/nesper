@@ -92,8 +92,7 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.querymethod
             method.Block.DeclareVar<IDictionary<object, object>>(
                 "names",
                 NewInstance(
-                    typeof(Dictionary<object, object>),
-                    Constant(CollectionUtil.CapacityHashMap(SubstitutionParamsNames.Count))));
+                    typeof(Dictionary<object, object>)));
             foreach (var entry in SubstitutionParamsNames) {
                 method.Block.ExprDotMethod(Ref("names"), "Put", Constant(entry.Key), Constant(entry.Value));
             }

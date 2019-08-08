@@ -1069,7 +1069,7 @@ namespace com.espertech.esper.common.@internal.@event.core
                             entry.Value +
                             "' for property '" +
                             name +
-                            "', expected java.lang.Class or java.util.Map or the name of a previously-declared Map or ObjectArray type");
+                            "', expected Type or Dictionary or the name of a previously-declared Map or ObjectArray type");
                     }
 
                     var underlyingType = eventType.UnderlyingType;
@@ -1143,7 +1143,7 @@ namespace com.espertech.esper.common.@internal.@event.core
                 clazzName +
                 "' for property '" +
                 name +
-                "', expected java.lang.Class or java.util.Map or the name of a previously-declared Map or ObjectArray type");
+                "', expected Type or Dictionary or the name of a previously-declared Map or ObjectArray type");
         }
 
         public static Type GetNestablePropertyType(

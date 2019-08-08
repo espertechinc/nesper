@@ -278,10 +278,10 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
                 nextStates.Add(new Pair<int, int[]>(state.NodeNumFlat, next));
             }
 
-            var method = parent.MakeChild(typeof(IList<object>), GetType(), classScope);
-            method.Block.DeclareVar<IList<object>>(
+            var method = parent.MakeChild(typeof(IList<Pair<int, int[]>>), GetType(), classScope);
+            method.Block.DeclareVar<IList<Pair<int, int[]>>>(
                 "next",
-                NewInstance<List<object>>(Constant(nextStates.Count)));
+                NewInstance<List<Pair<int, int[]>>>(Constant(nextStates.Count)));
             foreach (var pair in nextStates) {
                 method.Block.ExprDotMethod(
                     Ref("next"),

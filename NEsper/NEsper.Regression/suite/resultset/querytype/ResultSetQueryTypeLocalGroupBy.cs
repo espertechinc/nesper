@@ -976,7 +976,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
                           "minever(IntPrimitive, group_by:(TheString)) as minever0," +
                           "fminever(IntPrimitive, IntPrimitive>0, group_by:(TheString)) as fminever0," +
                           "median(IntPrimitive, group_by:(TheString)) as median0," +
-                          "Math.round(coalesce(stddev(IntPrimitive, group_by:(TheString)), 0)) as stddev0" +
+                          "Math.Round(coalesce(stddev(IntPrimitive, group_by:(TheString)), 0)) as stddev0" +
                           " from SupportBean#keepall";
                 env.CompileDeploy(epl).AddListener("s0");
 

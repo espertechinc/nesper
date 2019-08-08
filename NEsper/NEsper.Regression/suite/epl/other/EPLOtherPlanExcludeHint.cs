@@ -192,7 +192,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                     planFullTableScan);
                 TryAssertionJoin(
                     env,
-                    "@hint('exclude_plan(exprs.anyOf(v=> v=\"P00\"))')" + eplWithWhereEquals,
+                    "@hint('exclude_plan(exprs.anyOf(v-> v=\"P00\"))')" + eplWithWhereEquals,
                     planFullTableScan);
                 TryAssertionJoin(
                     env,
@@ -284,7 +284,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
                     "@hint('exclude_plan(1)') " + epl,
-                    "Expression provIded for hint EXCLUDE_PLAN must return a boolean value");
+                    "Expression provided for hint EXCLUDE_PLAN must return a boolean value");
 
                 // invalid expression
                 SupportMessageAssertUtil.TryInvalidCompile(

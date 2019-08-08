@@ -42,30 +42,30 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 // invalid syntax
                 TryInvalidCompile(
                     env,
-                    "create dataflow MyGraph MySource => select",
+                    "create dataflow MyGraph MySource -> select",
                     "Incorrect syntax near 'select' (a reserved keyword) at line 1 column 36 [");
 
                 TryInvalidCompile(
                     env,
-                    "create dataflow MyGraph MySource => myout",
+                    "create dataflow MyGraph MySource -> myout",
                     "Incorrect syntax near end-of-input expecting a left curly bracket '{' but found end-of-input at line 1 column 41 [");
 
                 // duplicate data flow name
-                epl = "create dataflow MyGraph Emitter => outstream<?> {};\n" +
-                      "create dataflow MyGraph Emitter => outstream<?> {};\n";
+                epl = "create dataflow MyGraph Emitter -> outstream<?> {};\n" +
+                      "create dataflow MyGraph Emitter -> outstream<?> {};\n";
                 TryInvalidCompile(env, epl, "A dataflow by name 'MyGraph' has already been declared [");
 
                 // type not found
                 TryInvalidCompile(
                     env,
-                    "create dataflow MyGraph DefaultSupportSourceOp => outstream<ABC> {}",
+                    "create dataflow MyGraph DefaultSupportSourceOp -> outstream<ABC> {}",
                     "Failed to find event type 'ABC'");
 
                 // invalid schema (need not test all variants, same as create-schema)
                 TryInvalidCompile(
                     env,
                     "create dataflow MyGraph create schema DUMMY com.mycompany.DUMMY, " +
-                    "DefaultSupportSourceOp => outstream<?> {}",
+                    "DefaultSupportSourceOp -> outstream<?> {}",
                     "Could not load class by name 'com.mycompany.DUMMY', please check imports");
 
                 // can't find op
@@ -108,8 +108,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
 
                 // two incompatible input streams: different types
                 epl = "create dataflow MyGraph " +
-                      "DefaultSupportSourceOp => out1<SupportBean_A> {}\n" +
-                      "DefaultSupportSourceOp => out2<SupportBean_B> {}\n" +
+                      "DefaultSupportSourceOp -> out1<SupportBean_A> {}\n" +
+                      "DefaultSupportSourceOp -> out2<SupportBean_B> {}\n" +
                       "MyTestOp((out1, out2) as ABC) {}";
                 TryInvalidCompile(
                     env,
@@ -118,8 +118,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
 
                 // two incompatible input streams: one is wildcard
                 epl = "create dataflow MyGraph " +
-                      "DefaultSupportSourceOp => out1<?> {}\n" +
-                      "DefaultSupportSourceOp => out2<SupportBean_B> {}\n" +
+                      "DefaultSupportSourceOp -> out1<?> {}\n" +
+                      "DefaultSupportSourceOp -> out2<SupportBean_B> {}\n" +
                       "MyTestOp((out1, out2) as ABC) {}";
                 TryInvalidCompile(
                     env,
@@ -128,8 +128,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
 
                 // two incompatible input streams: underlying versus eventbean
                 epl = "create dataflow MyGraph " +
-                      "DefaultSupportSourceOp => out1<Eventbean<SupportBean_B>> {}\n" +
-                      "DefaultSupportSourceOp => out2<SupportBean_B> {}\n" +
+                      "DefaultSupportSourceOp -> out1<Eventbean<SupportBean_B>> {}\n" +
+                      "DefaultSupportSourceOp -> out2<SupportBean_B> {}\n" +
                       "MyTestOp((out1, out2) as ABC) {}";
                 TryInvalidCompile(
                     env,
@@ -138,7 +138,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
 
                 // output stream multiple type parameters
                 epl = "create dataflow MyGraph " +
-                      "DefaultSupportSourceOp => out1<SupportBean_A, SupportBean_B> {}";
+                      "DefaultSupportSourceOp -> out1<SupportBean_A, SupportBean_B> {}";
                 TryInvalidCompile(
                     env,
                     epl,
@@ -146,14 +146,14 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
 
                 // same output stream declared twice
                 epl = "create dataflow MyGraph " +
-                      "DefaultSupportSourceOp => out1<SupportBean_A>, out1<SupportBean_B> {}";
+                      "DefaultSupportSourceOp -> out1<SupportBean_A>, out1<SupportBean_B> {}";
                 TryInvalidCompile(
                     env,
                     epl,
                     "For operator 'DefaultSupportSourceOp' stream 'out1' typed 'SupportBean_A' is not the same type as stream 'out1' typed 'SupportBean_B'");
 
                 epl = "create dataflow MyGraph " +
-                      "DefaultSupportSourceOp => out1<Eventbean<SupportBean_A>>, out1<Eventbean<SupportBean_B>> {}";
+                      "DefaultSupportSourceOp -> out1<Eventbean<SupportBean_A>>, out1<Eventbean<SupportBean_B>> {}";
                 TryInvalidCompile(
                     env,
                     epl,
@@ -161,8 +161,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
 
                 // two incompatible output streams: underlying versus eventbean
                 epl = "create dataflow MyGraph " +
-                      "DefaultSupportSourceOp => out1<SupportBean_A> {}\n" +
-                      "DefaultSupportSourceOp => out1<SupportBean_B> {}\n" +
+                      "DefaultSupportSourceOp -> out1<SupportBean_A> {}\n" +
+                      "DefaultSupportSourceOp -> out1<SupportBean_B> {}\n" +
                       "MyTestOp(out1) {}";
                 TryInvalidCompile(
                     env,
@@ -172,7 +172,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 // same schema defined twice
                 epl = "create dataflow MyGraph " +
                       "create schema ABC (c0 string), create schema ABC (c1 string), " +
-                      "DefaultSupportSourceOp => out1<SupportBean_A> {}";
+                      "DefaultSupportSourceOp -> out1<SupportBean_A> {}";
                 TryInvalidCompile(
                     env,
                     epl,
@@ -186,7 +186,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
             {
                 // incompatible on-input method
                 var epl = "@Name('flow') create dataflow MyGraph " +
-                          "DefaultSupportSourceOp => out1<SupportBean_A> {}\n" +
+                          "DefaultSupportSourceOp -> out1<SupportBean_A> {}\n" +
                           "MySBInputOp(out1) {}";
                 TryInvalidInstantiate(
                     env,

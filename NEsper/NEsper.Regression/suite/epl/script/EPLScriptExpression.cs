@@ -70,7 +70,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.script
                 env.Statement("script").GetProperty(StatementProperty.STATEMENTTYPE));
 
             env.CompileDeploy(
-                "@Name('s0') select myScriptReturnsEvents().where(v => v.Id in ('Id1', 'Id3')) as c0 from SupportBean",
+                "@Name('s0') select myScriptReturnsEvents().where(v -> v.Id in ('Id1', 'Id3')) as c0 from SupportBean",
                 path);
             env.AddListener("s0");
 
@@ -342,7 +342,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.script
             RegressionEnvironment env,
             string expression)
         {
-            var epl = "@Name('s0') " + expression + " select callIt().countOf(v => v<6) as val0 from SupportBean";
+            var epl = "@Name('s0') " + expression + " select callIt().countOf(v -> v<6) as val0 from SupportBean";
             env.CompileDeploy(epl).AddListener("s0");
             Assert.AreEqual(typeof(int?), env.Statement("s0").EventType.GetPropertyType("val0"));
 
@@ -761,7 +761,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.script
                 // execution problem
                 env.UndeployAll();
                 env.CompileDeploy(
-                        "@Name('ABC') expression int[] js:callIt() [ var myarr = new Array(2, 8, 5, 9); myarr; ] select callIt().countOf(v => v < 6) from SupportBean")
+                        "@Name('ABC') expression int[] js:callIt() [ var myarr = new Array(2, 8, 5, 9); myarr; ] select callIt().countOf(v -> v < 6) from SupportBean")
                     .AddListener("ABC");
                 try {
                     env.SendEventBean(new SupportBean());

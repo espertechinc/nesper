@@ -46,12 +46,12 @@ namespace com.espertech.esper.regressionlib.suite.epl.spatial
                     env,
                     path,
                     "create index MyIndex on MyWindow((Id, py) pointregionquadtree(0, 0, 100, 100))",
-                    "Index of type 'pointregionquadtree' for column 0 that is provIding x-values expecting type System.Number but received type System.String");
+                    "Index of type 'pointregionquadtree' for column 0 that is providing x-values expecting type System.Number but received type System.String");
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
                     path,
                     "create index MyIndex on MyWindow((px, Id) pointregionquadtree(0, 0, 100, 100))",
-                    "Index of type 'pointregionquadtree' for column 1 that is provIding y-values expecting type System.Number but received type System.String");
+                    "Index of type 'pointregionquadtree' for column 1 that is providing y-values expecting type System.Number but received type System.String");
 
                 // invalid expressions for column or parameter
                 SupportMessageAssertUtil.TryInvalidCompile(
@@ -94,32 +94,32 @@ namespace com.espertech.esper.regressionlib.suite.epl.spatial
                     env,
                     path,
                     "create index MyIndex on MyWindow((px, py) pointregionquadtree('a', 0, 100, 100))",
-                    "Index of type 'pointregionquadtree' for parameter 0 that is provIding xMin-values expecting type System.Number but received type System.String");
+                    "Index of type 'pointregionquadtree' for parameter 0 that is providing xMin-values expecting type System.Number but received type System.String");
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
                     path,
                     "create index MyIndex on MyWindow((px, py) pointregionquadtree(0, 'a', 100, 100))",
-                    "Index of type 'pointregionquadtree' for parameter 1 that is provIding yMin-values expecting type System.Number but received type System.String");
+                    "Index of type 'pointregionquadtree' for parameter 1 that is providing yMin-values expecting type System.Number but received type System.String");
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
                     path,
                     "create index MyIndex on MyWindow((px, py) pointregionquadtree(0, 0, 'a', 100))",
-                    "Index of type 'pointregionquadtree' for parameter 2 that is provIding width-values expecting type System.Number but received type System.String");
+                    "Index of type 'pointregionquadtree' for parameter 2 that is providing width-values expecting type System.Number but received type System.String");
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
                     path,
                     "create index MyIndex on MyWindow((px, py) pointregionquadtree(0, 0, 100, 'a'))",
-                    "Index of type 'pointregionquadtree' for parameter 3 that is provIding height-values expecting type System.Number but received type System.String");
+                    "Index of type 'pointregionquadtree' for parameter 3 that is providing height-values expecting type System.Number but received type System.String");
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
                     path,
                     "create index MyIndex on MyWindow((px, py) pointregionquadtree(0, 0, 100, 100, 'a'))",
-                    "Index of type 'pointregionquadtree' for parameter 4 that is provIding leafCapacity-values expecting type System.Integer but received type System.String");
+                    "Index of type 'pointregionquadtree' for parameter 4 that is providing leafCapacity-values expecting type System.Integer but received type System.String");
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
                     path,
                     "create index MyIndex on MyWindow((px, py) pointregionquadtree(0, 0, 100, 100, 1, 'a'))",
-                    "Index of type 'pointregionquadtree' for parameter 5 that is provIding maxTreeHeight-values expecting type System.Integer but received type System.String");
+                    "Index of type 'pointregionquadtree' for parameter 5 that is providing maxTreeHeight-values expecting type System.Integer but received type System.String");
 
                 // invalid parameter value
                 SupportMessageAssertUtil.TryInvalidDeploy(
@@ -217,24 +217,24 @@ namespace com.espertech.esper.regressionlib.suite.epl.spatial
             {
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
-                    "select * from SupportEventRectangleWithOffset(point('a', 0).insIde(rectangle(0, 0, 0, 0)))",
-                    "Failed to validate filter expression 'point(\"a\",0).insIde(rectangle(0,0,0,0))': Error valIdating left-hand-sIde function 'point', expected a number-type result for expression parameter 0 but received System.String");
+                    "select * from SupportEventRectangleWithOffset(point('a', 0).inside(rectangle(0, 0, 0, 0)))",
+                    "Failed to validate filter expression 'point(\"a\",0).inside(rectangle(0,0,0,0))': Error valIdating left-hand-sIde function 'point', expected a number-type result for expression parameter 0 but received System.String");
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
-                    "select * from SupportEventRectangleWithOffset(point(0).insIde(rectangle(0, 0, 0, 0)))",
-                    "Failed to validate filter expression 'point(0).insIde(rectangle(0,0,0,0))': Error valIdating left-hand-sIde method 'point', expected 2 parameters but received 1 parameters");
+                    "select * from SupportEventRectangleWithOffset(point(0).inside(rectangle(0, 0, 0, 0)))",
+                    "Failed to validate filter expression 'point(0).inside(rectangle(0,0,0,0))': Error valIdating left-hand-sIde method 'point', expected 2 parameters but received 1 parameters");
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
-                    "select * from SupportEventRectangleWithOffset(point(0,0).insIde(rectangle('a', 0, 0, 0)))",
-                    "Failed to validate filter expression 'point(0,0).insIde(rectangle(\"a\",0,0,0))': Error valIdating right-hand-sIde function 'rectangle', expected a number-type result for expression parameter 0 but received System.String");
+                    "select * from SupportEventRectangleWithOffset(point(0,0).inside(rectangle('a', 0, 0, 0)))",
+                    "Failed to validate filter expression 'point(0,0).inside(rectangle(\"a\",0,0,0))': Error valIdating right-hand-sIde function 'rectangle', expected a number-type result for expression parameter 0 but received System.String");
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
-                    "select * from SupportEventRectangleWithOffset(point(0,0).insIde(rectangle(0)))",
-                    "Failed to validate filter expression 'point(0,0).insIde(rectangle(0))': Error valIdating right-hand-sIde function 'rectangle', expected 4 parameters but received 1 parameters");
+                    "select * from SupportEventRectangleWithOffset(point(0,0).inside(rectangle(0)))",
+                    "Failed to validate filter expression 'point(0,0).inside(rectangle(0))': Error valIdating right-hand-sIde function 'rectangle', expected 4 parameters but received 1 parameters");
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
-                    "select * from SupportEventRectangleWithOffset(point(0,0).insIde(0))",
-                    "Failed to validate filter expression 'point(0,0).insIde(0)': point.insIde requires a single rectangle as parameter");
+                    "select * from SupportEventRectangleWithOffset(point(0,0).inside(0))",
+                    "Failed to validate filter expression 'point(0,0).inside(0)': point.inside requires a single rectangle as parameter");
             }
         }
 
@@ -246,9 +246,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.spatial
                     "create table PointTable(pointId string primary key, px double, py double);\n" +
                     "create index PointIndex on PointTable((px, py) pointregionquadtree(0, 0, 100, 100));\n" +
                     "create schema RectangleEvent(rx double, ry double, w double, h double);\n" +
-                    "on RectangleEvent select pointId from PointTable where point(px, py).insIde(rectangle(rx, ry, w, h));" +
+                    "on RectangleEvent select pointId from PointTable where point(px, py).inside(rectangle(rx, ry, w, h));" +
                     "expression myQuadtreeSettings { pointregionquadtree(0, 0, 100, 100) } \n" +
-                    "select * from SupportSpatialAABB(point(0, 0, filterindex:myQuadtreeSettings).insIde(rectangle(x, y, width, height)));\n";
+                    "select * from SupportSpatialAABB(point(0, 0, filterindex:myQuadtreeSettings).inside(rectangle(x, y, width, height)));\n";
                 env.CompileDeploy(epl).UndeployAll();
             }
         }
@@ -260,53 +260,53 @@ namespace com.espertech.esper.regressionlib.suite.epl.spatial
                 // unrecognized named parameter
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
-                    "select * from SupportSpatialAABB#keepall where point(0, 0, a:1).insIde(rectangle(x, y, width, height))",
-                    "Error valIdating expression: Failed to validate filter expression 'point(0,0,a:1).insIde(rectangle(x,y...(50 chars)': point does not accept 'a' as a named parameter");
+                    "select * from SupportSpatialAABB#keepall where point(0, 0, a:1).inside(rectangle(x, y, width, height))",
+                    "Error valIdating expression: Failed to validate filter expression 'point(0,0,a:1).inside(rectangle(x,y...(50 chars)': point does not accept 'a' as a named parameter");
 
                 // not a filter
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
-                    "expression myindex {pointregionquadtree(0, 0, 100, 100)} select * from SupportSpatialAABB#keepall where point(0, 0, filterindex:myindex).insIde(rectangle(x, y, width, height))",
+                    "expression myindex {pointregionquadtree(0, 0, 100, 100)} select * from SupportSpatialAABB#keepall where point(0, 0, filterindex:myindex).inside(rectangle(x, y, width, height))",
                     "Error valIdating expression: Failed to validate filter expression 'point(0,0,filterindex:myindex()).in...(68 chars)': The 'filterindex' named parameter can only be used in in filter expressions");
 
                 // invalid index expression
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
-                    "select * from SupportSpatialAABB(point(0, 0, filterindex:1).insIde(rectangle(x, y, width, height)))",
-                    "Failed to validate filter expression 'point(0,0,filterindex:1).insIde(rec...(60 chars)': Named parameter 'filterindex' requires an expression name");
+                    "select * from SupportSpatialAABB(point(0, 0, filterindex:1).inside(rectangle(x, y, width, height)))",
+                    "Failed to validate filter expression 'point(0,0,filterindex:1).inside(rec...(60 chars)': Named parameter 'filterindex' requires an expression name");
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
-                    "select * from SupportSpatialAABB(point(0, 0, filterindex:dummy).insIde(rectangle(x, y, width, height)))",
-                    "Failed to validate filter expression 'point(0,0,filterindex:dummy).insIde...(64 chars)': Named parameter 'filterindex' requires an expression name");
+                    "select * from SupportSpatialAABB(point(0, 0, filterindex:dummy).inside(rectangle(x, y, width, height)))",
+                    "Failed to validate filter expression 'point(0,0,filterindex:dummy).inside...(64 chars)': Named parameter 'filterindex' requires an expression name");
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
-                    "expression myindex {0} select * from SupportSpatialAABB(point(0, 0, filterindex:myindex).insIde(rectangle(x, y, width, height)))",
+                    "expression myindex {0} select * from SupportSpatialAABB(point(0, 0, filterindex:myindex).inside(rectangle(x, y, width, height)))",
                     "Failed to validate filter expression 'point(0,0,filterindex:myindex()).in...(68 chars)': Named parameter 'filterindex' requires an index expression");
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
-                    "expression myindex {dummy(0)} select * from SupportSpatialAABB(point(0, 0, filterindex:myindex).insIde(rectangle(x, y, width, height)))",
+                    "expression myindex {dummy(0)} select * from SupportSpatialAABB(point(0, 0, filterindex:myindex).inside(rectangle(x, y, width, height)))",
                     "Failed to validate filter expression 'point(0,0,filterindex:myindex()).in...(68 chars)': Unrecognized advanced-type index 'dummy'");
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
-                    "expression myindex {pointregionquadtree(0)} select * from SupportSpatialAABB(point(0, 0, filterindex:myindex).insIde(rectangle(x, y, width, height)))",
+                    "expression myindex {pointregionquadtree(0)} select * from SupportSpatialAABB(point(0, 0, filterindex:myindex).inside(rectangle(x, y, width, height)))",
                     "Failed to validate filter expression 'point(0,0,filterindex:myindex()).in...(68 chars)': Index of type 'pointregionquadtree' requires at least 4 parameters but received 1 [");
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
-                    "expression myindex {pointregionquadtree(0,0,0,0)} select * from SupportSpatialAABB(point(0, 0, filterindex:myindex).insIde(rectangle(x, y, width, height)))",
+                    "expression myindex {pointregionquadtree(0,0,0,0)} select * from SupportSpatialAABB(point(0, 0, filterindex:myindex).inside(rectangle(x, y, width, height)))",
                     "Failed to validate filter expression 'point(0,0,filterindex:myindex()).in...(68 chars)': Invalid value for index 'myindex' parameter 'width' received 0.0 and expected value>0");
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
-                    "expression myindex {pointregionquadtree(0,0,100,100).help()} select * from SupportSpatialAABB(point(0, 0, filterindex:myindex).insIde(rectangle(x, y, width, height)))",
+                    "expression myindex {pointregionquadtree(0,0,100,100).help()} select * from SupportSpatialAABB(point(0, 0, filterindex:myindex).inside(rectangle(x, y, width, height)))",
                     "Failed to validate filter expression 'point(0,0,filterindex:myindex()).in...(68 chars)': Named parameter 'filterindex' invalid chained index expression");
 
                 // filter-not-optimizable
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
-                    "expression myindex {pointregionquadtree(0, 0, 100, 100)} select * from SupportSpatialAABB(point(x, y, filterindex:myindex).insIde(rectangle(x, y, width, height)))",
-                    "Invalid filter-indexable expression 'x' in respect to index 'myindex': expected either a constant, context-builtin or property from a previous pattern match [expression myindex {pointregionquadtree(0, 0, 100, 100)} select * from SupportSpatialAABB(point(x, y, filterindex:myindex).insIde(rectangle(x, y, width, height)))]");
+                    "expression myindex {pointregionquadtree(0, 0, 100, 100)} select * from SupportSpatialAABB(point(x, y, filterindex:myindex).inside(rectangle(x, y, width, height)))",
+                    "Invalid filter-indexable expression 'x' in respect to index 'myindex': expected either a constant, context-builtin or property from a previous pattern match [expression myindex {pointregionquadtree(0, 0, 100, 100)} select * from SupportSpatialAABB(point(x, y, filterindex:myindex).inside(rectangle(x, y, width, height)))]");
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
-                    "expression myindex {pointregionquadtree(0, 0, 100, 100)} select * from SupportSpatialAABB(point(0, 0, filterindex:myindex).insIde(rectangle(0, y, width, height)))",
+                    "expression myindex {pointregionquadtree(0, 0, 100, 100)} select * from SupportSpatialAABB(point(0, 0, filterindex:myindex).inside(rectangle(0, y, width, height)))",
                     "Invalid filter-index lookup expression '0' in respect to index 'myindex': expected an event property");
             }
         }

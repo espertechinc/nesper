@@ -43,7 +43,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
             env.CompileDeploy(
                 "@Name('s0') select " +
                 methodName +
-                "(TheString).where(v => v.Id in ('Id1', 'Id3')) as c0 from SupportBean",
+                "(TheString).where(v -> v.Id in ('Id1', 'Id3')) as c0 from SupportBean",
                 path);
             env.AddListener("s0");
 
@@ -62,14 +62,14 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
             env.CompileDeploy("select myItemProducerInvalidNoType(TheString) as c0 from SupportBean");
             SupportMessageAssertUtil.TryInvalidCompile(
                 env,
-                "select myItemProducerInvalidNoType(TheString).where(v => v.Id='Id1') as c0 from SupportBean",
-                "Failed to validate select-clause expression 'myItemProducerInvalidNoType(theStri...(68 chars)': Method 'myItemProducerEventBeanArray' returns EventBean-array but does not provIde the event type name [");
+                "select myItemProducerInvalidNoType(TheString).where(v -> v.Id='Id1') as c0 from SupportBean",
+                "Failed to validate select-clause expression 'myItemProducerInvalidNoType(theStri...(68 chars)': Method 'myItemProducerEventBeanArray' returns EventBean-array but does not provide the event type name [");
 
             // test invalid: event type name invalid
             SupportMessageAssertUtil.TryInvalidCompile(
                 env,
-                "select myItemProducerInvalidWrongType(TheString).where(v => v.Id='Id1') as c0 from SupportBean",
-                "Failed to validate select-clause expression 'myItemProducerInvalidWrongType(theS...(74 chars)': Method 'myItemProducerEventBeanArray' returns event type 'dummy' and the event type cannot be found [select myItemProducerInvalidWrongType(TheString).where(v => v.Id='Id1') as c0 from SupportBean]");
+                "select myItemProducerInvalidWrongType(TheString).where(v -> v.Id='Id1') as c0 from SupportBean",
+                "Failed to validate select-clause expression 'myItemProducerInvalidWrongType(theS...(74 chars)': Method 'myItemProducerEventBeanArray' returns event type 'dummy' and the event type cannot be found [select myItemProducerInvalidWrongType(TheString).where(v -> v.Id='Id1') as c0 from SupportBean]");
 
             env.UndeployAll();
         }

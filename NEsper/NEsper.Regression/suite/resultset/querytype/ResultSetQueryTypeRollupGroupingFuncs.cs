@@ -144,7 +144,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
                 GroupingSupportFunc.Parameters.Clear();
 
                 // test uncorrelated subquery and expression-declaration and single-row func
-                var epl = "create expression myExpr {x=> '|' || x.Name || '|'};\n" +
+                var epl = "create expression myExpr {x-> '|' || x.Name || '|'};\n" +
                           "@Name('s0') select myfunc(" +
                           "  Name, Place, sum(count), grouping(Name), grouping(Place), grouping_Id(Name, Place)," +
                           "  (select refId from SupportCarInfoEvent#lastevent), " +

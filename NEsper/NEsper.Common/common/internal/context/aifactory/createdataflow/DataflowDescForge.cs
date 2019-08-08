@@ -84,10 +84,10 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createdataflow
             SAIFFInitializeSymbol symbols,
             CodegenClassScope classScope)
         {
-            var method = parent.MakeChild(typeof(IList<object>), typeof(DataflowDescForge), classScope);
-            method.Block.DeclareVar<IList<object>>(
+            var method = parent.MakeChild(typeof(IList<LogicalChannel>), typeof(DataflowDescForge), classScope);
+            method.Block.DeclareVar<IList<LogicalChannel>>(
                 "chnl",
-                NewInstance<List<object>>(Constant(logicalChannels.Count)));
+                NewInstance<List<LogicalChannel>>(Constant(logicalChannels.Count)));
             foreach (var channel in logicalChannels) {
                 method.Block.ExprDotMethod(Ref("chnl"), "Add", channel.Make(method, symbols, classScope));
             }
@@ -103,13 +103,12 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createdataflow
             CodegenClassScope classScope)
         {
             var method = parent.MakeChild(
-                typeof(LinkedHashSet<object>),
+                typeof(LinkedHashSet<int>),
                 typeof(DataflowDescForge),
                 classScope);
-            method.Block.DeclareVar<LinkedHashSet<object>>(
+            method.Block.DeclareVar<LinkedHashSet<int>>(
                 "order",
-                NewInstance<LinkedHashSet<object>>(
-                    Constant(CollectionUtil.CapacityHashMap(operatorBuildOrder.Count))));
+                NewInstance<LinkedHashSet<int>>());
             foreach (var entry in operatorBuildOrder) {
                 method.Block.ExprDotMethod(Ref("order"), "Add", Constant(entry));
             }
@@ -124,12 +123,10 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createdataflow
             SAIFFInitializeSymbol symbols,
             CodegenClassScope classScope)
         {
-            var method = parent.MakeChild(typeof(IDictionary<object, object>), typeof(DataflowDescForge), classScope);
-            method.Block.DeclareVar<IDictionary<object, object>>(
+            var method = parent.MakeChild(typeof(IDictionary<int, DataFlowOperatorFactory>), typeof(DataflowDescForge), classScope);
+            method.Block.DeclareVar<IDictionary<int, DataFlowOperatorFactory>>(
                 "fac",
-                NewInstance(
-                    typeof(Dictionary<object, object>),
-                    Constant(CollectionUtil.CapacityHashMap(operatorFactories.Count))));
+                NewInstance(typeof(Dictionary<int, DataFlowOperatorFactory>)));
             foreach (var entry in operatorFactories) {
                 method.Block.ExprDotMethod(
                     Ref("fac"),
@@ -148,12 +145,10 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createdataflow
             SAIFFInitializeSymbol symbols,
             CodegenClassScope classScope)
         {
-            var method = parent.MakeChild(typeof(IDictionary<object, object>), typeof(DataflowDescForge), classScope);
-            method.Block.DeclareVar<IDictionary<object, object>>(
+            var method = parent.MakeChild(typeof(IDictionary<int, OperatorMetadataDescriptor>), typeof(DataflowDescForge), classScope);
+            method.Block.DeclareVar<IDictionary<int, OperatorMetadataDescriptor>>(
                 "op",
-                NewInstance(
-                    typeof(Dictionary<object, object>),
-                    Constant(CollectionUtil.CapacityHashMap(operatorMetadata.Count))));
+                NewInstance(typeof(Dictionary<int, OperatorMetadataDescriptor>)));
             foreach (var entry in operatorMetadata) {
                 method.Block.ExprDotMethod(
                     Ref("op"),
@@ -172,12 +167,10 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createdataflow
             SAIFFInitializeSymbol symbols,
             CodegenClassScope classScope)
         {
-            var method = parent.MakeChild(typeof(IDictionary<object, object>), typeof(DataflowDescForge), classScope);
-            method.Block.DeclareVar<IDictionary<object, object>>(
+            var method = parent.MakeChild(typeof(IDictionary<string, EventType>), typeof(DataflowDescForge), classScope);
+            method.Block.DeclareVar<IDictionary<string, EventType>>(
                 "types",
-                NewInstance(
-                    typeof(Dictionary<object, object>),
-                    Constant(CollectionUtil.CapacityHashMap(declaredTypes.Count))));
+                NewInstance(typeof(Dictionary<string, EventType>)));
             foreach (var entry in declaredTypes) {
                 method.Block.ExprDotMethod(
                     Ref("types"),

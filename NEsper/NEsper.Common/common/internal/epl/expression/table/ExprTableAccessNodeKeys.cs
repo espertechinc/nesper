@@ -33,7 +33,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.table
         public override void ToPrecedenceFreeEPL(TextWriter writer)
         {
             ToPrecedenceFreeEPLInternal(writer);
-            writer.Write(".keys()");
+            writer.Write(".Keys()");
         }
 
         protected override void ValidateBindingInternal(ExprValidationContext validationContext)

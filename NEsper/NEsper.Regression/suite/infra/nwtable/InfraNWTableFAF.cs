@@ -413,7 +413,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 InsertInfra2Event(env, path, "X", 10);
                 InsertInfra2Event(env, path, "Y", 10);
 
-                query = "select distinct value from Infra1 as i1, Infra2 as i2 where i1.keyJoin = i2.keyJoin";
+                query = "select distinct value from Infra1 as i1, Infra2 as i2 where i1.KeyJoin = i2.KeyJoin";
                 fields = "value".SplitCsv();
                 result = env.CompileExecuteFAF(query, path);
                 EPAssertionUtil.AssertPropsPerRow(
@@ -719,11 +719,11 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 var path = SetupInfraJoin(env, namedWindow);
 
                 var queryAgg =
-                    "select w1.key, sum(value) from Infra1 w1, Infra2 w2 WHERE w1.keyJoin = w2.keyJoin GROUP BY w1.key order by w1.key";
-                var fieldsAgg = "w1.key,sum(value)".SplitCsv();
+                    "select w1.Key, sum(value) from Infra1 w1, Infra2 w2 WHERE w1.KeyJoin = w2.KeyJoin GROUP BY w1.Key order by w1.Key";
+                var fieldsAgg = "w1.Key,sum(value)".SplitCsv();
                 var queryNoagg =
-                    "select w1.key, w2.Value from Infra1 w1, Infra2 w2 where w1.keyJoin = w2.keyJoin and value = 1 order by w1.key";
-                var fieldsNoagg = "w1.key,w2.Value".SplitCsv();
+                    "select w1.Key, w2.Value from Infra1 w1, Infra2 w2 where w1.KeyJoin = w2.KeyJoin and value = 1 order by w1.Key";
+                var fieldsNoagg = "w1.Key,w2.Value".SplitCsv();
 
                 var result = env.CompileExecuteFAF(queryAgg, path).Array;
                 Assert.AreEqual(0, result.Length);

@@ -796,7 +796,7 @@ namespace com.espertech.esper.regressionlib.suite.context
 
                 var eplContext = "@Name('CTX') create context CtxInitiated " +
                                  "initiated by SupportBean sb " +
-                                 "terminated by pattern [SupportBean_S0(P00=sb.TheString) => SupportBean_S1(P10=sb.TheString)];\n";
+                                 "terminated by pattern [SupportBean_S0(P00=sb.TheString) -> SupportBean_S1(P10=sb.TheString)];\n";
                 var eplSelect = "@Name('S1') context CtxInitiated " +
                                 "select Id from SupportBean_S2(P20 = context.sb.TheString)";
                 env.CompileDeploy(eplContext + eplSelect).AddListener("S1");
@@ -870,7 +870,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 var path = new RegressionPath();
 
                 var eplContext = "@Name('CTX') create context CtxInitiated " +
-                                 "initiated by pattern [every s0=SupportBean_S0 => s1=SupportBean_S1(Id = s0.Id)]" +
+                                 "initiated by pattern [every s0=SupportBean_S0 -> s1=SupportBean_S1(Id = s0.Id)]" +
                                  "terminated after 1 minute";
                 env.CompileDeploy(eplContext, path);
 
@@ -1123,7 +1123,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                     env,
                     path,
                     milestone,
-                    "intBoxed = context.sb.Id",
+                    "IntBoxed = context.sb.Id",
                     new[] {
                         new object[] {10, true},
                         new object[] {9, false},
@@ -1179,7 +1179,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                     env,
                     path,
                     milestone,
-                    "intBoxed < context.sb.Id",
+                    "IntBoxed < context.sb.Id",
                     new[] {
                         new object[] {11, false}, new object[] {10, false}, new object[] {9, true},
                         new object[] {8, true}
@@ -1188,7 +1188,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                     env,
                     path,
                     milestone,
-                    "intBoxed <= context.sb.Id",
+                    "IntBoxed <= context.sb.Id",
                     new[] {
                         new object[] {11, false}, new object[] {10, true}, new object[] {9, true},
                         new object[] {8, true}
@@ -1197,7 +1197,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                     env,
                     path,
                     milestone,
-                    "intBoxed > context.sb.Id",
+                    "IntBoxed > context.sb.Id",
                     new[] {
                         new object[] {11, true}, new object[] {10, false}, new object[] {9, false},
                         new object[] {8, false}
@@ -1206,7 +1206,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                     env,
                     path,
                     milestone,
-                    "intBoxed >= context.sb.Id",
+                    "IntBoxed >= context.sb.Id",
                     new[] {
                         new object[] {11, true}, new object[] {10, true}, new object[] {9, false},
                         new object[] {8, false}
@@ -1216,7 +1216,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                     env,
                     path,
                     milestone,
-                    "intBoxed in (context.sb.Id)",
+                    "IntBoxed in (context.sb.Id)",
                     new[] {
                         new object[] {11, false}, new object[] {10, true}, new object[] {9, false},
                         new object[] {8, false}
@@ -1225,7 +1225,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                     env,
                     path,
                     milestone,
-                    "intBoxed between context.sb.Id and context.sb.Id",
+                    "IntBoxed between context.sb.Id and context.sb.Id",
                     new[] {
                         new object[] {11, false}, new object[] {10, true}, new object[] {9, false},
                         new object[] {8, false}
@@ -1241,14 +1241,14 @@ namespace com.espertech.esper.regressionlib.suite.context
                     env,
                     path,
                     milestone,
-                    "intBoxed != context.sb.Id",
+                    "IntBoxed != context.sb.Id",
                     new[] {new object[] {10, false}, new object[] {9, true}, new object[] {null, false}});
 
                 TryOperator(
                     env,
                     path,
                     milestone,
-                    "intBoxed not in (context.sb.Id)",
+                    "IntBoxed not in (context.sb.Id)",
                     new[] {
                         new object[] {11, true}, new object[] {10, false}, new object[] {9, true},
                         new object[] {8, true}
@@ -1257,7 +1257,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                     env,
                     path,
                     milestone,
-                    "intBoxed not between context.sb.Id and context.sb.Id",
+                    "IntBoxed not between context.sb.Id and context.sb.Id",
                     new[] {
                         new object[] {11, true}, new object[] {10, false}, new object[] {9, true},
                         new object[] {8, true}
@@ -1273,7 +1273,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                     env,
                     path,
                     milestone,
-                    "intBoxed is context.sb.Id",
+                    "IntBoxed is context.sb.Id",
                     new[] {new object[] {10, true}, new object[] {9, false}, new object[] {null, false}});
 
                 TryOperator(
@@ -1286,7 +1286,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                     env,
                     path,
                     milestone,
-                    "intBoxed is not context.sb.Id",
+                    "IntBoxed is not context.sb.Id",
                     new[] {new object[] {10, false}, new object[] {9, true}, new object[] {null, true}});
 
                 // try coercion

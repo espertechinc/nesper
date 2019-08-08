@@ -265,7 +265,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
             public void Run(RegressionEnvironment env)
             {
                 var stmtText =
-                    "@Name('s0') select s0.anyObject in (select * from SupportBean_S1#length(1000)) as value from SupportBeanArrayCollMap s0";
+                    "@Name('s0') select s0.AnyObject in (select * from SupportBean_S1#length(1000)) as value from SupportBeanArrayCollMap s0";
                 env.CompileDeployAddListenerMileZero(stmtText, "s0");
 
                 var s1 = new SupportBean_S1(100);

@@ -1955,12 +1955,12 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
                     "select count(*) from SupportBean#keepall where prev(0, IntPrimitive) = 5",
-                    "The 'prev' function may not occur in the where-clause or having-clause of a statement with aggregations as 'previous' does not provIde remove stream data; Use the 'first','last','window' or 'count' aggregation functions instead [select count(*) from SupportBean#keepall where prev(0, IntPrimitive) = 5]");
+                    "The 'prev' function may not occur in the where-clause or having-clause of a statement with aggregations as 'previous' does not provide remove stream data; Use the 'first','last','window' or 'count' aggregation functions instead [select count(*) from SupportBean#keepall where prev(0, IntPrimitive) = 5]");
 
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
                     "select count(*) from SupportBean#keepall having prev(0, IntPrimitive) = 5",
-                    "The 'prev' function may not occur in the where-clause or having-clause of a statement with aggregations as 'previous' does not provIde remove stream data; Use the 'first','last','window' or 'count' aggregation functions instead [select count(*) from SupportBean#keepall having prev(0, IntPrimitive) = 5]");
+                    "The 'prev' function may not occur in the where-clause or having-clause of a statement with aggregations as 'previous' does not provide remove stream data; Use the 'first','last','window' or 'count' aggregation functions instead [select count(*) from SupportBean#keepall having prev(0, IntPrimitive) = 5]");
             }
         }
     }

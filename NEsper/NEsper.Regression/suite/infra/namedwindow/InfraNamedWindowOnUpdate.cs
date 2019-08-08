@@ -85,7 +85,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
             {
                 var epl = "create window MyWindowUNP#keepall as SupportBean;\n" +
                           "insert into MyWindowUNP select * from SupportBean;\n" +
-                          "@Name('update') on SupportBean_S0 as sb " +
+                          "@Name('Update') on SupportBean_S0 as sb " +
                           "update MyWindowUNP as mywin" +
                           " set mywin.setIntPrimitive(10)," +
                           "     setBeanLongPrimitive999(mywin);\n";

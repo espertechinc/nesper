@@ -24,7 +24,7 @@ namespace com.espertech.esper.common.client.util
         OBJECTARRAY,
 
         /// <summary>
-        ///     Event representation is Map (any java.util.Map interface implementation).
+        ///     Event representation is Map (any IDictionary interface implementation).
         /// </summary>
         MAP,
 

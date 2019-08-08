@@ -80,7 +80,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.contained
                 env.CompileDeploy(stmtTextFive).AddListener("s5");
 
                 var stmtTextSix =
-                    "@Name('s6') select * from pattern [c=Cancel => o=MediaOrder(orderId = c.orderId)[books.book]]";
+                    "@Name('s6') select * from pattern [c=Cancel -> o=MediaOrder(orderId = c.orderId)[books.book]]";
                 env.CompileDeploy(stmtTextSix).AddListener("s6");
 
                 var stmtTextSeven =
@@ -88,15 +88,15 @@ namespace com.espertech.esper.regressionlib.suite.epl.contained
                 env.CompileDeploy(stmtTextSeven).AddListener("s7");
 
                 var stmtTextEight =
-                    "@Name('s8') select * from MediaOrder[select * from books.book][select reviewId, comment from review]";
+                    "@Name('s8') select * from MediaOrder[select * from books.book][select ReviewId, Comment from review]";
                 env.CompileDeploy(stmtTextEight).AddListener("s8");
 
                 var stmtTextNine =
-                    "@Name('s9') select * from MediaOrder[books.book as book][select book.*, reviewId, comment from review]";
+                    "@Name('s9') select * from MediaOrder[books.book as book][select book.*, ReviewId, Comment from review]";
                 env.CompileDeploy(stmtTextNine).AddListener("s9");
 
                 var stmtTextTen =
-                    "@Name('s10') select * from MediaOrder[books.book as book][select mediaOrder.*, bookId, reviewId from review] as mediaOrder";
+                    "@Name('s10') select * from MediaOrder[books.book as book][select mediaOrder.*, bookId, ReviewId from review] as mediaOrder";
                 env.CompileDeploy(stmtTextTen).AddListener("s10");
 
                 var path = new RegressionPath();
@@ -105,7 +105,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.contained
                     "    [select mediaOrder.* as mediaOrder, book.* as book, review.* as review from review as review] as mediaOrder";
                 env.CompileDeploy(stmtTextElevenZero, path);
                 var stmtTextElevenOne =
-                    "@Name('s11') select mediaOrder.orderId, book.bookId, review.reviewId from ReviewStream";
+                    "@Name('s11') select mediaOrder.orderId, book.BookId, review.ReviewId from ReviewStream";
                 env.CompileDeploy(stmtTextElevenOne, path).AddListener("s11");
 
                 var stmtTextTwelve =
@@ -132,32 +132,32 @@ namespace com.espertech.esper.regressionlib.suite.epl.contained
                     new[] {new object[] {2L}});
                 EPAssertionUtil.AssertPropsPerRow(
                     env.Listener("s5").LastNewData,
-                    "reviewId".SplitCsv(),
+                    "ReviewId".SplitCsv(),
                     new[] {new object[] {"1"}});
                 Assert.IsFalse(env.Listener("s6").IsInvoked);
                 EPAssertionUtil.AssertPropsPerRow(
                     env.Listener("s7").LastNewData,
-                    "orderId,bookId,reviewId".SplitCsv(),
+                    "orderId,bookId,ReviewId".SplitCsv(),
                     new[] {new object[] {"PO200901", "B001", "1"}});
                 EPAssertionUtil.AssertPropsPerRow(
                     env.Listener("s8").LastNewData,
-                    "reviewId,bookId".SplitCsv(),
+                    "ReviewId,bookId".SplitCsv(),
                     new[] {new object[] {"1", "B001"}});
                 EPAssertionUtil.AssertPropsPerRow(
                     env.Listener("s9").LastNewData,
-                    "reviewId,bookId".SplitCsv(),
+                    "ReviewId,bookId".SplitCsv(),
                     new[] {new object[] {"1", "B001"}});
                 EPAssertionUtil.AssertPropsPerRow(
                     env.Listener("s10").LastNewData,
-                    "reviewId,bookId".SplitCsv(),
+                    "ReviewId,bookId".SplitCsv(),
                     new[] {new object[] {"1", "B001"}});
                 EPAssertionUtil.AssertPropsPerRow(
                     env.Listener("s11").LastNewData,
-                    "mediaOrder.orderId,book.bookId,review.reviewId".SplitCsv(),
+                    "mediaOrder.orderId,book.BookId,review.ReviewId".SplitCsv(),
                     new[] {new object[] {"PO200901", "B001", "1"}});
                 EPAssertionUtil.AssertPropsPerRow(
                     env.Listener("s12").LastNewData,
-                    "reviewId".SplitCsv(),
+                    "ReviewId".SplitCsv(),
                     new[] {new object[] {"1"}});
 
                 env.UndeployAll();
@@ -180,10 +180,10 @@ namespace com.espertech.esper.regressionlib.suite.epl.contained
             public void Run(RegressionEnvironment env)
             {
                 var stmtText =
-                    "@Name('s0') select book.bookId,item.itemId from MediaOrder[books.book] as book, MediaOrder[items.item] as item where productId = bookId order by bookId, item.itemId asc";
+                    "@Name('s0') select book.BookId,item.itemId from MediaOrder[books.book] as book, MediaOrder[items.item] as item where productId = bookId order by bookId, item.itemId asc";
                 env.CompileDeploy(stmtText).AddListener("s0");
 
-                var fields = "book.bookId,item.itemId".SplitCsv();
+                var fields = "book.BookId,item.itemId".SplitCsv();
                 env.SendEventXMLDOM(eventDocOne, "MediaOrder");
                 PrintRows(env, env.Listener("s0").LastNewData);
                 EPAssertionUtil.AssertPropsPerRow(
@@ -263,10 +263,10 @@ namespace com.espertech.esper.regressionlib.suite.epl.contained
             public void Run(RegressionEnvironment env)
             {
                 var stmtText =
-                    "@Name('s0') select book.bookId,item.itemId from MediaOrder[books.book] as book left outer join MediaOrder[items.item] as item on productId = bookId order by bookId, item.itemId asc";
+                    "@Name('s0') select book.BookId,item.itemId from MediaOrder[books.book] as book left outer join MediaOrder[items.item] as item on productId = bookId order by bookId, item.itemId asc";
                 env.CompileDeploy(stmtText).AddListener("s0");
 
-                var fields = "book.bookId,item.itemId".SplitCsv();
+                var fields = "book.BookId,item.itemId".SplitCsv();
                 env.SendEventXMLDOM(eventDocTwo, "MediaOrder");
                 EPAssertionUtil.AssertPropsPerRow(
                     env.Listener("s0").GetAndResetLastNewData(),
@@ -340,10 +340,10 @@ namespace com.espertech.esper.regressionlib.suite.epl.contained
             public void Run(RegressionEnvironment env)
             {
                 var stmtText =
-                    "@Name('s0') select orderId, book.bookId,item.itemId from MediaOrder[books.book] as book full outer join MediaOrder[select orderId, * from items.item] as item on productId = bookId order by bookId, item.itemId asc";
+                    "@Name('s0') select orderId, book.BookId,item.itemId from MediaOrder[books.book] as book full outer join MediaOrder[select orderId, * from items.item] as item on productId = bookId order by bookId, item.itemId asc";
                 env.CompileDeploy(stmtText).AddListener("s0");
 
-                var fields = "book.bookId,item.itemId".SplitCsv();
+                var fields = "book.BookId,item.itemId".SplitCsv();
                 env.SendEventXMLDOM(eventDocTwo, "MediaOrder");
                 EPAssertionUtil.AssertPropsPerRow(
                     env.Listener("s0").GetAndResetLastNewData(),

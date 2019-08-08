@@ -40,28 +40,28 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
             TryInvalidCompile(
                 env,
                 epl,
-                "Failed to validate select-clause expression 'utildate.set(\"invalid\")': Parameters mismatch for date-time method 'set', the method requires an expression provIding a string-type calendar field name and an expression provIding an integer-type value");
+                "Failed to validate select-clause expression 'utildate.set(\"invalid\")': Parameters mismatch for date-time method 'set', the method requires an expression providing a string-type calendar field name and an expression providing an integer-type value");
 
             // invalid lambda parameter
-            epl = "select utildate.set(x => true) from SupportDateTime";
+            epl = "select utildate.set(x -> true) from SupportDateTime";
             TryInvalidCompile(
                 env,
                 epl,
-                "Failed to validate select-clause expression 'utildate.set()': Parameters mismatch for date-time method 'set', the method requires an expression provIding a string-type calendar field name and an expression provIding an integer-type value");
+                "Failed to validate select-clause expression 'utildate.set()': Parameters mismatch for date-time method 'set', the method requires an expression providing a string-type calendar field name and an expression providing an integer-type value");
 
             // invalid no parameter
             epl = "select utildate.set() from SupportDateTime";
             TryInvalidCompile(
                 env,
                 epl,
-                "Failed to validate select-clause expression 'utildate.set()': Parameters mismatch for date-time method 'set', the method requires an expression provIding a string-type calendar field name and an expression provIding an integer-type value");
+                "Failed to validate select-clause expression 'utildate.set()': Parameters mismatch for date-time method 'set', the method requires an expression providing a string-type calendar field name and an expression providing an integer-type value");
 
             // invalid wrong parameter
             epl = "select utildate.set(1) from SupportDateTime";
             TryInvalidCompile(
                 env,
                 epl,
-                "Failed to validate select-clause expression 'utildate.set(1)': Parameters mismatch for date-time method 'set', the method requires an expression provIding a string-type calendar field name and an expression provIding an integer-type value");
+                "Failed to validate select-clause expression 'utildate.set(1)': Parameters mismatch for date-time method 'set', the method requires an expression providing a string-type calendar field name and an expression providing an integer-type value");
 
             // invalid wrong parameter
             epl = "select utildate.between('a', 'b') from SupportDateTime";

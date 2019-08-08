@@ -786,17 +786,17 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
                 var milestone = new AtomicLong();
 
                 var epl = "@Name('s0') @Name('s0')select (" +
-                          "select sum(IntPrimitive) as sumi from SupportBean#keepall where TheString = st2.key2 and IntPrimitive between s0.P01Long and s1.P11Long) " +
+                          "select sum(IntPrimitive) as sumi from SupportBean#keepall where TheString = st2.Key2 and IntPrimitive between s0.P01Long and s1.P11Long) " +
                           "from SupportBean_ST2#lastevent st2, SupportBean_ST0#lastevent s0, SupportBean_ST1#lastevent s1";
                 TryAssertion3StreamKeyRangeCoercion(env, milestone, epl, true);
 
                 epl = "@Name('s0') select (" +
-                      "select sum(IntPrimitive) as sumi from SupportBean#keepall where TheString = st2.key2 and s1.P11Long >= IntPrimitive and s0.P01Long <= IntPrimitive) " +
+                      "select sum(IntPrimitive) as sumi from SupportBean#keepall where TheString = st2.Key2 and s1.P11Long >= IntPrimitive and s0.P01Long <= IntPrimitive) " +
                       "from SupportBean_ST2#lastevent st2, SupportBean_ST0#lastevent s0, SupportBean_ST1#lastevent s1";
                 TryAssertion3StreamKeyRangeCoercion(env, milestone, epl, false);
 
                 epl = "@Name('s0') select (" +
-                      "select sum(IntPrimitive) as sumi from SupportBean#keepall where TheString = st2.key2 and s1.P11Long > IntPrimitive) " +
+                      "select sum(IntPrimitive) as sumi from SupportBean#keepall where TheString = st2.Key2 and s1.P11Long > IntPrimitive) " +
                       "from SupportBean_ST2#lastevent st2, SupportBean_ST0#lastevent s0, SupportBean_ST1#lastevent s1";
                 env.CompileDeployAddListenerMile(epl, "s0", milestone.GetAndIncrement());
 
@@ -809,7 +809,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
 
                 env.UndeployAll();
                 epl = "@Name('s0') select (" +
-                      "select sum(IntPrimitive) as sumi from SupportBean#keepall where TheString = st2.key2 and s1.P11Long < IntPrimitive) " +
+                      "select sum(IntPrimitive) as sumi from SupportBean#keepall where TheString = st2.Key2 and s1.P11Long < IntPrimitive) " +
                       "from SupportBean_ST2#lastevent st2, SupportBean_ST0#lastevent s0, SupportBean_ST1#lastevent s1";
                 env.CompileDeployAddListenerMile(epl, "s0", milestone.GetAndIncrement());
 

@@ -32,9 +32,9 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
             {
                 string[] fields = {"val0", "val1", "val2"};
                 var eplFragment = "@Name('s0') select " +
-                                  "Contained.aggregate(0, (result, item) => result + item.P00) as val0, " +
-                                  "Contained.aggregate('', (result, item) => result || ', ' || item.Id) as val1, " +
-                                  "Contained.aggregate('', (result, item) => result || (case when result='' then '' else ',' end) || item.Id) as val2 " +
+                                  "Contained.aggregate(0, (result, item) -> result + item.P00) as val0, " +
+                                  "Contained.aggregate('', (result, item) -> result || ', ' || item.Id) as val1, " +
+                                  "Contained.aggregate('', (result, item) -> result || (case when result='' then '' else ',' end) || item.Id) as val2 " +
                                   " from SupportBean_ST0_Container";
                 env.CompileDeploy(eplFragment).AddListener("s0");
 
@@ -77,7 +77,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
             {
                 var fields = "val0".SplitCsv();
                 var eplFragment = "@Name('s0') select " +
-                                  "Strvals.aggregate('', (result, item) => result || '+' || item) as val0 " +
+                                  "Strvals.aggregate('', (result, item) -> result || '+' || item) as val0 " +
                                   "from SupportCollection";
                 env.CompileDeploy(eplFragment).AddListener("s0");
 

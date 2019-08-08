@@ -242,7 +242,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                           "inner join " +
                           "pattern [" +
                           "every-distinct(fooA.TheString) fooA=SupportBean(IntPrimitive=1)" +
-                          "=>" +
+                          "->" +
                           "every-distinct(wooA.TheString) wooA=SupportBean(IntPrimitive=2)" +
                           " where timer:within(1 hour)" +
                           "]#time(1 hour) as fooWooPair " +
@@ -276,7 +276,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                           "inner join " +
                           "pattern [" +
                           "every-distinct(fooA.TheString) fooA=SupportBean(IntPrimitive=1)" +
-                          "=>" +
+                          "->" +
                           "every-distinct(wooA.TheString) wooA=SupportBean(IntPrimitive=2)" +
                           " where timer:within(1 hour)" +
                           "]#time(1 hour) as fooWooPair " +

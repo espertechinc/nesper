@@ -133,34 +133,34 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 testCaseList.AddTest(testCase);
 
                 // Try with an followed-by as a second argument
-                testCase = new EventExpressionCase("b=SupportBean_B => timer:interval(0.001)");
+                testCase = new EventExpressionCase("b=SupportBean_B -> timer:interval(0.001)");
                 testCase.Add("C1", "b", events.GetEvent("B1"));
                 testCaseList.AddTest(testCase);
 
-                testCase = new EventExpressionCase("b=SupportBean_B => timer:interval(0)");
+                testCase = new EventExpressionCase("b=SupportBean_B -> timer:interval(0)");
                 testCase.Add("B1", "b", events.GetEvent("B1"));
                 testCaseList.AddTest(testCase);
 
-                testCase = new EventExpressionCase("b=SupportBean_B => timer:interval(1 sec)");
+                testCase = new EventExpressionCase("b=SupportBean_B -> timer:interval(1 sec)");
                 testCase.Add("C1", "b", events.GetEvent("B1"));
                 testCaseList.AddTest(testCase);
 
-                testCase = new EventExpressionCase("b=SupportBean_B => timer:interval(1.001)");
+                testCase = new EventExpressionCase("b=SupportBean_B -> timer:interval(1.001)");
                 testCase.Add("B2", "b", events.GetEvent("B1"));
                 testCaseList.AddTest(testCase);
 
                 // Try in a 3-way followed by
-                testCase = new EventExpressionCase("b=SupportBean_B() => timer:interval(6.000) => d=SupportBean_D");
+                testCase = new EventExpressionCase("b=SupportBean_B() => timer:interval(6.000) -> d=SupportBean_D");
                 testCase.Add("D2", "b", events.GetEvent("B1"), "d", events.GetEvent("D2"));
                 testCaseList.AddTest(testCase);
 
                 testCase = new EventExpressionCase(
-                    "every (b=SupportBean_B() => timer:interval(2.001) => d=SupportBean_D())");
+                    "every (b=SupportBean_B() => timer:interval(2.001) -> d=SupportBean_D())");
                 testCase.Add("D1", "b", events.GetEvent("B1"), "d", events.GetEvent("D1"));
                 testCaseList.AddTest(testCase);
 
                 testCase = new EventExpressionCase(
-                    "every (b=SupportBean_B() => timer:interval(2.000) => d=SupportBean_D())");
+                    "every (b=SupportBean_B() => timer:interval(2.000) -> d=SupportBean_D())");
                 testCase.Add("D1", "b", events.GetEvent("B1"), "d", events.GetEvent("D1"));
                 testCase.Add("D3", "b", events.GetEvent("B3"), "d", events.GetEvent("D3"));
                 testCaseList.AddTest(testCase);
@@ -304,7 +304,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
 
                 // Set up a timer:within
                 env.CompileDeploy(
-                    "@Name('s0') select a.TheString as Id from pattern [every a=SupportBean => timer:interval(IntPrimitive seconds)]");
+                    "@Name('s0') select a.TheString as Id from pattern [every a=SupportBean -> timer:interval(IntPrimitive seconds)]");
                 env.AddListener("s0");
 
                 SendTimer(10000, env);
@@ -334,7 +334,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
 
                 // Set up a timer:within
                 env.CompileDeploy(
-                    "@Name('s0') select a[0].TheString as a0Id, a[1].TheString as a1Id from pattern [ [2] a=SupportBean => timer:interval(a[0].IntPrimitive+a[1].IntPrimitive seconds)]");
+                    "@Name('s0') select a[0].TheString as a0Id, a[1].TheString as a1Id from pattern [ [2] a=SupportBean -> timer:interval(a[0].IntPrimitive+a[1].IntPrimitive seconds)]");
                 env.AddListener("s0");
 
                 SendTimer(10000, env);

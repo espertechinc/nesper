@@ -375,7 +375,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 testCase.Add("C1", "b[0]", events.GetEvent("B1"), "b[1]", null);
                 testCaseList.AddTest(testCase);
 
-                testCase = new EventExpressionCase("c=SupportBean_C => [2] b=SupportBean_B => d=SupportBean_D");
+                testCase = new EventExpressionCase("c=SupportBean_C => [2] b=SupportBean_B -> d=SupportBean_D");
                 testCase.Add(
                     "D3",
                     "c",
@@ -597,7 +597,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 EventBean theEvent;
 
                 stmt =
-                    "@Name('s0') select * from pattern [a=SupportBean_A until b=SupportBean_B => c=SupportBean_C(Id = ('C' || a[0].Id || a[1].Id || b.Id))]";
+                    "@Name('s0') select * from pattern [a=SupportBean_A until b=SupportBean_B -> c=SupportBean_C(Id = ('C' || a[0].Id || a[1].Id || b.Id))]";
                 env.CompileDeploy(stmt).AddListener("s0");
 
                 object eventA1 = new SupportBean_A("A1");
@@ -632,7 +632,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
 
                 // Test equals-optimization with array event
                 stmt =
-                    "@Name('s0') select * from pattern [a=SupportBean_A until b=SupportBean_B => c=SupportBean(TheString = a[1].Id)]";
+                    "@Name('s0') select * from pattern [a=SupportBean_A until b=SupportBean_B -> c=SupportBean(TheString = a[1].Id)]";
                 env.CompileDeploy(stmt).AddListener("s0");
 
                 env.SendEventBean(new SupportBean_A("A1"));
@@ -649,7 +649,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
 
                 // Test in-optimization
                 stmt =
-                    "@Name('s0') select * from pattern [a=SupportBean_A until b=SupportBean_B => c=SupportBean(TheString in(a[2].Id))]";
+                    "@Name('s0') select * from pattern [a=SupportBean_A until b=SupportBean_B -> c=SupportBean(TheString in(a[2].Id))]";
                 env.CompileDeploy(stmt).AddListener("s0");
 
                 env.SendEventBean(new SupportBean_A("A1"));
@@ -667,7 +667,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
 
                 // Test not-in-optimization
                 stmt =
-                    "@Name('s0') select * from pattern [a=SupportBean_A until b=SupportBean_B => c=SupportBean(TheString!=a[0].Id and TheString!=a[1].Id and TheString!=a[2].Id)]";
+                    "@Name('s0') select * from pattern [a=SupportBean_A until b=SupportBean_B -> c=SupportBean(TheString!=a[0].Id and TheString!=a[1].Id and TheString!=a[2].Id)]";
                 env.CompileDeploy(stmt).AddListener("s0");
 
                 env.SendEventBean(new SupportBean_A("A1"));
@@ -687,7 +687,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
 
                 // Test range-optimization
                 stmt =
-                    "@Name('s0') select * from pattern [a=SupportBean(TheString like 'A%') until b=SupportBean(TheString like 'B%') => c=SupportBean(IntPrimitive between a[0].IntPrimitive and a[1].IntPrimitive)]";
+                    "@Name('s0') select * from pattern [a=SupportBean(TheString like 'A%') until b=SupportBean(TheString like 'B%') -> c=SupportBean(IntPrimitive between a[0].IntPrimitive and a[1].IntPrimitive)]";
                 env.CompileDeploy(stmt).AddListener("s0");
 
                 env.SendEventBean(new SupportBean("A1", 5));
@@ -728,7 +728,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 // test with timer:interval
                 env.AdvanceTime(0);
                 var query =
-                    "@Name('s0') select * from pattern [every ([2:]e1=SupportBean(TheString='2') until timer:interval(5))=>([2:]e2=SupportBean(TheString='3') until timer:interval(2))]";
+                    "@Name('s0') select * from pattern [every ([2:]e1=SupportBean(TheString='2') until timer:interval(5))->([2:]e2=SupportBean(TheString='3') until timer:interval(2))]";
                 env.CompileDeploy(query).AddListener("s0");
 
                 env.SendEventBean(new SupportBean("2", 0));
@@ -749,8 +749,8 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 env.UndeployAll();
 
                 var epl = "@Name('s0') select * from pattern [ every [2] A=SupportBean(TheString='1') " +
-                          "=> [2] B=SupportBean(TheString='2' and IntPrimitive=A[0].IntPrimitive)" +
-                          "=> [2] C=SupportBean(TheString='3' and IntPrimitive=A[0].IntPrimitive)]";
+                          "-> [2] B=SupportBean(TheString='2' and IntPrimitive=A[0].IntPrimitive)" +
+                          "-> [2] C=SupportBean(TheString='3' and IntPrimitive=A[0].IntPrimitive)]";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 env.SendEventBean(new SupportBean("1", 10));
@@ -825,7 +825,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 ValidateStmt(env, stmtThree, 5, true, 2);
 
                 // test followed-by - bounded
-                env.CompileDeploy("@Name('s0') select * from pattern [s0=SupportBean_S0 => [s0.Id] b=SupportBean]")
+                env.CompileDeploy("@Name('s0') select * from pattern [s0=SupportBean_S0 -> [s0.Id] b=SupportBean]")
                     .AddListener("s0");
                 env.SendEventBean(new SupportBean_S0(2));
                 env.SendEventBean(new SupportBean("E1", 1));
@@ -850,7 +850,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 // test exactly-1
                 env.AdvanceTime(0);
                 var eplExact1 =
-                    "@Name('s0') select * from pattern [a=SupportBean_A => [1] every (timer:interval(10) and not SupportBean_B)]";
+                    "@Name('s0') select * from pattern [a=SupportBean_A -> [1] every (timer:interval(10) and not SupportBean_B)]";
                 env.CompileDeploy(eplExact1).AddListener("s0");
 
                 env.AdvanceTime(5000);
@@ -980,11 +980,11 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                     "Failed to validate filter expression 'a[0].Id=\"a\"': Property named 'a[0].Id' is not valid in any stream");
                 TryInvalidPattern(
                     env,
-                    "a=SupportBean_A => SupportBean_B(a[0].Id='a')",
+                    "a=SupportBean_A -> SupportBean_B(a[0].Id='a')",
                     "Failed to validate filter expression 'a[0].Id=\"a\"': Property named 'a[0].Id' is not valid in any stream");
                 TryInvalidPattern(
                     env,
-                    "(a=SupportBean_A until c=SupportBean_B) => c=SupportBean_C",
+                    "(a=SupportBean_A until c=SupportBean_B) -> c=SupportBean_C",
                     "Tag 'c' for event 'SupportBean_C' has already been declared for events of type " +
                     typeof(SupportBean_B).Name);
                 TryInvalidPattern(
@@ -993,15 +993,15 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                     "Tag 'a' for event 'SupportBean_A' used in the repeat-until operator cannot also appear in other filter expressions");
                 TryInvalidPattern(
                     env,
-                    "a=SupportBean => [a.TheString] b=SupportBean",
+                    "a=SupportBean -> [a.TheString] b=SupportBean",
                     "Match-until bounds value expressions must return a numeric value");
                 TryInvalidPattern(
                     env,
-                    "a=SupportBean => [:a.TheString] b=SupportBean",
+                    "a=SupportBean -> [:a.TheString] b=SupportBean",
                     "Match-until bounds value expressions must return a numeric value");
                 TryInvalidPattern(
                     env,
-                    "a=SupportBean => [a.TheString:1] b=SupportBean",
+                    "a=SupportBean -> [a.TheString:1] b=SupportBean",
                     "Match-until bounds value expressions must return a numeric value");
             }
         }

@@ -85,7 +85,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                 env.Runtime.VariableService.SetVariableValue(env.DeploymentId("var"), "varmsec", 1000);
                 env.SendEventBean(SupportDateTime.Make(startTime));
 
-                //System.out.println("===> " + SupportDateTime.print(env.Listener("s0").assertOneGetNew().Get("val4")));
+                //System.out.println("==-> " + SupportDateTime.print(env.Listener("s0").assertOneGetNew().Get("val4")));
                 expectedPlus = SupportDateTime.GetArrayCoerced(
                     "2002-05-30T09:00:01.000",
                     "long",

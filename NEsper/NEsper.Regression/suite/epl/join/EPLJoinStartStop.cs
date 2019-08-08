@@ -97,7 +97,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                     invalidJoin,
                     "Joins require that at least one view is specified for each stream, no view was specified for SupportBean_B");
 
-                invalidJoin = "select * from SupportBean_A#time(5 min), pattern[SupportBean_A=>SupportBean_B]";
+                invalidJoin = "select * from SupportBean_A#time(5 min), pattern[SupportBean_A->SupportBean_B]";
                 TryInvalidCompile(
                     env,
                     invalidJoin,

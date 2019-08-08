@@ -346,7 +346,7 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
                     null,
                     new[] {
                         "select * from ABC",
-                        "/* Final comment */"
+                        "/* Final Comment */"
                     },
                     new[] {false, true},
                     new[] {3, 8},

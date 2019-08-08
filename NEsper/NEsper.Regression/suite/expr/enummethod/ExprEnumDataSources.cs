@@ -101,7 +101,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
         private static SupportBean_ST0[] ToArray(ICollection<SupportBean_ST0> items)
         {
             if (!items.IsEmpty() && items.First() is EventBean) {
-                Assert.Fail("Iterator provIdes EventBean instances");
+                Assert.Fail("Iterator provides EventBean instances");
             }
 
             return items.ToArray();
@@ -139,7 +139,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
             {
                 var epl = "create schema OrderDetail(itemId string);\n" +
                           "create schema OrderEvent(details OrderDetail[]);\n" +
-                          "@Name('s0') select details.where(i => i.itemId = '001') as c0 from OrderEvent;\n";
+                          "@Name('s0') select details.where(i -> i.itemId = '001') as c0 from OrderEvent;\n";
                 env.CompileDeployWBusPublicType(epl, new RegressionPath()).AddListener("s0");
 
                 var detailOne = CollectionUtil.PopulateNameValueMap("itemId", "002");
@@ -160,9 +160,9 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
             public void Run(RegressionEnvironment env)
             {
                 var epl = "create objectarray schema StockTick(Id string, Price int);\n" +
-                          "insert into TicksLarge select window(*).where(e => e.Price > 100) @eventbean as ticksLargePrice\n" +
+                          "insert into TicksLarge select window(*).where(e -> e.Price > 100) @eventbean as ticksLargePrice\n" +
                           "from StockTick#time(10) having count(*) > 2;\n" +
-                          "@Name('s0') select ticksLargePrice.where(e => e.Price < 200) as ticksLargeLess200 from TicksLarge;\n";
+                          "@Name('s0') select ticksLargePrice.where(e -> e.Price < 200) as ticksLargeLess200 from TicksLarge;\n";
                 env.CompileDeployWBusPublicType(epl, new RegressionPath()).AddListener("s0");
 
                 env.SendEventObjectArray(new object[] {"E1", 90}, "StockTick");
@@ -191,11 +191,11 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
                 string epl;
                 if (!select) {
                     epl = "select Ids from SupportBean match_recognize ( " +
-                          "  measures A.selectFrom(o => o.TheString) as Ids ";
+                          "  measures A.selectFrom(o -> o.TheString) as Ids ";
                 }
                 else {
                     epl =
-                        "select a.selectFrom(o => o.TheString) as Ids from SupportBean match_recognize (measures A as a ";
+                        "select a.selectFrom(o -> o.TheString) as Ids from SupportBean match_recognize (measures A as a ";
                 }
 
                 epl = "@Name('s0') " + epl + " pattern (A{3}) define A as A.IntPrimitive = 1)";
@@ -246,7 +246,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
                 env.SendEventBean(new SupportBean("E2", 20));
 
                 env.CompileDeploy(
-                    "@Name('s0')select MyTableUnkeyed.theWindow.anyOf(v=>IntPrimitive=10) as c0 from SupportBean_A",
+                    "@Name('s0')select MyTableUnkeyed.theWindow.anyOf(v->IntPrimitive=10) as c0 from SupportBean_A",
                     path);
                 env.AddListener("s0");
 
@@ -262,7 +262,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
             public void Run(RegressionEnvironment env)
             {
                 var epl =
-                    "@Name('s0') select * from pattern [ ([2]a=SupportBean_ST0) -> b=SupportBean(IntPrimitive > a.max(i => P00))]";
+                    "@Name('s0') select * from pattern [ ([2]a=SupportBean_ST0) -> b=SupportBean(IntPrimitive > a.max(i -> P00))]";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 env.SendEventBean(new SupportBean_ST0("E1", 10));
@@ -278,7 +278,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
                 env.UndeployAll();
 
                 env.CompileDeploy(
-                    "@Name('s0') select * from pattern [ a=SupportBean_ST0 until b=SupportBean => c=SupportBean(IntPrimitive > a.sumOf(i => P00))]");
+                    "@Name('s0') select * from pattern [ a=SupportBean_ST0 until b=SupportBean => c=SupportBean(IntPrimitive > a.sumOf(i -> P00))]");
                 env.AddListener("s0");
 
                 env.SendEventBean(new SupportBean_ST0("E10", 10));
@@ -308,7 +308,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
                               " measures A as a_array, B as b " +
                               " pattern (A* B)" +
                               " define" +
-                              " B as A.anyOf(v=> v.IntPrimitive = B.IntPrimitive)" +
+                              " B as A.anyOf(v-> v.IntPrimitive = B.IntPrimitive)" +
                               ")";
                 env.CompileDeploy(textOne).AddListener("s0");
                 env.SendEventBean(new SupportBean("A1", 10));
@@ -335,7 +335,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
                 var fieldsTwo = "c0".SplitCsv();
                 var textTwo = "@Name('s0') select * from SupportBean " +
                               "match_recognize (" +
-                              " measures A.anyOf(v=> v.IntPrimitive = B.IntPrimitive) as c0 " +
+                              " measures A.anyOf(v-> v.IntPrimitive = B.IntPrimitive) as c0 " +
                               " pattern (A* B)" +
                               " define" +
                               " A as A.TheString like 'A%'," +
@@ -370,8 +370,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
             {
                 var fields = "c0,c1".SplitCsv();
                 var epl = "@Name('s0') select " +
-                          "SupportEnumTwo.ENUM_VALUE_1.getMystrings().anyOf(v => v = Id) as c0, " +
-                          "value.getMystrings().anyOf(v => v = '2') as c1 " +
+                          "SupportEnumTwo.ENUM_VALUE_1.getMystrings().anyOf(v -> v = Id) as c0, " +
+                          "value.getMystrings().anyOf(v -> v = '2') as c1 " +
                           "from SupportEnumTwoEvent";
                 env.CompileDeploy(epl).AddListener("s0");
 
@@ -398,11 +398,11 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
                 var fields = "c0,c1,c2,c3,c4".SplitCsv();
 
                 var eplWindowAgg = "@Name('s0') select " +
-                                   "sorted(TheString).allOf(x => x.IntPrimitive < 5) as c0," +
-                                   "maxby(TheString).allOf(x => x.IntPrimitive < 5) as c1," +
-                                   "minby(TheString).allOf(x => x.IntPrimitive < 5) as c2," +
-                                   "maxbyever(TheString).allOf(x => x.IntPrimitive < 5) as c3," +
-                                   "minbyever(TheString).allOf(x => x.IntPrimitive < 5) as c4" +
+                                   "sorted(TheString).allOf(x -> x.IntPrimitive < 5) as c0," +
+                                   "maxby(TheString).allOf(x -> x.IntPrimitive < 5) as c1," +
+                                   "minby(TheString).allOf(x -> x.IntPrimitive < 5) as c2," +
+                                   "maxbyever(TheString).allOf(x -> x.IntPrimitive < 5) as c3," +
+                                   "minbyever(TheString).allOf(x -> x.IntPrimitive < 5) as c4" +
                                    " from SupportBean#length(5)";
                 env.CompileDeploy(eplWindowAgg).AddListener("s0");
 
@@ -422,7 +422,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
             {
                 var epl =
                     "@Name('s0') select * from SupportSelectorEvent#keepall as sel, SupportContainerEvent#keepall as cont " +
-                    "where cont.items.anyOf(i => sel.selector = i.selected)";
+                    "where cont.items.anyOf(i -> sel.selector = i.selected)";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 env.SendEventBean(new SupportSelectorEvent("S1", "sel1"));
@@ -465,7 +465,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 
                 // Scalar version
                 string[] fields = {"val0"};
-                var stmtScalar = "@Name('s0') select prevwindow(Id).where(x => x not like '%ignore%') as val0 " +
+                var stmtScalar = "@Name('s0') select prevwindow(Id).where(x -> x not like '%ignore%') as val0 " +
                                  "from SupportBean_ST0#keepall as st0";
                 env.CompileDeploy(stmtScalar).AddListener("s0");
                 LambdaAssertionUtil.AssertTypes(
@@ -504,7 +504,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
                 env.CompileDeploy(epl, path);
 
                 env.CompileDeploy(
-                    "@Name('s0') select MyWindow.allOf(x => x.P00 < 5) as allOfX from SupportBean#keepall",
+                    "@Name('s0') select MyWindow.allOf(x -> x.P00 < 5) as allOfX from SupportBean#keepall",
                     path);
                 env.AddListener("s0");
                 LambdaAssertionUtil.AssertTypes(
@@ -524,7 +524,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 
                 // test named window correlated
                 var eplNamedWindowCorrelated =
-                    "@Name('s0') select MyWindow(Key0 = sb.TheString).allOf(x => x.P00 < 5) as allOfX from SupportBean#keepall sb";
+                    "@Name('s0') select MyWindow(Key0 = sb.TheString).allOf(x -> x.P00 < 5) as allOfX from SupportBean#keepall sb";
                 env.CompileDeploy(eplNamedWindowCorrelated, path).AddListener("s0");
 
                 env.SendEventBean(new SupportBean("E1", 1));
@@ -547,7 +547,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
             {
                 // test subselect-wildcard
                 var eplSubselect =
-                    "@Name('s0') select (select * from SupportBean_ST0#keepall).allOf(x => x.P00 < 5) as allOfX from SupportBean#keepall";
+                    "@Name('s0') select (select * from SupportBean_ST0#keepall).allOf(x -> x.P00 < 5) as allOfX from SupportBean#keepall";
                 env.CompileDeploy(eplSubselect).AddListener("s0");
 
                 env.SendEventBean(new SupportBean_ST0("ST0", "1", 0));
@@ -561,7 +561,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 
                 // test subselect scalar return
                 var eplSubselectScalar =
-                    "@Name('s0') select (select Id from SupportBean_ST0#keepall).allOf(x => x  like '%B%') as allOfX from SupportBean#keepall";
+                    "@Name('s0') select (select Id from SupportBean_ST0#keepall).allOf(x -> x  like '%B%') as allOfX from SupportBean#keepall";
                 env.CompileDeploy(eplSubselectScalar).AddListener("s0");
 
                 env.SendEventBean(new SupportBean_ST0("B1", 0));
@@ -575,7 +575,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 
                 // test subselect-correlated scalar return
                 var eplSubselectScalarCorrelated =
-                    "@Name('s0') select (select Key0 from SupportBean_ST0#keepall st0 where st0.Id = sb.TheString).allOf(x => x  like '%hello%') as allOfX from SupportBean#keepall sb";
+                    "@Name('s0') select (select Key0 from SupportBean_ST0#keepall st0 where st0.Id = sb.TheString).allOf(x -> x  like '%hello%') as allOfX from SupportBean#keepall sb";
                 env.CompileDeploy(eplSubselectScalarCorrelated).AddListener("s0");
 
                 env.SendEventBean(new SupportBean_ST0("A1", "hello", 0));
@@ -617,7 +617,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
                 // test subselect that delivers events
                 var epl = "create schema AEvent (Symbol string);\n" +
                           "create schema BEvent (a AEvent);\n" +
-                          "@Name('s0') select (select a from BEvent#keepall).anyOf(v => Symbol = 'GE') as flag from SupportBean;\n";
+                          "@Name('s0') select (select a from BEvent#keepall).anyOf(v -> Symbol = 'GE') as flag from SupportBean;\n";
                 env.CompileDeployWBusPublicType(epl, new RegressionPath()).AddListener("s0");
 
                 env.SendEventMap(MakeBEvent("XX"), "BEvent");
@@ -637,7 +637,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
             public void Run(RegressionEnvironment env)
             {
                 var epl = "create variable string[] myvar = { 'E1', 'E3' };\n" +
-                          "@Name('s0') select * from SupportBean(myvar.anyOf(v => v = TheString));\n";
+                          "@Name('s0') select * from SupportBean(myvar.anyOf(v -> v = TheString));\n";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 env.SendEventBean(new SupportBean("E1", 1));
@@ -657,11 +657,11 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 
                 // test window(*) and first(*)
                 var eplWindowAgg = "@Name('s0') select " +
-                                   "window(*).allOf(x => x.IntPrimitive < 5) as val0," +
-                                   "first(*).allOf(x => x.IntPrimitive < 5) as val1," +
-                                   "first(*, 1).allOf(x => x.IntPrimitive < 5) as val2," +
-                                   "last(*).allOf(x => x.IntPrimitive < 5) as val3," +
-                                   "last(*, 1).allOf(x => x.IntPrimitive < 5) as val4" +
+                                   "window(*).allOf(x -> x.IntPrimitive < 5) as val0," +
+                                   "first(*).allOf(x -> x.IntPrimitive < 5) as val1," +
+                                   "first(*, 1).allOf(x -> x.IntPrimitive < 5) as val2," +
+                                   "last(*).allOf(x -> x.IntPrimitive < 5) as val3," +
+                                   "last(*, 1).allOf(x -> x.IntPrimitive < 5) as val4" +
                                    " from SupportBean#length(2)";
                 env.CompileDeploy(eplWindowAgg).AddListener("s0");
 
@@ -687,11 +687,11 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 
                 // test scalar: window(*) and first(*)
                 var eplWindowAggScalar = "@Name('s0') select " +
-                                         "window(IntPrimitive).allOf(x => x < 5) as val0," +
-                                         "first(IntPrimitive).allOf(x => x < 5) as val1," +
-                                         "first(IntPrimitive, 1).allOf(x => x < 5) as val2," +
-                                         "last(IntPrimitive).allOf(x => x < 5) as val3," +
-                                         "last(IntPrimitive, 1).allOf(x => x < 5) as val4" +
+                                         "window(IntPrimitive).allOf(x -> x < 5) as val0," +
+                                         "first(IntPrimitive).allOf(x -> x < 5) as val1," +
+                                         "first(IntPrimitive, 1).allOf(x -> x < 5) as val2," +
+                                         "last(IntPrimitive).allOf(x -> x < 5) as val3," +
+                                         "last(IntPrimitive, 1).allOf(x -> x < 5) as val4" +
                                          " from SupportBean#length(2)";
                 env.CompileDeploy(eplWindowAggScalar).AddListener("s0");
 
@@ -723,7 +723,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
             {
                 // test fragment type - collection inside
                 var eplFragment =
-                    "@Name('s0') select Contained.allOf(x => x.P00 < 5) as allOfX from SupportBean_ST0_Container#keepall";
+                    "@Name('s0') select Contained.allOf(x -> x.P00 < 5) as allOfX from SupportBean_ST0_Container#keepall";
                 env.CompileDeploy(eplFragment).AddListener("s0");
 
                 env.SendEventBean(SupportBean_ST0_Container.Make3Value("ID1,KEY1,1"));
@@ -752,7 +752,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
                 var path = new RegressionPath();
                 env.CompileDeployWBusPublicType("create schema MySchema (books BookDesc[])", path);
 
-                env.CompileDeploy("@Name('s0') select books.max(i => i.Price) as mymax from MySchema", path);
+                env.CompileDeploy("@Name('s0') select books.max(i -> i.Price) as mymax from MySchema", path);
                 env.AddListener("s0");
 
                 var @event = Collections.SingletonDataMap(
@@ -771,27 +771,27 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
                 // test method invocation variations returning list/array of string and test UDF +property as well
                 RunAssertionMethodInvoke(
                     env,
-                    "select e.getTheList().anyOf(v => v = selector) as flag from SupportSelectorWithListEvent e");
+                    "select e.getTheList().anyOf(v -> v = selector) as flag from SupportSelectorWithListEvent e");
                 RunAssertionMethodInvoke(
                     env,
-                    "select convertToArray(theList).anyOf(v => v = selector) as flag from SupportSelectorWithListEvent e");
+                    "select convertToArray(theList).anyOf(v -> v = selector) as flag from SupportSelectorWithListEvent e");
                 RunAssertionMethodInvoke(
                     env,
-                    "select theArray.anyOf(v => v = selector) as flag from SupportSelectorWithListEvent e");
+                    "select theArray.anyOf(v -> v = selector) as flag from SupportSelectorWithListEvent e");
                 RunAssertionMethodInvoke(
                     env,
-                    "select e.getTheArray().anyOf(v => v = selector) as flag from SupportSelectorWithListEvent e");
+                    "select e.getTheArray().anyOf(v -> v = selector) as flag from SupportSelectorWithListEvent e");
                 RunAssertionMethodInvoke(
                     env,
-                    "select e.theList.anyOf(v => v = e.selector) as flag from pattern[every e=SupportSelectorWithListEvent]");
+                    "select e.theList.anyOf(v -> v = e.selector) as flag from pattern[every e=SupportSelectorWithListEvent]");
                 RunAssertionMethodInvoke(
                     env,
-                    "select e.nestedMyEvent.myNestedList.anyOf(v => v = e.selector) as flag from pattern[every e=SupportSelectorWithListEvent]");
+                    "select e.NestedMyEvent.myNestedList.anyOf(v -> v = e.selector) as flag from pattern[every e=SupportSelectorWithListEvent]");
                 RunAssertionMethodInvoke(
                     env,
                     "select " +
                     typeof(SupportSelectorWithListEvent).Name +
-                    ".convertToArray(theList).anyOf(v => v = selector) as flag from SupportSelectorWithListEvent e");
+                    ".convertToArray(theList).anyOf(v -> v = selector) as flag from SupportSelectorWithListEvent e");
 
                 env.UndeployAll();
             }
@@ -804,9 +804,9 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
                 string[] fields = {"val0", "val1", "val2"};
                 // test prevwindow(*) etc
                 var epl = "@Name('s0') select " +
-                          "prevwindow(sb).allOf(x => x.IntPrimitive < 5) as val0," +
-                          "prev(sb,1).allOf(x => x.IntPrimitive < 5) as val1," +
-                          "prevtail(sb,1).allOf(x => x.IntPrimitive < 5) as val2" +
+                          "prevwindow(sb).allOf(x -> x.IntPrimitive < 5) as val0," +
+                          "prev(sb,1).allOf(x -> x.IntPrimitive < 5) as val1," +
+                          "prevtail(sb,1).allOf(x -> x.IntPrimitive < 5) as val2" +
                           " from SupportBean#length(2) as sb";
                 env.CompileDeploy(epl).AddListener("s0");
 
@@ -837,9 +837,9 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 
                 // test scalar prevwindow(property) etc
                 var eplScalar = "@Name('s0') select " +
-                                "prevwindow(IntPrimitive).allOf(x => x < 5) as val0," +
-                                "prev(IntPrimitive,1).allOf(x => x < 5) as val1," +
-                                "prevtail(IntPrimitive,1).allOf(x => x < 5) as val2" +
+                                "prevwindow(IntPrimitive).allOf(x -> x < 5) as val0," +
+                                "prev(IntPrimitive,1).allOf(x -> x < 5) as val1," +
+                                "prevtail(IntPrimitive,1).allOf(x -> x < 5) as val2" +
                                 " from SupportBean#length(2) as sb";
                 env.CompileDeploy(eplScalar).AddListener("s0");
 
@@ -877,10 +877,10 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
             {
                 var fields = "val1,val2,val3,val4".SplitCsv();
                 var epl = "@Name('s0') select " +
-                          "SupportBean_ST0_Container.makeSampleList().where(x => x.P00 < 5) as val1, " +
-                          "SupportBean_ST0_Container.makeSampleArray().where(x => x.P00 < 5) as val2, " +
-                          "makeSampleList().where(x => x.P00 < 5) as val3, " +
-                          "makeSampleArray().where(x => x.P00 < 5) as val4 " +
+                          "SupportBean_ST0_Container.makeSampleList().where(x -> x.P00 < 5) as val1, " +
+                          "SupportBean_ST0_Container.makeSampleArray().where(x -> x.P00 < 5) as val2, " +
+                          "makeSampleList().where(x -> x.P00 < 5) as val3, " +
+                          "makeSampleArray().where(x -> x.P00 < 5) as val4 " +
                           "from SupportBean#length(2) as sb";
                 env.CompileDeploy(epl).AddListener("s0");
 
@@ -921,10 +921,10 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
                 // test UDF returning scalar values collection
                 fields = "val0,val1,val2,val3".SplitCsv();
                 var eplScalar = "@Name('s0') select " +
-                                "SupportCollection.makeSampleListString().where(x => x != 'E1') as val0, " +
-                                "SupportCollection.makeSampleArrayString().where(x => x != 'E1') as val1, " +
-                                "makeSampleListString().where(x => x != 'E1') as val2, " +
-                                "makeSampleArrayString().where(x => x != 'E1') as val3 " +
+                                "SupportCollection.makeSampleListString().where(x -> x != 'E1') as val0, " +
+                                "SupportCollection.makeSampleArrayString().where(x -> x != 'E1') as val1, " +
+                                "makeSampleListString().where(x -> x != 'E1') as val2, " +
+                                "makeSampleArrayString().where(x -> x != 'E1') as val3 " +
                                 "from SupportBean#length(2) as sb";
                 env.CompileDeploy(eplScalar).AddListener("s0");
                 LambdaAssertionUtil.AssertTypes(

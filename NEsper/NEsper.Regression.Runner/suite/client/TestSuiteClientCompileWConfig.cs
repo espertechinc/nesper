@@ -19,7 +19,7 @@ using com.espertech.esper.compiler.client;
 using com.espertech.esper.regressionlib.support.client;
 using com.espertech.esper.regressionlib.support.extend.aggfunc;
 using com.espertech.esper.regressionlib.support.extend.aggmultifunc;
-using com.espertech.esper.regressionrun.runner;
+using com.espertech.esper.regressionrun.Runner;
 
 using NUnit.Framework;
 
@@ -82,11 +82,11 @@ namespace com.espertech.esper.regressionrun.suite.client
             config.Common.AddEventType(typeof(SupportBean));
             config.Common.TransientConfiguration.Put(ClassForNameProviderConstants.NAME, new MyClassForNameProvider());
 
-            var epl = "select java.lang.System.exit(-1) from SupportBean";
+            var epl = "select System.Environment.Exit(-1) from SupportBean";
             TryInvalidCompileWConfig(
                 config,
                 epl,
-                "Failed to validate select-clause expression 'java.lang.System.exit(-1)': Failed to resolve 'java.lang.System.exit' to");
+                "Failed to validate select-clause expression 'System.Environment.Exit(-1)': Failed to resolve 'System.Environment.Exit' to");
 
             config.Common.TransientConfiguration.Put(
                 ClassForNameProviderConstants.NAME,

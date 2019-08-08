@@ -389,7 +389,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
                     "on SupportBean select * where IntPrimitive=1 insert into BStream select * where 1=2",
-                    "Required insert-into clause is not provIded, the clause is required for split-stream syntax");
+                    "Required insert-into clause is not provided, the clause is required for split-stream syntax");
 
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,

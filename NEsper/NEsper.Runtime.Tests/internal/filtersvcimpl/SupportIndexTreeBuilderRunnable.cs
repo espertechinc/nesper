@@ -82,7 +82,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
             if (matches.Count != 0)
             {
                 log.Error(
-                    ".run (" +
+                    ".Run (" +
                     currentThreadId +
                     ") Got a match but expected no-match, matchCount=" +
                     matches.Count +
@@ -99,7 +99,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
             if (matches.Count != 1)
             {
                 log.Error(
-                    ".run (" +
+                    ".Run (" +
                     currentThreadId +
                     ") Got zero or two or more match but expected a match, count=" +
                     matches.Count +
@@ -110,7 +110,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
 
             // Remove the same expression again
             IndexTreeBuilderRemove.Remove(eventType, filterCallback, filterValues[0], topNode);
-            log.Debug(".run (" + Thread.CurrentThread.ManagedThreadId + ")" + " Completed");
+            log.Debug(".Run (" + Thread.CurrentThread.ManagedThreadId + ")" + " Completed");
 
             ObjectReservationSingleton.GetInstance().Unreserve(filterSpec);
         }

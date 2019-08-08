@@ -144,7 +144,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
             }
 
             if (ExecutionPathDebugLog.IsDebugEnabled && Log.IsDebugEnabled) {
-                Log.Debug(".sendMap Processing event " + avroGenericDataDotRecord);
+                Log.Debug(".SendMap Processing event " + avroGenericDataDotRecord);
             }
 
             if (_inboundThreading) {
@@ -165,12 +165,12 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
             string eventTypeName)
         {
             if (theEvent == null) {
-                Log.Error(".sendEvent Null object supplied");
+                Log.Error(".SendEvent Null object supplied");
                 return;
             }
 
             if (ExecutionPathDebugLog.IsDebugEnabled && Log.IsDebugEnabled) {
-                Log.Debug(".sendEvent Processing event " + theEvent);
+                Log.Debug(".SendEvent Processing event " + theEvent);
             }
 
             if (_inboundThreading) {
@@ -226,7 +226,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
             string eventTypeName)
         {
             if (node == null) {
-                Log.Error(".sendEvent Null object supplied");
+                Log.Error(".SendEvent Null object supplied");
                 return;
             }
 
@@ -249,7 +249,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
             }
 
             if (ExecutionPathDebugLog.IsDebugEnabled && Log.IsDebugEnabled) {
-                Log.Debug(".sendEventObjectArray Processing event " + propertyValues.RenderAny());
+                Log.Debug(".SendEventObjectArray Processing event " + propertyValues.RenderAny());
             }
 
             if (_inboundThreading) {
@@ -271,7 +271,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
             }
 
             if (ExecutionPathDebugLog.IsDebugEnabled && Log.IsDebugEnabled) {
-                Log.Debug(".sendMap Processing event " + map);
+                Log.Debug(".SendMap Processing event " + map);
             }
 
             if (_inboundThreading) {
@@ -1219,13 +1219,13 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
         {
             RemoveFromThreadLocals();
 
-            _matchesArrayThreadLocal = new FastThreadLocal<ArrayBackedCollection<FilterHandle>>(
+            _matchesArrayThreadLocal = new SlimThreadLocal<ArrayBackedCollection<FilterHandle>>(
                 () => new ArrayBackedCollection<FilterHandle>(100));
 
-            _scheduleArrayThreadLocal = new FastThreadLocal<ArrayBackedCollection<ScheduleHandle>>(
+            _scheduleArrayThreadLocal = new SlimThreadLocal<ArrayBackedCollection<ScheduleHandle>>(
                 () => new ArrayBackedCollection<ScheduleHandle>(100));
 
-            _matchesPerStmtThreadLocal = new FastThreadLocal<IDictionary<EPStatementAgentInstanceHandle, object>>(
+            _matchesPerStmtThreadLocal = new SlimThreadLocal<IDictionary<EPStatementAgentInstanceHandle, object>>(
                 () => {
                     if (_isPrioritized) {
                         return new SortedDictionary<EPStatementAgentInstanceHandle, object>(
@@ -1235,7 +1235,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
                     return new Dictionary<EPStatementAgentInstanceHandle, object>();
                 });
 
-            _schedulePerStmtThreadLocal = new FastThreadLocal<IDictionary<EPStatementAgentInstanceHandle, object>>(
+            _schedulePerStmtThreadLocal = new SlimThreadLocal<IDictionary<EPStatementAgentInstanceHandle, object>>(
                 () => {
                     if (_isPrioritized) {
                         return new SortedDictionary<EPStatementAgentInstanceHandle, object>(

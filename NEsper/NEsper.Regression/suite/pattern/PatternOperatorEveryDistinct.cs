@@ -935,11 +935,11 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 var milestone = new AtomicLong();
 
                 var expression =
-                    "@Name('s0') select * from pattern [every-distinct(a.IntPrimitive) a=SupportBean(TheString like 'A%') => every-distinct(b.IntPrimitive) b=SupportBean(TheString like 'B%')]";
+                    "@Name('s0') select * from pattern [every-distinct(a.IntPrimitive) a=SupportBean(TheString like 'A%') -> every-distinct(b.IntPrimitive) b=SupportBean(TheString like 'B%')]";
                 RunFollowedByWithDistinct(env, expression, milestone);
 
                 expression =
-                    "@Name('s0') select * from pattern [every-distinct(a.IntPrimitive, 1 day) a=SupportBean(TheString like 'A%') => every-distinct(b.IntPrimitive) b=SupportBean(TheString like 'B%')]";
+                    "@Name('s0') select * from pattern [every-distinct(a.IntPrimitive, 1 day) a=SupportBean(TheString like 'A%') -> every-distinct(b.IntPrimitive) b=SupportBean(TheString like 'B%')]";
                 RunFollowedByWithDistinct(env, expression, milestone);
             }
 
@@ -1018,7 +1018,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
             {
                 TryInvalid(
                     env,
-                    "a=SupportBean_A=>every-distinct(a.IntPrimitive) SupportBean_B",
+                    "a=SupportBean_A->every-distinct(a.IntPrimitive) SupportBean_B",
                     "Failed to validate pattern every-distinct expression 'a.IntPrimitive': Failed to resolve property 'a.IntPrimitive' to a stream or nested property in a stream");
 
                 TryInvalid(

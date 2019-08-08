@@ -65,23 +65,23 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
             TryAssertion(env, epl, milestone, new SupportBean_ST0("E", -1), 6757);
 
             epl =
-                "@Name('s0') select sum(IntPrimitive) as val from SupportBeanRange#lastevent s0, SupportBean#keepall sb where sb.IntPrimitive >= (rangeStart + 1) and IntPrimitive <= (rangeEnd - 1)";
+                "@Name('s0') select sum(IntPrimitive) as val from SupportBeanRange#lastevent s0, SupportBean#keepall sb where sb.IntPrimitive >= (RangeStart + 1) and IntPrimitive <= (RangeEnd - 1)";
             TryAssertion(env, epl, milestone, new SupportBeanRange("R1", 6000, 6005), 6001 + 6002 + 6003 + 6004);
 
             epl =
-                "@Name('s0') select sum(IntPrimitive) as val from SupportBeanRange#lastevent s0, SupportBean#keepall sb where sb.IntPrimitive >= 6001 and IntPrimitive <= (rangeEnd - 1)";
+                "@Name('s0') select sum(IntPrimitive) as val from SupportBeanRange#lastevent s0, SupportBean#keepall sb where sb.IntPrimitive >= 6001 and IntPrimitive <= (RangeEnd - 1)";
             TryAssertion(env, epl, milestone, new SupportBeanRange("R1", 6000, 6005), 6001 + 6002 + 6003 + 6004);
 
             epl =
-                "@Name('s0') select sum(IntPrimitive) as val from SupportBeanRange#lastevent s0, SupportBean#keepall sb where sb.IntPrimitive between (rangeStart + 1) and (rangeEnd - 1)";
+                "@Name('s0') select sum(IntPrimitive) as val from SupportBeanRange#lastevent s0, SupportBean#keepall sb where sb.IntPrimitive between (RangeStart + 1) and (RangeEnd - 1)";
             TryAssertion(env, epl, milestone, new SupportBeanRange("R1", 6000, 6005), 6001 + 6002 + 6003 + 6004);
 
             epl =
-                "@Name('s0') select sum(IntPrimitive) as val from SupportBeanRange#lastevent s0, SupportBean#keepall sb where sb.IntPrimitive between (rangeStart + 1) and 6004";
+                "@Name('s0') select sum(IntPrimitive) as val from SupportBeanRange#lastevent s0, SupportBean#keepall sb where sb.IntPrimitive between (RangeStart + 1) and 6004";
             TryAssertion(env, epl, milestone, new SupportBeanRange("R1", 6000, 6005), 6001 + 6002 + 6003 + 6004);
 
             epl =
-                "@Name('s0') select sum(IntPrimitive) as val from SupportBeanRange#lastevent s0, SupportBean#keepall sb where sb.IntPrimitive in (6001 : (rangeEnd - 1)]";
+                "@Name('s0') select sum(IntPrimitive) as val from SupportBeanRange#lastevent s0, SupportBean#keepall sb where sb.IntPrimitive in (6001 : (RangeEnd - 1)]";
             TryAssertion(env, epl, milestone, new SupportBeanRange("R1", 6000, 6005), 6002 + 6003 + 6004);
 
             epl =

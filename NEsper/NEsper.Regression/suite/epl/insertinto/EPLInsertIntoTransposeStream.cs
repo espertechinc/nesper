@@ -253,7 +253,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                     Assert.AreEqual(
                         "Expression-returned value of type '" +
                         typeof(SupportBean).Name +
-                        "' cannot be converted to target event type 'SomeOtherStream' with underlying type 'java.util.Map' [insert into SomeOtherStream select transpose(customOne('O', 10)) from SupportBean]",
+                        "' cannot be converted to target event type 'SomeOtherStream' with underlying type 'IDictionary' [insert into SomeOtherStream select transpose(customOne('O', 10)) from SupportBean]",
                         ex.Message);
                 }
 

@@ -15,7 +15,7 @@ using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.suite.infra.namedwindow;
 using com.espertech.esper.regressionlib.support.bean;
 using com.espertech.esper.regressionlib.support.bookexample;
-using com.espertech.esper.regressionrun.runner;
+using com.espertech.esper.regressionrun.Runner;
 
 using NUnit.Framework;
 
@@ -120,11 +120,11 @@ namespace com.espertech.esper.regressionrun.suite.infra
             configuration.Compiler.AddPlugInSingleRowFunction(
                 "setBeanLongPrimitive999",
                 typeof(InfraNamedWindowOnUpdate),
-                "setBeanLongPrimitive999");
+                "SetBeanLongPrimitive999");
             configuration.Compiler.AddPlugInSingleRowFunction(
                 "increaseIntCopyDouble",
                 typeof(InfraNamedWindowOnMerge),
-                "increaseIntCopyDouble");
+                "IncreaseIntCopyDouble");
 
             var config = new ConfigurationCommonVariantStream();
             config.AddEventTypeName("SupportBean_A");

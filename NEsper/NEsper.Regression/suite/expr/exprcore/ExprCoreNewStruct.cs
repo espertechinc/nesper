@@ -250,7 +250,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
                     epl,
-                    "Failed to validate select-clause expression 'case when true then new{col1=\"a\"} e...(56 chars)': Incompatible case-when return types by new-operator in case-when number 1: The property 'col1' is not provIded but required [select case when true then new { col1 = 'a' } else new { col2 = 'a' } end from SupportBean]");
+                    "Failed to validate select-clause expression 'case when true then new{col1=\"a\"} e...(56 chars)': Incompatible case-when return types by new-operator in case-when number 1: The property 'col1' is not provided but required [select case when true then new { col1 = 'a' } else new { col2 = 'a' } end from SupportBean]");
 
                 epl = "select case when true then new { col1 = 'a', col1 = 'b' } end from SupportBean";
                 SupportMessageAssertUtil.TryInvalidCompile(

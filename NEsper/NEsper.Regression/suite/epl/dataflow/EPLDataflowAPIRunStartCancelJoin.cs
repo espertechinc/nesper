@@ -99,7 +99,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 env.CompileDeploy("create schema SomeType ()", path);
                 env.CompileDeploy(
                     "@Name('flow') create dataflow MyDataFlowOne " +
-                    "DefaultSupportSourceOp => outstream<SomeType> {}" +
+                    "DefaultSupportSourceOp -> outstream<SomeType> {}" +
                     "DefaultSupportCaptureOp(outstream) {}",
                     path);
 
@@ -147,7 +147,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 env.CompileDeploy("create schema SomeType ()", path);
                 env.CompileDeploy(
                     "@Name('flow') create dataflow MyDataFlowOne " +
-                    "DefaultSupportSourceOp => outstream<SomeType> {}" +
+                    "DefaultSupportSourceOp -> outstream<SomeType> {}" +
                     "DefaultSupportCaptureOp(outstream) {}",
                     path);
 
@@ -194,7 +194,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 env.CompileDeploy("create schema SomeType ()", path);
                 env.CompileDeploy(
                     "@Name('flow') create dataflow MyDataFlowOne " +
-                    "DefaultSupportSourceOp => outstream<SomeType> {}" +
+                    "DefaultSupportSourceOp -> outstream<SomeType> {}" +
                     "DefaultSupportCaptureOp(outstream) {}",
                     path);
 
@@ -221,7 +221,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 env.CompileDeploy("create schema SomeType ()", path);
                 env.CompileDeploy(
                     "@Name('flow') create dataflow MyDataFlowOne " +
-                    "DefaultSupportSourceOp => outstream<SomeType> {}" +
+                    "DefaultSupportSourceOp -> outstream<SomeType> {}" +
                     "DefaultSupportCaptureOp(outstream) {}",
                     path);
 
@@ -258,7 +258,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 env.CompileDeploy("create schema SomeType ()", path);
                 env.CompileDeploy(
                     "@Name('flow') create dataflow MyDataFlowOne " +
-                    "DefaultSupportSourceOp => outstream<SomeType> {}" +
+                    "DefaultSupportSourceOp -> outstream<SomeType> {}" +
                     "DefaultSupportCaptureOp(outstream) {}",
                     path);
 
@@ -316,7 +316,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 env.CompileDeploy("create schema SomeType ()", path);
                 env.CompileDeploy(
                     "@Name('flow') create dataflow MyDataFlowOne " +
-                    "DefaultSupportSourceOp => outstream<SomeType> {}" +
+                    "DefaultSupportSourceOp -> outstream<SomeType> {}" +
                     "DefaultSupportCaptureOp(outstream) {}",
                     path);
 
@@ -357,7 +357,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
             {
                 env.CompileDeploy(
                     "@Name('flow') create dataflow MyDataFlowOne " +
-                    "BeaconSource => BeaconStream {iterations : 1}");
+                    "BeaconSource -> BeaconStream {iterations : 1}");
 
                 var source = new DefaultSupportSourceOp(new object[] {5000});
                 var options =
@@ -418,8 +418,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 env.CompileDeploy("create schema SomeType ()", path);
                 env.CompileDeploy(
                     "@Name('flow') create dataflow MyDataFlowOne " +
-                    "DefaultSupportSourceOp => outstream<SomeType> { name: 'SourceOne' }" +
-                    "DefaultSupportSourceOp => outstream<SomeType> { name: 'SourceTwo' }" +
+                    "DefaultSupportSourceOp -> outstream<SomeType> { name: 'SourceOne' }" +
+                    "DefaultSupportSourceOp -> outstream<SomeType> { name: 'SourceTwo' }" +
                     "DefaultSupportCaptureOp(outstream) {}",
                     path);
 
@@ -480,8 +480,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 env.CompileDeploy("create schema SomeType ()", path);
                 env.CompileDeploy(
                     "@Name('flow') create dataflow MyDataFlowOne " +
-                    "DefaultSupportSourceOp => outstream<SomeType> {name: 'SourceOne'}" +
-                    "DefaultSupportSourceOp => outstream<SomeType> {name: 'SourceTwo'}" +
+                    "DefaultSupportSourceOp -> outstream<SomeType> {name: 'SourceOne'}" +
+                    "DefaultSupportSourceOp -> outstream<SomeType> {name: 'SourceTwo'}" +
                     "DefaultSupportCaptureOp(outstream) {}",
                     path);
 
@@ -546,7 +546,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 env.CompileDeploy("create schema SomeType ()", path);
                 env.CompileDeploy(
                     "@Name('flow') create dataflow MyDataFlowOne " +
-                    "DefaultSupportSourceOp => outstream<SomeType> {}" +
+                    "DefaultSupportSourceOp -> outstream<SomeType> {}" +
                     "DefaultSupportCaptureOp(outstream) {}",
                     path);
 
@@ -596,7 +596,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 env.CompileDeploy("create schema SomeType ()", path);
                 env.CompileDeploy(
                     "@Name('flow') create dataflow MyDataFlowOne " +
-                    "DefaultSupportSourceOp => s<SomeType> {}" +
+                    "DefaultSupportSourceOp -> s<SomeType> {}" +
                     "DefaultSupportCaptureOp(s) {}",
                     path);
 
@@ -664,7 +664,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 // declare
                 env.CompileDeploy(
                     "@Name('flow') create dataflow MyDataFlowOne " +
-                    "BeaconSource => BeaconStream {iterations : 1}" +
+                    "BeaconSource -> BeaconStream {iterations : 1}" +
                     "DefaultSupportCaptureOp(BeaconStream) {}");
 
                 // instantiate
@@ -706,7 +706,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 env.CompileDeploy("create schema SomeType ()", path);
                 env.CompileDeploy(
                     "@Name('flow') create dataflow MyDataFlowOne " +
-                    "DefaultSupportSourceOp => s<SomeType> {}" +
+                    "DefaultSupportSourceOp -> s<SomeType> {}" +
                     "DefaultSupportCaptureOp(s) {}",
                     path);
 
@@ -765,7 +765,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 // declare
                 env.CompileDeploy(
                     "@Name('flow') create dataflow MyDataFlowOne " +
-                    "BeaconSource => BeaconStream {iterations : 1}" +
+                    "BeaconSource -> BeaconStream {iterations : 1}" +
                     "DefaultSupportCaptureOp(BeaconStream) {}");
 
                 // instantiate

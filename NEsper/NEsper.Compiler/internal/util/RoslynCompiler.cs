@@ -195,20 +195,25 @@ namespace com.espertech.esper.compiler.@internal.util
                 }
             }
 
+#if DIAGNOSTICS
             Console.WriteLine($"Assembly Pre-Load: {DateTime.Now}");
-
+#endif
             _assembly = Assembly.LoadFile(assemblyPath);
 
+#if DIAGNOSTICS
             Console.WriteLine($"Assembly Loaded (Image): {DateTime.Now}");
             Console.WriteLine($"\tFullName:{_assembly.FullName}");
             Console.WriteLine($"\tName:{_assembly.GetName()}");
+#endif
 
             lock (MetadataCacheBindings) {
                 var metadataReference = MetadataReference.CreateFromFile(assemblyPath);
+#if DIAGNOSTICS
                 Console.WriteLine($"MetaDataReference: {DateTime.Now}");
                 Console.WriteLine($"\tFullType: {metadataReference.GetType().FullName}");
                 Console.WriteLine($"\tDisplay: {metadataReference.Display}");
                 Console.WriteLine($"\tProperties: {metadataReference.Properties}");
+#endif
                 MetadataCacheBindings[_assembly] = metadataReference;
             }
 

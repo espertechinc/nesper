@@ -68,7 +68,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
             StatementInformationalsRuntime statementInformationals,
             EPServicesContext epServicesContext)
         {
-            statementDispatchTL = new FastThreadLocal<StatementDispatchTLEntry>(() => new StatementDispatchTLEntry());
+            statementDispatchTL = new SlimThreadLocal<StatementDispatchTLEntry>(() => new StatementDispatchTLEntry());
             this.statementInformationals = statementInformationals;
             this.epServicesContext = epServicesContext;
             outboundThreading = epServicesContext.ThreadingService.IsOutboundThreading;

@@ -92,7 +92,7 @@ namespace com.espertech.esper.common.client.configuration.common
         private ConfigurationCommonLogging logging;
 
         /// <summary>
-        ///     The type names for events that are backed by java.util.Map,
+        ///     The type names for events that are backed by IDictionary,
         ///     not containing strongly-typed nested maps.
         /// </summary>
         private IDictionary<string, Properties> mapNames;
@@ -359,7 +359,7 @@ namespace com.espertech.esper.common.client.configuration.common
         }
 
         /// <summary>
-        ///     Add an name for an event type that represents java.util.Map events.
+        ///     Add an name for an event type that represents IDictionary events.
         ///     <para />
         ///     Each entry in the type map is the property name and the fully-qualified
         ///     type name or primitive type name.
@@ -377,7 +377,7 @@ namespace com.espertech.esper.common.client.configuration.common
         }
 
         /// <summary>
-        ///     Add an name for an event type that represents java.util.Map events,
+        ///     Add an name for an event type that represents IDictionary events,
         ///     and for which each property may itself be a Map of further properties,
         ///     with unlimited nesting levels.
         ///     <para />
@@ -398,7 +398,7 @@ namespace com.espertech.esper.common.client.configuration.common
         }
 
         /// <summary>
-        ///     Add a name for an event type that represents java.util.Map events,
+        ///     Add a name for an event type that represents IDictionary events,
         ///     and for which each property may itself be a Map of further properties,
         ///     with unlimited nesting levels.
         ///     <para />
@@ -426,7 +426,7 @@ namespace com.espertech.esper.common.client.configuration.common
         }
 
         /// <summary>
-        ///     Add a name for an event type that represents java.util.Map events,
+        ///     Add a name for an event type that represents IDictionary events,
         ///     and for which each property may itself be a Map of further properties,
         ///     with unlimited nesting levels.
         ///     <para />

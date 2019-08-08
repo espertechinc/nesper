@@ -131,7 +131,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.map
                 }
                 catch (EPException ex) {
                     Assert.AreEqual(
-                        "Event type named 'MyMap' has not been defined or is not a Object-array event type, the name 'MyMap' refers to a java.util.Map event type",
+                        "Event type named 'MyMap' has not been defined or is not a Object-array event type, the name 'MyMap' refers to a IDictionary event type",
                         ex.Message);
                 }
 
@@ -187,9 +187,9 @@ namespace com.espertech.esper.regressionlib.suite.@event.map
             public void Run(RegressionEnvironment env)
             {
                 var statementText = "@Name('s0') select beanA.simpleProperty as simple," +
-                                    "beanA.nested.NestedValue as nested," +
+                                    "beanA.Nested.NestedValue as nested," +
                                     "beanA.indexed[1] as indexed," +
-                                    "beanA.nested.nestedNested.nestedNestedValue as nestednested " +
+                                    "beanA.Nested.NestedNested.NestedNestedValue as nestednested " +
                                     "from myMapEvent#length(5)";
                 env.CompileDeploy(statementText).AddListener("s0");
 

@@ -629,7 +629,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 env.CompileDeploy(
                     "@Name('ctx') create context Ctx3Typed as " +
                     "partition by P00 from SupportBean_S0, P10 from SupportBean_S1, P20 from SupportBean_S2 " +
-                    "terminated by pattern[SupportBean_S1 => SupportBean_S2]",
+                    "terminated by pattern[SupportBean_S1 -> SupportBean_S2]",
                     path);
                 env.CompileDeploy(
                     "@Name('s0') context Ctx3Typed select P00, count(*) as cnt from SupportBean_S0 output last when terminated",

@@ -177,18 +177,18 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
             Type expectedPropertyType)
         {
             var stmtText = "@Name('s0') select " +
-                           " item.nested?.NestedValue as n1, " +
-                           " exists(item.nested?.NestedValue) as exists_n1, " +
-                           " item.nested?.NestedValue? as n2, " +
-                           " exists(item.nested?.NestedValue?) as exists_n2, " +
-                           " item.nested?.nestedNested.nestedNestedValue as n3, " +
-                           " exists(item.nested?.nestedNested.nestedNestedValue) as exists_n3, " +
-                           " item.nested?.nestedNested?.nestedNestedValue as n4, " +
-                           " exists(item.nested?.nestedNested?.nestedNestedValue) as exists_n4, " +
-                           " item.nested?.nestedNested.nestedNestedValue? as n5, " +
-                           " exists(item.nested?.nestedNested.nestedNestedValue?) as exists_n5, " +
-                           " item.nested?.nestedNested?.nestedNestedValue? as n6, " +
-                           " exists(item.nested?.nestedNested?.nestedNestedValue?) as exists_n6 " +
+                           " item.Nested?.NestedValue as n1, " +
+                           " exists(item.Nested?.NestedValue) as exists_n1, " +
+                           " item.Nested?.NestedValue? as n2, " +
+                           " exists(item.Nested?.NestedValue?) as exists_n2, " +
+                           " item.Nested?.NestedNested.NestedNestedValue as n3, " +
+                           " exists(item.Nested?.NestedNested.NestedNestedValue) as exists_n3, " +
+                           " item.Nested?.NestedNested?.NestedNestedValue as n4, " +
+                           " exists(item.Nested?.NestedNested?.NestedNestedValue) as exists_n4, " +
+                           " item.Nested?.NestedNested.NestedNestedValue? as n5, " +
+                           " exists(item.Nested?.NestedNested.NestedNestedValue?) as exists_n5, " +
+                           " item.Nested?.NestedNested?.NestedNestedValue? as n6, " +
+                           " exists(item.Nested?.NestedNested?.NestedNestedValue?) as exists_n6 " +
                            " from " +
                            typename;
             env.CompileDeploy(stmtText).AddListener("s0");

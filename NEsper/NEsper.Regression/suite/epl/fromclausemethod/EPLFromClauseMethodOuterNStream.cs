@@ -283,7 +283,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
                              "from SupportBeanInt(Id like 'E%')#keepall as s0 " +
                              " left outer join " +
                              "method:SupportJoinMethods.FetchValMultiRow('H0', P00, p04) as h0 " +
-                             " on s0.p02 = h0.index " +
+                             " on s0.P02 = h0.index " +
                              " left outer join " +
                              "method:SupportJoinMethods.FetchValMultiRow('H1', P01, p05) as h1 " +
                              " on s0.p03 = h1.index" +
@@ -297,7 +297,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
                              " on s0.p03 = h1.index " +
                              " left outer join " +
                              "method:SupportJoinMethods.FetchValMultiRow('H0', P00, p04) as h0 " +
-                             " on s0.p02 = h0.index" +
+                             " on s0.P02 = h0.index" +
                              " order by valh0, valh1";
                 TryAssertionOne(env, expression, milestone);
 
@@ -305,7 +305,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
                              "method:SupportJoinMethods.FetchValMultiRow('H0', P00, p04) as h0 " +
                              " right outer join " +
                              "SupportBeanInt(Id like 'E%')#keepall as s0 " +
-                             " on s0.p02 = h0.index" +
+                             " on s0.P02 = h0.index" +
                              " left outer join " +
                              "method:SupportJoinMethods.FetchValMultiRow('H1', P01, p05) as h1 " +
                              " on s0.p03 = h1.index " +
@@ -316,7 +316,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
                              "method:SupportJoinMethods.FetchValMultiRow('H0', P00, p04) as h0 " +
                              " full outer join " +
                              "SupportBeanInt(Id like 'E%')#keepall as s0 " +
-                             " on s0.p02 = h0.index" +
+                             " on s0.P02 = h0.index" +
                              " full outer join " +
                              "method:SupportJoinMethods.FetchValMultiRow('H1', P01, p05) as h1 " +
                              " on s0.p03 = h1.index " +
@@ -335,7 +335,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
                              "from SupportBeanInt(Id like 'E%')#keepall as s0 " +
                              " inner join " +
                              "method:SupportJoinMethods.FetchValMultiRow('H0', P00, p04) as h0 " +
-                             " on s0.p02 = h0.index " +
+                             " on s0.P02 = h0.index " +
                              " inner join " +
                              "method:SupportJoinMethods.FetchValMultiRow('H1', P01, p05) as h1 " +
                              " on s0.p03 = h1.index" +
@@ -346,7 +346,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
                              "method:SupportJoinMethods.FetchValMultiRow('H0', P00, p04) as h0 " +
                              " inner join " +
                              "SupportBeanInt(Id like 'E%')#keepall as s0 " +
-                             " on s0.p02 = h0.index " +
+                             " on s0.P02 = h0.index " +
                              " inner join " +
                              "method:SupportJoinMethods.FetchValMultiRow('H1', P01, p05) as h1 " +
                              " on s0.p03 = h1.index" +
@@ -365,7 +365,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
                              "from SupportBeanInt(Id like 'E%')#lastevent as s0 " +
                              " left outer join " +
                              "method:SupportJoinMethods.FetchVal('H0', P00) as h0 " +
-                             " on s0.p02 = h0.index " +
+                             " on s0.P02 = h0.index " +
                              " left outer join " +
                              "method:SupportJoinMethods.FetchVal('H1', P01) as h1 " +
                              " on h0.index = h1.index" +
@@ -426,7 +426,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
                              "method:SupportJoinMethods.FetchVal('H1', P01) as h1 " +
                              " on h0.index = h1.index" +
                              " left outer join " +
-                             "method:SupportJoinMethods.FetchVal('H2', p02) as h2 " +
+                             "method:SupportJoinMethods.FetchVal('H2', P02) as h2 " +
                              " on h1.index = h2.index" +
                              " order by valh0, valh1, valh2";
                 TryAssertionFour(env, expression);
@@ -440,7 +440,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
                              "method:SupportJoinMethods.FetchVal('H1', P01) as h1 " +
                              " on h0.index = h1.index" +
                              " full outer join " +
-                             "method:SupportJoinMethods.FetchVal('H2', p02) as h2 " +
+                             "method:SupportJoinMethods.FetchVal('H2', P02) as h2 " +
                              " on h1.index = h2.index" +
                              " order by valh0, valh1, valh2";
                 TryAssertionFour(env, expression);
@@ -499,7 +499,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
                              "method:SupportJoinMethods.FetchVal(h0.val || '-H1', P01) as h1 " +
                              " on h0.index = h1.index" +
                              " left outer join " +
-                             "method:SupportJoinMethods.FetchVal(h1.val || '-H2', p02) as h2 " +
+                             "method:SupportJoinMethods.FetchVal(h1.val || '-H2', P02) as h2 " +
                              " on h1.index = h2.index" +
                              " order by valh0, valh1, valh2";
                 TryAssertionFive(env, expression);

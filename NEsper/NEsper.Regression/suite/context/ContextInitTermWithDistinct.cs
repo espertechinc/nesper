@@ -80,7 +80,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
                     "create context MyContext initiated by distinct() SupportBean terminated after 15 seconds",
-                    "Distinct-expressions have not been provIded [create context MyContext initiated by distinct() SupportBean terminated after 15 seconds]");
+                    "Distinct-expressions have not been provided [create context MyContext initiated by distinct() SupportBean terminated after 15 seconds]");
 
                 // non-overlapping context not allowed with distinct
                 SupportMessageAssertUtil.TryInvalidCompile(

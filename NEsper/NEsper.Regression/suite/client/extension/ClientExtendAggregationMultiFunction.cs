@@ -61,8 +61,8 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
             var fieldsEnumEvent = "c0,c1,c2".SplitCsv();
             var eplEnumEvent = "@Name('s0') select " +
                                "ee() as c0, " +
-                               "ee().allOf(v => v.TheString = 'E1') as c1, " +
-                               "ee().allOf(v => v.IntPrimitive = 1) as c2 " +
+                               "ee().allOf(v -> v.TheString = 'E1') as c1, " +
+                               "ee().allOf(v -> v.IntPrimitive = 1) as c2 " +
                                "from SupportBean";
             env.CompileDeploy(eplEnumEvent).AddListener("s0");
 
@@ -98,8 +98,8 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
             var fieldsSingleEvent = "c0,c1,c2,c3,c4".SplitCsv();
             var eplSingleEvent = "@Name('s0') select " +
                                  "se1() as c0, " +
-                                 "se1().allOf(v => v.TheString = 'E1') as c1, " +
-                                 "se1().allOf(v => v.IntPrimitive = 1) as c2, " +
+                                 "se1().allOf(v -> v.TheString = 'E1') as c1, " +
+                                 "se1().allOf(v -> v.IntPrimitive = 1) as c2, " +
                                  "se1().TheString as c3, " +
                                  "se1().IntPrimitive as c4 " +
                                  "from SupportBean";
@@ -139,8 +139,8 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
             var eplScalarColl = "@Name('s0') select " +
                                 "sc(TheString) as c0, " +
                                 "sc(IntPrimitive) as c1, " +
-                                "sc(TheString).allOf(v => v = 'E1') as c2, " +
-                                "sc(IntPrimitive).allOf(v => v = 1) as c3 " +
+                                "sc(TheString).allOf(v -> v = 'E1') as c2, " +
+                                "sc(IntPrimitive).allOf(v -> v = 1) as c3 " +
                                 "from SupportBean";
             env.CompileDeploy(eplScalarColl).AddListener("s0");
 
@@ -187,8 +187,8 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
             var eplScalarArray = "@Name('s0') select " +
                                  "sa(TheString) as c0, " +
                                  "sa(IntPrimitive) as c1, " +
-                                 "sa(TheString).allOf(v => v = 'E1') as c2, " +
-                                 "sa(IntPrimitive).allOf(v => v = 1) as c3 " +
+                                 "sa(TheString).allOf(v -> v = 'E1') as c2, " +
+                                 "sa(IntPrimitive).allOf(v -> v = 1) as c3 " +
                                  "from SupportBean";
             env.CompileDeploy(eplScalarArray).AddListener("s0");
 

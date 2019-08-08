@@ -579,7 +579,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
         {
             string[] filtersAB = {
                 "theString = 'a' or IntPrimitive=1 or LongPrimitive=10 or DoublePrimitive=100 or BoolPrimitive=true or " +
-                "intBoxed=2 or LongBoxed=20 or DoubleBoxed=200",
+                "IntBoxed=2 or LongBoxed=20 or DoubleBoxed=200",
                 "longBoxed=20 or TheString = 'a' or BoolPrimitive=true or IntBoxed=2 or LongPrimitive=10 or DoublePrimitive=100 or " +
                 "IntPrimitive=1 or DoubleBoxed=200"
             };
@@ -751,7 +751,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
             AtomicLong milestone)
         {
             var epl =
-                "@Name('s0') select * from pattern[every a=SupportInKeywordBean => SupportBean(IntPrimitive in (a." +
+                "@Name('s0') select * from pattern[every a=SupportInKeywordBean -> SupportBean(IntPrimitive in (a." +
                 field +
                 "))]";
             env.CompileDeployAddListenerMile(epl, "s0", milestone.GetAndIncrement());
@@ -817,7 +817,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
             AtomicLong milestone)
         {
             var epl =
-                "@Name('s0') select * from pattern[every a=SupportInKeywordBean => SupportBean(IntPrimitive not in (a." +
+                "@Name('s0') select * from pattern[every a=SupportInKeywordBean -> SupportBean(IntPrimitive not in (a." +
                 field +
                 "))]";
             env.CompileDeployAddListenerMile(epl, "s0", milestone.GetAndIncrement());
@@ -1309,7 +1309,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
 
                 TryInvalidCompile(
                     env,
-                    "select * from pattern[every a=SupportInKeywordBean => SupportBean(IntPrimitive in (a.longs))]",
+                    "select * from pattern[every a=SupportInKeywordBean -> SupportBean(IntPrimitive in (a.longs))]",
                     "Implicit conversion from datatype 'long' to 'Integer' for property 'IntPrimitive' is not allowed (strict filter type coercion)");
             }
         }
@@ -1340,14 +1340,14 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
 
                 // declared expression (...) = value
                 env.CompileDeploy(
-                        "@Name('create-expr') create expression thesplit {TheString => libSplit(TheString)}",
+                        "@Name('create-expr') create expression thesplit {TheString -> libSplit(TheString)}",
                         path)
                     .AddListener("create-expr");
                 TryOptimizableEquals(env, path, "select * from SupportBean(thesplit(*) = !NUM!)", 10, milestone);
 
                 // declared expression (...) implied true
                 env.CompileDeploy(
-                        "@Name('create-expr') create expression theE1Test {TheString => libE1True(TheString)}",
+                        "@Name('create-expr') create expression theE1Test {TheString -> libE1True(TheString)}",
                         path)
                     .AddListener("create-expr");
                 TryOptimizableBoolean(env, path, "select * from SupportBean(theE1Test(*))", milestone);
@@ -1393,7 +1393,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                 AssertFilterSingle(env, path, epl, "typeof(e)", FilterOperator.EQUAL, milestone);
 
                 env.CompileDeploy(
-                        "@Name('create-expr') create expression thesplit {TheString => funcOne(TheString)}",
+                        "@Name('create-expr') create expression thesplit {TheString -> funcOne(TheString)}",
                         path)
                     .AddListener("create-expr");
                 epl = "select * from SupportBean(thesplit(*) = 0)";
@@ -1462,7 +1462,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
             public void Run(RegressionEnvironment env)
             {
                 var epl =
-                    "@Name('s0') select * from pattern[a=SupportBean() -> b=SupportBean(myCustomBigDecimalEquals(a.bigDecimal, b.bigDecimal))]";
+                    "@Name('s0') select * from pattern[a=SupportBean() -> b=SupportBean(myCustomBigDecimalEquals(a.DecimalBoxedimal, b.DecimalBoxedimal))]";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 var beanOne = new SupportBean("E1", 0);

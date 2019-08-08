@@ -41,7 +41,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
             env.CompileDeploy("@Name('window') create window MyWindow#keepall as MySchema", path);
             env.CompileDeploy(
                 "on MyUpdateEvent mue merge MyWindow mw " +
-                "where mw.TheString = mue.key " +
+                "where mw.TheString = mue.Key " +
                 "when not matched then insert select key as TheString, intupd as intval " +
                 "when matched then delete",
                 path);

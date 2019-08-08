@@ -17,7 +17,7 @@ using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.suite.epl.join;
 using com.espertech.esper.regressionlib.support.bean;
-using com.espertech.esper.regressionrun.runner;
+using com.espertech.esper.regressionrun.Runner;
 
 using NEsper.Avro.Core;
 using NEsper.Avro.Extensions;
@@ -363,7 +363,7 @@ namespace com.espertech.esper.regressionrun.suite.epl
             configuration.Common.AddEventTypeAvro("S0_" + EventUnderlyingType.AVRO.GetName(), new ConfigurationCommonEventTypeAvro().SetAvroSchema(schema));
             configuration.Common.AddEventTypeAvro("S1_" + EventUnderlyingType.AVRO.GetName(), new ConfigurationCommonEventTypeAvro().SetAvroSchema(schema));
 
-            configuration.Compiler.AddPlugInSingleRowFunction("myStaticEvaluator", typeof(EPLJoin2StreamAndPropertyPerformance.MyStaticEval), "myStaticEvaluator");
+            configuration.Compiler.AddPlugInSingleRowFunction("myStaticEvaluator", typeof(EPLJoin2StreamAndPropertyPerformance.MyStaticEval), "MyStaticEvaluator");
 
             configuration.Common.Logging.IsEnableQueryPlan = true;
         }

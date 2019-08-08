@@ -7,7 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using com.espertech.esper.regressionlib.suite.multithread;
-using com.espertech.esper.regressionrun.runner;
+using com.espertech.esper.regressionrun.Runner;
 
 using NUnit.Framework;
 
@@ -16,9 +16,9 @@ namespace com.espertech.esper.regressionrun.suite.multithread
     /// <summary>
     /// When running with a shared/default configuration place test in <seealso cref="TestSuiteMultithread" />since these tests share the runtimevia session.
     /// <para />When running with a configuration derived from the default configuration "SupportConfigFactory", use:
-    /// <pre>RegressionRunner.runConfigurable</pre><para />When running with a fully custom configuration, use a separate runtime instance but obtain the base
+    /// <pre>RegressionRunner.RunConfigurable</pre><para />When running with a fully custom configuration, use a separate runtime instance but obtain the base
     /// configuration from SupportConfigFactory:
-    /// <pre>new XXX().run(config)</pre></summary>
+    /// <pre>new XXX().Run(config)</pre></summary>
     [TestFixture]
     public class TestSuiteMultithreadWConfig
     {

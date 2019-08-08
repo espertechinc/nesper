@@ -1130,7 +1130,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@Name('s0') select case supportEnum " +
+                var epl = "@Name('s0') select case SupportEnum " +
                           " when " +
                           typeof(SupportEnum).Name +
                           ".getValueForEnum(0) then 1 " +

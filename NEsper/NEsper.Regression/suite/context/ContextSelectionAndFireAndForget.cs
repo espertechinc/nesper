@@ -207,14 +207,14 @@ namespace com.espertech.esper.regressionlib.suite.context
                 RunQueryAll(
                     env,
                     path,
-                    "context PartitionedByString select context.key1 as c0, IntPrimitive as c1 from MyWindow",
+                    "context PartitionedByString select context.Key1 as c0, IntPrimitive as c1 from MyWindow",
                     "c0,c1",
                     new[] {new object[] {"E1", 10}, new object[] {"E2", 20}, new object[] {"E2", 21}},
                     1);
                 RunQueryAll(
                     env,
                     path,
-                    "context PartitionedByString select context.key1 as c0, IntPrimitive as c1 from MyWindow where IntPrimitive > 15",
+                    "context PartitionedByString select context.Key1 as c0, IntPrimitive as c1 from MyWindow where IntPrimitive > 15",
                     "c0,c1",
                     new[] {new object[] {"E2", 20}, new object[] {"E2", 21}},
                     1);
@@ -223,7 +223,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 RunQuery(
                     env,
                     path,
-                    "context PartitionedByString select context.key1 as c0, IntPrimitive as c1 from MyWindow where IntPrimitive > 15",
+                    "context PartitionedByString select context.Key1 as c0, IntPrimitive as c1 from MyWindow where IntPrimitive > 15",
                     "c0,c1",
                     new[] {new object[] {"E2", 20}, new object[] {"E2", 21}},
                     new[] {new SupportSelectorPartitioned(Collections.SingletonList(new object[] {"E2"}))});
@@ -308,7 +308,7 @@ namespace com.espertech.esper.regressionlib.suite.context
             {
                 var fields = "c0,c1".SplitCsv();
                 var epl = "create context PartitionedByString partition by TheString from SupportBean;\n" +
-                          "@Name('s0') context PartitionedByString select context.key1 as c0, sum(IntPrimitive) as c1 from SupportBean#length(5);\n";
+                          "@Name('s0') context PartitionedByString select context.Key1 as c0, sum(IntPrimitive) as c1 from SupportBean#length(5);\n";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 env.SendEventBean(new SupportBean("E1", 10));
@@ -358,7 +358,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                     Assert.Fail();
                 }
                 catch (ArgumentException ex) {
-                    Assert.AreEqual(ex.Message, "No selector provIded");
+                    Assert.AreEqual(ex.Message, "No selector provided");
                 }
 
                 try {
@@ -366,7 +366,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                     Assert.Fail();
                 }
                 catch (ArgumentException ex) {
-                    Assert.AreEqual(ex.Message, "No selector provIded");
+                    Assert.AreEqual(ex.Message, "No selector provided");
                 }
 
                 env.CompileDeploy("@Name('s2') select * from SupportBean");

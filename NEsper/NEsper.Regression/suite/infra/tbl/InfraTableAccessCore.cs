@@ -427,7 +427,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
 
                 env.CompileDeploy(
                     "@Name('s0') select " +
-                    "varaggESC.keys()," +
+                    "varaggESC.Keys()," +
                     "varaggESC[P00].theEvents," +
                     "varaggESC[P00]," +
                     "varaggESC[P00].theEvents.last(*)," +
@@ -435,7 +435,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                     path);
 
                 object[][] expectedAggType = {
-                    new object[] {"varaggESC.keys()", typeof(object[])},
+                    new object[] {"varaggESC.Keys()", typeof(object[])},
                     new object[] {"varaggESC[P00].theEvents", typeof(SupportBean[])},
                     new object[] {"varaggESC[P00]", typeof(IDictionary<string, object>)},
                     new object[] {"varaggESC[P00].theEvents.last(*)", typeof(SupportBean)},
@@ -648,7 +648,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 var path = new RegressionPath();
                 env.CompileDeploy("create table MyTableTwo(TheString string primary key, IntPrimitive int)", path);
                 env.CompileDeploy(
-                    "create expression getMyValue{o => (select MyTableTwo[o.P00].IntPrimitive from SupportBean_S1#lastevent)}",
+                    "create expression getMyValue{o -> (select MyTableTwo[o.P00].IntPrimitive from SupportBean_S1#lastevent)}",
                     path);
                 env.CompileDeploy("insert into MyTableTwo select TheString, IntPrimitive from SupportBean", path);
                 env.CompileDeploy("@Name('s0') select getMyValue(s0) as c0 from SupportBean_S0 as s0", path)
@@ -675,7 +675,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             {
                 var path = new RegressionPath();
                 env.CompileDeploy("create table MyTableOne(TheString string primary key, IntPrimitive int)", path);
-                env.CompileDeploy("create expression getMyValue{o => MyTableOne[o.P00].IntPrimitive}", path);
+                env.CompileDeploy("create expression getMyValue{o -> MyTableOne[o.P00].IntPrimitive}", path);
                 env.CompileDeploy("insert into MyTableOne select TheString, IntPrimitive from SupportBean", path);
                 env.CompileDeploy("@Name('s0') select getMyValue(s0) as c0 from SupportBean_S0 as s0", path)
                     .AddListener("s0");
@@ -699,7 +699,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 AtomicLong milestone)
             {
                 var path = new RegressionPath();
-                env.CompileDeploy("create expression sumi {a => sum(IntPrimitive)}", path);
+                env.CompileDeploy("create expression sumi {a -> sum(IntPrimitive)}", path);
                 env.CompileDeploy("create expression sumd alias for {sum(DoublePrimitive)}", path);
                 env.CompileDeploy(
                     "create table varaggITFE (" +
@@ -1175,7 +1175,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 env.CompileDeploy(
                     "on SupportBean_S0 as s0 " +
                     "merge the_table as tt " +
-                    "where s0.P00 = tt.key " +
+                    "where s0.P00 = tt.Key " +
                     "when matched and the_table[s0.P00].total > 0" +
                     "  then update set value = 1",
                     path);

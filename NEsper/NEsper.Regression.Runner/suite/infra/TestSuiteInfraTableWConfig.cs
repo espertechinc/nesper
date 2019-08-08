@@ -9,7 +9,7 @@
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.regressionlib.suite.infra.tbl;
 using com.espertech.esper.regressionlib.support.bean;
-using com.espertech.esper.regressionrun.runner;
+using com.espertech.esper.regressionrun.Runner;
 
 using NUnit.Framework;
 

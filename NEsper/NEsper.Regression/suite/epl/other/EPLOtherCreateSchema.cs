@@ -462,7 +462,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
 
                 // insert pattern to named window
                 env.CompileDeploy(
-                    "@Name('windowInsertOne') insert into MyWindow select sb as bean, s0Arr as beanarray from pattern [sb=SupportBean => s0Arr=SupportBean_S0 until SupportBean_S0(Id=0)]",
+                    "@Name('windowInsertOne') insert into MyWindow select sb as bean, s0Arr as beanarray from pattern [sb=SupportBean -> s0Arr=SupportBean_S0 until SupportBean_S0(Id=0)]",
                     path);
                 env.SendEventBean(new SupportBean("E2", 2));
                 env.SendEventBean(new SupportBean_S0(10, "S0_1"));
@@ -620,7 +620,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                     " create schema E4 as " +
                     typeof(SupportBean).Name +
                     " copyFrom XYZ",
-                    "Copy-from types are not allowed with class-provIded types [");
+                    "Copy-from types are not allowed with class-provided types [");
                 TryInvalidCompile(
                     env,
                     path,
@@ -672,7 +672,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 EventRepresentationChoice eventRepresentationEnum)
             {
                 var expectedOne = !eventRepresentationEnum.IsAvroEvent()
-                    ? "Nestable type configuration encountered an unexpected property type name 'xxxx' for property 'col1', expected System.Class or java.util.Map or the name of a previously-declared Map or ObjectArray type ["
+                    ? "Nestable type configuration encountered an unexpected property type name 'xxxx' for property 'col1', expected System.Class or IDictionary or the name of a previously-declared Map or ObjectArray type ["
                     : "Type definition encountered an unexpected property type name 'xxxx' for property 'col1', expected the name of a previously-declared Avro type";
                 TryInvalidCompile(
                     env,

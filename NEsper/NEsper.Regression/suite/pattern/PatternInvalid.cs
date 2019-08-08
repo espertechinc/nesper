@@ -181,10 +181,10 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                     "Failed to validate filter expression 'dummy=1': Property named 'dummy' is not valid in any stream [");
 
                 // nested property not found
-                exception = GetStatementExceptionPattern(env, "SupportBean_N(dummy.nested=1)");
+                exception = GetStatementExceptionPattern(env, "SupportBean_N(dummy.Nested=1)");
                 AssertMessage(
                     exception,
-                    "Failed to validate filter expression 'dummy.nested=1': Failed to resolve property 'dummy.nested' to a stream or nested property in a stream [");
+                    "Failed to validate filter expression 'dummy.Nested=1': Failed to resolve property 'dummy.Nested' to a stream or nested property in a stream [");
 
                 // property wrong type
                 exception = GetStatementExceptionPattern(env, "SupportBean_N(IntPrimitive='s')");

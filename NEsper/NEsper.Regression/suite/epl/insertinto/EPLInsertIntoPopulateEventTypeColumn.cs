@@ -347,7 +347,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                 env.CompileDeploy(
                         "@Name('out') " +
                         "expression computeNested {\n" +
-                        "  sb => case\n" +
+                        "  sb -> case\n" +
                         "  when IntPrimitive = 1 \n" +
                         "    then new { p0 = 'a', p1 = 1}\n" +
                         "  else new { p0 = 'b', p1 = 2 }\n" +

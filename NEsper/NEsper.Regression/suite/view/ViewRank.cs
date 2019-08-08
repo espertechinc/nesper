@@ -835,7 +835,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
                     "select * from SupportBean#rank(1, IntPrimitive desc)",
-                    "Failed to validate data window declaration: Rank view requires a list of expressions provIding unique keys, a numeric size parameter and a list of expressions provIding sort keys [select * from SupportBean#rank(1, IntPrimitive desc)]");
+                    "Failed to validate data window declaration: Rank view requires a list of expressions providing unique keys, a numeric size parameter and a list of expressions providing sort keys [select * from SupportBean#rank(1, IntPrimitive desc)]");
 
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,

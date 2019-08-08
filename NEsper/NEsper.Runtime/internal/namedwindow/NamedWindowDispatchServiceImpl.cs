@@ -42,7 +42,8 @@ namespace com.espertech.esper.runtime.@internal.namedwindow
         private readonly TableManagementService tableManagementService;
         private readonly VariableManagementService variableService;
 
-        private readonly IThreadLocal<DispatchesTL> threadLocal = new FastThreadLocal<DispatchesTL>(() => new DispatchesTL());
+        private readonly IThreadLocal<DispatchesTL> threadLocal = 
+            new SlimThreadLocal<DispatchesTL>(() => new DispatchesTL());
 
         public NamedWindowDispatchServiceImpl(
             SchedulingService schedulingService,

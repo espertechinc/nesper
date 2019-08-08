@@ -20,7 +20,7 @@ namespace com.espertech.esper.common.@internal.statement.dispatch
     public class DispatchService
     {
         private readonly IThreadLocal<ArrayDeque<Dispatchable>> dispatchStateThreadLocal =
-            new FastThreadLocal<ArrayDeque<Dispatchable>>(() => new ArrayDeque<Dispatchable>());
+            new SlimThreadLocal<ArrayDeque<Dispatchable>>(() => new ArrayDeque<Dispatchable>());
 
         public IThreadLocal<ArrayDeque<Dispatchable>> DispatchStateThreadLocal => dispatchStateThreadLocal;
 

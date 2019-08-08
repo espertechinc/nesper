@@ -11,6 +11,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
+using Castle.DynamicProxy;
+
 using com.espertech.esper.collection;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.annotation;
@@ -651,56 +653,64 @@ namespace com.espertech.esper.common.@internal.epl.annotation
                     codegenClassScope);
             }
 
-            throw new IllegalStateException(
-                "Unrecognized annotation having type" + annotation.GetType().FullName);
+            if (annotation is IProxyTargetAccessor proxyTargetAccessor) {
+                var interceptor = (EPLAnnotationInvocationHandler) proxyTargetAccessor.GetInterceptors()[0];
+                var methodNode = parent.MakeChild(typeof(Attribute), typeof(AnnotationUtil), codegenClassScope);
 
-#if FALSE
-            //var innerProxy = (EPLAnnotationInvocationHandler) annotation; // Proxy.GetInvocationHandler(annotation);
-            var methodNode = parent.MakeChild(typeof(Attribute), typeof(AnnotationUtil), codegenClassScope);
-            var clazz = NewAnonymousClass(methodNode.Block, annotation.GetType());
+                methodNode.Block.DeclareVar(
+                    interceptor.AnnotationClass,
+                    "annotation",
+                    NewInstance(interceptor.AnnotationClass));
 
-            var annotationType = CodegenMethod.MakeParentNode(typeof(Type), typeof(AnnotationUtil), codegenClassScope);
-            clazz.AddMethod("annotationType", annotationType);
-            annotationType.Block.MethodReturn(Clazz(innerProxy.AnnotationClass));
+                //var annotationType = CodegenMethod.MakeMethod(
+                //    typeof(Type), typeof(AnnotationUtil), codegenClassScope);
+                //clazz.AddMethod("annotationType", annotationType);
+                //annotationType.Block.MethodReturn(Clazz(interceptor.AnnotationClass));
 
-            foreach (var method in innerProxy.AnnotationClass.GetMethods()) {
-                if ((method.Name == "Equals") ||
-                    (method.Name == "GetHashCode") ||
-                    (method.Name == "ToString") ||
-                    (method.Name == "GetType")) {
-                    continue;
+                foreach (var property in interceptor.AnnotationClass.GetProperties())
+                {
+                    if (!property.CanWrite) {
+                        continue;
+                    }
+
+                    CodegenExpression valueExpression;
+
+                    var value = interceptor.Attributes.Get(property.Name);
+                    if (value == null)
+                    {
+                        valueExpression = ConstantNull();
+                    }
+                    else if (property.PropertyType == typeof(Type))
+                    {
+                        valueExpression = Clazz((Type) value);
+                    }
+                    else if (property.PropertyType.IsArray && property.PropertyType.GetElementType().IsAttribute())
+                    {
+                        valueExpression = LocalMethod(
+                            MakeAnnotations(
+                                property.PropertyType, (Attribute[]) value, methodNode, codegenClassScope));
+                    }
+                    else if (!property.PropertyType.IsAttribute())
+                    {
+                        valueExpression = Constant(value);
+                    }
+                    else
+                    {
+                        valueExpression = Cast(
+                            property.PropertyType, 
+                            MakeAnnotation((Attribute) value, methodNode, codegenClassScope));
+                    }
+
+                    methodNode.Block.SetProperty(
+                        Ref("annotation"), property.Name, valueExpression);
                 }
 
-                var annotationValue =
- CodegenMethod.MakeParentNode(method.ReturnType, typeof(AnnotationUtil), codegenClassScope);
-                var value = innerProxy.Attributes.Get(method.Name);
-                clazz.AddMethod(method.Name, annotationValue);
-
-                CodegenExpression valueExpression;
-                if (value == null) {
-                    valueExpression = ConstantNull();
-                }
-                else if (method.ReturnType == typeof(Type)) {
-                    valueExpression = Clazz((Type) value);
-                }
-                else if (method.ReturnType.IsArray && method.ReturnType.GetElementType().IsAttribute()) {
-                    valueExpression =
- LocalMethod(MakeAnnotations(method.ReturnType, (Attribute[]) value, methodNode, codegenClassScope));
-                }
-                else if (!method.ReturnType.IsAttribute()) {
-                    valueExpression = Constant(value);
-                }
-                else {
-                    valueExpression =
- Cast(method.ReturnType, MakeAnnotation((Attribute) value, methodNode, codegenClassScope));
-                }
-
-                annotationValue.Block.MethodReturn(valueExpression);
+                methodNode.Block.MethodReturn(Ref("annotation"));
+                return LocalMethod(methodNode);
             }
 
-            methodNode.Block.MethodReturn(clazz);
-            return LocalMethod(methodNode);
-#endif
+            throw new IllegalStateException(
+                "Unrecognized annotation having type " + annotation.GetType().FullName);
         }
     }
 } // end of namespacecom

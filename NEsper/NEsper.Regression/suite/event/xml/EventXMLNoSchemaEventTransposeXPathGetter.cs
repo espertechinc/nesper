@@ -35,7 +35,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
             var type = env.Runtime.EventTypeService.GetEventTypePreconfigured("TestXMLSchemaTypeTXG");
             SupportEventTypeAssertionUtil.AssertConsistency(type);
             Assert.IsNull(type.GetFragmentType("nested1"));
-            Assert.IsNull(type.GetFragmentType("nested1.nested2"));
+            Assert.IsNull(type.GetFragmentType("nested1.Nested2"));
 
             SupportXML.SendDefaultEvent(env.EventService, "ABC", "TestXMLSchemaTypeTXG");
             SupportEventTypeAssertionUtil.AssertConsistency(env.GetEnumerator("s0").Advance());

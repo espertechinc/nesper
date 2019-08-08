@@ -15,7 +15,7 @@ using com.espertech.esper.regressionlib.suite.context;
 using com.espertech.esper.regressionlib.support.bean;
 using com.espertech.esper.regressionlib.support.extend.vdw;
 using com.espertech.esper.regressionlib.support.util;
-using com.espertech.esper.regressionrun.runner;
+using com.espertech.esper.regressionrun.Runner;
 
 using NUnit.Framework;
 
@@ -73,8 +73,8 @@ namespace com.espertech.esper.regressionrun.suite.context
             configuration.Common.AddEventType(typeof(ContextDocExamples.MyTwoKeyInit));
             configuration.Common.AddEventType(typeof(ContextDocExamples.MyTwoKeyTerm));
 
-            configuration.Compiler.AddPlugInSingleRowFunction("myHash", typeof(ContextHashSegmented), "myHashFunc");
-            configuration.Compiler.AddPlugInSingleRowFunction("mySecond", typeof(ContextHashSegmented), "mySecondFunc");
+            configuration.Compiler.AddPlugInSingleRowFunction("myHash", typeof(ContextHashSegmented), "MyHashFunc");
+            configuration.Compiler.AddPlugInSingleRowFunction("mySecond", typeof(ContextHashSegmented), "MySecondFunc");
             configuration.Compiler.AddPlugInSingleRowFunction(
                 "makeBean",
                 typeof(ContextInitTermTemporalFixed),

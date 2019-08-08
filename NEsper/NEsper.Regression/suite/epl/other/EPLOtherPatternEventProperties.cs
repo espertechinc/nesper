@@ -112,7 +112,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 SetupOrPattern(
                     env,
                     "a, a as myAEvent, b, b as myBEvent, a.IntPrimitive as myInt, " +
-                    "a.TheString, b.simpleProperty as simple, b.indexed[0] as indexed, b.nested.NestedValue as nestedVal");
+                    "a.TheString, b.simpleProperty as simple, b.indexed[0] as indexed, b.Nested.NestedValue as nestedVal");
 
                 object theEvent = SupportBeanComplexProps.MakeDefaultBean();
                 env.SendEventBean(theEvent);

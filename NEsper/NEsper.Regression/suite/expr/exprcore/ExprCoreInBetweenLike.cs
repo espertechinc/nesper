@@ -282,7 +282,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@Name('stmt1') select s0.anyObject in (objectArr) as value from SupportBeanArrayCollMap s0";
+                var epl = "@Name('stmt1') select s0.AnyObject in (objectArr) as value from SupportBeanArrayCollMap s0";
 
                 env.CompileDeploy(epl).AddListener("stmt1");
 

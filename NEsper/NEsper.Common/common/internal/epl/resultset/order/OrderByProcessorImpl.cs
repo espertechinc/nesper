@@ -56,7 +56,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.order
             }
 
             method.Block.Apply(Instblock(classScope, "qOrderBy", REF_EPS, Constant(expressions), Constant(descending)));
-            var getSortKey = GenerateOrderKeyCodegen("getSortKeyInternal", forge.OrderBy, classScope, namedMethods);
+            var getSortKey = GenerateOrderKeyCodegen("GetSortKeyInternal", forge.OrderBy, classScope, namedMethods);
             method.Block
                 .DeclareVar<object>("key", LocalMethod(getSortKey, REF_EPS, REF_ISNEWDATA, REF_EXPREVALCONTEXT))
                 .Apply(Instblock(classScope, "aOrderBy", Ref("key")))
@@ -73,7 +73,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.order
             var blocks = method.Block.SwitchBlockOfLength("num", forge.OrderByRollup.Length, true);
             for (var i = 0; i < blocks.Length; i++) {
                 var getSortKey = GenerateOrderKeyCodegen(
-                    "getSortKeyInternal_" + i,
+                    "GetSortKeyInternal_" + i,
                     forge.OrderByRollup[i],
                     classScope,
                     namedMethods);
@@ -176,7 +176,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.order
             };
             return namedMethods.AddMethod(
                 typeof(EventBean[]),
-                "sortWGroupKeysInternal",
+                "SortWGroupKeysInternal",
                 CodegenNamedParam.From(
                     typeof(EventBean[]),
                     REF_OUTGOINGEVENTS.Ref,
@@ -275,7 +275,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.order
             };
             return namedMethods.AddMethod(
                 typeof(IList<object>),
-                "createSortProperties",
+                "CreateSortProperties",
                 CodegenNamedParam.From(
                     typeof(EventBean[][]),
                     REF_GENERATINGEVENTS.Ref,
@@ -348,7 +348,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.order
                 var blocks = forEach.SwitchBlockOfLength("num", forge.OrderByRollup.Length, false);
                 for (var i = 0; i < blocks.Length; i++) {
                     var getSortKey = GenerateOrderKeyCodegen(
-                        "getSortKeyInternal_" + i,
+                        "GetSortKeyInternal_" + i,
                         forge.OrderByRollup[i],
                         classScope,
                         namedMethods);
@@ -368,7 +368,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.order
             };
             return namedMethods.AddMethod(
                 typeof(IList<object>),
-                "createSortPropertiesWRollup",
+                "CreateSortPropertiesWRollup",
                 CodegenNamedParam.From(
                     typeof(IList<object>),
                     REF_ORDERCURRENTGENERATORS.Ref,
@@ -473,7 +473,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.order
 
             return namedMethods.AddMethod(
                 typeof(EventBean),
-                "determineLocalMinMax",
+                "DetermineLocalMinMax",
                 CodegenNamedParam.From(
                     typeof(EventBean[]),
                     REF_OUTGOINGEVENTS.Ref,

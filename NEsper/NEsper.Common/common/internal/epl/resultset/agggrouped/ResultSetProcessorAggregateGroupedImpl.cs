@@ -516,11 +516,11 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
                 .DeclareVar<EventBean[]>("eventsPerStream", NewArrayByLength(typeof(EventBean), Constant(1)));
 
             {
-                method.Block.WhileLoop(ExprDotMethod(Ref("it"), "HasNext"))
+                method.Block.WhileLoop(ExprDotMethod(Ref("it"), "MoveNext"))
                     .AssignArrayElement(
                         Ref("eventsPerStream"),
                         Constant(0),
-                        Cast(typeof(EventBean), ExprDotMethod(Ref("it"), "Next")))
+                        Cast(typeof(EventBean), ExprDotMethod(Ref("it"), "Current")))
                     .DeclareVar<object>(
                         "groupKey",
                         LocalMethod(generateGroupKeySingle, Ref("eventsPerStream"), ConstantTrue()))
@@ -1705,10 +1705,10 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
                 "entryIterator",
                 ExprDotMethod(Ref(NAME_OUTPUTALLGROUPREPS), "EntryIterator"));
             {
-                method.Block.WhileLoop(ExprDotMethod(Ref("entryIterator"), "HasNext"))
+                method.Block.WhileLoop(ExprDotMethod(Ref("entryIterator"), "MoveNext"))
                     .DeclareVar<KeyValuePair<object, object>>(
                         "entry",
-                        Cast(typeof(KeyValuePair<object, object>), ExprDotMethod(Ref("entryIterator"), "Next")))
+                        Cast(typeof(KeyValuePair<object, object>), ExprDotMethod(Ref("entryIterator"), "Current")))
                     .IfCondition(
                         Not(ExprDotMethod(Ref("workCollection"), "containsKey", ExprDotMethod(Ref("entry"), "getKey"))))
                     .InstanceMethod(
@@ -2364,12 +2364,12 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
                 "entryIterator",
                 ExprDotMethod(Ref(NAME_OUTPUTALLGROUPREPS), "EntryIterator"));
             {
-                method.Block.WhileLoop(ExprDotMethod(Ref("entryIterator"), "HasNext"))
+                method.Block.WhileLoop(ExprDotMethod(Ref("entryIterator"), "MoveNext"))
                     .DeclareVar<KeyValuePair<object, object>>(
                         "entry",
-                        Cast(typeof(KeyValuePair<object, object>), ExprDotMethod(Ref("entryIterator"), "Next")))
+                        Cast(typeof(KeyValuePair<object, object>), ExprDotMethod(Ref("entryIterator"), "Current")))
                     .IfCondition(
-                        Not(ExprDotMethod(Ref("workCollection"), "containsKey", ExprDotMethod(Ref("entry"), "getKey"))))
+                        Not(ExprDotMethod(Ref("workCollection"), "ContainsKey", ExprDotName(Ref("entry"), "Key"))))
                     .InstanceMethod(
                         generateOutputBatchedAddToListSingle,
                         ExprDotName(Ref("entry"), "Key"),

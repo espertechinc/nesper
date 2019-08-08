@@ -17,7 +17,7 @@ using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.suite.expr.datetime;
 using com.espertech.esper.regressionlib.support.bean;
 using com.espertech.esper.regressionlib.support.schedule;
-using com.espertech.esper.regressionrun.runner;
+using com.espertech.esper.regressionrun.Runner;
 
 using NUnit.Framework;
 
@@ -78,7 +78,7 @@ namespace com.espertech.esper.regressionrun.suite.expr
             configuration.Compiler.AddPlugInSingleRowFunction(
                 "makeTest",
                 typeof(SupportBean_ST0_Container),
-                "makeTest");
+                "MakeTest");
 
             foreach (var fieldType in EnumHelper.GetValues<SupportDateTimeFieldType>()) {
                 var oa = new ConfigurationCommonEventTypeObjectArray();

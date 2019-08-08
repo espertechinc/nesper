@@ -128,7 +128,7 @@ namespace com.espertech.esper.common.@internal.collection
 
         private void CheckModuleNameParameter(string moduleName)
         {
-            if (String.IsNullOrEmpty(moduleName)) {
+            if (moduleName != null && moduleName.Length == 0) { 
                 throw new ArgumentException("Invalid empty module name, use null or a non-empty value");
             }
         }

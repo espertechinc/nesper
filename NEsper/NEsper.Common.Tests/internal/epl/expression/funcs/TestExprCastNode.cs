@@ -28,7 +28,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
             castNodes[0] = new ExprCastNode(new ClassIdentifierWArray("long"));
             castNodes[0].AddChildNode(new SupportExprNode(10L, typeof(long?)));
 
-            castNodes[1] = new ExprCastNode(new ClassIdentifierWArray("java.lang.Integer"));
+            castNodes[1] = new ExprCastNode(new ClassIdentifierWArray(typeof(int).FullName));
             castNodes[1].AddChildNode(new SupportExprNode(0x10, typeof(byte)));
         }
 
@@ -39,7 +39,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
         {
             Assert.IsFalse(castNodes[0].EqualsNode(new ExprEqualsNodeImpl(true, false), false));
             Assert.IsFalse(castNodes[0].EqualsNode(castNodes[1], false));
-            Assert.IsFalse(castNodes[0].EqualsNode(new ExprCastNode(new ClassIdentifierWArray("java.lang.Integer")), false));
+            Assert.IsFalse(castNodes[0].EqualsNode(new ExprCastNode(new ClassIdentifierWArray(typeof(int).FullName)), false));
         }
 
         [Test]

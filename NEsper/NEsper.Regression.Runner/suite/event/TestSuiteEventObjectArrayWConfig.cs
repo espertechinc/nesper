@@ -13,7 +13,7 @@ using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.suite.@event.objectarray;
-using com.espertech.esper.regressionrun.runner;
+using com.espertech.esper.regressionrun.Runner;
 
 using NUnit.Framework;
 
@@ -30,7 +30,7 @@ namespace com.espertech.esper.regressionrun.suite.@event
             session.Configuration.Common.AddEventType(
                 "MyOAType",
                 "bean,theString,map".SplitCsv(),
-                new object[] {typeof(SupportBean), "string", "java.util.Map"});
+                new object[] {typeof(SupportBean), "string", "Dictionary"});
             RegressionRunner.Run(session, new EventObjectArrayConfiguredStatic());
             session.Destroy();
         }

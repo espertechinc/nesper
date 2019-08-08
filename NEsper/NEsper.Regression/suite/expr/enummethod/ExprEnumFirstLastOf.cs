@@ -48,8 +48,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
                 var eplFragment = "@Name('s0') select " +
                                   "Strvals.firstOf() as val0, " +
                                   "Strvals.lastOf() as val1, " +
-                                  "Strvals.firstOf(x => x like '%1%') as val2, " +
-                                  "Strvals.lastOf(x => x like '%1%') as val3 " +
+                                  "Strvals.firstOf(x -> x like '%1%') as val2, " +
+                                  "Strvals.lastOf(x -> x like '%1%') as val3 " +
                                   " from SupportCollection";
                 env.CompileDeploy(eplFragment).AddListener("s0");
 
@@ -178,7 +178,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
             public void Run(RegressionEnvironment env)
             {
                 var eplFragment =
-                    "@Name('s0') select Contained.firstOf(x => P00 = 9) as val from SupportBean_ST0_Container";
+                    "@Name('s0') select Contained.firstOf(x -> P00 = 9) as val from SupportBean_ST0_Container";
                 env.CompileDeploy(eplFragment).AddListener("s0");
 
                 LambdaAssertionUtil.AssertTypes(

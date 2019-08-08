@@ -78,7 +78,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
             CodegenClassScope codegenClassScope)
         {
             var methodNode = codegenMethodScope.MakeChild(
-                typeof(ICollection<object>),
+                typeof(ICollection<EventBean>),
                 typeof(PropertyDotEventCollectionForge),
                 codegenClassScope);
 
@@ -219,7 +219,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
         {
             if (disablePropertyExpressionEventCollCache) {
                 var methodNodeX = codegenMethodScope.MakeChild(
-                        typeof(ICollection<object>),
+                        typeof(ICollection<EventBean>),
                         typeof(PropertyDotEventCollectionForge),
                         codegenClassScope)
                     .AddParam(typeof(EventBean), "@event");
@@ -256,7 +256,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
                     Cast(
                         typeof(EventBean[]),
                         getter.EventBeanFragmentCodegen(Ref("@event"), methodNode, codegenClassScope)))
-                .DeclareVarNoInit(typeof(ICollection<object>), "coll")
+                .DeclareVarNoInit(typeof(ICollection<EventBean>), "coll")
                 .IfRefNull("events")
                 .AssignRef("coll", ConstantNull())
                 .IfElse()

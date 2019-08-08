@@ -260,7 +260,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                                 ".me.p0 as c3, " +
                                 "varaggPWD" +
                                 key +
-                                ".mearr.selectFrom(i => i.p0) as c4 " +
+                                ".mearr.selectFrom(i -> i.p0) as c4 " +
                                 "from SupportBean_S0";
                 env.CompileDeploy(eplSelect, path);
                 env.AddListener("s0");

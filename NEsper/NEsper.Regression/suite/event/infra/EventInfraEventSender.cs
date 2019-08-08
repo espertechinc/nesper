@@ -39,9 +39,9 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
                 "SupportBean",
                 new SupportBean_G("G1"),
                 "Event object of type " +
-                typeof(SupportBean_G).Name +
+                typeof(SupportBean_G).FullName +
                 " does not equal, extend or implement the type " +
-                typeof(SupportBean).Name +
+                typeof(SupportBean).FullName +
                 " of event type 'SupportBean'");
             RunAssertionSuccess(env, "SupportMarkerInterface", new SupportMarkerImplA("Q2"), new SupportBean_G("Q3"));
 
@@ -51,7 +51,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
                 env,
                 MAP_TYPENAME,
                 new SupportBean(),
-                "Unexpected event object of type " + typeof(SupportBean).Name + ", expected java.util.Map");
+                "Unexpected event object of type " + typeof(SupportBean).FullName + ", expected IDictionary");
 
             // Object-Array
             RunAssertionSuccess(env, OA_TYPENAME);
@@ -59,7 +59,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
                 env,
                 OA_TYPENAME,
                 new SupportBean(),
-                "Unexpected event object of type " + typeof(SupportBean).Name + ", expected Object[]");
+                "Unexpected event object of type " + typeof(SupportBean).FullName + ", expected Object[]");
 
             // XML
             RunAssertionSuccess(env, XML_TYPENAME, SupportXML.GetDocument("<myevent/>").DocumentElement);

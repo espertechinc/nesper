@@ -17,7 +17,7 @@ using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.function;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.suite.@event.map;
-using com.espertech.esper.regressionrun.runner;
+using com.espertech.esper.regressionrun.Runner;
 
 using NUnit.Framework;
 
@@ -55,7 +55,7 @@ namespace com.espertech.esper.regressionrun.suite.@event
             // invalid property
             TryInvalidConfigure(config => {
                 config.Common.AddEventType("InvalidMap", Collections.SingletonDataMap("key", "XXX"));
-            }, "Nestable type configuration encountered an unexpected property type name 'XXX' for property 'key', expected java.lang.Class or java.util.Map or the name of a previously-declared Map or ObjectArray type");
+            }, "Nestable type configuration encountered an unexpected property type name 'XXX' for property 'key', expected Type or Dictionary or the name of a previously-declared Map or ObjectArray type");
 
             // invalid key
             IDictionary<string, object> invalid = EventMapCore.MakeMap(new object[][] {
@@ -70,7 +70,7 @@ namespace com.espertech.esper.regressionrun.suite.@event
             });
             TryInvalidConfigure(config => {
                 config.Common.AddEventType("InvalidMap", invalidTwo);
-            }, "Nestable type configuration encountered an unexpected property type name 'SupportBean(null, 0)' for property 'abc', expected java.lang.Class or java.util.Map or the name of a previously-declared Map or ObjectArray type");
+            }, "Nestable type configuration encountered an unexpected property type name 'SupportBean(null, 0)' for property 'abc', expected Type or Dictionary or the name of a previously-declared Map or ObjectArray type");
         }
 
         private void TryInvalidConfigure(Consumer<Configuration> configurer, string expected)

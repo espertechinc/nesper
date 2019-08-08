@@ -153,7 +153,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@Name('s0') select P00 like P01 as c0, Id like p02 as c1 from SupportBean_S0";
+                var epl = "@Name('s0') select P00 like P01 as c0, Id like P02 as c1 from SupportBean_S0";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 SendS0Event(env, 413, "%XXaXX", "%a%", "%1%", null);
@@ -206,7 +206,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@Name('s0') select P00 regexp P01 as c0, Id regexp p02 as c1 from SupportBean_S0";
+                var epl = "@Name('s0') select P00 regexp P01 as c0, Id regexp P02 as c1 from SupportBean_S0";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 SendS0Event(env, 413, "XXAXX", ".*A.*", ".*1.*", null);
@@ -237,7 +237,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
             {
                 var epl = "@Name('s0') select P00 like P01 as r1, " +
                           " P00 like P01 escape \"!\" as r2," +
-                          " p02 regexp p03 as r3 " +
+                          " P02 regexp p03 as r3 " +
                           " from SupportBean_S0";
                 env.CompileDeploy(epl).AddListener("s0");
 
@@ -291,7 +291,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
             {
                 var stmtText = "@Name('s0') select P00 like P01 as r1, " +
                                "P00 like P01 escape \"!\" as r2, " +
-                               "p02 regexp p03 as r3 " +
+                               "P02 regexp p03 as r3 " +
                                "from SupportBean_S0";
 
                 var model = new EPStatementObjectModel();
@@ -304,7 +304,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                             Expressions.Property("P01"),
                             Expressions.Constant("!")),
                         "r2")
-                    .Add(Expressions.Regexp(Expressions.Property("p02"), Expressions.Property("p03")), "r3");
+                    .Add(Expressions.Regexp(Expressions.Property("P02"), Expressions.Property("p03")), "r3");
 
                 model.FromClause = FromClause.Create(FilterStream.Create("SupportBean_S0"));
                 model = env.CopyMayFail(model);
@@ -325,7 +325,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
             {
                 var epl = "@Name('s0') select P00 like P01 as r1, " +
                           "P00 like P01 escape \"!\" as r2, " +
-                          "p02 regexp p03 as r3 " +
+                          "P02 regexp p03 as r3 " +
                           "from SupportBean_S0";
 
                 var model = env.EplToModel(epl);

@@ -37,7 +37,7 @@ namespace com.espertech.esper.runtime.client
         ///         then checking that the event object indeed is an array of object.
         ///     </para>
         ///     <para>
-        ///         For events backed by a java.util.Map (Map events), the sender does not perform any checking other
+        ///         For events backed by a IDictionary (Map events), the sender does not perform any checking other
         ///         then checking that the event object indeed implements Map.
         ///     </para>
         ///     <para>

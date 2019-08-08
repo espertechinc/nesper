@@ -238,7 +238,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                     env,
                     path,
                     "select ? as c0,?:a as c1 from MyWindow",
-                    "Inconsistent use of substitution parameters, expecting all substitutions to either all provIde a name or provIde no name");
+                    "Inconsistent use of substitution parameters, expecting all substitutions to either all provide a name or provide no name");
 
                 // keyword used for name
                 TryInvalidCompileFAF(
@@ -340,7 +340,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                     env,
                     compiled,
                     query => query.SetObject("x", 10),
-                    "Substitution parameter names have not been provIded for this query");
+                    "Substitution parameter names have not been provided for this query");
                 TryInvalidSetObject(
                     env,
                     compiled,
@@ -363,7 +363,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                     env,
                     compiled,
                     query => query.SetObject(0, "a"),
-                    "Substitution parameter names have been provIded for this query, please set the value by name");
+                    "Substitution parameter names have been provided for this query, please set the value by name");
 
                 env.UndeployAll();
             }

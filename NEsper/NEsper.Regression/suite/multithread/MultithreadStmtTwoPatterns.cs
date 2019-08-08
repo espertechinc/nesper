@@ -45,12 +45,12 @@ namespace com.espertech.esper.regressionlib.suite.multithread
 
         public void Run(RegressionEnvironment env)
         {
-            var statementTwo = "select * from pattern[( every event1=SupportTradeEvent(userId in ('100','101')) =>\n" +
-                               "         (SupportTradeEvent(userId in ('100','101'), direction = event1.direction ) =>\n" +
+            var statementTwo = "select * from pattern[( every event1=SupportTradeEvent(userId in ('100','101')) ->\n" +
+                               "         (SupportTradeEvent(userId in ('100','101'), direction = event1.direction ) ->\n" +
                                "          SupportTradeEvent(userId in ('100','101'), direction = event1.direction )\n" +
                                "         ) where timer:within(8 hours)\n" +
                                "         and not eventNC=SupportTradeEvent(userId in ('100','101'), direction!= event1.direction )\n" +
-                               "        ) => eventFinal=SupportTradeEvent(userId in ('100','101'), direction != event1.direction ) where timer:within(1 hour)]";
+                               "        ) -> eventFinal=SupportTradeEvent(userId in ('100','101'), direction != event1.direction ) where timer:within(1 hour)]";
             var compiledTwo = env.Compile(statementTwo);
 
             var runnable = new TwoPatternRunnable(env);

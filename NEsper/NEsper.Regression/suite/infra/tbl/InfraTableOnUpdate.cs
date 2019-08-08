@@ -37,7 +37,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             env.CompileDeploy("@Name('s0') select varagg[P00, Id].p0 as value from SupportBean_S0", path)
                 .AddListener("s0");
             env.CompileDeploy(
-                    "@Name('update') on SupportTwoKeyEvent update varagg set p0 = newValue " +
+                    "@Name('Update') on SupportTwoKeyEvent update varagg set p0 = newValue " +
                     "where k1 = keyOne and k2 = keyTwo",
                     path)
                 .AddListener("update");

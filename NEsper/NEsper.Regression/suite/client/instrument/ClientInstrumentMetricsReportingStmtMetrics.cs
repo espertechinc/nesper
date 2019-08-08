@@ -34,11 +34,11 @@ namespace com.espertech.esper.regressionlib.suite.client.instrument
             statements[0].AddListener(env.ListenerNew());
 
             statements[1] = env.CompileDeploy(
-                    "@Name('cpuStmtOne') select * from SupportBean(IntPrimitive=1)#keepall where MyMetricFunctions.TakeCPUTime(LongPrimitive)")
+                    "@Name('cpuStmtOne') select * from SupportBean(IntPrimitive=1)#keepall where MyMetricFunctions.TakeNanos(LongPrimitive)")
                 .Statement("cpuStmtOne");
             statements[1].AddListener(env.ListenerNew());
             statements[2] = env.CompileDeploy(
-                    "@Name('cpuStmtTwo') select * from SupportBean(IntPrimitive=2)#keepall where MyMetricFunctions.TakeCPUTime(LongPrimitive)")
+                    "@Name('cpuStmtTwo') select * from SupportBean(IntPrimitive=2)#keepall where MyMetricFunctions.TakeNanos(LongPrimitive)")
                 .Statement("cpuStmtTwo");
             statements[2].AddListener(env.ListenerNew());
             statements[3] = env.CompileDeploy(

@@ -87,7 +87,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 var pattern =
                     "@Name('s0') insert into NumberOfWaitingCalls(calls) " +
                     " select count(*)" +
-                    " from pattern[every call=SupportBean_A =>" +
+                    " from pattern[every call=SupportBean_A ->" +
                     " (not SupportBean_B(Id=call.Id) and" +
                     " not SupportBean_C(Id=call.Id))]";
                 env.CompileDeploy(pattern).AddListener("s0");

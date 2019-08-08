@@ -4054,7 +4054,7 @@ namespace com.espertech.esper.common.@internal.compile.stage1.specmapper
                         throw new EPException("Missing expression within ${...} in SQL statement");
                     }
 
-                    var toCompile = "select * from java.lang.Object where " + expression;
+                    var toCompile = "select * from System.Object where " + expression;
                     StatementSpecRaw rawSqlExpr;
                     try {
                         rawSqlExpr = mapContext.MapEnv.CompilerServices.ParseWalk(toCompile, mapContext.MapEnv);

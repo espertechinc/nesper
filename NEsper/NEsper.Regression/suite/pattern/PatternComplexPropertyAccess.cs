@@ -86,12 +86,12 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 testCaseList.AddTest(testCase);
 
                 testCase = new EventExpressionCase(
-                    "s=SupportBeanComplexProps(nested.nestedNested.nestedNestedValue = 'nestedNestedValue')");
+                    "s=SupportBeanComplexProps(nested.NestedNested.NestedNestedValue = 'nestedNestedValue')");
                 testCase.Add("e1", "s", events.GetEvent("e1"));
                 testCaseList.AddTest(testCase);
 
                 testCase = new EventExpressionCase(
-                    "s=SupportBeanComplexProps(nested.nestedNested.nestedNestedValue = 'x')");
+                    "s=SupportBeanComplexProps(nested.NestedNested.NestedNestedValue = 'x')");
                 testCaseList.AddTest(testCase);
 
                 testCase = new EventExpressionCase(

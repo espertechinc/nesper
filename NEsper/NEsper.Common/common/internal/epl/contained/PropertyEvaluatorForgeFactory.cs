@@ -43,7 +43,7 @@ namespace com.espertech.esper.common.@internal.epl.contained
 
             IList<EventType> streamEventTypes = new List<EventType>();
             IList<string> streamNames = new List<string>();
-            IDictionary<string, int> streamNameAndNumber = new Dictionary<string, int>();
+            IDictionary<string, int> streamNameAndNumber = new Dictionary<string, int>().WithNullKeySupport();
             IList<string> expressionTexts = new List<string>();
 
             streamEventTypes.Add(sourceEventType);

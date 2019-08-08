@@ -117,7 +117,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.prev
                 "strategy",
                 ExprDotMethod(
                     GetterField(codegenClassScope),
-                    "getStrategy",
+                    "GetStrategy",
                     exprSymbol.GetAddExprEvalCtx(method)));
 
             method.Block.IfCondition(Not(exprSymbol.GetAddIsNewData(method))).BlockReturn(ConstantNull());
@@ -189,7 +189,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.prev
                         "strategy",
                         ExprDotMethod(
                             GetterField(codegenClassScope),
-                            "getStrategy",
+                            "GetStrategy",
                             exprSymbol.GetAddExprEvalCtx(methodX)))
                     .Apply(
                         new PreviousBlockGetSizeAndIterator(methodX, exprSymbol, StreamNumber, Ref("strategy")).Accept);
@@ -401,7 +401,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.prev
                 .DeclareVar<long>("size", Constant(0))
                 .DeclareVar<PreviousGetterStrategy>(
                     "strategy",
-                    ExprDotMethod(GetterField(codegenClassScope), "getStrategy", exprSymbol.GetAddExprEvalCtx(method)));
+                    ExprDotMethod(GetterField(codegenClassScope), "GetStrategy", exprSymbol.GetAddExprEvalCtx(method)));
 
             var randomAccess = method.Block.IfCondition(InstanceOf(Ref("strategy"), typeof(RandomAccessByIndexGetter)));
             {
@@ -447,7 +447,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.prev
             method.Block
                 .DeclareVar<PreviousGetterStrategy>(
                     "strategy",
-                    ExprDotMethod(GetterField(codegenClassScope), "getStrategy", exprSymbol.GetAddExprEvalCtx(method)))
+                    ExprDotMethod(GetterField(codegenClassScope), "GetStrategy", exprSymbol.GetAddExprEvalCtx(method)))
                 .Apply(new PreviousBlockGetSizeAndIterator(method, exprSymbol, StreamNumber, Ref("strategy")).Accept);
 
             var eps = exprSymbol.GetAddEPS(method);
@@ -529,7 +529,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.prev
 
             method.Block.DeclareVar<PreviousGetterStrategy>(
                 "strategy",
-                ExprDotMethod(GetterField(codegenClassScope), "getStrategy", exprSymbol.GetAddExprEvalCtx(method)));
+                ExprDotMethod(GetterField(codegenClassScope), "GetStrategy", exprSymbol.GetAddExprEvalCtx(method)));
             if (IsConstantIndex) {
                 method.Block.DeclareVar<int>("index", Constant(ConstantIndexNumber));
             }
@@ -555,10 +555,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.prev
                         "randomAccess",
                         ExprDotName(Ref("getter"), "Accessor"));
                 if (PreviousType == ExprPreviousNodePreviousType.PREV) {
-                    randomAccess.BlockReturn(ExprDotMethod(Ref("randomAccess"), "getNewData", Ref("index")));
+                    randomAccess.BlockReturn(ExprDotMethod(Ref("randomAccess"), "GetNewData", Ref("index")));
                 }
                 else if (PreviousType == ExprPreviousNodePreviousType.PREVTAIL) {
-                    randomAccess.BlockReturn(ExprDotMethod(Ref("randomAccess"), "getNewDataTail", Ref("index")));
+                    randomAccess.BlockReturn(ExprDotMethod(Ref("randomAccess"), "GetNewDataTail", Ref("index")));
                 }
                 else {
                     throw new IllegalStateException("Previous type not recognized: " + PreviousType);
@@ -575,14 +575,14 @@ namespace com.espertech.esper.common.@internal.epl.expression.prev
                         ArrayAtIndex(exprSymbol.GetAddEPS(method), Constant(StreamNumber)))
                     .DeclareVar<RelativeAccessByEventNIndex>(
                         "relativeAccess",
-                        ExprDotMethod(Ref("getter"), "getAccessor", Ref("evalEvent")))
+                        ExprDotMethod(Ref("getter"), "GetAccessor", Ref("evalEvent")))
                     .IfRefNullReturnNull("relativeAccess");
                 if (PreviousType == ExprPreviousNodePreviousType.PREV) {
                     relativeAccess.BlockReturn(
-                        ExprDotMethod(Ref("relativeAccess"), "getRelativeToEvent", Ref("evalEvent"), Ref("index")));
+                        ExprDotMethod(Ref("relativeAccess"), "GetRelativeToEvent", Ref("evalEvent"), Ref("index")));
                 }
                 else if (PreviousType == ExprPreviousNodePreviousType.PREVTAIL) {
-                    relativeAccess.BlockReturn(ExprDotMethod(Ref("relativeAccess"), "getRelativeToEnd", Ref("index")));
+                    relativeAccess.BlockReturn(ExprDotMethod(Ref("relativeAccess"), "GetRelativeToEnd", Ref("index")));
                 }
                 else {
                     throw new IllegalStateException("Previous type not recognized: " + PreviousType);

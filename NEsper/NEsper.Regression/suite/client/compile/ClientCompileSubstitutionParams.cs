@@ -139,7 +139,7 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
             }
             catch (EPDeploySubstitutionParameterException ex) {
                 Assert.AreEqual(
-                    "Substitution parameters have not been provIded: Statement 's0' has 1 substitution parameters",
+                    "Substitution parameters have not been provided: Statement 's0' has 1 substitution parameters",
                     ex.Message);
             }
             catch (EPDeployException ex) {
@@ -366,7 +366,7 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
                 TryInvalidCompile(
                     env,
                     "select ? as c0,?:a as c1 from SupportBean",
-                    "Inconsistent use of substitution parameters, expecting all substitutions to either all provIde a name or provIde no name");
+                    "Inconsistent use of substitution parameters, expecting all substitutions to either all provide a name or provide no name");
 
                 // keyword used for name
                 TryInvalidCompile(
@@ -669,12 +669,12 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
                 TryInvalidResolver(
                     env,
                     compiled,
-                    "Substitution parameters have not been provIded: Missing value for substitution parameter 1 for statement 's0'",
+                    "Substitution parameters have not been provided: Missing value for substitution parameter 1 for statement 's0'",
                     prepared => { });
                 TryInvalidResolver(
                     env,
                     compiled,
-                    "Substitution parameters have not been provIded: Missing value for substitution parameter 2 for statement 's0'",
+                    "Substitution parameters have not been provided: Missing value for substitution parameter 2 for statement 's0'",
                     prepared => prepared.SetObject(1, "abc"));
 
                 compiled = env.Compile(
@@ -682,12 +682,12 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
                 TryInvalidResolver(
                     env,
                     compiled,
-                    "Substitution parameters have not been provIded: Missing value for substitution parameter 'p0' for statement 's0'",
+                    "Substitution parameters have not been provided: Missing value for substitution parameter 'p0' for statement 's0'",
                     prepared => { });
                 TryInvalidResolver(
                     env,
                     compiled,
-                    "Substitution parameters have not been provIded: Missing value for substitution parameter 'p1' for statement 's0'",
+                    "Substitution parameters have not been provided: Missing value for substitution parameter 'p1' for statement 's0'",
                     prepared => prepared.SetObject("p0", "x"));
             }
         }
@@ -720,7 +720,7 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
                         TryInvalidSetObject(
                             prepared,
                             stmt => stmt.SetObject("x", 10),
-                            "Substitution parameter names have not been provIded for this statement");
+                            "Substitution parameter names have not been provided for this statement");
                         TryInvalidSetObject(
                             prepared,
                             stmt => stmt.SetObject(0, "a"),
@@ -744,7 +744,7 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
                         TryInvalidSetObject(
                             prepared,
                             stmt => stmt.SetObject(0, "a"),
-                            "Substitution parameter names have been provIded for this statement, please set the value by name");
+                            "Substitution parameter names have been provided for this statement, please set the value by name");
                         prepared.SetObject("p0", "xxx");
                     });
                 DeployWithOptionsWUndeploy(env, compiled, options);

@@ -20,7 +20,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
             var fields = "value".SplitCsv();
             var text = "@Name('s0') select * from SupportRecogBean#length(10) " +
                        "match_recognize (" +
-                       "  partition by value" +
+                       "  partition by Value" +
                        "  measures E1.Value as value" +
                        "  pattern (E1 E2 | E2 E1 ) " +
                        "  define " +
@@ -81,9 +81,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
                 fields,
                 new object[] {7});
 
-            /// <summary>
-            /// Comment-in for testing partition removal.
-            /// </summary>
+            // Comment-in for testing partition removal.
             for (var i = 0; i < 10000; i++) {
                 env.SendEventBean(new SupportRecogBean("A", i));
                 //System.out.println(i);

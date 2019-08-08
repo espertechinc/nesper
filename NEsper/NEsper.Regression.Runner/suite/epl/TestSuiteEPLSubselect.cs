@@ -12,7 +12,7 @@ using com.espertech.esper.common.client.configuration;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.regressionlib.suite.epl.subselect;
 using com.espertech.esper.regressionlib.support.bean;
-using com.espertech.esper.regressionrun.runner;
+using com.espertech.esper.regressionrun.Runner;
 
 using NUnit.Framework;
 
@@ -159,7 +159,7 @@ namespace com.espertech.esper.regressionrun.suite.epl
 
             configuration.Common.Logging.IsEnableQueryPlan = true;
 
-            configuration.Compiler.AddPlugInSingleRowFunction("supportSingleRowFunction", typeof(EPLSubselectWithinPattern), "supportSingleRowFunction");
+            configuration.Compiler.AddPlugInSingleRowFunction("supportSingleRowFunction", typeof(EPLSubselectWithinPattern), "SupportSingleRowFunction");
         }
     }
 } // end of namespace

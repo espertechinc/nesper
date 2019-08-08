@@ -177,7 +177,7 @@ namespace com.espertech.esper.common.@internal.@event.core
                 propertyTypeName +
                 "' for property '" +
                 propertyName +
-                "', expected java.lang.Class or java.util.Map or the name of a previously-declared Map or ObjectArray type");
+                "', expected Type or Dictionary or the name of a previously-declared Map or ObjectArray type");
         }
 
         public static IDictionary<string, object> CheckedCastUnderlyingMap(EventBean theEvent)

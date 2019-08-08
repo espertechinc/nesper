@@ -52,24 +52,24 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                           "" +
                           "create objectarray schema SchemaOne (p1 string),\n" +
                           "\n" +
-                          "BeaconSource => InStream<SchemaOne> {p1:'A1', iterations:1}\n" +
-                          "Select(InStream) => out_1 { select: (select p1 from InStream) }\n" +
-                          "Select(out_1) => out_2 { select: (select p1 from out_1) }\n" +
-                          "Select(out_2) => out_3 { select: (select p1 from out_2) }\n" +
-                          "Select(out_3) => out_4 { select: (select p1 from out_3) }\n" +
-                          "Select(out_4) => out_5 { select: (select p1 from out_4) }\n" +
-                          "Select(out_5) => out_6 { select: (select p1 from out_5) }\n" +
-                          "Select(out_6) => out_7 { select: (select p1 from out_6) }\n" +
-                          "Select(out_7) => out_8 { select: (select p1 from out_7) }\n" +
-                          "Select(out_8) => out_9 { select: (select p1 from out_8) }\n" +
-                          "Select(out_9) => out_10 { select: (select p1 from out_9) }\n" +
-                          "Select(out_10) => out_11 { select: (select p1 from out_10) }\n" +
-                          "Select(out_11) => out_12 { select: (select p1 from out_11) }\n" +
-                          "Select(out_12) => out_13 { select: (select p1 from out_12) }\n" +
-                          "Select(out_13) => out_14 { select: (select p1 from out_13) }\n" +
-                          "Select(out_14) => out_15 { select: (select p1 from out_14) }\n" +
-                          "Select(out_15) => out_16 { select: (select p1 from out_15) }\n" +
-                          "Select(out_16) => out_17 { select: (select p1 from out_16) }\n" +
+                          "BeaconSource -> InStream<SchemaOne> {p1:'A1', iterations:1}\n" +
+                          "Select(InStream) -> out_1 { select: (select p1 from InStream) }\n" +
+                          "Select(out_1) -> out_2 { select: (select p1 from out_1) }\n" +
+                          "Select(out_2) -> out_3 { select: (select p1 from out_2) }\n" +
+                          "Select(out_3) -> out_4 { select: (select p1 from out_3) }\n" +
+                          "Select(out_4) -> out_5 { select: (select p1 from out_4) }\n" +
+                          "Select(out_5) -> out_6 { select: (select p1 from out_5) }\n" +
+                          "Select(out_6) -> out_7 { select: (select p1 from out_6) }\n" +
+                          "Select(out_7) -> out_8 { select: (select p1 from out_7) }\n" +
+                          "Select(out_8) -> out_9 { select: (select p1 from out_8) }\n" +
+                          "Select(out_9) -> out_10 { select: (select p1 from out_9) }\n" +
+                          "Select(out_10) -> out_11 { select: (select p1 from out_10) }\n" +
+                          "Select(out_11) -> out_12 { select: (select p1 from out_11) }\n" +
+                          "Select(out_12) -> out_13 { select: (select p1 from out_12) }\n" +
+                          "Select(out_13) -> out_14 { select: (select p1 from out_13) }\n" +
+                          "Select(out_14) -> out_15 { select: (select p1 from out_14) }\n" +
+                          "Select(out_15) -> out_16 { select: (select p1 from out_15) }\n" +
+                          "Select(out_16) -> out_17 { select: (select p1 from out_16) }\n" +
                           "\n" +
                           "DefaultSupportCaptureOp(out_17) {}\n";
                 env.CompileDeploy(epl);
@@ -106,12 +106,12 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                           "create objectarray schema SchemaOne (p1 string),\n" +
                           "create objectarray schema SchemaTwo (p2 int),\n" +
                           "\n" +
-                          "BeaconSource => InOne<SchemaOne> {p1:'A1', iterations:1}\n" +
-                          "BeaconSource => InTwo<SchemaOne> {p1:'A2', iterations:1}\n" +
+                          "BeaconSource -> InOne<SchemaOne> {p1:'A1', iterations:1}\n" +
+                          "BeaconSource -> InTwo<SchemaOne> {p1:'A2', iterations:1}\n" +
                           "\n" +
-                          "BeaconSource => InThree<SchemaTwo> {p2:10, iterations:1}\n" +
-                          "BeaconSource => InFour<SchemaTwo> {p2:20, iterations:1}\n" +
-                          "MyCustomOp((InOne, InTwo) as S0, (InThree, InFour) as S1) => OutOne<SchemaTwo>, OutTwo<SchemaOne>{}\n" +
+                          "BeaconSource -> InThree<SchemaTwo> {p2:10, iterations:1}\n" +
+                          "BeaconSource -> InFour<SchemaTwo> {p2:20, iterations:1}\n" +
+                          "MyCustomOp((InOne, InTwo) as S0, (InThree, InFour) as S1) -> OutOne<SchemaTwo>, OutTwo<SchemaOne>{}\n" +
                           "\n" +
                           "DefaultSupportCaptureOp(OutOne) { name : 'SupportOpCountFutureOneA' }\n" +
                           "DefaultSupportCaptureOp(OutOne) { name : 'SupportOpCountFutureOneB' }\n" +
@@ -168,9 +168,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                           "create objectarray schema TempSchema (current int, temp long),\n" +
                           "create objectarray schema FinalSchema (result long),\n" +
                           "\n" +
-                          "BeaconSource => InputData<InputSchema> {number:5, iterations:1}\n" +
+                          "BeaconSource -> InputData<InputSchema> {number:5, iterations:1}\n" +
                           "\n" +
-                          "MyFactorialOp(InputData as Input, TempResult as Temp) => TempResult<TempSchema>, FinalResult<FinalSchema>{}\n" +
+                          "MyFactorialOp(InputData as Input, TempResult as Temp) -> TempResult<TempSchema>, FinalResult<FinalSchema>{}\n" +
                           "\n" +
                           "DefaultSupportCaptureOp(FinalResult) {}\n";
                 env.CompileDeploy(epl);

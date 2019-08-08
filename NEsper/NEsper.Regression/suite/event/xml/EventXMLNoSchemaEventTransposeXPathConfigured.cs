@@ -68,7 +68,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
             var received = env.GetEnumerator("insert").Advance();
             EPAssertionUtil.AssertProps(
                 received,
-                "nested1simple.prop1,nested1simple.prop2,nested1simple.attr1,nested1simple.nested2.prop3[1]".SplitCsv(),
+                "nested1simple.prop1,nested1simple.prop2,nested1simple.attr1,nested1simple.Nested2.prop3[1]".SplitCsv(),
                 new object[] {"SAMPLE_V1", "true", "SAMPLE_ATTR1", "4"});
             EPAssertionUtil.AssertProps(
                 received,

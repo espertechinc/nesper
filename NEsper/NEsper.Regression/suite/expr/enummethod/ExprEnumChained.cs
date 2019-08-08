@@ -20,7 +20,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
         public void Run(RegressionEnvironment env)
         {
             var eplFragment =
-                "@Name('s0') select sales.where(x => x.cost > 1000).min(y => y.buyer.age) as val from PersonSales";
+                "@Name('s0') select Sales.where(x => x.cost > 1000).min(y -> y.buyer.age) as val from PersonSales";
             env.CompileDeploy(eplFragment).AddListener("s0");
 
             LambdaAssertionUtil.AssertTypes(env.Statement("s0").EventType, "val".SplitCsv(), new[] {typeof(int?)});

@@ -15,7 +15,7 @@ using com.espertech.esper.regressionlib.support.bean;
 using com.espertech.esper.regressionlib.support.epl;
 using com.espertech.esper.regressionlib.support.extend.aggfunc;
 using com.espertech.esper.regressionlib.support.extend.aggmultifunc;
-using com.espertech.esper.regressionrun.runner;
+using com.espertech.esper.regressionrun.Runner;
 
 using NUnit.Framework;
 
@@ -68,11 +68,11 @@ namespace com.espertech.esper.regressionrun.suite.infra
             configuration.Compiler.AddPlugInSingleRowFunction(
                 "singlerow",
                 typeof(InfraTableInvalid),
-                "mySingleRowFunction");
+                "MySingleRowFunction");
             configuration.Compiler.AddPlugInSingleRowFunction(
                 "pluginServiceEventBean",
                 typeof(InfraTableSelect),
-                "myServiceEventBean");
+                "MyServiceEventBean");
 
             configuration.Compiler.AddPlugInAggregationFunctionForge(
                 "myaggsingle",

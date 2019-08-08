@@ -19,7 +19,7 @@ namespace com.espertech.esper.common.@internal.collection
     public class PathModuleEntry<TE>
     {
         private readonly IDictionary<string, PathDeploymentEntry<TE>> modules =
-            new Dictionary<string, PathDeploymentEntry<TE>>(4);
+            new Dictionary<string, PathDeploymentEntry<TE>>().WithNullKeySupport();
 
         public void Add(
             string moduleName,

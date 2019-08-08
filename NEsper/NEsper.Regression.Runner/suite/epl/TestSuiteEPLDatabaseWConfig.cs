@@ -12,7 +12,7 @@ using com.espertech.esper.compat;
 using com.espertech.esper.container;
 using com.espertech.esper.regressionlib.suite.epl.database;
 using com.espertech.esper.regressionlib.support.util;
-using com.espertech.esper.regressionrun.runner;
+using com.espertech.esper.regressionrun.Runner;
 
 using NUnit.Framework;
 

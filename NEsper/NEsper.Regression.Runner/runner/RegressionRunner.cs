@@ -14,7 +14,7 @@ using com.espertech.esper.compat.logging;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.runtime.client;
 
-namespace com.espertech.esper.regressionrun.runner
+namespace com.espertech.esper.regressionrun.Runner
 {
     public class RegressionRunner
     {

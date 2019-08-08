@@ -125,7 +125,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.core
                     desc,
                     contextName,
                     activatorResult,
-                    optionalStreamSelector.Value,
+                    optionalStreamSelector,
                     subselectActivation,
                     streamSpec);
                 onTriggerPlan = OnTriggerWindowUtil.HandleContextFactoryOnTrigger(

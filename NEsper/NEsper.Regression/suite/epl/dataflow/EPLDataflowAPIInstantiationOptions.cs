@@ -40,7 +40,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 var path = new RegressionPath();
                 env.CompileDeploy("create schema SomeType ()", path);
                 env.CompileDeploy(
-                    "@Name('flow') create dataflow MyDataFlowOne MyOp => outstream<SomeType> {propOne:'abc', propThree:'xyz'}",
+                    "@Name('flow') create dataflow MyDataFlowOne MyOp -> outstream<SomeType> {propOne:'abc', propThree:'xyz'}",
                     path);
 
                 var options = new EPDataFlowInstantiationOptions();
@@ -79,7 +79,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 var path = new RegressionPath();
                 env.CompileDeploy("create schema SomeType ()", path);
                 env.CompileDeploy(
-                    "@Name('flow') create dataflow MyDataFlowOne MyOp => outstream<SomeType> {propOne:'abc', propThree:'xyz'}",
+                    "@Name('flow') create dataflow MyDataFlowOne MyOp -> outstream<SomeType> {propOne:'abc', propThree:'xyz'}",
                     path);
 
                 var myOperatorProvider = new MyOperatorProvider();

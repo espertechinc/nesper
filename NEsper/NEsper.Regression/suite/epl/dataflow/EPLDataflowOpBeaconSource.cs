@@ -58,12 +58,12 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
             env.CompileDeploy(
                 "@Name('flow') create dataflow MyDataFlowOne " +
                 "" +
-                "BeaconSource => BeaconStream<" +
+                "BeaconSource -> BeaconStream<" +
                 (eventbean ? "EventBean<MyEvent>" : "MyEvent") +
                 "> {" +
                 "  iterations : 3," +
                 "  p0 : 'abc'," +
-                "  p1 : Math.round(Math.random() * 10) + 1," +
+                "  p1 : Math.Round(Math.random() * 10) + 1," +
                 "  p2 : 1d," +
                 "}" +
                 "DefaultSupportCaptureOp(BeaconStream) {}",
@@ -123,7 +123,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
             env.CompileDeploy(
                 "@Name('flow') create dataflow MyDataFlowOne " +
                 "" +
-                "BeaconSource => BeaconStream<" +
+                "BeaconSource -> BeaconStream<" +
                 typeName +
                 "> {" +
                 "  myfield : 'abc', iterations : 1" +
@@ -174,7 +174,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 env.CompileDeploy("create variable int var_iterations=3", path);
                 env.CompileDeploy(
                     "@Name('flow') create dataflow MyDataFlowOne " +
-                    "BeaconSource => BeaconStream<SomeEvent> {" +
+                    "BeaconSource -> BeaconStream<SomeEvent> {" +
                     "  iterations : var_iterations" +
                     "}" +
                     "DefaultSupportCaptureOp(BeaconStream) {}",
@@ -213,11 +213,11 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                           "  " +
                           "  // BeaconSource that produces empty object-array events without delay or interval\n" +
                           "  // until cancelled.\n" +
-                          "  BeaconSource => stream.one {}\n" +
+                          "  BeaconSource -> stream.one {}\n" +
                           "  \n" +
                           "  // BeaconSource that produces one RFIDSchema event populating event properties\n" +
                           "  // from a user-defined function \"generateTagId\" and values.\n" +
-                          "  BeaconSource => stream.two<SampleSchema> {\n" +
+                          "  BeaconSource -> stream.two<SampleSchema> {\n" +
                           "    iterations : 1,\n" +
                           "    tagId : generateTagId(),\n" +
                           "    locX : 10,\n" +
@@ -226,7 +226,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                           "  \n" +
                           "  // BeaconSource that produces 10 object-array events populating the Price property \n" +
                           "  // with a random value.\n" +
-                          "  BeaconSource => stream.three {\n" +
+                          "  BeaconSource -> stream.three {\n" +
                           "    iterations : 1,\n" +
                           "    interval : 10, // every 10 seconds\n" +
                           "    initialDelay : 5, // start after 5 seconds\n" +
@@ -238,7 +238,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
 
                 // test options-provided beacon field
                 var eplMinimal = "@Name('flow') create dataflow MyGraph " +
-                                 "BeaconSource => outstream<SupportBean> {iterations:1} " +
+                                 "BeaconSource -> outstream<SupportBean> {iterations:1} " +
                                  "EventBusSink(outstream) {}";
                 env.CompileDeploy(eplMinimal);
 
@@ -273,7 +273,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
 
                 env.CompileDeploy(
                     "@Name('flow') create dataflow MyDataFlowOne " +
-                    "BeaconSource => BeaconStream {}" +
+                    "BeaconSource -> BeaconStream {}" +
                     "DefaultSupportCaptureOp(BeaconStream) {}");
 
                 var countExpected = 10;
@@ -296,7 +296,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 // BeaconSource with given number of iterations
                 env.CompileDeploy(
                     "@Name('flow') create dataflow MyDataFlowTwo " +
-                    "BeaconSource => BeaconStream {" +
+                    "BeaconSource -> BeaconStream {" +
                     "  iterations: 5" +
                     "}" +
                     "DefaultSupportCaptureOp(BeaconStream) {}");
@@ -318,7 +318,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 // BeaconSource with delay
                 env.CompileDeploy(
                     "@Name('flow') create dataflow MyDataFlowThree " +
-                    "BeaconSource => BeaconStream {" +
+                    "BeaconSource -> BeaconStream {" +
                     "  iterations: 2," +
                     "  initialDelay: 0.5" +
                     "}" +
@@ -344,7 +344,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 // BeaconSource with period
                 env.CompileDeploy(
                     "@Name('flow') create dataflow MyDataFlowFour " +
-                    "BeaconSource => BeaconStream {" +
+                    "BeaconSource -> BeaconStream {" +
                     "  interval: 0.5" +
                     "}" +
                     "DefaultSupportCaptureOp(BeaconStream) {}");
@@ -372,7 +372,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 env.CompileDeploy("create objectarray schema MyTestOAType(p1 string)", path);
                 env.CompileDeploy(
                     "@Name('flow') create dataflow MyDataFlowFive " +
-                    "BeaconSource => BeaconStream<MyTestOAType> {" +
+                    "BeaconSource -> BeaconStream<MyTestOAType> {" +
                     "  interval: 0.5," +
                     "  p1 : 'abc'" +
                     "}",

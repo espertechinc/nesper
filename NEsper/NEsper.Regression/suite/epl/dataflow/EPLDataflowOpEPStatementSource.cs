@@ -53,7 +53,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
             env.CompileDeploy(
                 "@Name('flow') create dataflow MyDataFlowOne " +
                 "create schema AllObject System.Object," +
-                "EPStatementSource => thedata<AllObject> {" +
+                "EPStatementSource -> thedata<AllObject> {" +
                 "  statementDeploymentId : '" +
                 env.DeploymentId("MyStatement") +
                 "'," +
@@ -93,7 +93,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 env.CompileDeploy(
                     "@Name('flow') create dataflow MyDataFlowOne " +
                     "create map schema SingleProp (Id string), " +
-                    "EPStatementSource => thedata<SingleProp> {" +
+                    "EPStatementSource -> thedata<SingleProp> {" +
                     "  statementDeploymentId : 'MyDeploymentId'," +
                     "  statementName : 'MyStatement'," +
                     "} " +
@@ -188,13 +188,13 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                           "  create schema SampleSchema(tagId string, locX double),\t// sample type\t\t\t\n" +
                           "\t\t\t\n" +
                           "  // ConsIder only the statement named MySelectStatement when it exists.\n" +
-                          "  EPStatementSource => stream.one<eventbean<?>> {\n" +
+                          "  EPStatementSource -> stream.one<eventbean<?>> {\n" +
                           "    statementDeploymentId : 'MyDeploymentABC',\n" +
                           "    statementName : 'MySelectStatement'\n" +
                           "  }\n" +
                           "  \n" +
-                          "  // ConsIder all statements that match the filter object provIded.\n" +
-                          "  EPStatementSource => stream.two<eventbean<?>> {\n" +
+                          "  // ConsIder all statements that match the filter object provided.\n" +
+                          "  EPStatementSource -> stream.two<eventbean<?>> {\n" +
                           "    statementFilter : {\n" +
                           "      class : '" +
                           typeof(MyFilter).Name +
@@ -202,9 +202,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                           "    }\n" +
                           "  }\n" +
                           "  \n" +
-                          "  // ConsIder all statements that match the filter object provIded.\n" +
+                          "  // ConsIder all statements that match the filter object provided.\n" +
                           "  // With collector that performs transformation.\n" +
-                          "  EPStatementSource => stream.two<SampleSchema> {\n" +
+                          "  EPStatementSource -> stream.two<SampleSchema> {\n" +
                           "    collector : {\n" +
                           "      class : '" +
                           typeof(MyCollector).Name +
@@ -230,7 +230,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 // test no statement name or statement filter provided
                 var epl = "create dataflow DF1 " +
                           "create schema AllObjects as System.Object," +
-                          "EPStatementSource => thedata<AllObjects> {} " +
+                          "EPStatementSource -> thedata<AllObjects> {} " +
                           "DefaultSupportCaptureOp(thedata) {}";
                 SupportDataFlowAssertionUtil.TryInvalidInstantiate(
                     env,
@@ -247,7 +247,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 // invalid: no statement deployment id
                 TryInvalidCompile(
                     env,
-                    "create dataflow DF1 EPStatementSource =>abc { statementName : 'abc' }",
+                    "create dataflow DF1 EPStatementSource ->abc { statementName : 'abc' }",
                     "Failed to obtain operator 'EPStatementSource': Both 'statementDeploymentId' and 'statementName' are required when either of these are specified");
             }
         }
@@ -262,7 +262,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 env.CompileDeploy(
                     "@Name('flow') create dataflow MyDataFlowOne " +
                     "create schema AllObjects as System.Object," +
-                    "EPStatementSource => thedata<AllObjects> {} " +
+                    "EPStatementSource -> thedata<AllObjects> {} " +
                     "DefaultSupportCaptureOp(thedata) {}");
 
                 var captureOp = new DefaultSupportCaptureOp<EventBean>(env.Container.LockManager());

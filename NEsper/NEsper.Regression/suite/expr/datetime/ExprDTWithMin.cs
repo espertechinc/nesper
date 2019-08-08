@@ -103,7 +103,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                 };
                 var startTime = "2002-05-30T09:01:02.003";
                 env.SendEventBean(SupportDateTime.Make(startTime));
-                //System.out.println("===> " + SupportDateTime.print(env.Listener("s0").assertOneGetNew().Get("val7")));
+                //System.out.println("==-> " + SupportDateTime.print(env.Listener("s0").assertOneGetNew().Get("val7")));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     fields,

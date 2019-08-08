@@ -800,21 +800,21 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 var path = new RegressionPath();
                 var eplCreate = namedWindow
                     ? "@Name('create') create window MyInfraMRAK#keepall as SupportBeanRange"
-                    : "@Name('create') create table MyInfraMRAK(Id string primary key, key string, keyLong long, rangeStartLong long primary key, rangeEndLong long primary key)";
+                    : "@Name('create') create table MyInfraMRAK(Id string primary key, key string, keyLong long, RangeStartLong long primary key, RangeEndLong long primary key)";
                 env.CompileDeploy(eplCreate, path);
 
                 var eplInsert = namedWindow
                     ? "insert into MyInfraMRAK select * from SupportBeanRange"
-                    : "on SupportBeanRange t0 merge MyInfraMRAK t1 where t0.Id = t1.Id when not matched then insert select Id, key, keyLong, rangeStartLong, rangeEndLong";
+                    : "on SupportBeanRange t0 merge MyInfraMRAK t1 where t0.Id = t1.Id when not matched then insert select Id, key, keyLong, RangeStartLong, RangeEndLong";
                 env.CompileDeploy(eplInsert, path);
 
                 env.CompileDeploy(
-                    "create index Idx1 on MyInfraMRAK(key hash, keyLong hash, rangeStartLong btree, rangeEndLong btree)",
+                    "create index Idx1 on MyInfraMRAK(key hash, keyLong hash, RangeStartLong btree, RangeEndLong btree)",
                     path);
                 var fields = "Id".SplitCsv();
 
                 var query1 =
-                    "select * from MyInfraMRAK where rangeStartLong > 1 and rangeEndLong > 2 and keyLong=1 and key='K1' order by Id asc";
+                    "select * from MyInfraMRAK where RangeStartLong > 1 and RangeEndLong > 2 and keyLong=1 and key='K1' order by Id asc";
                 RunQueryAssertion(env, path, query1, fields, null);
 
                 env.SendEventBean(SupportBeanRange.MakeLong("E1", "K1", 1L, 2L, 3L));
@@ -844,7 +844,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                     new[] {new object[] {"E1"}, new object[] {"E2"}, new object[] {"E3"}});
 
                 var query2 =
-                    "select * from MyInfraMRAK where rangeStartLong > 1 and rangeEndLong > 2 and keyLong=1 order by Id asc";
+                    "select * from MyInfraMRAK where RangeStartLong > 1 and RangeEndLong > 2 and keyLong=1 order by Id asc";
                 RunQueryAssertion(
                     env,
                     path,

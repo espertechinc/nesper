@@ -736,12 +736,9 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowforall
                 typeof(EventBean[]),
                 "GetSelectListEventsAsArray",
                 CodegenNamedParam.From(
-                    typeof(bool),
-                    NAME_ISNEWDATA,
-                    typeof(bool),
-                    NAME_ISSYNTHESIZE,
-                    typeof(bool),
-                    "join"),
+                    typeof(bool), NAME_ISNEWDATA,
+                    typeof(bool), NAME_ISSYNTHESIZE,
+                    typeof(bool), "join"),
                 typeof(ResultSetProcessorRowForAllImpl),
                 classScope,
                 code);

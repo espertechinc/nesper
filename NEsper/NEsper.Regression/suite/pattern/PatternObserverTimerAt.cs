@@ -268,23 +268,23 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 testCase.Add("F1");
                 testCaseList.AddTest(testCase);
 
-                testCase = new EventExpressionCase("b=SupportBean_B(Id='B3') => timer:at(20, 9, *, *, *, *)");
+                testCase = new EventExpressionCase("b=SupportBean_B(Id='B3') -> timer:at(20, 9, *, *, *, *)");
                 testCaseList.AddTest(testCase);
 
-                testCase = new EventExpressionCase("b=SupportBean_B(Id='B3') => timer:at(45, 9, *, *, *, *)");
+                testCase = new EventExpressionCase("b=SupportBean_B(Id='B3') -> timer:at(45, 9, *, *, *, *)");
                 testCase.Add("G1", "b", testData.GetEvent("B3"));
                 testCaseList.AddTest(testCase);
 
-                testCase = new EventExpressionCase("timer:at(59, 8, *, *, *, 59) => d=SupportBean_D");
+                testCase = new EventExpressionCase("timer:at(59, 8, *, *, *, 59) -> d=SupportBean_D");
                 testCase.Add("D1", "d", testData.GetEvent("D1"));
                 testCaseList.AddTest(testCase);
 
-                testCase = new EventExpressionCase("timer:at(*, 9, *, *, *, 59) => d=SupportBean_D");
+                testCase = new EventExpressionCase("timer:at(*, 9, *, *, *, 59) -> d=SupportBean_D");
                 testCase.Add("D2", "d", testData.GetEvent("D2"));
                 testCaseList.AddTest(testCase);
 
                 testCase = new EventExpressionCase(
-                    "timer:at(22, 8, *, *, *) -> b=SupportBean_B(Id='B3') => timer:at(55, *, *, *, *)");
+                    "timer:at(22, 8, *, *, *) -> b=SupportBean_B(Id='B3') -> timer:at(55, *, *, *, *)");
                 testCase.Add("D3", "b", testData.GetEvent("B3"));
                 testCaseList.AddTest(testCase);
 
@@ -297,7 +297,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 testCaseList.AddTest(testCase);
 
                 testCase = new EventExpressionCase(
-                    "timer:at(22, 8, *, *, *) -> b=SupportBean_B() => timer:at(55, 8, *, *, *)");
+                    "timer:at(22, 8, *, *, *) -> b=SupportBean_B() -> timer:at(55, 8, *, *, *)");
                 testCase.Add("D1", "b", testData.GetEvent("B2"));
                 testCaseList.AddTest(testCase);
 
@@ -423,7 +423,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
             {
                 SendTimeEvent("2008-08-3T06:00:00.000", env);
                 var expression =
-                    "@Name('s0') select * from pattern [a=SupportBean => every timer:at(2*a.IntPrimitive,*,*,*,*)]";
+                    "@Name('s0') select * from pattern [a=SupportBean -> every timer:at(2*a.IntPrimitive,*,*,*,*)]";
                 env.CompileDeploy(expression);
                 env.AddListener("s0");
 

@@ -244,7 +244,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
 
             var fields = "c0,c1,c2".SplitCsv();
             var eplRead =
-                "@Name('s0') select varaggMIUD[Id,P00].keyOne as c0, varaggMIUD[Id,P00].keyTwo as c1, varaggMIUD[Id,P00].prop as c2 from SupportBean_S0";
+                "@Name('s0') select varaggMIUD[Id,P00].KeyOne as c0, varaggMIUD[Id,P00].KeyTwo as c1, varaggMIUD[Id,P00].prop as c2 from SupportBean_S0";
             env.CompileDeploy(soda, eplRead, path).AddListener("s0");
 
             // assert selected column types
@@ -316,7 +316,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             env.SendEventBean(new SupportBean_S1(2));
             EPAssertionUtil.AssertProps(
                 env.Listener("convert").AssertOneGetNewAndReset(),
-                "val0.keyOne".SplitCsv(),
+                "val0.KeyOne".SplitCsv(),
                 new object[] {10});
 
             // delete for varagg[10, "A"]
@@ -437,7 +437,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                     "from SupportBean#lastevent group by TheString",
                     path);
 
-                env.CompileDeploy("@Name('s0') select varaggMMR[P00].keyOne as c0 from SupportBean_S0", path)
+                env.CompileDeploy("@Name('s0') select varaggMMR[P00].KeyOne as c0 from SupportBean_S0", path)
                     .AddListener("s0");
                 env.CompileDeploy("on SupportBean_S1 merge varaggMMR where cnt = 0 when matched then delete", path);
 

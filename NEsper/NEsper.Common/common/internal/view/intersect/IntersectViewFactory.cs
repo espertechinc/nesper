@@ -62,19 +62,19 @@ namespace com.espertech.esper.common.@internal.view.intersect
             }
 
             if (batchViewIndex != -1) {
-                batchViewLocalState = new FastThreadLocal<IntersectBatchViewLocalState>(
+                batchViewLocalState = new SlimThreadLocal<IntersectBatchViewLocalState>(
                     () =>
                         new IntersectBatchViewLocalState(
                             new EventBean[intersecteds.Length][],
                             new EventBean[intersecteds.Length][]));
             }
             else if (hasAsymetric) {
-                asymetricViewLocalState = new FastThreadLocal<IntersectAsymetricViewLocalState>(
+                asymetricViewLocalState = new SlimThreadLocal<IntersectAsymetricViewLocalState>(
                     () =>
                         new IntersectAsymetricViewLocalState(new EventBean[intersecteds.Length][]));
             }
             else {
-                defaultViewLocalState = new FastThreadLocal<IntersectDefaultViewLocalState>(
+                defaultViewLocalState = new SlimThreadLocal<IntersectDefaultViewLocalState>(
                     () =>
                         new IntersectDefaultViewLocalState(new EventBean[intersecteds.Length][]));
             }

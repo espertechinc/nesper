@@ -40,7 +40,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                 env,
                 "Bean",
                 "SupportBean",
-                "convertEvent",
+                "ConvertEvent",
                 typeof(BeanEventType),
                 typeof(SupportBean),
                 "SupportMarketDataBean",
@@ -57,7 +57,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                 env,
                 "Map",
                 "MapOne",
-                "convertEventMap",
+                "ConvertEventMap",
                 typeof(WrapperEventType),
                 typeof(IDictionary<string, object>),
                 "MapTwo",
@@ -72,7 +72,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
             RunAssertionConversionConfiguredType(
                 env,
                 "MapOne",
-                "convertEventMap",
+                "ConvertEventMap",
                 "MapTwo",
                 typeof(MappedEventBean),
                 typeof(IDictionary<string, object>),
@@ -86,7 +86,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                 env,
                 "OA",
                 "OAOne",
-                "convertEventObjectArray",
+                "ConvertEventObjectArray",
                 typeof(WrapperEventType),
                 typeof(object[]),
                 "OATwo",
@@ -97,7 +97,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
             RunAssertionConversionConfiguredType(
                 env,
                 "OAOne",
-                "convertEventObjectArray",
+                "ConvertEventObjectArray",
                 "OATwo",
                 typeof(ObjectArrayBackedEventBean),
                 typeof(object[]),
@@ -116,7 +116,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                 env,
                 "Avro",
                 "AvroOne",
-                "convertEventAvro",
+                "ConvertEventAvro",
                 typeof(WrapperEventType),
                 typeof(GenericRecord),
                 "AvroTwo",
@@ -133,7 +133,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
             RunAssertionConversionConfiguredType(
                 env,
                 "AvroOne",
-                "convertEventAvro",
+                "ConvertEventAvro",
                 "AvroTwo",
                 typeof(AvroGenericDataBackedEventBean),
                 typeof(GenericRecord),
@@ -161,7 +161,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
             var textTwo = "@Name('s2') insert into " +
                           streamName +
                           " select " +
-                          typeof(SupportStaticMethodLib).Name +
+                          typeof(SupportStaticMethodLib).FullName +
                           "." +
                           functionName +
                           "(s0) from " +

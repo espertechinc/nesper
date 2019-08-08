@@ -22,7 +22,7 @@ using com.espertech.esper.regressionlib.support.extend.pattern;
 using com.espertech.esper.regressionlib.support.extend.vdw;
 using com.espertech.esper.regressionlib.support.extend.view;
 using com.espertech.esper.regressionlib.support.util;
-using com.espertech.esper.regressionrun.runner;
+using com.espertech.esper.regressionrun.Runner;
 
 using NUnit.Framework;
 

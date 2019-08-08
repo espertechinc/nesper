@@ -36,7 +36,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
             SupportEventTypeAssertionUtil.AssertConsistency(env.Statement("s0").EventType);
 
             env.CompileDeploy(
-                "@Name('s1') select nested1.attr1 as attr1, nested1.prop1 as prop1, nested1.prop2 as prop2, nested1.nested2.prop3 as prop3, nested1.nested2.prop3[0] as prop3_0, nested1.nested2 as nested2 from MyNestedStream#lastevent",
+                "@Name('s1') select nested1.attr1 as attr1, nested1.prop1 as prop1, nested1.prop2 as prop2, nested1.Nested2.prop3 as prop3, nested1.Nested2.prop3[0] as prop3_0, nested1.Nested2 as nested2 from MyNestedStream#lastevent",
                 path);
             EPAssertionUtil.AssertEqualsAnyOrder(
                 new object[] {
@@ -93,11 +93,11 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
 
             var fragmentNested1 = (EventBean) stmtInsertBean.GetFragment("nested1");
             Assert.AreEqual(5, fragmentNested1.Get("nested2.prop3[2]"));
-            Assert.AreEqual("SimpleEventWSchema.nested1", fragmentNested1.EventType.Name);
+            Assert.AreEqual("SimpleEventWSchema.Nested1", fragmentNested1.EventType.Name);
 
             var fragmentNested2 = (EventBean) stmtInsertWildcardBean.GetFragment("nested2");
             Assert.AreEqual(4, fragmentNested2.Get("prop3[1]"));
-            Assert.AreEqual("SimpleEventWSchema.nested1.nested2", fragmentNested2.EventType.Name);
+            Assert.AreEqual("SimpleEventWSchema.Nested1.Nested2", fragmentNested2.EventType.Name);
 
             env.UndeployAll();
         }

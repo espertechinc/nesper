@@ -50,7 +50,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 env,
                 path,
                 "context ByCustomerAndAccount\n" +
-                "  select context.name, context.Id, context.key1, context.key2 from BankTxn");
+                "  select context.name, context.Id, context.Key1, context.Key2 from BankTxn");
             UndeployClearPath(env, path);
             Create(env, path, "create context ByCust partition by custId from BankTxn");
             Create(
@@ -103,7 +103,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 path,
                 "context CtxTrainEnter\n" +
                 "select t1 from pattern [\n" +
-                "t1=TrainEnterEvent => timer:interval(5 min) and not TrainLeaveEvent(trainId = context.te.trainId)]");
+                "t1=TrainEnterEvent -> timer:interval(5 min) and not TrainLeaveEvent(trainId = context.te.trainId)]");
             Create(
                 env,
                 path,
@@ -198,7 +198,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 env,
                 path,
                 "context NineToFiveSegmented\n" +
-                "select context.NineToFive.startTime, context.SegmentedByCustomer.key1 from BankTxn");
+                "select context.NineToFive.startTime, context.SegmentedByCustomer.Key1 from BankTxn");
             Create(env, path, "context NineToFiveSegmented select context.name, context.Id from BankTxn");
 
             Create(env, path, "create context MyContext start MyStartEvent end MyEndEvent");
@@ -222,7 +222,7 @@ namespace com.espertech.esper.regressionlib.suite.context
             Create(
                 env,
                 path,
-                "create context MyContext6 initiated by pattern [every MyInitEvent => MyOtherEvent where timer:within(5)] terminated by MyTermEvent");
+                "create context MyContext6 initiated by pattern [every MyInitEvent -> MyOtherEvent where timer:within(5)] terminated by MyTermEvent");
             Create(
                 env,
                 path,
@@ -270,7 +270,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 "  partition by " +
                 "    key1, key2 from MyTwoKeyInit\n," +
                 "    key1, key2 from SensorEvent\n," +
-                "context InitiateAndTerm initiated by MyTwoKeyInit as e1 terminated by MyTwoKeyTerm(key1=e1.key1 and key2=e1.key2)");
+                "context InitiateAndTerm initiated by MyTwoKeyInit as e1 terminated by MyTwoKeyTerm(key1=e1.Key1 and key2=e1.Key2)");
             Create(
                 env,
                 path,

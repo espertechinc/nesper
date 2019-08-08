@@ -115,9 +115,7 @@ namespace com.espertech.esper.common.@internal.epl.historical.database.core
             CodegenMethod method = parent.MakeChild(typeof(IDictionary<object, object>), this.GetType(), classScope);
             method.Block.DeclareVar<IDictionary<object, object>>(
                 "types",
-                NewInstance(
-                    typeof(Dictionary<object, object>),
-                    Constant(CollectionUtil.CapacityHashMap(outputTypes.Count))));
+                NewInstance(typeof(Dictionary<object, object>)));
             foreach (KeyValuePair<string, DBOutputTypeDesc> entry in outputTypes) {
                 method.Block.ExprDotMethod(@Ref("types"), "Put", Constant(entry.Key), entry.Value.Make());
             }

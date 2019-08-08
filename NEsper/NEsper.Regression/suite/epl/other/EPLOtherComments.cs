@@ -21,13 +21,13 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
         {
             var lineSeparator = Environment.NewLine;
             var statement = "@Name('s0') select TheString, /* this is my string */\n" +
-                            "IntPrimitive, // same line comment\n" +
-                            "/* comment taking one line */\n" +
-                            "// another comment taking a line\n" +
+                            "IntPrimitive, // same line Comment\n" +
+                            "/* Comment taking one line */\n" +
+                            "// another Comment taking a line\n" +
                             "IntPrimitive as /* rename */ myPrimitive\n" +
                             "from SupportBean" +
                             lineSeparator +
-                            " where /* insIde a where */ IntPrimitive /* */ = /* */ 100";
+                            " where /* inside a where */ IntPrimitive /* */ = /* */ 100";
             env.CompileDeploy(statement).AddListener("s0");
 
             env.SendEventBean(new SupportBean("e1", 100));

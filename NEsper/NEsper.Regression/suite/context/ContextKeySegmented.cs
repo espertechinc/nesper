@@ -154,7 +154,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 env.CompileDeploy(eplContext, path);
 
                 var eplAnalysis = "@Name('s0') context IndivIdualBean " +
-                                  "select * from pattern [every (event1=SupportBean(stringContainsX(TheString) = false) => event2=SupportBean(stringContainsX(TheString) = true))]";
+                                  "select * from pattern [every (event1=SupportBean(stringContainsX(TheString) = false) -> event2=SupportBean(stringContainsX(TheString) = true))]";
                 env.CompileDeploy(eplAnalysis, path).AddListener("s0");
 
                 env.SendEventBean(new SupportBean("F1", 0));
@@ -312,7 +312,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 env.CompileDeploy("create context PartitionedByString partition by TheString from SupportBean", path);
                 var fields = "c0,c1".SplitCsv();
                 env.CompileDeploy(
-                    "@Name('s0') context PartitionedByString select context.key1 as c0, sum(IntPrimitive) as c1 from SupportBean#length(5)",
+                    "@Name('s0') context PartitionedByString select context.Key1 as c0, sum(IntPrimitive) as c1 from SupportBean#length(5)",
                     path);
 
                 env.SendEventBean(new SupportBean("E1", 10));
@@ -589,7 +589,7 @@ namespace com.espertech.esper.regressionlib.suite.context
 
                 // Test unnecessary filter
                 var epl = "create context CtxSegmented partition by TheString from SupportBean;" +
-                          "context CtxSegmented select * from pattern [every a=SupportBean => c=SupportBean(c.TheString=a.TheString)];";
+                          "context CtxSegmented select * from pattern [every a=SupportBean -> c=SupportBean(c.TheString=a.TheString)];";
                 env.CompileDeploy(epl);
                 env.SendEventBean(new SupportBean("E1", 1));
                 env.SendEventBean(new SupportBean("E1", 2));
@@ -749,7 +749,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 var fields = "c1,c2,c3,c4,c5,c6".SplitCsv();
                 env.CompileDeploy(
                     "@Name('s0') context SegmentedBy2Fields " +
-                    "select TheString as c1, IntPrimitive as c2, Id as c3, P00 as c4, context.key1 as c5, context.key2 as c6 " +
+                    "select TheString as c1, IntPrimitive as c2, Id as c3, P00 as c4, context.Key1 as c5, context.Key2 as c6 " +
                     "from SupportBean#lastevent, SupportBean_S0#lastevent",
                     path);
                 env.AddListener("s0");
@@ -1280,7 +1280,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 var ctx = "SegmentedByString";
                 env.CompileDeploy(
                     "@Name('s0') context SegmentedByString " +
-                    "select context.name as c1, context.Id as c2, context.key1 as c3, TheString as c4 " +
+                    "select context.name as c1, context.Id as c2, context.Key1 as c3, TheString as c4 " +
                     "from SupportBean#length(2) as items",
                     path);
                 env.AddListener("s0");

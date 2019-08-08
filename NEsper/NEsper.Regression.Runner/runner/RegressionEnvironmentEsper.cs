@@ -12,7 +12,7 @@ using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.runtime.client;
 using com.espertech.esper.runtime.client.scopetest;
 
-namespace com.espertech.esper.regressionrun.runner
+namespace com.espertech.esper.regressionrun.Runner
 {
     public class RegressionEnvironmentEsper : RegressionEnvironmentBase
     {

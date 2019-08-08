@@ -34,7 +34,7 @@ namespace com.espertech.esper.common.client
         ///     active expressions seeking that event receive it. The routed event has priority over other
         ///     events sent to the runtime. In a single-threaded application the routed event is
         ///     processed before the next event is sent to the runtime through the
-        ///     EPRuntime.sendEvent method.
+        ///     EPRuntime.SendEvent method.
         /// </summary>
         /// <param name="theEvent">to process</param>
         /// <throws>EPException is thrown when the processing of the event lead to an error</throws>

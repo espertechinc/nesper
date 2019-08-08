@@ -611,9 +611,7 @@ namespace com.espertech.esper.common.@internal.context.module
             method.Block
                 .DeclareVar<IDictionary<StatementProperty, object>>(
                     "properties",
-                    NewInstance(
-                        typeof(Dictionary<StatementProperty, object>),
-                        Constant(CollectionUtil.CapacityHashMap(properties.Count))));
+                    NewInstance(typeof(Dictionary<StatementProperty, object>)));
             foreach (var entry in properties) {
                 method.Block.ExprDotMethod(
                     Ref("properties"),

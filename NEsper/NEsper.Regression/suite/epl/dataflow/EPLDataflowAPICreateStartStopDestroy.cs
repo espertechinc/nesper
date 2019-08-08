@@ -85,12 +85,12 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                     env,
                     "DEP1",
                     "MyGraph",
-                    "Data flow by name 'MyGraph' for deployment Id 'DEP1' has not been defined");
+                    "Data flow by name 'MyGraph' for deployment id 'DEP1' has not been defined");
                 TryInstantiate(
                     env,
                     "DEP1",
                     "DUMMY",
-                    "Data flow by name 'DUMMY' for deployment Id 'DEP1' has not been defined");
+                    "Data flow by name 'DUMMY' for deployment id 'DEP1' has not been defined");
 
                 // destroy - should be gone
                 Assert.AreEqual(null, dfruntime.GetDataFlow("DEP1", "MyGraph"));
@@ -99,7 +99,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                     env,
                     "DEP1",
                     "MyGraph",
-                    "Data flow by name 'MyGraph' for deployment Id 'DEP1' has not been defined");
+                    "Data flow by name 'MyGraph' for deployment id 'DEP1' has not been defined");
 
                 // new one, try start-stop-start
                 env.CompileDeploy(epl);
@@ -120,8 +120,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                           "create schema ABC as " +
                           typeof(SupportBean).FullName +
                           "," +
-                          "DefaultSupportSourceOp => outstream<SupportBean> {}\n" +
-                          "Select(outstream) => selectedData {select: (select TheString, IntPrimitive from outstream) }\n" +
+                          "DefaultSupportSourceOp -> outstream<SupportBean> {}\n" +
+                          "Select(outstream) -> selectedData {select: (select TheString, IntPrimitive from outstream) }\n" +
                           "DefaultSupportCaptureOp(selectedData) {};";
 
                 Module module = null;

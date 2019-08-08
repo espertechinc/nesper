@@ -62,10 +62,10 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
             {
                 var fields = "val0,val1,val2,val3".SplitCsv();
                 var eplFragment = "@Name('s0') select " +
-                                  "Strvals.min(v => extractNum(v)) as val0, " +
-                                  "Strvals.max(v => extractNum(v)) as val1, " +
-                                  "Strvals.min(v => v) as val2, " +
-                                  "Strvals.max(v => v) as val3 " +
+                                  "Strvals.min(v -> extractNum(v)) as val0, " +
+                                  "Strvals.max(v -> extractNum(v)) as val1, " +
+                                  "Strvals.min(v -> v) as val2, " +
+                                  "Strvals.max(v -> v) as val3 " +
                                   "from SupportCollection";
                 env.CompileDeploy(eplFragment).AddListener("s0");
 
@@ -108,8 +108,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
             {
                 var fields = "val0,val1".SplitCsv();
                 var eplFragment = "@Name('s0') select " +
-                                  "Contained.min(x => P00) as val0, " +
-                                  "Contained.max(x => P00) as val1 " +
+                                  "Contained.min(x -> P00) as val0, " +
+                                  "Contained.max(x -> P00) as val1 " +
                                   "from SupportBean_ST0_Container";
                 env.CompileDeploy(eplFragment).AddListener("s0");
 

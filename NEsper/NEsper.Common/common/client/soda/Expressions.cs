@@ -54,7 +54,7 @@ namespace com.espertech.esper.common.client.soda
         /// returns null if the type cannot be casted to the type.
         /// <para />The list of types can include fully-qualified class names plus any of the
         /// primitive type names: byte, char, short, int, long, float, double, boolean.
-        /// Alternatively to "java.lang.String" the simple "string" is also permitted.
+        /// Alternatively to "System.String" the simple "string" is also permitted.
         /// <para />Type checks include all superclasses and interfaces of the value returned by the expression.
         /// </summary>
         /// <param name="expression">returns the value to cast</param>
@@ -72,7 +72,7 @@ namespace com.espertech.esper.common.client.soda
         /// returns null if the type cannot be casted to the type.
         /// <para />The list of types can include fully-qualified class names plus any of the
         /// primitive type names: byte, char, short, int, long, float, double, boolean.
-        /// Alternatively to "java.lang.String" the simple "string" is also permitted.
+        /// Alternatively to "System.String" the simple "string" is also permitted.
         /// <para />Type checks include all superclasses and interfaces of the value returned by the expression.
         /// </summary>
         /// <param name="propertyName">name of the property supplying the value to cast</param>
@@ -89,7 +89,7 @@ namespace com.espertech.esper.common.client.soda
         /// Instance-of function, tests if the type of the return value of an expression is in a list of types.
         /// <para />The list of types can include fully-qualified class names plus any of the
         /// primitive type names: byte, char, short, int, long, float, double, boolean.
-        /// Alternatively to "java.lang.String" the simple "string" is also permitted.
+        /// Alternatively to "System.String" the simple "string" is also permitted.
         /// <para />Type checks include all superclasses and interfaces of the value returned by the expression.
         /// </summary>
         /// <param name="expression">returns the value to test whether the type returned is any of the  is the function name</param>
@@ -109,7 +109,7 @@ namespace com.espertech.esper.common.client.soda
         /// <para />Useful with dynamic (unchecked) properties to check the type of property returned.
         /// <para />The list of types can include fully-qualified class names plus any of the
         /// primitive type names: byte, char, short, int, long, float, double, boolean.
-        /// Alternatively to "java.lang.String" the simple "string" is also permitted.
+        /// Alternatively to "System.String" the simple "string" is also permitted.
         /// <para />Type checks include all superclasses and interfaces of the value returned by the expression.
         /// </summary>
         /// <param name="propertyName">name of the property supplying the value to test</param>

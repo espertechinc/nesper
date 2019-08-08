@@ -280,7 +280,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
 
                 var fields = "cols.mini,cols.maxi".SplitCsv();
                 var queryEpl =
-                    "@Name('s0') select (select min(IntPrimitive) as mini, max(IntPrimitive) as maxi from MyWindow where TheString = sbr.key and IntPrimitive between sbr.rangeStart and sbr.rangeEnd) as cols from SupportBeanRange sbr";
+                    "@Name('s0') select (select min(IntPrimitive) as mini, max(IntPrimitive) as maxi from MyWindow where TheString = sbr.Key and IntPrimitive between sbr.RangeStart and sbr.RangeEnd) as cols from SupportBeanRange sbr";
                 env.CompileDeploy(queryEpl, path).AddListener("s0");
 
                 var startTime = PerformanceObserver.MilliTime;
@@ -336,7 +336,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
 
                 var fields = "cols.mini,cols.maxi".SplitCsv();
                 var queryEpl =
-                    "@Name('s0') select (select min(IntPrimitive) as mini, max(IntPrimitive) as maxi from MyWindow where IntPrimitive between sbr.rangeStart and sbr.rangeEnd) as cols from SupportBeanRange sbr";
+                    "@Name('s0') select (select min(IntPrimitive) as mini, max(IntPrimitive) as maxi from MyWindow where IntPrimitive between sbr.RangeStart and sbr.RangeEnd) as cols from SupportBeanRange sbr";
                 env.CompileDeploy(queryEpl, path).AddListener("s0");
 
                 var startTime = PerformanceObserver.MilliTime;
@@ -373,7 +373,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
                 var fields = "cols.mini,cols.maxi".SplitCsv();
                 var queryEpl =
                     "@Name('s0') select (select min(IntPrimitive) as mini, max(IntPrimitive) as maxi from MyWindow " +
-                    "where TheString = sbr.key and IntPrimitive between sbr.rangeStart and sbr.rangeEnd) as cols from SupportBeanRange sbr";
+                    "where TheString = sbr.Key and IntPrimitive between sbr.RangeStart and sbr.RangeEnd) as cols from SupportBeanRange sbr";
                 env.CompileDeploy(queryEpl, path).AddListener("s0").Milestone(0);
 
                 var startTime = PerformanceObserver.MilliTime;

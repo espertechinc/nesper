@@ -118,7 +118,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                     Assert.AreEqual(
                         expected,
                         validator.Validate(leftStart, leftEnd, rightStart, rightEnd),
-                        "ValIdation of expected result failed for " + message);
+                        "Validation of expected result failed for " + message);
                 }
 
                 env.SendEventObjectArray(
@@ -177,7 +177,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                     Assert.AreEqual(
                         expected,
                         validator.Validate(leftStart, leftEnd, rightStart, rightEnd),
-                        "ValIdation of expected result failed for " + message);
+                        "Validation of expected result failed for " + message);
                 }
 
                 env.SendEventBean(SupportTimeStartEndA.Make("A", testtime, testduration));
@@ -347,7 +347,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                 TryInvalidCompile(
                     env,
                     "select a.before() from SupportTimeStartEndA#lastevent as a, SupportBean#lastevent as b",
-                    "Failed to validate select-clause expression 'a.before()': Parameters mismatch for date-time method 'before', the method has multiple footprints accepting an expression provIding timestamp or timestamped-event, or an expression provIding timestamp or timestamped-event and an expression provIding interval start value, or an expression provIding timestamp or timestamped-event and an expression provIding interval start value and an expression provIding interval finishes value, but receives no parameters");
+                    "Failed to validate select-clause expression 'a.before()': Parameters mismatch for date-time method 'before', the method has multiple footprints accepting an expression providing timestamp or timestamped-event, or an expression providing timestamp or timestamped-event and an expression providing interval start value, or an expression providing timestamp or timestamped-event and an expression providing interval start value and an expression providing interval finishes value, but receives no parameters");
 
                 // wrong target
                 TryInvalidCompile(
@@ -375,29 +375,29 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                 TryInvalidCompile(
                     env,
                     "select a.before(b, 1, 2, 3) from SupportTimeStartEndA#lastevent as a, SupportTimeStartEndB#lastevent as b",
-                    "Failed to validate select-clause expression 'a.before(b,1,2,3)': Parameters mismatch for date-time method 'before', the method has multiple footprints accepting an expression provIding timestamp or timestamped-event, or an expression provIding timestamp or timestamped-event and an expression provIding interval start value, or an expression provIding timestamp or timestamped-event and an expression provIding interval start value and an expression provIding interval finishes value, but receives 4 expressions ");
+                    "Failed to validate select-clause expression 'a.before(b,1,2,3)': Parameters mismatch for date-time method 'before', the method has multiple footprints accepting an expression providing timestamp or timestamped-event, or an expression providing timestamp or timestamped-event and an expression providing interval start value, or an expression providing timestamp or timestamped-event and an expression providing interval start value and an expression providing interval finishes value, but receives 4 expressions ");
 
                 // test coincides
                 TryInvalidCompile(
                     env,
-                    "select a.coincIdes(b, 1, 2, 3) from SupportTimeStartEndA#lastevent as a, SupportTimeStartEndB#lastevent as b",
-                    "Failed to validate select-clause expression 'a.coincIdes(b,1,2,3)': Parameters mismatch for date-time method 'coincIdes', the method has multiple footprints accepting an expression provIding timestamp or timestamped-event, or an expression provIding timestamp or timestamped-event and an expression provIding threshold for start and end value, or an expression provIding timestamp or timestamped-event and an expression provIding threshold for start value and an expression provIding threshold for end value, but receives 4 expressions ");
+                    "select a.coincides(b, 1, 2, 3) from SupportTimeStartEndA#lastevent as a, SupportTimeStartEndB#lastevent as b",
+                    "Failed to validate select-clause expression 'a.coincides(b,1,2,3)': Parameters mismatch for date-time method 'coincides', the method has multiple footprints accepting an expression providing timestamp or timestamped-event, or an expression providing timestamp or timestamped-event and an expression providing threshold for start and end value, or an expression providing timestamp or timestamped-event and an expression providing threshold for start value and an expression providing threshold for end value, but receives 4 expressions ");
                 TryInvalidCompile(
                     env,
-                    "select a.coincIdes(b, -1) from SupportTimeStartEndA#lastevent as a, SupportTimeStartEndB#lastevent as b",
-                    "Failed to validate select-clause expression 'a.coincIdes(b,-1)': The coincIdes date-time method does not allow negative start and end values ");
+                    "select a.coincides(b, -1) from SupportTimeStartEndA#lastevent as a, SupportTimeStartEndB#lastevent as b",
+                    "Failed to validate select-clause expression 'a.coincides(b,-1)': The coincides date-time method does not allow negative start and end values ");
 
                 // test during+interval
                 TryInvalidCompile(
                     env,
                     "select a.during(b, 1, 2, 3) from SupportTimeStartEndA#lastevent as a, SupportTimeStartEndB#lastevent as b",
-                    "Failed to validate select-clause expression 'a.during(b,1,2,3)': Parameters mismatch for date-time method 'during', the method has multiple footprints accepting an expression provIding timestamp or timestamped-event, or an expression provIding timestamp or timestamped-event and an expression provIding maximum distance interval both start and end, or an expression provIding timestamp or timestamped-event and an expression provIding minimum distance interval both start and end and an expression provIding maximum distance interval both start and end, or an expression provIding timestamp or timestamped-event and an expression provIding minimum distance start and an expression provIding maximum distance start and an expression provIding minimum distance end and an expression provIding maximum distance end, but receives 4 expressions ");
+                    "Failed to validate select-clause expression 'a.during(b,1,2,3)': Parameters mismatch for date-time method 'during', the method has multiple footprints accepting an expression providing timestamp or timestamped-event, or an expression providing timestamp or timestamped-event and an expression providing maximum distance interval both start and end, or an expression providing timestamp or timestamped-event and an expression providing minimum distance interval both start and end and an expression providing maximum distance interval both start and end, or an expression providing timestamp or timestamped-event and an expression providing minimum distance start and an expression providing maximum distance start and an expression providing minimum distance end and an expression providing maximum distance end, but receives 4 expressions ");
 
                 // test finishes+finished-by
                 TryInvalidCompile(
                     env,
                     "select a.finishes(b, 1, 2) from SupportTimeStartEndA#lastevent as a, SupportTimeStartEndB#lastevent as b",
-                    "Failed to validate select-clause expression 'a.finishes(b,1,2)': Parameters mismatch for date-time method 'finishes', the method has multiple footprints accepting an expression provIding timestamp or timestamped-event, or an expression provIding timestamp or timestamped-event and an expression provIding maximum distance between end timestamps, but receives 3 expressions ");
+                    "Failed to validate select-clause expression 'a.finishes(b,1,2)': Parameters mismatch for date-time method 'finishes', the method has multiple footprints accepting an expression providing timestamp or timestamped-event, or an expression providing timestamp or timestamped-event and an expression providing maximum distance between end timestamps, but receives 3 expressions ");
                 TryInvalidCompile(
                     env,
                     "select a.finishes(b, -1) from SupportTimeStartEndA#lastevent as a, SupportTimeStartEndB#lastevent as b",
@@ -411,7 +411,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                 TryInvalidCompile(
                     env,
                     "select a.meets(b, 1, 2) from SupportTimeStartEndA#lastevent as a, SupportTimeStartEndB#lastevent as b",
-                    "Failed to validate select-clause expression 'a.meets(b,1,2)': Parameters mismatch for date-time method 'meets', the method has multiple footprints accepting an expression provIding timestamp or timestamped-event, or an expression provIding timestamp or timestamped-event and an expression provIding maximum distance between start and end timestamps, but receives 3 expressions ");
+                    "Failed to validate select-clause expression 'a.meets(b,1,2)': Parameters mismatch for date-time method 'meets', the method has multiple footprints accepting an expression providing timestamp or timestamped-event, or an expression providing timestamp or timestamped-event and an expression providing maximum distance between start and end timestamps, but receives 3 expressions ");
                 TryInvalidCompile(
                     env,
                     "select a.meets(b, -1) from SupportTimeStartEndA#lastevent as a, SupportTimeStartEndB#lastevent as b",
@@ -425,13 +425,13 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                 TryInvalidCompile(
                     env,
                     "select a.overlaps(b, 1, 2, 3) from SupportTimeStartEndA#lastevent as a, SupportTimeStartEndB#lastevent as b",
-                    "Failed to validate select-clause expression 'a.overlaps(b,1,2,3)': Parameters mismatch for date-time method 'overlaps', the method has multiple footprints accepting an expression provIding timestamp or timestamped-event, or an expression provIding timestamp or timestamped-event and an expression provIding maximum distance interval both start and end, or an expression provIding timestamp or timestamped-event and an expression provIding minimum distance interval both start and end and an expression provIding maximum distance interval both start and end, but receives 4 expressions ");
+                    "Failed to validate select-clause expression 'a.overlaps(b,1,2,3)': Parameters mismatch for date-time method 'overlaps', the method has multiple footprints accepting an expression providing timestamp or timestamped-event, or an expression providing timestamp or timestamped-event and an expression providing maximum distance interval both start and end, or an expression providing timestamp or timestamped-event and an expression providing minimum distance interval both start and end and an expression providing maximum distance interval both start and end, but receives 4 expressions ");
 
                 // test start/startedby
                 TryInvalidCompile(
                     env,
                     "select a.starts(b, 1, 2, 3) from SupportTimeStartEndA#lastevent as a, SupportTimeStartEndB#lastevent as b",
-                    "Failed to validate select-clause expression 'a.starts(b,1,2,3)': Parameters mismatch for date-time method 'starts', the method has multiple footprints accepting an expression provIding timestamp or timestamped-event, or an expression provIding timestamp or timestamped-event and an expression provIding maximum distance between start timestamps, but receives 4 expressions ");
+                    "Failed to validate select-clause expression 'a.starts(b,1,2,3)': Parameters mismatch for date-time method 'starts', the method has multiple footprints accepting an expression providing timestamp or timestamped-event, or an expression providing timestamp or timestamped-event and an expression providing maximum distance between start timestamps, but receives 4 expressions ");
                 TryInvalidCompile(
                     env,
                     "select a.starts(b, -1) from SupportTimeStartEndA#lastevent as a, SupportTimeStartEndB#lastevent as b",
@@ -809,11 +809,11 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                     new object[] {"2002-05-30T09:00:00.000", 0, true},
                     new object[] {"2002-05-30T09:00:00.001", 0, false}
                 };
-                AssertExpression(env, seedTime, 0, "a.coincIdes(b)", expected, expectedValidator);
-                AssertExpression(env, seedTime, 0, "a.coincIdes(b, 0 millisecond)", expected, expectedValidator);
-                AssertExpression(env, seedTime, 0, "a.coincIdes(b, 0, 0)", expected, expectedValidator);
-                AssertExpression(env, seedTime, 0, "a.startTS.coincIdes(b)", expected, expectedValidator);
-                AssertExpression(env, seedTime, 0, "a.coincIdes(b.startTS)", expected, expectedValidator);
+                AssertExpression(env, seedTime, 0, "a.coincides(b)", expected, expectedValidator);
+                AssertExpression(env, seedTime, 0, "a.coincides(b, 0 millisecond)", expected, expectedValidator);
+                AssertExpression(env, seedTime, 0, "a.coincides(b, 0, 0)", expected, expectedValidator);
+                AssertExpression(env, seedTime, 0, "a.startTS.coincides(b)", expected, expectedValidator);
+                AssertExpression(env, seedTime, 0, "a.coincides(b.startTS)", expected, expectedValidator);
 
                 expected = new[] {
                     new object[] {"2002-05-30T09:00:00.000", 1, true},
@@ -821,8 +821,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                     new object[] {"2002-05-30T09:00:00.001", 0, false},
                     new object[] {"2002-05-30T09:00:00.001", 1, false}
                 };
-                AssertExpression(env, seedTime, 1, "a.coincIdes(b)", expected, expectedValidator);
-                AssertExpression(env, seedTime, 1, "a.coincIdes(b, 0, 0)", expected, expectedValidator);
+                AssertExpression(env, seedTime, 1, "a.coincides(b)", expected, expectedValidator);
+                AssertExpression(env, seedTime, 1, "a.coincides(b, 0, 0)", expected, expectedValidator);
 
                 expected = new[] {
                     new object[] {"2002-05-30T08:59:59.899", 0, false},
@@ -836,12 +836,12 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                     new object[] {"2002-05-30T09:00:00.101", 0, false}
                 };
                 expectedValidator = new CoincidesValidator(100L);
-                AssertExpression(env, seedTime, 0, "a.coincIdes(b, 100 milliseconds)", expected, expectedValidator);
+                AssertExpression(env, seedTime, 0, "a.coincides(b, 100 milliseconds)", expected, expectedValidator);
                 AssertExpression(
                     env,
                     seedTime,
                     0,
-                    "a.coincIdes(b, 100 milliseconds, 0.1 sec)",
+                    "a.coincides(b, 100 milliseconds, 0.1 sec)",
                     expected,
                     expectedValidator);
 
@@ -859,7 +859,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                     env,
                     seedTime,
                     0,
-                    "a.coincIdes(b, 200 milliseconds, 500 milliseconds)",
+                    "a.coincides(b, 200 milliseconds, 500 milliseconds)",
                     expected,
                     expectedValidator);
 
@@ -882,7 +882,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                     env,
                     seedTime,
                     50,
-                    "a.coincIdes(b, 200 milliseconds, 50 milliseconds)",
+                    "a.coincides(b, 200 milliseconds, 50 milliseconds)",
                     expected,
                     expectedValidator);
 
@@ -892,7 +892,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                     env,
                     seedTime,
                     50,
-                    "a.coincIdes(b, V_START milliseconds, V_END milliseconds)",
+                    "a.coincides(b, V_START milliseconds, V_END milliseconds)",
                     expected,
                     expectedValidator);
 
@@ -910,7 +910,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                     env,
                     seedTime,
                     50,
-                    "a.coincIdes(b, V_START milliseconds, V_END milliseconds)",
+                    "a.coincides(b, V_START milliseconds, V_END milliseconds)",
                     expected,
                     expectedValidator);
 
@@ -925,7 +925,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                     env,
                     seedTime,
                     GetMillisecForDays(28 + 31),
-                    "a.coincIdes(b, 1 month)",
+                    "a.coincides(b, 1 month)",
                     expected,
                     expectedValidator);
             }

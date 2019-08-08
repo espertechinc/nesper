@@ -17,7 +17,7 @@ using com.espertech.esper.regressionlib.suite.epl.other;
 using com.espertech.esper.regressionlib.support.bean;
 using com.espertech.esper.regressionlib.support.bookexample;
 using com.espertech.esper.regressionlib.support.epl;
-using com.espertech.esper.regressionrun.runner;
+using com.espertech.esper.regressionrun.Runner;
 
 using NUnit.Framework;
 
@@ -162,8 +162,6 @@ namespace com.espertech.esper.regressionrun.suite.epl
 
             configuration.Common.AddVariable("myvar", typeof(int?), 10);
 
-            configuration.Common.AddImportNamespace("java.beans.EventHandler");
-            configuration.Common.AddImportNamespace("java.sql.*");
             configuration.Common.AddImportType(typeof(SupportStaticMethodLib));
             configuration.Common.AddImportType(typeof(EPLOtherStaticFunctions.LevelZero));
             configuration.Common.AddImportType(typeof(SupportChainTop));

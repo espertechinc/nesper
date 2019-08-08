@@ -484,7 +484,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
                 TryOperator(
                     env,
                     path,
-                    "intBoxed < MYCONST",
+                    "IntBoxed < MYCONST",
                     new[] {
                         new object[] {11, false}, new object[] {10, false}, new object[] {9, true},
                         new object[] {8, true}
@@ -492,7 +492,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
                 TryOperator(
                     env,
                     path,
-                    "intBoxed <= MYCONST",
+                    "IntBoxed <= MYCONST",
                     new[] {
                         new object[] {11, false}, new object[] {10, true}, new object[] {9, true},
                         new object[] {8, true}
@@ -500,7 +500,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
                 TryOperator(
                     env,
                     path,
-                    "intBoxed > MYCONST",
+                    "IntBoxed > MYCONST",
                     new[] {
                         new object[] {11, true}, new object[] {10, false}, new object[] {9, false},
                         new object[] {8, false}
@@ -508,7 +508,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
                 TryOperator(
                     env,
                     path,
-                    "intBoxed >= MYCONST",
+                    "IntBoxed >= MYCONST",
                     new[] {
                         new object[] {11, true}, new object[] {10, true}, new object[] {9, false},
                         new object[] {8, false}
@@ -517,7 +517,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
                 TryOperator(
                     env,
                     path,
-                    "intBoxed in (MYCONST)",
+                    "IntBoxed in (MYCONST)",
                     new[] {
                         new object[] {11, false}, new object[] {10, true}, new object[] {9, false},
                         new object[] {8, false}
@@ -525,7 +525,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
                 TryOperator(
                     env,
                     path,
-                    "intBoxed between MYCONST and MYCONST",
+                    "IntBoxed between MYCONST and MYCONST",
                     new[] {
                         new object[] {11, false}, new object[] {10, true}, new object[] {9, false},
                         new object[] {8, false}
@@ -539,13 +539,13 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
                 TryOperator(
                     env,
                     path,
-                    "intBoxed != MYCONST",
+                    "IntBoxed != MYCONST",
                     new[] {new object[] {10, false}, new object[] {9, true}, new object[] {null, false}});
 
                 TryOperator(
                     env,
                     path,
-                    "intBoxed not in (MYCONST)",
+                    "IntBoxed not in (MYCONST)",
                     new[] {
                         new object[] {11, true}, new object[] {10, false}, new object[] {9, true},
                         new object[] {8, true}
@@ -553,7 +553,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
                 TryOperator(
                     env,
                     path,
-                    "intBoxed not between MYCONST and MYCONST",
+                    "IntBoxed not between MYCONST and MYCONST",
                     new[] {
                         new object[] {11, true}, new object[] {10, false}, new object[] {9, true},
                         new object[] {8, true}
@@ -567,7 +567,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
                 TryOperator(
                     env,
                     path,
-                    "intBoxed is MYCONST",
+                    "IntBoxed is MYCONST",
                     new[] {new object[] {10, true}, new object[] {9, false}, new object[] {null, false}});
 
                 TryOperator(
@@ -578,7 +578,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
                 TryOperator(
                     env,
                     path,
-                    "intBoxed is not MYCONST",
+                    "IntBoxed is not MYCONST",
                     new[] {new object[] {10, false}, new object[] {9, true}, new object[] {null, true}});
 
                 // try coercion
@@ -670,7 +670,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
                 TryOperator(
                     env,
                     path,
-                    "intBoxed in (10, 8)",
+                    "IntBoxed in (10, 8)",
                     new[] {
                         new object[] {11, false}, new object[] {10, true}, new object[] {9, false},
                         new object[] {8, true}
@@ -680,7 +680,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
                 TryOperator(
                     env,
                     path,
-                    "intBoxed in (var_ints)",
+                    "IntBoxed in (var_ints)",
                     new[] {
                         new object[] {11, false}, new object[] {10, true}, new object[] {9, false},
                         new object[] {8, true}
@@ -690,7 +690,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
                 TryOperator(
                     env,
                     path,
-                    "intBoxed in (var_ints, var_intstwo)",
+                    "IntBoxed in (var_ints, var_intstwo)",
                     new[] {
                         new object[] {11, false}, new object[] {10, true}, new object[] {9, true},
                         new object[] {8, true}

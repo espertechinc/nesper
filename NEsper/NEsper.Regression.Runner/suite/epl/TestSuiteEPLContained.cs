@@ -19,7 +19,7 @@ using com.espertech.esper.regressionlib.suite.epl.contained;
 using com.espertech.esper.regressionlib.support.bean;
 using com.espertech.esper.regressionlib.support.bookexample;
 using com.espertech.esper.regressionlib.support.wordexample;
-using com.espertech.esper.regressionrun.runner;
+using com.espertech.esper.regressionrun.Runner;
 
 using NEsper.Avro.Util.Support;
 
@@ -142,8 +142,8 @@ namespace com.espertech.esper.regressionrun.suite.epl
             configuration.Common.AddEventType("Cancel", config);
 
             configuration.Compiler.ByteCode.AllowSubscriber = true;
-            configuration.Compiler.AddPlugInSingleRowFunction("invalidSentence", typeof(EPLContainedEventSplitExpr), "invalidSentenceMethod");
-            configuration.Compiler.AddPlugInSingleRowFunction("mySplitUDFReturnEventBeanArray", typeof(EPLContainedEventSplitExpr), "mySplitUDFReturnEventBeanArray");
+            configuration.Compiler.AddPlugInSingleRowFunction("invalidSentence", typeof(EPLContainedEventSplitExpr), "InvalidSentenceMethod");
+            configuration.Compiler.AddPlugInSingleRowFunction("mySplitUDFReturnEventBeanArray", typeof(EPLContainedEventSplitExpr), "MySplitUDFReturnEventBeanArray");
         }
     }
 } // end of namespace

@@ -11,7 +11,7 @@ using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.regressionlib.suite.infra.nwtable;
 using com.espertech.esper.regressionlib.support.bean;
 using com.espertech.esper.regressionlib.support.bookexample;
-using com.espertech.esper.regressionrun.runner;
+using com.espertech.esper.regressionrun.Runner;
 
 using NUnit.Framework;
 
@@ -60,11 +60,11 @@ namespace com.espertech.esper.regressionrun.suite.infra
 
             configuration.Common.Logging.IsEnableQueryPlan = true;
 
-            configuration.Compiler.AddPlugInSingleRowFunction("doubleInt", typeof(InfraNWTableFAF), "doubleInt");
+            configuration.Compiler.AddPlugInSingleRowFunction("doubleInt", typeof(InfraNWTableFAF), "DoubleInt");
             configuration.Compiler.AddPlugInSingleRowFunction(
                 "justCount",
                 typeof(InfraNWTableFAFIndexPerfWNoQueryPlanLog.InvocationCounter),
-                "justCount");
+                "JustCount");
             configuration.Compiler.ByteCode.AllowSubscriber = true;
         }
 

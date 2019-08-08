@@ -277,7 +277,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.contained
                     env,
                     path,
                     "select * from MySentenceEvent[invalidSentence(sentence)@type(WordEvent)]",
-                    "Event type 'WordEvent' underlying type java.util.Map cannot be assigned a value of type");
+                    "Event type 'WordEvent' underlying type IDictionary cannot be assigned a value of type");
             }
             else if (eventRepresentationEnum.IsAvroEvent()) {
                 TryInvalidCompile(

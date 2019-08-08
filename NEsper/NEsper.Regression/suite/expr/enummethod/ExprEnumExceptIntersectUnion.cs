@@ -297,11 +297,11 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
             public void Run(RegressionEnvironment env)
             {
                 var epl = "@Name('s0') expression one {" +
-                          "  x => x.Contained.where(y => P00 = 10)" +
+                          "  x => x.Contained.where(y -> P00 = 10)" +
                           "} " +
                           "" +
                           "expression two {" +
-                          "  x => x.Contained.where(y => P00 = 11)" +
+                          "  x => x.Contained.where(y -> P00 = 11)" +
                           "} " +
                           "" +
                           "select one(bean).union(two(bean)) as val0 from SupportBean_ST0_Container as bean";

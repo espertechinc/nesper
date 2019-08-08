@@ -36,26 +36,11 @@ namespace com.espertech.esper.regressionlib.support.rowrecog
             Value = value;
         }
 
-        public string TheString { get; private set; }
+        public string TheString { get; set; }
 
-        public string Cat { get; private set; }
+        public string Cat { get; set; }
 
-        public int Value { get; private set; }
-
-        public void SetCat(string cat)
-        {
-            Cat = cat;
-        }
-
-        public void SetTheString(string theString)
-        {
-            TheString = theString;
-        }
-
-        public void SetValue(int value)
-        {
-            Value = value;
-        }
+        public int Value { get; set; }
 
         public override string ToString()
         {

@@ -83,9 +83,9 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
 
                 for (int i = 0; i < 100000; i++)
                 {
-                    env.sendEventBean(new SupportRecogBean("P2", 1));
+                    env.SendEventBean(new SupportRecogBean("P2", 1));
                 }
-                env.sendEventBean(new SupportRecogBean("P2", 1));
+                env.SendEventBean(new SupportRecogBean("P2", 1));
                  */
             }
         }
@@ -173,7 +173,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
                 var fields = "a_string,b_string,c_string".SplitCsv();
                 var text = "@Name('s0') select * from SupportRecogBean#time_batch(5 sec) " +
                            "match_recognize (" +
-                           "  partition by cat " +
+                           "  partition by Cat " +
                            "  measures A.TheString as a_string, B.TheString as b_string, C.TheString as c_string" +
                            "  all matches pattern ( (A | B) C ) " +
                            "  define " +
@@ -312,7 +312,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
                 var fields = "a_string,b_string,c_string".SplitCsv();
                 var text = "@Name('s0') select * from SupportRecogBean#time_batch(5 sec) " +
                            "match_recognize (" +
-                           "  partition by cat " +
+                           "  partition by Cat " +
                            "  measures A.TheString as a_string, B.TheString as b_string, C.TheString as c_string" +
                            "  all matches pattern ( (A | B) C ) " +
                            "  define " +

@@ -49,10 +49,10 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
             object[] events)
         {
             var graph = "@Name('flow') create dataflow MySelect\n" +
-                        "DefaultSupportSourceOp => instream<" +
+                        "DefaultSupportSourceOp -> instream<" +
                         typeName +
                         ">{}\n" +
-                        "Select(instream as ME) => outstream {select: (select myString, sum(myInt) as total from ME)}\n" +
+                        "Select(instream as ME) -> outstream {select: (select myString, sum(myInt) as total from ME)}\n" +
                         "DefaultSupportCaptureOp(outstream) {}";
             env.CompileDeploy(graph);
 
@@ -82,8 +82,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
             string message)
         {
             var graph = "@Name('flow') create dataflow MySelect\n" +
-                        "DefaultSupportSourceOp => instream<SupportBean>{}\n" +
-                        "Select(instream as ME) => outstream {select: (" +
+                        "DefaultSupportSourceOp -> instream<SupportBean>{}\n" +
+                        "Select(instream as ME) -> outstream {select: (" +
                         select +
                         "), iterate: " +
                         iterate +
@@ -102,39 +102,39 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
 
                 var epl = "@Name('flow') create dataflow MyDataFlow\n" +
                           "  create schema SampleSchema(tagId string, locX double),\t// sample type\t\t\t\n" +
-                          "  BeaconSource => instream<SampleSchema> {}  // sample stream\n" +
-                          "  BeaconSource => secondstream<SampleSchema> {}  // sample stream\n" +
+                          "  BeaconSource -> instream<SampleSchema> {}  // sample stream\n" +
+                          "  BeaconSource -> secondstream<SampleSchema> {}  // sample stream\n" +
                           "  \n" +
                           "  // Simple continuous count of events\n" +
-                          "  Select(instream) => outstream {\n" +
+                          "  Select(instream) -> outstream {\n" +
                           "    select: (select count(*) from instream)\n" +
                           "  }\n" +
                           "  \n" +
                           "  // Demonstrate use of alias\n" +
-                          "  Select(instream as myalias) => outstream {\n" +
+                          "  Select(instream as myalias) -> outstream {\n" +
                           "    select: (select count(*) from myalias)\n" +
                           "  }\n" +
                           "  \n" +
                           "  // Output only when the final marker arrives\n" +
-                          "  Select(instream as myalias) => outstream {\n" +
+                          "  Select(instream as myalias) -> outstream {\n" +
                           "    select: (select count(*) from myalias),\n" +
                           "    iterate: true\n" +
                           "  }\n" +
                           "\n" +
                           "  // Same input port for the two sample streams.\n" +
-                          "  Select( (instream, secondstream) as myalias) => outstream {\n" +
+                          "  Select( (instream, secondstream) as myalias) -> outstream {\n" +
                           "    select: (select count(*) from myalias)\n" +
                           "  }\n" +
                           "\n" +
                           "  // A join with multiple input streams,\n" +
                           "  // joining the last event per stream forming pairs\n" +
-                          "  Select(instream, secondstream) => outstream {\n" +
+                          "  Select(instream, secondstream) -> outstream {\n" +
                           "    select: (select a.tagId, b.tagId \n" +
                           "                 from instream#lastevent as a, secondstream#lastevent as b)\n" +
                           "  }\n" +
                           "  \n" +
                           "  // A join with multiple input streams and using aliases.\n" +
-                          "  @Audit Select(instream as S1, secondstream as S2) => outstream {\n" +
+                          "  @Audit Select(instream as S1, secondstream as S2) -> outstream {\n" +
                           "    select: (select a.tagId, b.tagId \n" +
                           "                 from S1#lastevent as a, S2#lastevent as b)\n" +
                           "  }";
@@ -199,8 +199,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 }
 
                 var graph = "@Name('flow') create dataflow MySelect\n" +
-                            "Emitter => instream_s0<SupportBean>{name: 'emitterS0'}\n" +
-                            "@Audit Select(instream_s0 as ALIAS) => outstream {\n" +
+                            "Emitter -> instream_s0<SupportBean>{name: 'emitterS0'}\n" +
+                            "@Audit Select(instream_s0 as ALIAS) -> outstream {\n" +
                             "  select: (select TheString, sum(IntPrimitive) as sumInt from ALIAS group by TheString order by TheString asc),\n" +
                             "  iterate: true" +
                             "}\n" +
@@ -245,8 +245,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 }
 
                 var graph = "@Name('flow') create dataflow MySelect\n" +
-                            "Emitter => instream_s0<SupportBean>{name: 'emitterS0'}\n" +
-                            "Select(instream_s0) => outstream {\n" +
+                            "Emitter -> instream_s0<SupportBean>{name: 'emitterS0'}\n" +
+                            "Select(instream_s0) -> outstream {\n" +
                             "  select: (select sum(IntPrimitive) as sumInt from instream_s0 output snapshot every 1 minute)\n" +
                             "}\n" +
                             "DefaultSupportCaptureOp(outstream) {}\n";
@@ -304,8 +304,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 }
 
                 var graph = "@Name('flow') create dataflow MySelect\n" +
-                            "Emitter => instream_s0<SupportBean>{name: 'emitterS0'}\n" +
-                            "Select(instream_s0) => outstream {\n" +
+                            "Emitter -> instream_s0<SupportBean>{name: 'emitterS0'}\n" +
+                            "Select(instream_s0) -> outstream {\n" +
                             "  select: (select sum(IntPrimitive) as sumInt from instream_s0#time(1 minute))\n" +
                             "}\n" +
                             "DefaultSupportCaptureOp(outstream) {}\n";
@@ -355,9 +355,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 }
 
                 var graph = "@Name('flow') create dataflow MySelect\n" +
-                            "Emitter => instream_s0<SupportBean_S0>{name: 'emitterS0'}\n" +
-                            "Emitter => instream_s1<SupportBean_S1>{name: 'emitterS1'}\n" +
-                            "Select(instream_s0 as S0, instream_s1 as S1) => outstream {\n" +
+                            "Emitter -> instream_s0<SupportBean_S0>{name: 'emitterS0'}\n" +
+                            "Emitter -> instream_s1<SupportBean_S1>{name: 'emitterS1'}\n" +
+                            "Select(instream_s0 as S0, instream_s1 as S1) -> outstream {\n" +
                             "  select: (select P00, P10 from S0#keepall full outer join S1#keepall)\n" +
                             "}\n" +
                             "DefaultSupportCaptureOp(outstream) {}\n";
@@ -402,10 +402,10 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 string fromClause)
             {
                 var graph = "@Name('flow') create dataflow MySelect\n" +
-                            "Emitter => instream_s0<SupportBean_S0>{name: 'emitterS0'}\n" +
-                            "Emitter => instream_s1<SupportBean_S1>{name: 'emitterS1'}\n" +
-                            "Emitter => instream_s2<SupportBean_S2>{name: 'emitterS2'}\n" +
-                            "Select(instream_s0 as S0, instream_s1 as S1, instream_s2 as S2) => outstream {\n" +
+                            "Emitter -> instream_s0<SupportBean_S0>{name: 'emitterS0'}\n" +
+                            "Emitter -> instream_s1<SupportBean_S1>{name: 'emitterS1'}\n" +
+                            "Emitter -> instream_s2<SupportBean_S2>{name: 'emitterS2'}\n" +
+                            "Select(instream_s0 as S0, instream_s1 as S1, instream_s2 as S2) -> outstream {\n" +
                             "  select: (select s0.Id as s0Id, s1.Id as s1Id, s2.Id as s2Id " +
                             fromClause +
                             ")\n" +
@@ -471,8 +471,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 env.CompileDeploy(
                     "create objectarray schema MyEventOA(p0 string, p1 long);\n" +
                     "@Name('flow') create dataflow MyDataFlowOne " +
-                    "Emitter => instream<MyEventOA> {name: 'E1'}" +
-                    "Select(instream as ME) => astream {select: (select p0, sum(p1) from ME)}");
+                    "Emitter -> instream<MyEventOA> {name: 'E1'}" +
+                    "Select(instream as ME) -> astream {select: (select p0, sum(p1) from ME)}");
                 var df = env.Runtime.DataFlowService.Instantiate(env.DeploymentId("flow"), "MyDataFlowOne");
                 var emitter = df.StartCaptive().Emitters.Get("E1");
                 var start = PerformanceObserver.MilliTime;

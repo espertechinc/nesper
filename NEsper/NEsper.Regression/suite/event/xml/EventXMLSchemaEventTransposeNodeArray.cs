@@ -25,7 +25,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
         public void Run(RegressionEnvironment env)
         {
             // try array property insert
-            env.CompileDeploy("@Name('s0') select nested3.nested4 as narr from SimpleEventWSchema#lastevent");
+            env.CompileDeploy("@Name('s0') select nested3.Nested4 as narr from SimpleEventWSchema#lastevent");
             EPAssertionUtil.AssertEqualsAnyOrder(
                 new object[] {
                     new EventPropertyDescriptor(
@@ -51,11 +51,11 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
             Assert.AreEqual("SAMPLE_V11", fragments[2].Get("prop5[1]"));
 
             var fragmentItem = (EventBean) result.GetFragment("narr[2]");
-            Assert.AreEqual("SimpleEventWSchema.nested3.nested4", fragmentItem.EventType.Name);
+            Assert.AreEqual("SimpleEventWSchema.Nested3.Nested4", fragmentItem.EventType.Name);
             Assert.AreEqual("SAMPLE_V10", fragmentItem.Get("prop5[0]"));
 
             // try array index property insert
-            env.CompileDeploy("@Name('ii') select nested3.nested4[1] as narr from SimpleEventWSchema#lastevent");
+            env.CompileDeploy("@Name('ii') select nested3.Nested4[1] as narr from SimpleEventWSchema#lastevent");
             EPAssertionUtil.AssertEqualsAnyOrder(
                 new object[] {
                     new EventPropertyDescriptor("narr", typeof(XmlNode), null, false, false, false, false, true)

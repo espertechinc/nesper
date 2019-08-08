@@ -189,7 +189,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             RegressionPath path,
             object[] rowValues)
         {
-            var epl = "@Name('s0') select (select * from MyTable).where(v=>v.key = 'G1') as mt from SupportBean_S2";
+            var epl = "@Name('s0') select (select * from MyTable).where(v->v.Key = 'G1') as mt from SupportBean_S2";
             env.CompileDeploy(epl, path).AddListener("s0");
 
             Assert.AreEqual(typeof(ICollection<object>), env.Statement("s0").EventType.GetPropertyType("mt"));

@@ -188,7 +188,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
             }
 
             methodNode.Block
-                .DeclareVar<ICollection<object>>(
+                .DeclareVar<ICollection<EventBean>>(
                     "inner",
                     forge.innerForge.EvaluateGetROCollectionEventsCodegen(methodNode, exprSymbol, codegenClassScope))
                 .Apply(
@@ -209,7 +209,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
                         exprSymbol,
                         codegenClassScope,
                         Ref("inner"),
-                        typeof(ICollection<object>),
+                        typeof(ICollection<EventBean>),
                         forge.forgesIteratorEventBean,
                         null))
                 .Apply(InstrumentationCode.Instblock(codegenClassScope, "aExprDotChain"))
@@ -234,7 +234,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
                     new EPTypeCodegenSharable(forge.innerForge.TypeInfo, codegenClassScope));
             }
 
-            methodNode.Block.DeclareVar<ICollection<object>>(
+            methodNode.Block.DeclareVar<ICollection<EventBean>>(
                     "inner",
                     forge.innerForge.EvaluateGetROCollectionScalarCodegen(methodNode, exprSymbol, codegenClassScope))
                 .Apply(
@@ -255,7 +255,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
                         exprSymbol,
                         codegenClassScope,
                         Ref("inner"),
-                        typeof(ICollection<object>),
+                        typeof(ICollection<EventBean>),
                         forge.forgesIteratorEventBean,
                         null))
                 .Apply(InstrumentationCode.Instblock(codegenClassScope, "aExprDotChain"))

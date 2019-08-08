@@ -75,7 +75,7 @@ namespace com.espertech.esper.regressionlib.support.patternassert
             if (sendEventCollection.GetTime(EventCollection.ON_START_EVENT_ID) != null) {
                 var startTime = sendEventCollection.GetTime(EventCollection.ON_START_EVENT_ID);
                 env.AdvanceTime(startTime.Value);
-                log.Debug(".runTest Start time is " + startTime);
+                log.Debug(".RunTest Start time is " + startTime);
             }
 
             // Set up expression filters and match listeners
@@ -88,7 +88,7 @@ namespace com.espertech.esper.regressionlib.support.patternassert
                 var statementName = NameOfStatement(descriptor);
                 var nameAnnotation = "@Name(\"" + statementName + "\") ";
                 EPCompiled compiled;
-                log.Debug(".runTest Deploying " + epl);
+                log.Debug(".RunTest Deploying " + epl);
 
                 try {
                     if (model != null) {
@@ -145,7 +145,7 @@ namespace com.espertech.esper.regressionlib.support.patternassert
                     }
 
                     log.Error(
-                        ".runTest Failed to create statement for style " + testStyle + " pattern expression=" + text,
+                        ".RunTest Failed to create statement for style " + testStyle + " pattern expression=" + text,
                         ex);
                     Assert.Fail();
                     compiled = null;
@@ -180,7 +180,7 @@ namespace com.espertech.esper.regressionlib.support.patternassert
                     if (sendEventCollection.TryGetTime(eventId, out var currentTime)) {
                         env.AdvanceTime(currentTime);
                         log.Debug(
-                            ".runTest Sending event " +
+                            ".RunTest Sending event " +
                             entry.Key +
                             " = " +
                             entry.Value +

@@ -14,7 +14,7 @@ using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.regressionlib.support.util;
 
-namespace com.espertech.esper.regressionrun.runner
+namespace com.espertech.esper.regressionrun.Runner
 {
     public class SupportConfigFactory
     {

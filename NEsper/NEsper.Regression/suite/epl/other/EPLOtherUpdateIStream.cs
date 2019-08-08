@@ -84,11 +84,11 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             // test update-istream with map
             var path = new RegressionPath();
             var eplType = eventRepresentationEnum.GetAnnotationText() +
-                          " @Name('type') create schema MyInfraTypeWithMapProp(simple String, myarray int[], mymap java.util.Map)";
+                          " @Name('type') create schema MyInfraTypeWithMapProp(simple String, myarray int[], mymap IDictionary)";
             env.CompileDeployWBusPublicType(eplType, path);
 
             env.CompileDeploy(
-                    "@Name('update') update istream MyInfraTypeWithMapProp set simple='A', mymap('abc') = 1, myarray[2] = 10",
+                    "@Name('Update') update istream MyInfraTypeWithMapProp set simple='A', mymap('abc') = 1, myarray[2] = 10",
                     path)
                 .AddListener("update");
 
@@ -131,7 +131,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             // test named-window update
             var path = new RegressionPath();
             var eplTypes = eventRepresentationEnum.GetAnnotationText() +
-                           " @Name('type') create schema MyNWInfraTypeWithMapProp(simple String, myarray int[], mymap java.util.Map)";
+                           " @Name('type') create schema MyNWInfraTypeWithMapProp(simple String, myarray int[], mymap IDictionary)";
             env.CompileDeployWBusPublicType(eplTypes, path);
 
             env.CompileDeploy(
@@ -459,7 +459,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             public void Run(RegressionEnvironment env)
             {
                 env.CompileDeploy(
-                    "@Name('update') update istream SupportBean " +
+                    "@Name('Update') update istream SupportBean " +
                     "set IntPrimitive=myvar, IntBoxed=IntPrimitive");
                 Assert.AreEqual(
                     StatementType.UPDATE,
@@ -756,7 +756,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 env.CompileDeploy("@Name('insert') insert into MyStreamII select * from MyMapTypeII", path)
                     .AddListener("insert");
 
-                var update = env.Compile("@Name('update') update istream MyStreamII set p0=p1, p1=p0", path);
+                var update = env.Compile("@Name('Update') update istream MyStreamII set p0=p1, p1=p0", path);
                 env.Deploy(update);
 
                 env.CompileDeploy("@Name('s0') select * from MyStreamII", path).AddListener("s0");
@@ -1148,7 +1148,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             {
                 var path = new RegressionPath();
                 env.CompileDeploy("insert into ABCStreamWO select 1 as valOne, 2 as valTwo, * from SupportBean", path);
-                env.CompileDeploy("@Name('update') update istream ABCStreamWO set valOne = 987, valTwo=123", path);
+                env.CompileDeploy("@Name('Update') update istream ABCStreamWO set valOne = 987, valTwo=123", path);
                 env.CompileDeploy("@Name('s0') select * from ABCStreamWO", path).AddListener("s0");
 
                 env.SendEventBean(new SupportBean("E1", 0));
@@ -1158,7 +1158,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                     new object[] {987, 123, "E1"});
 
                 env.UndeployModuleContaining("update");
-                env.CompileDeploy("@Name('update') update istream ABCStreamWO set TheString = 'A'", path);
+                env.CompileDeploy("@Name('Update') update istream ABCStreamWO set TheString = 'A'", path);
 
                 env.SendEventBean(new SupportBean("E2", 0));
                 EPAssertionUtil.AssertProps(
@@ -1206,7 +1206,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 var fields = "theString,IntPrimitive".SplitCsv();
                 env.CompileDeploy("insert into ABCStreamSQ select * from SupportBean", path);
                 env.CompileDeploy(
-                    "@Name('update') update istream ABCStreamSQ set TheString = (select s0 from MyMapTypeSelect#lastevent) where IntPrimitive in (select w0 from MyMapTypeWhere#keepall)",
+                    "@Name('Update') update istream ABCStreamSQ set TheString = (select s0 from MyMapTypeSelect#lastevent) where IntPrimitive in (select w0 from MyMapTypeWhere#keepall)",
                     path);
                 env.CompileDeploy("@Name('s0') select * from ABCStreamSQ", path).AddListener("s0");
 
@@ -1246,7 +1246,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 // test correlated subquery
                 env.UndeployModuleContaining("update");
                 env.CompileDeploy(
-                    "@Name('update') update istream ABCStreamSQ set IntPrimitive = (select s1 from MyMapTypeSelect#keepall where s0 = ABCStreamSQ.TheString)",
+                    "@Name('Update') update istream ABCStreamSQ set IntPrimitive = (select s1 from MyMapTypeSelect#keepall where s0 = ABCStreamSQ.TheString)",
                     path);
 
                 // note that this will log an error (int primitive set to null), which is good, and leave the value unchanged
@@ -1266,7 +1266,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 // test correlated with as-clause
                 env.UndeployModuleContaining("update");
                 env.CompileDeploy(
-                    "@Name('update') update istream ABCStreamSQ as mystream set IntPrimitive = (select s1 from MyMapTypeSelect#keepall where s0 = mystream.TheString)",
+                    "@Name('Update') update istream ABCStreamSQ as mystream set IntPrimitive = (select s1 from MyMapTypeSelect#keepall where s0 = mystream.TheString)",
                     path);
 
                 // note that this will log an error (int primitive set to null), which is good, and leave the value unchanged

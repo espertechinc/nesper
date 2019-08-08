@@ -177,7 +177,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
                 env.UndeployAll();
 
                 epl = "@Name('s0') select sp0.P00||'+'||sp1.P10 as myId from pattern[" +
-                      "every sp0=SupportBean_S0 => sp1=SupportBean_S1(P11 = (select stream2.P21 from SupportBean_S2#keepall as stream2 where stream2.P20 = sp0.P00))]";
+                      "every sp0=SupportBean_S0 -> sp1=SupportBean_S1(P11 = (select stream2.P21 from SupportBean_S2#keepall as stream2 where stream2.P20 = sp0.P00))]";
                 env.CompileDeployAddListenerMile(epl, "s0", 2);
 
                 env.SendEventBean(new SupportBean_S2(21, "X", "A"));

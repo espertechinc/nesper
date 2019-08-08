@@ -49,9 +49,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
                 codegenClassScope);
             methodNode.Block.DeclareVar<IDictionary<string, object>>(
                 "props",
-                NewInstance(
-                    typeof(Dictionary<string, object>),
-                    Constant(CollectionUtil.CapacityHashMap(selectContext.ColumnNames.Length))));
+                NewInstance(typeof(Dictionary<string, object>)));
             for (int i = 0; i < selectContext.ColumnNames.Length; i++) {
                 CodegenExpression expression = CodegenLegoMayVoid.ExpressionMayVoid(
                     typeof(object),

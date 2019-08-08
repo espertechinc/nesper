@@ -469,10 +469,10 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergroup
                 GenerateOutputBatchedRowAddToListCodegen(forge, classScope, instance);
 
             Consumer<CodegenMethod> code = method => method.Block
-                .WhileLoop(ExprDotMethod(Ref("keysAndEvents"), "HasNext"))
+                .WhileLoop(ExprDotMethod(Ref("keysAndEvents"), "MoveNext"))
                 .DeclareVar<KeyValuePair<object, object>>(
                     "entry",
-                    Cast(typeof(KeyValuePair<object, object>), ExprDotMethod(Ref("keysAndEvents"), "Next")))
+                    Cast(typeof(KeyValuePair<object, object>), ExprDotMethod(Ref("keysAndEvents"), "Current")))
                 .InstanceMethod(
                     generateOutputBatchedRowAddToList,
                     Ref("join"),
@@ -912,10 +912,10 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergroup
                     .DeclareVar<ISet<EventBean>>("priorSeenGroups", NewInstance(typeof(HashSet<EventBean>)));
 
                 {
-                    var whileLoop = method.Block.WhileLoop(ExprDotMethod(Ref("parentIter"), "HasNext"));
+                    var whileLoop = method.Block.WhileLoop(ExprDotMethod(Ref("parentIter"), "MoveNext"));
                     whileLoop.DeclareVar<EventBean>(
                             "candidate",
-                            Cast(typeof(EventBean), ExprDotMethod(Ref("parentIter"), "Next")))
+                            Cast(typeof(EventBean), ExprDotMethod(Ref("parentIter"), "Current")))
                         .AssignArrayElement("eventsPerStream", Constant(0), Ref("candidate"))
                         .DeclareVar<object>(
                             "groupKey",

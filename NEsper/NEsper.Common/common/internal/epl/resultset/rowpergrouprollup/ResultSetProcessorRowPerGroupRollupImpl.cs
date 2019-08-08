@@ -448,11 +448,11 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                     "levels",
                     ExprDotMethodChain(Ref("this")).Get("GroupByRollupDesc").Get("Levels"));
             {
-                method.Block.WhileLoop(ExprDotMethod(Ref("it"), "HasNext"))
+                method.Block.WhileLoop(ExprDotMethod(Ref("it"), "MoveNext"))
                     .AssignArrayElement(
                         Ref("eventsPerStream"),
                         Constant(0),
-                        Cast(typeof(EventBean), ExprDotMethod(Ref("it"), "Next")))
+                        Cast(typeof(EventBean), ExprDotMethod(Ref("it"), "Current")))
                     .DeclareVar<object>(
                         "groupKeyComplete",
                         LocalMethod(generateGroupKeySingle, Ref("eventsPerStream"), ConstantTrue()))
@@ -510,7 +510,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                         Ref(NAME_EVENTPERGROUPBUFVIEW),
                         ConstantTrue(),
                         ConstantTrue()))
-                .MethodReturn(StaticMethod(typeof(EnumerationHelper), "Singleton", Ref("output")));
+                .MethodReturn(StaticMethod(typeof(EnumerationHelper), "SingletonSet", Ref("output")));
             return iterator;
         }
 
@@ -541,7 +541,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                         Ref(NAME_EVENTPERGROUPBUFJOIN),
                         ConstantTrue(),
                         ConstantTrue()))
-                .MethodReturn(StaticMethod(typeof(EnumerationHelper), "Singleton", Ref("output")));
+                .MethodReturn(StaticMethod(typeof(EnumerationHelper), "SingletonSet", Ref("output")));
         }
 
         protected internal static void ClearMethodCodegen(CodegenMethod method)

@@ -203,7 +203,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.@base
                 future,
                 "GetValue",
                 Constant(column),
-                ExprDotMethod(exprSymbol.GetAddExprEvalCtx(parent), "GetAgentInstanceId"),
+                ExprDotName(exprSymbol.GetAddExprEvalCtx(parent), "AgentInstanceId"),
                 exprSymbol.GetAddEPS(parent),
                 exprSymbol.GetAddIsNewData(parent),
                 exprSymbol.GetAddExprEvalCtx(parent));

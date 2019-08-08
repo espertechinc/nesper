@@ -156,33 +156,33 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                 var milestone = new AtomicLong();
 
                 var stmtOne =
-                    "@Name('s0') select sb.TheString as sbstr, sb.IntPrimitive as sbint, sbr.key as sbrk, sbr.rangeStart as sbrs, sbr.rangeEnd as sbre " +
+                    "@Name('s0') select sb.TheString as sbstr, sb.IntPrimitive as sbint, sbr.Key as sbrk, sbr.RangeStart as sbrs, sbr.RangeEnd as sbre " +
                     "from SupportBean#keepall sb " +
                     "full outer join " +
                     "SupportBeanRange#keepall sbr " +
                     "on TheString = key " +
-                    "where IntPrimitive between rangeStart and rangeEnd " +
-                    "order by rangeStart asc, IntPrimitive asc";
+                    "where IntPrimitive between RangeStart and RangeEnd " +
+                    "order by RangeStart asc, IntPrimitive asc";
                 TryAssertion(env, stmtOne, milestone);
 
                 var stmtTwo =
-                    "@Name('s0') select sb.TheString as sbstr, sb.IntPrimitive as sbint, sbr.key as sbrk, sbr.rangeStart as sbrs, sbr.rangeEnd as sbre " +
+                    "@Name('s0') select sb.TheString as sbstr, sb.IntPrimitive as sbint, sbr.Key as sbrk, sbr.RangeStart as sbrs, sbr.RangeEnd as sbre " +
                     "from SupportBeanRange#keepall sbr " +
                     "full outer join " +
                     "SupportBean#keepall sb " +
                     "on TheString = key " +
-                    "where IntPrimitive between rangeStart and rangeEnd " +
-                    "order by rangeStart asc, IntPrimitive asc";
+                    "where IntPrimitive between RangeStart and RangeEnd " +
+                    "order by RangeStart asc, IntPrimitive asc";
                 TryAssertion(env, stmtTwo, milestone);
 
                 var stmtThree =
-                    "@Name('s0') select sb.TheString as sbstr, sb.IntPrimitive as sbint, sbr.key as sbrk, sbr.rangeStart as sbrs, sbr.rangeEnd as sbre " +
+                    "@Name('s0') select sb.TheString as sbstr, sb.IntPrimitive as sbint, sbr.Key as sbrk, sbr.RangeStart as sbrs, sbr.RangeEnd as sbre " +
                     "from SupportBeanRange#keepall sbr " +
                     "full outer join " +
                     "SupportBean#keepall sb " +
                     "on TheString = key " +
-                    "where IntPrimitive >= rangeStart and IntPrimitive <= rangeEnd " +
-                    "order by rangeStart asc, IntPrimitive asc";
+                    "where IntPrimitive >= RangeStart and IntPrimitive <= RangeEnd " +
+                    "order by RangeStart asc, IntPrimitive asc";
                 TryAssertion(env, stmtThree, milestone);
             }
 

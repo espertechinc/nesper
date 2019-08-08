@@ -87,12 +87,12 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                     env,
                     "create dataflow MyDataFlow8\n" +
                     "create objectarray schema RFIDSchema (tagId string, locX double, locy double),\n" +
-                    "MyOperator -> rfId.stream<RFIDSchema> {}");
+                    "MyOperator -> rfid.stream<RFIDSchema> {}");
                 TryEpl(
                     env,
                     "create dataflow MyDataFlow9\n" +
                     "create objectarray schema RFIDSchema (tagId string, locX double, locy double),\n" +
-                    "MyOperator -> rfId.stream<eventbean<RFIDSchema>> {}");
+                    "MyOperator -> rfid.stream<eventbean<RFIDSchema>> {}");
                 TryEpl(
                     env,
                     "create dataflow MyDataFlow10\n" +

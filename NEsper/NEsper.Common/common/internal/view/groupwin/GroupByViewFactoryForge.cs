@@ -185,7 +185,7 @@ namespace com.espertech.esper.common.@internal.view.groupwin
             }
 
             method.Block
-                .SetProperty(factory, "ReclaimAged", Constant(isReclaimAged))
+                .SetProperty(factory, "IsReclaimAged", Constant(isReclaimAged))
                 .SetProperty(factory, "ReclaimMaxAge", Constant(reclaimMaxAge))
                 .SetProperty(factory, "ReclaimFrequency", Constant(reclaimFrequency))
                 .SetProperty(factory, "PropertyNames", Constant(propertyNames))
@@ -205,7 +205,7 @@ namespace com.espertech.esper.common.@internal.view.groupwin
                     factory,
                     "EventType",
                     EventTypeUtility.ResolveTypeCodegen(eventType, EPStatementInitServicesConstants.REF))
-                .SetProperty(factory, "AddingProperties", Constant(addingProperties));
+                .SetProperty(factory, "IsAddingProperties", Constant(addingProperties));
         }
 
         public override void Accept(ViewForgeVisitor visitor)

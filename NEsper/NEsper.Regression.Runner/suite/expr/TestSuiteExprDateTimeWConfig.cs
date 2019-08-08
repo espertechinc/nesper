@@ -13,7 +13,7 @@ using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.compat;
 using com.espertech.esper.regressionlib.suite.expr.datetime;
 using com.espertech.esper.regressionlib.support.bean;
-using com.espertech.esper.regressionrun.runner;
+using com.espertech.esper.regressionrun.Runner;
 
 using NUnit.Framework;
 
@@ -54,11 +54,11 @@ namespace com.espertech.esper.regressionrun.suite.expr
 
             configBean.EndTimestampPropertyName = null;
             configBean.StartTimestampPropertyName = "TheString";
-            TryInvalidConfig(typeof(SupportBean), configBean, "Declared start timestamp property 'theString' is expected to return a Date, Calendar or long-typed value but returns 'java.lang.String'");
+            TryInvalidConfig(typeof(SupportBean), configBean, "Declared start timestamp property 'TheString' is expected to return a Date, Calendar or long-typed value but returns 'System.String'");
 
             configBean.StartTimestampPropertyName = "LongPrimitive";
             configBean.EndTimestampPropertyName = "TheString";
-            TryInvalidConfig(typeof(SupportBean), configBean, "Declared end timestamp property 'theString' is expected to return a Date, Calendar or long-typed value but returns 'java.lang.String'");
+            TryInvalidConfig(typeof(SupportBean), configBean, "Declared end timestamp property 'TheString' is expected to return a Date, Calendar or long-typed value but returns 'System.String'");
 
             configBean.StartTimestampPropertyName = "longdate";
             configBean.EndTimestampPropertyName = "exdate";

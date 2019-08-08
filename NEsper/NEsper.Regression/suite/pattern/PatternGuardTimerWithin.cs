@@ -204,11 +204,11 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 testCaseList.AddTest(testCase);
 
                 testCase = new EventExpressionCase(
-                    "b=SupportBean_B => d=SupportBean_D where timer:within(4001 milliseconds)");
+                    "b=SupportBean_B -> d=SupportBean_D where timer:within(4001 milliseconds)");
                 testCase.Add("D1", "b", events.GetEvent("B1"), "d", events.GetEvent("D1"));
                 testCaseList.AddTest(testCase);
 
-                testCase = new EventExpressionCase("b=SupportBean_B() => d=SupportBean_D() where timer:within(4 sec)");
+                testCase = new EventExpressionCase("b=SupportBean_B() -> d=SupportBean_D() where timer:within(4 sec)");
                 testCaseList.AddTest(testCase);
 
                 testCase = new EventExpressionCase(
@@ -231,13 +231,13 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 testCaseList.AddTest(testCase);
 
                 testCase = new EventExpressionCase(
-                    "every b=SupportBean_B => d=SupportBean_D where timer:within(4000 msec)");
+                    "every b=SupportBean_B -> d=SupportBean_D where timer:within(4000 msec)");
                 testCase.Add("D1", "b", events.GetEvent("B2"), "d", events.GetEvent("D1"));
                 testCase.Add("D3", "b", events.GetEvent("B3"), "d", events.GetEvent("D3"));
                 testCaseList.AddTest(testCase);
 
                 testCase = new EventExpressionCase(
-                    "every b=SupportBean_B() => every d=SupportBean_D where timer:within(4000 msec)");
+                    "every b=SupportBean_B() -> every d=SupportBean_D where timer:within(4000 msec)");
                 testCase.Add("D1", "b", events.GetEvent("B1"), "d", events.GetEvent("D1"));
                 testCase.Add("D1", "b", events.GetEvent("B2"), "d", events.GetEvent("D1"));
                 testCase.Add("D2", "b", events.GetEvent("B1"), "d", events.GetEvent("D2"));
@@ -248,17 +248,17 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 testCaseList.AddTest(testCase);
 
                 testCase = new EventExpressionCase(
-                    "b=SupportBean_B() => d=SupportBean_D() where timer:within(3999 msec)");
+                    "b=SupportBean_B() -> d=SupportBean_D() where timer:within(3999 msec)");
                 testCaseList.AddTest(testCase);
 
                 testCase = new EventExpressionCase(
-                    "every b=SupportBean_B() => (every d=SupportBean_D) where timer:within(2001 msec)");
+                    "every b=SupportBean_B() -> (every d=SupportBean_D) where timer:within(2001 msec)");
                 testCase.Add("D1", "b", events.GetEvent("B2"), "d", events.GetEvent("D1"));
                 testCase.Add("D3", "b", events.GetEvent("B3"), "d", events.GetEvent("D3"));
                 testCaseList.AddTest(testCase);
 
                 testCase = new EventExpressionCase(
-                    "every (b=SupportBean_B() => d=SupportBean_D()) where timer:within(6001 msec)");
+                    "every (b=SupportBean_B() -> d=SupportBean_D()) where timer:within(6001 msec)");
                 testCase.Add("D1", "b", events.GetEvent("B1"), "d", events.GetEvent("D1"));
                 testCase.Add("D3", "b", events.GetEvent("B3"), "d", events.GetEvent("D3"));
                 testCaseList.AddTest(testCase);
@@ -386,7 +386,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
 
                 // Set up a timer:within
                 env.CompileDeploy(
-                    "@Name('s0') select b.TheString as Id from pattern[a=SupportBean => (every b=SupportBean) where timer:within(a.IntPrimitive seconds)]");
+                    "@Name('s0') select b.TheString as Id from pattern[a=SupportBean -> (every b=SupportBean) where timer:within(a.IntPrimitive seconds)]");
                 env.AddListener("s0");
 
                 // seed
@@ -414,7 +414,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 SendTimer(0, env);
 
                 var stmtText =
-                    "@Name('s0') select * from pattern [ every(SupportBean => (SupportMarketDataBean where timer:within(5 sec))) ]";
+                    "@Name('s0') select * from pattern [ every(SupportBean -> (SupportMarketDataBean where timer:within(5 sec))) ]";
                 env.CompileDeploy(stmtText).AddListener("s0");
 
                 env.SendEventBean(new SupportBean("E1", 1));

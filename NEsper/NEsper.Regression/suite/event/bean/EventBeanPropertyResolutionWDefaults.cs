@@ -130,7 +130,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.bean
                 env.CompileDeploy("insert into DerivedStream select customer,`from` from MyEvent", path);
                 env.CompileDeploy("create window TheWindow#firstunique(customer,`from`) as DerivedStream", path);
                 env.CompileDeploy(
-                    "on pattern [a=TheWindow => timer:interval(12 hours)] as s0 delete from TheWindow as s1 where s0.a.`from`=s1.`from`",
+                    "on pattern [a=TheWindow -> timer:interval(12 hours)] as s0 delete from TheWindow as s1 where s0.a.`from`=s1.`from`",
                     path);
 
                 // test escape in column name

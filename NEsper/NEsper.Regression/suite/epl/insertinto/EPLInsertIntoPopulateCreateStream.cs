@@ -120,7 +120,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                       " create schema CompositeEvent(c1 MyEvent, c2 MyEvent, rule string);\n" +
                       "insert into MyStream select c, 'additionalValue' as value from MyEvent c;\n" +
                       "insert into CompositeEvent select e1.c as c1, e2.c as c2, '4' as rule " +
-                      "  from pattern [e1=MyStream => e2=MyStream];\n" +
+                      "  from pattern [e1=MyStream -> e2=MyStream];\n" +
                       eventRepresentationEnum.GetAnnotationText() +
                       " @Name('Target') select * from CompositeEvent;\n";
             env.CompileDeployWBusPublicType(epl, new RegressionPath()).AddListener("Target");

@@ -111,7 +111,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             {
                 var path = new RegressionPath();
                 env.CompileDeploy("create expression string js:myscript(p1) [\"--\"+p1+\"--\"]", path);
-                env.CompileDeploy("create expression myexpr {sb => '--'||TheString||'--'}", path);
+                env.CompileDeploy("create expression myexpr {sb -> '--'||TheString||'--'}", path);
 
                 // test mapped property syntax
                 var eplMapped = "@Name('s0') select myscript('x') as c0, myexpr(sb) as c1 from SupportBean as sb";
@@ -126,12 +126,12 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
 
                 // test expression chained syntax
                 var eplExpr = "" +
-                              "create expression scalarfilter {s => " +
-                              "   Strvals.where(y => y != 'E1') " +
+                              "create expression scalarfilter {s -> " +
+                              "   Strvals.where(y -> y != 'E1') " +
                               "}";
                 env.CompileDeploy(eplExpr, path);
                 var eplSelect =
-                    "@Name('s0') select scalarfilter(t).where(x => x != 'E2') as val1 from SupportCollection as t";
+                    "@Name('s0') select scalarfilter(t).where(x -> x != 'E2') as val1 from SupportCollection as t";
                 env.CompileDeploy(eplSelect, path).AddListener("s0");
                 AssertStatelessStmt(env, "s0", true);
                 env.SendEventBean(SupportCollection.MakeString("E1,E2,E3,E4"));
@@ -202,7 +202,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             {
                 var path = new RegressionPath();
                 env.CompileDeploy("create expression TwoPi {Math.PI * 2}", path);
-                env.CompileDeploy("create expression factorPi {sb => Math.PI * IntPrimitive}", path);
+                env.CompileDeploy("create expression factorPi {sb -> Math.PI * IntPrimitive}", path);
 
                 var fields = "c0,c1,c2".SplitCsv();
                 var epl = "@Name('s0') select " +
@@ -234,7 +234,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                     new object[] {Math.PI * 10});
 
                 // test SODA
-                var eplExpr = "@Name('expr') create expression JoinMultiplication {(s1,s2) => s1.IntPrimitive*s2.Id}";
+                var eplExpr = "@Name('expr') create expression JoinMultiplication {(s1,s2) -> s1.IntPrimitive*s2.Id}";
                 var modelExpr = env.EplToModel(eplExpr);
                 Assert.AreEqual(eplExpr, modelExpr.ToEPL());
                 env.CompileDeploy(modelExpr, path);
@@ -288,9 +288,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 // expression assertion
                 TryAssertionLifecycleAndFilter(
                     env,
-                    "create expression MyFilter {sb => IntPrimitive = 1}",
+                    "create expression MyFilter {sb -> IntPrimitive = 1}",
                     "select * from SupportBean(MyFilter(sb)) as sb",
-                    "create expression MyFilter {sb => IntPrimitive = 2}");
+                    "create expression MyFilter {sb -> IntPrimitive = 2}");
 
                 // script assertion
                 TryAssertionLifecycleAndFilter(

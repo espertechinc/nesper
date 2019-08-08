@@ -109,7 +109,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 env.CompileDeploy(context, path);
 
                 var statement =
-                    "@Name('s0') context context2 select * from pattern[e1=SupportBean(THE_EXPRESSION) => e2=SupportBean(TheString='y')]";
+                    "@Name('s0') context context2 select * from pattern[e1=SupportBean(THE_EXPRESSION) -> e2=SupportBean(TheString='y')]";
                 env.CompileDeploy(statement, path).AddListener("s0");
 
                 env.SendEventBean(new SupportBean("x", 1));

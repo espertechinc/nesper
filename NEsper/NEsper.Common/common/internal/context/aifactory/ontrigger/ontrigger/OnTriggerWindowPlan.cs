@@ -22,7 +22,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.ontri
             OnTriggerWindowDesc onTriggerDesc,
             string contextName,
             OnTriggerActivatorDesc activatorResult,
-            StreamSelector optionalStreamSelector,
+            StreamSelector? optionalStreamSelector,
             IDictionary<ExprSubselectNode, SubSelectActivationPlan> subselectActivation,
             StreamSpecCompiled streamSpec)
         {
@@ -40,7 +40,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.ontri
 
         public OnTriggerActivatorDesc ActivatorResult { get; }
 
-        public StreamSelector OptionalStreamSelector { get; }
+        public StreamSelector? OptionalStreamSelector { get; }
 
         public IDictionary<ExprSubselectNode, SubSelectActivationPlan> SubselectActivation { get; }
 

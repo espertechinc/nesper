@@ -31,10 +31,10 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
             {
                 var fields = "val0,val1,val2,val3".SplitCsv();
                 var epl = "@Name('s0') select " +
-                          "Contained.takeWhile(x => x.P00 > 0) as val0," +
-                          "Contained.takeWhile( (x, i) => x.P00 > 0 and i<2) as val1," +
-                          "Contained.takeWhileLast(x => x.P00 > 0) as val2," +
-                          "Contained.takeWhileLast( (x, i) => x.P00 > 0 and i<2) as val3" +
+                          "Contained.takeWhile(x -> x.P00 > 0) as val0," +
+                          "Contained.takeWhile( (x, i) -> x.P00 > 0 and i<2) as val1," +
+                          "Contained.takeWhileLast(x -> x.P00 > 0) as val2," +
+                          "Contained.takeWhileLast( (x, i) -> x.P00 > 0 and i<2) as val3" +
                           " from SupportBean_ST0_Container";
                 env.CompileDeploy(epl).AddListener("s0");
                 LambdaAssertionUtil.AssertTypes(
@@ -104,10 +104,10 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
             {
                 var fields = "val0,val1,val2,val3".SplitCsv();
                 var epl = "@Name('s0') select " +
-                          "Strvals.takeWhile(x => x != 'E1') as val0," +
-                          "Strvals.takeWhile( (x, i) => x != 'E1' and i<2) as val1," +
-                          "Strvals.takeWhileLast(x => x != 'E1') as val2," +
-                          "Strvals.takeWhileLast( (x, i) => x != 'E1' and i<2) as val3" +
+                          "Strvals.takeWhile(x -> x != 'E1') as val0," +
+                          "Strvals.takeWhile( (x, i) -> x != 'E1' and i<2) as val1," +
+                          "Strvals.takeWhileLast(x -> x != 'E1') as val2," +
+                          "Strvals.takeWhileLast( (x, i) -> x != 'E1' and i<2) as val3" +
                           " from SupportCollection";
                 env.CompileDeploy(epl).AddListener("s0");
                 LambdaAssertionUtil.AssertTypes(

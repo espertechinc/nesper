@@ -30,9 +30,7 @@ namespace com.espertech.esper.common.@internal.epl.join.querygraph
             var method = parent.MakeChild(typeof(QueryGraphValueEntryCustomOperation), GetType(), classScope);
             method.Block.DeclareVar<IDictionary<int, ExprNode>>(
                 "map",
-                NewInstance(
-                    typeof(Dictionary<int, ExprNode>),
-                    Constant(CollectionUtil.CapacityHashMap(PositionalExpressions.Count))));
+                NewInstance(typeof(Dictionary<int, ExprNode>)));
             foreach (var entry in PositionalExpressions) {
                 method.Block.ExprDotMethod(
                     Ref("map"),

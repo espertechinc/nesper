@@ -127,8 +127,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
             {
                 var fields = "vall,vany".SplitCsv();
                 var stmtText = "@Name('s0') select " +
-                               "intBoxed >= all (select DoubleBoxed from SupportBean(TheString like 'S%')#keepall) as vall, " +
-                               "intBoxed >= any (select DoubleBoxed from SupportBean(TheString like 'S%')#keepall) as vany " +
+                               "IntBoxed >= all (select DoubleBoxed from SupportBean(TheString like 'S%')#keepall) as vall, " +
+                               "IntBoxed >= any (select DoubleBoxed from SupportBean(TheString like 'S%')#keepall) as vany " +
                                " from SupportBean(TheString like 'E%')";
                 env.CompileDeployAddListenerMileZero(stmtText, "s0");
 
@@ -361,11 +361,11 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
             {
                 var fields = "eall,eany,neall,neany,isin".SplitCsv();
                 var stmtText = "@Name('s0') select " +
-                               "intBoxed = all (select DoubleBoxed from SupportBean(TheString like 'S%')#keepall) as eall, " +
-                               "intBoxed = any (select DoubleBoxed from SupportBean(TheString like 'S%')#keepall) as eany, " +
-                               "intBoxed != all (select DoubleBoxed from SupportBean(TheString like 'S%')#keepall) as neall, " +
-                               "intBoxed != any (select DoubleBoxed from SupportBean(TheString like 'S%')#keepall) as neany, " +
-                               "intBoxed in (select DoubleBoxed from SupportBean(TheString like 'S%')#keepall) as isin " +
+                               "IntBoxed = all (select DoubleBoxed from SupportBean(TheString like 'S%')#keepall) as eall, " +
+                               "IntBoxed = any (select DoubleBoxed from SupportBean(TheString like 'S%')#keepall) as eany, " +
+                               "IntBoxed != all (select DoubleBoxed from SupportBean(TheString like 'S%')#keepall) as neall, " +
+                               "IntBoxed != any (select DoubleBoxed from SupportBean(TheString like 'S%')#keepall) as neany, " +
+                               "IntBoxed in (select DoubleBoxed from SupportBean(TheString like 'S%')#keepall) as isin " +
                                " from SupportBean(TheString like 'E%')";
                 env.CompileDeployAddListenerMileZero(stmtText, "s0");
 

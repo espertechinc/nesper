@@ -114,24 +114,24 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 testCaseList.AddTest(testCase);
 
                 testCase = new EventExpressionCase(
-                    "(b=SupportBean_B => d=SupportBean_D) and " +
+                    "(b=SupportBean_B -> d=SupportBean_D) and " +
                     " not SupportBean_A");
                 testCaseList.AddTest(testCase);
 
                 testCase = new EventExpressionCase(
-                    "(b=SupportBean_B => d=SupportBean_D) and " +
+                    "(b=SupportBean_B -> d=SupportBean_D) and " +
                     " not SupportBean_G");
                 testCase.Add("D1", "b", events.GetEvent("B1"), "d", events.GetEvent("D1"));
                 testCaseList.AddTest(testCase);
 
                 testCase = new EventExpressionCase(
-                    "every (b=SupportBean_B => d=SupportBean_D) and " +
+                    "every (b=SupportBean_B -> d=SupportBean_D) and " +
                     " not SupportBean_G");
                 testCase.Add("D1", "b", events.GetEvent("B1"), "d", events.GetEvent("D1"));
                 testCaseList.AddTest(testCase);
 
                 testCase = new EventExpressionCase(
-                    "every (b=SupportBean_B => d=SupportBean_D) and " +
+                    "every (b=SupportBean_B -> d=SupportBean_D) and " +
                     " not SupportBean_G(Id='x')");
                 testCase.Add("D1", "b", events.GetEvent("B1"), "d", events.GetEvent("D1"));
                 testCase.Add("D3", "b", events.GetEvent("B3"), "d", events.GetEvent("D3"));
@@ -207,24 +207,24 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 testCaseList.AddTest(testCase);
 
                 testCase = new EventExpressionCase(
-                    "(b=SupportBean_B => d=SupportBean_D) and " +
+                    "(b=SupportBean_B -> d=SupportBean_D) and " +
                     " not SupportBean_A");
                 testCaseList.AddTest(testCase);
 
                 testCase = new EventExpressionCase(
-                    "(b=SupportBean_B => d=SupportBean_D) and " +
+                    "(b=SupportBean_B -> d=SupportBean_D) and " +
                     " not SupportBean_G");
                 testCase.Add("D1", "b", events.GetEvent("B1"), "d", events.GetEvent("D1"));
                 testCaseList.AddTest(testCase);
 
                 testCase = new EventExpressionCase(
-                    "every (b=SupportBean_B => d=SupportBean_D) and " +
+                    "every (b=SupportBean_B -> d=SupportBean_D) and " +
                     " not SupportBean_G");
                 testCase.Add("D1", "b", events.GetEvent("B1"), "d", events.GetEvent("D1"));
                 testCaseList.AddTest(testCase);
 
                 testCase = new EventExpressionCase(
-                    "every (b=SupportBean_B => d=SupportBean_D) and " +
+                    "every (b=SupportBean_B -> d=SupportBean_D) and " +
                     " not SupportBean_G(Id='x')");
                 testCase.Add("D1", "b", events.GetEvent("B1"), "d", events.GetEvent("D1"));
                 testCase.Add("D3", "b", events.GetEvent("B3"), "d", events.GetEvent("D3"));
@@ -258,7 +258,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
             public void Run(RegressionEnvironment env)
             {
                 var text = "@Name('s0') select A.TheString as TheString from pattern " +
-                           "[every A=SupportBean(IntPrimitive=123) => (timer:interval(30 seconds) and not SupportMarketDataBean(Volume=123, Symbol=A.TheString))]";
+                           "[every A=SupportBean(IntPrimitive=123) -> (timer:interval(30 seconds) and not SupportMarketDataBean(Volume=123, Symbol=A.TheString))]";
                 env.CompileDeploy(text);
 
                 env.AddListener("s0");
@@ -292,7 +292,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
             public void Run(RegressionEnvironment env)
             {
                 var stmtText =
-                    "@Name('s0') select * from pattern [ every( SupportBean(IntPrimitive>0) => (SupportMarketDataBean and not SupportBean(IntPrimitive=0) ) ) ]";
+                    "@Name('s0') select * from pattern [ every( SupportBean(IntPrimitive>0) -> (SupportMarketDataBean and not SupportBean(IntPrimitive=0) ) ) ]";
                 env.CompileDeploy(stmtText);
 
                 env.AddListener("s0");

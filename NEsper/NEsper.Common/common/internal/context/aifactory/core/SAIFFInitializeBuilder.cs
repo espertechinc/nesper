@@ -196,9 +196,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.core
             var child = method.MakeChild(typeof(IDictionary<string, T>), originator, classScope);
             child.Block.DeclareVar<IDictionary<string, T>>(
                 "map",
-                NewInstance(
-                    typeof(LinkedHashMap<string, T>),
-                    CodegenExpressionBuilder.Constant(CollectionUtil.CapacityHashMap(map.Count))));
+                NewInstance(typeof(LinkedHashMap<string, T>)));
             foreach (var entry in map) {
                 child.Block.ExprDotMethod(
                     Ref("map"),

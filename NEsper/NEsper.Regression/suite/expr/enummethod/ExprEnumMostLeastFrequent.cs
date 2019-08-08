@@ -32,8 +32,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
             {
                 var fields = "val0,val1".SplitCsv();
                 var eplFragment = "@Name('s0') select " +
-                                  "Contained.mostFrequent(x => P00) as val0," +
-                                  "Contained.leastFrequent(x => P00) as val1 " +
+                                  "Contained.mostFrequent(x -> P00) as val0," +
+                                  "Contained.leastFrequent(x -> P00) as val1 " +
                                   "from SupportBean_ST0_Container";
                 env.CompileDeploy(eplFragment).AddListener("s0");
 
@@ -143,8 +143,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
                 env.UndeployAll();
 
                 var eplLambda = "@Name('s0') select " +
-                                "Strvals.mostFrequent(v => extractNum(v)) as val0, " +
-                                "Strvals.leastFrequent(v => extractNum(v)) as val1 " +
+                                "Strvals.mostFrequent(v -> extractNum(v)) as val0, " +
+                                "Strvals.leastFrequent(v -> extractNum(v)) as val1 " +
                                 "from SupportCollection";
                 env.CompileDeploy(eplLambda).AddListener("s0");
                 LambdaAssertionUtil.AssertTypes(

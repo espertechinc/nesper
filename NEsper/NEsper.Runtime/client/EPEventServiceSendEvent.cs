@@ -45,7 +45,7 @@ namespace com.espertech.esper.runtime.client
         /// Send a map containing event property values to the runtime.
         /// <para />Use the route method for sending events into the runtime from within UpdateListener code.
         /// to avoid the possibility of a stack overflow due to nested calls to sendEvent
-        /// (except with the outbound-threading configuration), see {@link EPEventServiceRouteEvent#routeEventMap(java.util.Map, String)}).
+        /// (except with the outbound-threading configuration), see {@link EPEventServiceRouteEvent#routeEventMap(IDictionary, String)}).
         /// </summary>
         /// <param name="event">map that contains event property values. Keys are expected to be of type String while value scan be of any type. Keys and values should match those declared via Configuration for the given eventTypeName.
         /// </param>

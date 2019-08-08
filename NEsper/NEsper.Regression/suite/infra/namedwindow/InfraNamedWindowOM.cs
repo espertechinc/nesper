@@ -105,11 +105,11 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
 
                 // create delete stmt
                 var stmtTextDelete =
-                    "@Name('delete') on SupportMarketDataBean as s0 delete from MyWindow as s1 where s0.Symbol=s1.key";
+                    "@Name('delete') on SupportMarketDataBean as s0 delete from MyWindow as s1 where s0.Symbol=s1.Key";
                 var modelDelete = env.EplToModel(stmtTextDelete);
                 env.CompileDeploy(modelDelete, path).AddListener("delete");
                 Assert.AreEqual(
-                    "@Name('delete') on SupportMarketDataBean as s0 delete from MyWindow as s1 where s0.Symbol=s1.key",
+                    "@Name('delete') on SupportMarketDataBean as s0 delete from MyWindow as s1 where s0.Symbol=s1.Key",
                     modelDelete.ToEPL());
 
                 // send delete event
@@ -236,9 +236,9 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                 model = new EPStatementObjectModel();
                 model.OnExpr = OnClause.CreateOnDelete("MyWindow", "s1");
                 model.FromClause = FromClause.Create(FilterStream.Create("SupportMarketDataBean", "s0"));
-                model.WhereClause = Expressions.EqProperty("s0.Symbol", "s1.key");
+                model.WhereClause = Expressions.EqProperty("s0.Symbol", "s1.Key");
 
-                var stmtTextDelete = "on SupportMarketDataBean as s0 delete from MyWindow as s1 where s0.Symbol=s1.key";
+                var stmtTextDelete = "on SupportMarketDataBean as s0 delete from MyWindow as s1 where s0.Symbol=s1.Key";
                 Assert.AreEqual(stmtTextDelete, model.ToEPL());
 
                 model.Annotations = Collections.SingletonList(AnnotationPart.NameAnnotation("ondelete"));
@@ -274,11 +274,11 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                 // On-select object model
                 model = new EPStatementObjectModel();
                 model.OnExpr = OnClause.CreateOnSelect("MyWindow", "s1");
-                model.WhereClause = Expressions.EqProperty("s0.Id", "s1.key");
+                model.WhereClause = Expressions.EqProperty("s0.Id", "s1.Key");
                 model.FromClause = FromClause.Create(FilterStream.Create("SupportBean_B", "s0"));
                 model.SelectClause = SelectClause.CreateStreamWildcard("s1");
 
-                var stmtTextOnSelect = "on SupportBean_B as s0 select s1.* from MyWindow as s1 where s0.Id=s1.key";
+                var stmtTextOnSelect = "on SupportBean_B as s0 select s1.* from MyWindow as s1 where s0.Id=s1.Key";
                 Assert.AreEqual(stmtTextOnSelect, model.ToEPL());
 
                 model.Annotations = Collections.SingletonList(AnnotationPart.NameAnnotation("onselect"));

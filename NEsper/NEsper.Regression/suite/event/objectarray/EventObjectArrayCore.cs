@@ -118,9 +118,9 @@ namespace com.espertech.esper.regressionlib.suite.@event.objectarray
             public void Run(RegressionEnvironment env)
             {
                 var statementText = "@Name('s0') select beanA.simpleProperty as simple," +
-                                    "beanA.nested.NestedValue as nested," +
+                                    "beanA.Nested.NestedValue as nested," +
                                     "beanA.indexed[1] as indexed," +
-                                    "beanA.nested.nestedNested.nestedNestedValue as nestednested " +
+                                    "beanA.Nested.NestedNested.NestedNestedValue as nestednested " +
                                     "from MyObjectArrayEvent#length(5)";
                 env.CompileDeploy(statementText).AddListener("s0");
 

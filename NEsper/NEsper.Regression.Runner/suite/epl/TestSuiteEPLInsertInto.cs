@@ -18,7 +18,7 @@ using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.suite.epl.insertinto;
 using com.espertech.esper.regressionlib.support.bean;
 using com.espertech.esper.regressionlib.support.epl;
-using com.espertech.esper.regressionrun.runner;
+using com.espertech.esper.regressionrun.Runner;
 
 using NEsper.Avro.Core;
 using NEsper.Avro.Extensions;
@@ -250,12 +250,12 @@ namespace com.espertech.esper.regressionrun.suite.epl
             configuration.Common.AddEventType("ComplexMap", complexMapMetadata);
 
             configuration.Compiler.ByteCode.AllowSubscriber = true;
-            configuration.Compiler.AddPlugInSingleRowFunction("generateMap", typeof(EPLInsertIntoTransposeStream), "localGenerateMap");
-            configuration.Compiler.AddPlugInSingleRowFunction("generateOA", typeof(EPLInsertIntoTransposeStream), "localGenerateOA");
-            configuration.Compiler.AddPlugInSingleRowFunction("generateAvro", typeof(EPLInsertIntoTransposeStream), "localGenerateAvro");
-            configuration.Compiler.AddPlugInSingleRowFunction("custom", typeof(SupportStaticMethodLib), "makeSupportBean");
-            configuration.Compiler.AddPlugInSingleRowFunction("customOne", typeof(SupportStaticMethodLib), "makeSupportBean");
-            configuration.Compiler.AddPlugInSingleRowFunction("customTwo", typeof(SupportStaticMethodLib), "makeSupportBeanNumeric");
+            configuration.Compiler.AddPlugInSingleRowFunction("generateMap", typeof(EPLInsertIntoTransposeStream), "LocalGenerateMap");
+            configuration.Compiler.AddPlugInSingleRowFunction("generateOA", typeof(EPLInsertIntoTransposeStream), "LocalGenerateOA");
+            configuration.Compiler.AddPlugInSingleRowFunction("generateAvro", typeof(EPLInsertIntoTransposeStream), "LocalGenerateAvro");
+            configuration.Compiler.AddPlugInSingleRowFunction("custom", typeof(SupportStaticMethodLib), "MakeSupportBean");
+            configuration.Compiler.AddPlugInSingleRowFunction("customOne", typeof(SupportStaticMethodLib), "MakeSupportBean");
+            configuration.Compiler.AddPlugInSingleRowFunction("customTwo", typeof(SupportStaticMethodLib), "MakeSupportBeanNumeric");
         }
 
         private static IDictionary<string, object> MakeMap(object[][] entries)

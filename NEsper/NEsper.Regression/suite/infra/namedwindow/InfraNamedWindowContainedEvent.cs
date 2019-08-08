@@ -30,7 +30,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                 epl,
                 "Failed to validate named window use in join, Contained-event is only allowed for named windows when marked as unidirectional");
 
-            epl = "select *, (select * from BookWindow[reviews] where sb.TheString = comment) " +
+            epl = "select *, (select * from BookWindow[reviews] where sb.TheString = Comment) " +
                   "from SupportBean sb";
             TryInvalidCompile(
                 env,

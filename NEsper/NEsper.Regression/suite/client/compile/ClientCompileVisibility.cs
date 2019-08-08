@@ -144,7 +144,7 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
             }
 
             var deployed = SupportCompileDeployUtil.Deploy(compiledBoth, env.Runtime);
-            Assert.AreEqual("abc", deployed.ModuleName); // Option-provIded module-name wins
+            Assert.AreEqual("abc", deployed.ModuleName); // Option-provided module-name wins
 
             env.UndeployAll();
         }

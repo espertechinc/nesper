@@ -679,16 +679,14 @@ namespace com.espertech.esper.compiler.@internal.util
             if (deepSuperTypes.Count == 1) {
                 return StaticMethod(
                     typeof(Collections),
-                    "Singleton",
+                    "SingletonSet",
                     EventTypeUtility.ResolveTypeCodegen(deepSuperTypes.First(), symbols.GetAddInitSvc(parent)));
             }
 
             var method = parent.MakeChild(typeof(ISet<object>), typeof(CompilerHelperModuleProvider), classScope);
             method.Block.DeclareVar<ISet<object>>(
                 "dst",
-                NewInstance(
-                    typeof(LinkedHashSet<object>),
-                    Constant(CollectionUtil.CapacityHashMap(deepSuperTypes.Count))));
+                NewInstance(typeof(LinkedHashSet<object>)));
             foreach (var eventType in deepSuperTypes) {
                 method.Block.ExprDotMethod(
                     @Ref("dst"),

@@ -91,7 +91,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.render
 
                 var json = env.Runtime.RenderEventService.RenderJSON("MyEvent", env.GetEnumerator("s0").Advance());
                 var expectedJson =
-                    "{ \"MyEvent\": { \"p0\": \"abc\", \"p1\": 1, \"p3\": 2, \"p4\": 3.0, \"p2\": { \"id\": 1, \"P00\": \"P00\", \"P01\": null, \"p02\": null, \"p03\": null } } }";
+                    "{ \"MyEvent\": { \"p0\": \"abc\", \"p1\": 1, \"p3\": 2, \"p4\": 3.0, \"p2\": { \"id\": 1, \"P00\": \"P00\", \"P01\": null, \"P02\": null, \"p03\": null } } }";
                 Assert.AreEqual(RemoveNewline(expectedJson), RemoveNewline(json));
 
                 var xmlOne = env.Runtime.RenderEventService.RenderXML("MyEvent", env.GetEnumerator("s0").Advance());

@@ -975,8 +975,8 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 
                 var epl = "@Name('select') on SupportBean_S0 as s0 " +
                           "select window(win.*) as c0," +
-                          "window(win.*).where(v => v.IntPrimitive < 2) as c1, " +
-                          "window(win.*).toMap(k=>k.TheString,v=>v.IntPrimitive) as c2 " +
+                          "window(win.*).where(v -> v.IntPrimitive < 2) as c1, " +
+                          "window(win.*).toMap(k=>k.TheString,v->v.IntPrimitive) as c2 " +
                           "from MyInfraWA as win";
                 env.CompileDeploy(epl, path).AddListener("select");
 

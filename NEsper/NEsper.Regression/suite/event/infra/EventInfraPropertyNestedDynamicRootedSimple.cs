@@ -138,8 +138,8 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
                            "exists(simpleProperty?) as exists_simple, " +
                            "nested?.NestedValue as nested, " +
                            "exists(nested?.NestedValue) as exists_nested, " +
-                           "nested?.nestedNested.nestedNestedValue as nestedNested, " +
-                           "exists(nested?.nestedNested.nestedNestedValue) as exists_nestedNested " +
+                           "nested?.NestedNested.NestedNestedValue as nestedNested, " +
+                           "exists(nested?.NestedNested.NestedNestedValue) as exists_nestedNested " +
                            "from " +
                            typename;
             env.CompileDeploy(stmtText).AddListener("s0");

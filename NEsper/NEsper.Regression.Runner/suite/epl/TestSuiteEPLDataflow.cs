@@ -14,7 +14,7 @@ using com.espertech.esper.compat;
 using com.espertech.esper.regressionlib.suite.epl.dataflow;
 using com.espertech.esper.regressionlib.support.bean;
 using com.espertech.esper.regressionlib.support.dataflow;
-using com.espertech.esper.regressionrun.runner;
+using com.espertech.esper.regressionrun.Runner;
 
 using NUnit.Framework;
 

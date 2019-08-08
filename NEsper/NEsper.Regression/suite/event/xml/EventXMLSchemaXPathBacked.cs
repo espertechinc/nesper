@@ -48,11 +48,11 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
             var stmt = "@Name('s0') select nested1 as nodeProp," +
                        "prop4 as nested1Prop," +
                        "nested1.prop2 as nested2Prop," +
-                       "nested3.nested4('a').prop5[1] as complexProp," +
-                       "nested1.nested2.prop3[2] as indexedProp," +
+                       "nested3.Nested4('a').prop5[1] as complexProp," +
+                       "nested1.Nested2.prop3[2] as indexedProp," +
                        "customProp," +
                        "prop4.attr2 as attrOneProp," +
-                       "nested3.nested4[2].Id as attrTwoProp" +
+                       "nested3.Nested4[2].Id as attrTwoProp" +
                        " from " +
                        typeName +
                        "#length(100)";

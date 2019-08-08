@@ -34,12 +34,12 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
             {
                 var fields = "val0,val1,val2,val3,val4,val5".SplitCsv();
                 var eplFragment = "@Name('s0') select " +
-                                  "Contained.orderBy(x => P00) as val0," +
-                                  "Contained.orderBy(x => 10 - P00) as val1," +
-                                  "Contained.orderBy(x => 0) as val2," +
-                                  "Contained.orderByDesc(x => P00) as val3," +
-                                  "Contained.orderByDesc(x => 10 - P00) as val4," +
-                                  "Contained.orderByDesc(x => 0) as val5" +
+                                  "Contained.orderBy(x -> P00) as val0," +
+                                  "Contained.orderBy(x -> 10 - P00) as val1," +
+                                  "Contained.orderBy(x -> 0) as val2," +
+                                  "Contained.orderByDesc(x -> P00) as val3," +
+                                  "Contained.orderByDesc(x -> 10 - P00) as val4," +
+                                  "Contained.orderByDesc(x -> 0) as val5" +
                                   " from SupportBean_ST0_Container";
                 env.CompileDeploy(eplFragment).AddListener("s0");
 
@@ -113,8 +113,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 
                 // test scalar-coll with lambda
                 var eplLambda = "@Name('s0') select " +
-                                "Strvals.orderBy(v => extractNum(v)) as val0, " +
-                                "Strvals.orderByDesc(v => extractNum(v)) as val1 " +
+                                "Strvals.orderBy(v -> extractNum(v)) as val0, " +
+                                "Strvals.orderByDesc(v -> extractNum(v)) as val1 " +
                                 "from SupportCollection";
                 env.CompileDeploy(eplLambda).AddListener("s0");
                 LambdaAssertionUtil.AssertTypes(

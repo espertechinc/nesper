@@ -19,7 +19,7 @@ using com.espertech.esper.common.@internal.epl.dataflow.interfaces;
 using com.espertech.esper.common.@internal.epl.dataflow.util;
 using com.espertech.esper.compat.logging;
 
-namespace com.espertech.esper.common.@internal.epl.dataflow.runnables
+namespace com.espertech.esper.common.@internal.epl.dataflow.Runnables
 {
     public class GraphSourceRunnable : BaseRunnable,
         DataFlowSignalListener

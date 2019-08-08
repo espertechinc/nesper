@@ -323,14 +323,14 @@ namespace com.espertech.esper.regressionlib.suite.view
         {
             public void Run(RegressionEnvironment env)
             {
-                var text = "@Name('s0') select irstream * from SupportBeanWithEnum#sort(1, TheString, supportEnum)";
+                var text = "@Name('s0') select irstream * from SupportBeanWithEnum#sort(1, TheString, SupportEnum)";
                 env.CompileDeployAddListenerMileZero(text, "s0");
 
                 env.SendEventBean(new SupportBeanWithEnum("E1", SupportEnum.ENUM_VALUE_1));
                 env.Listener("s0")
                     .AssertNewOldData(
                         new[] {
-                            new object[] {"TheString", "E1"}, new object[] {"supportEnum", SupportEnum.ENUM_VALUE_1}
+                            new object[] {"TheString", "E1"}, new object[] {"SupportEnum", SupportEnum.ENUM_VALUE_1}
                         },
                         null);
 

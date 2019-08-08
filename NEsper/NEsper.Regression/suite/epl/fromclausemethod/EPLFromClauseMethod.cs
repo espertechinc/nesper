@@ -362,7 +362,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
                 env.SendEventBean(new SupportBean("E1", 10));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    "s.P00,s.P01,s.p02".SplitCsv(),
+                    "s.P00,s.P01,s.P02".SplitCsv(),
                     new object[] {"somevalue", "E1", "s0"});
 
                 env.UndeployAll();
@@ -382,7 +382,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
                 env.SendEventBean(new SupportBean("E1", 10));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    "s.P00,s.P01,s.p02".SplitCsv(),
+                    "s.P00,s.P01,s.P02".SplitCsv(),
                     new object[] {"somevalue", "E1", "s0"});
 
                 env.UndeployAll();
@@ -1144,7 +1144,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
                 TryInvalidCompile(
                     env,
                     "select * from method:SupportMethodInvocationJoinInvalid.readRowWrongMetadata()",
-                    "Getter method 'readRowWrongMetadataMetadata' does not return java.util.Map [select * from method:SupportMethodInvocationJoinInvalid.readRowWrongMetadata()]");
+                    "Getter method 'readRowWrongMetadataMetadata' does not return IDictionary [select * from method:SupportMethodInvocationJoinInvalid.readRowWrongMetadata()]");
 
                 TryInvalidCompile(
                     env,

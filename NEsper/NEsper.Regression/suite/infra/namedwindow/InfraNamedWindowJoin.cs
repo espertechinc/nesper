@@ -130,8 +130,8 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                           "insert into MyWindowWUJ select * from SupportBean;\n" +
                           "on SupportBean_S1 as s1 delete from MyWindowWUJ where s1.P10 = TheString;\n" +
                           "@Name('s0') select window(win.*) as c0," +
-                          "window(win.*).where(v => v.IntPrimitive < 2) as c1, " +
-                          "window(win.*).toMap(k=>k.TheString,v=>v.IntPrimitive) as c2 " +
+                          "window(win.*).where(v -> v.IntPrimitive < 2) as c1, " +
+                          "window(win.*).toMap(k=>k.TheString,v->v.IntPrimitive) as c2 " +
                           "from SupportBean_S0 as s0 unidirectional, MyWindowWUJ as win";
                 env.CompileDeploy(epl, path).AddListener("s0");
 
@@ -480,23 +480,23 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                 }
 
                 var stmtTextOne =
-                    "@Name('s1') select s1.location as loc, sku, avg((coalesce(timeLeave, 250) - timeEnter)) as avgTime, " +
+                    "@Name('s1') select s1.Location as loc, sku, avg((coalesce(timeLeave, 250) - timeEnter)) as avgTime, " +
                     "count(timeEnter) as cntEnter, count(timeLeave) as cntLeave, (count(timeEnter) - count(timeLeave)) as diff " +
                     "from WindowLeave as s0 right outer join WindowEnter as s1 " +
-                    "on s0.Id = s1.Id and s0.location = s1.location " +
-                    "group by s1.location, sku " +
+                    "on s0.Id = s1.Id and s0.Location = s1.Location " +
+                    "group by s1.Location, sku " +
                     "output every 1.0 seconds " +
-                    "order by s1.location, sku";
+                    "order by s1.Location, sku";
                 env.CompileDeploy(stmtTextOne, path);
 
                 var stmtTextTwo =
-                    "@Name('s2') select s1.location as loc, sku, avg((coalesce(timeLeave, 250) - timeEnter)) as avgTime, " +
+                    "@Name('s2') select s1.Location as loc, sku, avg((coalesce(timeLeave, 250) - timeEnter)) as avgTime, " +
                     "count(timeEnter) as cntEnter, count(timeLeave) as cntLeave, (count(timeEnter) - count(timeLeave)) as diff " +
                     "from WindowEnter as s1 left outer join WindowLeave as s0 " +
-                    "on s0.Id = s1.Id and s0.location = s1.location " +
-                    "group by s1.location, sku " +
+                    "on s0.Id = s1.Id and s0.Location = s1.Location " +
+                    "group by s1.Location, sku " +
                     "output every 1.0 seconds " +
-                    "order by s1.location, sku";
+                    "order by s1.Location, sku";
                 env.CompileDeploy(stmtTextTwo, path);
 
                 object[][] expected = {

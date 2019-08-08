@@ -98,7 +98,7 @@ namespace com.espertech.esper.common.@internal.support
                    ", P01='" +
                    P01 +
                    '\'' +
-                   ", p02='" +
+                   ", P02='" +
                    P02 +
                    '\'' +
                    ", p03='" +

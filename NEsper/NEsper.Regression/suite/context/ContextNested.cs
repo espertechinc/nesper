@@ -660,7 +660,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 var fields = "c0,c1,c2".SplitCsv();
                 env.CompileDeploy(
                     "@Name('s0') context NestedContext select " +
-                    "context.EightToNine.startTime as c0, context.SegByString.key1 as c1, IntPrimitive as c2 from SupportBean#keepall",
+                    "context.EightToNine.startTime as c0, context.SegByString.Key1 as c1, IntPrimitive as c2 from SupportBean#keepall",
                     path);
                 env.AddListener("s0");
 
@@ -1084,7 +1084,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 var fieldsOne = "c0,c1,c2,c3".SplitCsv();
                 env.CompileDeploy(
                     "@Name('s0') context NestedContext select " +
-                    "context.SegByString.key1 as c0, context.SegByInt.key1 as c1, context.SegByLong.key1 as c2, count(*) as c3 from SupportBean",
+                    "context.SegByString.Key1 as c0, context.SegByInt.Key1 as c1, context.SegByLong.Key1 as c2, count(*) as c3 from SupportBean",
                     path);
                 env.AddListener("s0");
 
@@ -1390,7 +1390,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                           "context InitCtx initiated by SupportBean_S0(Id > 0) as s0 terminated after 10 seconds, " +
                           "context SegmCtx as partition by TheString from SupportBean(IntPrimitive > 0);\n" +
                           "@Name('s0') context NestedContext select " +
-                          "context.InitCtx.s0.P00 as c1, context.SegmCtx.key1 as c2, sum(IntPrimitive) as c3 from SupportBean;\n";
+                          "context.InitCtx.s0.P00 as c1, context.SegmCtx.Key1 as c2, sum(IntPrimitive) as c3 from SupportBean;\n";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 env.SendEventBean(new SupportBean("E1", -1));
@@ -1503,7 +1503,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 var fields = "c1,c2,c3".SplitCsv();
                 env.CompileDeploy(
                     "@Name('s0') context NestedContext select " +
-                    "context.ByCat.label as c1, context.SegmentedByString.key1 as c2, sum(LongPrimitive) as c3 from SupportBean",
+                    "context.ByCat.label as c1, context.SegmentedByString.Key1 as c2, sum(LongPrimitive) as c3 from SupportBean",
                     path);
                 env.AddListener("s0");
 
@@ -1519,7 +1519,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 env.EplToModelCompileDeploy(eplCtx, path);
                 env.CompileDeploy(
                     "@Name('s0') context NestedContext select " +
-                    "context.ByCat.label as c1, context.SegmentedByString.key1 as c2, sum(LongPrimitive) as c3 from SupportBean",
+                    "context.ByCat.label as c1, context.SegmentedByString.Key1 as c2, sum(LongPrimitive) as c3 from SupportBean",
                     path);
                 env.AddListener("s0");
 
@@ -1955,7 +1955,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                           "context.EightToNine.name as c0, " +
                           "context.EightToNine.startTime as c1, " +
                           "context.SegmentedByAString.name as c2, " +
-                          "context.SegmentedByAString.key1 as c3, " +
+                          "context.SegmentedByAString.Key1 as c3, " +
                           "context.name as c4, " +
                           "IntPrimitive as c5," +
                           "count(*) as c6 " +
@@ -2371,7 +2371,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 var fields = "c1,c2,c3".SplitCsv();
                 env.CompileDeploy(
                     "@Name('s0') context NestedContext select " +
-                    "context.ByCat.label as c1, context.SegmentedByString.key1 as c2, sum(LongPrimitive) as c3 from SupportBean",
+                    "context.ByCat.label as c1, context.SegmentedByString.Key1 as c2, sum(LongPrimitive) as c3 from SupportBean",
                     path);
                 env.AddListener("s0");
 

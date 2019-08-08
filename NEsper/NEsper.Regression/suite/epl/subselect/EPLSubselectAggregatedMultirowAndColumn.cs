@@ -176,13 +176,13 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
             SupportMessageAssertUtil.TryInvalidCompile(
                 env,
                 epl,
-                "Failed to plan subquery number 1 querying SupportBean: Subselect with group-by requires that group-by properties are provIded by the subselect stream only (property 'Id' is not) [select (select TheString, sum(LongPrimitive) from SupportBean#keepall group by TheString, s0.Id) from SupportBean_S0 as s0]");
+                "Failed to plan subquery number 1 querying SupportBean: Subselect with group-by requires that group-by properties are provided by the subselect stream only (property 'Id' is not) [select (select TheString, sum(LongPrimitive) from SupportBean#keepall group by TheString, s0.Id) from SupportBean_S0 as s0]");
             epl =
                 "select (select TheString, sum(LongPrimitive) from SupportBean#keepall group by TheString, s0.getP00()) from SupportBean_S0 as s0";
             SupportMessageAssertUtil.TryInvalidCompile(
                 env,
                 epl,
-                "Failed to plan subquery number 1 querying SupportBean: Subselect with group-by requires that group-by properties are provIded by the subselect stream only (expression 's0.getP00()' against stream 1 is not)");
+                "Failed to plan subquery number 1 querying SupportBean: Subselect with group-by requires that group-by properties are provided by the subselect stream only (expression 's0.getP00()' against stream 1 is not)");
 
             // aggregations not allowed in group-by
             epl =

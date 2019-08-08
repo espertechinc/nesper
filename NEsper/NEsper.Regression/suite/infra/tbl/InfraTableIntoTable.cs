@@ -100,7 +100,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 env,
                 path,
                 "into table varagg select lastever(*) as windowb from SupportBean#length(2)",
-                "Incompatible aggregation function for table 'varagg' column 'windowb', expecting 'window(*)' and received 'lastever(*)': The table declares 'window(*)' and provIded is 'lastever(*)'");
+                "Incompatible aggregation function for table 'varagg' column 'windowb', expecting 'window(*)' and received 'lastever(*)': The table declares 'window(*)' and provided is 'lastever(*)'");
 
             // valid: bound with unbound variable
             var eplBoundIntoUnbound = "into table varagg select lastever(*) as lasteveru from SupportBean#length(2)";
@@ -153,13 +153,13 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 env,
                 path,
                 "into table varagg select maxby(IntPrimitive) as maxbyeveru from SupportBean#length(2)",
-                "Failed to validate select-clause expression 'maxby(IntPrimitive)': When specifying into-table a sort expression cannot be provIded [");
+                "Failed to validate select-clause expression 'maxby(IntPrimitive)': When specifying into-table a sort expression cannot be provided [");
             // invalid: unbound aggregation into bound max
             SupportMessageAssertUtil.TryInvalidCompile(
                 env,
                 path,
                 "into table varagg select maxbyever() as sortedb from SupportBean#length(2)",
-                "Incompatible aggregation function for table 'varagg' column 'sortedb', expecting 'sorted(IntPrimitive)' and received 'maxbyever()': The required aggregation function name is 'sorted' and provIded is 'maxbyever' [");
+                "Incompatible aggregation function for table 'varagg' column 'sortedb', expecting 'sorted(IntPrimitive)' and received 'maxbyever()': The required aggregation function name is 'sorted' and provided is 'maxbyever' [");
 
             // valid: bound with unbound variable
             var eplBoundIntoUnbound = "into table varagg select " +
@@ -225,7 +225,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 env,
                 path,
                 "into table varagg select max(IntPrimitive) as maxb from SupportBean",
-                "Incompatible aggregation function for table 'varagg' column 'maxb', expecting 'max(int)' and received 'max(IntPrimitive)': The table declares use with data windows and provIded is unbound [");
+                "Incompatible aggregation function for table 'varagg' column 'maxb', expecting 'max(int)' and received 'max(IntPrimitive)': The table declares use with data windows and provided is unbound [");
 
             // valid: bound with unbound variable
             var eplBoundIntoUnbound = "into table varagg select " +

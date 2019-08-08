@@ -71,7 +71,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
 
             var listeners = new SupportUpdateListener[numEvents];
             for (var i = 0; i < numEvents; i++) {
-                var text = "select * from pattern [MyStream(cnt=" + (i + 1) + ") => MyStream(cnt=" + (i + 2) + ")]";
+                var text = "select * from pattern [MyStream(cnt=" + (i + 1) + ") -> MyStream(cnt=" + (i + 2) + ")]";
                 var compiled = Compile(text, configuration, path);
                 var deployedPattern = Deploy(compiled, runtime);
                 listeners[i] = new SupportUpdateListener();

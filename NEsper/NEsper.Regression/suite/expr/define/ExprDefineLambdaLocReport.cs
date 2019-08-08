@@ -21,9 +21,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.define
     {
         public void Run(RegressionEnvironment env)
         {
-            /// <summary>
-            /// Regular algorithm to find separated luggage and new owner.
-            /// </summary>
+            // Regular algorithm to find separated luggage and new owner.
             var theEvent = LocationReportFactory.MakeLarge();
             var separatedLuggage = LocationReportFactory.FindSeparatedLuggage(theEvent);
 
@@ -35,16 +33,16 @@ namespace com.espertech.esper.regressionlib.suite.expr.define
 
             var epl = "@Name('s0') " +
                       "expression lostLuggage {" +
-                      "  lr => lr.items.where(l => l.type='L' and " +
-                      "    lr.items.anyof(p => p.type='P' and p.assetId=l.assetIdPassenger and LRUtil.distance(l.location.x, l.location.y, p.location.x, p.location.y) > 20))" +
+                      "  lr => lr.Items.where(l -> l.Type='L' and " +
+                      "    lr.Items.anyof(p -> p.Type='P' and p.AssetId=l.AssetIdPassenger and LRUtil.distance(l.Location.x, l.Location.y, p.Location.x, p.Location.y) > 20))" +
                       "}" +
                       "expression passengers {" +
-                      "  lr => lr.items.where(l => l.type='P')" +
+                      "  lr => lr.Items.where(l -> l.Type='P')" +
                       "}" +
                       "" +
                       "expression nearestOwner {" +
-                      "  lr => lostLuggage(lr).toMap(key => key.assetId, " +
-                      "     value => passengers(lr).minBy(p => LRUtil.distance(value.location.x, value.location.y, p.location.x, p.location.y)))" +
+                      "  lr => lostLuggage(lr).toMap(key -> key.AssetId, " +
+                      "     value => passengers(lr).minBy(p -> LRUtil.distance(value.Location.x, value.Location.y, p.Location.x, p.Location.y)))" +
                       "}" +
                       "" +
                       "select lostLuggage(lr) as val1, nearestOwner(lr) as val2 from LocationReport lr";

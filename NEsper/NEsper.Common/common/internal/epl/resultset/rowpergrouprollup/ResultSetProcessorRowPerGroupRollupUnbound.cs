@@ -167,7 +167,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                         ExprDotName(Ref(NAME_UNBOUNDHELPER), "Buffer"),
                         ConstantTrue(),
                         ConstantTrue()))
-                .MethodReturn(StaticMethod(typeof(EnumerationHelper), "Singleton", Ref("output")));
+                .MethodReturn(StaticMethod(typeof(EnumerationHelper), "SingletonSet", Ref("output")));
         }
     }
 } // end of namespace

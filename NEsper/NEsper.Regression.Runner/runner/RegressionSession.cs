@@ -11,7 +11,7 @@ using com.espertech.esper.compiler.@internal.util;
 using com.espertech.esper.container;
 using com.espertech.esper.runtime.client;
 
-namespace com.espertech.esper.regressionrun.runner
+namespace com.espertech.esper.regressionrun.Runner
 {
     public class RegressionSession
     {

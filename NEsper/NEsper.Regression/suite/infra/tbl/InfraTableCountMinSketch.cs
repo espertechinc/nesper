@@ -273,12 +273,12 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                     env,
                     path,
                     "create table MyTable(cms countMinSketch({agent:'a'}))",
-                    "Failed to validate table-column expression 'countMinSketch({agent=a})': Failed to instantiate agent provIder: Could not load class by name 'a', please check imports [");
+                    "Failed to validate table-column expression 'countMinSketch({agent=a})': Failed to instantiate agent provider: Could not load class by name 'a', please check imports [");
                 TryInvalidCompile(
                     env,
                     path,
                     "create table MyTable(cms countMinSketch({agent:'System.String'}))",
-                    "Failed to validate table-column expression 'countMinSketch({agent=System.String})': Failed to instantiate agent provIder: Class 'System.String' does not implement interface 'com.espertech.esper.common.client.util.CountMinSketchAgentForge' [");
+                    "Failed to validate table-column expression 'countMinSketch({agent=System.String})': Failed to instantiate agent provider: Class 'System.String' does not implement interface 'com.espertech.esper.common.client.util.CountMinSketchAgentForge' [");
 
                 // invalid "countMinSketchAdd" declarations
                 //

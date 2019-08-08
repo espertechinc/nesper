@@ -16,7 +16,7 @@ using com.espertech.esper.regressionlib.support.bean;
 using com.espertech.esper.regressionlib.support.bookexample;
 using com.espertech.esper.regressionlib.support.lrreport;
 using com.espertech.esper.regressionlib.support.sales;
-using com.espertech.esper.regressionrun.runner;
+using com.espertech.esper.regressionrun.Runner;
 
 using NUnit.Framework;
 
@@ -241,18 +241,18 @@ namespace com.espertech.esper.regressionrun.suite.expr
             configuration.Compiler.Expression.UdfCache = false;
 
             ConfigurationCompiler configurationCompiler = configuration.Compiler;
-            configurationCompiler.AddPlugInSingleRowFunction("makeSampleList", typeof(SupportBean_ST0_Container), "makeSampleList");
-            configurationCompiler.AddPlugInSingleRowFunction("makeSampleArray", typeof(SupportBean_ST0_Container), "makeSampleArray");
-            configurationCompiler.AddPlugInSingleRowFunction("makeSampleListString", typeof(SupportCollection), "makeSampleListString");
-            configurationCompiler.AddPlugInSingleRowFunction("makeSampleArrayString", typeof(SupportCollection), "makeSampleArrayString");
-            configurationCompiler.AddPlugInSingleRowFunction("convertToArray", typeof(SupportSelectorWithListEvent), "convertToArray");
-            configurationCompiler.AddPlugInSingleRowFunction("extractAfterUnderscore", typeof(ExprEnumGroupBy), "extractAfterUnderscore");
-            configurationCompiler.AddPlugInSingleRowFunction("extractNum", typeof(ExprEnumMinMax.MyService), "extractNum");
-            configurationCompiler.AddPlugInSingleRowFunction("extractBigDecimal", typeof(ExprEnumMinMax.MyService), "extractBigDecimal");
-            configurationCompiler.AddPlugInSingleRowFunction("inrect", typeof(LRUtil), "inrect");
-            configurationCompiler.AddPlugInSingleRowFunction("distance", typeof(LRUtil), "distance");
-            configurationCompiler.AddPlugInSingleRowFunction("getZoneNames", typeof(Zone), "getZoneNames");
-            configurationCompiler.AddPlugInSingleRowFunction("makeTest", typeof(SupportBean_ST0_Container), "makeTest");
+            configurationCompiler.AddPlugInSingleRowFunction("makeSampleList", typeof(SupportBean_ST0_Container), "MakeSampleList");
+            configurationCompiler.AddPlugInSingleRowFunction("makeSampleArray", typeof(SupportBean_ST0_Container), "MakeSampleArray");
+            configurationCompiler.AddPlugInSingleRowFunction("makeSampleListString", typeof(SupportCollection), "MakeSampleListString");
+            configurationCompiler.AddPlugInSingleRowFunction("makeSampleArrayString", typeof(SupportCollection), "MakeSampleArrayString");
+            configurationCompiler.AddPlugInSingleRowFunction("convertToArray", typeof(SupportSelectorWithListEvent), "ConvertToArray");
+            configurationCompiler.AddPlugInSingleRowFunction("extractAfterUnderscore", typeof(ExprEnumGroupBy), "ExtractAfterUnderscore");
+            configurationCompiler.AddPlugInSingleRowFunction("extractNum", typeof(ExprEnumMinMax.MyService), "ExtractNum");
+            configurationCompiler.AddPlugInSingleRowFunction("extractBigDecimal", typeof(ExprEnumMinMax.MyService), "ExtractBigDecimal");
+            configurationCompiler.AddPlugInSingleRowFunction("inrect", typeof(LRUtil), "Inrect");
+            configurationCompiler.AddPlugInSingleRowFunction("distance", typeof(LRUtil), "Distance");
+            configurationCompiler.AddPlugInSingleRowFunction("getZoneNames", typeof(Zone), "GetZoneNames");
+            configurationCompiler.AddPlugInSingleRowFunction("makeTest", typeof(SupportBean_ST0_Container), "MakeTest");
         }
     }
 } // end of namespace

@@ -51,11 +51,11 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
             public void Run(RegressionEnvironment env)
             {
                 var eplOne =
-                    "@Name('s0') select sb.* from SupportBean#keepall sb, SupportBeanRange#lastevent where IntBoxed between rangeStart and rangeEnd";
+                    "@Name('s0') select sb.* from SupportBean#keepall sb, SupportBeanRange#lastevent where IntBoxed between RangeStart and RangeEnd";
                 env.CompileDeploy(eplOne).AddListener("s0");
 
                 var eplTwo =
-                    "@Name('s1') select sb.* from SupportBean#keepall sb, SupportBeanRange#lastevent where TheString = key and IntBoxed in [rangeStart: rangeEnd]";
+                    "@Name('s1') select sb.* from SupportBean#keepall sb, SupportBeanRange#lastevent where TheString = key and IntBoxed in [RangeStart: RangeEnd]";
                 env.CompileDeploy(eplTwo).AddListener("s1");
 
                 // null join lookups
@@ -80,7 +80,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
 
                 // test string compare
                 var eplThree =
-                    "@Name('s2') select sb.* from SupportBeanRange#keepall sb, SupportBean#lastevent where TheString in [rangeStartStr:rangeEndStr]";
+                    "@Name('s2') select sb.* from SupportBeanRange#keepall sb, SupportBean#lastevent where TheString in [RangeStartStr:RangeEndStr]";
                 env.CompileDeploy(eplThree).AddListener("s2");
 
                 SendSupportBean(env, "P", 1, 1);

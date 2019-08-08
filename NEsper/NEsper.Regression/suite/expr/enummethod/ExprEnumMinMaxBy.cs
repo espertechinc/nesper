@@ -20,10 +20,10 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
         {
             var fields = "val0,val1,val2,val3".SplitCsv();
             var eplFragment = "@Name('s0') select " +
-                              "Contained.minBy(x => P00) as val0," +
-                              "Contained.maxBy(x => P00) as val1," +
-                              "Contained.minBy(x => P00).Id as val2," +
-                              "Contained.maxBy(x => P00).P00 as val3 " +
+                              "Contained.minBy(x -> P00) as val0," +
+                              "Contained.maxBy(x -> P00) as val1," +
+                              "Contained.minBy(x -> P00).Id as val2," +
+                              "Contained.maxBy(x -> P00).P00 as val3 " +
                               "from SupportBean_ST0_Container";
             env.CompileDeploy(eplFragment).AddListener("s0");
 
@@ -62,8 +62,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
             // test scalar-coll with lambda
             var fieldsLambda = "val0,val1".SplitCsv();
             var eplLambda = "@Name('s0') select " +
-                            "Strvals.minBy(v => extractNum(v)) as val0, " +
-                            "Strvals.maxBy(v => extractNum(v)) as val1 " +
+                            "Strvals.minBy(v -> extractNum(v)) as val0, " +
+                            "Strvals.maxBy(v -> extractNum(v)) as val1 " +
                             "from SupportCollection";
             env.CompileDeploy(eplLambda).AddListener("s0");
             LambdaAssertionUtil.AssertTypes(

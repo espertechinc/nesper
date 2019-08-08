@@ -10,7 +10,7 @@ using com.espertech.esper.common.client.configuration;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.regressionlib.suite.view;
 using com.espertech.esper.regressionlib.support.bean;
-using com.espertech.esper.regressionrun.runner;
+using com.espertech.esper.regressionrun.Runner;
 
 using NUnit.Framework;
 
@@ -69,7 +69,7 @@ namespace com.espertech.esper.regressionrun.suite.view
             configuration.Compiler.AddPlugInSingleRowFunction(
                 "udf",
                 typeof(ViewExpressionWindow.LocalUDF),
-                "evaluateExpiryUDF");
+                "EvaluateExpiryUDF");
         }
 
         [Test]

@@ -146,8 +146,8 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
 
                 var eplInto = "on SupportBean_S0 merge MyTable " +
                               "where P00 = k0 and P01 = k1 " +
-                              "when not matched then insert select P00 as k0, P01 as k1, p02 as p2, Id as value " +
-                              "when matched then update set p2 = p02, value = Id ";
+                              "when not matched then insert select P00 as k0, P01 as k1, P02 as p2, Id as value " +
+                              "when matched then update set p2 = P02, value = Id ";
                 env.CompileDeploy(eplInto, path);
 
                 var eplSubselect =

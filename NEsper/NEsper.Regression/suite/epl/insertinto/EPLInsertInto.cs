@@ -968,7 +968,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                 env.CompileDeploy(stmtTwoTxt, path).AddListener("s2");
 
                 var stmtThreeTxt = "@Name('s3') select 111 as eventSpecId, A.locationReportId as locationReportId " +
-                                   " from pattern [every A=InZone => (timer:interval(1 sec) and not OutOfZone(mac=A.mac))]";
+                                   " from pattern [every A=InZone -> (timer:interval(1 sec) and not OutOfZone(mac=A.mac))]";
                 env.CompileDeploy(stmtThreeTxt, path).AddListener("s3");
 
                 // try the alert case with 1 event for the mac in question
