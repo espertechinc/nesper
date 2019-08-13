@@ -62,7 +62,7 @@ namespace com.espertech.esper.regressionlib.suite.view
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "c0,c1".SplitCsv();
+                var fields = new [] { "c0", "c1" };
                 env.AdvanceTime(0);
                 var epl =
                     "@Name('s0') select irstream TheString as c0, IntPrimitive as c1 from SupportBean#firsttime(10 sec)";
@@ -185,7 +185,7 @@ namespace com.espertech.esper.regressionlib.suite.view
 
                 EPAssertionUtil.AssertPropsPerRow(
                     env.Statement("s0").GetEnumerator(),
-                    "TheString".SplitCsv(),
+                    new [] { "TheString" },
                     new[] {new object[] {"E1"}, new object[] {"E2"}});
 
                 env.UndeployAll();

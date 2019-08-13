@@ -69,7 +69,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 IDictionary<string, object> theEvent = new LinkedHashMap<string, object>();
                 theEvent.Put("userId", userId);
                 theEvent.Put("keyword", keyword);
-                theEvent.Put("productId", productId);
+                theEvent.Put("ProductId", productId);
                 theEvent.Put("score", score);
                 env.SendEventMap(theEvent, typeName);
             }
@@ -82,7 +82,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                         .AsRecordSchema());
                 record.Put("userId", userId);
                 record.Put("keyword", keyword);
-                record.Put("productId", productId);
+                record.Put("ProductId", productId);
                 record.Put("score", score);
                 env.SendEventAvro(record, typeName);
             }
@@ -141,7 +141,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 var fields = "userId,keyword,sumScore".SplitCsv();
                 var epl =
                     eventRepresentationEnum.GetAnnotationText() +
-                    " create schema ScoreCycle (userId string, keyword string, productId string, score long);\n" +
+                    " create schema ScoreCycle (userId string, keyword string, ProductId string, score long);\n" +
                     eventRepresentationEnum.GetAnnotationText() +
                     " create schema UserKeywordTotalStream (userId string, keyword string, sumScore long);\n" +
                     "\n" +
@@ -151,7 +151,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                     "consistent_hash_crc32(userId) from UserKeywordTotalStream " +
                     "granularity 1000000;\n" +
                     "\n" +
-                    "context HashByUserCtx create window ScoreCycleWindow#unique(productId, keyword) as ScoreCycle;\n" +
+                    "context HashByUserCtx create window ScoreCycleWindow#unique(ProductId, keyword) as ScoreCycle;\n" +
                     "\n" +
                     "context HashByUserCtx insert into ScoreCycleWindow select * from ScoreCycle;\n" +
                     "\n" +
@@ -200,7 +200,7 @@ namespace com.espertech.esper.regressionlib.suite.context
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "c0,c1,c2".SplitCsv();
+                var fields = new [] { "c0", "c1", "c2" };
                 var path = new RegressionPath();
                 env.CompileDeploy(
                     "@Name('ctx') create context MyCtx as coalesce consistent_hash_crc32(TheString) from SupportBean granularity 16 preallocate",
@@ -379,7 +379,7 @@ namespace com.espertech.esper.regressionlib.suite.context
             {
                 var path = new RegressionPath();
                 var ctx = "HashSegmentedContext";
-                var fields = "c0,c1".SplitCsv();
+                var fields = new [] { "c0", "c1" };
 
                 var eplCtx = "@Name('context') create context " +
                              ctx +
@@ -453,7 +453,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                                  "coalesce by consistent_hash_crc32(TheString) from SupportBean granularity 16";
                 env.CompileDeploy(eplContext, path);
 
-                var fields = "c0,c1,c2".SplitCsv();
+                var fields = new [] { "c0", "c1", "c2" };
                 var eplGrouped = "@Name('s0') context CtxHash " +
                                  "select context.Id as c0, TheString as c1, sum(IntPrimitive) as c2 from SupportBean group by TheString";
                 env.CompileDeploy(eplGrouped, path).AddListener("s0");
@@ -573,7 +573,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                               "select context.name as c0, IntPrimitive as c1, Id as c2 from SupportBean#keepall as t1, SupportBean_S0#keepall as t2 where t1.TheString = t2.P00";
                 env.CompileDeploy(eplStmt, path).AddListener("s0");
 
-                var fields = "c0,c1,c2".SplitCsv();
+                var fields = new [] { "c0", "c1", "c2" };
 
                 env.SendEventBean(new SupportBean("E1", 10));
                 env.SendEventBean(new SupportBean_S0(1, "E2"));
@@ -724,7 +724,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 string stmtNameIterate,
                 string stmtNameContext)
             {
-                var fields = "c0,c1,c2".SplitCsv();
+                var fields = new [] { "c0", "c1", "c2" };
 
                 env.SendEventBean(new SupportBean("E1", 5));
                 EPAssertionUtil.AssertProps(

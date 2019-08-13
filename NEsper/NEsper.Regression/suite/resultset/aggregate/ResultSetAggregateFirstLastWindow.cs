@@ -60,7 +60,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
             RegressionEnvironment env,
             AtomicLong milestone)
         {
-            var fields = "theString,firststring,firstint,laststring,lastint,allint".SplitCsv();
+            var fields = "TheString,firststring,firstint,laststring,lastint,allint".SplitCsv();
 
             env.SendEventBean(new SupportBean("E1", 10));
             EPAssertionUtil.AssertProps(
@@ -298,7 +298,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
                           "from SupportBean#length(5) group by TheString order by TheString asc";
                 env.CompileDeploy(epl).AddListener("s0");
 
-                var fields = "theString,firststring,firstint,laststring,lastint,allint".SplitCsv();
+                var fields = "TheString,firststring,firstint,laststring,lastint,allint".SplitCsv();
 
                 env.SendEventBean(new SupportBean("E1", 10));
                 EPAssertionUtil.AssertProps(
@@ -419,11 +419,11 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
                     "@Name('s0') select first().property as val0, first().myMethod() as val1, window() as val2 from SupportEventPropertyWithMethod#lastevent";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
-                env.SendEventBean(new SupportEventPropertyWithMethod("p1"));
+                env.SendEventBean(new SupportEventPropertyWithMethod("P1"));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    "val0,val1".SplitCsv(),
-                    new object[] {"p1", "abc"});
+                    new [] { "val0", "val1" },
+                    new object[] {"P1", "abc"});
 
                 env.UndeployAll();
             }
@@ -1083,14 +1083,14 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
             public void Run(RegressionEnvironment env)
             {
                 var epl = "@Name('s0') select " +
-                          "theString, " +
+                          "TheString, " +
                           "first(IntPrimitive) as fi, " +
                           "window(IntPrimitive) as wi, " +
                           "last(IntPrimitive) as li " +
                           "from SupportBean#length_batch(6) as sb group by TheString order by TheString asc";
                 env.CompileDeploy(epl).AddListener("s0");
 
-                var fields = "theString,fi,wi,li".SplitCsv();
+                var fields = "TheString,fi,wi,li".SplitCsv();
 
                 env.SendEventBean(new SupportBean("E1", 10));
                 env.SendEventBean(new SupportBean("E2", 20));
@@ -1341,7 +1341,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
                 var epl = "@Name('s0') select first(TheString) as c0, last(TheString) as c1 from SupportBean";
                 env.CompileDeploy(epl).AddListener("s0");
 
-                var fields = "c0,c1".SplitCsv();
+                var fields = new [] { "c0", "c1" };
 
                 env.Milestone(0);
 
@@ -1454,7 +1454,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
                 var milestone = new AtomicLong();
 
                 var epl = "@Name('s0') select " +
-                          "theString, " +
+                          "TheString, " +
                           "first(TheString) as firststring, " +
                           "last(TheString) as laststring, " +
                           "first(IntPrimitive) as firstint, " +
@@ -1506,7 +1506,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "c0,c1,c2".SplitCsv();
+                var fields = new [] { "c0", "c1", "c2" };
                 var epl = "create window ABCWin.win:keepall() as SupportBean;\n" +
                           "insert into ABCWin select * from SupportBean;\n" +
                           "on SupportBean_S0 delete from ABCWin where IntPrimitive = Id;\n" +
@@ -1581,7 +1581,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "c0,c1,c2".SplitCsv();
+                var fields = new [] { "c0", "c1", "c2" };
 
                 var epl = "@Name('s0') select TheString as c0, sum(IntPrimitive) as c1," +
                           "window(IntPrimitive*LongPrimitive) as c2 from SupportBean#length(3) group by TheString order by TheString asc";

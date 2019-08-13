@@ -12,8 +12,8 @@ using System.IO;
 namespace com.espertech.esper.common.client.soda
 {
     /// <summary>
-    /// Represents a single expression (non-combined, rollup/cube or grouping set) as part 
-    /// of a group-by expression. 
+    /// Represents a single expression (non-combined, rollup/cube or grouping set) as part
+    /// of a group-by expression.
     /// </summary>
     [Serializable]
     public class GroupByClauseExpressionSingle : GroupByClauseExpression
@@ -34,7 +34,8 @@ namespace com.espertech.esper.common.client.soda
 
         /// <summary>Returns the expression. </summary>
         /// <value>expressions</value>
-        public Expression Expression {
+        public Expression Expression
+        {
             get { return _expression; }
             set { _expression = value; }
         }

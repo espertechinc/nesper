@@ -41,8 +41,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
             AddCase(
                 cases,
                 stats,
-                "theString like 'A%'",
-                "theString like 'A%'",
+                "TheString like 'A%'",
+                "TheString like 'A%'",
                 MakeItem(MakeBean("A1"), true, true),
                 MakeItem(MakeBean("B1"), false, false));
 

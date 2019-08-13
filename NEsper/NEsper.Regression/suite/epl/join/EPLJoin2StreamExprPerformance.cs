@@ -96,7 +96,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
             object theEvent,
             object expected)
         {
-            var fields = "val".SplitCsv();
+            var fields = new [] { "val" };
             env.CompileDeploy(epl).AddListener("s0");
 
             // preload

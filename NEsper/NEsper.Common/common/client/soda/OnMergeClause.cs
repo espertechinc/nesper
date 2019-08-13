@@ -95,23 +95,28 @@ namespace com.espertech.esper.common.client.soda
             writer.Write("merge ");
             writer.Write(WindowName);
 
-            if (OptionalAsName != null) {
+            if (OptionalAsName != null)
+            {
                 writer.Write(" as ");
                 writer.Write(OptionalAsName);
             }
 
-            if (InsertNoMatch != null) {
+            if (InsertNoMatch != null)
+            {
                 writer.Write(" ");
                 InsertNoMatch.ToEPL(writer);
             }
-            else {
-                if (optionalWhereClause != null) {
+            else
+            {
+                if (optionalWhereClause != null)
+                {
                     formatter.BeginMergeWhere(writer);
                     writer.Write("where ");
                     optionalWhereClause.ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
                 }
 
-                foreach (var item in MatchItems) {
+                foreach (var item in MatchItems)
+                {
                     item.ToEPL(writer, formatter);
                 }
             }

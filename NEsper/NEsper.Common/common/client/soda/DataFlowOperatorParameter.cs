@@ -40,7 +40,7 @@ namespace com.espertech.esper.common.client.soda
         public string ParameterName { get; set; }
 
         /// <summary>
-        /// Get the parameter value, which can be either a constant, an <seealso cref="Expression" /> 
+        /// Get the parameter value, which can be either a constant, an <seealso cref="Expression" />
         /// or a JSON object or a <seealso cref="EPStatementObjectModel" />.
         /// </summary>
         /// <value>parameter value</value>
@@ -62,23 +62,28 @@ namespace com.espertech.esper.common.client.soda
             TextWriter writer,
             Object parameterValue)
         {
-            if (parameterValue is EPStatementObjectModel) {
+            if (parameterValue is EPStatementObjectModel)
+            {
                 writer.Write("(");
                 ((EPStatementObjectModel) parameterValue).ToEPL(writer);
                 writer.Write(")");
             }
-            else if (parameterValue is Expression) {
+            else if (parameterValue is Expression)
+            {
                 ((Expression) parameterValue).ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
             }
-            else if (parameterValue == null) {
+            else if (parameterValue == null)
+            {
                 writer.Write("null");
             }
-            else if (parameterValue is String) {
+            else if (parameterValue is String)
+            {
                 writer.Write("\"");
                 writer.Write(parameterValue.ToString());
                 writer.Write("\"");
             }
-            else {
+            else
+            {
                 writer.Write(parameterValue.ToString());
             }
         }

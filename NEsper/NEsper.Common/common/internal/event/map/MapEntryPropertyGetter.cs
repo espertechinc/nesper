@@ -78,7 +78,7 @@ namespace com.espertech.esper.common.@internal.@event.map
             }
 
             var result = Get(eventBean);
-            return BaseNestableEventUtil.GetBNFragmentPojo(result, eventType, eventBeanTypedEventFactory);
+            return BaseNestableEventUtil.GetBNFragmentPono(result, eventType, eventBeanTypedEventFactory);
         }
 
         public CodegenExpression EventBeanGetCodegen(
@@ -87,7 +87,7 @@ namespace com.espertech.esper.common.@internal.@event.map
             CodegenClassScope codegenClassScope)
         {
             return UnderlyingGetCodegen(
-                CastUnderlying(typeof(IDictionary<object, object>), beanExpression),
+                CastUnderlying(typeof(IDictionary<string, object>), beanExpression),
                 codegenMethodScope,
                 codegenClassScope);
         }
@@ -110,7 +110,7 @@ namespace com.espertech.esper.common.@internal.@event.map
             }
 
             return UnderlyingFragmentCodegen(
-                CastUnderlying(typeof(IDictionary<object, object>), beanExpression),
+                CastUnderlying(typeof(IDictionary<string, object>), beanExpression),
                 codegenMethodScope,
                 codegenClassScope);
         }
@@ -161,7 +161,7 @@ namespace com.espertech.esper.common.@internal.@event.map
             CodegenClassScope codegenClassScope)
         {
             var method = codegenMethodScope.MakeChild(typeof(object), typeof(MapEntryPropertyGetter), codegenClassScope)
-                .AddParam(typeof(IDictionary<object, object>), "map")
+                .AddParam(typeof(IDictionary<string, object>), "map")
                 .Block
                 .DeclareVar<object>("value", ExprDotMethod(Ref("map"), "Get", Constant(propertyName)))
                 .IfInstanceOf("value", typeof(EventBean))

@@ -78,43 +78,56 @@ namespace com.espertech.esper.common.@internal.@event.bean.manufacturer
                 typeof(EventType),
                 EventTypeUtility.ResolveTypeCodegen(this.eventType, EPStatementInitServicesConstants.REF));
 
-            var manufacturer = NewAnonymousClass(init.Block, typeof(EventBeanManufacturer));
+            var makeUndLambda = new CodegenExpressionLambda(init.Block)
+                .WithParam<object[]>("properties");
+            init.Block.DeclareVar<ProxyEventBeanManufacturer.MakeUnderlyingFunc>(
+                "makeUndFunc", makeUndLambda);
+            MakeUnderlyingCodegen(makeUndLambda.Block, codegenClassScope);
 
-            var makeUndMethod = CodegenMethod.MakeMethod(typeof(object[]), GetType(), codegenClassScope)
-                .AddParam(typeof(object[]), "properties");
-            manufacturer.AddMethod("MakeUnderlying", makeUndMethod);
-            MakeUnderlyingCodegen(makeUndMethod, codegenClassScope);
+            var makeLambda = new CodegenExpressionLambda(init.Block)
+                .WithParam<object[]>("properties");
+            init.Block.DeclareVar<ProxyEventBeanManufacturer.MakeFunc>(
+                "makeFunc", makeLambda);
+            makeLambda.Block
+                .DeclareVar<object[]>("und",
+                    Cast(typeof(object[]), 
+                        ExprDotMethod(Ref("makeUndFunc"), "Invoke", Ref("properties"))))
+                .BlockReturn(ExprDotMethod(factory, "AdapterForTypedObjectArray", Ref("und"), eventType));
 
-            var makeMethod = CodegenMethod.MakeMethod(typeof(EventBean), GetType(), codegenClassScope)
-                .AddParam(typeof(object[]), "properties");
-            manufacturer.AddMethod("Make", makeMethod);
-            makeMethod.Block
-                .DeclareVar<object[]>("und", LocalMethod(makeUndMethod, Ref("properties")))
-                .MethodReturn(ExprDotMethod(factory, "AdapterForTypedObjectArray", Ref("und"), eventType));
+            var manufacturer = NewInstance<ProxyEventBeanManufacturer>(Ref("makeFunc"), Ref("makeUndFunc"));
+
+            //var makeUndProc = CodegenMethod.MakeMethod(typeof(object[]), GetType(), codegenClassScope)
+            //    .AddParam(typeof(object[]), "properties");
+            //manufacturer.AddMethod("MakeUnderlying", makeUndProc);
+            //MakeUnderlyingCodegen(makeUndProc, codegenClassScope);
+
+            //var makeProc = CodegenMethod.MakeMethod(typeof(EventBean), GetType(), codegenClassScope)
+            //    .AddParam(typeof(object[]), "properties");
+            //manufacturer.AddMethod("Make", makeProc);
 
             return codegenClassScope.AddFieldUnshared(true, typeof(EventBeanManufacturer), manufacturer);
         }
 
         private void MakeUnderlyingCodegen(
-            CodegenMethod method,
+            CodegenBlock block,
             CodegenClassScope codegenClassScope)
         {
             if (oneToOne) {
-                method.Block.MethodReturn(Ref("properties"));
+                block.ReturnMethodOrBlock(Ref("properties"));
                 return;
             }
 
-            method.Block.DeclareVar<object[]>(
+            block.DeclareVar<object[]>(
                 "cols",
                 NewArrayByLength(typeof(object), Constant(eventType.PropertyNames.Length)));
             for (var i = 0; i < indexPerWritable.Length; i++) {
-                method.Block.AssignArrayElement(
+                block.AssignArrayElement(
                     Ref("cols"),
                     Constant(indexPerWritable[i]),
                     ArrayAtIndex(Ref("properties"), Constant(i)));
             }
 
-            method.Block.MethodReturn(Ref("cols"));
+            block.ReturnMethodOrBlock(Ref("cols"));
         }
     }
 } // end of namespace

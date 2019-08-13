@@ -147,7 +147,7 @@ namespace com.espertech.esper.regressionlib.support.patternassert
                     log.Error(
                         ".RunTest Failed to create statement for style " + testStyle + " pattern expression=" + text,
                         ex);
-                    Assert.Fail();
+                    Assert.Fail(text + ": " + ex.Message);
                     compiled = null;
                 }
 

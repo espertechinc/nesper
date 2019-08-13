@@ -14,11 +14,21 @@ using com.espertech.esper.compat.logging;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.runtime.client;
 
+using NEsper.Avro.Core;
+
 namespace com.espertech.esper.regressionrun.Runner
 {
     public class RegressionRunner
     {
         private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
+        // References required to ensure type loading
+        private static readonly Type eventTypeAvroHandlerImpl = typeof(EventTypeAvroHandlerImpl);
+
+        static RegressionRunner()
+        {
+            RegressionCore.Initialize();
+        }
 
         public static void RunConfigurable(RegressionExecutionWithConfigure configurable)
         {

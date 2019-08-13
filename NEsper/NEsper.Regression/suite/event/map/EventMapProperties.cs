@@ -42,7 +42,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.map
 
                 int[] p0 = {1, 2, 3};
                 SupportBean[] beans = {new SupportBean("e1", 5), new SupportBean("e2", 6)};
-                var theEvent = EventMapCore.MakeMap(new[] {new object[] {"p0", p0}, new object[] {"p1", beans}});
+                var theEvent = EventMapCore.MakeMap(new[] {new object[] {"P0", p0}, new object[] {"P1", beans}});
                 env.SendEventMap(theEvent, "MyArrayMap");
 
                 EPAssertionUtil.AssertProps(
@@ -90,7 +90,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.map
                 eventVal.Put("k1", "v1");
                 var theEvent = EventMapCore.MakeMap(
                     new[] {
-                        new object[] {"p0", eventVal}
+                        new object[] {"P0", eventVal}
                     });
                 env.SendEventMap(theEvent, "MyMappedPropertyMap");
 
@@ -161,7 +161,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.map
                 IDictionary<string, object>[] n0Bean2 = {n0Bean21, n0Bean22};
                 var theEvent = EventMapCore.MakeMap(
                     new[] {
-                        new object[] {"p0", n0Bean1}, new object[] {"p1", n0Bean2}
+                        new object[] {"P0", n0Bean1}, new object[] {"P1", n0Bean2}
                     });
                 var eventOuter = EventMapCore.MakeMap(
                     new[] {
@@ -220,7 +220,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.map
                 IDictionary<string, object>[] n0Bean2 = {n0Bean21, n0Bean22};
                 var theEvent = EventMapCore.MakeMap(
                     new[] {
-                        new object[] {"p0", n0Bean1}, new object[] {"p1", n0Bean2}
+                        new object[] {"P0", n0Bean1}, new object[] {"P1", n0Bean2}
                     });
                 env.SendEventMap(theEvent, "MyMapWithAMap");
 

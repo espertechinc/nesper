@@ -77,7 +77,7 @@ namespace com.espertech.esper.common.@internal.@event.arr
         public object GetFragment(EventBean obj)
         {
             var fragmentUnderlying = Get(obj);
-            return BaseNestableEventUtil.GetBNFragmentNonPojo(
+            return BaseNestableEventUtil.GetBNFragmentNonPono(
                 fragmentUnderlying,
                 fragmentType,
                 eventBeanTypedEventFactory);
@@ -145,7 +145,7 @@ namespace com.espertech.esper.common.@internal.@event.arr
                 EventTypeUtility.ResolveTypeCodegen(fragmentType, EPStatementInitServicesConstants.REF));
             return StaticMethod(
                 typeof(BaseNestableEventUtil),
-                "GetBNFragmentNonPojo",
+                "GetBNFragmentNonPono",
                 UnderlyingGetCodegen(underlyingExpression, codegenMethodScope, codegenClassScope),
                 mType,
                 mSvc);

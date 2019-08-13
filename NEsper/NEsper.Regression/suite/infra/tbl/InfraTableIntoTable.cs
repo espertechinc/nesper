@@ -587,10 +587,10 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "c0,c1,c2,c3".SplitCsv();
+                var fields = new [] { "c0", "c1", "c2", "c3" };
                 var epl =
                     "@Name('tbl') create table MyTable as (c0 avg(BigInteger), c1 avg(BigDecimal), c2 sum(BigInteger), c3 sum(BigDecimal));\n" +
-                    "into table MyTable select avg(bigint) as c0, avg(bigdec) as c1, sum(bigint) as c2, sum(bigdec) as c3  from SupportBeanNumeric#lastevent;\n";
+                    "into table MyTable select avg(Bigint) as c0, avg(DecimalOne) as c1, sum(Bigint) as c2, sum(DecimalOne) as c3  from SupportBeanNumeric#lastevent;\n";
                 env.CompileDeploy(epl);
 
                 env.SendEventBean(new SupportBeanNumeric(new BigInteger(5), 100m));

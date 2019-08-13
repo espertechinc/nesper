@@ -78,36 +78,36 @@ namespace com.espertech.esper.regressionrun.suite.epl
             }
 
             IDictionary<string, object> myMapTypeInv = new Dictionary<string, object>();
-            myMapTypeInv.Put("p0", typeof(long));
-            myMapTypeInv.Put("p1", typeof(long));
-            myMapTypeInv.Put("p2", typeof(long));
+            myMapTypeInv.Put("P0", typeof(long));
+            myMapTypeInv.Put("P1", typeof(long));
+            myMapTypeInv.Put("P2", typeof(long));
             myMapTypeInv.Put("p3", typeof(string));
             configuration.Common.AddEventType("MyMapTypeInv", myMapTypeInv);
 
             IDictionary<string, object> myMapTypeII = new Dictionary<string, object>();
-            myMapTypeII.Put("p0", typeof(long));
-            myMapTypeII.Put("p1", typeof(long));
-            myMapTypeII.Put("p2", typeof(long));
+            myMapTypeII.Put("P0", typeof(long));
+            myMapTypeII.Put("P1", typeof(long));
+            myMapTypeII.Put("P2", typeof(long));
             configuration.Common.AddEventType("MyMapTypeII", myMapTypeII);
 
             IDictionary<string, object> myMapTypeIDB = new Dictionary<string, object>();
-            myMapTypeIDB.Put("p0", typeof(string));
-            myMapTypeIDB.Put("p1", typeof(string));
+            myMapTypeIDB.Put("P0", typeof(string));
+            myMapTypeIDB.Put("P1", typeof(string));
             configuration.Common.AddEventType("MyMapTypeIDB", myMapTypeIDB);
 
             IDictionary<string, object> myMapTypeNW = new Dictionary<string, object>();
-            myMapTypeNW.Put("p0", typeof(string));
-            myMapTypeNW.Put("p1", typeof(string));
+            myMapTypeNW.Put("P0", typeof(string));
+            myMapTypeNW.Put("P1", typeof(string));
             configuration.Common.AddEventType("MyMapTypeNW", myMapTypeNW);
 
             IDictionary<string, object> myMapTypeSR = new Dictionary<string, object>();
-            myMapTypeSR.Put("p0", typeof(string));
-            myMapTypeSR.Put("p1", typeof(string));
+            myMapTypeSR.Put("P0", typeof(string));
+            myMapTypeSR.Put("P1", typeof(string));
             configuration.Common.AddEventType("MyMapTypeSR", myMapTypeSR);
 
             IDictionary<string, object> myMapTypeSODA = new Dictionary<string, object>();
-            myMapTypeSODA.Put("p0", typeof(string));
-            myMapTypeSODA.Put("p1", typeof(string));
+            myMapTypeSODA.Put("P0", typeof(string));
+            myMapTypeSODA.Put("P1", typeof(string));
             configuration.Common.AddEventType("MyMapTypeSODA", myMapTypeSODA);
 
             var configXML = new ConfigurationCommonEventTypeXMLDOM();

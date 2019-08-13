@@ -46,7 +46,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "c0,c1".SplitCsv();
+                var fields = new [] { "c0", "c1" };
 
                 var epl =
                     "@Name('s0') select a.TheString as c0, b.TheString as c1 from pattern [a=SupportBean(IntPrimitive=0) and b=SupportBean(IntPrimitive=1)]";

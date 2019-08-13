@@ -167,7 +167,7 @@ namespace com.espertech.esper.common.@internal.epl.join.@base
             }
 
             var selectsRemoveStream =
-                spec.Raw.SelectStreamSelectorEnum.IsSelectsRStream || spec.Raw.OutputLimitSpec != null;
+                spec.Raw.SelectStreamSelectorEnum.IsSelectsRStream() || spec.Raw.OutputLimitSpec != null;
             var joinRemoveStream = selectsRemoveStream || hasAggregations;
 
             ExprNode postJoinEvaluator;

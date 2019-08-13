@@ -19,7 +19,7 @@ namespace com.espertech.esper.common.@internal.serde
         /// <summary>
         /// Write event collated.
         /// </summary>
-        /// <param name="@event">to write</param>
+        /// <param name="event">to write</param>
         /// <param name="dataOutput">destination</param>
         /// <param name="pageFullKey">page key</param>
         /// <throws>IOException for io exceptions</throws>

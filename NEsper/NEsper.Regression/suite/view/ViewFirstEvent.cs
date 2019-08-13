@@ -45,7 +45,7 @@ namespace com.espertech.esper.regressionlib.suite.view
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "c0,c1".SplitCsv();
+                var fields = new [] { "c0", "c1" };
                 var epl =
                     "@Name('s0') select irstream TheString as c0, IntPrimitive as c1 from SupportBean#firstevent()";
                 env.CompileDeployAddListenerMileZero(epl, "s0");

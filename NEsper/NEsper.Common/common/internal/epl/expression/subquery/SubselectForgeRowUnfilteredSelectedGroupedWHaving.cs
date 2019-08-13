@@ -153,7 +153,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                 .ApplyTri(DECLARE_EVENTS_SHIFTED, method, symbols)
                 .DeclareVar<ICollection<object>>(
                     "result",
-                    NewInstance<ArrayDeque<object>>(ExprDotMethod(Ref("groupKeys"), "Size")));
+                    NewInstance<ArrayDeque<object>>(ExprDotName(Ref("groupKeys"), "Count")));
 
             var forEach = method.Block.ForEach(typeof(object), "groupKey", Ref("groupKeys"));
             {

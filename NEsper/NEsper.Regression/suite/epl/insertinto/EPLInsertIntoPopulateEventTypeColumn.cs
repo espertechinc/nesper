@@ -255,10 +255,10 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
         {
             var path = new RegressionPath();
             env.CompileDeploy("create " + typeType + " schema Item(name string, Price double)", path);
-            env.CompileDeploy("create " + typeType + " schema PurchaseOrder(orderId string, items Item[])", path);
+            env.CompileDeploy("create " + typeType + " schema PurchaseOrder(OrderId string, items Item[])", path);
             env.CompileDeployWBusPublicType("create schema TriggerEvent()", path);
             env.CompileDeploy(
-                    "@Name('s0') insert into PurchaseOrder select '001' as orderId, new {name= 'i1', Price=10} as items from TriggerEvent",
+                    "@Name('s0') insert into PurchaseOrder select '001' as OrderId, new {name= 'i1', Price=10} as items from TriggerEvent",
                     path)
                 .AddListener("s0");
 
@@ -266,7 +266,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
             var @event = env.Listener("s0").AssertOneGetNewAndReset();
             EPAssertionUtil.AssertProps(
                 @event,
-                "orderId,items[0].name,items[0].Price".SplitCsv(),
+                "OrderId,items[0].name,items[0].Price".SplitCsv(),
                 new object[] {"001", "i1", 10d});
 
             var underlying = (EventBean[]) @event.Get("items");
@@ -405,7 +405,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                     env,
                     path,
                     "insert into N1_2 select new {p0='a'} as p1 from SupportBean",
-                    "Invalid assignment of column 'p0' of type 'System.String' to event property 'p0' typed as 'System.Integer', column and parameter types mismatch");
+                    "Invalid assignment of column 'p0' of type 'System.String' to event property 'p0' typed as 'System.Int32', column and parameter types mismatch");
 
                 // typable - selected column type is not matching anything
                 TryInvalidCompile(

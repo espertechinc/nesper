@@ -122,7 +122,7 @@ namespace com.espertech.esper.regressionlib.suite.context
             env.SendEventBean(new SupportBean(theString, intPrimitive));
             EPAssertionUtil.AssertProps(
                 env.Listener("s0").AssertOneGetNewAndReset(),
-                "theString,cnt".SplitCsv(),
+                "TheString,cnt".SplitCsv(),
                 new object[] {theString, expected});
         }
 
@@ -310,7 +310,7 @@ namespace com.espertech.esper.regressionlib.suite.context
             {
                 var path = new RegressionPath();
                 env.CompileDeploy("create context PartitionedByString partition by TheString from SupportBean", path);
-                var fields = "c0,c1".SplitCsv();
+                var fields = new [] { "c0", "c1" };
                 env.CompileDeploy(
                     "@Name('s0') context PartitionedByString select context.Key1 as c0, sum(IntPrimitive) as c1 from SupportBean#length(5)",
                     path);
@@ -427,7 +427,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
                     epl,
-                    "For context 'SegmentedByAString' for context 'SegmentedByAString' found mismatch of property types, property 'TheString' of type 'System.String' compared to property 'Id' of type 'System.Integer' [");
+                    "For context 'SegmentedByAString' for context 'SegmentedByAString' found mismatch of property types, property 'TheString' of type 'System.String' compared to property 'Id' of type 'System.Int32' [");
 
                 // duplicate type specification
                 epl =
@@ -1165,7 +1165,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                     "select a.TheString as c0, a.IntPrimitive as c1, b.Id as c2, b.P00 as c3 from pattern [" +
                     "every a=SupportBean -> b=SupportBean_S0(Id=a.IntPrimitive)];\n";
                 env.CompileDeploy(epl).AddListener("S1");
-                var fields = "c0,c1,c2,c3".SplitCsv();
+                var fields = new [] { "c0", "c1", "c2", "c3" };
 
                 env.Milestone(0);
 
@@ -1329,7 +1329,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                     "@Name('CTX') create context SegmentedByString partition by TheString from SupportBean";
                 env.CompileDeploy(eplContext, path);
 
-                var fields = "theString,IntPrimitive".SplitCsv();
+                var fields = new [] { "TheString","IntPrimitive" };
                 var eplSelect = "@Name('S1') context SegmentedByString select irstream * from SupportBean#lastevent()";
                 env.CompileDeploy(eplSelect, path).AddListener("S1");
 

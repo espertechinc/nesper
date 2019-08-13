@@ -81,9 +81,21 @@ namespace com.espertech.esper.compiler.@internal.util
             builder.Append(classname);
             if (implementedInterface != null) {
                 builder.Append(" : ");
-                AppendClassName(builder, implementedInterface);
-                if (implementedInterfaceGeneric != null) {
-                    builder.Append("<").Append(implementedInterfaceGeneric).Append(">");
+
+                if (implementedInterface.IsGenericTypeDefinition) {
+                    if (string.IsNullOrEmpty(implementedInterfaceGeneric)) {
+                        throw new ArgumentException(
+                            "implementedInterfaceGeneric must be provided when interface is generic type definition");
+                    }
+
+                    AppendClassName(builder, implementedInterface);
+                    builder
+                        .Append("<")
+                        .Append(implementedInterfaceGeneric)
+                        .Append(">");
+                }
+                else {
+                    AppendClassName(builder, implementedInterface);
                 }
             }
 

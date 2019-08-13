@@ -62,7 +62,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
             RegressionEnvironment env,
             string epl)
         {
-            CompileDeployWSubstitution(env, epl, CollectionUtil.BuildMap("p0", 10, "p1", 11));
+            CompileDeployWSubstitution(env, epl, CollectionUtil.BuildMap("P0", 10, "P1", 11));
             AssertFilterSingle(env.Statement("s0"), epl, "IntPrimitive", FilterOperator.RANGE_CLOSED);
             TryAssertionWSubsFrom9To12(env);
             env.UndeployAll();
@@ -82,7 +82,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
             RegressionEnvironment env,
             string epl)
         {
-            CompileDeployWSubstitution(env, epl, CollectionUtil.BuildMap("p0", "c", "p1", "d"));
+            CompileDeployWSubstitution(env, epl, CollectionUtil.BuildMap("P0", "c", "P1", "d"));
             TryAssertionBetweenDeplotTimeConst(env, epl);
         }
 
@@ -119,7 +119,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
             RegressionEnvironment env,
             string epl)
         {
-            CompileDeployWSubstitution(env, epl, CollectionUtil.BuildMap("p0", new[] {10, 11}));
+            CompileDeployWSubstitution(env, epl, CollectionUtil.BuildMap("P0", new[] {10, 11}));
             AssertFilterSingle(env.Statement("s0"), epl, "IntPrimitive", FilterOperator.IN_LIST_OF_VALUES);
             TryAssertionWSubsFrom9To12(env);
             env.UndeployAll();
@@ -154,7 +154,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
             RegressionEnvironment env,
             string epl)
         {
-            CompileDeployWSubstitution(env, epl, CollectionUtil.BuildMap("p0", 10, "p1", 11));
+            CompileDeployWSubstitution(env, epl, CollectionUtil.BuildMap("P0", 10, "P1", 11));
             AssertFilterSingle(env.Statement("s0"), epl, "IntPrimitive", FilterOperator.IN_LIST_OF_VALUES);
             TryAssertionWSubsFrom9To12(env);
             env.UndeployAll();
@@ -174,7 +174,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
             RegressionEnvironment env,
             string epl)
         {
-            CompileDeployWSubstitution(env, epl, CollectionUtil.BuildMap("p0", 10));
+            CompileDeployWSubstitution(env, epl, CollectionUtil.BuildMap("P0", 10));
             TryAssertionRelOpWDeployTimeConst(env, epl);
         }
 
@@ -205,7 +205,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
             RegressionEnvironment env,
             string epl)
         {
-            CompileDeployWSubstitution(env, epl, CollectionUtil.BuildMap("p0", "abc"));
+            CompileDeployWSubstitution(env, epl, CollectionUtil.BuildMap("P0", "abc"));
             TryAssertionEqualsWDeployTimeConst(env, epl);
         }
 
@@ -236,7 +236,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
             RegressionEnvironment env,
             string epl)
         {
-            CompileDeployWSubstitution(env, epl, CollectionUtil.BuildMap("p0", 100));
+            CompileDeployWSubstitution(env, epl, CollectionUtil.BuildMap("P0", 100));
             AssertFilterSingle(env.Statement("s0"), epl, "LongPrimitive", FilterOperator.EQUAL);
 
             var sb = new SupportBean();
@@ -498,7 +498,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
             AtomicLong milestone)
         {
             string[] filtersAB = {
-                "theString='a' and (IntPrimitive=1 or LongPrimitive=10)"
+                "TheString='a' and (IntPrimitive=1 or LongPrimitive=10)"
             };
             foreach (var filter in filtersAB) {
                 var epl = "@Name('s0') select * from SupportBean(" + filter + ")";
@@ -578,9 +578,9 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
             AtomicLong milestone)
         {
             string[] filtersAB = {
-                "theString = 'a' or IntPrimitive=1 or LongPrimitive=10 or DoublePrimitive=100 or BoolPrimitive=true or " +
+                "TheString = 'a' or IntPrimitive=1 or LongPrimitive=10 or DoublePrimitive=100 or BoolPrimitive=true or " +
                 "IntBoxed=2 or LongBoxed=20 or DoubleBoxed=200",
-                "longBoxed=20 or TheString = 'a' or BoolPrimitive=true or IntBoxed=2 or LongPrimitive=10 or DoublePrimitive=100 or " +
+                "LongBoxed=20 or TheString = 'a' or BoolPrimitive=true or IntBoxed=2 or LongPrimitive=10 or DoublePrimitive=100 or " +
                 "IntPrimitive=1 or DoubleBoxed=200"
             };
             foreach (var filter in filtersAB) {
@@ -618,7 +618,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
             AtomicLong milestone)
         {
             string[] filtersAB = {
-                "theString = 'a' or IntPrimitive=1 or LongPrimitive=10 or DoublePrimitive=100"
+                "TheString = 'a' or IntPrimitive=1 or LongPrimitive=10 or DoublePrimitive=100"
             };
             foreach (var filter in filtersAB) {
                 var epl = "@Name('s0') select * from SupportBean(" + filter + ")";
@@ -701,7 +701,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
             AtomicLong milestone)
         {
             string[] filtersAB = {
-                "theString = 'a' or IntPrimitive = 1 or LongPrimitive = 2",
+                "TheString = 'a' or IntPrimitive = 1 or LongPrimitive = 2",
                 "2 = LongPrimitive or 1 = IntPrimitive or TheString = 'a'"
             };
             foreach (var filter in filtersAB) {
@@ -841,7 +841,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
             AtomicLong milestone)
         {
             string[] filtersAB = {
-                "theString = 'a' or TheString = 'b' or IntPrimitive=1",
+                "TheString = 'a' or TheString = 'b' or IntPrimitive=1",
                 "IntPrimitive = 1 or TheString = 'b' or TheString = 'a'"
             };
             foreach (var filter in filtersAB) {
@@ -1462,7 +1462,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
             public void Run(RegressionEnvironment env)
             {
                 var epl =
-                    "@Name('s0') select * from pattern[a=SupportBean() -> b=SupportBean(myCustomBigDecimalEquals(a.DecimalBoxedimal, b.DecimalBoxedimal))]";
+                    "@Name('s0') select * from pattern[a=SupportBean() -> b=SupportBean(myCustomBigDecimalEquals(a.DecimalBoxed, b.DecimalBoxed))]";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 var beanOne = new SupportBean("E1", 0);
@@ -1486,8 +1486,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                 var milestone = new AtomicLong();
                 // test 'or' rewrite
                 string[] filtersAB = {
-                    "theString = 'a' or TheString = 'b'",
-                    "theString = 'a' or 'b' = TheString",
+                    "TheString = 'a' or TheString = 'b'",
+                    "TheString = 'a' or 'b' = TheString",
                     "'a' = TheString or 'b' = TheString",
                     "'a' = TheString or TheString = 'b'"
                 };

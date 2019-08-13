@@ -194,7 +194,7 @@ namespace NEsper.Avro.Getter
                 .MethodReturn(
                     CodegenExpressionBuilder.StaticMethod(
                         GetType(),
-                        "getFragmentAvro",
+                        "GetFragmentAvro",
                         CodegenExpressionBuilder.Ref("value"),
                         factory,
                         type));

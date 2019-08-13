@@ -6,6 +6,7 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
 using System.IO;
 
 namespace com.espertech.esper.common.client.soda
@@ -13,6 +14,7 @@ namespace com.espertech.esper.common.client.soda
     /// <summary>
     ///     SQL-Like expression for matching '%' and '_' wildcard strings following SQL standards.
     /// </summary>
+    [Serializable]
     public class LikeExpression : ExpressionBase
     {
         /// <summary>
@@ -61,7 +63,8 @@ namespace com.espertech.esper.common.client.soda
         {
             Children.Add(left);
             Children.Add(right);
-            if (escape != null) {
+            if (escape != null)
+            {
                 Children.Add(escape);
             }
 
@@ -97,7 +100,8 @@ namespace com.espertech.esper.common.client.soda
         {
             Children.Add(left);
             Children.Add(right);
-            if (escape != null) {
+            if (escape != null)
+            {
                 Children.Add(escape);
             }
 
@@ -116,7 +120,8 @@ namespace com.espertech.esper.common.client.soda
         ///     Returns true if this is a "not like", or false if just a like
         /// </summary>
         /// <returns>indicator whether negated or not</returns>
-        public bool Not {
+        public bool Not
+        {
             get => IsNot;
             set => IsNot = value;
         }
@@ -124,14 +129,16 @@ namespace com.espertech.esper.common.client.soda
         public override void ToPrecedenceFreeEPL(TextWriter writer)
         {
             Children[0].ToEPL(writer, Precedence);
-            if (IsNot) {
+            if (IsNot)
+            {
                 writer.Write(" not");
             }
 
             writer.Write(" like ");
             Children[1].ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
 
-            if (Children.Count > 2) {
+            if (Children.Count > 2)
+            {
                 writer.Write(" escape ");
                 Children[2].ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
             }

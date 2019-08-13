@@ -32,7 +32,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowforall
             EventBean[] oldData,
             bool isGenerateSynthetic)
         {
-            if (processor.IsSelectRStream()) {
+            if (processor.IsSelectRStream) {
                 var eventsX = processor.GetSelectListEventsAsArray(false, isGenerateSynthetic, false);
                 EventBeanUtility.AddToCollection(eventsX, eventsOld);
             }
@@ -54,7 +54,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowforall
             ISet<MultiKey<EventBean>> oldEvents,
             bool isGenerateSynthetic)
         {
-            if (processor.IsSelectRStream()) {
+            if (processor.IsSelectRStream) {
                 var eventsX = processor.GetSelectListEventsAsArray(false, isGenerateSynthetic, true);
                 EventBeanUtility.AddToCollection(eventsX, eventsOld);
             }
@@ -95,7 +95,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowforall
                 newEvents = processor.GetSelectListEventsAsArray(true, isGenerateSynthetic, isJoin);
             }
 
-            if (oldEvents == null && processor.IsSelectRStream()) {
+            if (oldEvents == null && processor.IsSelectRStream) {
                 oldEvents = processor.GetSelectListEventsAsArray(false, isGenerateSynthetic, isJoin);
             }
 

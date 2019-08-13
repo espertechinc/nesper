@@ -101,7 +101,7 @@ namespace com.espertech.esper.regressionlib.suite.view
             {
                 SendTimer(env, 0);
 
-                var fields = "Symbol".SplitCsv();
+                var fields = new [] { "Symbol" };
                 var text = "@Name('s0') select irstream * from SupportMarketDataBean#time_batch(1 sec)";
                 env.CompileDeployAddListenerMileZero(text, "s0");
 
@@ -230,7 +230,7 @@ namespace com.espertech.esper.regressionlib.suite.view
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "TheString".SplitCsv();
+                var fields = new [] { "TheString" };
 
                 SendTimer(env, 0);
                 var epl = "@Name('s0') select irstream * from SupportBean#time_batch(10 sec)";
@@ -324,7 +324,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 SendCurrentTime(env, "2002-03-01T09:00:00.000");
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    "TheString".SplitCsv(),
+                    new [] { "TheString" },
                     new object[] {"E1"});
 
                 env.SendEventBean(new SupportBean("E2", 1));
@@ -334,14 +334,14 @@ namespace com.espertech.esper.regressionlib.suite.view
                 SendCurrentTime(env, "2002-04-01T09:00:00.000");
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    "TheString".SplitCsv(),
+                    new [] { "TheString" },
                     new object[] {"E2"});
 
                 env.SendEventBean(new SupportBean("E3", 1));
                 SendCurrentTime(env, "2002-05-01T09:00:00.000");
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    "TheString".SplitCsv(),
+                    new [] { "TheString" },
                     new object[] {"E3"});
 
                 env.UndeployAll();
@@ -376,13 +376,13 @@ namespace com.espertech.esper.regressionlib.suite.view
                 SendTimer(env, 4000);
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    "TheString".SplitCsv(),
+                    new [] { "TheString" },
                     new object[] {"E1"});
 
                 SendTimer(env, 5000);
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetOldAndReset(),
-                    "TheString".SplitCsv(),
+                    new [] { "TheString" },
                     new object[] {"E1"});
 
                 SendTimer(env, 5999);
@@ -482,7 +482,7 @@ namespace com.espertech.esper.regressionlib.suite.view
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "TheString".SplitCsv();
+                var fields = new [] { "TheString" };
 
                 SendTimer(env, 0);
                 var epl = "@Name('s0') select irstream * from SupportBean#time_batch(10 sec)";
@@ -569,7 +569,7 @@ namespace com.espertech.esper.regressionlib.suite.view
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "TheString".SplitCsv();
+                var fields = new [] { "TheString" };
 
                 SendTimer(env, 0);
                 var epl = "@Name('s0') select irstream * from SupportBean#time_batch(10 sec)";

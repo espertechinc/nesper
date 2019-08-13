@@ -59,17 +59,17 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
 
         private static void TryAssertionReturnTypeIsEventsInvalid(RegressionEnvironment env)
         {
-            env.CompileDeploy("select myItemProducerInvalidNoType(TheString) as c0 from SupportBean");
+            env.CompileDeploy("select MyItemProducerInvalidNoType(TheString) as c0 from SupportBean");
             SupportMessageAssertUtil.TryInvalidCompile(
                 env,
-                "select myItemProducerInvalidNoType(TheString).where(v -> v.Id='Id1') as c0 from SupportBean",
-                "Failed to validate select-clause expression 'myItemProducerInvalidNoType(theStri...(68 chars)': Method 'myItemProducerEventBeanArray' returns EventBean-array but does not provide the event type name [");
+                "select MyItemProducerInvalidNoType(TheString).where(v -> v.Id='Id1') as c0 from SupportBean",
+                "Failed to validate select-clause expression 'MyItemProducerInvalidNoType(TheStri...(68 chars)': Method 'MyItemProducerEventBeanArray' returns EventBean-array but does not provide the event type name [");
 
             // test invalid: event type name invalid
             SupportMessageAssertUtil.TryInvalidCompile(
                 env,
                 "select myItemProducerInvalidWrongType(TheString).where(v -> v.Id='Id1') as c0 from SupportBean",
-                "Failed to validate select-clause expression 'myItemProducerInvalidWrongType(theS...(74 chars)': Method 'myItemProducerEventBeanArray' returns event type 'dummy' and the event type cannot be found [select myItemProducerInvalidWrongType(TheString).where(v -> v.Id='Id1') as c0 from SupportBean]");
+                "Failed to validate select-clause expression 'MyItemProducerInvalidWrongType(TheS...(74 chars)': Method 'MyItemProducerEventBeanArray' returns event type 'dummy' and the event type cannot be found [select MyItemProducerInvalidWrongType(TheString).where(v -> v.Id='Id1') as c0 from SupportBean]");
 
             env.UndeployAll();
         }

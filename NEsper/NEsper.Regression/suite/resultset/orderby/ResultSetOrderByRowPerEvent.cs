@@ -159,7 +159,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.orderby
                 env.SendEventBean(new SupportBeanString("KGB"));
                 env.SendEventBean(new SupportBeanString("DOG"));
 
-                var fields = "Symbol".SplitCsv();
+                var fields = new [] { "Symbol" };
                 EPAssertionUtil.AssertPropsPerRow(
                     env.Listener("s0").LastNewData,
                     fields,
@@ -192,7 +192,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.orderby
                 SendEvent(env, "CAT", 6);
                 SendEvent(env, "CAT", 5);
 
-                var fields = "Symbol".SplitCsv();
+                var fields = new [] { "Symbol" };
                 EPAssertionUtil.AssertPropsPerRow(
                     env.Listener("s0").LastNewData,
                     fields,

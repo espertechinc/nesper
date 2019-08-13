@@ -56,7 +56,7 @@ namespace com.espertech.esper.common.@internal.collection
         }
 
         /// <summary>Add an event to the buffer.</summary>
-        /// <param name="@event">to add</param>
+        /// <param name="event">to add</param>
         public void Add(EventBean @event)
         {
             Buffer[NextFreeIndex] = @event;

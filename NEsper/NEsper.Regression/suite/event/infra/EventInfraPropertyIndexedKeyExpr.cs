@@ -68,8 +68,8 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
             env.CompileDeployWBusPublicType(epl, new RegressionPath()).AddListener("s0");
 
             IDictionary<string, object>[] mapinner = {
-                Collections.SingletonDataMap("p0", "A"),
-                Collections.SingletonDataMap("p0", "B")
+                Collections.SingletonDataMap("P0", "A"),
+                Collections.SingletonDataMap("P0", "B")
             };
             IDictionary<string, object> map = new Dictionary<string, object>();
             map.Put("intarray", new[] {1, 2});

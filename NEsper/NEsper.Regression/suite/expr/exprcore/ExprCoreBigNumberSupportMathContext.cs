@@ -31,10 +31,10 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@Name('s0') select 10/BigDecimal.ValueOf(5,0) as c0 from SupportBean";
+                var epl = "@Name('s0') select 10/5.0m as c0 from SupportBean";
                 env.CompileDeploy(epl).AddListener("s0");
 
-                var fields = "c0".SplitCsv();
+                var fields = new [] { "c0" };
                 Assert.AreEqual(typeof(decimal), env.Statement("s0").EventType.GetPropertyType("c0"));
 
                 env.SendEventBean(new SupportBean());

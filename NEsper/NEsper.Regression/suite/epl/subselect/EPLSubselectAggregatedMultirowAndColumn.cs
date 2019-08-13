@@ -206,7 +206,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
     {
         public void Run(RegressionEnvironment env)
         {
-            var fields = "c0,c1".SplitCsv();
+            var fields = new [] { "c0", "c1" };
             var epl =
                 "@Name('s0') @Name('s0')select (select TheString as c0, sum(IntPrimitive) as c1 from SupportBean#keepall group by TheString having sum(IntPrimitive) > 10) as subq from SupportBean_S0";
             env.CompileDeployAddListenerMileZero(epl, "s0");
@@ -236,7 +236,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
         public void Run(RegressionEnvironment env)
         {
             var fieldName = "subq";
-            var fields = "c0,c1".SplitCsv();
+            var fields = new [] { "c0", "c1" };
 
             var epl =
                 "create context MyCtx partition by TheString from SupportBean, P00 from SupportBean_S0;\n" +
@@ -284,7 +284,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
         {
             var milestone = new AtomicLong();
             var fieldName = "subq";
-            var fields = "c0,c1".SplitCsv();
+            var fields = new [] { "c0", "c1" };
             var path = new RegressionPath();
 
             var eplNoDelete = "@Name('s0') select " +
@@ -367,7 +367,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
             env.UndeployAll();
 
             // test multiple group-by criteria
-            var fieldsMultiGroup = "c0,c1,c2,c3,c4".SplitCsv();
+            var fieldsMultiGroup = new [] { "c0", "c1", "c2", "c3", "c4" };
             var eplMultiGroup = "@Name('s0') select " +
                                 "(select TheString as c0, IntPrimitive as c1, TheString||'x' as c2, " +
                                 "    IntPrimitive * 1000 as c3, sum(LongPrimitive) as c4 " +
@@ -402,7 +402,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
         public void Run(RegressionEnvironment env)
         {
             var fieldName = "subq";
-            var fields = "c0,c1".SplitCsv();
+            var fields = new [] { "c0", "c1" };
 
             var eplEnumCorrelated = "@Name('s0') select " +
                                     "(select TheString as c0, sum(IntPrimitive) as c1 " +
@@ -458,7 +458,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
         public void Run(RegressionEnvironment env)
         {
             var fieldName = "subq";
-            var fields = "c0,c1".SplitCsv();
+            var fields = new [] { "c0", "c1" };
 
             var eplEnumCorrelated = "@Name('s0') select " +
                                     "(select TheString as c0, sum(IntPrimitive) as c1 " +
@@ -528,7 +528,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
                 "e1",
                 env.Listener("s0").AssertOneGetNewAndReset(),
                 "c0",
-                "c0,c1".SplitCsv(),
+                new [] { "c0", "c1" },
                 new[] {new object[] {"E1", 30}});
 
             env.SendEventBean(new SupportBean("E2", 200));
@@ -537,7 +537,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
                 "e1",
                 env.Listener("s0").AssertOneGetNewAndReset(),
                 "c0",
-                "c0,c1".SplitCsv(),
+                new [] { "c0", "c1" },
                 new[] {new object[] {"E1", 30}, new object[] {"E2", 200}});
             env.UndeployModuleContaining("s0");
 
@@ -551,7 +551,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
                 "e1",
                 env.Listener("s0").AssertOneGetNewAndReset(),
                 "c0",
-                "c0,c1".SplitCsv(),
+                new [] { "c0", "c1" },
                 new[] {new object[] {"E1", 30}});
 
             env.UndeployAll();
@@ -566,7 +566,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
                 "@Name('s0') select (select TheString as c0, sum(IntPrimitive) as c1 from SupportBean group by TheString).take(10) as subq from SupportBean_S0";
             env.CompileDeploy(epl).AddListener("s0");
 
-            var fields = "c0,c1".SplitCsv();
+            var fields = new [] { "c0", "c1" };
 
             env.SendEventBean(new SupportBean_S0(1, "E1"));
             AssertMapMultiRow("subq", env.Listener("s0").AssertOneGetNewAndReset(), "c0", fields, null);
@@ -597,7 +597,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
     {
         public void Run(RegressionEnvironment env)
         {
-            var fields = "c0,c1".SplitCsv();
+            var fields = new [] { "c0", "c1" };
             var epl = "@Name('s0') expression getGroups {" +
                       "(select TheString as c0, sum(IntPrimitive) as c1 " +
                       "  from SupportBean#keepall group by TheString)" +
@@ -644,7 +644,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
         public void Run(RegressionEnvironment env)
         {
             var fieldName = "subq";
-            var fields = "c0,c1".SplitCsv();
+            var fields = new [] { "c0", "c1" };
 
             // test unfiltered
             var eplEnumUnfiltered = "@Name('s0') select " +
@@ -754,7 +754,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
                 "e1",
                 env.Listener("s0").AssertOneGetNewAndReset(),
                 "c0",
-                "c0,c1".SplitCsv(),
+                new [] { "c0", "c1" },
                 null);
 
             env.Milestone(1);
@@ -765,7 +765,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
                 "e1",
                 env.Listener("s0").AssertOneGetNewAndReset(),
                 "c0",
-                "c0,c1".SplitCsv(),
+                new [] { "c0", "c1" },
                 new[] {new object[] {"E1", 10}});
 
             env.Milestone(2);
@@ -776,7 +776,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
                 "e1",
                 env.Listener("s0").AssertOneGetNewAndReset(),
                 "c0",
-                "c0,c1".SplitCsv(),
+                new [] { "c0", "c1" },
                 new[] {new object[] {"E1", 10}, new object[] {"E2", 200}});
 
             env.Milestone(3);
@@ -787,7 +787,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
                 "e1",
                 env.Listener("s0").AssertOneGetNewAndReset(),
                 "c0",
-                "c0,c1".SplitCsv(),
+                new [] { "c0", "c1" },
                 new[] {new object[] {"E1", 30}, new object[] {"E2", 200}});
 
             env.UndeployAll();

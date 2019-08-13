@@ -9,6 +9,8 @@
 using System;
 using System.Collections.Generic;
 
+using Avro.Generic;
+
 using com.espertech.esper.collection;
 using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.@internal.support;
@@ -18,9 +20,14 @@ using com.espertech.esper.compiler.client;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
 
+using NEsper.Avro.Extensions;
+
 using NUnit.Framework;
 
 using static com.espertech.esper.regressionlib.framework.SupportMessageAssertUtil;
+
+using static NEsper.Avro.Extensions.SchemaBuilder;
+using static NEsper.Avro.Extensions.TypeBuilder;
 
 using SupportBean_A = com.espertech.esper.regressionlib.support.bean.SupportBean_A;
 using SupportBeanComplexProps = com.espertech.esper.regressionlib.support.bean.SupportBeanComplexProps;
@@ -53,6 +60,28 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
             return result;
         }
 
+        public static IDictionary<string, object> LocalGenerateMap(string @string, int intPrimitive)
+        {
+            var  @out = new Dictionary<string, object>();
+            @out.Put("p0", @string);
+            @out.Put("p1", intPrimitive);
+            return @out;
+        }
+
+        public static object[] LocalGenerateOA(string @string, int intPrimitive)
+        {
+            return new object[] { @string, intPrimitive };
+        }
+
+        public static GenericRecord LocalGenerateAvro(string @string, int intPrimitive)
+        {
+            var schema = SchemaBuilder.Record("name", RequiredString("p0"), RequiredInt("p1"));
+            var record = new GenericRecord(schema);
+            record.Put("p0", @string);
+            record.Put("p1", intPrimitive);
+            return record;
+        }
+
         internal class EPLInsertIntoTransposeMapAndObjectArray : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
@@ -75,13 +104,13 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
 
                 string generateFunction;
                 if (representation.IsObjectArrayEvent()) {
-                    generateFunction = "generateOA";
+                    generateFunction = "GenerateOA";
                 }
                 else if (representation.IsMapEvent()) {
-                    generateFunction = "generateMap";
+                    generateFunction = "GenerateMap";
                 }
                 else if (representation.IsAvroEvent()) {
-                    generateFunction = "generateAvro";
+                    generateFunction = "GenerateAvro";
                 }
                 else {
                     throw new IllegalStateException("Unrecognized code " + representation);
@@ -165,7 +194,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                 var result = env.Listener("s0").AssertOneGetNewAndReset();
                 EPAssertionUtil.AssertProps(
                     result,
-                    "theString,IntPrimitive".SplitCsv(),
+                    new [] { "TheString","IntPrimitive" },
                     new object[] {"OI1", 10});
                 Assert.AreEqual("OI1", ((SupportBean) result.Underlying).TheString);
 
@@ -175,7 +204,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                 env.SendEventBean(new SupportBean("I2", 2));
                 EPAssertionUtil.AssertProps(
                     env.Listener("second").AssertOneGetNewAndReset(),
-                    "theString,IntPrimitive".SplitCsv(),
+                    new [] { "TheString","IntPrimitive" },
                     new object[] {"OI2", 10});
 
                 env.UndeployAll();
@@ -196,7 +225,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                 var resultOne = env.Listener("s0").AssertOneGetNewAndReset();
                 EPAssertionUtil.AssertProps(
                     resultOne,
-                    "theString,IntPrimitive".SplitCsv(),
+                    new [] { "TheString","IntPrimitive" },
                     new object[] {"OI1", 10});
                 Assert.AreEqual("OI1", ((SupportBean) resultOne.Underlying).TheString);
                 env.UndeployModuleContaining("s0");
@@ -211,7 +240,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                 var resultTwo = env.Listener("s0").AssertOneGetNewAndReset();
                 EPAssertionUtil.AssertProps(
                     resultTwo,
-                    "intOne,intTwo".SplitCsv(),
+                    "IntOne,intTwo".SplitCsv(),
                     new object[] {10, 11});
                 Assert.AreEqual(11, (int) ((SupportBeanNumeric) resultTwo.Underlying).IntTwo);
                 env.UndeployModuleContaining("s0");

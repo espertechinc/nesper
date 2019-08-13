@@ -85,7 +85,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "c0".SplitCsv();
+                var fields = new [] { "c0" };
 
                 var epl =
                     "@Name('s0') select a.TheString as c0 from pattern [every-distinct(a.TheString) a=SupportBean]";
@@ -136,7 +136,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "c0".SplitCsv();
+                var fields = new [] { "c0" };
 
                 env.AdvanceTime(0);
                 var epl =

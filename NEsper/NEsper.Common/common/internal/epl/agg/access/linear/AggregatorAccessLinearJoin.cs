@@ -198,7 +198,10 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
             method.Block.IfRefNull(array)
                 .InstanceMethod(initArray)
                 .BlockEnd()
-                .MethodReturn(StaticMethod(typeof(Arrays), "Iterate", array));
+                .MethodReturn(
+                    ExprDotMethod(
+                        StaticMethod(typeof(Arrays), "Enumerate", array),
+                        "GetEnumerator"));
             return LocalMethod(method);
         }
 

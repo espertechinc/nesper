@@ -171,7 +171,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.core
             string name,
             IDictionary<string, T> values)
         {
-            return SetValue(name, BuildMap(values));
+            return SetValue(name, BuildMap<T>(values));
         }
 
         private CodegenExpression BuildMap<T>(IDictionary<string, T> map)
@@ -181,7 +181,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.core
             }
 
             if (map.IsEmpty()) {
-                return StaticMethod(typeof(Collections), "GetEmptyMap");
+                return StaticMethod(typeof(Collections), "GetEmptyMap", new Type[] { typeof(string), typeof(T) });
             }
 
             if (map.Count == 1) {
@@ -189,6 +189,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.core
                 return StaticMethod(
                     typeof(Collections),
                     "SingletonMap",
+                    new Type[] { typeof(string), typeof(T) },
                     CodegenExpressionBuilder.Constant(single.Key),
                     BuildMapValue(single.Value));
             }

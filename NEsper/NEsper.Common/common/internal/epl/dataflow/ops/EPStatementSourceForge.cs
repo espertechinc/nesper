@@ -79,8 +79,8 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.ops
                     classScope)
                 .Exprnode("statementDeploymentId", statementDeploymentId)
                 .Exprnode("statementName", statementName)
-                .Map("statementFilter", statementFilter)
-                .Map("collector", collector)
+                .Map<object>("statementFilter", statementFilter)
+                .Map<object>("collector", collector)
                 .Constant("submitEventBean", submitEventBean)
                 .Build();
         }

@@ -78,7 +78,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
                 eventBeanFactory,
                 "AdapterForTypedWrapper",
                 wrapped,
-                StaticMethod(typeof(Collections), "GetEmptyMap"),
+                StaticMethod(typeof(Collections), "GetEmptyMap", new[] { typeof(string), typeof(object) }),
                 memberWrapperType);
         }
     }

@@ -9,9 +9,6 @@
 using System;
 using System.IO;
 
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
-
 namespace com.espertech.esper.common.client.soda
 {
     /// <summary>
@@ -20,7 +17,7 @@ namespace com.espertech.esper.common.client.soda
     [Serializable]
     public class RegExpExpression : ExpressionBase
     {
-        private bool not;
+        private readonly bool not;
 
         /// <summary>
         /// Ctor - for use to create an expression tree, without child expression.
@@ -60,7 +57,8 @@ namespace com.espertech.esper.common.client.soda
         {
             this.Children.Add(left);
             this.Children.Add(right);
-            if (escape != null) {
+            if (escape != null)
+            {
                 this.Children.Add(escape);
             }
 
@@ -100,28 +98,32 @@ namespace com.espertech.esper.common.client.soda
         {
             this.Children.Add(left);
             this.Children.Add(right);
-            if (escape != null) {
+            if (escape != null)
+            {
                 this.Children.Add(escape);
             }
 
             not = false;
         }
 
-        public override ExpressionPrecedenceEnum Precedence {
+        public override ExpressionPrecedenceEnum Precedence
+        {
             get => ExpressionPrecedenceEnum.RELATIONAL_BETWEEN_IN;
         }
 
         public override void ToPrecedenceFreeEPL(TextWriter writer)
         {
             this.Children[0].ToEPL(writer, Precedence);
-            if (not) {
+            if (not)
+            {
                 writer.Write(" not");
             }
 
             writer.Write(" regexp ");
             this.Children[1].ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
 
-            if (this.Children.Count > 2) {
+            if (this.Children.Count > 2)
+            {
                 writer.Write(" escape ");
                 this.Children[2].ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
             }
@@ -131,7 +133,8 @@ namespace com.espertech.esper.common.client.soda
         /// Returns true if negated.
         /// </summary>
         /// <returns>indicator whether negated</returns>
-        public bool IsNot {
+        public bool IsNot
+        {
             get => not;
         }
     }

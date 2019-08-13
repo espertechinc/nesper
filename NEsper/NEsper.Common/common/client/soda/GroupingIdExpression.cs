@@ -9,14 +9,12 @@
 using System;
 using System.IO;
 
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
-
 namespace com.espertech.esper.common.client.soda
 {
     /// <summary>
     /// Grouping_id-function for use with rollup, cube or grouping sets.
     /// </summary>
+    [Serializable]
     public class GroupingIdExpression : ExpressionBase
     {
         /// <summary>
@@ -27,7 +25,8 @@ namespace com.espertech.esper.common.client.soda
         {
         }
 
-        public override ExpressionPrecedenceEnum Precedence {
+        public override ExpressionPrecedenceEnum Precedence
+        {
             get => ExpressionPrecedenceEnum.UNARY;
         }
 

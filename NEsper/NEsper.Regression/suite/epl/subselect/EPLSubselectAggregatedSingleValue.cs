@@ -563,7 +563,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
                     "@Name('s0') select P00 as c0, (select sum(IntPrimitive) from SupportBean) as c1 from SupportBean_S0";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
-                var fields = "c0,c1".SplitCsv();
+                var fields = new [] { "c0", "c1" };
 
                 env.SendEventBean(new SupportBean_S0(1, "E1"));
                 EPAssertionUtil.AssertProps(
@@ -593,7 +593,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "c0,c1".SplitCsv();
+                var fields = new [] { "c0", "c1" };
                 var epl = "@Name('s0') @Name('s0')select *, " +
                           "(select sum(IntPrimitive) from SupportBean#keepall having sum(IntPrimitive) > 100) as c0," +
                           "exists (select sum(IntPrimitive) from SupportBean#keepall having sum(IntPrimitive) > 100) as c1 " +
@@ -742,7 +742,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
                 env.UndeployAll();
 
                 // test distinct
-                fields = "theString,c0,c1,c2,c3".SplitCsv();
+                fields = "TheString,c0,c1,c2,c3".SplitCsv();
                 epl = "@Name('s0') @Name('s0')select TheString, " +
                       "(select count(sb.IntPrimitive) from SupportBean()#keepall as sb where bean.TheString = sb.TheString) as c0, " +
                       "(select count(distinct sb.IntPrimitive) from SupportBean()#keepall as sb where bean.TheString = sb.TheString) as c1, " +

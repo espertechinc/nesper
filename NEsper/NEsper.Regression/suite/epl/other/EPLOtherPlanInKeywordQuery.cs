@@ -492,7 +492,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 // assert table
                 path.Clear();
                 env.CompileDeploy(
-                    "create table S0Table(Id int primary key, P00 string primary key, P01 string primary key, P02 string primary key, p03 string primary key)",
+                    "create table S0Table(Id int primary key, P00 string primary key, P01 string primary key, P02 string primary key, P03 string primary key)",
                     path);
                 env.CompileDeploy("insert into S0Table select * from SupportBean_S0", path);
                 env.CompileDeploy("create index S0Idx1 on S0Table(P00)", path);

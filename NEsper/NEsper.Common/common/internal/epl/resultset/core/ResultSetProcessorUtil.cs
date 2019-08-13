@@ -361,7 +361,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
 
             return instance.Methods.AddMethod(
                 typeof(EventBean[]),
-                "getSelectEventsHavingWithOrderBy",
+                "GetSelectEventsHavingWithOrderBy",
                 CodegenNamedParam.From(
                     typeof(AggregationService),
                     REF_AGGREGATIONSVC.Ref,
@@ -480,7 +480,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
 
             return instance.Methods.AddMethod(
                 typeof(EventBean[]),
-                "getSelectEventsHaving",
+                "GetSelectEventsHaving",
                 CodegenNamedParam.From(
                     typeof(SelectExprProcessor),
                     NAME_SELECTEXPRPROCESSOR,
@@ -662,7 +662,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
                         .IfCondition(EqualsNull(Ref("result")))
                         .AssignRef(
                             "result",
-                            NewInstance<ArrayDeque<EventBean>>(ExprDotMethod(Ref("events"), "Size")))
+                            NewInstance<ArrayDeque<EventBean>>(ExprDotName(Ref("events"), "Count")))
                         .BlockEnd()
                         .ExprDotMethod(Ref("result"), "Add", Ref("generated"))
                         .BlockEnd();
@@ -673,7 +673,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
 
             return instance.Methods.AddMethod(
                 typeof(EventBean[]),
-                "getSelectJoinEventsHaving",
+                "GetSelectJoinEventsHaving",
                 CodegenNamedParam.From(
                     typeof(SelectExprProcessor),
                     NAME_SELECTEXPRPROCESSOR,
@@ -795,10 +795,10 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
                         .IfCondition(EqualsNull(Ref("result")))
                         .AssignRef(
                             "result",
-                            NewInstance<ArrayDeque<EventBean>>(ExprDotMethod(Ref("events"), "Size")))
+                            NewInstance<ArrayDeque<EventBean>>(ExprDotName(Ref("events"), "Count")))
                         .AssignRef(
                             "eventGenerators",
-                            NewInstance<ArrayDeque<EventBean>>(ExprDotMethod(Ref("events"), "Size")))
+                            NewInstance<ArrayDeque<EventBean>>(ExprDotName(Ref("events"), "Count")))
                         .BlockEnd()
                         .ExprDotMethod(Ref("result"), "Add", Ref("resultEvent"))
                         .ExprDotMethod(Ref("eventGenerators"), "Add", Ref("eventsPerStream"))
@@ -827,7 +827,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
 
             return instance.Methods.AddMethod(
                 typeof(EventBean[]),
-                "getSelectJoinEventsHavingWithOrderBy",
+                "GetSelectJoinEventsHavingWithOrderBy",
                 CodegenNamedParam.From(
                     typeof(AggregationService),
                     REF_AGGREGATIONSVC.Ref,
@@ -1071,7 +1071,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
                             "Add",
                             ExprDotMethod(
                                 REF_ORDERBYPROCESSOR,
-                                "getSortKey",
+                                "GetSortKey",
                                 REF_EPS,
                                 ExprForgeCodegenNames.REF_ISNEWDATA,
                                 REF_EXPREVALCONTEXT));
@@ -1261,7 +1261,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
                             "Add",
                             ExprDotMethod(
                                 REF_ORDERBYPROCESSOR,
-                                "getSortKey",
+                                "GetSortKey",
                                 REF_EPS,
                                 ExprForgeCodegenNames.REF_ISNEWDATA,
                                 REF_EXPREVALCONTEXT));

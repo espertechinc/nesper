@@ -89,7 +89,7 @@ namespace com.espertech.esper.common.@internal.epl.virtualdw
                 subordTableFactory.IndexBtreeProps);
             VirtualDWEventTable noopTable = tableVW.Second;
             for (int i = 0; i < noopTable.BtreeAccess.Count; i++) {
-                string opRange = subordTableFactory.RangeEvals[i].Type.StringOp;
+                string opRange = subordTableFactory.RangeEvals[i].Type.StringOp();
                 VirtualDataWindowLookupOp op = VirtualDataWindowLookupOpExtensions.FromOpString(opRange);
                 noopTable.BtreeAccess[i].Operator = op;
             }
@@ -140,7 +140,7 @@ namespace com.espertech.esper.common.@internal.epl.virtualdw
 
             for (int i = 0; i < noopTable.BtreeAccess.Count; i++) {
                 QueryGraphValueEntryRange range = tableLookupPlan.VirtualDWRangeEvals[i];
-                VirtualDataWindowLookupOp op = VirtualDataWindowLookupOpExtensions.FromOpString(range.Type.StringOp);
+                VirtualDataWindowLookupOp op = VirtualDataWindowLookupOpExtensions.FromOpString(range.Type.StringOp());
                 VirtualDataWindowLookupFieldDesc rangeField = noopTable.BtreeAccess[i];
                 rangeField.Operator = op;
                 rangeField.LookupValueType = tableLookupPlan.VirtualDWRangeTypes[i];
@@ -177,7 +177,7 @@ namespace com.espertech.esper.common.@internal.epl.virtualdw
             VirtualDWEventTable noopTable = (VirtualDWEventTable) eventTable;
             for (int i = 0; i < noopTable.BtreeAccess.Count; i++) {
                 RangeIndexLookupValueRange range = (RangeIndexLookupValueRange) rangeValues[i];
-                VirtualDataWindowLookupOp op = range.Operator.StringOp.FromOpString();
+                VirtualDataWindowLookupOp op = range.Operator.StringOp().FromOpString();
                 noopTable.BtreeAccess[i].Operator = op;
             }
 

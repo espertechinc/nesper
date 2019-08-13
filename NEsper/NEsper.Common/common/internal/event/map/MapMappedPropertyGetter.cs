@@ -73,7 +73,7 @@ namespace com.espertech.esper.common.@internal.@event.map
             CodegenClassScope codegenClassScope)
         {
             return UnderlyingGetCodegen(
-                CastUnderlying(typeof(IDictionary<object, object>), beanExpression),
+                CastUnderlying(typeof(IDictionary<string, object>), beanExpression),
                 codegenMethodScope,
                 codegenClassScope);
         }
@@ -84,7 +84,7 @@ namespace com.espertech.esper.common.@internal.@event.map
             CodegenClassScope codegenClassScope)
         {
             return UnderlyingExistsCodegen(
-                CastUnderlying(typeof(IDictionary<object, object>), beanExpression),
+                CastUnderlying(typeof(IDictionary<string, object>), beanExpression),
                 codegenMethodScope,
                 codegenClassScope);
         }
@@ -148,7 +148,7 @@ namespace com.espertech.esper.common.@internal.@event.map
             return StaticMethod(
                 GetType(),
                 "GetMapMappedValue",
-                CastUnderlying(typeof(IDictionary<object, object>), beanExpression),
+                CastUnderlying(typeof(IDictionary<string, object>), beanExpression),
                 Constant(fieldName),
                 key);
         }

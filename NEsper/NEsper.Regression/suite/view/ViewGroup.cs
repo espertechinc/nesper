@@ -1028,7 +1028,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                     new[] {new object[] {20.0}, new object[] {21.0}, new object[] {22.0}});
                 EPAssertionUtil.AssertPropsPerRow(
                     env.Listener("s0").NewDataListFlattened,
-                    "Symbol".SplitCsv(),
+                    new [] { "Symbol" },
                     new[] {new object[] {"S2"}, new object[] {"S2"}, new object[] {"S2"}});
                 Assert.IsNull(env.Listener("s0").LastOldData);
                 env.Listener("s0").Reset();
@@ -1047,7 +1047,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                     new[] {new object[] {1.0}, new object[] {2.0}, new object[] {3.0}});
                 EPAssertionUtil.AssertPropsPerRow(
                     env.Listener("s0").NewDataListFlattened,
-                    "Symbol".SplitCsv(),
+                    new [] { "Symbol" },
                     new[] {new object[] {"S1"}, new object[] {"S1"}, new object[] {"S1"}});
                 Assert.IsNull(env.Listener("s0").LastOldData);
                 env.Listener("s0").Reset();
@@ -1066,7 +1066,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                     new[] {new object[] {23.0}, new object[] {24.0}, new object[] {25.0}});
                 EPAssertionUtil.AssertPropsPerRow(
                     env.Listener("s0").NewDataListFlattened,
-                    "Symbol".SplitCsv(),
+                    new [] { "Symbol" },
                     new[] {new object[] {"S2"}, new object[] {"S2"}, new object[] {"S2"}});
                 EPAssertionUtil.AssertPropsPerRow(
                     env.Listener("s0").OldDataListFlattened,
@@ -1074,7 +1074,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                     new[] {new object[] {20.0}, new object[] {21.0}, new object[] {22.0}});
                 EPAssertionUtil.AssertPropsPerRow(
                     env.Listener("s0").OldDataListFlattened,
-                    "Symbol".SplitCsv(),
+                    new [] { "Symbol" },
                     new[] {new object[] {"S2"}, new object[] {"S2"}, new object[] {"S2"}});
                 env.Listener("s0").Reset();
 
@@ -1093,7 +1093,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                     new[] {new object[] {4.0}, new object[] {5.0}, new object[] {6.0}});
                 EPAssertionUtil.AssertPropsPerRow(
                     env.Listener("s0").NewDataListFlattened,
-                    "Symbol".SplitCsv(),
+                    new [] { "Symbol" },
                     new[] {new object[] {"S1"}, new object[] {"S1"}, new object[] {"S1"}});
                 EPAssertionUtil.AssertPropsPerRow(
                     env.Listener("s0").OldDataListFlattened,
@@ -1101,7 +1101,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                     new[] {new object[] {1.0}, new object[] {2.0}, new object[] {3.0}});
                 EPAssertionUtil.AssertPropsPerRow(
                     env.Listener("s0").OldDataListFlattened,
-                    "Symbol".SplitCsv(),
+                    new [] { "Symbol" },
                     new[] {new object[] {"S1"}, new object[] {"S1"}, new object[] {"S1"}});
                 env.Listener("s0").Reset();
 
@@ -1183,7 +1183,7 @@ namespace com.espertech.esper.regressionlib.suite.view
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "c0,c1".SplitCsv();
+                var fields = new [] { "c0", "c1" };
 
                 env.Milestone(0);
 

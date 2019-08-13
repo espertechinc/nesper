@@ -6,6 +6,7 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
 using System.IO;
 
 namespace com.espertech.esper.common.client.soda
@@ -13,13 +14,15 @@ namespace com.espertech.esper.common.client.soda
     /// <summary>
     ///     For use in expression as a placeholder to represent its child nodes.
     /// </summary>
+    [Serializable]
     public class ExpressionPlaceholder : ExpressionBase
     {
         public override ExpressionPrecedenceEnum Precedence => ExpressionPrecedenceEnum.MINIMUM;
 
         public override void ToPrecedenceFreeEPL(TextWriter writer)
         {
-            if (Children == null || Children.Count == 0) {
+            if (Children == null || Children.Count == 0)
+            {
                 return;
             }
 

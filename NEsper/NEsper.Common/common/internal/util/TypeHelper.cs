@@ -369,8 +369,8 @@ namespace com.espertech.esper.common.@internal.util
             }
 
             if (typeName == typeof(BigInteger).FullName ||
-                typeName == "biginteger" ||
-                typeName == "bigint")
+                typeName == "Biginteger" ||
+                typeName == "Bigint")
             {
                 return typeof(BigInteger?).FullName;
             }
@@ -1342,7 +1342,7 @@ namespace com.espertech.esper.common.@internal.util
 
             if (type == typeof(BigInteger))
             {
-                return "bigint";
+                return "Bigint";
             }
 
             return type.FullName;
@@ -1423,7 +1423,7 @@ namespace com.espertech.esper.common.@internal.util
 
             if (type == typeof(BigInteger))
             {
-                return "bigint";
+                return "Bigint";
             }
 
             return type.FullName;
@@ -1550,8 +1550,8 @@ namespace com.espertech.esper.common.@internal.util
                 case "dtx":
                     return typeof(DateTimeEx);
 
-                case "bigint":
-                case "biginteger":
+                case "Bigint":
+                case "Biginteger":
                     return boxed
                         ? typeof(BigInteger?)
                         : typeof(BigInteger);
@@ -1680,7 +1680,7 @@ namespace com.espertech.esper.common.@internal.util
 
             if (boxed == typeof(BigInteger?))
             {
-                return "bigint";
+                return "Bigint";
             }
 
             return clazz.Name;
@@ -1772,8 +1772,8 @@ namespace com.espertech.esper.common.@internal.util
                 case "dtx":
                     return typeof(DateTimeEx);
 
-                case "bigint":
-                case "biginteger":
+                case "Bigint":
+                case "Biginteger":
                     return typeof(BigInteger?);
 
                 default:
@@ -2997,6 +2997,23 @@ namespace com.espertech.esper.common.@internal.util
             object[] args,
             Exception e)
         {
+            return GetMessageInvocationTarget(
+                statementName,
+                method.Name,
+                method.GetParameterTypes(),
+                classOrPropertyName,
+                args,
+                e);
+        }
+
+        public static string GetMessageInvocationTarget(
+            string statementName,
+            string methodName,
+            Type[] methodParameters,
+            string classOrPropertyName,
+            object[] args,
+            Exception e)
+        {
             if (e is TargetInvocationException)
             {
                 if (e.InnerException != null)
@@ -3008,12 +3025,11 @@ namespace com.espertech.esper.common.@internal.util
             var parameters = args == null ? "null" : args.Render(",", "[]");
             if (args != null)
             {
-                var methodParameters = method.GetParameterTypes();
                 for (var i = 0; i < methodParameters.Length; i++)
                 {
                     if (methodParameters[i].IsPrimitive && args[i] == null)
                     {
-                        return "NullPointerException invoking method '" + method.Name +
+                        return "NullPointerException invoking method '" + methodName +
                                "' of class '" + classOrPropertyName +
                                "' in parameter " + i +
                                " passing parameters " + parameters +
@@ -3024,7 +3040,7 @@ namespace com.espertech.esper.common.@internal.util
                 }
             }
 
-            return "Invocation exception when invoking method '" + method.Name +
+            return "Invocation exception when invoking method '" + methodName +
                    "' of class '" + classOrPropertyName +
                    "' passing parameters " + parameters +
                    " for statement '" + statementName + "': " + GetCleanName(e.GetType()) + " : " +

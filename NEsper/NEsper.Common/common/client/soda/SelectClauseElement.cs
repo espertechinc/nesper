@@ -29,7 +29,8 @@ namespace com.espertech.esper.common.client.soda
         /// <returns></returns>
         public static string ToEPL(this SelectClauseElement selectClauseElement)
         {
-            using (var textWriter = new StringWriter()) {
+            using (var textWriter = new StringWriter())
+            {
                 selectClauseElement.ToEPLElement(textWriter);
                 return textWriter.ToString();
             }

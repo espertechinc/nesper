@@ -560,7 +560,7 @@ namespace com.espertech.esper.common.@internal.epl.annotation
             }
 
             if (annotation is NameAttribute name) {
-                return NewInstance<AnnotationNameAttribute>(
+                return NewInstance<NameAttribute>(
                     Constant(name.Value));
             }
 

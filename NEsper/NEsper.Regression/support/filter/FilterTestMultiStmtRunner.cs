@@ -95,7 +95,7 @@ namespace com.espertech.esper.regressionlib.support.filter
             // find stats for this permutation
             FilterTestMultiStmtAssertStats statsPermuted = null;
             foreach (var stats in permutableCase.StatsPerPermutation) {
-                if (Equals(stats.Permutation, permutation)) {
+                if (Arrays.AreEqual(stats.Permutation, permutation)) {
                     if (statsPermuted != null) {
                         throw new IllegalStateException("Permutation " + permutation.RenderAny() + " exists twice");
                     }

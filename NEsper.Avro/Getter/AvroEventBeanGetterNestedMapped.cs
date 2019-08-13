@@ -138,7 +138,7 @@ namespace NEsper.Avro.Getter
                 .MethodReturn(
                     CodegenExpressionBuilder.StaticMethod(
                         typeof(AvroEventBeanGetterMapped),
-                        "getAvroMappedValueWNullCheck",
+                        "GetAvroMappedValueWNullCheck",
                         CodegenExpressionBuilder.Ref("map"),
                         CodegenExpressionBuilder.Constant(_key)));
         }

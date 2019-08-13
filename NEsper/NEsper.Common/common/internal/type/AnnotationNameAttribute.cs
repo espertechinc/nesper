@@ -12,6 +12,7 @@ using com.espertech.esper.common.client.annotation;
 
 namespace com.espertech.esper.common.@internal.type
 {
+#if false
     public class AnnotationNameAttribute : NameAttribute
     {
         private readonly string name;
@@ -54,4 +55,5 @@ namespace com.espertech.esper.common.@internal.type
             return name.GetHashCode();
         }
     }
+#endif
 } // end of namespace

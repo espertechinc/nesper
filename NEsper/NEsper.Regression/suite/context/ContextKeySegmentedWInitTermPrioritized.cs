@@ -72,7 +72,7 @@ namespace com.espertech.esper.regressionlib.suite.context
             env.SendEventBean(new SupportBean(theString, intPrimitive));
             EPAssertionUtil.AssertProps(
                 env.Listener("s0").AssertOneGetNewAndReset(),
-                "theString,cnt".SplitCsv(),
+                "TheString,cnt".SplitCsv(),
                 new object[] {theString, expected});
         }
 
@@ -178,7 +178,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                     path);
                 env.AddListener("s0");
 
-                var fields = "theString,theSum".SplitCsv();
+                var fields = "TheString,theSum".SplitCsv();
 
                 env.SendEventBean(new SupportBean("A", 10));
                 env.SendEventBean(new SupportBean("B", 99));
@@ -246,7 +246,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                     "@Name('s0') context CtxPartitionInitWCorrTerm select TheString, sum(LongPrimitive) as theSum from SupportBean output last when terminated",
                     path);
                 env.AddListener("s0");
-                var fields = "theString,theSum".SplitCsv();
+                var fields = "TheString,theSum".SplitCsv();
 
                 var initA = SendBean(env, "A", 100, 1, true);
 
@@ -466,7 +466,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                           "terminated by SupportBean(IntPrimitive=1000);\n" +
                           "@Name('s0') context CtxStringZeroTo1k select TheString, sum(IntPrimitive) as theSum from SupportBean output last when terminated;\n";
                 env.CompileDeploy(epl).AddListener("s0");
-                var fields = "theString,theSum".SplitCsv();
+                var fields = "TheString,theSum".SplitCsv();
 
                 env.SendEventBean(new SupportBean("A", 20));
                 env.SendEventBean(new SupportBean("A", 1000));
@@ -558,7 +558,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                     path);
 
                 env.AddListener("s0");
-                var fields = "theString,theSum".SplitCsv();
+                var fields = "TheString,theSum".SplitCsv();
 
                 env.SendEventBean(new SupportBean("A", 20));
                 env.SendEventBean(new SupportBean("A", 1000));
@@ -691,7 +691,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                     path);
 
                 env.AddListener("s0");
-                var fields = "theString,IntPrimitive,thesum".SplitCsv();
+                var fields = "TheString,IntPrimitive,thesum".SplitCsv();
 
                 SendBean(env, "A", 1, 10, true);
                 SendBean(env, "B", 1, 11, true);
@@ -750,7 +750,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                     "@Name('s0') context MyTermByUnrelated select TheString, count(*) as cnt from SupportBean output last when terminated",
                     path);
                 env.AddListener("s0");
-                var fields = "theString,cnt".SplitCsv();
+                var fields = "TheString,cnt".SplitCsv();
 
                 env.SendEventBean(new SupportBean("A", 2));
 
@@ -800,7 +800,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                     "@Name('s0') context MyTermByUnrelated select TheString, count(*) as cnt from SupportBean output last when terminated",
                     path);
                 env.AddListener("s0");
-                var fields = "theString,cnt".SplitCsv();
+                var fields = "TheString,cnt".SplitCsv();
 
                 env.Milestone(0);
 
@@ -843,7 +843,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                     path);
 
                 env.AddListener("s0");
-                var fields = "theString,cnt".SplitCsv();
+                var fields = "TheString,cnt".SplitCsv();
 
                 env.SendEventBean(new SupportBean("A", 0));
                 env.SendEventBean(new SupportBean("B", 0));
@@ -978,7 +978,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 SendCurrentTime(env, "2002-02-01T09:01:00.000");
                 EPAssertionUtil.AssertPropsPerRowAnyOrder(
                     env.Listener("s0").GetAndResetLastNewData(),
-                    "theString,cnt".SplitCsv(),
+                    "TheString,cnt".SplitCsv(),
                     new[] {new object[] {"A", 3L}, new object[] {"B", 2L}});
 
                 env.Milestone(3);
@@ -995,7 +995,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 SendCurrentTime(env, "2002-02-01T09:02:00.000");
                 EPAssertionUtil.AssertPropsPerRowAnyOrder(
                     env.Listener("s0").GetAndResetLastNewData(),
-                    "theString,cnt".SplitCsv(),
+                    "TheString,cnt".SplitCsv(),
                     new[] {new object[] {"A", 1L}, new object[] {"C", 2L}, new object[] {"D", 1L}});
 
                 SendCurrentTime(env, "2002-02-01T09:03:00.000");

@@ -15,6 +15,10 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.realize
     /// <summary>Models a pipe between two operators. </summary>
     public class LogicalChannel
     {
+        public LogicalChannel()
+        {
+        }
+
         public LogicalChannel(
             int channelId,
             string consumingOpName,
@@ -35,21 +39,21 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.realize
             OutputPort = outputPort;
         }
 
-        public int ChannelId { get; }
+        public int ChannelId { get; set; }
 
-        public string ConsumingOpName { get; }
+        public string ConsumingOpName { get; set; }
 
-        public string ConsumingOpStreamName { get; }
+        public string ConsumingOpStreamName { get; set; }
 
-        public string ConsumingOptStreamAliasName { get; }
+        public string ConsumingOptStreamAliasName { get; set; }
 
-        public int ConsumingOpStreamNum { get; }
+        public int ConsumingOpStreamNum { get; set; }
 
-        public int ConsumingOpNum { get; }
+        public int ConsumingOpNum { get; set; }
 
-        public LogicalChannelProducingPortCompiled OutputPort { get; }
+        public LogicalChannelProducingPortCompiled OutputPort { get; set; }
 
-        public string ConsumingOpPrettyPrint { get; }
+        public string ConsumingOpPrettyPrint { get; set; }
 
         public override string ToString()
         {

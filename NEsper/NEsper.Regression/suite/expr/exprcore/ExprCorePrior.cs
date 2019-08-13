@@ -323,7 +323,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "c0,c1,c2".SplitCsv();
+                var fields = new [] { "c0", "c1", "c2" };
 
                 var epl =
                     "@Name('s0') select TheString as c0, prior(1, IntPrimitive) as c1, prior(2, IntPrimitive) as c2 from SupportBean";
@@ -377,7 +377,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "c0,c1,c2".SplitCsv();
+                var fields = new [] { "c0", "c1", "c2" };
                 var epl =
                     "@Name('s0') select irstream TheString as c0, prior(1, IntPrimitive) as c1, prior(2, IntPrimitive) as c2 from SupportBean#length(2)";
                 env.CompileDeploy(epl).AddListener("s0");
@@ -433,7 +433,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "c0,c1".SplitCsv();
+                var fields = new [] { "c0", "c1" };
 
                 env.Milestone(0);
 

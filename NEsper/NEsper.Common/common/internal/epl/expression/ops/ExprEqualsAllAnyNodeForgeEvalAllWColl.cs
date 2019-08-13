@@ -230,28 +230,18 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                             NotOptional(!isNot, ExprDotMethod(Ref("leftCoerced"), "Equals", Ref("item"))))
                         .BlockReturn(ConstantFalse());
                 }
-                else if (reftype.IsGenericCollection()) {
-                    block.IfRefNullReturnNull("left")
-                        .DeclareVar<ICollection<object>>(
-                            refname,
-                            refforge.EvaluateCodegen(
-                                typeof(ICollection<object>),
-                                methodNode,
-                                exprSymbol,
-                                codegenClassScope))
-                        .IfCondition(EqualsNull(Ref(refname)))
-                        .AssignRef("hasNullRow", ConstantTrue())
-                        .IfElse()
-                        .AssignRef("hasNonNullRow", ConstantTrue())
-                        .IfCondition(NotOptional(!isNot, ExprDotMethod(Ref(refname), "Contains", Ref("left"))))
-                        .BlockReturn(ConstantFalse());
-                }
                 else if (reftype.IsGenericDictionary()) {
+                    var dictionaryType = typeof(IDictionary<,>)
+                        .MakeGenericType(
+                            reftype.GetGenericArguments()[0],
+                            reftype.GetGenericArguments()[1]);
+
                     block.IfRefNullReturnNull("left")
-                        .DeclareVar<IDictionary<object, object>>(
+                        .DeclareVar(
+                            dictionaryType,
                             refname,
                             refforge.EvaluateCodegen(
-                                typeof(IDictionary<object, object>),
+                                dictionaryType,
                                 methodNode,
                                 exprSymbol,
                                 codegenClassScope))
@@ -259,10 +249,33 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                         .AssignRef("hasNullRow", ConstantTrue())
                         .IfElse()
                         .AssignRef("hasNonNullRow", ConstantTrue())
-                        .IfCondition(NotOptional(!isNot, ExprDotMethod(Ref(refname), "containsKey", Ref("left"))))
+                        .IfCondition(NotOptional(!isNot, ExprDotMethod(Ref(refname), "ContainsKey", 
+                            ExprDotName(Ref("left"), "Value"))))
                         .BlockReturn(ConstantFalse());
                 }
-                else {
+                else if (reftype.IsGenericCollection()) {
+                    var collectionType = typeof(ICollection<>)
+                        .MakeGenericType(reftype.GetGenericArguments()[0]);
+
+                    block.IfRefNullReturnNull("left")
+                        .DeclareVar(
+                            collectionType,
+                            refname,
+                            refforge.EvaluateCodegen(
+                                collectionType,
+                                methodNode,
+                                exprSymbol,
+                                codegenClassScope))
+                        .IfCondition(EqualsNull(Ref(refname)))
+                        .AssignRef("hasNullRow", ConstantTrue())
+                        .IfElse()
+                        .AssignRef("hasNonNullRow", ConstantTrue())
+                        .IfCondition(NotOptional(!isNot, ExprDotMethod(Ref(refname), "Contains",
+                            ExprDotName(Ref("left"), "Value"))))
+                        .BlockReturn(ConstantFalse());
+                }
+                else
+                {
                     block.IfRefNullReturnNull("leftCoerced");
                     block.DeclareVar(
                         forge.CoercionTypeBoxed,

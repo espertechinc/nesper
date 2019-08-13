@@ -11,8 +11,8 @@ using System.IO;
 namespace com.espertech.esper.common.client.soda
 {
     /// <summary>
-    /// Base interface for group-by clause expressions, covers all possible combinations 
-    /// of expressions, parenthesis-expression-combinations, rollup, cube and grouping sets 
+    /// Base interface for group-by clause expressions, covers all possible combinations
+    /// of expressions, parenthesis-expression-combinations, rollup, cube and grouping sets
     /// and their parameters.
     /// </summary>
     public interface GroupByClauseExpression

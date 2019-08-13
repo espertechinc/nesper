@@ -9,7 +9,6 @@
 using System;
 using System.IO;
 
-using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.client.soda
@@ -17,6 +16,7 @@ namespace com.espertech.esper.common.client.soda
     /// <summary>
     /// Named parameter expression of the form "name:expression" or "name:(expression, expression...)"
     /// </summary>
+    [Serializable]
     public class NamedParameterExpression : ExpressionBase
     {
         private string name;
@@ -41,7 +41,8 @@ namespace com.espertech.esper.common.client.soda
         /// Returns the parameter name.
         /// </summary>
         /// <returns>name</returns>
-        public string Name {
+        public string Name
+        {
             get => name;
         }
 
@@ -54,7 +55,8 @@ namespace com.espertech.esper.common.client.soda
             this.name = name;
         }
 
-        public override ExpressionPrecedenceEnum Precedence {
+        public override ExpressionPrecedenceEnum Precedence
+        {
             get => ExpressionPrecedenceEnum.UNARY;
         }
 
@@ -62,18 +64,21 @@ namespace com.espertech.esper.common.client.soda
         {
             writer.Write(name);
             writer.Write(':');
-            if (this.Children.Count > 1 || this.Children.IsEmpty()) {
+            if (this.Children.Count > 1 || this.Children.IsEmpty())
+            {
                 writer.Write('(');
             }
 
             string delimiter = "";
-            foreach (Expression expr in this.Children) {
+            foreach (Expression expr in this.Children)
+            {
                 writer.Write(delimiter);
                 expr.ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
                 delimiter = ",";
             }
 
-            if (this.Children.Count > 1 || this.Children.IsEmpty()) {
+            if (this.Children.Count > 1 || this.Children.IsEmpty())
+            {
                 writer.Write(')');
             }
         }

@@ -13,7 +13,7 @@ using System.IO;
 namespace com.espertech.esper.common.client.soda
 {
     /// <summary>
-    /// A clause to Update a named window based on a triggering event arriving and correlated 
+    /// A clause to Update a named window based on a triggering event arriving and correlated
     /// to the named window events to be updated.
     /// </summary>
     public class OnUpdateClause : OnClause
@@ -60,7 +60,8 @@ namespace com.espertech.esper.common.client.soda
         public void ToEPL(TextWriter writer)
         {
             writer.Write(WindowName);
-            if (OptionalAsName != null) {
+            if (OptionalAsName != null)
+            {
                 writer.Write(" as ");
                 writer.Write(OptionalAsName);
             }

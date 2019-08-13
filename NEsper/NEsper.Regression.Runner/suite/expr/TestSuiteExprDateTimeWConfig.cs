@@ -41,7 +41,7 @@ namespace com.espertech.esper.regressionrun.suite.expr
             ConfigurationCommonEventTypeBean configBean = new ConfigurationCommonEventTypeBean();
 
             configBean.StartTimestampPropertyName = null;
-            configBean.EndTimestampPropertyName = "exdate";
+            configBean.EndTimestampPropertyName = "DtxDate";
             TryInvalidConfig(typeof(SupportDateTime), configBean, "Declared end timestamp property requires that a start timestamp property is also declared");
 
             configBean.StartTimestampPropertyName = "xyz";
@@ -60,9 +60,9 @@ namespace com.espertech.esper.regressionrun.suite.expr
             configBean.EndTimestampPropertyName = "TheString";
             TryInvalidConfig(typeof(SupportBean), configBean, "Declared end timestamp property 'TheString' is expected to return a Date, Calendar or long-typed value but returns 'System.String'");
 
-            configBean.StartTimestampPropertyName = "longdate";
-            configBean.EndTimestampPropertyName = "exdate";
-            TryInvalidConfig(typeof(SupportDateTime), configBean, "Declared end timestamp property 'exdate' is expected to have the same property type as the start-timestamp property 'longdate'");
+            configBean.StartTimestampPropertyName = "LongDate";
+            configBean.EndTimestampPropertyName = "DtxDate";
+            TryInvalidConfig(typeof(SupportDateTime), configBean, "Declared end timestamp property 'DtxDate' is expected to have the same property type as the start-timestamp property 'LongDate'");
         }
 
         private void TryInvalidConfig(Type beanEventClass, ConfigurationCommonEventTypeBean configBean, string expected)

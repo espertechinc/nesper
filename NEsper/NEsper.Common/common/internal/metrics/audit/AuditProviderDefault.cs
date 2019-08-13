@@ -38,14 +38,14 @@ namespace com.espertech.esper.common.@internal.metrics.audit
         {
         }
 
-        public void Stream(
+        public void StreamSingle(
             EventBean @event,
             ExprEvaluatorContext context,
             string filterSpecText)
         {
         }
 
-        public void Stream(
+        public void StreamMulti(
             EventBean[] newData,
             EventBean[] oldData,
             ExprEvaluatorContext context,

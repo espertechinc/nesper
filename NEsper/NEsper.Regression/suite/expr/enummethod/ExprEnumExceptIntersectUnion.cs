@@ -130,7 +130,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
                 env.CompileDeploy(epl).AddListener("s0");
                 LambdaAssertionUtil.AssertTypes(
                     env.Statement("s0").EventType,
-                    "val0".SplitCsv(),
+                    new [] { "val0" },
                     new[] {typeof(ICollection<object>)});
 
                 var first = SupportBean_ST0_Container.Make2ValueList("E1,1", "E2,10", "E3,1", "E4,10", "E5,11");
@@ -164,7 +164,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
                 env.CompileDeploy(epl).AddListener("s0");
                 LambdaAssertionUtil.AssertTypes(
                     env.Statement("s0").EventType,
-                    "val0".SplitCsv(),
+                    new [] { "val0" },
                     new[] {typeof(ICollection<object>)});
 
                 env.SendEventBean(new SupportBean_ST0("E1", "A1", 10)); // in both
@@ -226,7 +226,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
                 env.CompileDeploy(epl).AddListener("s0");
                 LambdaAssertionUtil.AssertTypes(
                     env.Statement("s0").EventType,
-                    "val0".SplitCsv(),
+                    new [] { "val0" },
                     new[] {typeof(ICollection<object>)});
 
                 env.SendEventBean(SupportCollection.MakeString("E1,E2", "E3,E4"));
@@ -309,7 +309,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 
                 LambdaAssertionUtil.AssertTypes(
                     env.Statement("s0").EventType,
-                    "val0".SplitCsv(),
+                    new [] { "val0" },
                     new[] {typeof(ICollection<object>)});
 
                 env.SendEventBean(SupportBean_ST0_Container.Make2Value("E1,1", "E2,10", "E3,1", "E4,10", "E5,11"));

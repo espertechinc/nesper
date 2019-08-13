@@ -26,7 +26,7 @@ namespace com.espertech.esper.common.@internal.epl.output.core
     public class OutputStrategyPostProcessForge
     {
         private readonly bool audit;
-        private readonly SelectClauseStreamSelectorEnum insertIntoStreamSelector;
+        private readonly SelectClauseStreamSelectorEnum? insertIntoStreamSelector;
         private readonly bool isRouted;
         private readonly bool routeToFront;
         private readonly SelectClauseStreamSelectorEnum selectStreamSelector;
@@ -34,7 +34,7 @@ namespace com.espertech.esper.common.@internal.epl.output.core
 
         public OutputStrategyPostProcessForge(
             bool isRouted,
-            SelectClauseStreamSelectorEnum insertIntoStreamSelector,
+            SelectClauseStreamSelectorEnum? insertIntoStreamSelector,
             SelectClauseStreamSelectorEnum selectStreamSelector,
             bool routeToFront,
             TableMetaData table,
@@ -69,16 +69,18 @@ namespace com.espertech.esper.common.@internal.epl.output.core
             // handle non-null
             var ifResultNotNull = ifChild.IfRefNotNull("result");
             if (isRouted) {
-                if (insertIntoStreamSelector.IsSelectsIStream) {
-                    ifResultNotNull.InstanceMethod(
-                        RouteCodegen(classScope, parent),
-                        Cast(typeof(EventBean[]), ExprDotName(Ref("result"), "First")));
-                }
+                if (insertIntoStreamSelector != null) {
+                    if (insertIntoStreamSelector.Value.IsSelectsIStream()) {
+                        ifResultNotNull.InstanceMethod(
+                            RouteCodegen(classScope, parent),
+                            Cast(typeof(EventBean[]), ExprDotName(Ref("result"), "First")));
+                    }
 
-                if (insertIntoStreamSelector.IsSelectsRStream) {
-                    ifResultNotNull.InstanceMethod(
-                        RouteCodegen(classScope, parent),
-                        Cast(typeof(EventBean[]), ExprDotName(Ref("result"), "Second")));
+                    if (insertIntoStreamSelector.Value.IsSelectsRStream()) {
+                        ifResultNotNull.InstanceMethod(
+                            RouteCodegen(classScope, parent),
+                            Cast(typeof(EventBean[]), ExprDotName(Ref("result"), "Second")));
+                    }
                 }
             }
 
@@ -174,7 +176,7 @@ namespace com.espertech.esper.common.@internal.epl.output.core
                 : TableDeployTimeResolver.MakeResolveTable(table, symbols.GetAddInitSvc(method));
             return NewInstance<OutputStrategyPostProcessFactory>(
                 Constant(isRouted),
-                EnumValue(typeof(SelectClauseStreamSelectorEnum), insertIntoStreamSelector.GetName()),
+                EnumValue(typeof(SelectClauseStreamSelectorEnum), insertIntoStreamSelector.Value.GetName()),
                 EnumValue(typeof(SelectClauseStreamSelectorEnum), selectStreamSelector.GetName()),
                 Constant(routeToFront),
                 resolveTable);

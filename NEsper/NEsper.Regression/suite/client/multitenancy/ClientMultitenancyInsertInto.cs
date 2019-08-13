@@ -61,7 +61,7 @@ namespace com.espertech.esper.regressionlib.suite.client.multitenancy
                 if (received) {
                     EPAssertionUtil.AssertProps(
                         env.Listener("s1").AssertOneGetNewAndReset(),
-                        "TheString,IntPrimitive".SplitCsv(),
+                        new [] { "TheString","IntPrimitive" },
                         new object[] {theString, intPrimitive});
                 }
                 else {

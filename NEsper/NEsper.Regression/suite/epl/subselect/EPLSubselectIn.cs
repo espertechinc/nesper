@@ -537,7 +537,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
             {
                 TryInvalidCompile(
                     env,
-                    "@Name('s0') select intArr in (select IntPrimitive from SupportBean#keepall) as r1 from SupportBeanArrayCollMap",
+                    "@Name('s0') select IntArr in (select IntPrimitive from SupportBean#keepall) as r1 from SupportBeanArrayCollMap",
                     "Failed to validate select-clause expression subquery number 1 querying SupportBean: Collection or array comparison is not allowed for the IN, ANY, SOME or ALL keywords");
             }
         }

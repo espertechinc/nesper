@@ -184,7 +184,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
                 MakeSendSupportBean(env, "E1", 20, 200L);
                 EPAssertionUtil.AssertPropsPerRow(
                     env.Listener("s0").GetAndResetLastNewData(),
-                    "c0,c1".SplitCsv(),
+                    new [] { "c0", "c1" },
                     new[] {new object[] {100L, 30}, new object[] {200L, 30}});
 
                 env.UndeployAll();
@@ -195,7 +195,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "c0,c1".SplitCsv();
+                var fields = new [] { "c0", "c1" };
                 var epl =
                     "@Name('s0') @IterableUnbound select TheString as c0, sum(IntPrimitive) as c1 from SupportBean group by TheString";
                 env.CompileDeploy(epl).AddListener("s0");
@@ -250,7 +250,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             public void Run(RegressionEnvironment env)
             {
                 // test no output limit
-                var fields = "theString, IntPrimitive, minval".SplitCsv();
+                var fields = "TheString, IntPrimitive, minval".SplitCsv();
                 var epl =
                     "@Name('s0') select *, min(IntPrimitive) as minval from SupportBean#length(2) group by TheString";
                 env.CompileDeploy(epl).AddListener("s0");

@@ -61,7 +61,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
                 ArrayAtIndex(refEPS, Constant(0)),
                 @Ref("props"),
                 innerType);
-            return ExprDotMethod(type, "getValueAddEventBean", wrapped);
+            return ExprDotMethod(type, "GetValueAddEventBean", wrapped);
         }
     }
 } // end of namespace

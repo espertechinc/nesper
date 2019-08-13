@@ -60,7 +60,7 @@ namespace com.espertech.esper.common.@internal.compile.stage3
 
             var initializeMethod = MakeInitialize(classScope);
             var statementAIFactoryProviderProp = MakeGetStatementAIFactoryProvider(classScope);
-            var statementInformationalsProp = CodegenProperty.MakeParentNode(
+            var statementInformationalsProp = CodegenProperty.MakePropertyNode(
                     typeof(StatementInformationalsRuntime),
                     typeof(StmtClassForgableStmtProvider),
                     CodegenSymbolProviderEmpty.INSTANCE,
@@ -120,7 +120,7 @@ namespace com.espertech.esper.common.@internal.compile.stage3
 
         private static CodegenProperty MakeGetStatementAIFactoryProvider(CodegenClassScope classScope)
         {
-            var property = CodegenProperty.MakeParentNode(
+            var property = CodegenProperty.MakePropertyNode(
                 typeof(StatementAIFactoryProvider),
                 typeof(StmtClassForgableStmtProvider),
                 CodegenSymbolProviderEmpty.INSTANCE,

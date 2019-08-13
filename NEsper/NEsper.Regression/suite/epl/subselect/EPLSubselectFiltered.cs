@@ -645,7 +645,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
                                "(select IntPrimitive from SupportBean(TheString='S')#length(1000) " +
                                "  where IntBoxed=s1.LongBoxed and " +
                                "IntBoxed=s2.DoubleBoxed and " +
-                               "doubleBoxed=s3.IntBoxed" +
+                               "DoubleBoxed=s3.IntBoxed" +
                                ") as Ids0 from " +
                                "SupportBean(TheString='A')#keepall as s1, " +
                                "SupportBean(TheString='B')#keepall as s2, " +
@@ -688,7 +688,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
                 var stmtText = "@Name('s0') select " +
                                "(select IntPrimitive from SupportBean(TheString='S')#length(1000) " +
                                "  where LongBoxed=s1.IntBoxed and " +
-                               "longBoxed=s2.DoubleBoxed and " +
+                               "LongBoxed=s2.DoubleBoxed and " +
                                "IntBoxed=s3.LongBoxed" +
                                ") as Ids0 from " +
                                "SupportBean(TheString='A')#keepall as s1, " +
@@ -701,7 +701,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
                            "(select IntPrimitive from SupportBean(TheString='S')#length(1000) " +
                            "  where LongBoxed=s2.DoubleBoxed and " +
                            "IntBoxed=s3.LongBoxed and " +
-                           "longBoxed=s1.IntBoxed " +
+                           "LongBoxed=s1.IntBoxed " +
                            ") as Ids0 from " +
                            "SupportBean(TheString='A')#keepall as s1, " +
                            "SupportBean(TheString='B')#keepall as s2, " +

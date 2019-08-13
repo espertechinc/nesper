@@ -43,13 +43,13 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                 };
                 var epl = "@Name('s0') select " +
                           "current_timestamp.plus(varmsec) as val0," +
-                          "utildate.plus(varmsec) as val1," +
-                          "longdate.plus(varmsec) as val2," +
-                          "exdate.plus(varmsec) as val3," +
+                          "DtoDate.plus(varmsec) as val1," +
+                          "LongDate.plus(varmsec) as val2," +
+                          "DtxDate.plus(varmsec) as val3," +
                           "current_timestamp.minus(varmsec) as val6," +
-                          "utildate.minus(varmsec) as val7," +
-                          "longdate.minus(varmsec) as val8," +
-                          "exdate.minus(varmsec) as val9" +
+                          "DtoDate.minus(varmsec) as val7," +
+                          "LongDate.minus(varmsec) as val8," +
+                          "DtxDate.minus(varmsec) as val9" +
                           " from SupportDateTime";
 
                 env.CompileDeploy(epl, path).AddListener("s0");
@@ -140,13 +140,13 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                 var fields = "val0,val1,val2,val3,val6,val7,val8,val9".SplitCsv();
                 var eplFragment = "@Name('s0') select " +
                                   "current_timestamp.plus(1 hour 10 sec 20 msec) as val0," +
-                                  "utildate.plus(1 hour 10 sec 20 msec) as val1," +
-                                  "longdate.plus(1 hour 10 sec 20 msec) as val2," +
-                                  "exdate.plus(1 hour 10 sec 20 msec) as val3," +
+                                  "DtoDate.plus(1 hour 10 sec 20 msec) as val1," +
+                                  "LongDate.plus(1 hour 10 sec 20 msec) as val2," +
+                                  "DtxDate.plus(1 hour 10 sec 20 msec) as val3," +
                                   "current_timestamp.minus(1 hour 10 sec 20 msec) as val6," +
-                                  "utildate.minus(1 hour 10 sec 20 msec) as val7," +
-                                  "longdate.minus(1 hour 10 sec 20 msec) as val8," +
-                                  "exdate.minus(1 hour 10 sec 20 msec) as val9" +
+                                  "DtoDate.minus(1 hour 10 sec 20 msec) as val7," +
+                                  "LongDate.minus(1 hour 10 sec 20 msec) as val8," +
+                                  "DtxDate.minus(1 hour 10 sec 20 msec) as val9" +
                                   " from SupportDateTime";
 
                 env.CompileDeploy(eplFragment).AddListener("s0");

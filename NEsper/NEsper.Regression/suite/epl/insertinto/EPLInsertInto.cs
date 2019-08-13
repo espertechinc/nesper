@@ -18,6 +18,7 @@ using com.espertech.esper.common.client.soda;
 using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.@event.bean.core;
 using com.espertech.esper.common.@internal.support;
+using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compiler.client;
@@ -75,6 +76,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
             EPStatementObjectModel model,
             string typeName)
         {
+            typeName = TypeHelper.MaskTypeName(typeName);
+
             var path = new RegressionPath();
             // Attach listener to feed
             if (model != null) {
@@ -183,8 +186,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
         {
             Assert.IsTrue(listener.GetAndClearIsInvoked());
             var eventBean = listener.LastNewData[0];
-            Assert.AreEqual(myString, eventBean.Get("myString"));
-            Assert.AreEqual(myInt, eventBean.Get("myInt"));
+            Assert.AreEqual(myString, eventBean.Get("MyString"));
+            Assert.AreEqual(myInt, eventBean.Get("MyInt"));
             if (additionalString != null) {
                 Assert.AreEqual(additionalString, eventBean.Get("concat"));
                 Assert.AreEqual(additionalInt, eventBean.Get("summed"));
@@ -209,7 +212,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
         }
 
         private static void AssertJoinWildcard(
-            EventRepresentationChoice rep,
+            EventRepresentationChoice? rep,
             SupportListener listener,
             object eventS0,
             object eventS1)
@@ -221,7 +224,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
             Assert.IsTrue(listener.LastNewData[0].EventType.IsProperty("s1"));
             Assert.AreSame(eventS0, listener.LastNewData[0].Get("s0"));
             Assert.AreSame(eventS1, listener.LastNewData[0].Get("s1"));
-            Assert.IsTrue(rep == null || rep.MatchesClass(listener.LastNewData[0].Underlying.GetType()));
+            Assert.IsTrue(rep == null || rep.Value.MatchesClass(listener.LastNewData[0].Underlying.GetType()));
         }
 
         private static void TryAssertionJoinWildcard(
@@ -397,8 +400,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
             }
             else if (sourceType.Value.IsMapEvent()) {
                 IDictionary<string, object> map = new Dictionary<string, object>();
-                map.Put("p0", "a");
-                map.Put("p1", 10);
+                map.Put("P0", "a");
+                map.Put("P1", 10);
                 env.SendEventMap(map, "SourceSchema");
             }
             else if (sourceType.Value.IsObjectArrayEvent()) {
@@ -407,12 +410,12 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
             else if (sourceType.Value.IsAvroEvent()) {
                 var schema = SchemaBuilder.Record(
                     "schema",
-                    TypeBuilder.RequiredString("p0"),
-                    TypeBuilder.RequiredString("p1"),
+                    TypeBuilder.RequiredString("P0"),
+                    TypeBuilder.RequiredString("P1"),
                     TypeBuilder.RequiredString("c0"));
                 var record = new GenericRecord(schema);
-                record.Put("p0", "a");
-                record.Put("p1", 10);
+                record.Put("P0", "a");
+                record.Put("P1", 10);
                 env.SendEventAvro(record, "SourceSchema");
             }
             else {

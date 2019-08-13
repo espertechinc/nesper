@@ -75,7 +75,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
 
             var block = methodNode.Block
                 .IfCondition(ExprDotMethod(EnumForgeCodegenNames.REF_ENUMCOLL, "IsEmpty"))
-                .BlockReturn(StaticMethod(typeof(Collections), "GetEmptyMap"));
+                .BlockReturn(StaticMethod(typeof(Collections), "GetEmptyMap", new[] { typeof(object), typeof(object) }));
             block.DeclareVar<IDictionary<object, object>>("map", NewInstance(typeof(Dictionary<object, object>)));
             block.ForEach(typeof(EventBean), "next", EnumForgeCodegenNames.REF_ENUMCOLL)
                 .AssignArrayElement(EnumForgeCodegenNames.REF_EPS, Constant(forge.streamNumLambda), Ref("next"))

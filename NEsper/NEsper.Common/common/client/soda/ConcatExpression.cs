@@ -9,9 +9,6 @@
 using System;
 using System.IO;
 
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
-
 namespace com.espertech.esper.common.client.soda
 {
     /// <summary>
@@ -60,14 +57,16 @@ namespace com.espertech.esper.common.client.soda
             return this;
         }
 
-        public override ExpressionPrecedenceEnum Precedence {
+        public override ExpressionPrecedenceEnum Precedence
+        {
             get => ExpressionPrecedenceEnum.CONCAT;
         }
 
         public override void ToPrecedenceFreeEPL(TextWriter writer)
         {
             string delimiter = "";
-            foreach (Expression child in this.Children) {
+            foreach (Expression child in this.Children)
+            {
                 writer.Write(delimiter);
                 child.ToEPL(writer, Precedence);
                 delimiter = "||";

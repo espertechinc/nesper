@@ -6,6 +6,7 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
 using System.IO;
 
 namespace com.espertech.esper.common.client.soda
@@ -13,6 +14,7 @@ namespace com.espertech.esper.common.client.soda
     /// <summary>
     ///     Exists-expression for a set of values returned by a lookup.
     /// </summary>
+    [Serializable]
     public class SubqueryQualifiedExpression : ExpressionBase
     {
         /// <summary>
@@ -63,10 +65,12 @@ namespace com.espertech.esper.common.client.soda
             Children[0].ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
             writer.Write(' ');
             writer.Write(Operator);
-            if (IsAll) {
+            if (IsAll)
+            {
                 writer.Write(" all (");
             }
-            else {
+            else
+            {
                 writer.Write(" any (");
             }
 

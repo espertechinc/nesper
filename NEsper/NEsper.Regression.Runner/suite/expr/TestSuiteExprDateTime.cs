@@ -86,13 +86,19 @@ namespace com.espertech.esper.regressionrun.suite.expr
                 oa.EndTimestampPropertyName = "endTS";
                 configuration.Common.AddEventType(
                     "A_" + fieldType.GetName(),
-                    "startTS,endTS".SplitCsv(),
-                    new object[] {fieldType.GetType(), fieldType.GetType()},
+                    new[] {"startTS", "endTS"},
+                    new object[] {
+                        fieldType.GetFieldType(),
+                        fieldType.GetFieldType()
+                    },
                     oa);
                 configuration.Common.AddEventType(
                     "B_" + fieldType.GetName(),
-                    "startTS,endTS".SplitCsv(),
-                    new object[] {fieldType.GetType(), fieldType.GetType()},
+                    new[] {"startTS", "endTS"},
+                    new object[] {
+                        fieldType.GetFieldType(),
+                        fieldType.GetFieldType()
+                    },
                     oa);
             }
 
@@ -102,11 +108,11 @@ namespace com.espertech.esper.regressionrun.suite.expr
         internal static void AddIdStsEtsEvent(Configuration configuration)
         {
             var oa = new ConfigurationCommonEventTypeObjectArray();
-            oa.StartTimestampPropertyName = "sts";
-            oa.EndTimestampPropertyName = "ets";
+            oa.StartTimestampPropertyName = "Sts";
+            oa.EndTimestampPropertyName = "Ets";
             configuration.Common.AddEventType(
                 "MyEvent",
-                "id,sts,ets".SplitCsv(),
+                new [] { "Id", "Sts", "Ets" },
                 new object[] {typeof(string), typeof(long), typeof(long)},
                 oa);
         }

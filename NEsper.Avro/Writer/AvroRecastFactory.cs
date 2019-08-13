@@ -186,7 +186,7 @@ namespace NEsper.Avro.Writer
                     CodegenExpressionBuilder.ExprDotMethod(
                         eventBeanFactory,
                         "AdapterForTypedAvro",
-                        CodegenExpressionBuilder.ExprDotMethod(theEvent, "getProperties"),
+                        CodegenExpressionBuilder.ExprDotName(theEvent, "Properties"),
                         resultEventType));
                 return methodNode;
             }
@@ -280,9 +280,9 @@ namespace NEsper.Avro.Writer
                                 CodegenExpressionBuilder.Constant(_underlyingStreamNumber))))
                     .DeclareVar<GenericRecord>(
                         "source",
-                        CodegenExpressionBuilder.ExprDotMethod(
+                        CodegenExpressionBuilder.ExprDotName(
                             CodegenExpressionBuilder.Ref("theEvent"),
-                            "getProperties"))
+                            "Properties"))
                     .DeclareVar<GenericRecord>(
                         "target",
                         CodegenExpressionBuilder.NewInstance(typeof(GenericRecord), schema));

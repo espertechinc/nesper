@@ -56,7 +56,7 @@ namespace com.espertech.esper.regressionlib.suite.view
             {
                 env.Milestone(0);
 
-                var fields = "c0,c1".SplitCsv();
+                var fields = new [] { "c0", "c1" };
                 var epl =
                     "@Name('s0') select irstream TheString as c0, IntPrimitive as c1 from SupportBean#firstunique(TheString)";
                 if (optionalAnnotations != null) {

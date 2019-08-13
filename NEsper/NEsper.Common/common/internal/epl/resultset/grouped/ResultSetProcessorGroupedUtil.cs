@@ -182,7 +182,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.grouped
 
             return instance.Methods.AddMethod(
                 typeof(object),
-                "generateGroupKeySingle",
+                "GenerateGroupKeySingle",
                 CodegenNamedParam.From(
                     typeof(EventBean[]),
                     NAME_EPS,
@@ -221,7 +221,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.grouped
             };
             return instance.Methods.AddMethod(
                 typeof(object[]),
-                "generateGroupKeyArrayView",
+                "GenerateGroupKeyArrayView",
                 CodegenNamedParam.From(
                     typeof(EventBean[]),
                     "events",
@@ -243,7 +243,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.grouped
                     .BlockReturn(ConstantNull())
                     .DeclareVar<object[]>(
                         "keys",
-                        NewArrayByLength(typeof(object), ExprDotMethod(Ref("resultSet"), "Size")))
+                        NewArrayByLength(typeof(object), ExprDotName(Ref("resultSet"), "Count")))
                     .DeclareVar<int>("count", Constant(0))
                     .ForEach(typeof(MultiKey<object>), "eventsPerStream", Ref("resultSet"))
                     .AssignArrayElement(
@@ -261,7 +261,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.grouped
             };
             return instance.Methods.AddMethod(
                 typeof(object[]),
-                "generateGroupKeyArrayJoin",
+                "GenerateGroupKeyArrayJoin",
                 CodegenNamedParam.From(typeof(ISet<object>), "resultSet", typeof(bool), "isNewData"),
                 typeof(ResultSetProcessorRowPerEventImpl),
                 classScope,

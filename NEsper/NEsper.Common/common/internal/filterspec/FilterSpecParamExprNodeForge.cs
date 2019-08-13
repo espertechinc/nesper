@@ -135,25 +135,25 @@ namespace com.espertech.esper.common.@internal.filterspec
                 .DeclareVar<FilterOperator>("op", EnumValue(typeof(FilterOperator), filterOperator.GetName()));
 
             // getFilterValue-FilterSpecParamExprNode code
-#if DEPRECATED_ANONYMOUS_CLASS
-            var param = NewAnonymousClass(
-                method.Block,
-                typeof(FilterSpecParamExprNode),
-                Arrays.AsList<CodegenExpression>(Ref("lookupable"), Ref("op")));
-            var getFilterValue = CodegenMethod.MakeMethod(typeof(object), GetType(), classScope)
-                .AddParam(GET_FILTER_VALUE_FP);
-            param.AddMethod("GetFilterValue", getFilterValue);
-#else
+            //var param = NewAnonymousClass(
+            //    method.Block,
+            //    typeof(FilterSpecParamExprNode),
+            //    Arrays.AsList<CodegenExpression>(Ref("lookupable"), Ref("op")));
+            //var getFilterValue = CodegenMethod.MakeMethod(typeof(object), GetType(), classScope)
+            //    .AddParam(GET_FILTER_VALUE_FP);
+            //param.AddMethod("GetFilterValue", getFilterValue);
+
             var getFilterValue = new CodegenExpressionLambda(method.Block)
                 .WithParams(GET_FILTER_VALUE_FP);
+
             var param = NewInstance<ProxyFilterSpecParamExprNode>(
-                getFilterValue, Ref("lookupable"), Ref("op"));
-#endif
+                Ref("lookupable"),
+                Ref("op"));
 
             if (TaggedEventTypes != null && !TaggedEventTypes.IsEmpty() ||
                 _arrayEventTypes != null && !_arrayEventTypes.IsEmpty()) {
-                var size = TaggedEventTypes != null ? TaggedEventTypes.Count : 0;
-                size += _arrayEventTypes != null ? _arrayEventTypes.Count : 0;
+                var size = TaggedEventTypes?.Count ?? 0;
+                size += _arrayEventTypes?.Count ?? 0;
                 getFilterValue.Block.DeclareVar<EventBean[]>(
                     "events",
                     NewArrayByLength(typeof(EventBean), Constant(size + 1)));
@@ -195,15 +195,11 @@ namespace com.espertech.esper.common.@internal.filterspec
             }
 
             getFilterValue.Block
-#if DEPRECATED_ANONYMOUS_CLASS
-                .MethodReturn(
-#else
                 .BlockReturn(
-#endif
                   ExprDotMethod(
-                        Ref("FilterBooleanExpressionFactory"),
+                        ExprDotName(Ref("node"), "FilterBooleanExpressionFactory"),
                         "Make",
-                        Ref("this"), // FilterSpecParamExprNode filterSpecParamExprNode
+                        Ref("node"), // FilterSpecParamExprNode filterSpecParamExprNode
                         Ref("events"), // EventBean[] events
                         REF_EXPREVALCONTEXT, // ExprEvaluatorContext exprEvaluatorContext
                         ExprDotName(REF_EXPREVALCONTEXT, "AgentInstanceId"), // int agentInstanceId
@@ -218,10 +214,9 @@ namespace com.espertech.esper.common.@internal.filterspec
 
             // setter calls
             method.Block
-                .DeclareVar<FilterSpecParamExprNode>("node", param)
-                .SetProperty(
-                    Ref("node"),
-                    "ExprText",
+                .DeclareVar<ProxyFilterSpecParamExprNode>("node", param)
+                .SetProperty(Ref("node"), "ProcGetFilterValue", getFilterValue)
+                .SetProperty(Ref("node"), "ExprText", 
                     Constant(
                         StringValue.StringDelimitedTo60Char(
                             ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(ExprNode))))

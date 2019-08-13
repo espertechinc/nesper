@@ -235,13 +235,13 @@ namespace com.espertech.esper.regressionlib.suite.@event.bean
                 Assert.AreEqual(3, eventArray.Length);
 
                 var eventElement = eventArray[0];
-                Assert.AreSame(eventObject.Array[0].GetMapped("0ma"), eventElement.Get("mapped('0ma')"));
+                Assert.AreSame(eventObject.Array[0].GetMapped("0ma"), eventElement.Get("Mapped('0ma')"));
                 Assert.AreSame(
                     eventObject.Array[0].GetMapped("0ma"),
-                    ((EventBean) eventBean.GetFragment("array[0]")).Get("mapped('0ma')"));
+                    ((EventBean) eventBean.GetFragment("array[0]")).Get("Mapped('0ma')"));
                 Assert.AreSame(
                     eventObject.Array[0].GetMapped("0ma"),
-                    ((EventBean) eventBean.GetFragment("array[0]?")).Get("mapped('0ma')"));
+                    ((EventBean) eventBean.GetFragment("array[0]?")).Get("Mapped('0ma')"));
 
                 env.UndeployAll();
             }

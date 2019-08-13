@@ -73,7 +73,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
         {
             var methodNode = codegenMethodScope
                 .MakeChild(typeof(EventBean), typeof(SelectEvalStreamWUnderlying), codegenClassScope)
-                .AddParam(typeof(IDictionary<object, object>), "props");
+                .AddParam(typeof(IDictionary<string, object>), "props");
             var wrapperUndType = codegenClassScope.AddFieldUnshared(
                 true,
                 typeof(EventType),
@@ -142,7 +142,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
                             "theEvent",
                             ExprDotMethod(
                                 eventToPublic,
-                                "convert",
+                                "Convert",
                                 Ref("theEvent"),
                                 refEPS,
                                 refIsNewData,

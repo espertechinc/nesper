@@ -344,12 +344,12 @@ namespace com.espertech.esper.regressionlib.suite.epl.contained
                 var pvalue = split[i].Substring(1);
                 if (split[i].StartsWith("A")) {
                     events[i] = context.EventBeanService.AdapterForMap(
-                        Collections.SingletonDataMap("p0", pvalue),
+                        Collections.SingletonDataMap("P0", pvalue),
                         "AEvent");
                 }
                 else if (split[i].StartsWith("B")) {
                     events[i] = context.EventBeanService.AdapterForMap(
-                        Collections.SingletonDataMap("p1", pvalue),
+                        Collections.SingletonDataMap("P1", pvalue),
                         "BEvent");
                 }
                 else {
@@ -457,10 +457,11 @@ namespace com.espertech.esper.regressionlib.suite.epl.contained
             {
                 var path = new RegressionPath();
                 var script = "@Name('mystmt') create expression Object js:myGetScriptContext() [\n" +
-                             "myGetScriptContext();" +
                              "function myGetScriptContext() {" +
                              "  return epl;\n" +
-                             "}]";
+                             "}" +
+                             "return myGetScriptContext();" +
+                             "]";
                 env.CompileDeploy(script, path);
 
                 env.CompileDeploy("@Name('s0') select myGetScriptContext() as c0 from SupportBean", path)
@@ -524,9 +525,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.contained
 
                 env.SendEventMap(Collections.SingletonDataMap("value", "AE1,BE2,AE3"), "SplitEvent");
                 var events = env.Listener("s0").GetAndResetLastNewData();
-                AssertSplitEx(events[0], "AEvent", "p0", "E1");
-                AssertSplitEx(events[1], "BEvent", "p1", "E2");
-                AssertSplitEx(events[2], "AEvent", "p0", "E3");
+                AssertSplitEx(events[0], "AEvent", "P0", "E1");
+                AssertSplitEx(events[1], "BEvent", "P1", "E2");
+                AssertSplitEx(events[2], "AEvent", "P0", "E3");
 
                 env.UndeployModuleContaining("s0");
             }

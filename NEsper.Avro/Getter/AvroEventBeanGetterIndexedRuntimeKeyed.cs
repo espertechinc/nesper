@@ -67,7 +67,7 @@ namespace NEsper.Avro.Getter
                 .MethodReturn(
                     CodegenExpressionBuilder.StaticMethod(
                         typeof(AvroEventBeanGetterIndexed),
-                        "getAvroIndexedValue",
+                        "GetAvroIndexedValue",
                         CodegenExpressionBuilder.Ref("values"),
                         CodegenExpressionBuilder.Ref("index")));
             return CodegenExpressionBuilder.LocalMethodBuild(method).Pass(beanExpression).Pass(key).Call();

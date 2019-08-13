@@ -9,9 +9,6 @@
 using System;
 using System.IO;
 
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
-
 namespace com.espertech.esper.common.client.soda
 {
     /// <summary>
@@ -56,12 +53,14 @@ namespace com.espertech.esper.common.client.soda
         {
             this.functionName = functionName;
             this.isDistinct = isDistinct;
-            for (int i = 0; i < moreExpressions.Length; i++) {
+            for (int i = 0; i < moreExpressions.Length; i++)
+            {
                 this.Children.Add(moreExpressions[i]);
             }
         }
 
-        public override ExpressionPrecedenceEnum Precedence {
+        public override ExpressionPrecedenceEnum Precedence
+        {
             get => ExpressionPrecedenceEnum.UNARY;
         }
 
@@ -74,7 +73,8 @@ namespace com.espertech.esper.common.client.soda
         /// Returns the function name.
         /// </summary>
         /// <returns>name of function</returns>
-        public string FunctionName {
+        public string FunctionName
+        {
             get => functionName;
         }
 
@@ -91,7 +91,8 @@ namespace com.espertech.esper.common.client.soda
         /// Returns true for distinct.
         /// </summary>
         /// <returns>boolean indicating distinct or not</returns>
-        public bool IsDistinct {
+        public bool IsDistinct
+        {
             get => isDistinct;
         }
 

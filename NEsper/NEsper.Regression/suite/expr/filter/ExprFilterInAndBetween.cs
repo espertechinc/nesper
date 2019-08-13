@@ -191,7 +191,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
             public void Run(RegressionEnvironment env)
             {
                 var epl =
-                    "@Name('s0') select * from pattern [a=SupportBeanNumeric -> every b=SupportBean(IntPrimitive in (a.intOne, a.intTwo))]";
+                    "@Name('s0') select * from pattern [a=SupportBeanNumeric -> every b=SupportBean(IntPrimitive in (a.IntOne, a.intTwo))]";
                 env.CompileDeployAddListenerMile(epl, "s0", 0);
 
                 SendBeanNumeric(env, 10, 20);
@@ -244,7 +244,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                 ISet<SupportEnum> types = new HashSet<SupportEnum>();
                 types.Add(SupportEnum.ENUM_VALUE_2);
                 var compiled = env.Compile(
-                    "@Name('s0') select * from SupportBean ev " + "where ev.enumValue in (?::java.util.Collection)");
+                    "@Name('s0') select * from SupportBean ev " + "where ev.EnumValue in (?::java.util.Collection)");
                 env.Deploy(
                     compiled,
                     new DeploymentOptions().WithStatementSubstitutionParameter(

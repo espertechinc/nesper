@@ -87,7 +87,10 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.core
             if (Footprint.OptionalComment != null)
             {
                 indent.Indent(builder, 1 + additionalIndent);
-                builder.Append("// ").Append(Footprint.OptionalComment).Append("\n");
+                builder
+                    .Append("// ")
+                    .Append(Footprint.OptionalComment)
+                    .Append("\n");
             }
 
             indent.Indent(builder, 1 + additionalIndent);
@@ -115,8 +118,11 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.core
                 builder.Append(Footprint.ReturnTypeName);
             }
 
-            builder.Append(" ").Append(Name);
-            builder.Append("(");
+            builder
+                .Append(" ")
+                .Append(Name)
+                .Append("(");
+
             var delimiter = "";
             foreach (var param in Footprint.Params)
             {

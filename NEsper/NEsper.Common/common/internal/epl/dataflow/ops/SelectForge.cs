@@ -223,8 +223,8 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.ops
                 symbols,
                 classScope);
             return builder.EventtypesMayNull("eventTypes", eventTypes)
-                .Constant("submitEventBean", submitEventBean)
-                .Constant("iterate", iterate)
+                .Constant("isSubmitEventBean", submitEventBean)
+                .Constant("isIterate", iterate)
                 .Constant("originatingStreamToViewableStream", originatingStreamToViewableStream)
                 .Expression(
                     "factoryProvider",

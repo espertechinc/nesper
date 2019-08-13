@@ -56,11 +56,13 @@ namespace com.espertech.esper.common.client.soda
         public void ToEPLElement(TextWriter writer)
         {
             Expression.ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
-            if (IsAnnotatedByEventFlag) {
+            if (IsAnnotatedByEventFlag)
+            {
                 writer.Write(" @eventbean");
             }
 
-            if (AsName != null) {
+            if (AsName != null)
+            {
                 writer.Write(" as ");
                 writer.Write(AsName);
             }

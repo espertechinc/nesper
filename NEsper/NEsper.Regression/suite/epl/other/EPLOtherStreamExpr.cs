@@ -46,7 +46,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
         {
             public void Run(RegressionEnvironment env)
             {
-                var subexpr = "top.getChildOne(\"abc\",10).getChildTwo(\"append\")";
+                var subexpr = "top.GetChildOne(\"abc\",10).GetChildTwo(\"append\")";
                 var epl = "@Name('s0') select " + subexpr + " from SupportChainTop as top";
                 env.CompileDeploy(epl).AddListener("s0");
                 TryAssertionChainedParam(env, subexpr);
@@ -231,7 +231,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 env.SendEventBean(new MyTestEvent(10));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    "c0,c1".SplitCsv(),
+                    new [] { "c0", "c1" },
                     new object[] {10, 10});
 
                 env.UndeployAll();

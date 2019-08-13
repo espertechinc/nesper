@@ -42,7 +42,7 @@ namespace com.espertech.esper.regressionlib.support.epl
             var events = new EventBean[split.Length];
             for (var i = 0; i < split.Length; i++) {
                 events[i] = context.EventBeanService.AdapterForMap(
-                    Collections.SingletonDataMap("p0", split[i]),
+                    Collections.SingletonDataMap("P0", split[i]),
                     "MyItemEvent");
             }
 

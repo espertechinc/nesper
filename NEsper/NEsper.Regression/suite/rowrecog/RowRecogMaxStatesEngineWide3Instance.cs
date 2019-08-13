@@ -38,7 +38,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
 
         private void RunAssertionTwoStatementNoDelete(RegressionEnvironment env)
         {
-            var fields = "c0".SplitCsv();
+            var fields = new [] { "c0" };
             var eplOne = "@Name('S1') select * from SupportBean(TheString='A') " +
                          "match_recognize (" +
                          "  measures P1.LongPrimitive as c0" +
@@ -136,7 +136,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
 
         private void RunAssertionContextPartitionAndOverflow(RegressionEnvironment env)
         {
-            var fields = "c0".SplitCsv();
+            var fields = new [] { "c0" };
             var path = new RegressionPath();
             var eplCtx =
                 "create context MyCtx initiated by SupportBean_S0 as s0 terminated by SupportBean_S1(P10 = s0.P00)";
@@ -194,7 +194,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
 
         private void RunAssertionNamedWindowInSequenceRemoveEvent(RegressionEnvironment env)
         {
-            var fields = "c0,c1".SplitCsv();
+            var fields = new [] { "c0", "c1" };
             var path = new RegressionPath();
 
             var namedWindow = "create window MyWindow#keepall as SupportBean";
@@ -264,7 +264,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
 
         private void RunAssertionNamedWindowOutOfSequenceRemoveEvent(RegressionEnvironment env)
         {
-            var fields = "c0,c1,c2".SplitCsv();
+            var fields = new [] { "c0", "c1", "c2" };
             var path = new RegressionPath();
 
             var namedWindow = "create window MyWindow#keepall as SupportBean";

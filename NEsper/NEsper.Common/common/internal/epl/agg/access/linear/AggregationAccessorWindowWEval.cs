@@ -50,7 +50,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
                     "eventsPerStreamBuf",
                     NewArrayByLength(typeof(EventBean), Constant(forge.StreamNum + 1)))
                 .WhileLoop(ExprDotMethod(Ref("it"), "MoveNext"))
-                .DeclareVar<EventBean>("bean", Cast(typeof(EventBean), ExprDotMethod(Ref("it"), "Current")))
+                .DeclareVar<EventBean>("bean", Cast(typeof(EventBean), ExprDotName(Ref("it"), "Current")))
                 .AssignArrayElement("eventsPerStreamBuf", Constant(forge.StreamNum), Ref("bean"))
                 .AssignArrayElement(
                     Ref("array"),
@@ -94,7 +94,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
                     "eventsPerStreamBuf",
                     NewArrayByLength(typeof(EventBean), Constant(forge.StreamNum + 1)))
                 .WhileLoop(ExprDotMethod(Ref("it"), "MoveNext"))
-                .DeclareVar<EventBean>("bean", Cast(typeof(EventBean), ExprDotMethod(Ref("it"), "Current")))
+                .DeclareVar<EventBean>("bean", Cast(typeof(EventBean), ExprDotName(Ref("it"), "Current")))
                 .AssignArrayElement("eventsPerStreamBuf", Constant(forge.StreamNum), Ref("bean"))
                 .DeclareVar(
                     forge.ChildNode.EvaluationType.GetBoxedType(),

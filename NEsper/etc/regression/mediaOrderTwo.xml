@@ -1,52 +1,52 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<mediaorder xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="mediaOrderSchema.xsd">
-  <orderId>PO200901</orderId>
-  <items>
-    <item>
-      <itemId>200001</itemId>
-      <productId>B006</productId>
-      <amount>7</amount>
-      <price>7.45</price>
-    </item>
-    <item>
-      <itemId>200002</itemId>
-      <productId>B005</productId>
-      <amount>1</amount>
-      <price>67.99</price>
-    </item>
-    <item>
-      <itemId>200003</itemId>
-      <productId>B007</productId>
-      <amount>0</amount>
-      <price>0</price>
-    </item>
-    <item>
-      <itemId>200004</itemId>
-      <productId>B005</productId>
-      <amount>2</amount>
-      <price>63.99</price>
-    </item>
-  </items>
-  <books>
-    <book>
-      <bookId>B005</bookId>
-      <author>Heinlein</author>
-      <review>
-        <reviewId>1</reviewId>
-        <comment>best book ever</comment>
-      </review>
-      <review>
-        <reviewId>2</reviewId>
-        <comment>would recommend</comment>
-      </review>
-    </book>
-    <book>
-      <bookId>B006</bookId>
-      <author>Isaac Asimov</author>
-    </book>
-    <book>
-      <bookId>B008</bookId>
-      <author>Ian M Banks</author>
-    </book>
-  </books>
-</mediaorder>
+<MediaOrder xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="mediaOrderSchema.xsd">
+  <OrderId>PO200901</OrderId>
+  <Items>
+    <Item>
+      <ItemId>200001</ItemId>
+      <ProductId>B006</ProductId>
+      <Amount>7</Amount>
+      <Price>7.45</Price>
+    </Item>
+    <Item>
+      <ItemId>200002</ItemId>
+      <ProductId>B005</ProductId>
+      <Amount>1</Amount>
+      <Price>67.99</Price>
+    </Item>
+    <Item>
+      <ItemId>200003</ItemId>
+      <ProductId>B007</ProductId>
+      <Amount>0</Amount>
+      <Price>0</Price>
+    </Item>
+    <Item>
+      <ItemId>200004</ItemId>
+      <ProductId>B005</ProductId>
+      <Amount>2</Amount>
+      <Price>63.99</Price>
+    </Item>
+  </Items>
+  <Books>
+    <Book>
+      <BookId>B005</BookId>
+      <Author>Heinlein</Author>
+      <Review>
+        <Reviewid>1</Reviewid>
+        <Comment>best Book ever</Comment>
+      </Review>
+      <Review>
+        <Reviewid>2</Reviewid>
+        <Comment>would recommend</Comment>
+      </Review>
+    </Book>
+    <Book>
+      <BookId>B006</BookId>
+      <Author>Isaac Asimov</Author>
+    </Book>
+    <Book>
+      <BookId>B008</BookId>
+      <Author>Ian M Banks</Author>
+    </Book>
+  </Books>
+</MediaOrder>

@@ -213,7 +213,7 @@ namespace com.espertech.esper.regressionlib.suite.context
         {
             public void Run(RegressionEnvironment env)
             {
-                var fieldsOne = "c0,c1".SplitCsv();
+                var fieldsOne = new [] { "c0", "c1" };
                 var path = new RegressionPath();
                 env.AdvanceTime(0);
 
@@ -254,7 +254,7 @@ namespace com.espertech.esper.regressionlib.suite.context
         {
             public void Run(RegressionEnvironment env)
             {
-                var fieldsOne = "c0,c1".SplitCsv();
+                var fieldsOne = new [] { "c0", "c1" };
 
                 // test initiated-by pattern with immediate start
                 env.AdvanceTime(120000);
@@ -294,7 +294,7 @@ namespace com.espertech.esper.regressionlib.suite.context
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "theString,IntPrimitive".SplitCsv();
+                var fields = new [] { "TheString","IntPrimitive" };
                 var path = new RegressionPath();
                 env.AdvanceTime(0);
 
@@ -476,7 +476,7 @@ namespace com.espertech.esper.regressionlib.suite.context
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "c0,c1,c2,c3".SplitCsv();
+                var fields = new [] { "c0", "c1", "c2", "c3" };
                 env.AdvanceTime(0);
                 var path = new RegressionPath();
                 var milestone = new AtomicLong();
@@ -1302,7 +1302,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                     env,
                     path,
                     milestone,
-                    "shortBoxed = context.sb.Id",
+                    "ShortBoxed = context.sb.Id",
                     new[] {
                         new object[] {(short) 10, true}, new object[] {(short) 9, false}, new object[] {null, false}
                     });
@@ -1320,7 +1320,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                     env,
                     path,
                     milestone,
-                    "shortBoxed < context.sb.Id",
+                    "ShortBoxed < context.sb.Id",
                     new[] {
                         new object[] {(short) 11, false}, new object[] {(short) 10, false},
                         new object[] {(short) 9, true}, new object[] {(short) 8, true}
@@ -1330,7 +1330,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                     env,
                     path,
                     milestone,
-                    "shortBoxed in (context.sb.Id)",
+                    "ShortBoxed in (context.sb.Id)",
                     new[] {
                         new object[] {(short) 11, false}, new object[] {(short) 10, true},
                         new object[] {(short) 9, false}, new object[] {(short) 8, false}
@@ -1393,7 +1393,7 @@ namespace com.espertech.esper.regressionlib.suite.context
 
                 env.Milestone(0);
 
-                var fields = "c0,c1,c2".SplitCsv();
+                var fields = new [] { "c0", "c1", "c2" };
                 env.CompileDeploy(
                     "@Name('s0') context EverySupportBean " +
                     "select TheString as c0,IntPrimitive as c1,context.sb.P00 as c2 " +
@@ -1716,7 +1716,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                     path);
 
                 // test when-terminated and every 2 events output all with group by
-                var fields = "c0".SplitCsv();
+                var fields = new [] { "c0" };
                 var epl = "@Name('s0') context EveryMinute " +
                           "select TheString as c0 from SupportBean output when count_insert>1 and when terminated and count_insert>0";
                 env.CompileDeploy(epl, path).AddListener("s0");
@@ -1781,7 +1781,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                     path);
 
                 // test when-terminated and every 2 events output all with group by
-                var fields = "c0".SplitCsv();
+                var fields = new [] { "c0" };
                 var epl = "@Name('s0') context EveryMinute " +
                           "select TheString as c0 from SupportBean output when terminated and count_insert > 0";
                 env.CompileDeploy(epl, path);
@@ -1859,7 +1859,7 @@ namespace com.espertech.esper.regressionlib.suite.context
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "c0".SplitCsv();
+                var fields = new [] { "c0" };
                 SendTimeEvent(env, "2002-05-1T08:00:00.000");
                 var path = new RegressionPath();
 
@@ -2097,7 +2097,7 @@ namespace com.espertech.esper.regressionlib.suite.context
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "c0,c1".SplitCsv();
+                var fields = new [] { "c0", "c1" };
                 var epl = "create schema SummedEvent(grp string, key string, value int);\n" +
                           "create schema InitEvent(grp string);\n" +
                           "create schema TermEvent(grp string);\n";

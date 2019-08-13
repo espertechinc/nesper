@@ -107,8 +107,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
 
                 TryInvalidCompile(
                     env,
-                    "select intArr > all (select IntPrimitive from SupportBean#keepall) from SupportBeanArrayCollMap",
-                    "Failed to validate select-clause expression subquery number 1 querying SupportBean: Collection or array comparison is not allowed for the IN, ANY, SOME or ALL keywords [select intArr > all (select IntPrimitive from SupportBean#keepall) from SupportBeanArrayCollMap]");
+                    "select IntArr > all (select IntPrimitive from SupportBean#keepall) from SupportBeanArrayCollMap",
+                    "Failed to validate select-clause expression subquery number 1 querying SupportBean: Collection or array comparison is not allowed for the IN, ANY, SOME or ALL keywords [select IntArr > all (select IntPrimitive from SupportBean#keepall) from SupportBeanArrayCollMap]");
 
                 // test OM
                 env.EplToModelCompileDeploy(stmtText).AddListener("s0");
@@ -427,8 +427,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
             {
                 TryInvalidCompile(
                     env,
-                    "select intArr = all (select IntPrimitive from SupportBean#keepall) as r1 from SupportBeanArrayCollMap",
-                    "Failed to validate select-clause expression subquery number 1 querying SupportBean: Collection or array comparison is not allowed for the IN, ANY, SOME or ALL keywords [select intArr = all (select IntPrimitive from SupportBean#keepall) as r1 from SupportBeanArrayCollMap]");
+                    "select IntArr = all (select IntPrimitive from SupportBean#keepall) as r1 from SupportBeanArrayCollMap",
+                    "Failed to validate select-clause expression subquery number 1 querying SupportBean: Collection or array comparison is not allowed for the IN, ANY, SOME or ALL keywords [select IntArr = all (select IntPrimitive from SupportBean#keepall) as r1 from SupportBeanArrayCollMap]");
             }
         }
     }

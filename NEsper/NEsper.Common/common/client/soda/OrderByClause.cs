@@ -78,7 +78,8 @@ namespace com.espertech.esper.common.client.soda
         public OrderByClause(params String[] properties)
             : this()
         {
-            for (int i = 0; i < properties.Length; i++) {
+            for (int i = 0; i < properties.Length; i++)
+            {
                 orderByExpressions.Add(new OrderByElement(Expressions.GetPropExpr(properties[i]), false));
             }
         }
@@ -88,14 +89,16 @@ namespace com.espertech.esper.common.client.soda
         public OrderByClause(params Expression[] expressions)
             : this()
         {
-            for (int i = 0; i < expressions.Length; i++) {
+            for (int i = 0; i < expressions.Length; i++)
+            {
                 orderByExpressions.Add(new OrderByElement(expressions[i], false));
             }
         }
 
         /// <summary>Gets or set a list of expressions and flags to order by.</summary>
         /// <returns>order-by elements</returns>
-        public IList<OrderByElement> OrderByExpressions {
+        public IList<OrderByElement> OrderByExpressions
+        {
             get { return orderByExpressions; }
             set { orderByExpressions = value; }
         }
@@ -105,7 +108,8 @@ namespace com.espertech.esper.common.client.soda
         public void ToEPL(TextWriter writer)
         {
             String delimiter = "";
-            foreach (OrderByElement element in orderByExpressions) {
+            foreach (OrderByElement element in orderByExpressions)
+            {
                 writer.Write(delimiter);
                 element.ToEPL(writer);
                 delimiter = ", ";

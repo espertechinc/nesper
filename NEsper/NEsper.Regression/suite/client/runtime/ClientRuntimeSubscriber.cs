@@ -30,7 +30,7 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
 {
     public class ClientRuntimeSubscriber : RegressionExecution
     {
-        private static readonly string[] FIELDS = "TheString,IntPrimitive".SplitCsv();
+        private static readonly string[] FIELDS = new [] { "TheString","IntPrimitive" };
 
         public void Run(RegressionEnvironment env)
         {

@@ -18,15 +18,20 @@ namespace com.espertech.esper.common.client.annotation
     /// </summary>
     public class PriorityAttribute : Attribute
     {
+        private int _value;
+
         /// <summary>
         /// Priority value.
         /// </summary>
         /// <returns>value</returns>
-        public virtual int Value { get; set; }
+        public virtual int Value {
+            get => _value;
+            set => _value = value;
+        }
 
         public PriorityAttribute(int value)
         {
-            Value = value;
+            _value = value;
         }
 
         public PriorityAttribute()

@@ -88,8 +88,8 @@ namespace com.espertech.esper.common.@internal.epl.join.@base
                     Ref("impl"),
                     "IndexingStrategy",
                     pollResultIndexingStrategy.Make(method, symbols, classScope))
-                .SetProperty(Ref("impl"), "AllHistoricalNoSubordinate", Constant(isAllHistoricalNoSubordinate))
-                .SetProperty(Ref("impl"), "OuterJoinPerStream", Constant(outerJoinPerStream));
+                .SetProperty(Ref("impl"), "IsAllHistoricalNoSubordinate", Constant(isAllHistoricalNoSubordinate))
+                .SetProperty(Ref("impl"), "IsOuterJoinPerStream", Constant(outerJoinPerStream));
         }
     }
 } // end of namespace

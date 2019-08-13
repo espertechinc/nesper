@@ -50,7 +50,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
 
             SendTimer(env, 20000);
             SendEvent(env, "E4");
-            var fields = "TheString".SplitCsv();
+            var fields = new [] { "TheString" };
             EPAssertionUtil.AssertPropsPerRow(
                 env.Listener("s0").LastNewData,
                 fields,
@@ -75,7 +75,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
             RegressionEnvironment env,
             AtomicLong milestone)
         {
-            var fields = "TheString".SplitCsv();
+            var fields = new [] { "TheString" };
             SendTimer(env, 1);
             SendEvent(env, "E1");
 
@@ -240,7 +240,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
                 env.SendEventBean(new SupportBean("E3", 3));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    "TheString".SplitCsv(),
+                    new [] { "TheString" },
                     new object[] {"E3"});
 
                 env.UndeployAll();
@@ -251,7 +251,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "TheString".SplitCsv();
+                var fields = new [] { "TheString" };
                 var stmtText = "@Name('s0') select TheString from SupportBean#keepall output after 3 events";
                 env.CompileDeploy(stmtText).AddListener("s0");
 
@@ -317,7 +317,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
             public void Run(RegressionEnvironment env)
             {
                 SendTimer(env, 0);
-                var fields = "TheString".SplitCsv();
+                var fields = new [] { "TheString" };
                 var stmtText = "@Name('s0') select TheString from SupportBean#keepall output after 20 seconds";
                 env.CompileDeploy(stmtText).AddListener("s0");
 

@@ -105,10 +105,5 @@ namespace com.espertech.esper.common.@internal.view.intersect
         }
 
         public string ViewName => "intersect";
-
-        public void SetEventType(EventType eventType)
-        {
-            this.eventType = eventType;
-        }
     }
 } // end of namespace

@@ -52,7 +52,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
             var refExprEvalCtx = exprSymbol.GetAddExprEvalCtx(methodNode);
 
             var init = size == 0
-                ? StaticMethod(typeof(Collections), "GetEmptyMap")
+                ? StaticMethod(typeof(Collections), "GetEmptyMap", new[] { typeof(object), typeof(object) })
                 : NewInstance(typeof(Dictionary<object, object>));
             var block = methodNode.Block
                 .DeclareVar<IDictionary<object, object>>("props", init);

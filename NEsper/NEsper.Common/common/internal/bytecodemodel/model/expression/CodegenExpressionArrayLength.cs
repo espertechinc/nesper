@@ -38,7 +38,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
                 builder.Append(")");
             }
 
-            builder.Append(".length");
+            builder.Append(".Length");
         }
 
         public void MergeClasses(ISet<Type> classes)

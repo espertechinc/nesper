@@ -37,16 +37,11 @@ namespace com.espertech.esper.common.@internal.settings
 
             string hookClass = null;
             for (var i = 0; i < annotations.Length; i++) {
-                if (!(annotations[i] is HookAttribute)) {
-                    continue;
+                if (annotations[i] is HookAttribute hookAttribute) {
+                    if (hookAttribute.HookType == hookType) {
+                        hookClass = hookAttribute.Hook;
+                    }
                 }
-
-                var hookAttribute = (HookAttribute) annotations[i];
-                if (hookAttribute.HookType != hookType) {
-                    continue;
-                }
-
-                hookClass = hookAttribute.Hook;
             }
 
             if (hookClass == null) {

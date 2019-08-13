@@ -15,7 +15,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 {
     public class ExprCoreAndOrNot : RegressionExecution
     {
-        private static readonly string[] FIELDS = "c0,c1,c2".SplitCsv();
+        private static readonly string[] FIELDS = new [] { "c0", "c1", "c2" };
 
         public void Run(RegressionEnvironment env)
         {

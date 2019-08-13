@@ -73,7 +73,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
             env.CompileDeployAddListenerMile(epl.ToString(), "s0", milestone.GetAndIncrement());
 
             var sdt = SupportDateTime.Make("2002-05-30T09:01:02.003");
-            sdt.ExDate.SetMillis(3);
+            sdt.DtxDate.SetMillis(3);
             env.SendEventBean(sdt);
 
             EPAssertionUtil.AssertProps(
@@ -106,7 +106,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                           "min(LongPrimitive, LongBoxed).before(20000L, 1 second) as c1" +
                           " from SupportBean#length(2)";
                 env.CompileDeploy(epl).AddListener("s0");
-                var fields = "c0,c1".SplitCsv();
+                var fields = new [] { "c0", "c1" };
 
                 SendBean(env, 20000, 20000);
                 EPAssertionUtil.AssertProps(
@@ -160,9 +160,9 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                                   "current_timestamp.getsecondOfMinute() as valsom," +
                                   "current_timestamp.getweekyear() as valwye," +
                                   "current_timestamp.getyear() as valyea," +
-                                  "utildate.gethourOfDay() as val1," +
-                                  "longdate.gethourOfDay() as val2," +
-                                  "exdate.gethourOfDay() as val3" +
+                                  "DtoDate.gethourOfDay() as val1," +
+                                  "LongDate.gethourOfDay() as val2," +
+                                  "DtxDate.gethourOfDay() as val3" +
                                   " from SupportDateTime";
                 env.CompileDeploy(eplFragment).AddListener("s0");
                 foreach (var field in fields) {

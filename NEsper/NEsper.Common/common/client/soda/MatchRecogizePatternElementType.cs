@@ -41,7 +41,8 @@ namespace com.espertech.esper.common.client.soda
     {
         public static string GetText(this MatchRecogizePatternElementType value)
         {
-            switch (value) {
+            switch (value)
+            {
                 case MatchRecogizePatternElementType.SINGLE:
                     return "";
 

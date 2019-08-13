@@ -34,7 +34,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "TheString".SplitCsv();
+                var fields = new [] { "TheString" };
                 var epl = "@Name('create') create window MyWindow.win:keepall() as SupportBean;\n" +
                           "@Name('insert') insert into MyWindow select * from SupportBean;\n" +
                           "@Name('select') select irstream * from MyWindow;\n";
@@ -66,7 +66,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "c0,c1".SplitCsv();
+                var fields = new [] { "c0", "c1" };
                 var epl = "create window MyWindow#length(2) as SupportBean;\n" +
                           "insert into MyWindow select * from SupportBean;\n" +
                           "@Name('s0') select TheString as c0, sum(IntPrimitive) as c1 from MyWindow;\n";

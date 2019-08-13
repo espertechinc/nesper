@@ -84,7 +84,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
             env.SendEventBean(new SupportBean("a,b", 0));
             EPAssertionUtil.AssertPropsPerRow(
                 env.Listener("s0").GetAndResetLastNewData(),
-                "p0".SplitCsv(),
+                "P0".SplitCsv(),
                 new[] {new object[] {"a"}, new object[] {"b"}});
 
             env.UndeployModuleContaining("s0");
@@ -265,7 +265,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
                       typeof(SupportStaticMethodLib).Name +
                       "." +
                       method;
-            var fields = "theString,IntPrimitive,mapstring,mapint".SplitCsv();
+            var fields = "TheString,IntPrimitive,mapstring,mapint".SplitCsv();
             env.CompileDeploy(epl).AddListener("s0");
 
             EPAssertionUtil.AssertPropsPerRow(env.GetEnumerator("s0"), fields, null);

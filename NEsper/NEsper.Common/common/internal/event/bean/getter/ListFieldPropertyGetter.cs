@@ -157,7 +157,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
                 .DeclareVar<object>("value", ExprDotName(Ref("@object"), _field.Name))
                 .IfRefNotTypeReturnConst("value", typeof(IList<object>), null)
                 .DeclareVar<IList<object>>("l", Cast(typeof(IList<object>), Ref("value")))
-                .IfConditionReturnConst(Relational(ExprDotMethod(Ref("l"), "Size"), LE, Ref("index")), null)
+                .IfConditionReturnConst(Relational(ExprDotName(Ref("l"), "Count"), LE, Ref("index")), null)
                 .MethodReturn(Cast(BeanPropType, ExprDotMethod(Ref("l"), "Get", Ref("index"))));
         }
 

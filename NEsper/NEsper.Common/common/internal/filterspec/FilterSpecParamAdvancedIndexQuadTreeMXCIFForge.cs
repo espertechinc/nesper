@@ -54,11 +54,11 @@ namespace com.espertech.esper.common.@internal.filterspec
                     NewInstance<FilterSpecParamAdvancedIndexQuadTreeMXCIF>(Ref("lookupable"), Ref("op")))
                 .SetProperty(
                     Ref("fpai"),
-                    "xEval",
+                    "XEval",
                     FilterSpecParamFilterForEvalDoubleForgeHelper.MakeAnonymous(_xEval, GetType(), classScope, method))
                 .SetProperty(
                     Ref("fpai"),
-                    "yEval",
+                    "YEval",
                     FilterSpecParamFilterForEvalDoubleForgeHelper.MakeAnonymous(_yEval, GetType(), classScope, method))
                 .SetProperty(
                     Ref("fpai"),

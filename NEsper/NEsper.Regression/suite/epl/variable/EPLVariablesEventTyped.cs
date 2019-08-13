@@ -96,7 +96,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
                 env.CompileDeploy(vars, path);
                 var deploymentId = env.DeploymentId("vars");
 
-                var fields = "c0,c1,c2,c3,c4,c5,c6".SplitCsv();
+                var fields = new [] { "c0", "c1", "c2", "c3", "c4", "c5", "c6" };
                 var stmtSelectText =
                     "@Name('Select') select varbean.TheString as c0,varbean.IntPrimitive as c1,vars0.Id as c2,vars0.P00 as c3,varobj as c4,varbeannull.TheString as c5, varobjnull as c6 from SupportBean_A";
                 env.CompileDeploy(stmtSelectText, path).AddListener("Select");

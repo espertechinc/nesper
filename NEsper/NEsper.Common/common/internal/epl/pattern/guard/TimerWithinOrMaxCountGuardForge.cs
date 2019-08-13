@@ -81,7 +81,7 @@ namespace com.espertech.esper.common.@internal.epl.pattern.guard
             }
 
             var method = parent.MakeChild(typeof(TimerWithinOrMaxCountGuardFactory), GetType(), classScope);
-            var patternDelta = PatternDeltaComputeUtil.MakePatternDeltaAnonymous(
+            var patternDelta = PatternDeltaComputeUtil.MakePatternDeltaLambda(
                 timeExpr,
                 convertor,
                 timeAbacus,

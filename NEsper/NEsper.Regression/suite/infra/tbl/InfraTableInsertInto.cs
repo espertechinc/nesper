@@ -81,8 +81,8 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             }
             else if (rep.IsMapEvent()) {
                 IDictionary<string, object> map = new Dictionary<string, object>();
-                map.Put("p0", "a");
-                map.Put("p1", "b");
+                map.Put("P0", "a");
+                map.Put("P1", "b");
                 env.SendEventMap(map, "MySchema");
             }
             else if (rep.IsObjectArrayEvent()) {
@@ -92,8 +92,8 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 var theEvent = new GenericRecord(
                     SupportAvroUtil.GetAvroSchema(env.Runtime.EventTypeService.GetEventTypePreconfigured("MySchema"))
                         .AsRecordSchema());
-                theEvent.Put("p0", "a");
-                theEvent.Put("p1", "b");
+                theEvent.Put("P0", "a");
+                theEvent.Put("P1", "b");
                 env.EventService.SendEventAvro(theEvent, "MySchema");
             }
 
@@ -202,7 +202,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "TheString".SplitCsv();
+                var fields = new [] { "TheString" };
                 var epl = "@Name('create') create table MyTableSM(TheString string);\n" +
                           "@Name('tbl-insert') insert into MyTableSM select TheString from SupportBean;\n";
                 env.CompileDeploy(epl);
@@ -441,7 +441,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "TheString".SplitCsv();
+                var fields = new [] { "TheString" };
                 var path = new RegressionPath();
                 env.CompileDeploy("@Name('create') create table MyTableIIU(TheString string)", path);
                 env.CompileDeploy("@Name('tbl-insert') insert into MyTableIIU select TheString from SupportBean", path);

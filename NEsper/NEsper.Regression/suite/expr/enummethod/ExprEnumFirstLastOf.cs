@@ -96,7 +96,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "val0,val1".SplitCsv();
+                var fields = new [] { "val0", "val1" };
                 var eplFragment = "@Name('s0') select " +
                                   "Contained.firstOf().P00 as val0, " +
                                   "Contained.lastOf().P00 as val1 " +
@@ -148,7 +148,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 
                 LambdaAssertionUtil.AssertTypes(
                     env.Statement("s0").EventType,
-                    "val0,val1".SplitCsv(),
+                    new [] { "val0", "val1" },
                     new[] {typeof(SupportBean_ST0), typeof(SupportBean_ST0)});
 
                 env.SendEventBean(SupportBean_ST0_Container.Make2Value("E1,1", "E3,9", "E2,9"));
@@ -183,7 +183,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 
                 LambdaAssertionUtil.AssertTypes(
                     env.Statement("s0").EventType,
-                    "val".SplitCsv(),
+                    new [] { "val" },
                     new[] {typeof(SupportBean_ST0)});
 
                 var bean = SupportBean_ST0_Container.Make2Value("E1,1", "E2,9", "E2,9");

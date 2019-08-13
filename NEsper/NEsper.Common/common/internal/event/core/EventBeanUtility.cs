@@ -27,8 +27,8 @@ namespace com.espertech.esper.common.@internal.@event.core
     /// </summary>
     public class EventBeanUtility
     {
-        public const string METHOD_FLATTENBATCHJOIN = "flattenBatchJoin";
-        public const string METHOD_FLATTENBATCHSTREAM = "flattenBatchStream";
+        public const string METHOD_FLATTENBATCHJOIN = "FlattenBatchJoin";
+        public const string METHOD_FLATTENBATCHSTREAM = "FlattenBatchStream";
 
         /// <summary>
         ///     Code-generation-invoked method, method name and parameter order matters

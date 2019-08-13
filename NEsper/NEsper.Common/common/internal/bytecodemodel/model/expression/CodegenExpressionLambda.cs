@@ -70,6 +70,12 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
             return this;
         }
 
+        public CodegenExpressionLambda WithBody(Action<CodegenBlock> blockHandler)
+        {
+            blockHandler.Invoke(this.Block);
+            return this;
+        }
+
         public override void Render(
             StringBuilder builder,
             bool isInnerClass,

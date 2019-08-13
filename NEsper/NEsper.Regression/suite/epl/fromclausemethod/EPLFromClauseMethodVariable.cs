@@ -39,7 +39,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
             int intPrimitive,
             string expected)
         {
-            var fields = "c0".SplitCsv();
+            var fields = new [] { "c0" };
             env.SendEventBean(new SupportBean(theString, intPrimitive));
             EPAssertionUtil.AssertProps(
                 env.Listener("s0").AssertOneGetNewAndReset(),

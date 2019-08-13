@@ -60,16 +60,19 @@ namespace com.espertech.esper.common.client.soda
         public void ToEPL(TextWriter writer)
         {
             writer.Write("then insert");
-            if (OptionalStreamName != null) {
+            if (OptionalStreamName != null)
+            {
                 writer.Write(" into ");
                 writer.Write(OptionalStreamName);
             }
 
             string delimiter;
-            if (ColumnNames.Count > 0) {
+            if (ColumnNames.Count > 0)
+            {
                 writer.Write("(");
                 delimiter = "";
-                foreach (String name in ColumnNames) {
+                foreach (String name in ColumnNames)
+                {
                     writer.Write(delimiter);
                     writer.Write(name);
                     delimiter = ", ";
@@ -80,18 +83,20 @@ namespace com.espertech.esper.common.client.soda
 
             writer.Write(" select ");
             delimiter = "";
-            foreach (SelectClauseElement element in SelectList) {
+            foreach (SelectClauseElement element in SelectList)
+            {
                 writer.Write(delimiter);
                 element.ToEPLElement(writer);
                 delimiter = ", ";
             }
 
-            if (WhereClause != null) {
+            if (WhereClause != null)
+            {
                 writer.Write(" where ");
                 WhereClause.ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
             }
         }
 
-        #endregion
+        #endregion OnMergeMatchedAction Members
     }
 }

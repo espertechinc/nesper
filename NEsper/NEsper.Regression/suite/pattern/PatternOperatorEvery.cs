@@ -44,7 +44,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "c0".SplitCsv();
+                var fields = new [] { "c0" };
 
                 var epl = "@Name('s0') select a.TheString as c0 from pattern [every a=SupportBean]";
                 env.CompileDeploy(epl).AddListener("s0");
@@ -98,7 +98,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "c0,c1,c2".SplitCsv();
+                var fields = new [] { "c0", "c1", "c2" };
 
                 var epl = "@Name('s0') select a.TheString as c0, a.IntPrimitive as c1, b.IntPrimitive as c2 " +
                           "from pattern [every a=SupportBean -> b=SupportBean(TheString=a.TheString)]";
@@ -132,7 +132,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "c0,c1,c2".SplitCsv();
+                var fields = new [] { "c0", "c1", "c2" };
 
                 env.AdvanceTime(0);
                 var epl = "@Name('s0') select a.TheString as c0, a.IntPrimitive as c1, b.IntPrimitive as c2 " +
@@ -173,7 +173,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "c0,c1".SplitCsv();
+                var fields = new [] { "c0", "c1" };
 
                 var epl =
                     "@Name('s0') select a.TheString as c0, b.TheString as c1 from pattern [every (a=SupportBean(IntPrimitive>0) and b=SupportBean(IntPrimitive<0))]";

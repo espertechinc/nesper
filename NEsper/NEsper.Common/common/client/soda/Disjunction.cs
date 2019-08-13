@@ -39,7 +39,8 @@ namespace com.espertech.esper.common.client.soda
         {
             AddChild(first);
             AddChild(second);
-            for (var i = 0; i < expressions.Length; i++) {
+            for (var i = 0; i < expressions.Length; i++)
+            {
                 AddChild(expressions[i]);
             }
         }
@@ -49,7 +50,8 @@ namespace com.espertech.esper.common.client.soda
         public override void ToPrecedenceFreeEPL(TextWriter writer)
         {
             var delimiter = "";
-            foreach (var child in Children) {
+            foreach (var child in Children)
+            {
                 writer.Write(delimiter);
                 child.ToEPL(writer, Precedence);
                 delimiter = " or ";

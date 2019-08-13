@@ -16,11 +16,8 @@ using NEsper.Avro.Extensions;
 using NLog;
 
 using NUnit.Framework;
-#if NETSTANDARD2_0
-#else
-#endif
 
-namespace com.espertech.esper
+namespace com.espertech.esper.regressionlib
 {
     [SetUpFixture]
     public class NEsperSetup

@@ -44,7 +44,7 @@ namespace com.espertech.esper.common.@internal.support
                     return "";
             }
 
-            throw new ArgumentException("invalid value for enumValue", nameof(enumValue));
+            throw new ArgumentException("invalid value for EnumValue", nameof(enumValue));
         }
 
         public static string GetAnnotationText(this EventRepresentationChoice enumValue)
@@ -63,7 +63,7 @@ namespace com.espertech.esper.common.@internal.support
                     return "";
             }
 
-            throw new ArgumentException("invalid value for enumValue", nameof(enumValue));
+            throw new ArgumentException("invalid value for EnumValue", nameof(enumValue));
         }
 
         public static string GetOutputTypeCreateSchemaName(this EventRepresentationChoice enumValue)
@@ -82,7 +82,7 @@ namespace com.espertech.esper.common.@internal.support
                     return "";
             }
 
-            throw new ArgumentException("invalid value for enumValue", nameof(enumValue));
+            throw new ArgumentException("invalid value for EnumValue", nameof(enumValue));
         }
 
         public static string GetOutputTypeClassName(this EventRepresentationChoice enumValue)
@@ -101,7 +101,7 @@ namespace com.espertech.esper.common.@internal.support
                     return EventUnderlyingTypeExtensions.GetDefault().GetUnderlyingClassName();
             }
 
-            throw new ArgumentException("invalid value for enumValue", nameof(enumValue));
+            throw new ArgumentException("invalid value for EnumValue", nameof(enumValue));
         }
 
 
@@ -121,7 +121,7 @@ namespace com.espertech.esper.common.@internal.support
                     return EventUnderlyingTypeExtensions.GetDefault();
             }
 
-            throw new ArgumentException("invalid value for enumValue", nameof(enumValue));
+            throw new ArgumentException("invalid value for EnumValue", nameof(enumValue));
         }
 
 

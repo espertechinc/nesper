@@ -76,7 +76,7 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
                 env.SendEventBean(new SupportBean("E1", 0));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    "c0,c1,c2,c3".SplitCsv(),
+                    new [] { "c0", "c1", "c2", "c3" },
                     new object[] {10, "abc", 2, 5});
 
                 env.UndeployAll();

@@ -92,7 +92,7 @@ namespace com.espertech.esper.common.@internal.epl.output.view
                     "OutputConditionFactory",
                     _outputConditionFactoryForge.Make(method, symbols, classScope))
                 .SetProperty(spec, "StreamCount", Constant(_streamCount))
-                .SetProperty(spec, "Terminable", Constant(_terminable))
+                .SetProperty(spec, "IsTerminable", Constant(_terminable))
                 .SetProperty(
                     spec,
                     "SelectClauseStreamSelector",
@@ -104,7 +104,7 @@ namespace com.espertech.esper.common.@internal.epl.output.view
                         ? ConstantNull()
                         : _outputStrategyPostProcessForge.Make(method, symbols, classScope))
                 .SetProperty(spec, "HasAfter", Constant(_hasAfter))
-                .SetProperty(spec, "Distinct", Constant(_isDistinct))
+                .SetProperty(spec, "IsDistinct", Constant(_isDistinct))
                 .SetProperty(
                     spec,
                     "ResultEventType",
@@ -116,7 +116,7 @@ namespace com.espertech.esper.common.@internal.epl.output.view
                         ? ConstantNull()
                         : _afterTimePeriodExpr.TimePeriodComputeForge.MakeEvaluator(method, classScope))
                 .SetProperty(spec, "AfterConditionNumberOfEvents", Constant(_afterNumberOfEvents))
-                .SetProperty(spec, "UnaggregatedUngrouped", Constant(_unaggregatedUngrouped))
+                .SetProperty(spec, "IsUnaggregatedUngrouped", Constant(_unaggregatedUngrouped))
                 .SetProperty(
                     spec,
                     "EventTypes",

@@ -322,7 +322,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                           "@Name('s0') select p0, p1 from MySchema;\n";
                 env.CompileDeployWBusPublicType(epl, new RegressionPath()).AddListener("s0");
 
-                env.SendEventMap(CollectionUtil.BuildMap("p0", "a", "p1", 20), "MySchema");
+                env.SendEventMap(CollectionUtil.BuildMap("P0", "a", "P1", 20), "MySchema");
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     "p0,p1".SplitCsv(),

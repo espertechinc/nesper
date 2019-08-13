@@ -27,7 +27,8 @@ namespace com.espertech.esper.common.client.soda
             AddChild(inner);
         }
 
-        public override PatternExprPrecedenceEnum Precedence {
+        public override PatternExprPrecedenceEnum Precedence
+        {
             get { return PatternExprPrecedenceEnum.EVERY_NOT; }
         }
 
@@ -37,7 +38,8 @@ namespace com.espertech.esper.common.client.soda
         {
             writer.Write("every ");
             PatternExprPrecedenceEnum precedence = Precedence;
-            if (Children[0] is PatternEveryExpr) {
+            if (Children[0] is PatternEveryExpr)
+            {
                 precedence = PatternExprPrecedenceEnum.MAXIMIM;
             }
 

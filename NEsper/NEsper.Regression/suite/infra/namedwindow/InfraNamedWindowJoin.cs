@@ -572,7 +572,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                 received = EPAssertionUtil.EnumeratorToArray(env.GetEnumerator("select"));
                 EPAssertionUtil.AssertPropsPerRow(
                     received,
-                    "theString,IntPrimitive,cntBool,Symbol".SplitCsv(),
+                    "TheString,IntPrimitive,cntBool,Symbol".SplitCsv(),
                     new[] {
                         new object[] {null, null, 0L, "c3"},
                         new object[] {"c0", 0, 2L, "c0"},

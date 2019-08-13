@@ -52,7 +52,8 @@ namespace com.espertech.esper.common.client.soda
             string[] columns,
             StreamSelector streamSelector)
         {
-            if (streamSelector == StreamSelector.RSTREAM_ISTREAM_BOTH) {
+            if (streamSelector == StreamSelector.RSTREAM_ISTREAM_BOTH)
+            {
                 throw new ArgumentException("Insert into only allows istream or rstream selection, not both");
             }
 
@@ -124,7 +125,8 @@ namespace com.espertech.esper.common.client.soda
         {
             formatter.BeginInsertInto(writer, isTopLevel);
             writer.Write("insert ");
-            if (StreamSelector != StreamSelector.ISTREAM_ONLY) {
+            if (StreamSelector != StreamSelector.ISTREAM_ONLY)
+            {
                 writer.Write(StreamSelector.GetEPL());
                 writer.Write(" ");
             }
@@ -132,10 +134,12 @@ namespace com.espertech.esper.common.client.soda
             writer.Write("into ");
             writer.Write(StreamName);
 
-            if (ColumnNames.Count > 0) {
+            if (ColumnNames.Count > 0)
+            {
                 writer.Write("(");
                 String delimiter = "";
-                foreach (var name in ColumnNames) {
+                foreach (var name in ColumnNames)
+                {
                     writer.Write(delimiter);
                     writer.Write(name);
                     delimiter = ", ";

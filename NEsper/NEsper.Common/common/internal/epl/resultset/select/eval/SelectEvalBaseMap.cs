@@ -57,7 +57,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
             CodegenBlock block = methodNode.Block;
             if (this.context.ExprForges.Length == 0) {
                 block.DeclareVar<IDictionary<string, object>>(
-                    "props", StaticMethod(typeof(Collections), "GetEmptyMap"));
+                    "props", StaticMethod(typeof(Collections), "GetEmptyMap", new[] { typeof(string), typeof(object) }));
             }
             else {
                 block.DeclareVar<IDictionary<string, object>>(

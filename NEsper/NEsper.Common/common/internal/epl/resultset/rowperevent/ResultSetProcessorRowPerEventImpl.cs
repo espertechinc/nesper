@@ -207,7 +207,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowperevent
                         "Add",
                         ExprDotMethod(
                             REF_ORDERBYPROCESSOR,
-                            "getSortKey",
+                            "GetSortKey",
                             Ref("eventsPerStream"),
                             ConstantTrue(),
                             REF_AGENTINSTANCECONTEXT));

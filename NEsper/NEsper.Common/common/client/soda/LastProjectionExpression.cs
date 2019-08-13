@@ -37,7 +37,8 @@ namespace com.espertech.esper.common.client.soda
         /// Returns the function name of the aggregation function.
         /// </summary>
         /// <value>function name</value>
-        public override string AggregationFunctionName {
+        public override string AggregationFunctionName
+        {
             get { return "last"; }
         }
     }

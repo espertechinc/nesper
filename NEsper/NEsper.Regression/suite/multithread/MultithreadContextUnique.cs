@@ -28,7 +28,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
     {
         public void Run(RegressionEnvironment env)
         {
-            var epl = "create schema ScoreCycle (userId string, keyword string, productId string, score long);\n" +
+            var epl = "create schema ScoreCycle (userId string, keyword string, ProductId string, score long);\n" +
                       "\n" +
                       "create schema UserKeywordTotalStream (userId string, keyword string, sumScore long);\n" +
                       "\n" +
@@ -37,7 +37,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
                       "consistent_hash_crc32(userId) from UserKeywordTotalStream \n" +
                       "granularity 10000000;\n" +
                       "\n" +
-                      "context HashByUserCtx create window ScoreCycleWindow#unique(userId, keyword, productId) as ScoreCycle;\n" +
+                      "context HashByUserCtx create window ScoreCycleWindow#unique(userId, keyword, ProductId) as ScoreCycle;\n" +
                       "\n" +
                       "context HashByUserCtx insert into ScoreCycleWindow select * from ScoreCycle;\n" +
                       "\n" +
@@ -87,7 +87,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
             IDictionary<string, object> theEvent = new LinkedHashMap<string, object>();
             theEvent.Put("userId", userId);
             theEvent.Put("keyword", keyword);
-            theEvent.Put("productId", productId);
+            theEvent.Put("ProductId", productId);
             theEvent.Put("score", score);
             return theEvent;
         }

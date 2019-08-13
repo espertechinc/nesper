@@ -143,19 +143,19 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 return new MyOp(this, propOneText, propTwoText, propThreeText);
             }
 
-            public void SetPropOne(ExprEvaluator propOne)
-            {
-                this.propOne = propOne;
+            public ExprEvaluator PropOne {
+                get => this.propOne;
+                set => this.propOne = value;
             }
 
-            public void SetPropTwo(ExprEvaluator propTwo)
-            {
-                this.propTwo = propTwo;
+            public ExprEvaluator PropTwo {
+                get => this.propTwo;
+                set => this.propTwo = value;
             }
 
-            public void SetPropThree(ExprEvaluator propThree)
-            {
-                this.propThree = propThree;
+            public ExprEvaluator PropThree {
+                get => this.propThree;
+                set => this.propThree = value;
             }
         }
 

@@ -29,7 +29,8 @@ namespace com.espertech.esper.common.client.soda
     {
         public static string GetEPL(this StreamSelector enumValue)
         {
-            switch (enumValue) {
+            switch (enumValue)
+            {
                 case StreamSelector.RSTREAM_ONLY:
                     return "rstream";
 

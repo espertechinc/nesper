@@ -331,7 +331,7 @@ namespace com.espertech.esper.regressionlib.suite.view
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "theString,LongPrimitive".SplitCsv();
+                var fields = "TheString,LongPrimitive".SplitCsv();
 
                 env.AdvanceTime(0);
                 var epl = "@Name('s0') select irstream * from SupportBean.ext:time_order(LongPrimitive, 10 sec)";

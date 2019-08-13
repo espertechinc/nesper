@@ -253,7 +253,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
             CodegenNamedMethods namedMethods,
             CodegenClassScope classScope)
         {
-            var methodName = "getComparable_" + @ref.Ref;
+            var methodName = "GetComparable_" + @ref.Ref;
             Consumer<CodegenMethod> code = method => {
                 if (criteria.Length == 1) {
                     method.Block.MethodReturn(

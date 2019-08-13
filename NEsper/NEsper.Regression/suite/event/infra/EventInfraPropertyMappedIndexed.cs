@@ -48,9 +48,9 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
                 MAP_TYPENAME,
                 FMAP,
                 TwoEntryMap<string, object>(
-                    "indexed",
+                    "Indexed",
                     new[] {"v1", "v2"},
-                    "mapped",
+                    "Mapped",
                     Collections.SingletonDataMap("k1", "v1")));
 
             RunAssertion(
@@ -63,8 +63,8 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
             var avroSchema =
                 AvroSchemaUtil.ResolveAvroSchema(env.Runtime.EventTypeService.GetEventTypePreconfigured(AVRO_TYPENAME));
             var datum = new GenericRecord(avroSchema.AsRecordSchema());
-            datum.Put("indexed", Arrays.AsList("v1", "v2"));
-            datum.Put("mapped", Collections.SingletonMap("k1", "v1"));
+            datum.Put("Indexed", Arrays.AsList("v1", "v2"));
+            datum.Put("Mapped", Collections.SingletonMap("k1", "v1"));
             RunAssertion(env, AVRO_TYPENAME, FAVRO, datum);
         }
 
@@ -83,10 +83,10 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
             send.Invoke(env, underlying, typename);
             var @event = env.Listener("s0").AssertOneGetNewAndReset();
 
-            var mappedGetter = @event.EventType.GetGetterMapped("mapped");
+            var mappedGetter = @event.EventType.GetGetterMapped("Mapped");
             Assert.AreEqual("v1", mappedGetter.Get(@event, "k1"));
 
-            var indexedGetter = @event.EventType.GetGetterIndexed("indexed");
+            var indexedGetter = @event.EventType.GetGetterIndexed("Indexed");
             Assert.AreEqual("v2", indexedGetter.Get(@event, 1));
 
             RunAssertionEventInvalidProp(@event);
@@ -97,7 +97,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 
         private void RunAssertionEventInvalidProp(EventBean @event)
         {
-            foreach (var prop in Arrays.AsList("xxxx", "mapped[1]", "indexed('a')", "mapped.x", "indexed.x")) {
+            foreach (var prop in Arrays.AsList("xxxx", "Mapped[1]", "Indexed('a')", "Mapped.x", "Indexed.x")) {
                 SupportMessageAssertUtil.TryInvalidProperty(@event, prop);
                 SupportMessageAssertUtil.TryInvalidGetFragment(@event, prop);
             }
@@ -112,37 +112,37 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 
             object[][] expectedType = {
                 new object[] {
-                    "indexed", underlying is GenericRecord ? typeof(ICollection<object>) : typeof(string[]), null, null
+                    "Indexed", underlying is GenericRecord ? typeof(ICollection<object>) : typeof(string[]), null, null
                 },
-                new object[] {"mapped", typeof(IDictionary<string, object>), null, null}
+                new object[] {"Mapped", typeof(IDictionary<string, object>), null, null}
             };
             SupportEventTypeAssertionUtil.AssertEventTypeProperties(
                 expectedType,
                 eventType,
                 SupportEventTypeAssertionEnumExtensions.GetSetWithFragment());
 
-            EPAssertionUtil.AssertEqualsAnyOrder(new[] {"indexed", "mapped"}, eventType.PropertyNames);
+            EPAssertionUtil.AssertEqualsAnyOrder(new[] {"Indexed", "Mapped"}, eventType.PropertyNames);
 
-            Assert.IsNotNull(eventType.GetGetter("mapped"));
-            Assert.IsNotNull(eventType.GetGetter("mapped('a')"));
-            Assert.IsNotNull(eventType.GetGetter("indexed"));
-            Assert.IsNotNull(eventType.GetGetter("indexed[0]"));
-            Assert.IsTrue(eventType.IsProperty("mapped"));
-            Assert.IsTrue(eventType.IsProperty("mapped('a')"));
-            Assert.IsTrue(eventType.IsProperty("indexed"));
-            Assert.IsTrue(eventType.IsProperty("indexed[0]"));
-            Assert.AreEqual(typeof(IDictionary<string, object>), eventType.GetPropertyType("mapped"));
+            Assert.IsNotNull(eventType.GetGetter("Mapped"));
+            Assert.IsNotNull(eventType.GetGetter("Mapped('a')"));
+            Assert.IsNotNull(eventType.GetGetter("Indexed"));
+            Assert.IsNotNull(eventType.GetGetter("Indexed[0]"));
+            Assert.IsTrue(eventType.IsProperty("Mapped"));
+            Assert.IsTrue(eventType.IsProperty("Mapped('a')"));
+            Assert.IsTrue(eventType.IsProperty("Indexed"));
+            Assert.IsTrue(eventType.IsProperty("Indexed[0]"));
+            Assert.AreEqual(typeof(IDictionary<string, object>), eventType.GetPropertyType("Mapped"));
             Assert.AreEqual(
                 underlying is IDictionary<string, object> || underlying is object[] ? typeof(object) : typeof(string),
-                eventType.GetPropertyType("mapped('a')"));
+                eventType.GetPropertyType("Mapped('a')"));
             Assert.AreEqual(
                 underlying is GenericRecord ? typeof(ICollection<object>) : typeof(string[]),
-                eventType.GetPropertyType("indexed"));
-            Assert.AreEqual(typeof(string), eventType.GetPropertyType("indexed[0]"));
+                eventType.GetPropertyType("Indexed"));
+            Assert.AreEqual(typeof(string), eventType.GetPropertyType("Indexed[0]"));
 
             Assert.AreEqual(
                 new EventPropertyDescriptor(
-                    "indexed",
+                    "Indexed",
                     underlying is GenericRecord ? typeof(ICollection<object>) : typeof(string[]),
                     typeof(string),
                     false,
@@ -150,10 +150,10 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
                     true,
                     false,
                     false),
-                eventType.GetPropertyDescriptor("indexed"));
+                eventType.GetPropertyDescriptor("Indexed"));
             Assert.AreEqual(
                 new EventPropertyDescriptor(
-                    "mapped",
+                    "Mapped",
                     typeof(IDictionary<string, object>),
                     underlying is IDictionary<string, object> || underlying is object[]
                         ? typeof(object)
@@ -163,10 +163,10 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
                     false,
                     true,
                     false),
-                eventType.GetPropertyDescriptor("mapped"));
+                eventType.GetPropertyDescriptor("Mapped"));
 
-            Assert.IsNull(eventType.GetFragmentType("indexed"));
-            Assert.IsNull(eventType.GetFragmentType("mapped"));
+            Assert.IsNull(eventType.GetFragmentType("Indexed"));
+            Assert.IsNull(eventType.GetFragmentType("Mapped"));
         }
 
         private void RunAssertionTypeInvalidProp(
@@ -178,10 +178,10 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
             foreach (var prop in Arrays.AsList(
                 "xxxx",
                 "myString[0]",
-                "indexed('a')",
-                "indexed.x",
-                "mapped[0]",
-                "mapped.x")) {
+                "Indexed('a')",
+                "Indexed.x",
+                "Mapped[0]",
+                "Mapped.x")) {
                 Assert.AreEqual(false, eventType.IsProperty(prop));
                 Assert.AreEqual(null, eventType.GetPropertyType(prop));
                 Assert.IsNull(eventType.GetPropertyDescriptor(prop));

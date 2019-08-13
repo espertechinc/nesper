@@ -75,7 +75,8 @@ namespace com.espertech.esper.common.client.soda
         ///     Returns the pattern expression providing events to the stream.
         /// </summary>
         /// <returns>pattern expression</returns>
-        public PatternExpr Expression {
+        public PatternExpr Expression
+        {
             get => expression;
             set => expression = value;
         }
@@ -84,7 +85,8 @@ namespace com.espertech.esper.common.client.soda
         ///     Returns the pattern-level annotations, if any
         /// </summary>
         /// <returns>pattern-level annotations</returns>
-        public AnnotationPart[] Annotations {
+        public AnnotationPart[] Annotations
+        {
             get => annotations;
             set => annotations = value;
         }
@@ -117,15 +119,18 @@ namespace com.espertech.esper.common.client.soda
             EPStatementFormatter formatter)
         {
             writer.Write("pattern");
-            if (annotations != null) {
-                foreach (var part in annotations) {
+            if (annotations != null)
+            {
+                foreach (var part in annotations)
+                {
                     writer.Write(' ');
                     part.ToEPL(writer);
                 }
             }
 
             writer.Write(" [");
-            if (expression != null) {
+            if (expression != null)
+            {
                 expression.ToEPL(writer, PatternExprPrecedenceEnum.MINIMUM, formatter);
             }
 

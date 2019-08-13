@@ -61,7 +61,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                     "@Name('s0') select (select IntPrimitive from MyInfra where TheString = s1.P10) as val from SupportBean_S0#lastevent as s0, SupportBean_S1#lastevent as s1";
                 env.CompileDeploy(consumeEpl, path).AddListener("s0");
 
-                var fields = "val".SplitCsv();
+                var fields = new [] { "val" };
 
                 env.SendEventBean(new SupportBean("E1", 10));
                 env.SendEventBean(new SupportBean("E2", 20));

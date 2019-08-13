@@ -10,9 +10,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
-
 namespace com.espertech.esper.common.client.soda
 {
     /// <summary>
@@ -20,6 +17,7 @@ namespace com.espertech.esper.common.client.soda
     /// <para />The form "x =&gt; x * x" reads as "x goes to x times x", for an example expression that yields x multiplied by x.
     /// <para />Used with expression declaration and with enumeration methods, for example, to parameterize by an expression.
     /// </summary>
+    [Serializable]
     public class LambdaExpression : ExpressionBase
     {
         private IList<string> parameters;
@@ -44,21 +42,25 @@ namespace com.espertech.esper.common.client.soda
         /// Returns the lambda expression parameters.
         /// </summary>
         /// <returns>lambda expression parameters</returns>
-        public IList<string> Parameters {
+        public IList<string> Parameters
+        {
             get => parameters;
             set { this.parameters = value; }
         }
 
-        public override ExpressionPrecedenceEnum Precedence {
+        public override ExpressionPrecedenceEnum Precedence
+        {
             get => ExpressionPrecedenceEnum.MINIMUM;
         }
 
         public override void ToPrecedenceFreeEPL(TextWriter writer)
         {
-            if (parameters.Count > 1) {
+            if (parameters.Count > 1)
+            {
                 writer.Write("(");
                 string delimiter = "";
-                foreach (string parameter in parameters) {
+                foreach (string parameter in parameters)
+                {
                     writer.Write(delimiter);
                     writer.Write(parameter);
                     delimiter = ",";
@@ -66,7 +68,8 @@ namespace com.espertech.esper.common.client.soda
 
                 writer.Write(")");
             }
-            else {
+            else
+            {
                 writer.Write(parameters[0]);
             }
 

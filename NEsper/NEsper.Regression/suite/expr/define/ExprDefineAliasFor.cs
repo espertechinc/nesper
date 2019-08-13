@@ -77,7 +77,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.define
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "c0".SplitCsv();
+                var fields = new [] { "c0" };
 
                 var path = new RegressionPath();
                 env.CompileDeploy("create expression F1 alias for {10}", path);

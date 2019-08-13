@@ -64,7 +64,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.contained
                 var epl = "create objectarray schema DeleteId(Id int);" +
                           "create window MyWindow#keepall as SupportBean;" +
                           "insert into MyWindow select * from SupportBean;" +
-                          "on SupportBeanArrayCollMap[intArr@type(DeleteId)] delete from MyWindow where IntPrimitive = Id";
+                          "on SupportBeanArrayCollMap[IntArr@type(DeleteId)] delete from MyWindow where IntPrimitive = Id";
                 env.CompileDeploy(epl, path);
 
                 env.SendEventBean(new SupportBean("E1", 1));

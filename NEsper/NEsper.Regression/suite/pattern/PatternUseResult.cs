@@ -46,7 +46,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
             int numFiltersRemaining)
         {
             env.SendEventBean(new SupportBean_A(id));
-            var fields = "c0".SplitCsv();
+            var fields = new [] { "c0" };
             EPAssertionUtil.AssertProps(
                 env.Listener("s0").AssertOneGetNewAndReset(),
                 fields,

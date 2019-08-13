@@ -340,14 +340,14 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
             CodegenExpression future = classScope.NamespaceScope.AddOrGetFieldWellKnown(
                 new CodegenFieldNameSubqueryResult(subselectNode.SubselectNumber),
                 typeof(SubordTableLookupStrategy));
-            var evalMatching = ExprDotMethod(future, "lookup", eps, evalCtx);
+            var evalMatching = ExprDotMethod(future, "Lookup", eps, evalCtx);
             method.Block.DeclareVar<ICollection<EventBean>>(NAME_MATCHINGEVENTS, evalMatching);
 
             // process matching events
             var evalMatchSymbol = new ExprSubselectEvalMatchSymbol();
             var processMethod = method
                 .MakeChildWithScope(resultType, typeof(ExprSubselectNode), evalMatchSymbol, classScope)
-                .AddParam(typeof(ICollection<object>), NAME_MATCHINGEVENTS)
+                .AddParam(typeof(ICollection<EventBean>), NAME_MATCHINGEVENTS)
                 .AddParam(ExprForgeCodegenNames.PARAMS);
             CodegenExpression process;
             if (evaluationType == PLAIN) {

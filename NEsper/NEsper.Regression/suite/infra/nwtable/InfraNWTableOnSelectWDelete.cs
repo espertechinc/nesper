@@ -37,8 +37,8 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 
             public void Run(RegressionEnvironment env)
             {
-                var fieldsWin = "theString,IntPrimitive".SplitCsv();
-                var fieldsSelect = "c0".SplitCsv();
+                var fieldsWin = new [] { "TheString","IntPrimitive" };
+                var fieldsSelect = new [] { "c0" };
                 var path = new RegressionPath();
 
                 var eplCreate = namedWindow

@@ -9,14 +9,12 @@
 using System;
 using System.IO;
 
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
-
 namespace com.espertech.esper.common.client.soda
 {
     /// <summary>
     /// Represent an expression
     /// </summary>
+    [Serializable]
     public class TimePeriodExpression : ExpressionBase
     {
         private bool hasYears;
@@ -209,47 +207,56 @@ namespace com.espertech.esper.common.client.soda
             Expression millisecondsExpr,
             Expression microsecondsExpr)
         {
-            if (yearsExpr != null) {
+            if (yearsExpr != null)
+            {
                 hasYears = true;
                 this.AddChild(yearsExpr);
             }
 
-            if (monthExpr != null) {
+            if (monthExpr != null)
+            {
                 hasMonths = true;
                 this.AddChild(monthExpr);
             }
 
-            if (weeksExpr != null) {
+            if (weeksExpr != null)
+            {
                 hasWeeks = true;
                 this.AddChild(weeksExpr);
             }
 
-            if (daysExpr != null) {
+            if (daysExpr != null)
+            {
                 hasDays = true;
                 this.AddChild(daysExpr);
             }
 
-            if (hoursExpr != null) {
+            if (hoursExpr != null)
+            {
                 hasHours = true;
                 this.AddChild(hoursExpr);
             }
 
-            if (minutesExpr != null) {
+            if (minutesExpr != null)
+            {
                 hasMinutes = true;
                 this.AddChild(minutesExpr);
             }
 
-            if (secondsExpr != null) {
+            if (secondsExpr != null)
+            {
                 hasSeconds = true;
                 this.AddChild(secondsExpr);
             }
 
-            if (millisecondsExpr != null) {
+            if (millisecondsExpr != null)
+            {
                 hasMilliseconds = true;
                 this.AddChild(millisecondsExpr);
             }
 
-            if (microsecondsExpr != null) {
+            if (microsecondsExpr != null)
+            {
                 hasMicroseconds = true;
                 this.AddChild(microsecondsExpr);
             }
@@ -259,7 +266,8 @@ namespace com.espertech.esper.common.client.soda
         /// Returns true if a subexpression exists that is a day-part.
         /// </summary>
         /// <returns>indicator for presence of part</returns>
-        public bool IsDays {
+        public bool IsDays
+        {
             get => hasDays;
         }
 
@@ -276,7 +284,8 @@ namespace com.espertech.esper.common.client.soda
         /// Returns true if a subexpression exists that is a hour-part.
         /// </summary>
         /// <returns>indicator for presence of part</returns>
-        public bool IsHours {
+        public bool IsHours
+        {
             get => hasHours;
         }
 
@@ -293,7 +302,8 @@ namespace com.espertech.esper.common.client.soda
         /// Returns true if a subexpression exists that is a minutes-part.
         /// </summary>
         /// <returns>indicator for presence of part</returns>
-        public bool IsMinutes {
+        public bool IsMinutes
+        {
             get => hasMinutes;
         }
 
@@ -310,7 +320,8 @@ namespace com.espertech.esper.common.client.soda
         /// Returns true if a subexpression exists that is a seconds-part.
         /// </summary>
         /// <returns>indicator for presence of part</returns>
-        public bool IsSeconds {
+        public bool IsSeconds
+        {
             get => hasSeconds;
         }
 
@@ -327,7 +338,8 @@ namespace com.espertech.esper.common.client.soda
         /// Returns true if a subexpression exists that is a milliseconds-part.
         /// </summary>
         /// <returns>indicator for presence of part</returns>
-        public bool IsMilliseconds {
+        public bool IsMilliseconds
+        {
             get => hasMilliseconds;
         }
 
@@ -344,7 +356,8 @@ namespace com.espertech.esper.common.client.soda
         /// Returns true if a subexpression exists that is a year-part.
         /// </summary>
         /// <returns>indicator for presence of part</returns>
-        public bool IsYears {
+        public bool IsYears
+        {
             get => hasYears;
         }
 
@@ -361,7 +374,8 @@ namespace com.espertech.esper.common.client.soda
         /// Returns true if a subexpression exists that is a month-part.
         /// </summary>
         /// <returns>indicator for presence of part</returns>
-        public bool IsMonths {
+        public bool IsMonths
+        {
             get => hasMonths;
         }
 
@@ -378,7 +392,8 @@ namespace com.espertech.esper.common.client.soda
         /// Returns true if a subexpression exists that is a weeks-part.
         /// </summary>
         /// <returns>indicator for presence of part</returns>
-        public bool IsWeeks {
+        public bool IsWeeks
+        {
             get => hasWeeks;
         }
 
@@ -395,7 +410,8 @@ namespace com.espertech.esper.common.client.soda
         /// Returns true if a subexpression exists that is a microsecond-part.
         /// </summary>
         /// <returns>indicator for presence of part</returns>
-        public bool IsMicroseconds {
+        public bool IsMicroseconds
+        {
             get => hasMicroseconds;
         }
 
@@ -408,7 +424,8 @@ namespace com.espertech.esper.common.client.soda
             this.hasMicroseconds = hasMicroseconds;
         }
 
-        public override ExpressionPrecedenceEnum Precedence {
+        public override ExpressionPrecedenceEnum Precedence
+        {
             get => ExpressionPrecedenceEnum.UNARY;
         }
 
@@ -416,14 +433,16 @@ namespace com.espertech.esper.common.client.soda
         {
             string delimiter = "";
             int countExpr = 0;
-            if (hasYears) {
+            if (hasYears)
+            {
                 this.Children[countExpr].ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
                 writer.Write(" years");
                 delimiter = " ";
                 countExpr++;
             }
 
-            if (hasMonths) {
+            if (hasMonths)
+            {
                 writer.Write(delimiter);
                 this.Children[countExpr].ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
                 writer.Write(" months");
@@ -431,7 +450,8 @@ namespace com.espertech.esper.common.client.soda
                 countExpr++;
             }
 
-            if (hasWeeks) {
+            if (hasWeeks)
+            {
                 writer.Write(delimiter);
                 this.Children[countExpr].ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
                 writer.Write(" weeks");
@@ -439,7 +459,8 @@ namespace com.espertech.esper.common.client.soda
                 countExpr++;
             }
 
-            if (hasDays) {
+            if (hasDays)
+            {
                 writer.Write(delimiter);
                 this.Children[countExpr].ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
                 writer.Write(" days");
@@ -447,7 +468,8 @@ namespace com.espertech.esper.common.client.soda
                 countExpr++;
             }
 
-            if (hasHours) {
+            if (hasHours)
+            {
                 writer.Write(delimiter);
                 this.Children[countExpr].ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
                 writer.Write(" hours");
@@ -455,7 +477,8 @@ namespace com.espertech.esper.common.client.soda
                 countExpr++;
             }
 
-            if (hasMinutes) {
+            if (hasMinutes)
+            {
                 writer.Write(delimiter);
                 this.Children[countExpr].ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
                 writer.Write(" minutes");
@@ -463,7 +486,8 @@ namespace com.espertech.esper.common.client.soda
                 countExpr++;
             }
 
-            if (hasSeconds) {
+            if (hasSeconds)
+            {
                 writer.Write(delimiter);
                 this.Children[countExpr].ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
                 writer.Write(" seconds");
@@ -471,7 +495,8 @@ namespace com.espertech.esper.common.client.soda
                 countExpr++;
             }
 
-            if (hasMilliseconds) {
+            if (hasMilliseconds)
+            {
                 writer.Write(delimiter);
                 this.Children[countExpr].ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
                 writer.Write(" milliseconds");
@@ -479,7 +504,8 @@ namespace com.espertech.esper.common.client.soda
                 countExpr++;
             }
 
-            if (hasMicroseconds) {
+            if (hasMicroseconds)
+            {
                 writer.Write(delimiter);
                 this.Children[countExpr].ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
                 writer.Write(" microseconds");

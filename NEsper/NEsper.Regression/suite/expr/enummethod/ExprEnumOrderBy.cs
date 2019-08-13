@@ -91,7 +91,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "val0,val1".SplitCsv();
+                var fields = new [] { "val0", "val1" };
                 var eplFragment = "@Name('s0') select " +
                                   "Strvals.orderBy() as val0, " +
                                   "Strvals.orderByDesc() as val1 " +

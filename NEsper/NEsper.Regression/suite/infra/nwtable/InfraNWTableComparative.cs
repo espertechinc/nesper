@@ -56,7 +56,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 
             public void Run(RegressionEnvironment env)
             {
-                var fields = "c0,c1".SplitCsv();
+                var fields = new [] { "c0", "c1" };
                 env.CompileDeploy(epl).AddListener("s0");
 
                 var startLoad = PerformanceObserver.NanoTime;

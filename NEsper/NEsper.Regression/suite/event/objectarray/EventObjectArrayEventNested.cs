@@ -95,7 +95,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.objectarray
                 eventVal.Put("k1", "v1");
                 var theEvent = MakeMap(
                     new[] {
-                        new object[] {"p0", eventVal}
+                        new object[] {"P0", eventVal}
                     });
                 env.SendEventMap(theEvent, "MyMappedPropertyMap");
 
@@ -168,7 +168,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.objectarray
                 IDictionary<string, object>[] n0Bean2 = {n0Bean21, n0Bean22};
                 var theEvent = MakeMap(
                     new[] {
-                        new object[] {"p0", n0Bean1}, new object[] {"p1", n0Bean2}
+                        new object[] {"P0", n0Bean1}, new object[] {"P1", n0Bean2}
                     });
                 env.SendEventObjectArray(new object[] {theEvent}, "MyObjectArrayMapOuter");
 

@@ -20,12 +20,12 @@ namespace com.espertech.esper.regressionlib.support.bookexample
         {
             Books = books;
             Games = games;
-            Orderdetail = order;
+            OrderDetail = order;
         }
 
         public BookDesc[] Books { get; }
 
-        public OrderWithItems Orderdetail { get; }
+        public OrderWithItems OrderDetail { get; }
 
         public GameDesc[] Games { get; }
     }

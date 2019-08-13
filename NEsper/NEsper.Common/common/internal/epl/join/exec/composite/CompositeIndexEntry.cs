@@ -13,8 +13,17 @@ using com.espertech.esper.compat;
 
 namespace com.espertech.esper.common.@internal.epl.join.exec.composite
 {
+    /// <summary>
+    /// An entry in a dictionary that can represent either an index or a collection, but not both.
+    /// This is another carryover of improper use of type erasure in Java that needs to be corrected
+    /// in Esper.
+    /// </summary>
     public class CompositeIndexEntry
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="CompositeIndexEntry"/> class.
+        /// </summary>
+        /// <param name="index">The index.</param>
         public CompositeIndexEntry(IDictionary<object, CompositeIndexEntry> index)
         {
             Index = index;

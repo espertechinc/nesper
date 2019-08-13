@@ -597,12 +597,12 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                 // test equals&selection
                 var fields = "val0,val1,val2,val3,val4,val5".SplitCsv();
                 epl = "@Name('s0') select " +
-                      "theString != 'A' as val0, " +
-                      "theString != 'A' or IntPrimitive != 0 as val1, " +
-                      "theString != 'A' and IntPrimitive != 0 as val2, " +
-                      "theString = 'A' as val3," +
-                      "theString = 'A' or IntPrimitive != 0 as val4, " +
-                      "theString = 'A' and IntPrimitive != 0 as val5 from SupportBean";
+                      "TheString != 'A' as val0, " +
+                      "TheString != 'A' or IntPrimitive != 0 as val1, " +
+                      "TheString != 'A' and IntPrimitive != 0 as val2, " +
+                      "TheString = 'A' as val3," +
+                      "TheString = 'A' or IntPrimitive != 0 as val4, " +
+                      "TheString = 'A' and IntPrimitive != 0 as val5 from SupportBean";
                 env.CompileDeploy(epl).AddListener("s0").MilestoneInc(milestone);
 
                 SendSupportBean(env, new SupportBean(null, 0));
@@ -675,12 +675,12 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
 
                 // test is-and-isnot&selection
                 epl = "@Name('s0') select " +
-                      "theString is null as val0, " +
-                      "theString is null or IntPrimitive != 0 as val1, " +
-                      "theString is null and IntPrimitive != 0 as val2, " +
-                      "theString is not null as val3," +
-                      "theString is not null or IntPrimitive != 0 as val4, " +
-                      "theString is not null and IntPrimitive != 0 as val5 " +
+                      "TheString is null as val0, " +
+                      "TheString is null or IntPrimitive != 0 as val1, " +
+                      "TheString is null and IntPrimitive != 0 as val2, " +
+                      "TheString is not null as val3," +
+                      "TheString is not null or IntPrimitive != 0 as val4, " +
+                      "TheString is not null and IntPrimitive != 0 as val5 " +
                       "from SupportBean";
                 env.CompileDeploy(epl).AddListener("s0").MilestoneInc(milestone);
 
@@ -770,7 +770,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                           "pattern [ \n" +
                           " every start_load=SupportBeanArrayCollMap \n" +
                           " -> \n" +
-                          " single_load=SupportBean(TheString in (start_load.setOfString)) \n" +
+                          " single_load=SupportBean(TheString in (start_load.SetOfString)) \n" +
                           "]";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
@@ -1467,7 +1467,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                        "(DoubleBoxed = " +
                        typeof(SupportStaticMethodLib).FullName +
                        ".minusOne(a.DoubleBoxed) or " +
-                       "doubleBoxed = " +
+                       "DoubleBoxed = " +
                        typeof(SupportStaticMethodLib).FullName +
                        ".minusOne(a.IntBoxed))]";
                 TryPattern(

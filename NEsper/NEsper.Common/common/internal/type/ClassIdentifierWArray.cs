@@ -6,9 +6,11 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
 using System.IO;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.@internal.util;
 
 namespace com.espertech.esper.common.@internal.type
 {
@@ -47,6 +49,19 @@ namespace com.espertech.esper.common.@internal.type
             var indexStart = typeName.IndexOf('[');
             if (indexStart == -1) {
                 return new ClassIdentifierWArray(typeName);
+            }
+
+            var testType = Type.GetType(typeName, false);
+            if (testType != null) {
+                if (testType.IsArray) {
+                    return new ClassIdentifierWArray(
+                        testType.GetElementType().FullName,
+                        testType.GetArrayRank(),
+                        testType.GetElementType().IsPrimitive);
+                }
+                else {
+                    return new ClassIdentifierWArray(typeName); // Generics like Nullable show up here
+                }
             }
 
             var name = typeName.Substring(0, indexStart);

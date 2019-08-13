@@ -33,11 +33,11 @@ namespace com.espertech.esper.common.@internal.epl.join.querygraph
         {
             queryGraph = new QueryGraphForge(3, null, false);
             types = new EventType[] {
-                supportEventTypeFactory.CreateMapType(CreateType("p0,P00,P01,P02")),
-                supportEventTypeFactory.CreateMapType(CreateType("p1,P10,P11,p12")),
-                supportEventTypeFactory.CreateMapType(CreateType("p2,P20,P21")),
-                supportEventTypeFactory.CreateMapType(CreateType("p3,P30,p31")),
-                supportEventTypeFactory.CreateMapType(CreateType("p4,P40,p41,p42")),
+                supportEventTypeFactory.CreateMapType(CreateType("P0,P00,P01,P02")),
+                supportEventTypeFactory.CreateMapType(CreateType("P1,P10,P11,P12")),
+                supportEventTypeFactory.CreateMapType(CreateType("P2,P20,P21")),
+                supportEventTypeFactory.CreateMapType(CreateType("P3,P30,P31")),
+                supportEventTypeFactory.CreateMapType(CreateType("P4,P40,P41,p42")),
             };
         }
 
@@ -62,10 +62,10 @@ namespace com.espertech.esper.common.@internal.epl.join.querygraph
 
             // test with 5 streams, connect all streams to all streams
             queryGraph = new QueryGraphForge(5, null, false);
-            queryGraph.AddStrictEquals(0, "p0", Make(0, "p0"), 1, "p1", Make(1, "p1"));
-            queryGraph.AddStrictEquals(3, "p3", Make(3, "p3"), 4, "p4", Make(4, "p4"));
-            queryGraph.AddStrictEquals(2, "p2", Make(2, "p2"), 3, "p3", Make(3, "p3"));
-            queryGraph.AddStrictEquals(1, "p1", Make(1, "p1"), 2, "p2", Make(2, "p2"));
+            queryGraph.AddStrictEquals(0, "P0", Make(0, "P0"), 1, "P1", Make(1, "P1"));
+            queryGraph.AddStrictEquals(3, "P3", Make(3, "P3"), 4, "P4", Make(4, "P4"));
+            queryGraph.AddStrictEquals(2, "P2", Make(2, "P2"), 3, "P3", Make(3, "P3"));
+            queryGraph.AddStrictEquals(1, "P1", Make(1, "P1"), 2, "P2", Make(2, "P2"));
 
             QueryGraphForge.FillEquivalentNav(types, queryGraph);
 
@@ -112,7 +112,7 @@ namespace com.espertech.esper.common.@internal.epl.join.querygraph
 
             try
             {
-                queryGraph.AddStrictEquals(2, "p22", null, 3, "p31", null);
+                queryGraph.AddStrictEquals(2, "P22", null, 3, "P31", null);
                 Assert.Fail();
             }
             catch (ArgumentException ex)
@@ -122,7 +122,7 @@ namespace com.espertech.esper.common.@internal.epl.join.querygraph
 
             try
             {
-                queryGraph.AddStrictEquals(2, "p22", null, 3, "p31", null);
+                queryGraph.AddStrictEquals(2, "P22", null, 3, "P31", null);
                 Assert.Fail();
             }
             catch (ArgumentException ex)
@@ -142,17 +142,17 @@ namespace com.espertech.esper.common.@internal.epl.join.querygraph
             Assert.IsFalse(queryGraph.IsNavigableAtAll(0, 2));
             Assert.IsFalse(queryGraph.IsNavigableAtAll(1, 2));
 
-            queryGraph.AddStrictEquals(0, "p1", fake, 1, "p2", fake);
+            queryGraph.AddStrictEquals(0, "P1", fake, 1, "P2", fake);
             Assert.IsTrue(queryGraph.IsNavigableAtAll(0, 1));
             Assert.IsFalse(queryGraph.IsNavigableAtAll(0, 2));
             Assert.IsFalse(queryGraph.IsNavigableAtAll(1, 2));
 
-            queryGraph.AddStrictEquals(2, "p1", fake, 1, "p2", fake);
+            queryGraph.AddStrictEquals(2, "P1", fake, 1, "P2", fake);
             Assert.IsTrue(queryGraph.IsNavigableAtAll(0, 1));
             Assert.IsFalse(queryGraph.IsNavigableAtAll(0, 2));
             Assert.IsTrue(queryGraph.IsNavigableAtAll(1, 2));
 
-            queryGraph.AddStrictEquals(2, "p1", fake, 0, "p2", fake);
+            queryGraph.AddStrictEquals(2, "P1", fake, 0, "P2", fake);
             Assert.IsTrue(queryGraph.IsNavigableAtAll(0, 1));
             Assert.IsTrue(queryGraph.IsNavigableAtAll(0, 2));
             Assert.IsTrue(queryGraph.IsNavigableAtAll(1, 2));
@@ -165,8 +165,8 @@ namespace com.espertech.esper.common.@internal.epl.join.querygraph
 
             queryGraph = new QueryGraphForge(5, null, false);
             queryGraph.AddStrictEquals(3, "p3", fake, 4, "p4", fake);
-            queryGraph.AddStrictEquals(2, "p2", fake, 3, "p3", fake);
-            queryGraph.AddStrictEquals(1, "p1", fake, 2, "p2", fake);
+            queryGraph.AddStrictEquals(2, "P2", fake, 3, "p3", fake);
+            queryGraph.AddStrictEquals(1, "P1", fake, 2, "P2", fake);
 
             Assert.AreEqual(0, queryGraph.GetNavigableStreams(0).Count);
             EPAssertionUtil.AssertEqualsAnyOrder(new int[] { 2 }, queryGraph.GetNavigableStreams(1));

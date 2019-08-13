@@ -72,13 +72,13 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
             return EvaluateInternal(eventInQuestion, context);
         }
 
-        public CodegenExpression EvaluateGetROCollectionEventsCodegen(
+        public CodegenExpression EvaluateGetROCollectionEventsCodegenImpl<T>(
             CodegenMethodScope codegenMethodScope,
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
             var methodNode = codegenMethodScope.MakeChild(
-                typeof(ICollection<EventBean>),
+                typeof(ICollection<T>),
                 typeof(PropertyDotEventCollectionForge),
                 codegenClassScope);
 
@@ -94,6 +94,15 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
                         methodNode,
                         codegenClassScope));
             return LocalMethod(methodNode);
+        }
+
+        public CodegenExpression EvaluateGetROCollectionEventsCodegen(
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
+            CodegenClassScope codegenClassScope)
+        {
+            return EvaluateGetROCollectionEventsCodegenImpl<EventBean>(
+                codegenMethodScope, exprSymbol, codegenClassScope);
         }
 
         public CodegenExpression EvaluateEventGetROCollectionEventsCodegen(
@@ -236,7 +245,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
             }
 
             var methodNode = codegenMethodScope
-                .MakeChild(typeof(ICollection<object>), typeof(PropertyDotEventCollectionForge), codegenClassScope)
+                .MakeChild(typeof(ICollection<EventBean>), typeof(PropertyDotEventCollectionForge), codegenClassScope)
                 .AddParam(typeof(EventBean), "@event");
             CodegenExpressionRef refExprEvalCtx = refExprEvalCtxFunc.Invoke(methodNode);
 

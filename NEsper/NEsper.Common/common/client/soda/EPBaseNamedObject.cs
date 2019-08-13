@@ -10,9 +10,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
-
 namespace com.espertech.esper.common.client.soda
 {
     /// <summary>
@@ -52,7 +49,8 @@ namespace com.espertech.esper.common.client.soda
         /// Returns the object namespace name.
         /// </summary>
         /// <returns>namespace name</returns>
-        public string Namespace {
+        public string Namespace
+        {
             get => @namespace;
             set => @namespace = value;
         }
@@ -61,7 +59,8 @@ namespace com.espertech.esper.common.client.soda
         /// Returns the object name.
         /// </summary>
         /// <returns>object name</returns>
-        public string Name {
+        public string Name
+        {
             get => name;
             set => name = value;
         }
@@ -70,7 +69,8 @@ namespace com.espertech.esper.common.client.soda
         /// Returns the object parameters.
         /// </summary>
         /// <returns>parameters for object, empty list for no parameters</returns>
-        public IList<Expression> Parameters {
+        public IList<Expression> Parameters
+        {
             get => parameters;
             set => parameters = value;
         }

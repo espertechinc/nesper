@@ -19,7 +19,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowperevent
 {
     public interface ResultSetProcessorRowPerEvent : ResultSetProcessor
     {
-        SelectExprProcessor SelectExprProcessor { get; }
+        SelectExprProcessor GetSelectExprProcessor();
 
         bool HasHavingClause();
 

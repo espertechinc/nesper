@@ -115,7 +115,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.rate
             method.Block.IfCondition(Not(ExprDotMethod(points, "IsEmpty")))
                 .DeclareVar<long>("newest", Cast(typeof(long), ExprDotName(points, "Last")))
                 .DeclareVar<bool>(
-                    "leave",
+                    "eave",
                     StaticMethod(
                         typeof(AggregatorRateEver),
                         "RemoveFromHead",

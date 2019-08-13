@@ -47,7 +47,8 @@ namespace com.espertech.esper.common.client.soda
         ///     Returns the column names.
         /// </summary>
         /// <returns>colum names</returns>
-        public IList<string> ColumnNames {
+        public IList<string> ColumnNames
+        {
             get => columnNames;
             set => columnNames = value;
         }
@@ -58,20 +59,24 @@ namespace com.espertech.esper.common.client.soda
         {
             writer.Write("new{");
             var delimiter = "";
-            for (var i = 0; i < Children.Count; i++) {
+            for (var i = 0; i < Children.Count; i++)
+            {
                 writer.Write(delimiter);
                 writer.Write(columnNames[i]);
                 var expr = Children[i];
 
                 var outputexpr = true;
-                if (expr is PropertyValueExpression) {
+                if (expr is PropertyValueExpression)
+                {
                     var prop = (PropertyValueExpression) expr;
-                    if (prop.PropertyName.Equals(columnNames[i])) {
+                    if (prop.PropertyName.Equals(columnNames[i]))
+                    {
                         outputexpr = false;
                     }
                 }
 
-                if (outputexpr) {
+                if (outputexpr)
+                {
                     writer.Write("=");
                     expr.ToEPL(writer, Precedence);
                 }

@@ -201,7 +201,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                     env,
                     path,
                     eplOneParam,
-                    Collections.SingletonDataMap("p0", 5),
+                    Collections.SingletonDataMap("P0", 5),
                     new[] {"E5"});
 
                 var eplTwiceUsed = "select * from MyInfra where IntPrimitive = ?:p0:int or IntBoxed = ?:p0:int";
@@ -209,17 +209,17 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                     env,
                     path,
                     eplTwiceUsed,
-                    Collections.SingletonDataMap("p0", 12),
+                    Collections.SingletonDataMap("P0", 12),
                     new[] {"E2"});
 
                 var eplTwoParam = "select * from MyInfra where IntPrimitive = ?:p1:int and IntBoxed = ?:p0:int";
                 query = CompilePrepare(eplTwoParam, path, env);
-                RunParameterizedQuery(env, query, CollectionUtil.PopulateNameValueMap("p0", 13, "p1", 3), new[] {"E3"});
-                RunParameterizedQuery(env, query, CollectionUtil.PopulateNameValueMap("p0", 3, "p1", 3), new string[0]);
+                RunParameterizedQuery(env, query, CollectionUtil.PopulateNameValueMap("P0", 13, "P1", 3), new[] {"E3"});
+                RunParameterizedQuery(env, query, CollectionUtil.PopulateNameValueMap("P0", 3, "P1", 3), new string[0]);
                 RunParameterizedQuery(
                     env,
                     query,
-                    CollectionUtil.PopulateNameValueMap("p0", 13, "p1", 13),
+                    CollectionUtil.PopulateNameValueMap("P0", 13, "P1", 13),
                     new string[0]);
 
                 env.UndeployAll();
@@ -252,7 +252,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                     env,
                     path,
                     "select ?:p0:int as c0, ?:p0:long from MyWindow",
-                    "Substitution parameter 'p0' incompatible type assignment between types 'System.Integer' and 'System.Long'");
+                    "Substitution parameter 'p0' incompatible type assignment between types 'System.Int32' and 'System.Long'");
 
                 env.UndeployAll();
             }
@@ -308,7 +308,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 TryInvalidlyParameterized(
                     env,
                     compiled,
-                    query => { query.SetObject("p0", "a"); },
+                    query => { query.SetObject("P0", "a"); },
                     "Missing value for substitution parameter 'p1");
 
                 env.UndeployAll();
@@ -391,7 +391,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 TryInvalidSetObject(
                     env,
                     compiled,
-                    query => query.SetObject("p0", 10),
+                    query => query.SetObject("P0", 10),
                     "Failed to set substitution parameter 'p0', expected a value of type 'System.String': " +
                     typeof(string));
 

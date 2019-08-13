@@ -259,7 +259,7 @@ namespace com.espertech.esper.common.@internal.@event.core
         /// <param name="eventType">type</param>
         /// <param name="eventBeanTypedEventFactory">event service</param>
         /// <returns>fragment</returns>
-        public static object GetBNFragmentPojo(
+        public static object GetBNFragmentPono(
             object result,
             BeanEventType eventType,
             EventBeanTypedEventFactory eventBeanTypedEventFactory)
@@ -629,7 +629,7 @@ namespace com.espertech.esper.common.@internal.@event.core
         /// <param name="fragmentEventType">type</param>
         /// <param name="eventBeanTypedEventFactory">svc</param>
         /// <returns>bean</returns>
-        public static EventBean GetBNFragmentNonPojo(
+        public static EventBean GetBNFragmentNonPono(
             object fragmentUnderlying,
             EventType fragmentEventType,
             EventBeanTypedEventFactory eventBeanTypedEventFactory)
@@ -675,7 +675,7 @@ namespace com.espertech.esper.common.@internal.@event.core
                 var countX = 0;
                 foreach (var item in subEvents) {
                     if (item != null) {
-                        outEvents[countX++] = GetBNFragmentNonPojo(item, fragmentEventType, eventBeanTypedEventFactory);
+                        outEvents[countX++] = GetBNFragmentNonPono(item, fragmentEventType, eventBeanTypedEventFactory);
                     }
                 }
 

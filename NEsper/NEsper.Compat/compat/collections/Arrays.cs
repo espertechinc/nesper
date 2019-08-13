@@ -49,7 +49,7 @@ namespace com.espertech.esper.compat.collections
             return true;
         }
 
-        public static IEnumerable<T> Iterate<T>(T[] array)
+        public static IEnumerable<T> Enumerate<T>(T[] array)
         {
             if (array != null) {
                 int arrayLength = array.Length;
@@ -59,7 +59,7 @@ namespace com.espertech.esper.compat.collections
             }
         }
 
-        public static IEnumerable<T> ReverseIterate<T>(T[] array)
+        public static IEnumerable<T> ReverseEnumerate<T>(T[] array)
         {
             if (array != null) {
                 int arrayLength = array.Length;

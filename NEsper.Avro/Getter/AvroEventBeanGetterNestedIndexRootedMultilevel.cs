@@ -181,7 +181,7 @@ namespace NEsper.Avro.Getter
                     "value",
                     CodegenExpressionBuilder.StaticMethod(
                         typeof(AvroEventBeanGetterNestedIndexRooted),
-                        "getAtIndex",
+                        "GetAtIndex",
                         CodegenExpressionBuilder.Ref("record"),
                         CodegenExpressionBuilder.Constant(_posTop),
                         CodegenExpressionBuilder.Constant(_index)))

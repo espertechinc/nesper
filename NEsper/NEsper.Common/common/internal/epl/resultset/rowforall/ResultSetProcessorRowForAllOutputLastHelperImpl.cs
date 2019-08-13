@@ -29,7 +29,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowforall
             EventBean[] oldData,
             bool isGenerateSynthetic)
         {
-            if (processor.IsSelectRStream() && lastEventRStreamForOutputLast == null) {
+            if (processor.IsSelectRStream && lastEventRStreamForOutputLast == null) {
                 lastEventRStreamForOutputLast = processor.GetSelectListEventsAsArray(false, isGenerateSynthetic, false);
             }
 
@@ -47,7 +47,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowforall
             ISet<MultiKey<EventBean>> oldEvents,
             bool isGenerateSynthetic)
         {
-            if (processor.IsSelectRStream() && lastEventRStreamForOutputLast == null) {
+            if (processor.IsSelectRStream && lastEventRStreamForOutputLast == null) {
                 lastEventRStreamForOutputLast = processor.GetSelectListEventsAsArray(false, isGenerateSynthetic, true);
             }
 
@@ -78,7 +78,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowforall
             var events = processor.GetSelectListEventsAsArray(true, isSynthesize, false);
             var result = new UniformPair<EventBean[]>(events, null);
 
-            if (processor.IsSelectRStream() && lastEventRStreamForOutputLast == null) {
+            if (processor.IsSelectRStream && lastEventRStreamForOutputLast == null) {
                 lastEventRStreamForOutputLast = processor.GetSelectListEventsAsArray(false, isSynthesize, false);
             }
 

@@ -68,7 +68,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.rollup
                 .DeclareVar<AggregationRowFactory>(
                     "rowFactory",
                     NewInstance(classNames.RowFactoryTop, Ref("this")))
-                .DeclareVar<DataInputOutputSerdeWCollation<object>>(
+                .DeclareVar<DataInputOutputSerdeWCollation<AggregationRow>>(
                     "rowSerde",
                     NewInstance(classNames.RowSerdeTop, Ref("this")))
                 .MethodReturn(
@@ -222,7 +222,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.rollup
                         ExprDotMethod(
                             ArrayAtIndex(
                                 REF_AGGREGATORSPERGROUP,
-                                ExprDotMethod(AggregationServiceCodegenNames.REF_ROLLUPLEVEL, "getAggregationOffset")),
+                                ExprDotName(AggregationServiceCodegenNames.REF_ROLLUPLEVEL, "AggregationOffset")),
                             "Get",
                             AggregationServiceCodegenNames.REF_GROUPKEY)))
                 .IfCondition(EqualsNull(REF_CURRENTROW))

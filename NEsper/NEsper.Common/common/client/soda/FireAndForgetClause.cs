@@ -9,7 +9,7 @@
 namespace com.espertech.esper.common.client.soda
 {
     /// <summary>
-    /// Marker interface used for fire-and-forget (on-demand) queries such as "Update...set" 
+    /// Marker interface used for fire-and-forget (on-demand) queries such as "Update...set"
     /// and "delete from..." that can be executed via the API.
     /// </summary>
     public interface FireAndForgetClause

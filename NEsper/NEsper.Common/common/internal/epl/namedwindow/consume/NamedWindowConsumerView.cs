@@ -74,7 +74,7 @@ namespace com.espertech.esper.common.@internal.epl.namedwindow.consume
             EventBean[] oldData)
         {
             if (audit) {
-                exprEvaluatorContext.AuditProvider.Stream(newData, oldData, exprEvaluatorContext, eventType.Name);
+                exprEvaluatorContext.AuditProvider.StreamMulti(newData, oldData, exprEvaluatorContext, eventType.Name);
             }
 
             // if we have a filter for the named window,

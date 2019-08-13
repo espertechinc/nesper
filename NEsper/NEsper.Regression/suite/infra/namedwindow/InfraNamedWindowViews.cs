@@ -440,7 +440,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "TheString".SplitCsv();
+                var fields = new [] { "TheString" };
 
                 var path = new RegressionPath();
                 var eplCreate = "@Name('create') create window MyWindow.win:keepall() as SupportBean";
@@ -712,7 +712,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                     "insert into MyWindowINT select * from SupportBean;\n" +
                     "@Name('s0') select irstream * from MyWindowINT");
 
-                var fields = "TheString".SplitCsv();
+                var fields = new [] { "TheString" };
                 env.AddListener("s0");
 
                 env.SendEventBean(new SupportBean("E1", 1));
@@ -1585,7 +1585,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "TheString".SplitCsv();
+                var fields = new [] { "TheString" };
                 var path = new RegressionPath();
 
                 env.AdvanceTime(0);
@@ -4173,7 +4173,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "TheString".SplitCsv();
+                var fields = new [] { "TheString" };
                 var path = new RegressionPath();
                 env.CompileDeploy("create window ABCWin#length(2) as SupportBean", path);
                 env.CompileDeploy("insert into ABCWin select * from SupportBean", path);
@@ -5194,7 +5194,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
 
                 EPAssertionUtil.AssertPropsPerRow(
                     received,
-                    "theString,IntPrimitive,count(*)".SplitCsv(),
+                    "TheString,IntPrimitive,count(*)".SplitCsv(),
                     new[] {
                         new object[] {"c0", 0, 1L},
                         new object[] {"c0", 1, 2L},
@@ -5266,7 +5266,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                 Assert.AreEqual(3, received.Length);
                 EPAssertionUtil.AssertPropsPerRow(
                     received,
-                    "theString,IntPrimitive,avgLong,cntBool".SplitCsv(),
+                    "TheString,IntPrimitive,avgLong,cntBool".SplitCsv(),
                     new[] {
                         new object[] {"c0", 0, 0.0, 1L},
                         new object[] {"c0", 1, 1.0, 1L},
@@ -5280,7 +5280,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                 Assert.AreEqual(3, received.Length);
                 EPAssertionUtil.AssertPropsPerRow(
                     received,
-                    "theString,IntPrimitive,avgLong,cntBool".SplitCsv(),
+                    "TheString,IntPrimitive,avgLong,cntBool".SplitCsv(),
                     new[] {
                         new object[] {"c1", 0, 0.0, 1L},
                         new object[] {"c1", 1, 5.5, 2L},

@@ -38,17 +38,22 @@ namespace com.espertech.esper.common.@internal.epl.table.strategy
             SAIFFInitializeSymbol symbols,
             CodegenClassScope classScope)
         {
-            CodegenMethod method = parent.MakeChild(typeof(IDictionary<object, object>), generator, classScope);
+            // int, ExprTableEvalStrategyFactory
+            CodegenMethod method = parent.MakeChild(typeof(IDictionary<int, ExprTableEvalStrategyFactory>), generator, classScope);
             method.Block
-                .DeclareVar<IDictionary<object, object>>(
-                    "ta",
-                    NewInstance(typeof(LinkedHashMap<object, object>), Constant(tableAccesses.Count + 2)));
+                .DeclareVar<IDictionary<int, ExprTableEvalStrategyFactory>>(
+                    "ta", NewInstance(typeof(LinkedHashMap<int, ExprTableEvalStrategyFactory>)));
             foreach (KeyValuePair<ExprTableAccessNode, ExprTableEvalStrategyFactoryForge> entry in tableAccesses) {
-                method.Block.ExprDotMethod(
-                    @Ref("ta"),
-                    "Put",
+                method.Block.AssignArrayElement(
+                    Ref("ta"),
                     Constant(entry.Key.TableAccessNumber),
                     entry.Value.Make(method, symbols, classScope));
+
+                //method.Block.ExprDotMethod(
+                //    @Ref("ta"),
+                //    "Put",
+                //    Constant(entry.Key.TableAccessNumber),
+                //    entry.Value.Make(method, symbols, classScope));
             }
 
             method.Block.MethodReturn(@Ref("ta"));

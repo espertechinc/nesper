@@ -121,7 +121,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                           typeof(SupportBean).FullName +
                           "," +
                           "DefaultSupportSourceOp -> outstream<SupportBean> {}\n" +
-                          "Select(outstream) -> selectedData {select: (select TheString, IntPrimitive from outstream) }\n" +
+                          "select(outstream) -> selectedData {select: (select TheString, IntPrimitive from outstream) }\n" +
                           "DefaultSupportCaptureOp(selectedData) {};";
 
                 Module module = null;

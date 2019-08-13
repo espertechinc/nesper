@@ -80,7 +80,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.prior
                     "substituteEvent",
                     ExprDotMethod(
                         future,
-                        "getSubstituteEvent",
+                        "GetSubstituteEvent",
                         Ref("originalEvent"),
                         exprSymbol.GetAddIsNewData(method),
                         Constant(ConstantIndexNumber),

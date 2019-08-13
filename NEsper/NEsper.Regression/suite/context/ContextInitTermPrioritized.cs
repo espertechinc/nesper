@@ -43,7 +43,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 var path = new RegressionPath();
                 var epl =
                     "\n @Name('ctx') create context RuleActivityTime as start (0, 9, *, *, *) end (0, 17, *, *, *);" +
-                    "\n @Name('window') context RuleActivityTime create window EventsWindow#firstunique(productID) as SupportProductIdEvent;" +
+                    "\n @Name('window') context RuleActivityTime create window EventsWindow#firstunique(ProductID) as SupportProductIdEvent;" +
                     "\n @Name('variable') create variable boolean IsOutputTriggered_2 = false;" +
                     "\n @Name('A') context RuleActivityTime insert into EventsWindow select * from SupportProductIdEvent(not exists (select * from EventsWindow));" +
                     "\n @Name('B') context RuleActivityTime insert into EventsWindow select * from SupportProductIdEvent(not exists (select * from EventsWindow));" +
@@ -69,7 +69,7 @@ namespace com.espertech.esper.regressionlib.suite.context
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "TheString".SplitCsv();
+                var fields = new [] { "TheString" };
                 var epl = "@Priority(1) create context C1 start @now end SupportBean;\n" +
                           "@Name('s0') @Priority(0) context C1 select * from SupportBean;\n";
                 env.CompileDeploy(epl).AddListener("s0");

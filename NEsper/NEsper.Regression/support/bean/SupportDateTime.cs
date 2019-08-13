@@ -17,19 +17,19 @@ namespace com.espertech.esper.regressionlib.support.bean
     {
         public SupportDateTime(
             long? longDate,
-            DateTimeOffset? utilDate,
-            DateTimeEx exDate)
+            DateTimeOffset? dtoDate,
+            DateTimeEx dtxDate)
         {
             LongDate = longDate;
-            UtilDate = utilDate;
-            ExDate = exDate;
+            DtoDate = dtoDate;
+            DtxDate = dtxDate;
         }
 
         public long? LongDate { get; }
 
-        public DateTimeOffset? UtilDate { get; }
+        public DateTimeOffset? DtoDate { get; }
 
-        public DateTimeEx ExDate { get; }
+        public DateTimeEx DtxDate { get; }
 
         public string Key { get; set; }
 

@@ -53,7 +53,7 @@ namespace com.espertech.esper.common.@internal.epl.output.core
 
             OutputStrategyPostProcessForge outputStrategyPostProcessForge = null;
             if ((insertIntoDesc != null) || (selectStreamSelector == SelectClauseStreamSelectorEnum.RSTREAM_ONLY)) {
-                SelectClauseStreamSelectorEnum insertIntoStreamSelector = null;
+                SelectClauseStreamSelectorEnum? insertIntoStreamSelector = null;
                 TableMetaData table = null;
 
                 if (insertIntoDesc != null) {

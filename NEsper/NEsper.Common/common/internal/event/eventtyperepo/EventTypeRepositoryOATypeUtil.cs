@@ -9,6 +9,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.configuration;
@@ -20,6 +21,7 @@ using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.settings;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.logging;
 
 using static com.espertech.esper.common.@internal.@event.eventtyperepo.EventTypeRepositoryMapTypeUtil;
 
@@ -27,6 +29,8 @@ namespace com.espertech.esper.common.@internal.@event.eventtyperepo
 {
     public class EventTypeRepositoryOATypeUtil
     {
+        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
         public static void BuildOATypes(
             EventTypeRepositoryImpl repo,
             IDictionary<string, ConfigurationCommonEventTypeObjectArray> objectArrayTypeConfigurations,
@@ -157,16 +161,22 @@ namespace com.espertech.esper.common.@internal.@event.eventtyperepo
                 throw new ConfigurationException("A null value has been provided for the type");
             }
 
-            var clazz = TypeHelper.GetTypeForSimpleName(type, importService.ClassForNameProvider);
-            if (clazz == null) {
+            try {
+                var clazz = TypeHelper.GetTypeForSimpleName(type, importService.ClassForNameProvider);
+                if (clazz == null) {
+                    return null;
+                }
+
+                if (isArray) {
+                    clazz = Array.CreateInstance(clazz, 0).GetType();
+                }
+
+                return clazz;
+            }
+            catch (TypeLoadException e) {
+                Log.Error($"Unable to load type \"{e.Message}\"", e);
                 return null;
             }
-
-            if (isArray) {
-                clazz = Array.CreateInstance(clazz, 0).GetType();
-            }
-
-            return clazz;
         }
     }
 } // end of namespace

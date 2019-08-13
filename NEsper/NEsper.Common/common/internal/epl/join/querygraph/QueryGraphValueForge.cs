@@ -84,7 +84,7 @@ namespace com.espertech.esper.common.@internal.epl.join.querygraph
             ExprNode propertyEnd,
             ExprIdentNode propertyValueIdent)
         {
-            if (!rangeType.IsRange) {
+            if (!rangeType.IsRange()) {
                 throw new ArgumentException("Expected range type, received " + rangeType);
             }
 

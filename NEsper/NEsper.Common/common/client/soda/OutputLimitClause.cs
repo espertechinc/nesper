@@ -178,7 +178,8 @@ namespace com.espertech.esper.common.client.soda
         ///     Returns the selector indicating the events to output.
         /// </summary>
         /// <returns>selector</returns>
-        public OutputLimitSelector Selector {
+        public OutputLimitSelector Selector
+        {
             get => selector;
             set => selector = value;
         }
@@ -187,7 +188,8 @@ namespace com.espertech.esper.common.client.soda
         ///     Returns output frequency.
         /// </summary>
         /// <returns>frequency of output</returns>
-        public double? Frequency {
+        public double? Frequency
+        {
             get => frequency;
             set => frequency = value;
         }
@@ -196,7 +198,8 @@ namespace com.espertech.esper.common.client.soda
         ///     Returns the unit the frequency is in.
         /// </summary>
         /// <returns>unit for the frequency.</returns>
-        public OutputLimitUnit Unit {
+        public OutputLimitUnit Unit
+        {
             get => unit;
             set => unit = value;
         }
@@ -206,7 +209,8 @@ namespace com.espertech.esper.common.client.soda
         ///     fixed value.
         /// </summary>
         /// <returns>variable name or null if no variable is used</returns>
-        public string FrequencyVariable {
+        public string FrequencyVariable
+        {
             get => frequencyVariable;
             set => frequencyVariable = value;
         }
@@ -215,7 +219,8 @@ namespace com.espertech.esper.common.client.soda
         ///     Returns the expression that controls output for use with the when-keyword.
         /// </summary>
         /// <returns>expression should be boolean result</returns>
-        public Expression WhenExpression {
+        public Expression WhenExpression
+        {
             get => whenExpression;
             set => whenExpression = value;
         }
@@ -224,7 +229,8 @@ namespace com.espertech.esper.common.client.soda
         ///     Returns the time period, or null if none provided.
         /// </summary>
         /// <returns>time period</returns>
-        public Expression TimePeriodExpression {
+        public Expression TimePeriodExpression
+        {
             get => timePeriodExpression;
             set => timePeriodExpression = value;
         }
@@ -233,7 +239,8 @@ namespace com.espertech.esper.common.client.soda
         ///     Returns the list of optional then-keyword variable assignments, if any
         /// </summary>
         /// <returns>list of variable assignments or null if none</returns>
-        public IList<Assignment> ThenAssignments {
+        public IList<Assignment> ThenAssignments
+        {
             get => thenAssignments;
             set => thenAssignments = value;
         }
@@ -242,7 +249,8 @@ namespace com.espertech.esper.common.client.soda
         ///     Returns the crontab parameters, or null if not using crontab-like schedule.
         /// </summary>
         /// <returns>parameters</returns>
-        public Expression[] CrontabAtParameters {
+        public Expression[] CrontabAtParameters
+        {
             get => crontabAtParameters;
             set => crontabAtParameters = value;
         }
@@ -251,7 +259,8 @@ namespace com.espertech.esper.common.client.soda
         ///     Returns true for output upon termination of a context partition
         /// </summary>
         /// <returns>indicator</returns>
-        public bool IsAndAfterTerminate {
+        public bool IsAndAfterTerminate
+        {
             get => andAfterTerminate;
             set => andAfterTerminate = value;
         }
@@ -260,7 +269,8 @@ namespace com.espertech.esper.common.client.soda
         ///     Returns the after-keyword time period.
         /// </summary>
         /// <returns>after-keyword time period</returns>
-        public Expression AfterTimePeriodExpression {
+        public Expression AfterTimePeriodExpression
+        {
             get => afterTimePeriodExpression;
             set => afterTimePeriodExpression = value;
         }
@@ -269,7 +279,8 @@ namespace com.espertech.esper.common.client.soda
         ///     Returns the after-keyword number of events, or null if undefined.
         /// </summary>
         /// <returns>num events for after-keyword</returns>
-        public int? AfterNumberOfEvents {
+        public int? AfterNumberOfEvents
+        {
             get => afterNumberOfEvents;
             set => afterNumberOfEvents = value;
         }
@@ -278,7 +289,8 @@ namespace com.espertech.esper.common.client.soda
         ///     Returns the optional expression evaluated when a context partition terminates before triggering output.
         /// </summary>
         /// <returns>expression</returns>
-        public Expression AndAfterTerminateAndExpr {
+        public Expression AndAfterTerminateAndExpr
+        {
             get => andAfterTerminateAndExpr;
             set => andAfterTerminateAndExpr = value;
         }
@@ -287,7 +299,8 @@ namespace com.espertech.esper.common.client.soda
         ///     Returns the set-assignments to execute when a context partition terminates.
         /// </summary>
         /// <returns>set-assignments</returns>
-        public IList<Assignment> AndAfterTerminateThenAssignments {
+        public IList<Assignment> AndAfterTerminateThenAssignments
+        {
             get => andAfterTerminateThenAssignments;
             set => andAfterTerminateThenAssignments = value;
         }
@@ -412,34 +425,41 @@ namespace com.espertech.esper.common.client.soda
         /// <param name="writer">to output to</param>
         public void ToEPL(TextWriter writer)
         {
-            if (afterTimePeriodExpression != null) {
+            if (afterTimePeriodExpression != null)
+            {
                 writer.Write("after ");
                 afterTimePeriodExpression.ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
                 writer.Write(" ");
             }
-            else if (afterNumberOfEvents != null && afterNumberOfEvents != 0) {
+            else if (afterNumberOfEvents != null && afterNumberOfEvents != 0)
+            {
                 writer.Write("after ");
                 writer.Write(afterNumberOfEvents);
                 writer.Write(" events ");
             }
 
-            if (selector != OutputLimitSelector.DEFAULT) {
+            if (selector != OutputLimitSelector.DEFAULT)
+            {
                 writer.Write(selector.GetText());
                 writer.Write(" ");
             }
 
-            if (unit == OutputLimitUnit.WHEN_EXPRESSION) {
+            if (unit == OutputLimitUnit.WHEN_EXPRESSION)
+            {
                 writer.Write("when ");
                 whenExpression.ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
 
-                if (thenAssignments != null && thenAssignments.Count > 0) {
+                if (thenAssignments != null && thenAssignments.Count > 0)
+                {
                     WriteThenAssignments(writer, thenAssignments);
                 }
             }
-            else if (unit == OutputLimitUnit.CRONTAB_EXPRESSION) {
+            else if (unit == OutputLimitUnit.CRONTAB_EXPRESSION)
+            {
                 writer.Write("at (");
                 var delimiter = "";
-                for (var i = 0; i < crontabAtParameters.Length; i++) {
+                for (var i = 0; i < crontabAtParameters.Length; i++)
+                {
                     writer.Write(delimiter);
                     crontabAtParameters[i].ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
                     delimiter = ", ";
@@ -447,30 +467,37 @@ namespace com.espertech.esper.common.client.soda
 
                 writer.Write(")");
             }
-            else if (unit == OutputLimitUnit.TIME_PERIOD && timePeriodExpression != null) {
+            else if (unit == OutputLimitUnit.TIME_PERIOD && timePeriodExpression != null)
+            {
                 writer.Write("every ");
                 timePeriodExpression.ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
             }
-            else if (unit == OutputLimitUnit.AFTER) {
+            else if (unit == OutputLimitUnit.AFTER)
+            {
                 // no action required
             }
-            else if (unit == OutputLimitUnit.CONTEXT_PARTITION_TERM) {
+            else if (unit == OutputLimitUnit.CONTEXT_PARTITION_TERM)
+            {
                 writer.Write("when terminated");
                 OutputAndAfter(writer);
             }
-            else {
+            else
+            {
                 writer.Write("every ");
-                if (frequencyVariable == null) {
+                if (frequencyVariable == null)
+                {
                     writer.Write(frequency.Value);
                 }
-                else {
+                else
+                {
                     writer.Write(frequencyVariable);
                 }
 
                 writer.Write(" events");
             }
 
-            if (andAfterTerminate) {
+            if (andAfterTerminate)
+            {
                 writer.Write(" and when terminated");
                 OutputAndAfter(writer);
             }
@@ -631,12 +658,14 @@ namespace com.espertech.esper.common.client.soda
 
         private void OutputAndAfter(TextWriter writer)
         {
-            if (andAfterTerminateAndExpr != null) {
+            if (andAfterTerminateAndExpr != null)
+            {
                 writer.Write(" and ");
                 andAfterTerminateAndExpr.ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
             }
 
-            if (andAfterTerminateThenAssignments != null && andAfterTerminateThenAssignments.Count > 0) {
+            if (andAfterTerminateThenAssignments != null && andAfterTerminateThenAssignments.Count > 0)
+            {
                 WriteThenAssignments(writer, andAfterTerminateThenAssignments);
             }
         }

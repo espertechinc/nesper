@@ -50,7 +50,8 @@ namespace com.espertech.esper.common.client.soda
             EPStatementFormatter formatter)
         {
             String delimiter = "";
-            foreach (ContextDescriptorCategoryItem item in Items) {
+            foreach (ContextDescriptorCategoryItem item in Items)
+            {
                 writer.Write(delimiter);
                 item.ToEPL(writer, formatter);
                 delimiter = ", ";
@@ -60,6 +61,6 @@ namespace com.espertech.esper.common.client.soda
             Filter.ToEPL(writer, formatter);
         }
 
-        #endregion
+        #endregion ContextDescriptor Members
     }
 }

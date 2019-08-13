@@ -104,7 +104,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                     "create dataflow MyGraph MyTestOp {TheString: 1}",
                     "Property 'TheString' of class " +
                     typeof(MyTestOp).Name +
-                    " expects an System.String but receives a value of type System.Integer");
+                    " expects an System.String but receives a value of type System.Int32");
 
                 // two incompatible input streams: different types
                 epl = "create dataflow MyGraph " +

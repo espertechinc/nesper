@@ -152,17 +152,18 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
                 IntervalComputerForgeFactory.Make(method, expressions, timeAbacus);
 
             // evaluation without end timestamp
+            var timestampTypeBoxed = timestampType.GetBoxedType();
             if (forgeEndTimestamp == null) {
                 if (TypeHelper.IsSubclassOrImplementsInterface(timestampType, typeof(DateTimeEx))) {
                     IntervalOpForge = new IntervalOpDateTimeExForge(intervalComputerForge);
                 }
-                else if (timestampType.GetBoxedType() == typeof(long)) {
+                else if (timestampTypeBoxed == typeof(long?)) {
                     IntervalOpForge = new IntervalOpForgeLong(intervalComputerForge);
                 }
-                else if (TypeHelper.IsSubclassOrImplementsInterface(timestampType, typeof(DateTimeOffset))) {
+                else if (timestampTypeBoxed == typeof(DateTimeOffset?)) {
                     IntervalOpForge = new IntervalOpDateTimeOffsetForge(intervalComputerForge);
                 }
-                else if (TypeHelper.IsSubclassOrImplementsInterface(timestampType, typeof(DateTime))) {
+                else if (timestampTypeBoxed == typeof(DateTime?)) {
                     IntervalOpForge = new IntervalOpDateTimeForge(intervalComputerForge);
                 }
                 else {
@@ -173,15 +174,15 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
                 if (TypeHelper.IsSubclassOrImplementsInterface(timestampType, typeof(DateTimeEx))) {
                     IntervalOpForge = new IntervalOpDateTimeExWithEndForge(intervalComputerForge, forgeEndTimestamp);
                 }
-                else if (timestampType.GetBoxedType() == typeof(long)) {
+                else if (timestampTypeBoxed == typeof(long?)) {
                     IntervalOpForge = new IntervalOpLongWithEndForge(intervalComputerForge, forgeEndTimestamp);
                 }
-                else if (TypeHelper.IsSubclassOrImplementsInterface(timestampType, typeof(DateTimeOffset))) {
+                else if (timestampTypeBoxed == typeof(DateTimeOffset?)) {
                     IntervalOpForge = new IntervalOpDateTimeOffsetWithEndForge(
                         intervalComputerForge,
                         forgeEndTimestamp);
                 }
-                else if (TypeHelper.IsSubclassOrImplementsInterface(timestampType, typeof(DateTime))) {
+                else if (timestampTypeBoxed == typeof(DateTime?)) {
                     IntervalOpForge = new IntervalOpDateTimeWithEndForge(intervalComputerForge, forgeEndTimestamp);
                 }
                 else {

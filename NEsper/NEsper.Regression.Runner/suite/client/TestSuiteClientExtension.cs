@@ -135,14 +135,25 @@ namespace com.espertech.esper.regressionrun.suite.client
                 configurationCompiler.AddPlugInSingleRowFunction(method, typeof(SupportSingleRowFunction), method);
             }
 
-            AddEventTypeUDF("myItemProducerEventBeanArray", "MyItem", "myItemProducerEventBeanArray", configuration);
+            AddEventTypeUDF(
+                "myItemProducerEventBeanArray", 
+                "MyItem", 
+                "MyItemProducerEventBeanArray", configuration);
             AddEventTypeUDF(
                 "myItemProducerEventBeanCollection",
                 "MyItem",
-                "myItemProducerEventBeanCollection",
+                "MyItemProducerEventBeanCollection",
                 configuration);
-            AddEventTypeUDF("myItemProducerInvalidNoType", null, "myItemProducerEventBeanArray", configuration);
-            AddEventTypeUDF("myItemProducerInvalidWrongType", "dummy", "myItemProducerEventBeanArray", configuration);
+            AddEventTypeUDF(
+                "myItemProducerInvalidNoType",
+                null, 
+                "myItemProducerEventBeanArray", 
+                configuration);
+            AddEventTypeUDF(
+                "myItemProducerInvalidWrongType", 
+                "dummy",
+                "myItemProducerEventBeanArray", 
+                configuration);
 
             configurationCompiler.AddPlugInAggregationFunctionForge(
                 "concatstring",

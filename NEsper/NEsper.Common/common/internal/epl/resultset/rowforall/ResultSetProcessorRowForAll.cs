@@ -29,6 +29,6 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowforall
             bool isSynthesize,
             bool join);
 
-        bool IsSelectRStream();
+        bool IsSelectRStream { get; }
     }
 } // end of namespace

@@ -33,7 +33,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "val0".SplitCsv();
+                var fields = new [] { "val0" };
                 var eplFragment =
                     "@Name('s0') select Contained.selectFrom(x => Key0).sequenceEqual(Contained.selectFrom(y -> Id)) as val0 " +
                     "from SupportBean_ST0_Container";
@@ -41,7 +41,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 
                 LambdaAssertionUtil.AssertTypes(
                     env.Statement("s0").EventType,
-                    "val0".SplitCsv(),
+                    new [] { "val0" },
                     new[] {typeof(bool?)});
 
                 env.SendEventBean(SupportBean_ST0_Container.Make3Value("I1,E1,0", "I2,E2,0"));
@@ -76,7 +76,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "val0".SplitCsv();
+                var fields = new [] { "val0" };
                 var eplFragment = "@Name('s0') select " +
                                   "Strvals.sequenceEqual(Strvalstwo) as val0 " +
                                   "from SupportCollection";
@@ -84,7 +84,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 
                 LambdaAssertionUtil.AssertTypes(
                     env.Statement("s0").EventType,
-                    "val0".SplitCsv(),
+                    new [] { "val0" },
                     new[] {typeof(bool?)});
 
                 env.SendEventBean(SupportCollection.MakeString("E1,E2,E3", "E1,E2,E3"));

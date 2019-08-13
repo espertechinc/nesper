@@ -32,7 +32,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
         public void Run(RegressionEnvironment env)
         {
             handler = SupportConditionHandlerFactory.LastHandler;
-            var fields = "c0".SplitCsv();
+            var fields = new [] { "c0" };
 
             var eplOne = "@Name('S1') select * from SupportBean(TheString = 'A') " +
                          "match_recognize (" +

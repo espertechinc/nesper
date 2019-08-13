@@ -75,17 +75,20 @@ namespace com.espertech.esper.common.client.soda
         ///     Get sub expression
         /// </summary>
         /// <returns>sub pattern</returns>
-        public IList<PatternExpr> Guarded {
+        public IList<PatternExpr> Guarded
+        {
             get => guarded;
             set => guarded = value;
         }
 
-        public IList<PatternExpr> Children {
+        public IList<PatternExpr> Children
+        {
             get => guarded;
             set => guarded = value;
         }
 
-        public string TreeObjectName {
+        public string TreeObjectName
+        {
             get => treeObjectName;
             set => treeObjectName = value;
         }
@@ -97,12 +100,14 @@ namespace com.espertech.esper.common.client.soda
             PatternExprPrecedenceEnum parentPrecedence,
             EPStatementFormatter formatter)
         {
-            if (Precedence.GetLevel() < parentPrecedence.GetLevel()) {
+            if (Precedence.GetLevel() < parentPrecedence.GetLevel())
+            {
                 writer.Write("(");
                 ToPrecedenceFreeEPL(writer, formatter);
                 writer.Write(")");
             }
-            else {
+            else
+            {
                 ToPrecedenceFreeEPL(writer, formatter);
             }
         }
@@ -118,12 +123,14 @@ namespace com.espertech.esper.common.client.soda
             EPStatementFormatter formatter)
         {
             guarded[0].ToEPL(writer, Precedence, formatter);
-            if (GuardEnumExtensions.IsWhile(Namespace, Name)) {
+            if (GuardEnumExtensions.IsWhile(Namespace, Name))
+            {
                 writer.Write(" while (");
                 Parameters[0].ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
                 writer.Write(")");
             }
-            else {
+            else
+            {
                 writer.Write(" where ");
                 base.ToEPL(writer);
             }

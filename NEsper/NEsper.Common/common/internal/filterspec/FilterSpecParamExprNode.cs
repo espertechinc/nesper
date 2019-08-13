@@ -77,7 +77,12 @@ namespace com.espertech.esper.common.@internal.filterspec
             ExprEvaluatorContext exprEvaluatorContext,
             StatementContextFilterEvalEnv filterEvalEnv);
 
-        
+        public ProxyFilterSpecParamExprNode(
+            ExprFilterSpecLookupable lookupable,
+            FilterOperator filterOperator) : base(lookupable, filterOperator)
+        {
+        }
+
         public ProxyFilterSpecParamExprNode(
             GetFilterValueFunc getFilterValue,
             ExprFilterSpecLookupable lookupable,

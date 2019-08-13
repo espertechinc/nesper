@@ -109,10 +109,10 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
 
                 SendSupportBeanEvent(env, 2, 2, 2, 2);
                 var theEvent = env.Listener("s0").GetAndResetLastNewData()[0];
-                Assert.AreEqual(typeof(long?), theEvent.EventType.GetPropertyType("p1"));
-                Assert.AreEqual(4L, theEvent.Get("p1"));
-                Assert.AreEqual(typeof(double?), theEvent.EventType.GetPropertyType("p2"));
-                Assert.AreEqual(4d, theEvent.Get("p2"));
+                Assert.AreEqual(typeof(long?), theEvent.EventType.GetPropertyType("P1"));
+                Assert.AreEqual(4L, theEvent.Get("P1"));
+                Assert.AreEqual(typeof(double?), theEvent.EventType.GetPropertyType("P2"));
+                Assert.AreEqual(4d, theEvent.Get("P2"));
                 Assert.AreEqual(typeof(double?), theEvent.EventType.GetPropertyType("p3"));
                 Assert.AreEqual(1d, theEvent.Get("p3"));
 

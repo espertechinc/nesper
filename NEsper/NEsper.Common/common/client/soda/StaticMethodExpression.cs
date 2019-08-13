@@ -10,9 +10,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
-
 namespace com.espertech.esper.common.client.soda
 {
     /// <summary>
@@ -38,11 +35,14 @@ namespace com.espertech.esper.common.client.soda
             this.className = className;
 
             IList<Expression> parameterList = new List<Expression>();
-            for (int i = 0; i < parameters.Length; i++) {
-                if (parameters[i] is Expression) {
+            for (int i = 0; i < parameters.Length; i++)
+            {
+                if (parameters[i] is Expression)
+                {
                     parameterList.Add((Expression) parameters[i]);
                 }
-                else {
+                else
+                {
                     parameterList.Add(new ConstantExpression(parameters[i]));
                 }
             }
@@ -54,7 +54,8 @@ namespace com.espertech.esper.common.client.soda
         /// Returns the chain of method invocations, each pair a method name and list of parameter expressions
         /// </summary>
         /// <returns>method chain</returns>
-        public IList<DotExpressionItem> Chain {
+        public IList<DotExpressionItem> Chain
+        {
             get => chain;
         }
 
@@ -80,7 +81,8 @@ namespace com.espertech.esper.common.client.soda
             this.chain = chain;
         }
 
-        public override ExpressionPrecedenceEnum Precedence {
+        public override ExpressionPrecedenceEnum Precedence
+        {
             get => ExpressionPrecedenceEnum.UNARY;
         }
 
@@ -94,7 +96,8 @@ namespace com.espertech.esper.common.client.soda
         /// Returns the class name.
         /// </summary>
         /// <returns>class name</returns>
-        public string ClassName {
+        public string ClassName
+        {
             get => className;
         }
 

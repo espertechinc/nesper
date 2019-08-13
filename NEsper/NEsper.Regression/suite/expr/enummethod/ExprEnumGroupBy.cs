@@ -56,7 +56,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 
                 LambdaAssertionUtil.AssertTypes(
                     env.Statement("s0").EventType,
-                    "val".SplitCsv(),
+                    new [] { "val" },
                     new[] {typeof(IDictionary<string, object>)});
                 EPAssertionUtil.AssertionCollectionValueString extractorEvents = collectionItem => {
                     var p00 = ((SupportBean_ST0) collectionItem).P00;
@@ -85,7 +85,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
                 env.CompileDeploy(eplScalar).AddListener("s0");
                 LambdaAssertionUtil.AssertTypes(
                     env.Statement("s0").EventType,
-                    "val".SplitCsv(),
+                    new [] { "val" },
                     new[] {typeof(IDictionary<string, object>)});
 
                 env.SendEventBean(SupportCollection.MakeString("E1_2,E2_1,E3_2"));
@@ -143,7 +143,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
                 env.CompileDeploy(eplScalar).AddListener("s0");
                 LambdaAssertionUtil.AssertTypes(
                     env.Statement("s0").EventType,
-                    "val".SplitCsv(),
+                    new [] { "val" },
                     new[] {typeof(IDictionary<string, object>)});
 
                 env.SendEventBean(SupportCollection.MakeString("E1_2,E2_1,E3_2"));

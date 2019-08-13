@@ -11,7 +11,7 @@ namespace com.espertech.esper.common.client.soda
     /// <summary>
     /// Fire-and-forget (on-demand) insert DML.
     /// <para/>
-    /// The insert-into clause holds the named window name and column names. The select-clause 
+    /// The insert-into clause holds the named window name and column names. The select-clause
     /// list holds the values to be inserted.
     /// </summary>
     public class FireAndForgetInsert : FireAndForgetClause
@@ -32,7 +32,8 @@ namespace com.espertech.esper.common.client.soda
 
         /// <summary>Returns indicator whether to use the values keyword. </summary>
         /// <value>indicator</value>
-        public bool IsUseValuesKeyword {
+        public bool IsUseValuesKeyword
+        {
             get { return _useValuesKeyword; }
             set { this._useValuesKeyword = value; }
         }

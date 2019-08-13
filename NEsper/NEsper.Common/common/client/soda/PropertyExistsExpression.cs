@@ -9,14 +9,12 @@
 using System;
 using System.IO;
 
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
-
 namespace com.espertech.esper.common.client.soda
 {
     /// <summary>
     /// Property-exists checks if a dynamic property exists.
     /// </summary>
+    [Serializable]
     public class PropertyExistsExpression : ExpressionBase
     {
         /// <summary>
@@ -35,7 +33,8 @@ namespace com.espertech.esper.common.client.soda
             this.Children.Add(Expressions.GetPropExpr(propertyName));
         }
 
-        public override ExpressionPrecedenceEnum Precedence {
+        public override ExpressionPrecedenceEnum Precedence
+        {
             get => ExpressionPrecedenceEnum.UNARY;
         }
 

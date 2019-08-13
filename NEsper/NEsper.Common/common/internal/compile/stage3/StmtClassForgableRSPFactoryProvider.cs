@@ -147,7 +147,7 @@ namespace com.espertech.esper.common.@internal.compile.stage3
                     _spec.SelectExprProcessorForges);
 
                 // make provider methods
-                var propResultSetProcessorFactoryMethod = CodegenProperty.MakeParentNode(
+                var propResultSetProcessorFactoryMethod = CodegenProperty.MakePropertyNode(
                     typeof(ResultSetProcessorFactory),
                     GetType(),
                     CodegenSymbolProviderEmpty.INSTANCE,
@@ -156,7 +156,7 @@ namespace com.espertech.esper.common.@internal.compile.stage3
                     .GetterBlock
                     .BlockReturn(Ref(MEMBERNAME_RESULTSETPROCESSORFACTORY));
 
-                var propAggregationServiceFactoryMethod = CodegenProperty.MakeParentNode(
+                var propAggregationServiceFactoryMethod = CodegenProperty.MakePropertyNode(
                     typeof(AggregationServiceFactory),
                     GetType(),
                     CodegenSymbolProviderEmpty.INSTANCE,
@@ -165,7 +165,7 @@ namespace com.espertech.esper.common.@internal.compile.stage3
                     .GetterBlock
                     .BlockReturn(Ref(MEMBERNAME_AGGREGATIONSVCFACTORY));
 
-                var propOrderByProcessorFactoryMethod = CodegenProperty.MakeParentNode(
+                var propOrderByProcessorFactoryMethod = CodegenProperty.MakePropertyNode(
                     typeof(OrderByProcessorFactory),
                     GetType(),
                     CodegenSymbolProviderEmpty.INSTANCE,
@@ -174,7 +174,7 @@ namespace com.espertech.esper.common.@internal.compile.stage3
                     .GetterBlock
                     .BlockReturn(Ref(MEMBERNAME_ORDERBYFACTORY));
 
-                var propResultSetProcessorTypeMethod = CodegenProperty.MakeParentNode(
+                var propResultSetProcessorTypeMethod = CodegenProperty.MakePropertyNode(
                     typeof(ResultSetProcessorType),
                     GetType(),
                     CodegenSymbolProviderEmpty.INSTANCE,
@@ -183,7 +183,7 @@ namespace com.espertech.esper.common.@internal.compile.stage3
                     .GetterBlock
                     .BlockReturn(EnumValue(typeof(ResultSetProcessorType), _spec.ResultSetProcessorType.GetName()));
 
-                var propResultEventTypeMethod = CodegenProperty.MakeParentNode(
+                var propResultEventTypeMethod = CodegenProperty.MakePropertyNode(
                     typeof(EventType),
                     GetType(),
                     CodegenSymbolProviderEmpty.INSTANCE,
@@ -318,7 +318,7 @@ namespace com.espertech.esper.common.@internal.compile.stage3
 
             // Get-Result-Type Method
             var forge = spec.ResultSetProcessorFactoryForge;
-            var resultEventTypeGetter = CodegenProperty.MakeParentNode(
+            var resultEventTypeGetter = CodegenProperty.MakePropertyNode(
                 typeof(EventType),
                 forge.GetType(),
                 CodegenSymbolProviderEmpty.INSTANCE,
@@ -431,7 +431,7 @@ namespace com.espertech.esper.common.@internal.compile.stage3
 
             // Set-Agent-Instance is supported for fire-and-forget queries only
             var agentInstanceContextProperty = CodegenProperty
-                .MakeParentNode(typeof(AgentInstanceContext), forge.GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope);
+                .MakePropertyNode(typeof(AgentInstanceContext), forge.GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope);
             agentInstanceContextProperty.GetterBlock.BlockReturn(ExprDotName(Ref("this"), NAME_AGENTINSTANCECONTEXT));
             agentInstanceContextProperty.SetterBlock.AssignRef(NAME_AGENTINSTANCECONTEXT, Ref("value"));
 
@@ -628,6 +628,15 @@ namespace com.espertech.esper.common.@internal.compile.stage3
                 "AcceptHelperVisitor",
                 innerMethods,
                 innerProperties);
+
+            foreach (var propertyEntry in instance.Properties.Properties)
+            {
+                CodegenStackGenerator.RecursiveBuildStack(
+                    propertyEntry.Value,
+                    propertyEntry.Key,
+                    innerMethods,
+                    innerProperties);
+            }
 
             foreach (var methodEntry in instance.Methods.Methods) {
                 CodegenStackGenerator.RecursiveBuildStack(

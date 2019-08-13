@@ -94,22 +94,22 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                     }
                     else if (representationEnum.IsMapEvent()) {
                         var row = (IDictionary<string, object>) output[i];
-                        Assert.AreEqual("abc", row.Get("p0"));
-                        var val = row.Get("p1").AsLong();
+                        Assert.AreEqual("abc", row.Get("P0"));
+                        var val = row.Get("P1").AsLong();
                         Assert.IsTrue(val >= 0 && val <= 11, "val=" + val);
-                        Assert.AreEqual(1d, row.Get("p2"));
+                        Assert.AreEqual(1d, row.Get("P2"));
                     }
                     else {
                         var row = (GenericRecord) output[i];
-                        Assert.AreEqual("abc", row.Get("p0"));
-                        var val = row.Get("p1").AsLong();
+                        Assert.AreEqual("abc", row.Get("P0"));
+                        var val = row.Get("P1").AsLong();
                         Assert.IsTrue(val >= 0 && val <= 11, "val=" + val);
-                        Assert.AreEqual(1d, row.Get("p2"));
+                        Assert.AreEqual(1d, row.Get("P2"));
                     }
                 }
                 else {
                     var row = (EventBean) output[i];
-                    Assert.AreEqual("abc", row.Get("p0"));
+                    Assert.AreEqual("abc", row.Get("P0"));
                 }
             }
 
@@ -251,7 +251,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 Sleep(200);
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    "TheString".SplitCsv(),
+                    new [] { "TheString" },
                     new object[] {"E1"});
 
                 // invalid: no output stream

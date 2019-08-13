@@ -119,7 +119,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
                 }
 
                 // make get-factory method
-                var factoryMethodGetter = CodegenProperty.MakeParentNode(
+                var factoryMethodGetter = CodegenProperty.MakePropertyNode(
                     typeof(OutputProcessViewFactory),
                     GetType(),
                     CodegenSymbolProviderEmpty.INSTANCE,
@@ -227,7 +227,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
 
             // Get-Result-Type Method
             var eventTypeGetter = CodegenProperty
-                .MakeParentNode(typeof(EventType), forge.GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope)
+                .MakePropertyNode(typeof(EventType), forge.GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope)
                 .WithOverride();
             eventTypeGetter.GetterBlock.BlockReturn(ExprDotName(Ref(NAME_RESULTSETPROCESSOR), "ResultEventType"));
 
@@ -272,13 +272,13 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
 
             // NumChangesetRows (always zero for generated code)
             var numChangesetRowsProp = CodegenProperty
-                .MakeParentNode(typeof(int), forge.GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope)
+                .MakePropertyNode(typeof(int), forge.GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope)
                 .WithOverride();
             numChangesetRowsProp.GetterBlock.BlockReturn(Constant(0));
 
             // OptionalOutputCondition (always null for generated code)
             var optionalOutputConditionProp = CodegenProperty
-                .MakeParentNode(typeof(OutputCondition), forge.GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope)
+                .MakePropertyNode(typeof(OutputCondition), forge.GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope)
                 .WithOverride();
             optionalOutputConditionProp.GetterBlock.BlockReturn(ConstantNull());
 

@@ -46,7 +46,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
                 ExprDotMethod(
                     eventBeanFactory,
                     "AdapterForTypedMap",
-                    StaticMethod(typeof(Collections), "GetEmptyMap"),
+                    StaticMethod(typeof(Collections), "GetEmptyMap", new[] { typeof(object), typeof(object) }),
                     resultEventType));
             return methodNode;
         }

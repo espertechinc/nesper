@@ -127,8 +127,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
                 // subquery with event as input
                 var epl = "create schema SettlementEvent (Symbol string, Price double);" +
                           "create schema PriceEvent (Symbol string, Price double);\n" +
-                          "create schema OrderEvent (orderId string, Pricedata PriceEvent);\n" +
-                          "select (select Pricedata from OrderEvent#unique(orderId))\n" +
+                          "create schema OrderEvent (OrderId string, Pricedata PriceEvent);\n" +
+                          "select (select Pricedata from OrderEvent#unique(OrderId))\n" +
                           ".anyOf(v -> v.Symbol = 'GE') as has_ge from SettlementEvent(Symbol = 'GE')";
                 env.CompileDeploy(epl);
 

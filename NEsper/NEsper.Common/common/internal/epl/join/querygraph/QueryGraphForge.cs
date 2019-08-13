@@ -385,14 +385,14 @@ namespace com.espertech.esper.common.@internal.epl.join.querygraph
                 streamIdLeft,
                 streamIdRight,
                 propertyLeftExpr,
-                QueryGraphRangeEnum.MapFrom(relationalOpEnum.Reversed()),
+                QueryGraphRangeEnumExtensions.MapFrom(relationalOpEnum.Reversed()),
                 propertyRightExpr,
                 false);
             InternalAddRelOp(
                 streamIdRight,
                 streamIdLeft,
                 propertyRightExpr,
-                QueryGraphRangeEnum.MapFrom(relationalOpEnum),
+                QueryGraphRangeEnumExtensions.MapFrom(relationalOpEnum),
                 propertyLeftExpr,
                 false);
         }
@@ -513,7 +513,7 @@ namespace com.espertech.esper.common.@internal.epl.join.querygraph
                             i,
                             indexedStream,
                             exprNodeNoIdent,
-                            QueryGraphRangeEnum.MapFrom(relationalOpEnum),
+                            QueryGraphRangeEnumExtensions.MapFrom(relationalOpEnum),
                             indexedProp,
                             false);
                     }
@@ -523,7 +523,7 @@ namespace com.espertech.esper.common.@internal.epl.join.querygraph
                         SELF_STREAM,
                         indexedStream,
                         exprNodeNoIdent,
-                        QueryGraphRangeEnum.MapFrom(relationalOpEnum),
+                        QueryGraphRangeEnumExtensions.MapFrom(relationalOpEnum),
                         indexedProp,
                         false);
                 }
@@ -536,7 +536,7 @@ namespace com.espertech.esper.common.@internal.epl.join.querygraph
                 keyStreamNum.Value,
                 indexedStream,
                 exprNodeNoIdent,
-                QueryGraphRangeEnum.MapFrom(relationalOpEnum),
+                QueryGraphRangeEnumExtensions.MapFrom(relationalOpEnum),
                 indexedProp,
                 false);
         }
@@ -804,9 +804,9 @@ namespace com.espertech.esper.common.@internal.epl.join.querygraph
             SAIFFInitializeSymbol symbols,
             CodegenClassScope classScope)
         {
-            method.Block.DeclareVar<IDictionary<string, object>>(
+            method.Block.DeclareVar<IDictionary<UniformPair<int>, QueryGraphValue>>(
                 "map",
-                NewInstance(typeof(Dictionary<string, object>)));
+                NewInstance(typeof(Dictionary<UniformPair<int>, QueryGraphValue>)));
             foreach (var entry in streamJoinMap) {
                 var streams = entry.Key.Streams;
                 if (streams.First != SELF_STREAM || streams.Second != 0) {

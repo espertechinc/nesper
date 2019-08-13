@@ -74,7 +74,7 @@ namespace com.espertech.esper.common.@internal.@event.map
             CodegenClassScope codegenClassScope)
         {
             return UnderlyingGetCodegen(
-                CastUnderlying(typeof(IDictionary<object, object>), beanExpression),
+                CastUnderlying(typeof(IDictionary<string, object>), beanExpression),
                 codegenMethodScope,
                 codegenClassScope);
         }
@@ -93,7 +93,7 @@ namespace com.espertech.esper.common.@internal.@event.map
             CodegenClassScope codegenClassScope)
         {
             return UnderlyingFragmentCodegen(
-                CastUnderlying(typeof(IDictionary<object, object>), beanExpression),
+                CastUnderlying(typeof(IDictionary<string, object>), beanExpression),
                 codegenMethodScope,
                 codegenClassScope);
         }
@@ -127,7 +127,7 @@ namespace com.espertech.esper.common.@internal.@event.map
             CodegenClassScope codegenClassScope)
         {
             return codegenMethodScope.MakeChild(typeof(object), GetType(), codegenClassScope)
-                .AddParam(typeof(IDictionary<object, object>), "map")
+                .AddParam(typeof(IDictionary<string, object>), "map")
                 .Block
                 .DeclareVar<EventBean[]>(
                     "wrapper",
@@ -145,7 +145,7 @@ namespace com.espertech.esper.common.@internal.@event.map
             CodegenClassScope codegenClassScope)
         {
             return codegenMethodScope.MakeChild(typeof(object), GetType(), codegenClassScope)
-                .AddParam(typeof(IDictionary<object, object>), "map")
+                .AddParam(typeof(IDictionary<string, object>), "map")
                 .Block
                 .DeclareVar<EventBean[]>(
                     "wrapper",

@@ -33,7 +33,8 @@ namespace com.espertech.esper.common.client.soda
         /// <returns>keyword</returns>
         public static string GetName(this ForClauseKeyword keyword)
         {
-            switch (keyword) {
+            switch (keyword)
+            {
                 case ForClauseKeyword.GROUPED_DELIVERY:
                     return "grouped_delivery";
 

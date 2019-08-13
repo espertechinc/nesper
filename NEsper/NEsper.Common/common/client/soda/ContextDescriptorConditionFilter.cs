@@ -45,7 +45,8 @@ namespace com.espertech.esper.common.client.soda
             EPStatementFormatter formatter)
         {
             Filter.ToEPL(writer, formatter);
-            if (OptionalAsName != null) {
+            if (OptionalAsName != null)
+            {
                 writer.Write(" as ");
                 writer.Write(OptionalAsName);
             }

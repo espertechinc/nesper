@@ -130,7 +130,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 env.SendEventBean(new SupportBean_S0(0, p00));
                 EPAssertionUtil.AssertProps(
                     env.Listener("Subq").AssertOneGetNewAndReset(),
-                    "c0".SplitCsv(),
+                    new [] { "c0" },
                     new object[] {expected});
             }
         }

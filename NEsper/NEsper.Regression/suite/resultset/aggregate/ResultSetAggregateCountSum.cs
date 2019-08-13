@@ -462,7 +462,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "theString,mysum".SplitCsv();
+                var fields = "TheString,mysum".SplitCsv();
                 var epl = "create window MyWindow.win:keepall() as select * from SupportBean;\n" +
                           "insert into MyWindow select * from SupportBean;\n" +
                           "on SupportBean_A a delete from MyWindow w where w.TheString = a.Id;\n" +

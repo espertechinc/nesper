@@ -9,9 +9,6 @@
 using System;
 using System.IO;
 
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
-
 namespace com.espertech.esper.common.client.soda
 {
     /// <summary>
@@ -41,7 +38,8 @@ namespace com.espertech.esper.common.client.soda
         {
             AddChild(new PropertyValueExpression(propertyOne));
             AddChild(new PropertyValueExpression(propertyTwo));
-            for (int i = 0; i < moreProperties.Length; i++) {
+            for (int i = 0; i < moreProperties.Length; i++)
+            {
                 AddChild(new PropertyValueExpression(moreProperties[i]));
             }
         }
@@ -59,7 +57,8 @@ namespace com.espertech.esper.common.client.soda
         {
             AddChild(exprOne);
             AddChild(exprTwo);
-            for (int i = 0; i < moreExpressions.Length; i++) {
+            for (int i = 0; i < moreExpressions.Length; i++)
+            {
                 AddChild(moreExpressions[i]);
             }
         }
@@ -97,7 +96,8 @@ namespace com.espertech.esper.common.client.soda
             return this;
         }
 
-        public override ExpressionPrecedenceEnum Precedence {
+        public override ExpressionPrecedenceEnum Precedence
+        {
             get => ExpressionPrecedenceEnum.UNARY;
         }
 

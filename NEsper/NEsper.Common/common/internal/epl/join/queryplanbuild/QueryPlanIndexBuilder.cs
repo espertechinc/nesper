@@ -258,7 +258,7 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanbuild
 
                     // other streams may specify the start or end endpoint of a range, therefore this operation can be additive
                     if (subqRangeDesc != null) {
-                        if (subqRangeDesc.RangeInfo.Type.IsRange) {
+                        if (subqRangeDesc.RangeInfo.Type.IsRange()) {
                             continue;
                         }
 
@@ -307,7 +307,7 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanbuild
                     }
 
                     // an existing entry has not been found
-                    if (rangeDesc.Type.IsRange) {
+                    if (rangeDesc.Type.IsRange()) {
                         var rangeIn = (QueryGraphValueEntryRangeInForge) rangeDesc;
                         var indexedPropType =
                             allStreamTypesZeroIndexed[0].GetPropertyType(rangeIndexProp).GetBoxedType();

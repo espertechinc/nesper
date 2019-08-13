@@ -55,8 +55,11 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
 
             EPAssertionUtil.AssertPropsPerRow(
                 env.Listener("s0").NewDataListFlattened,
-                "myDouble,myInt,myString".SplitCsv(),
-                new[] {new object[] {1.1d, 1, "one"}, new object[] {2.2d, 2, "two"}});
+                new[] {"MyDouble", "MyInt", "MyString"},
+                new[] {
+                    new object[] {1.1d, 1, "one"},
+                    new object[] {2.2d, 2, "two"}
+                });
 
             env.UndeployAll();
         }
@@ -126,8 +129,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 var events = env.Listener("s0").NewDataListFlattened;
 
                 for (var i = 0; i < 3; i++) {
-                    Assert.AreEqual("abc", events[i].Get("p0"));
-                    var val = events[i].Get("p1").AsLong();
+                    Assert.AreEqual("abc", events[i].Get("P0"));
+                    var val = events[i].Get("P1").AsLong();
                     Assert.IsTrue(val > 0 && val < 10);
                 }
 

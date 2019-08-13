@@ -36,7 +36,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                 MakeItem(MakeBean("E2", 1), false));
 
             // simple "not-equals"
-            AddCase(cases, stats, "theString != 'A'", MakeItem(MakeBean("B"), true), MakeItem(MakeBean("A"), false));
+            AddCase(cases, stats, "TheString != 'A'", MakeItem(MakeBean("B"), true), MakeItem(MakeBean("A"), false));
 
             // simple greater
             AddCase(
@@ -48,18 +48,18 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                 MakeItem(MakeBean("E2", -1), false));
 
             // simple "is"
-            AddCase(cases, stats, "theString is null", MakeItem(MakeBean(null), true), MakeItem(MakeBean("A"), false));
+            AddCase(cases, stats, "TheString is null", MakeItem(MakeBean(null), true), MakeItem(MakeBean("A"), false));
 
             // simple "is-not"
             AddCase(
                 cases,
                 stats,
-                "theString is not null",
+                "TheString is not null",
                 MakeItem(MakeBean(null), false),
                 MakeItem(MakeBean("A"), true));
 
             // simple boolean expression
-            AddCase(cases, stats, "theString like 'A%'", MakeItem(MakeBean("A"), true), MakeItem(MakeBean("B"), false));
+            AddCase(cases, stats, "TheString like 'A%'", MakeItem(MakeBean("A"), true), MakeItem(MakeBean("B"), false));
             AddCase(
                 cases,
                 stats,
@@ -71,7 +71,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
             AddCase(
                 cases,
                 stats,
-                "theString between null and 'Z'",
+                "TheString between null and 'Z'",
                 MakeItem(MakeBean("A"), false),
                 MakeItem(MakeBean("B"), false));
 

@@ -27,7 +27,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 
             var joinStatement = "@Name('s0') select * from " +
                                 "SupportBeanCombinedProps#length(1)" +
-                                " where indexed[0].mapped('a').Value = 'dummy'";
+                                " where Indexed[0].Mapped('a').Value = 'dummy'";
             env.CompileDeploy(joinStatement).AddListener("s0");
 
             // Send events for each stream

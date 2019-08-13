@@ -42,7 +42,7 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplan
                 var valuePropType = typesPerStream[indexedStream].GetPropertyType(indexed).GetBoxedType();
                 Type coercionType;
 
-                if (entry.Type.IsRange) {
+                if (entry.Type.IsRange()) {
                     var rangeIn = (QueryGraphValueEntryRangeInForge) entry;
                     coercionType = GetCoercionTypeRangeIn(valuePropType, rangeIn.ExprStart, rangeIn.ExprEnd);
                 }
@@ -120,7 +120,7 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplan
             SubordPropRangeKeyForge rangeKey)
         {
             var desc = rangeKey.RangeInfo;
-            if (desc.Type.IsRange) {
+            if (desc.Type.IsRange()) {
                 var rangeIn = (QueryGraphValueEntryRangeInForge) desc;
                 return GetCoercionTypeRangeIn(
                     indexedType.GetPropertyType(indexedProp),
@@ -151,7 +151,7 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplan
                 var valuePropType = viewableEventType.GetPropertyType(entry.Key).GetBoxedType();
                 Type coercionType;
 
-                if (rangeDesc.Type.IsRange) {
+                if (rangeDesc.Type.IsRange()) {
                     var rangeIn = (QueryGraphValueEntryRangeInForge) rangeDesc;
                     coercionType = GetCoercionTypeRangeIn(valuePropType, rangeIn.ExprStart, rangeIn.ExprEnd);
                 }

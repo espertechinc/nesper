@@ -73,7 +73,7 @@ namespace com.espertech.esper.common.@internal.@event.map
         public object GetFragment(EventBean obj)
         {
             var value = Get(obj);
-            return BaseNestableEventUtil.GetBNFragmentNonPojo(value, fragmentType, eventBeanTypedEventFactory);
+            return BaseNestableEventUtil.GetBNFragmentNonPono(value, fragmentType, eventBeanTypedEventFactory);
         }
 
         public CodegenExpression EventBeanGetCodegen(
@@ -82,7 +82,7 @@ namespace com.espertech.esper.common.@internal.@event.map
             CodegenClassScope codegenClassScope)
         {
             return UnderlyingGetCodegen(
-                CastUnderlying(typeof(IDictionary<object, object>), beanExpression),
+                CastUnderlying(typeof(IDictionary<string, object>), beanExpression),
                 codegenMethodScope,
                 codegenClassScope);
         }
@@ -101,7 +101,7 @@ namespace com.espertech.esper.common.@internal.@event.map
             CodegenClassScope codegenClassScope)
         {
             return UnderlyingFragmentCodegen(
-                CastUnderlying(typeof(IDictionary<object, object>), beanExpression),
+                CastUnderlying(typeof(IDictionary<string, object>), beanExpression),
                 codegenMethodScope,
                 codegenClassScope);
         }
@@ -149,7 +149,7 @@ namespace com.espertech.esper.common.@internal.@event.map
         {
             return LocalMethod(
                 GetMapInternalCodegen(codegenMethodScope, codegenClassScope),
-                CastUnderlying(typeof(IDictionary<object, object>), beanExpression),
+                CastUnderlying(typeof(IDictionary<string, object>), beanExpression),
                 key);
         }
 
@@ -166,7 +166,7 @@ namespace com.espertech.esper.common.@internal.@event.map
             CodegenClassScope codegenClassScope)
         {
             return codegenMethodScope.MakeChild(typeof(object), GetType(), codegenClassScope)
-                .AddParam(typeof(IDictionary<object, object>), "map")
+                .AddParam(typeof(IDictionary<string, object>), "map")
                 .AddParam(typeof(int), "index")
                 .Block
                 .DeclareVar<object>("value", ExprDotMethod(Ref("map"), "Get", Constant(propertyName)))
@@ -188,13 +188,13 @@ namespace com.espertech.esper.common.@internal.@event.map
                 typeof(EventType),
                 EventTypeUtility.ResolveTypeCodegen(fragmentType, EPStatementInitServicesConstants.REF));
             return codegenMethodScope.MakeChild(typeof(object), GetType(), codegenClassScope)
-                .AddParam(typeof(IDictionary<object, object>), "map")
+                .AddParam(typeof(IDictionary<string, object>), "map")
                 .Block
                 .DeclareVar<object>("value", UnderlyingGetCodegen(Ref("map"), codegenMethodScope, codegenClassScope))
                 .MethodReturn(
                     StaticMethod(
                         typeof(BaseNestableEventUtil),
-                        "GetBNFragmentNonPojo",
+                        "GetBNFragmentNonPono",
                         Ref("value"),
                         eventType,
                         factory));

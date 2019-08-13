@@ -41,7 +41,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             var eplDeclare = "create table varaggIUD (p0 string, sumint sum(int))";
             env.CompileDeploy(soda, eplDeclare, path);
 
-            var fields = "c0,c1".SplitCsv();
+            var fields = new [] { "c0", "c1" };
             var eplRead =
                 "@Name('s0') select varaggIUD.p0 as c0, varaggIUD.sumint as c1, varaggIUD as c2 from SupportBean_S0";
             env.CompileDeploy(soda, eplRead, path).AddListener("s0");
@@ -134,7 +134,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 "create table varaggMIU (key int primary key, p0 string, p1 int, p2 int[], sumint sum(int))";
             env.CompileDeploy(soda, eplDeclare, path);
 
-            var fields = "c0,c1,c2,c3".SplitCsv();
+            var fields = new [] { "c0", "c1", "c2", "c3" };
             var eplRead =
                 "@Name('s0') select varaggMIU[Id].p0 as c0, varaggMIU[Id].p1 as c1, varaggMIU[Id].p2 as c2, varaggMIU[Id].sumint as c3 from SupportBean_S0";
             env.CompileDeploy(soda, eplRead, path).AddListener("s0");
@@ -242,7 +242,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             var eplDeclare = "create table varaggMIUD (keyOne int primary key, keyTwo string primary key, prop string)";
             env.CompileDeploy(soda, eplDeclare, path);
 
-            var fields = "c0,c1,c2".SplitCsv();
+            var fields = new [] { "c0", "c1", "c2" };
             var eplRead =
                 "@Name('s0') select varaggMIUD[Id,P00].KeyOne as c0, varaggMIUD[Id,P00].KeyTwo as c1, varaggMIUD[Id,P00].prop as c2 from SupportBean_S0";
             env.CompileDeploy(soda, eplRead, path).AddListener("s0");

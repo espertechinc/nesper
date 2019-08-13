@@ -39,7 +39,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
 
             EPAssertionUtil.AssertPropsPerRowAnyOrder(
                 env.GetEnumerator("window"),
-                "theString,IntPrimitive".SplitCsv(),
+                new [] { "TheString","IntPrimitive" },
                 new[] {new object[] {"E0", 5}, new object[] {"E1", 4}, new object[] {"E2", 3}});
 
             env.UndeployAll();

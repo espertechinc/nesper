@@ -7,11 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-using System.Collections.Generic;
 using System.IO;
-
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.client.soda
 {
@@ -69,7 +65,8 @@ namespace com.espertech.esper.common.client.soda
             this.AddChild(expression);
         }
 
-        public override ExpressionPrecedenceEnum Precedence {
+        public override ExpressionPrecedenceEnum Precedence
+        {
             get => ExpressionPrecedenceEnum.UNARY;
         }
 
@@ -77,7 +74,8 @@ namespace com.espertech.esper.common.client.soda
         /// Returns the type of the previous expression (tail, first, window, count)
         /// </summary>
         /// <returns>type</returns>
-        public PreviousExpressionType Type {
+        public PreviousExpressionType Type
+        {
             get => type;
             set => type = value;
         }
@@ -87,7 +85,8 @@ namespace com.espertech.esper.common.client.soda
             writer.Write(type.ToString().ToLowerInvariant());
             writer.Write("(");
             this.Children[0].ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
-            if (this.Children.Count > 1) {
+            if (this.Children.Count > 1)
+            {
                 writer.Write(",");
                 this.Children[1].ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
             }

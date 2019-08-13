@@ -40,90 +40,90 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                     env,
                     milestone,
                     caseEnum,
-                    "d2,i2",
-                    "where ssb2.i2 = ssb1.i1 and ssb2.d2 = ssb1.d1",
+                    "D2,I2",
+                    "where ssb2.I2 = ssb1.I1 and ssb2.D2 = ssb1.D1",
                     true,
                     assertSendEvents);
                 RunAssertion(
                     env,
                     milestone,
                     caseEnum,
-                    "d2,i2",
-                    "where ssb2.d2 = ssb1.d1 and ssb2.i2 = ssb1.i1",
+                    "D2,I2",
+                    "where ssb2.D2 = ssb1.D1 and ssb2.I2 = ssb1.I1",
                     true,
                     assertSendEvents);
                 RunAssertion(
                     env,
                     milestone,
                     caseEnum,
-                    "d2,i2",
-                    "where ssb2.l2 = ssb1.l1 and ssb2.d2 = ssb1.d1 and ssb2.i2 = ssb1.i1",
+                    "D2,I2",
+                    "where ssb2.L2 = ssb1.L1 and ssb2.D2 = ssb1.D1 and ssb2.I2 = ssb1.I1",
                     true,
                     assertSendEvents);
                 RunAssertion(
                     env,
                     milestone,
                     caseEnum,
-                    "d2,i2",
-                    "where ssb2.l2 = ssb1.l1 and ssb2.i2 = ssb1.i1",
+                    "D2,I2",
+                    "where ssb2.L2 = ssb1.L1 and ssb2.I2 = ssb1.I1",
                     false,
                     assertSendEvents);
-                RunAssertion(env, milestone, caseEnum, "d2,i2", "where ssb2.d2 = ssb1.d1", false, assertSendEvents);
+                RunAssertion(env, milestone, caseEnum, "D2,I2", "where ssb2.D2 = ssb1.D1", false, assertSendEvents);
                 RunAssertion(
                     env,
                     milestone,
                     caseEnum,
-                    "d2,i2",
-                    "where ssb2.i2 = ssb1.i1 and ssb2.d2 = ssb1.d1 and ssb2.l2 between 1 and 1000",
+                    "D2,I2",
+                    "where ssb2.I2 = ssb1.I1 and ssb2.D2 = ssb1.D1 and ssb2.L2 between 1 and 1000",
                     true,
                     assertSendEvents);
                 RunAssertion(
                     env,
                     milestone,
                     caseEnum,
-                    "d2,i2",
-                    "where ssb2.d2 = ssb1.d1 and ssb2.l2 between 1 and 1000",
-                    false,
-                    assertSendEvents);
-                RunAssertion(
-                    env,
-                    milestone,
-                    caseEnum,
-                    "i2,d2,l2",
-                    "where ssb2.l2 = ssb1.l1 and ssb2.d2 = ssb1.d1",
+                    "D2,I2",
+                    "where ssb2.D2 = ssb1.D1 and ssb2.L2 between 1 and 1000",
                     false,
                     assertSendEvents);
                 RunAssertion(
                     env,
                     milestone,
                     caseEnum,
-                    "i2,d2,l2",
-                    "where ssb2.l2 = ssb1.l1 and ssb2.i2 = ssb1.i1 and ssb2.d2 = ssb1.d1",
+                    "I2,D2,L2",
+                    "where ssb2.L2 = ssb1.L1 and ssb2.D2 = ssb1.D1",
+                    false,
+                    assertSendEvents);
+                RunAssertion(
+                    env,
+                    milestone,
+                    caseEnum,
+                    "I2,D2,L2",
+                    "where ssb2.L2 = ssb1.L1 and ssb2.I2 = ssb1.I1 and ssb2.D2 = ssb1.D1",
                     true,
                     assertSendEvents);
                 RunAssertion(
                     env,
                     milestone,
                     caseEnum,
-                    "d2,l2,i2",
-                    "where ssb2.l2 = ssb1.l1 and ssb2.i2 = ssb1.i1 and ssb2.d2 = ssb1.d1",
+                    "D2,L2,I2",
+                    "where ssb2.L2 = ssb1.L1 and ssb2.I2 = ssb1.I1 and ssb2.D2 = ssb1.D1",
                     true,
                     assertSendEvents);
                 RunAssertion(
                     env,
                     milestone,
                     caseEnum,
-                    "d2,l2,i2",
-                    "where ssb2.l2 = ssb1.l1 and ssb2.i2 = ssb1.i1 and ssb2.d2 = ssb1.d1 and ssb2.s2 between 'E3' and 'E4'",
+                    "D2,L2,I2",
+                    "where ssb2.L2 = ssb1.L1 and ssb2.I2 = ssb1.I1 and ssb2.D2 = ssb1.D1 and ssb2.s2 between 'E3' and 'E4'",
                     true,
                     assertSendEvents);
-                RunAssertion(env, milestone, caseEnum, "l2", "where ssb2.l2 = ssb1.l1", true, assertSendEvents);
+                RunAssertion(env, milestone, caseEnum, "L2", "where ssb2.L2 = ssb1.L1", true, assertSendEvents);
                 RunAssertion(
                     env,
                     milestone,
                     caseEnum,
-                    "l2",
-                    "where ssb2.l2 = ssb1.l1 and ssb1.i1 between 1 and 20",
+                    "L2",
+                    "where ssb2.L2 = ssb1.L1 and ssb1.I1 between 1 and 20",
                     true,
                     assertSendEvents);
             }

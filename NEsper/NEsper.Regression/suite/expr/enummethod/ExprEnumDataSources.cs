@@ -139,7 +139,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
             {
                 var epl = "create schema OrderDetail(itemId string);\n" +
                           "create schema OrderEvent(details OrderDetail[]);\n" +
-                          "@Name('s0') select details.where(i -> i.itemId = '001') as c0 from OrderEvent;\n";
+                          "@Name('s0') select details.where(i -> i.ItemId = '001') as c0 from OrderEvent;\n";
                 env.CompileDeployWBusPublicType(epl, new RegressionPath()).AddListener("s0");
 
                 var detailOne = CollectionUtil.PopulateNameValueMap("itemId", "002");
@@ -332,7 +332,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
                 env.UndeployAll();
 
                 // try measures-clause
-                var fieldsTwo = "c0".SplitCsv();
+                var fieldsTwo = new [] { "c0" };
                 var textTwo = "@Name('s0') select * from SupportBean " +
                               "match_recognize (" +
                               " measures A.anyOf(v-> v.IntPrimitive = B.IntPrimitive) as c0 " +
@@ -368,7 +368,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "c0,c1".SplitCsv();
+                var fields = new [] { "c0", "c1" };
                 var epl = "@Name('s0') select " +
                           "SupportEnumTwo.ENUM_VALUE_1.getMystrings().anyOf(v -> v = Id) as c0, " +
                           "value.getMystrings().anyOf(v -> v = '2') as c1 " +
@@ -395,7 +395,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "c0,c1,c2,c3,c4".SplitCsv();
+                var fields = new [] { "c0", "c1", "c2", "c3", "c4" };
 
                 var eplWindowAgg = "@Name('s0') select " +
                                    "sorted(TheString).allOf(x -> x.IntPrimitive < 5) as c0," +
@@ -443,7 +443,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 
                 LambdaAssertionUtil.AssertTypes(
                     env.Statement("s0").EventType,
-                    "val0,val1".SplitCsv(),
+                    new [] { "val0", "val1" },
                     new[] {typeof(SupportBean_ST0[]), typeof(ICollection<object>)});
 
                 env.SendEventBean(new SupportBean_ST0("E1", 5));
@@ -734,7 +734,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
                 env.UndeployAll();
 
                 // test array and iterable
-                var fields = "val0,val1".SplitCsv();
+                var fields = new [] { "val0", "val1" };
                 eplFragment = "@Name('s0') select intarray.sumof() as val0, " +
                               "intiterable.sumOf() as val1 " +
                               " from SupportCollection#keepall";

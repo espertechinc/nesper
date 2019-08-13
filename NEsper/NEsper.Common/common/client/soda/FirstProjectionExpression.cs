@@ -8,9 +8,6 @@
 
 using System;
 
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
-
 namespace com.espertech.esper.common.client.soda
 {
     /// <summary>
@@ -35,7 +32,8 @@ namespace com.espertech.esper.common.client.soda
         {
         }
 
-        public override string AggregationFunctionName {
+        public override string AggregationFunctionName
+        {
             get => "first";
         }
     }

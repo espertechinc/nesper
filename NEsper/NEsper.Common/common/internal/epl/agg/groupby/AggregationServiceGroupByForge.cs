@@ -76,7 +76,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupby
                 .DeclareVar<AggregationRowFactory>(
                     "rowFactory",
                     NewInstance(classNames.RowFactoryTop, Ref("this")))
-                .DeclareVar<DataInputOutputSerdeWCollation<object>>(
+                .DeclareVar<DataInputOutputSerdeWCollation<AggregationRow>>(
                     "rowSerde",
                     NewInstance(classNames.RowSerdeTop, Ref("this")))
                 .DeclareVar<AggregationServiceFactory>(

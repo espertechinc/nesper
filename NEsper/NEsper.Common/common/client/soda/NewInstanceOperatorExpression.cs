@@ -9,14 +9,12 @@
 using System;
 using System.IO;
 
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
-
 namespace com.espertech.esper.common.client.soda
 {
     /// <summary>
     /// The "new instance" operator instantiates a host language object.
     /// </summary>
+    [Serializable]
     public class NewInstanceOperatorExpression : ExpressionBase
     {
         private string className;
@@ -41,7 +39,8 @@ namespace com.espertech.esper.common.client.soda
         /// Returns the class name.
         /// </summary>
         /// <returns>class name</returns>
-        public string ClassName {
+        public string ClassName
+        {
             get => className;
         }
 
@@ -54,7 +53,8 @@ namespace com.espertech.esper.common.client.soda
             this.className = className;
         }
 
-        public override ExpressionPrecedenceEnum Precedence {
+        public override ExpressionPrecedenceEnum Precedence
+        {
             get => ExpressionPrecedenceEnum.UNARY;
         }
 

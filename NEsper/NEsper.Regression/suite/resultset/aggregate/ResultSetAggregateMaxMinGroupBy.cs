@@ -274,7 +274,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
                     .Add(Expressions.MaxDistinct("Volume"), "maxDistVol");
 
                 model.FromClause = FromClause.Create(
-                    FilterStream.Create(typeof(SupportMarketDataBean).Name).AddView("length", Expressions.Constant(3)));
+                    FilterStream.Create(typeof(SupportMarketDataBean).FullName).AddView("length", Expressions.Constant(3)));
                 model.WhereClause = Expressions.Or()
                     .Add(Expressions.Eq("Symbol", "DELL"))
                     .Add(Expressions.Eq("Symbol", "IBM"))

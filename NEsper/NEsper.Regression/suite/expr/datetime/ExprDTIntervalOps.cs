@@ -201,13 +201,13 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
             public void Run(RegressionEnvironment env)
             {
                 var epl = "create variable int somenumber = 1;\n" +
-                          "@Name('s0') select longdate.before(longdate, somenumber) as c0 from SupportDateTime;\n";
+                          "@Name('s0') select LongDate.before(longdate, somenumber) as c0 from SupportDateTime;\n";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 env.SendEventBean(SupportDateTime.Make("2002-05-30T09:00:00.000"));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    "c0".SplitCsv(),
+                    new [] { "c0" },
                     new object[] {false});
 
                 env.UndeployAll();
@@ -222,22 +222,22 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                 env.CompileDeploy("create variable int somenumber = 1", path);
 
                 var epl = "@Name('s0') select " +
-                          "longdate.before(longdate, somenumber years) as c0," +
-                          "longdate.before(longdate, somenumber month) as c1, " +
-                          "longdate.before(longdate, somenumber weeks) as c2, " +
-                          "longdate.before(longdate, somenumber days) as c3, " +
-                          "longdate.before(longdate, somenumber hours) as c4, " +
-                          "longdate.before(longdate, somenumber minutes) as c5, " +
-                          "longdate.before(longdate, somenumber seconds) as c6, " +
-                          "longdate.before(longdate, somenumber milliseconds) as c7, " +
-                          "longdate.before(longdate, somenumber microseconds) as c8 " +
+                          "LongDate.before(longdate, somenumber years) as c0," +
+                          "LongDate.before(longdate, somenumber month) as c1, " +
+                          "LongDate.before(longdate, somenumber weeks) as c2, " +
+                          "LongDate.before(longdate, somenumber days) as c3, " +
+                          "LongDate.before(longdate, somenumber hours) as c4, " +
+                          "LongDate.before(longdate, somenumber minutes) as c5, " +
+                          "LongDate.before(longdate, somenumber seconds) as c6, " +
+                          "LongDate.before(longdate, somenumber milliseconds) as c7, " +
+                          "LongDate.before(longdate, somenumber microseconds) as c8 " +
                           " from SupportDateTime";
                 env.CompileDeploy(epl, path).AddListener("s0");
 
                 env.SendEventBean(SupportDateTime.Make("2002-05-30T09:00:00.000"));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    "c0".SplitCsv(),
+                    new [] { "c0" },
                     new object[] {false});
 
                 env.UndeployAll();
@@ -248,11 +248,11 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "c0,c1,c2,c3,c4".SplitCsv();
+                var fields = new [] { "c0", "c1", "c2", "c3", "c4" };
                 var epl = "@Name('s0') select " +
-                          "longdate.set('month', 1).before(LongPrimitive) as c0, " +
-                          "utildate.set('month', 1).before(LongPrimitive) as c1," +
-                          "exdate.set('month', 1).before(LongPrimitive) as c2" +
+                          "LongDate.set('month', 1).before(LongPrimitive) as c0, " +
+                          "DtoDate.set('month', 1).before(LongPrimitive) as c1," +
+                          "DtxDate.set('month', 1).before(LongPrimitive) as c2" +
                           "from SupportDateTime unidirectional, SupportBean#lastevent";
                 env.CompileDeploy(epl).AddListener("s0");
 
@@ -447,7 +447,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "c0,c1".SplitCsv();
+                var fields = new [] { "c0", "c1" };
                 var epl = "@Name('s0') select " +
                           "a.longdateStart.before(b.longdateStart) as c0," +
                           "a.before(b) as c1 " +

@@ -27,13 +27,13 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.composite
             int numStreams,
             QueryGraphValueEntryRange rangeProp)
         {
-            if (rangeProp.Type.IsRange) {
+            if (rangeProp.Type.IsRange()) {
                 var rangeIn = (QueryGraphValueEntryRangeIn) rangeProp;
                 var start = rangeIn.ExprStart;
-                var includeStart = rangeProp.Type.IsIncludeStart;
+                var includeStart = rangeProp.Type.IsIncludeStart();
 
                 var end = rangeIn.ExprEnd;
-                var includeEnd = rangeProp.Type.IsIncludeEnd;
+                var includeEnd = rangeProp.Type.IsIncludeEnd();
 
                 if (!rangeProp.Type.IsRangeInverted()) {
                     strategy = new CompositeAccessStrategyRangeNormal(
@@ -225,7 +225,7 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.composite
             ICollection<EventBean> result,
             CompositeIndexQueryResultPostProcessor postProcessor)
         {
-            var map = (IDictionary<object, ISet<EventBean>>) sortedMapOne;
+            var map = sortedMapOne;
 
             if (postProcessor != null) {
                 foreach (var entry in map) {
@@ -234,7 +234,7 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.composite
             }
             else {
                 foreach (var entry in map) {
-                    result.AddAll(entry.Value);
+                    result.AddAll(entry.Value.AssertCollection());
                 }
             }
         }

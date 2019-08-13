@@ -69,7 +69,8 @@ namespace com.espertech.esper.common.client.soda
         ///     Returns the type of outer join.
         /// </summary>
         /// <returns>outer join type</returns>
-        public OuterJoinType Type {
+        public OuterJoinType Type
+        {
             get => type;
             set => type = value;
         }
@@ -78,7 +79,8 @@ namespace com.espertech.esper.common.client.soda
         ///     Returns property value expression to join on.
         /// </summary>
         /// <returns>expression providing joined-on values</returns>
-        public Expression Left {
+        public Expression Left
+        {
             get => left;
             set => left = value;
         }
@@ -87,7 +89,8 @@ namespace com.espertech.esper.common.client.soda
         ///     Returns property value expression to join on.
         /// </summary>
         /// <returns>expression providing joined-on values</returns>
-        public Expression Right {
+        public Expression Right
+        {
             get => right;
             set => right = value;
         }
@@ -96,7 +99,8 @@ namespace com.espertech.esper.common.client.soda
         ///     Returns optional additional properties in the on-clause of the outer join.
         /// </summary>
         /// <returns>pairs of properties connected via logical-and in an on-clause</returns>
-        public IList<PropertyValueExpressionPair> AdditionalProperties {
+        public IList<PropertyValueExpressionPair> AdditionalProperties
+        {
             get => additionalProperties;
             set => additionalProperties = value;
         }

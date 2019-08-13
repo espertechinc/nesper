@@ -86,13 +86,13 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             SendCombinedProps(env);
             var eventBean = env.Listener("s0").LastNewData[0];
 
-            Assert.AreEqual("0ma0", eventBean.Get("indexed[0].mapped('0ma').Value"));
-            Assert.AreEqual("0ma1", eventBean.Get("indexed[0].mapped('0mb').Value"));
-            Assert.AreEqual("1ma0", eventBean.Get("indexed[1].mapped('1ma').Value"));
-            Assert.AreEqual("1ma1", eventBean.Get("indexed[1].mapped('1mb').Value"));
+            Assert.AreEqual("0ma0", eventBean.Get("Indexed[0].Mapped('0ma').Value"));
+            Assert.AreEqual("0ma1", eventBean.Get("Indexed[0].Mapped('0mb').Value"));
+            Assert.AreEqual("1ma0", eventBean.Get("Indexed[1].Mapped('1ma').Value"));
+            Assert.AreEqual("1ma1", eventBean.Get("Indexed[1].Mapped('1mb').Value"));
 
-            Assert.AreEqual("0ma0", eventBean.Get("array[0].mapped('0ma').Value"));
-            Assert.AreEqual("1ma1", eventBean.Get("array[1].mapped('1mb').Value"));
+            Assert.AreEqual("0ma0", eventBean.Get("Array[0].Mapped('0ma').Value"));
+            Assert.AreEqual("1ma1", eventBean.Get("Array[1].Mapped('1mb').Value"));
 
             Assert.AreEqual("0ma00ma1", eventBean.Get("concat"));
         }
@@ -307,7 +307,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             public void Run(RegressionEnvironment env)
             {
                 var text =
-                    "@Name('s0') select *, indexed[0].mapped('0ma').Value||indexed[0].mapped('0mb').Value as concat from SupportBeanCombinedProps#length(5)";
+                    "@Name('s0') select *, Indexed[0].Mapped('0ma').Value||Indexed[0].Mapped('0mb').Value as concat from SupportBeanCombinedProps#length(5)";
                 env.CompileDeploy(text).AddListener("s0");
                 AssertCombinedProps(env);
                 env.UndeployAll();

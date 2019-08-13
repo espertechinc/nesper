@@ -39,12 +39,14 @@ namespace com.espertech.esper.common.client.soda
             PatternExprPrecedenceEnum parentPrecedence,
             EPStatementFormatter formatter)
         {
-            if (Precedence.GetLevel() < parentPrecedence.GetLevel()) {
+            if (Precedence.GetLevel() < parentPrecedence.GetLevel())
+            {
                 writer.Write("(");
                 ToPrecedenceFreeEPL(writer, formatter);
                 writer.Write(")");
             }
-            else {
+            else
+            {
                 ToPrecedenceFreeEPL(writer, formatter);
             }
         }

@@ -197,14 +197,14 @@ namespace com.espertech.esper.regressionlib.support.client
 
         public static string VarargOverload(int a)
         {
-            return "p1";
+            return "P1";
         }
 
         public static string VarargOverload(
             int a,
             int b)
         {
-            return "p2";
+            return "P2";
         }
 
         public static string VarargOverload(

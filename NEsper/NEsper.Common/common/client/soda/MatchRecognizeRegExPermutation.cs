@@ -21,7 +21,8 @@ namespace com.espertech.esper.common.client.soda
         {
             string delimiter = "";
             writer.Write("match_recognize_permute(");
-            foreach (MatchRecognizeRegEx node in Children) {
+            foreach (MatchRecognizeRegEx node in Children)
+            {
                 writer.Write(delimiter);
                 node.WriteEPL(writer);
                 delimiter = ",";

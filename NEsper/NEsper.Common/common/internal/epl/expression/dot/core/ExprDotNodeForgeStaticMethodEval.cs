@@ -319,5 +319,42 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
                 throw new EPException(message, indication);
             }
         }
+
+        /// <summary>
+        ///     NOTE: Code-generation-invoked method, method name and parameter order matters
+        /// </summary>
+        /// <param name="optionalStatementName">stmt name</param>
+        /// <param name="methodName">name of the method</param>
+        /// <param name="parameterTypes">parameters to method</param>
+        /// <param name="classOrPropertyName">target name</param>
+        /// <param name="args">args</param>
+        /// <param name="thrown">exception</param>
+        /// <param name="rethrow">indicator whether to rethrow</param>
+
+        public static void StaticMethodEvalHandleInvocationException(
+            string optionalStatementName,
+            string methodName,
+            Type[] parameterTypes,
+            String classOrPropertyName,
+            Object[] args,
+            Exception thrown,
+            bool rethrow)
+        {
+            var indication = thrown is TargetException
+                ? ((TargetException) thrown).InnerException
+                : thrown;
+
+            var message = TypeHelper.GetMessageInvocationTarget(
+                optionalStatementName,
+                methodName,
+                parameterTypes,
+                classOrPropertyName,
+                args,
+                indication);
+            Log.Error(message, indication);
+            if (rethrow) {
+                throw new EPException(message, indication);
+            }
+        }
     }
 } // end of namespace

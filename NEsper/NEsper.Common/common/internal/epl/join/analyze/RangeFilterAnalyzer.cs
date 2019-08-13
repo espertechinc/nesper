@@ -22,7 +22,7 @@ namespace com.espertech.esper.common.@internal.epl.join.analyze
             bool isNot,
             QueryGraphForge queryGraph)
         {
-            var rangeOp = QueryGraphRangeEnum.GetRangeOp(includeStart, includeEnd, isNot);
+            var rangeOp = QueryGraphRangeEnumExtensions.GetRangeOp(includeStart, includeEnd, isNot);
 
             if (target is ExprIdentNode &&
                 start is ExprIdentNode &&

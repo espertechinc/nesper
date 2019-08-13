@@ -114,12 +114,12 @@ namespace com.espertech.esper.regressionlib.suite.epl.spatial
                     env,
                     path,
                     "create index MyIndex on MyWindow((px, py) pointregionquadtree(0, 0, 100, 100, 'a'))",
-                    "Index of type 'pointregionquadtree' for parameter 4 that is providing leafCapacity-values expecting type System.Integer but received type System.String");
+                    "Index of type 'pointregionquadtree' for parameter 4 that is providing leafCapacity-values expecting type System.Int32 but received type System.String");
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
                     path,
                     "create index MyIndex on MyWindow((px, py) pointregionquadtree(0, 0, 100, 100, 1, 'a'))",
-                    "Index of type 'pointregionquadtree' for parameter 5 that is providing maxTreeHeight-values expecting type System.Integer but received type System.String");
+                    "Index of type 'pointregionquadtree' for parameter 5 that is providing maxTreeHeight-values expecting type System.Int32 but received type System.String");
 
                 // invalid parameter value
                 SupportMessageAssertUtil.TryInvalidDeploy(

@@ -609,7 +609,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                                   "null as LongBoxed, true as BoolPrimitive, " +
                                   "'x' as CharPrimitive, 0xA as BytePrimitive, " +
                                   "8.0f as FloatPrimitive, 9.0d as DoublePrimitive, " +
-                                  "0x05 as ShortPrimitive, SupportEnum.ENUM_VALUE_2 as enumValue " +
+                                  "0x05 as ShortPrimitive, SupportEnum.ENUM_VALUE_2 as EnumValue " +
                                   " from MyMap";
                 env.CompileDeploy(stmtTextOne);
 
@@ -621,7 +621,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                 Assert.AreEqual("E1", received.TheString);
                 SupportBean.Compare(
                     received,
-                    "IntPrimitive,IntBoxed,LongPrimitive,LongBoxed,BoolPrimitive,CharPrimitive,BytePrimitive,FloatPrimitive,DoublePrimitive,ShortPrimitive,enumValue"
+                    "IntPrimitive,IntBoxed,LongPrimitive,LongBoxed,BoolPrimitive,CharPrimitive,BytePrimitive,FloatPrimitive,DoublePrimitive,ShortPrimitive,EnumValue"
                         .SplitCsv(),
                     new object[] {1, 2, 3L, null, true, 'x', (byte) 10, 8f, 9d, (short) 5, SupportEnum.ENUM_VALUE_2});
 
@@ -630,8 +630,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                 env.UndeployModuleContaining("i1");
 
                 stmtTextOne = "@Name('s0') insert into SupportBean(TheString, IntPrimitive, IntBoxed, LongPrimitive," +
-                              "longBoxed, BoolPrimitive, CharPrimitive, BytePrimitive, FloatPrimitive, DoublePrimitive, " +
-                              "shortPrimitive, enumValue) select " +
+                              "LongBoxed, BoolPrimitive, CharPrimitive, BytePrimitive, FloatPrimitive, DoublePrimitive, " +
+                              "ShortPrimitive, EnumValue) select " +
                               "'E1', 1, 2, 3L," +
                               "null, true, " +
                               "'x', 0xA, " +
@@ -645,7 +645,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                 Assert.AreEqual("E1", received.TheString);
                 SupportBean.Compare(
                     received,
-                    "IntPrimitive,IntBoxed,LongPrimitive,LongBoxed,BoolPrimitive,CharPrimitive,BytePrimitive,FloatPrimitive,DoublePrimitive,ShortPrimitive,enumValue"
+                    "IntPrimitive,IntBoxed,LongPrimitive,LongBoxed,BoolPrimitive,CharPrimitive,BytePrimitive,FloatPrimitive,DoublePrimitive,ShortPrimitive,EnumValue"
                         .SplitCsv(),
                     new object[] {1, 2, 3L, null, true, 'x', (byte) 10, 8f, 9d, (short) 5, SupportEnum.ENUM_VALUE_2});
 
@@ -661,7 +661,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                 env.SendEventMap(vals, "MyMap");
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    "longBoxed,DoubleBoxed".SplitCsv(),
+                    "LongBoxed,DoubleBoxed".SplitCsv(),
                     new object[] {4L, 0d});
                 env.UndeployAll();
 
@@ -710,13 +710,13 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
             {
                 // arrays and maps
                 var stmtTextOne =
-                    "@Name('s0') insert into SupportBeanComplexProps(arrayProperty,objectArray,mapProperty) select " +
-                    "intArr,{10,20,30},mapProp" +
+                    "@Name('s0') insert into SupportBeanComplexProps(arrayProperty,ObjectArray,mapProperty) select " +
+                    "IntArr,{10,20,30},mapProp" +
                     " from MyMap as m";
                 env.CompileDeploy(stmtTextOne).AddListener("s0");
 
                 IDictionary<string, object> mymapVals = new Dictionary<string, object>();
-                mymapVals.Put("intArr", new[] {-1, -2});
+                mymapVals.Put("IntArr", new[] {-1, -2});
                 IDictionary<string, object> inner = new Dictionary<string, object>();
                 inner.Put("mykey", "myval");
                 mymapVals.Put("mapProp", inner);

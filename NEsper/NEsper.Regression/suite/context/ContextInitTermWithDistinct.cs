@@ -101,7 +101,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                     "  terminated by SupportBean(TheString = s0.TheString and IntPrimitive = 1)",
                     path);
 
-                var fields = "theString,LongPrimitive,cnt".SplitCsv();
+                var fields = "TheString,LongPrimitive,cnt".SplitCsv();
                 env.CompileDeploy(
                     "@Name('s0') context MyContext " +
                     "select TheString, LongPrimitive, count(*) as cnt from SupportBean(TheString = context.s0.TheString)",

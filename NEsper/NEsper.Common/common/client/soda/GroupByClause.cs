@@ -69,7 +69,8 @@ namespace com.espertech.esper.common.client.soda
         public GroupByClause(params String[] properties)
             : this()
         {
-            foreach (string property in properties) {
+            foreach (string property in properties)
+            {
                 _groupByExpressions.Add(new GroupByClauseExpressionSingle(Expressions.Property(property)));
             }
         }
@@ -79,15 +80,19 @@ namespace com.espertech.esper.common.client.soda
         public GroupByClause(params Expression[] expressions)
             : this()
         {
-            foreach (Expression expression in expressions) {
+            foreach (Expression expression in expressions)
+            {
                 _groupByExpressions.Add(new GroupByClauseExpressionSingle(expression));
             }
         }
 
         /// <summary>Gets or sets the expressions providing the grouped-by values.</summary>
         /// <returns>expressions</returns>
-        public IList<GroupByClauseExpression> GroupByExpressions {
-            get { return _groupByExpressions; }
+        public IList<GroupByClauseExpression> GroupByExpressions
+        {
+            get {
+                return _groupByExpressions;
+            }
             set {
                 _groupByExpressions.Clear();
                 _groupByExpressions.AddAll(value);
@@ -99,7 +104,8 @@ namespace com.espertech.esper.common.client.soda
         public void ToEPL(TextWriter writer)
         {
             String delimiter = "";
-            foreach (GroupByClauseExpression child in _groupByExpressions) {
+            foreach (GroupByClauseExpression child in _groupByExpressions)
+            {
                 writer.Write(delimiter);
                 child.ToEPL(writer);
                 delimiter = ", ";

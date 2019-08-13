@@ -103,11 +103,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             block.DeclareVar<bool>(
                 "result",
                 forge.Computer.CodegenNoNullCheck(
-                    Ref("value"),
+                    ExprDotName(Ref("value"), "Value"),
                     value.EvaluationType,
-                    Ref("lower"),
+                    ExprDotName(Ref("lower"), "Value"),
                     lower.EvaluationType,
-                    Ref("higher"),
+                    ExprDotName(Ref("higher"), "Value"),
                     higher.EvaluationType,
                     methodNode,
                     codegenClassScope));

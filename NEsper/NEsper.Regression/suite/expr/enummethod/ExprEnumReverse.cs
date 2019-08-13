@@ -34,7 +34,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 
                 LambdaAssertionUtil.AssertTypes(
                     env.Statement("s0").EventType,
-                    "val".SplitCsv(),
+                    new [] { "val" },
                     new[] {typeof(ICollection<object>)});
 
                 env.SendEventBean(SupportBean_ST0_Container.Make2Value("E1,1", "E2,9", "E3,1"));
@@ -65,7 +65,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "val0".SplitCsv();
+                var fields = new [] { "val0" };
                 var eplFragment = "@Name('s0') select " +
                                   "Strvals.reverse() as val0 " +
                                   "from SupportCollection";

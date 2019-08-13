@@ -35,7 +35,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
             existsNodes[0].AddChildNode(supportExprNodeFactory.MakeIdentNode("dummy?", "s0"));
 
             existsNodes[1] = new ExprPropertyExistsNode();
-            existsNodes[1].AddChildNode(supportExprNodeFactory.MakeIdentNode("boolPrimitive?", "s0"));
+            existsNodes[1].AddChildNode(supportExprNodeFactory.MakeIdentNode("BoolPrimitive?", "s0"));
         }
 
 

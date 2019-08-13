@@ -77,27 +77,24 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowforall
             CodegenCtor factoryCtor,
             IList<CodegenTypedParam> factoryMembers)
         {
-            instance.Methods.AddMethod(
+            instance.Properties.AddProperty(
                 typeof(AggregationService),
-                "GetAggregationService",
-                Collections.GetEmptyList<CodegenNamedParam>(),
+                "AggregationService",
                 typeof(ResultSetProcessorRowForAll),
                 classScope,
-                methodNode => methodNode.Block.MethodReturn(REF_AGGREGATIONSVC));
-            instance.Methods.AddMethod(
+                node => node.GetterBlock.BlockReturn(REF_AGGREGATIONSVC));
+            instance.Properties.AddProperty(
                 typeof(ExprEvaluatorContext),
-                "GetExprEvaluatorContext",
-                Collections.GetEmptyList<CodegenNamedParam>(),
+                "ExprEvaluatorContext",
                 typeof(ResultSetProcessorRowForAll),
                 classScope,
-                methodNode => methodNode.Block.MethodReturn(REF_AGENTINSTANCECONTEXT));
-            instance.Methods.AddMethod(
+                node => node.GetterBlock.BlockReturn(REF_AGENTINSTANCECONTEXT));
+            instance.Properties.AddProperty(
                 typeof(bool),
                 "IsSelectRStream",
-                Collections.GetEmptyList<CodegenNamedParam>(),
                 typeof(ResultSetProcessorRowForAll),
                 classScope,
-                methodNode => methodNode.Block.MethodReturn(Constant(IsSelectRStream)));
+                node => node.GetterBlock.BlockReturn(Constant(IsSelectRStream)));
             ResultSetProcessorUtil.EvaluateHavingClauseCodegen(OptionalHavingNode, classScope, instance);
             ResultSetProcessorRowForAllImpl.GetSelectListEventsAsArrayCodegen(this, classScope, instance);
         }

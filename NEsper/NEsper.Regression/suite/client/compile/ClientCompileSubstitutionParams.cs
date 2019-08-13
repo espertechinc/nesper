@@ -329,7 +329,7 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
                 Assert.IsTrue(ctx.StatementId > 0);
                 Assert.AreEqual("s0", ctx.StatementName);
                 Assert.AreEqual(typeof(int?), ctx.SubstitutionParameterTypes[0]);
-                Assert.AreEqual((int?) 1, ctx.SubstitutionParameterNames.Get("p0"));
+                Assert.AreEqual((int?) 1, ctx.SubstitutionParameterNames.Get("P0"));
             }
         }
 
@@ -343,15 +343,15 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
                     compiled,
                     "s0",
                     prepared => {
-                        prepared.SetObject("p0", 10);
-                        prepared.SetObject("p1", 11);
+                        prepared.SetObject("P0", 10);
+                        prepared.SetObject("P1", 11);
                     });
                 env.AddListener("s0");
 
                 env.SendEventBean(new SupportBean());
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    "c0,c1".SplitCsv(),
+                    new [] { "c0", "c1" },
                     new object[] {10, 11});
 
                 env.UndeployAll();
@@ -378,7 +378,7 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
                 TryInvalidCompile(
                     env,
                     "select ?:p0:int as c0, ?:p0:long from SupportBean",
-                    "Substitution parameter 'p0' incompatible type assignment between types 'System.Integer' and 'System.Long'");
+                    "Substitution parameter 'p0' incompatible type assignment between types 'System.Int32' and 'System.Long'");
             }
         }
 
@@ -412,7 +412,7 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
                 env.SendEventBean(@event);
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    "c0".SplitCsv(),
+                    new [] { "c0" },
                     new object[] {10});
 
                 env.Milestone(0);
@@ -420,7 +420,7 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
                 env.SendEventBean(@event);
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    "c0".SplitCsv(),
+                    new [] { "c0" },
                     new object[] {10});
 
                 env.UndeployAll();
@@ -688,7 +688,7 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
                     env,
                     compiled,
                     "Substitution parameters have not been provided: Missing value for substitution parameter 'p1' for statement 's0'",
-                    prepared => prepared.SetObject("p0", "x"));
+                    prepared => prepared.SetObject("P0", "x"));
             }
         }
 
@@ -745,7 +745,7 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
                             prepared,
                             stmt => stmt.SetObject(0, "a"),
                             "Substitution parameter names have been provided for this statement, please set the value by name");
-                        prepared.SetObject("p0", "xxx");
+                        prepared.SetObject("P0", "xxx");
                     });
                 DeployWithOptionsWUndeploy(env, compiled, options);
             }
@@ -777,10 +777,10 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
                     prepared => {
                         TryInvalidSetObject(
                             prepared,
-                            stmt => stmt.SetObject("p0", 10),
+                            stmt => stmt.SetObject("P0", 10),
                             "Failed to set substitution parameter 'p0', expected a value of type 'System.String': " +
                             typeof(string));
-                        prepared.SetObject("p0", "abc");
+                        prepared.SetObject("P0", "abc");
                     });
                 DeployWithOptionsWUndeploy(env, compiled, options);
 
@@ -789,8 +789,8 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
                 options = new DeploymentOptions().WithStatementSubstitutionParameter(
                     prepared => {
                         // There is only boxed type consistent with all other column/variable/schema typing:
-                        // tryInvalidSetObject(prepared, stmt => stmt.setObject("p0", null), "Failed to set substitution parameter 'p0', expected a value of type 'int': Received a null-value for a primitive type");
-                        prepared.SetObject("p0", 10);
+                        // tryInvalidSetObject(prepared, stmt => stmt.setObject("P0", null), "Failed to set substitution parameter 'p0', expected a value of type 'int': Received a null-value for a primitive type");
+                        prepared.SetObject("P0", 10);
                     });
                 DeployWithOptionsWUndeploy(env, compiled, options);
             }

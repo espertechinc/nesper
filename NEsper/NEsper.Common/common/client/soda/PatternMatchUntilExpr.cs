@@ -72,7 +72,8 @@ namespace com.espertech.esper.common.client.soda
         /// <value>single-bound expression</value>
         public Expression Single { get; set; }
 
-        public override PatternExprPrecedenceEnum Precedence {
+        public override PatternExprPrecedenceEnum Precedence
+        {
             get { return PatternExprPrecedenceEnum.MATCH_UNTIL; }
         }
 
@@ -80,24 +81,30 @@ namespace com.espertech.esper.common.client.soda
             TextWriter writer,
             EPStatementFormatter formatter)
         {
-            if (Single != null) {
+            if (Single != null)
+            {
                 writer.Write("[");
                 Single.ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
                 writer.Write("]");
             }
-            else {
-                if (Low != null || High != null) {
+            else
+            {
+                if (Low != null || High != null)
+                {
                     writer.Write("[");
-                    if ((Low != null) && (High != null)) {
+                    if ((Low != null) && (High != null))
+                    {
                         Low.ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
                         writer.Write(":");
                         High.ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
                     }
-                    else if (Low != null) {
+                    else if (Low != null)
+                    {
                         Low.ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
                         writer.Write(":");
                     }
-                    else {
+                    else
+                    {
                         writer.Write(":");
                         High.ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
                     }
@@ -107,13 +114,15 @@ namespace com.espertech.esper.common.client.soda
             }
 
             PatternExprPrecedenceEnum precedence = Precedence;
-            if (Children[0] is PatternMatchUntilExpr) {
+            if (Children[0] is PatternMatchUntilExpr)
+            {
                 precedence = PatternExprPrecedenceEnum.MAXIMIM;
             }
 
             Children[0].ToEPL(writer, precedence, formatter);
 
-            if (Children.Count > 1) {
+            if (Children.Count > 1)
+            {
                 writer.Write(" until ");
                 Children[1].ToEPL(writer, Precedence, formatter);
             }

@@ -111,7 +111,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.bean
                 env.SendEventMap(defValues, "MyType");
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    "c0,c1,c2,c3,c4".SplitCsv(),
+                    new [] { "c0", "c1", "c2", "c3", "c4" },
                     new object[] {"Enders Game", "book", 100, 50, "abc"});
                 env.UndeployAll();
 

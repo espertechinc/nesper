@@ -9,14 +9,12 @@
 using System;
 using System.IO;
 
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
-
 namespace com.espertech.esper.common.client.soda
 {
     /// <summary>
     /// Subquery-expression returns values returned by a lookup modelled by a further <seealso cref="EPStatementObjectModel" />.
     /// </summary>
+    [Serializable]
     public class SubqueryExpression : ExpressionBase
     {
         private EPStatementObjectModel model;
@@ -37,7 +35,8 @@ namespace com.espertech.esper.common.client.soda
             this.model = model;
         }
 
-        public override ExpressionPrecedenceEnum Precedence {
+        public override ExpressionPrecedenceEnum Precedence
+        {
             get => ExpressionPrecedenceEnum.UNARY;
         }
 
@@ -52,7 +51,8 @@ namespace com.espertech.esper.common.client.soda
         /// Returns the lookup statement object model.
         /// </summary>
         /// <returns>lookup model</returns>
-        public EPStatementObjectModel Model {
+        public EPStatementObjectModel Model
+        {
             get => model;
         }
 

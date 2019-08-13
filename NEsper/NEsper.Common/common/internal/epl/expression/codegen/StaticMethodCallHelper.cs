@@ -9,6 +9,8 @@
 using System;
 using System.Reflection;
 
+using Castle.Core.Internal;
+
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.core;
@@ -92,9 +94,20 @@ namespace com.espertech.esper.common.@internal.epl.expression.codegen
             StaticMethodCodegenArgDesc[] args,
             CodegenClassScope codegenClassScope)
         {
+            var parameters = reflectionMethod.GetParameters();
             var expressions = new CodegenExpression[args.Length];
             for (var i = 0; i < expressions.Length; i++) {
-                expressions[i] = Ref(args[i].BlockRefName);
+                // Check for downcast transformations between nullables and non-nullables
+                var parameter = parameters[i];
+                if ((parameter.ParameterType.IsValueType || parameter.ParameterType.IsPrimitive) &&
+                    (args[i].DeclareType.IsNullable()))
+                {
+                    expressions[i] = ExprDotName(Ref(args[i].BlockRefName), "Value");
+                }
+                else
+                {
+                    expressions[i] = Ref(args[i].BlockRefName);
+                }
             }
 
             if (optionalTargetObject == null) {

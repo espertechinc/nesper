@@ -55,7 +55,7 @@ namespace com.espertech.esper.regressionlib.support.util
         public static string ResetGetClassName()
         {
             Reset();
-            return typeof(SupportQueryPlanIndexHook).Name;
+            return typeof(SupportQueryPlanIndexHook).FullName;
         }
 
         public static void Reset()

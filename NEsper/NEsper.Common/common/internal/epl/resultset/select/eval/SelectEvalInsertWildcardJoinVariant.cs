@@ -55,7 +55,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
                 selectSymbol,
                 exprSymbol,
                 codegenClassScope);
-            methodNode.Block.MethodReturn(ExprDotMethod(variantType, "getValueAddEventBean", LocalMethod(jw)));
+            methodNode.Block.MethodReturn(ExprDotMethod(variantType, "GetValueAddEventBean", LocalMethod(jw)));
             return methodNode;
         }
     }

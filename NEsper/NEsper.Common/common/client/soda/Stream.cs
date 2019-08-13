@@ -42,7 +42,8 @@ namespace com.espertech.esper.common.client.soda
         ///     Returns the stream name.
         /// </summary>
         /// <returns>name of stream, or null if unnamed.</returns>
-        public string StreamName {
+        public string StreamName
+        {
             get => streamName;
             set => streamName = value;
         }
@@ -79,7 +80,8 @@ namespace com.espertech.esper.common.client.soda
         {
             ToEPLStream(writer, formatter);
 
-            if (streamName != null) {
+            if (streamName != null)
+            {
                 writer.Write(" as ");
                 writer.Write(streamName);
             }

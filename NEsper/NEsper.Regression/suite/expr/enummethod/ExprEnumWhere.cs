@@ -35,7 +35,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
                 env.CompileDeploy(epl).AddListener("s0");
                 LambdaAssertionUtil.AssertTypes(
                     env.Statement("s0").EventType,
-                    "val0,val1".SplitCsv(),
+                    new [] { "val0", "val1" },
                     new[] {typeof(ICollection<object>), typeof(ICollection<object>)});
 
                 env.SendEventBean(SupportBean_ST0_Container.Make2Value("E1,1", "E2,9", "E3,1"));
@@ -71,7 +71,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "val0,val1".SplitCsv();
+                var fields = new [] { "val0", "val1" };
                 var eplFragment = "@Name('s0') select " +
                                   "Strvals.where(x -> x not like '%1%') as val0, " +
                                   "Strvals.where((x, i) -> x not like '%1%' and i > 1) as val1 " +
@@ -108,7 +108,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 
                 LambdaAssertionUtil.AssertTypes(
                     env.Statement("s0").EventType,
-                    "val0".SplitCsv(),
+                    new [] { "val0" },
                     new[] {typeof(ICollection<object>)});
 
                 env.SendEventBean(SupportCollection.MakeBoolean("true,true,false"));

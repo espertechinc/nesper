@@ -24,20 +24,20 @@ namespace com.espertech.esper.common.@internal.@event.map
     /// </summary>
     public class MapEventBeanPropertyGetter : MapEventPropertyGetter
     {
-        private readonly string propertyName;
-        private readonly Type underlyingType;
+        private readonly string _propertyName;
+        private readonly Type _underlyingType;
 
         public MapEventBeanPropertyGetter(
             string propertyName,
             Type underlyingType)
         {
-            this.propertyName = propertyName;
-            this.underlyingType = underlyingType;
+            _propertyName = propertyName;
+            _underlyingType = underlyingType;
         }
 
         public object GetMap(IDictionary<string, object> map)
         {
-            var eventBean = map.Get(propertyName);
+            var eventBean = map.Get(_propertyName);
 
             if (eventBean == null) {
                 return null;
@@ -65,7 +65,7 @@ namespace com.espertech.esper.common.@internal.@event.map
         public object GetFragment(EventBean obj)
         {
             var map = BaseNestableEventUtil.CheckedCastUnderlyingMap(obj);
-            return map.Get(propertyName);
+            return map.Get(_propertyName);
         }
 
         public CodegenExpression EventBeanGetCodegen(
@@ -74,7 +74,7 @@ namespace com.espertech.esper.common.@internal.@event.map
             CodegenClassScope codegenClassScope)
         {
             return UnderlyingGetCodegen(
-                CastUnderlying(typeof(IDictionary<object, object>), beanExpression),
+                CastUnderlying(typeof(IDictionary<string, object>), beanExpression),
                 codegenMethodScope,
                 codegenClassScope);
         }
@@ -93,7 +93,7 @@ namespace com.espertech.esper.common.@internal.@event.map
             CodegenClassScope codegenClassScope)
         {
             return UnderlyingFragmentCodegen(
-                CastUnderlying(typeof(IDictionary<object, object>), beanExpression),
+                CastUnderlying(typeof(IDictionary<string, object>), beanExpression),
                 codegenMethodScope,
                 codegenClassScope);
         }
@@ -119,20 +119,20 @@ namespace com.espertech.esper.common.@internal.@event.map
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            return ExprDotMethod(underlyingExpression, "Get", Constant(propertyName));
+            return ExprDotMethod(underlyingExpression, "Get", Constant(_propertyName));
         }
 
         private CodegenMethod GetMapCodegen(
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            return codegenMethodScope.MakeChild(underlyingType, GetType(), codegenClassScope)
-                .AddParam(typeof(IDictionary<object, object>), "map")
+            return codegenMethodScope.MakeChild(_underlyingType, GetType(), codegenClassScope)
+                .AddParam(typeof(IDictionary<string, object>), "map")
                 .Block
-                .DeclareVar<object>("eventBean", ExprDotMethod(Ref("map"), "Get", Constant(propertyName)))
+                .DeclareVar<object>("eventBean", ExprDotMethod(Ref("map"), "Get", Constant(_propertyName)))
                 .IfRefNullReturnNull("eventBean")
                 .MethodReturn(
-                    Cast(underlyingType, ExprDotName(Cast(typeof(EventBean), Ref("eventBean")), "Underlying")));
+                    Cast(_underlyingType, ExprDotName(Cast(typeof(EventBean), Ref("eventBean")), "Underlying")));
         }
     }
 } // end of namespace

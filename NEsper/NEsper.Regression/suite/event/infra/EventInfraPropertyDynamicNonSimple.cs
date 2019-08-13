@@ -111,14 +111,14 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
             Type expectedPropertyType)
         {
             var stmtText = "@Name('s0') select " +
-                           "indexed[0]? as indexed1, " +
-                           "exists(indexed[0]?) as exists_indexed1, " +
-                           "indexed[1]? as indexed2, " +
-                           "exists(indexed[1]?) as exists_indexed2, " +
-                           "mapped('keyOne')? as mapped1, " +
-                           "exists(mapped('keyOne')?) as exists_mapped1, " +
-                           "mapped('keyTwo')? as mapped2,  " +
-                           "exists(mapped('keyTwo')?) as exists_mapped2  " +
+                           "Indexed[0]? as indexed1, " +
+                           "exists(Indexed[0]?) as exists_indexed1, " +
+                           "Indexed[1]? as indexed2, " +
+                           "exists(Indexed[1]?) as exists_indexed2, " +
+                           "Mapped('keyOne')? as mapped1, " +
+                           "exists(Mapped('keyOne')?) as exists_mapped1, " +
+                           "Mapped('keyTwo')? as mapped2,  " +
+                           "exists(Mapped('keyTwo')?) as exists_mapped2  " +
                            "from " +
                            typename;
             env.CompileDeploy(stmtText).AddListener("s0");

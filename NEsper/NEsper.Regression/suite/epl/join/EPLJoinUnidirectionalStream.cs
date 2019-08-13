@@ -126,7 +126,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
             RegressionEnvironment env,
             long startTime)
         {
-            var fields = "c0,c1".SplitCsv();
+            var fields = new [] { "c0", "c1" };
             env.AdvanceTime(startTime + 2000);
             EPAssertionUtil.AssertProps(
                 env.Listener("s0").AssertOneGetNewAndReset(),
@@ -167,7 +167,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                       "from E1 unidirectional inner join E2#keepall on E1.Id = E2.Id group by E1.grp";
             env.CompileDeployWBusPublicType(epl, new RegressionPath());
             env.AddListener("s0");
-            var fields = "c0,c1,c2".SplitCsv();
+            var fields = new [] { "c0", "c1", "c2" };
 
             env.SendEventObjectArray(new object[] {"A", 100}, "E2");
             Assert.IsFalse(env.Listener("s0").IsInvoked);
@@ -304,7 +304,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
 
                 // test 2-stream inner join
                 //
-                var fieldsIJ = "c0,c1".SplitCsv();
+                var fieldsIJ = new [] { "c0", "c1" };
                 var stmtTextIJ = "@Name('s0') select sum(IntPrimitive) as c0, count(*) as c1 " +
                                  "from SupportBean_S0 unidirectional " +
                                  "inner join " +
@@ -335,7 +335,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
 
                 // test 3-stream inner join
                 //
-                var fields3IJ = "c0,c1".SplitCsv();
+                var fields3IJ = new [] { "c0", "c1" };
                 var stmtText3IJ = "@Name('s0') select sum(IntPrimitive) as c0, count(*) as c1 " +
                                   "from " +
                                   "SupportBean_S0#keepall " +

@@ -1023,7 +1023,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
             {
                 env.AdvanceTime(0);
 
-                var fields = "c0,c1".SplitCsv();
+                var fields = new [] { "c0", "c1" };
                 var epl =
                     "create window MyWindow#keepall as SupportBean_S0;\n" +
                     "insert into MyWindow select * from SupportBean_S0;\n" +
@@ -1604,7 +1604,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
                 env.SendEventBean(new SupportBean("E1", 1));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    "TheString".SplitCsv(),
+                    new [] { "TheString" },
                     new object[] {"E1"});
 
                 env.SendEventBean(new SupportBean("E2", 2));
@@ -1614,7 +1614,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
                 env.SendEventBean(new SupportBean("E4", 4));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    "TheString".SplitCsv(),
+                    new [] { "TheString" },
                     new object[] {"E4"});
 
                 env.SendEventBean(new SupportBean("E2", 2));
@@ -1730,7 +1730,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
                 SendCurrentTime(env, "2002-03-01T09:00:00.000");
                 EPAssertionUtil.AssertPropsPerRow(
                     env.Listener("s0").GetAndResetLastNewData(),
-                    "TheString".SplitCsv(),
+                    new [] { "TheString" },
                     new[] {new object[] {"E1"}});
 
                 env.UndeployAll();
@@ -1758,7 +1758,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
                 env.SendEventBean(new SupportBean("E4", 4));
                 EPAssertionUtil.AssertPropsPerRow(
                     env.Listener("s0").GetAndResetLastNewData(),
-                    "TheString".SplitCsv(),
+                    new [] { "TheString" },
                     new[] {new object[] {"E4"}});
 
                 env.UndeployAll();

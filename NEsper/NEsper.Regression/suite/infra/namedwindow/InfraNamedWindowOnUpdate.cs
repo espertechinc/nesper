@@ -56,7 +56,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                 env.SendEventBean(new SupportBean_S0(-1));
                 EPAssertionUtil.AssertProps(
                     env.GetEnumerator("window").Advance(),
-                    new[] {"TheString", "p0"},
+                    new[] {"TheString", "P0"},
                     new object[] {"x", 2});
 
                 env.UndeployAll();
@@ -128,12 +128,12 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                 oldevents = EPAssertionUtil.Sort(oldevents, "TheString");
                 EPAssertionUtil.AssertPropsPerRow(
                     oldevents,
-                    "theString,IntPrimitive".SplitCsv(),
+                    new [] { "TheString","IntPrimitive" },
                     new[] {new object[] {"E2", 3}});
 
                 EPAssertionUtil.AssertPropsPerRowAnyOrder(
                     env.GetEnumerator("create"),
-                    "theString,IntPrimitive".SplitCsv(),
+                    new [] { "TheString","IntPrimitive" },
                     new[] {new object[] {"E1", 2}, new object[] {"E2", 300}});
 
                 env.UndeployAll();
@@ -164,13 +164,13 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                 Assert.AreEqual(1, oldevents.Length);
                 EPAssertionUtil.AssertPropsPerRow(
                     oldevents,
-                    "theString,IntPrimitive".SplitCsv(),
+                    new [] { "TheString","IntPrimitive" },
                     new[] {new object[] {"E2", 3}});
 
                 var events = EPAssertionUtil.Sort(env.GetEnumerator("create"), "TheString");
                 EPAssertionUtil.AssertPropsPerRow(
                     events,
-                    "theString,IntPrimitive".SplitCsv(),
+                    new [] { "TheString","IntPrimitive" },
                     new[] {new object[] {"E1", 2}, new object[] {"E2", 300}});
 
                 env.UndeployAll();

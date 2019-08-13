@@ -97,7 +97,8 @@ namespace com.espertech.esper.common.client.soda
         {
             writer.Write("update istream ");
             writer.Write(EventType);
-            if (OptionalAsClauseStreamName != null) {
+            if (OptionalAsClauseStreamName != null)
+            {
                 writer.Write(" as ");
                 writer.Write(OptionalAsClauseStreamName);
             }
@@ -105,7 +106,8 @@ namespace com.espertech.esper.common.client.soda
             writer.Write(" ");
             RenderEPLAssignments(writer, Assignments);
 
-            if (OptionalWhereClause != null) {
+            if (OptionalWhereClause != null)
+            {
                 writer.Write(" where ");
                 OptionalWhereClause.ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
             }
@@ -122,7 +124,8 @@ namespace com.espertech.esper.common.client.soda
         {
             writer.Write("set ");
             String delimiter = "";
-            foreach (Assignment pair in assignments) {
+            foreach (Assignment pair in assignments)
+            {
                 writer.Write(delimiter);
                 pair.Value.ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
                 delimiter = ", ";

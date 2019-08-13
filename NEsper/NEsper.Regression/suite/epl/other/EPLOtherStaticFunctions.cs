@@ -119,7 +119,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 env.SendEventBean(new SupportBean("E1", 10));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    "c0,c1,c2,c3".SplitCsv(),
+                    new [] { "c0", "c1", "c2", "c3" },
                     new object[] {10, 10, 10, 10});
 
                 env.UndeployAll();
@@ -154,14 +154,14 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 env.SendEventBean(new SupportBean());
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    "val0".SplitCsv(),
+                    new [] { "val0" },
                     new object[] {"v1"});
 
                 LevelOne.Field = "v2";
                 env.SendEventBean(new SupportBean());
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    "val0".SplitCsv(),
+                    new [] { "val0" },
                     new object[] {"v2"});
 
                 env.UndeployAll();
@@ -172,7 +172,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
         {
             public void Run(RegressionEnvironment env)
             {
-                var subexp = "SupportChainTop.make().getChildOne(\"abc\",1).getChildTwo(\"def\").getText()";
+                var subexp = "SupportChainTop.Make().GetChildOne(\"abc\",1).GetChildTwo(\"def\").getText()";
                 var statementText = "@Name('s0') select " + subexp + " from SupportBean";
                 env.CompileDeploy(statementText).AddListener("s0");
 

@@ -43,7 +43,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                 var epl =
                     "@Name('s0') select IntPrimitive=LongPrimitive as c0, IntPrimitive is LongPrimitive as c1 from SupportBean";
                 env.CompileDeploy(epl).AddListener("s0");
-                var fields = "c0,c1".SplitCsv();
+                var fields = new [] { "c0", "c1" };
 
                 MakeSendBean(env, 1, 1L);
                 EPAssertionUtil.AssertProps(
@@ -68,7 +68,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                 var epl =
                     "@Name('s0') select P00 = P01 as c0, Id = Id as c1, P02 is not null as c2 from SupportBean_S0";
                 env.CompileDeploy(epl).AddListener("s0");
-                var fields = "c0,c1,c2".SplitCsv();
+                var fields = new [] { "c0", "c1", "c2" };
 
                 env.SendEventBean(new SupportBean_S0(1, "a", "a", "a"));
                 EPAssertionUtil.AssertProps(

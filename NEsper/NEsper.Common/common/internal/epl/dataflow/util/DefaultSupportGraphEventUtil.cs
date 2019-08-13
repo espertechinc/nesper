@@ -36,16 +36,15 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.util
         {
             var container = configuration.Container;
             var propertyTypes = new Dictionary<string, object>();
-            propertyTypes.Put("myDouble", typeof(double?));
-            propertyTypes.Put("myInt", typeof(int?));
-            propertyTypes.Put("myString", typeof(string));
+            propertyTypes.Put("MyDouble", typeof(double?));
+            propertyTypes.Put("MyInt", typeof(int?));
+            propertyTypes.Put("MyString", typeof(string));
             configuration.Common.AddEventType("MyMapEvent", propertyTypes);
             configuration.Common.AddEventType(
                 "MyOAEvent",
-                "myDouble,myInt,myString".SplitCsv(),
-                new object[] {
-                    typeof(double?), typeof(int?), typeof(string)
-                });
+                new string[] {"MyDouble", "MyInt", "MyString"},
+                new object[] {typeof(double?), typeof(int?), typeof(string)}
+            );
             configuration.Common.AddEventType(typeof(MyDefaultSupportGraphEvent));
             configuration.Common.AddEventType("MyXMLEvent", GetConfig(container.ResourceManager()));
         }
@@ -135,7 +134,7 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.util
             int myInt,
             string myString)
         {
-            var xml = "<rootelement myDouble=\"VAL_DBL\" myInt=\"VAL_INT\" myString=\"VAL_STR\" />";
+            var xml = "<rootelement MyDouble=\"VAL_DBL\" MyInt=\"VAL_INT\" MyString=\"VAL_STR\" />";
             xml = xml.RegexReplaceAll("VAL_DBL", Convert.ToString(myDouble));
             xml = xml.RegexReplaceAll("VAL_INT", Convert.ToString(myInt));
             xml = xml.RegexReplaceAll("VAL_STR", myString);
@@ -156,9 +155,9 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.util
             string myString)
         {
             IDictionary<string, object> map = new Dictionary<string, object>();
-            map.Put("myDouble", myDouble);
-            map.Put("myInt", myInt);
-            map.Put("myString", myString);
+            map.Put("MyDouble", myDouble);
+            map.Put("MyInt", myInt);
+            map.Put("MyString", myString);
             return map;
         }
 

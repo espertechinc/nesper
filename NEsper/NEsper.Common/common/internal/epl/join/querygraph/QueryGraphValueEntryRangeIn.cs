@@ -22,7 +22,7 @@ namespace com.espertech.esper.common.@internal.epl.join.querygraph
             bool allowRangeReversal)
             : base(rangeType)
         {
-            if (!rangeType.IsRange) {
+            if (!rangeType.IsRange()) {
                 throw new ArgumentException("Range type expected but received " + rangeType.GetName());
             }
 

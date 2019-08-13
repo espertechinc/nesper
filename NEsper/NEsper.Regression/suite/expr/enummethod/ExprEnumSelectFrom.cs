@@ -47,31 +47,31 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 
                 LambdaAssertionUtil.AssertTypes(
                     env.Statement("s0").EventType,
-                    "val0".SplitCsv(),
+                    new [] { "val0" },
                     new[] {typeof(ICollection<object>)});
 
                 env.SendEventBean(SupportBean_ST0_Container.Make3Value("E1,12,0", "E2,11,0", "E3,2,0"));
                 EPAssertionUtil.AssertPropsPerRow(
                     ToMapArray(env.Listener("s0").AssertOneGetNewAndReset().Get("val0")),
-                    "c0,c1".SplitCsv(),
+                    new [] { "c0", "c1" },
                     new[] {new object[] {"E1x", "12y"}, new object[] {"E2x", "11y"}, new object[] {"E3x", "2y"}});
 
                 env.SendEventBean(SupportBean_ST0_Container.Make3Value("E4,0,1"));
                 EPAssertionUtil.AssertPropsPerRow(
                     ToMapArray(env.Listener("s0").AssertOneGetNewAndReset().Get("val0")),
-                    "c0,c1".SplitCsv(),
+                    new [] { "c0", "c1" },
                     new[] {new object[] {"E4x", "0y"}});
 
                 env.SendEventBean(SupportBean_ST0_Container.Make3Value(null));
                 EPAssertionUtil.AssertPropsPerRow(
                     ToMapArray(env.Listener("s0").AssertOneGetNewAndReset().Get("val0")),
-                    "c0,c1".SplitCsv(),
+                    new [] { "c0", "c1" },
                     null);
 
                 env.SendEventBean(SupportBean_ST0_Container.Make3Value());
                 EPAssertionUtil.AssertPropsPerRow(
                     ToMapArray(env.Listener("s0").AssertOneGetNewAndReset().Get("val0")),
-                    "c0,c1".SplitCsv(),
+                    new [] { "c0", "c1" },
                     new object[0][]);
 
                 env.UndeployAll();
@@ -89,7 +89,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 
                 LambdaAssertionUtil.AssertTypes(
                     env.Statement("s0").EventType,
-                    "val0".SplitCsv(),
+                    new [] { "val0" },
                     new[] {typeof(ICollection<object>)});
 
                 env.SendEventBean(SupportBean_ST0_Container.Make2Value("E1,12", "E2,11", "E3,2"));
@@ -106,7 +106,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
                 env.UndeployAll();
 
                 // test scalar-coll with lambda
-                var fields = "val0".SplitCsv();
+                var fields = new [] { "val0" };
                 var eplLambda = "@Name('s0') select " +
                                 "Strvals.selectFrom(v -> extractNum(v)) as val0 " +
                                 "from SupportCollection";

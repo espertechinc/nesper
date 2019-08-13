@@ -11,7 +11,7 @@ using System.IO;
 namespace com.espertech.esper.common.client.soda
 {
     /// <summary>
-    /// For use with overlapping or non-overlapping contexts, implementations represents a 
+    /// For use with overlapping or non-overlapping contexts, implementations represents a
     /// condition for starting/initiating or ending/terminating a context.
     /// </summary>
     public interface ContextDescriptorCondition

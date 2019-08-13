@@ -18,23 +18,23 @@ namespace com.espertech.esper.regressionlib.suite.@event.bean
     {
         public void Run(RegressionEnvironment env)
         {
-            var stmtText = "@Name('s0') select simpleProperty?, " +
-                           "indexed[1]? as indexed, " +
-                           "mapped('keyOne')? as mapped " +
+            var stmtText = "@Name('s0') select SimpleProperty?, " +
+                           "Indexed[1]? as indexed, " +
+                           "Mapped('keyOne')? as mapped " +
                            "from SupportBeanComplexProps";
             env.CompileDeploy(stmtText).AddListener("s0");
 
             var type = env.Statement("s0").EventType;
-            Assert.AreEqual(typeof(object), type.GetPropertyType("simpleProperty?"));
-            Assert.AreEqual(typeof(object), type.GetPropertyType("indexed"));
-            Assert.AreEqual(typeof(object), type.GetPropertyType("mapped"));
+            Assert.AreEqual(typeof(object), type.GetPropertyType("SimpleProperty?"));
+            Assert.AreEqual(typeof(object), type.GetPropertyType("Indexed"));
+            Assert.AreEqual(typeof(object), type.GetPropertyType("Mapped"));
 
             var inner = SupportBeanComplexProps.MakeDefaultBean();
             env.SendEventBean(inner);
             var theEvent = env.Listener("s0").AssertOneGetNewAndReset();
-            Assert.AreEqual(inner.SimpleProperty, theEvent.Get("simpleProperty?"));
-            Assert.AreEqual(inner.GetIndexed(1), theEvent.Get("indexed"));
-            Assert.AreEqual(inner.GetMapped("keyOne"), theEvent.Get("mapped"));
+            Assert.AreEqual(inner.SimpleProperty, theEvent.Get("SimpleProperty?"));
+            Assert.AreEqual(inner.GetIndexed(1), theEvent.Get("Indexed"));
+            Assert.AreEqual(inner.GetMapped("keyOne"), theEvent.Get("Mapped"));
 
             var start = PerformanceObserver.MilliTime;
             for (var i = 0; i < 10000; i++) {

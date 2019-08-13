@@ -15,13 +15,19 @@ namespace com.espertech.esper.common.client.annotation
     /// </summary>
     public class TagAttribute : Attribute
     {
+        private string _name;
+        private string _value;
+
         /// <summary>
         /// Returns the tag name.
         /// </summary>
         /// <returns>
         /// tag name.
         /// </returns>
-        public virtual string Name { get; set; }
+        public virtual string Name {
+            get => _name;
+            set => _name = value;
+        }
 
         /// <summary>
         /// Returns the tag value.
@@ -29,7 +35,10 @@ namespace com.espertech.esper.common.client.annotation
         /// <returns>
         /// tag value.
         /// </returns>
-        public virtual string Value { get; set; }
+        public virtual string Value {
+            get => _value;
+            set => _value = value;
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TagAttribute"/> class.
@@ -40,8 +49,8 @@ namespace com.espertech.esper.common.client.annotation
             string name,
             string value)
         {
-            Name = name;
-            Value = value;
+            _name = name;
+            _value = value;
         }
 
         /// <summary>

@@ -115,7 +115,7 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.querymethod
                         symbols,
                         classScope))
                 .SetProperty(select, "HasTableAccess", Constant(_desc.HasTableAccess))
-                .SetProperty(select, "Distinct", Constant(_desc.IsDistinct))
+                .SetProperty(select, "IsDistinct", Constant(_desc.IsDistinct))
                 .MethodReturn(select);
         }
     }

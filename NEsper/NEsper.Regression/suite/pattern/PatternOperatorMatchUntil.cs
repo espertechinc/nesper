@@ -89,7 +89,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "c0,c1,c2".SplitCsv();
+                var fields = new [] { "c0", "c1", "c2" };
 
                 var epl =
                     "@Name('s0') select a[0].TheString as c0, a[1].TheString as c1, b.TheString as c2 from pattern [a=SupportBean(IntPrimitive=0) until b=SupportBean(IntPrimitive=1)]";

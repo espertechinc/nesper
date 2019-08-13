@@ -10,7 +10,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 
-using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.client.soda
@@ -69,17 +68,20 @@ namespace com.espertech.esper.common.client.soda
         /// Returns the method chain of all methods after the dot.
         /// </summary>
         /// <returns>method name ane list of parameters</returns>
-        public IList<DotExpressionItem> Chain {
+        public IList<DotExpressionItem> Chain
+        {
             get => chain;
         }
 
-        public override ExpressionPrecedenceEnum Precedence {
+        public override ExpressionPrecedenceEnum Precedence
+        {
             get => ExpressionPrecedenceEnum.MINIMUM;
         }
 
         public override void ToPrecedenceFreeEPL(TextWriter writer)
         {
-            if (!this.Children.IsEmpty()) {
+            if (!this.Children.IsEmpty())
+            {
                 this.Children[0].ToEPL(writer, Precedence);
             }
 

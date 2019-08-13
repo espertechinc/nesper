@@ -165,7 +165,7 @@ namespace com.espertech.esper.compiler.@internal.util
             var properties = new CodegenClassProperties();
 
             // provide module name
-            var moduleNameProp = CodegenProperty.MakeParentNode(
+            var moduleNameProp = CodegenProperty.MakePropertyNode(
                 typeof(string),
                 typeof(EPCompilerImpl),
                 CodegenSymbolProviderEmpty.INSTANCE,
@@ -173,7 +173,7 @@ namespace com.espertech.esper.compiler.@internal.util
             moduleNameProp.GetterBlock.BlockReturn(Constant(optionalModuleName));
 
             // provide module properties
-            var modulePropertiesProp = CodegenProperty.MakeParentNode(
+            var modulePropertiesProp = CodegenProperty.MakePropertyNode(
                 typeof(IDictionary<ModuleProperty, object>),
                 typeof(EPCompilerImpl),
                 CodegenSymbolProviderEmpty.INSTANCE,
@@ -181,7 +181,7 @@ namespace com.espertech.esper.compiler.@internal.util
             MakeModuleProperties(moduleProperties, modulePropertiesProp);
 
             // provide module dependencies
-            var moduleDependenciesProp = CodegenProperty.MakeParentNode(
+            var moduleDependenciesProp = CodegenProperty.MakePropertyNode(
                 typeof(ModuleDependenciesRuntime),
                 typeof(EPCompilerImpl),
                 CodegenSymbolProviderEmpty.INSTANCE,
@@ -291,7 +291,7 @@ namespace com.espertech.esper.compiler.@internal.util
             }
 
             // instantiate factories for statements
-            var statementsProp = CodegenProperty.MakeParentNode(
+            var statementsProp = CodegenProperty.MakePropertyNode(
                 typeof(IList<StatementProvider>),
                 typeof(EPCompilerImpl),
                 CodegenSymbolProviderEmpty.INSTANCE,
@@ -511,7 +511,7 @@ namespace com.espertech.esper.compiler.@internal.util
                 .DeclareVar<IndexDetail>("detail", index.Value.Make(method, symbols, classScope))
                 .Expression(
                     ExprDotMethodChain(symbols.GetAddInitSvc(method))
-                        .Add(EPModuleIndexInitServicesConstants.GETINDEXCOLLECTOR)
+                        .Get(EPModuleIndexInitServicesConstants.INDEXCOLLECTOR)
                         .Add("RegisterIndex", @Ref("key"), @Ref("detail")));
             return method;
         }
@@ -680,6 +680,7 @@ namespace com.espertech.esper.compiler.@internal.util
                 return StaticMethod(
                     typeof(Collections),
                     "SingletonSet",
+                    new Type[] { typeof(EventType) },
                     EventTypeUtility.ResolveTypeCodegen(deepSuperTypes.First(), symbols.GetAddInitSvc(parent)));
             }
 

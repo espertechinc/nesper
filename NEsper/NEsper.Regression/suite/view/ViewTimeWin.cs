@@ -248,7 +248,7 @@ namespace com.espertech.esper.regressionlib.suite.view
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "TheString".SplitCsv();
+                var fields = new [] { "TheString" };
 
                 env.AdvanceTime(0);
                 var epl = "@Name('s0') select irstream * from SupportBean#time(10 sec)";
@@ -389,7 +389,7 @@ namespace com.espertech.esper.regressionlib.suite.view
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "TheString".SplitCsv();
+                var fields = new [] { "TheString" };
                 env.AdvanceTime(1000);
                 var epl = "@Name('s0') select irstream * from SupportBean#time(10 sec)";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
@@ -471,7 +471,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 SendCurrentTime(env, "2002-03-01T09:00:00.000");
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    "TheString".SplitCsv(),
+                    new [] { "TheString" },
                     new object[] {"E1"});
 
                 SendCurrentTimeWithMinus(env, "2002-03-15T09:00:00.000", 1);
@@ -480,7 +480,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 SendCurrentTime(env, "2002-03-15T09:00:00.000");
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    "TheString".SplitCsv(),
+                    new [] { "TheString" },
                     new object[] {"E2"});
 
                 env.UndeployAll();
@@ -673,7 +673,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 env.AdvanceTime(1600);
                 EPAssertionUtil.AssertPropsPerRow(
                     env.Listener("s0").OldDataListFlattened,
-                    "Symbol".SplitCsv(),
+                    new [] { "Symbol" },
                     new[] {new object[] {"E1"}, new object[] {"E2"}, new object[] {"E3"}});
                 env.Listener("s0").Reset();
 
@@ -804,7 +804,7 @@ namespace com.espertech.esper.regressionlib.suite.view
             {
                 env.AdvanceTime(startTime);
 
-                var fields = "TheString".SplitCsv();
+                var fields = new [] { "TheString" };
                 var epl = "@Name('s0') select * from SupportBean#time(" + size + ")";
                 env.CompileDeploy(epl).AddListener("s0");
 

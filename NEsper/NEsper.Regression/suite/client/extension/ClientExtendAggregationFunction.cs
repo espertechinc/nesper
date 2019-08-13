@@ -223,13 +223,13 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
             env.SendEventBean(new SupportBean("d", -1));
             EPAssertionUtil.AssertProps(
                 env.Listener("s0").AssertOneGetNewAndReset(),
-                "val".SplitCsv(),
+                new [] { "val" },
                 new object[] {"SupportBean(d, -1)"});
 
             env.SendEventBean(new SupportBean("e", 2));
             EPAssertionUtil.AssertProps(
                 env.Listener("s0").AssertOneGetNewAndReset(),
-                "val".SplitCsv(),
+                new [] { "val" },
                 new object[] {"SupportBean(d, -1) SupportBean(e, 2)"});
 
             TryInvalidCompile(
@@ -284,7 +284,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
         {
             // test dot-method
             SupportSupportBeanAggregationFunctionFactory.InstanceCount = 0;
-            var fields = "val0,val1".SplitCsv();
+            var fields = new [] { "val0", "val1" };
             env.CompileDeploy(
                     "@Name('s0') select (myagg(Id)).getTheString() as val0, (myagg(Id)).getIntPrimitive() as val1 from SupportBean_A")
                 .AddListener("s0");

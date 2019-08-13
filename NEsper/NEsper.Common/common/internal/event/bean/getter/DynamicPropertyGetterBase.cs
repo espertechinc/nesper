@@ -286,7 +286,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
                         Ref("obj")))
                 .IfRefNotNull("desc")
                 .BlockReturn(Ref("desc"))
-                .DeclareVar<Type>("clazz", ExprDotName(Ref("obj"), "Class"))
+                .DeclareVar<Type>("clazz", ExprDotMethod(Ref("obj"), "GetType"))
                 .DeclareVar<MethodInfo>("method", DetermineMethodCodegen(Ref("clazz"), method, codegenClassScope))
                 .AssignRef(
                     "desc",

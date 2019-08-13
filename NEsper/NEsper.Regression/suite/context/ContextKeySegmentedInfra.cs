@@ -124,7 +124,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 new ContextPartitionSelector[] {new SupportSelectorById(1)});
             EPAssertionUtil.AssertPropsPerRow(
                 result.Array,
-                "theString,IntPrimitive".SplitCsv(),
+                new [] { "TheString","IntPrimitive" },
                 new[] {new object[] {"E1", 1}});
 
             env.SendEventBean(new SupportBean_S1(3, "A"));
@@ -664,7 +664,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                         new ProxyContextPartitionSelectorSegmented {
                             ProcPartitionKeys = () => { return Collections.SingletonList(new object[] {group}); }
                         });
-                EPAssertionUtil.AssertPropsPerRowAnyOrder(it, "theString,IntPrimitive".SplitCsv(), expected);
+                EPAssertionUtil.AssertPropsPerRowAnyOrder(it, new [] { "TheString","IntPrimitive" }, expected);
             }
         }
     }

@@ -48,7 +48,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
             RegressionEnvironment env,
             int days)
         {
-            var fields = "Symbol".SplitCsv();
+            var fields = new [] { "Symbol" };
             SendEvent(env, "S1", 0);
             Assert.IsFalse(env.Listener("s0").IsInvoked);
 
@@ -371,7 +371,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
                 env.SendEventBean(new SupportBean("E3", 1));
                 EPAssertionUtil.AssertPropsPerRow(
                     env.Listener("s0").GetAndResetLastNewData(),
-                    "TheString".SplitCsv(),
+                    new [] { "TheString" },
                     new[] {new object[] {"E1"}, new object[] {"E2"}, new object[] {"E3"}});
 
                 env.Runtime.VariableService.SetVariableValue(env.DeploymentId("var"), "var_cnt_total", -1);
@@ -382,7 +382,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
                 env.SendEventBean(new SupportBean("E5", 1));
                 EPAssertionUtil.AssertPropsPerRow(
                     env.Listener("s0").GetAndResetLastNewData(),
-                    "TheString".SplitCsv(),
+                    new [] { "TheString" },
                     new[] {new object[] {"E4"}, new object[] {"E5"}});
 
                 env.UndeployAll();
@@ -555,7 +555,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
                     "select * from SupportMarketDataBean output when true then set myvardummy = 'b'",
-                    "Error in the output rate limiting clause: Variable 'myvardummy' of declared type System.Integer cannot be assigned a value of type System.String [select * from SupportMarketDataBean output when true then set myvardummy = 'b']");
+                    "Error in the output rate limiting clause: Variable 'myvardummy' of declared type System.Int32 cannot be assigned a value of type System.String [select * from SupportMarketDataBean output when true then set myvardummy = 'b']");
 
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,

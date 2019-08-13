@@ -93,7 +93,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             CodegenExpression pattern,
             CodegenExpression stringExpr)
         {
-            CodegenExpression eval = ExprDotMethodChain(pattern).Add("Matcher", stringExpr).Add("matches");
+            CodegenExpression eval = ExprDotMethodChain(pattern).Add("IsMatch", stringExpr);
             return !forge.ForgeRenderable.IsNot ? eval : Not(eval);
         }
     }

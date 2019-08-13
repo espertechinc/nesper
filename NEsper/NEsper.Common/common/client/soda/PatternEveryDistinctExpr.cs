@@ -38,7 +38,8 @@ namespace com.espertech.esper.common.client.soda
         /// <value>expr</value>
         public IList<Expression> Expressions { get; set; }
 
-        public override PatternExprPrecedenceEnum Precedence {
+        public override PatternExprPrecedenceEnum Precedence
+        {
             get { return PatternExprPrecedenceEnum.EVERY_NOT; }
         }
 
@@ -48,7 +49,8 @@ namespace com.espertech.esper.common.client.soda
         {
             writer.Write("every-distinct(");
             String delimiter = "";
-            foreach (Expression expr in Expressions) {
+            foreach (Expression expr in Expressions)
+            {
                 writer.Write(delimiter);
                 expr.ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
                 delimiter = ",";

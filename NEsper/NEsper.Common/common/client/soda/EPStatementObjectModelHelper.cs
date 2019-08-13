@@ -18,51 +18,65 @@ namespace com.espertech.esper.common.client.soda
     {
         public static string RenderValue(this object constant)
         {
-            if (constant == null) {
+            if (constant == null)
+            {
                 return ("null");
             }
 
             if ((constant is string) ||
-                (constant is char)) {
+                (constant is char))
+            {
                 return '\"' + constant.ToString() + '\"';
             }
-            else if (constant is long) {
+            else if (constant is long)
+            {
                 return string.Format("{0}L", constant);
             }
-            else if (constant is double) {
+            else if (constant is double)
+            {
                 double dvalue = (double) constant;
                 double scrubbed = Math.Floor(dvalue);
-                if (dvalue == scrubbed) {
+                if (dvalue == scrubbed)
+                {
                     return string.Format("{0:F1}d", dvalue);
                 }
-                else {
+                else
+                {
                     return string.Format("{0}", dvalue);
                 }
             }
-            else if (constant is float) {
+            else if (constant is float)
+            {
                 double dvalue = (float) constant;
                 double scrubbed = Math.Floor(dvalue);
-                if (dvalue == scrubbed) {
+                if (dvalue == scrubbed)
+                {
                     return string.Format("{0:F1}f", dvalue);
                 }
-                else {
+                else
+                {
                     return string.Format("{0}f", dvalue);
                 }
             }
-            else if (constant is decimal) {
+            else if (constant is decimal)
+            {
                 decimal dvalue = (decimal) constant;
                 decimal scrubbed = Math.Floor(dvalue);
-                if (dvalue == scrubbed) {
+                if (dvalue == scrubbed)
+                {
                     return string.Format("{0:F1}m", dvalue);
                 }
-                else {
+                else
+                {
                     return string.Format("{0}m", dvalue);
                 }
             }
-            else if (constant is bool) {
+            else if (constant is bool)
+            {
                 return (constant.ToString().ToLower());
             }
-            else {
+            else
+            {
                 return (constant.ToString());
             }
         }
@@ -74,54 +88,68 @@ namespace com.espertech.esper.common.client.soda
             TextWriter writer,
             object constant)
         {
-            if (constant == null) {
+            if (constant == null)
+            {
                 writer.Write("null");
                 return;
             }
 
             if ((constant is string) ||
-                (constant is char)) {
+                (constant is char))
+            {
                 writer.Write('\"');
                 writer.Write(constant.ToString());
                 writer.Write('\"');
             }
-            else if (constant is long) {
+            else if (constant is long)
+            {
                 writer.Write("{0}L", constant);
             }
-            else if (constant is double) {
+            else if (constant is double)
+            {
                 double dvalue = (double) constant;
                 double scrubbed = Math.Floor(dvalue);
-                if (dvalue == scrubbed) {
+                if (dvalue == scrubbed)
+                {
                     writer.Write("{0:F1}d", dvalue);
                 }
-                else {
+                else
+                {
                     writer.Write("{0}", dvalue);
                 }
             }
-            else if (constant is float) {
+            else if (constant is float)
+            {
                 double dvalue = (float) constant;
                 double scrubbed = Math.Floor(dvalue);
-                if (dvalue == scrubbed) {
+                if (dvalue == scrubbed)
+                {
                     writer.Write("{0:F1}f", dvalue);
                 }
-                else {
+                else
+                {
                     writer.Write("{0}f", dvalue);
                 }
             }
-            else if (constant is decimal) {
+            else if (constant is decimal)
+            {
                 decimal dvalue = (decimal) constant;
                 decimal scrubbed = Math.Floor(dvalue);
-                if (dvalue == scrubbed) {
+                if (dvalue == scrubbed)
+                {
                     writer.Write("{0:F1}m", dvalue);
                 }
-                else {
+                else
+                {
                     writer.Write("{0}m", dvalue);
                 }
             }
-            else if (constant is bool) {
+            else if (constant is bool)
+            {
                 writer.Write(constant.ToString().ToLower());
             }
-            else {
+            else
+            {
                 writer.Write(constant.ToString());
             }
         }

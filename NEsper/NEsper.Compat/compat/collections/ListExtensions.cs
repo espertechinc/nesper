@@ -34,5 +34,25 @@ namespace com.espertech.esper.compat.collections
 
             throw new ArgumentException("invalid value for object list");
         }
+
+        public static bool AreEqual<T>(IList<T> listThis, IList<T> listThat)
+        {
+            var listThisCount = listThis.Count;
+            var listThatCount = listThat.Count;
+            if (listThisCount != listThatCount)
+            {
+                return false;
+            }
+
+            for (var ii = 0; ii < listThisCount; ii++)
+            {
+                if (!Equals(listThis[ii], listThat[ii]))
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
     }
 }

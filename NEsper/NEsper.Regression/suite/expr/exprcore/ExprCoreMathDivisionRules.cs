@@ -51,7 +51,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 
                 Assert.AreEqual(typeof(BigInteger), env.Statement("s0").EventType.GetPropertyType("c0"));
 
-                var fields = "c0".SplitCsv();
+                var fields = new [] { "c0" };
                 env.SendEventBean(new SupportBean());
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
@@ -73,7 +73,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 
                 Assert.AreEqual(typeof(long?), env.Statement("s0").EventType.GetPropertyType("c0"));
 
-                var fields = "c0".SplitCsv();
+                var fields = new [] { "c0" };
                 env.SendEventBean(new SupportBean());
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
@@ -93,7 +93,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 
                 Assert.AreEqual(typeof(float?), env.Statement("s0").EventType.GetPropertyType("c0"));
 
-                var fields = "c0".SplitCsv();
+                var fields = new [] { "c0" };
                 env.SendEventBean(new SupportBean());
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
@@ -111,7 +111,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                 var epl = "@Name('s0') select 10d/0d as c0 from SupportBean";
                 env.CompileDeploy(epl).AddListener("s0");
 
-                var fields = "c0".SplitCsv();
+                var fields = new [] { "c0" };
                 env.SendEventBean(new SupportBean());
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),

@@ -13,7 +13,7 @@ namespace com.espertech.esper.common.client.soda
 {
     public class EPStatementFormatter
     {
-        private string SYSTEM_NEWLINE = Environment.NewLine;
+        private readonly string SYSTEM_NEWLINE = Environment.NewLine;
         private const string SPACE = " ";
 
         private readonly bool _isNewline;
@@ -112,7 +112,8 @@ namespace com.espertech.esper.common.client.soda
             TextWriter writer,
             bool topLevel)
         {
-            if (topLevel) {
+            if (topLevel)
+            {
                 WriteDelimiter(writer, topLevel);
             }
 
@@ -161,17 +162,20 @@ namespace com.espertech.esper.common.client.soda
 
         private void SetDelimiter()
         {
-            if (_isNewline) {
+            if (_isNewline)
+            {
                 _delimiter = _newlineString;
             }
-            else {
+            else
+            {
                 _delimiter = SPACE;
             }
         }
 
         private void WriteDelimiter(TextWriter writer)
         {
-            if (_delimiter != null) {
+            if (_delimiter != null)
+            {
                 writer.Write(_delimiter);
             }
 
@@ -182,11 +186,14 @@ namespace com.espertech.esper.common.client.soda
             TextWriter writer,
             bool topLevel)
         {
-            if (_delimiter != null) {
-                if (!topLevel) {
+            if (_delimiter != null)
+            {
+                if (!topLevel)
+                {
                     writer.Write(SPACE);
                 }
-                else {
+                else
+                {
                     writer.Write(_delimiter);
                 }
             }

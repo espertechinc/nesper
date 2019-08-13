@@ -20,6 +20,6 @@ namespace com.espertech.esper.common.@internal.context.module
     public static class EPModuleIndexInitServicesConstants
     {
         public static readonly CodegenExpressionRef REF = ModuleIndexesInitializeSymbol.REF_INITSVC;
-        public static readonly string GETINDEXCOLLECTOR = "getIndexCollector";
+        public static readonly string INDEXCOLLECTOR = "IndexCollector";
     }
 } // end of namespace

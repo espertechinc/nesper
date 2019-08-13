@@ -147,7 +147,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 SendCurrentTime(env, "2002-03-01T09:00:00.000");
                 EPAssertionUtil.AssertPropsPerRow(
                     env.Listener("s0").GetAndResetLastNewData(),
-                    "TheString".SplitCsv(),
+                    new [] { "TheString" },
                     new[] {new object[] {"E1"}, new object[] {"E2"}});
 
                 env.UndeployAll();
@@ -250,7 +250,7 @@ namespace com.espertech.esper.regressionlib.suite.view
             public void Run(RegressionEnvironment env)
             {
                 SendTimer(env, 1000);
-                var fields = "TheString".SplitCsv();
+                var fields = new [] { "TheString" };
 
                 var text = "@Name('s0') select irstream * from SupportMarketDataBean#time_accum(10 sec)";
                 env.CompileDeployAddListenerMileZero(text, "s0");
@@ -351,7 +351,7 @@ namespace com.espertech.esper.regressionlib.suite.view
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "TheString".SplitCsv();
+                var fields = new [] { "TheString" };
                 SendTimer(env, 1000);
                 var epl = "@Name('s0') select irstream * from SupportBean#time_accum(10 sec)";
                 env.CompileDeployAddListenerMileZero(epl, "s0");

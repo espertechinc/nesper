@@ -9,14 +9,12 @@
 using System;
 using System.IO;
 
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
-
 namespace com.espertech.esper.common.client.soda
 {
     /// <summary>
     /// In-expression for a set of values returned by a lookup.
     /// </summary>
+    [Serializable]
     public class SubqueryInExpression : ExpressionBase
     {
         private bool notIn;
@@ -62,7 +60,8 @@ namespace com.espertech.esper.common.client.soda
         /// Returns true for not-in, or false for in-lookup.
         /// </summary>
         /// <returns>true for not-in</returns>
-        public bool IsNotIn {
+        public bool IsNotIn
+        {
             get => notIn;
         }
 
@@ -75,17 +74,20 @@ namespace com.espertech.esper.common.client.soda
             this.notIn = notIn;
         }
 
-        public override ExpressionPrecedenceEnum Precedence {
+        public override ExpressionPrecedenceEnum Precedence
+        {
             get => ExpressionPrecedenceEnum.UNARY;
         }
 
         public override void ToPrecedenceFreeEPL(TextWriter writer)
         {
             this.Children[0].ToEPL(writer, Precedence);
-            if (notIn) {
+            if (notIn)
+            {
                 writer.Write(" not in (");
             }
-            else {
+            else
+            {
                 writer.Write(" in (");
             }
 
@@ -97,7 +99,8 @@ namespace com.espertech.esper.common.client.soda
         /// Returns the lookup statement object model.
         /// </summary>
         /// <returns>lookup model</returns>
-        public EPStatementObjectModel Model {
+        public EPStatementObjectModel Model
+        {
             get => model;
         }
 

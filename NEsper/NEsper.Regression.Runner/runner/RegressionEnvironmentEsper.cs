@@ -16,7 +16,8 @@ namespace com.espertech.esper.regressionrun.Runner
 {
     public class RegressionEnvironmentEsper : RegressionEnvironmentBase
     {
-        public RegressionEnvironmentEsper(Configuration configuration, EPRuntime epService) : base(configuration, epService)
+        public RegressionEnvironmentEsper(Configuration configuration, EPRuntime runtime) 
+            : base(configuration, runtime)
         {
         }
 

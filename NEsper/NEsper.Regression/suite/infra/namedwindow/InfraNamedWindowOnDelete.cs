@@ -249,7 +249,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                 var path = new RegressionPath();
                 // create window
                 var stmtTextCreate = "@Name('createOne') create window MyWindowCK#keepall as select " +
-                                     "theString, IntPrimitive, IntBoxed, DoublePrimitive, DoubleBoxed from SupportBean";
+                                     "TheString, IntPrimitive, IntBoxed, DoublePrimitive, DoubleBoxed from SupportBean";
                 env.CompileDeploy(stmtTextCreate, path).AddListener("createOne");
 
                 IList<string> deleteStatements = new List<string>();
@@ -450,7 +450,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                 var path = new RegressionPath();
 
                 var stmtTextCreate = "@Name('createOne') create window MyWindowCR#keepall as select " +
-                                     "theString, IntPrimitive, IntBoxed, DoublePrimitive, DoubleBoxed from SupportBean";
+                                     "TheString, IntPrimitive, IntBoxed, DoublePrimitive, DoubleBoxed from SupportBean";
                 env.CompileDeploy(stmtTextCreate, path).AddListener("createOne");
 
                 var stmtText =
@@ -559,7 +559,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
             {
                 var path = new RegressionPath();
                 var stmtTextCreate = "@Name('createOne') create window MyWindowCKR#keepall as select " +
-                                     "theString, IntPrimitive, IntBoxed, DoublePrimitive, DoubleBoxed from SupportBean";
+                                     "TheString, IntPrimitive, IntBoxed, DoublePrimitive, DoubleBoxed from SupportBean";
                 env.CompileDeploy(stmtTextCreate, path).AddListener("createOne");
 
                 var stmtText =

@@ -173,7 +173,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.define
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "c0".SplitCsv();
+                var fields = new [] { "c0" };
 
                 var path = new RegressionPath();
                 env.CompileDeploy("create expression F1 { (select IntPrimitive from SupportBean#lastevent)}", path);
@@ -646,8 +646,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.define
                 RegressionEnvironment env,
                 string epl)
             {
-                var fieldsSelected = "c0,c1".SplitCsv();
-                var fieldsInside = "val0".SplitCsv();
+                var fieldsSelected = new [] { "c0", "c1" };
+                var fieldsInside = new [] { "val0" };
 
                 var path = new RegressionPath();
                 env.CompileDeploy(
@@ -755,8 +755,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.define
                 RegressionEnvironment env,
                 string epl)
             {
-                var fieldSelected = "c0".SplitCsv();
-                var fieldInside = "val0".SplitCsv();
+                var fieldSelected = new [] { "c0" };
+                var fieldInside = new [] { "val0" };
 
                 var path = new RegressionPath();
                 env.CompileDeploy(
@@ -886,7 +886,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.define
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "c0,c1".SplitCsv();
+                var fields = new [] { "c0", "c1" };
                 var epl = "@Name('s0') expression lambda1 { o -> 1 * o.IntPrimitive }\n" +
                           "expression lambda2 { o -> 3 * o.IntPrimitive }\n" +
                           "select sum(lambda1(e)) as c0, sum(lambda2(e)) as c1 from SupportBean as e";

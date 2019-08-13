@@ -6,6 +6,7 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
 using System.IO;
 
 using com.espertech.esper.common.@internal.type;
@@ -15,6 +16,7 @@ namespace com.espertech.esper.common.client.soda
     /// <summary>
     ///     Bitwise (binary) operator for binary AND, binary OR and binary XOR.
     /// </summary>
+    [Serializable]
     public class BitwiseOpExpression : ExpressionBase
     {
         /// <summary>
@@ -79,8 +81,10 @@ namespace com.espertech.esper.common.client.soda
         public override void ToPrecedenceFreeEPL(TextWriter writer)
         {
             var isFirst = true;
-            foreach (var child in Children) {
-                if (!isFirst) {
+            foreach (var child in Children)
+            {
+                if (!isFirst)
+                {
                     writer.Write(BinaryOp.ExpressionText);
                 }
 

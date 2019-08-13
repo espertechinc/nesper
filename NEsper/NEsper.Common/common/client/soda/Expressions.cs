@@ -8,11 +8,9 @@
 
 using System;
 using System.Collections.Generic;
-using System.IO;
 
 using com.espertech.esper.common.@internal.type;
 using com.espertech.esper.common.@internal.util;
-using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.client.soda
@@ -1906,7 +1904,8 @@ namespace com.espertech.esper.common.client.soda
             ScheduleItemType type)
         {
             CrontabParameterExpression param = new CrontabParameterExpression(type);
-            if (parameter != null) {
+            if (parameter != null)
+            {
                 param.AddChild(Expressions.Constant(parameter));
             }
 
@@ -1944,7 +1943,8 @@ namespace com.espertech.esper.common.client.soda
         protected internal static IList<PropertyValueExpression> ToPropertyExpressions(params string[] properties)
         {
             IList<PropertyValueExpression> expr = new List<PropertyValueExpression>();
-            foreach (string property in properties) {
+            foreach (string property in properties)
+            {
                 expr.Add(GetPropExpr(property));
             }
 
@@ -1963,15 +1963,18 @@ namespace com.espertech.esper.common.client.soda
 
         private static Expression ConvertVariableNumeric(object @object)
         {
-            if (@object == null) {
+            if (@object == null)
+            {
                 return null;
             }
 
-            if (@object is string) {
+            if (@object is string)
+            {
                 return Property(@object.ToString());
             }
 
-            if (@object.IsNumber()) {
+            if (@object.IsNumber())
+            {
                 return Constant(@object);
             }
 

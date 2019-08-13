@@ -6,6 +6,7 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
 using System.IO;
 
 namespace com.espertech.esper.common.client.soda
@@ -15,6 +16,7 @@ namespace com.espertech.esper.common.client.soda
     ///     <para />
     ///     Closed and open ranges (endpoint included or excluded) are supported by this class, as is not-between.
     /// </summary>
+    [Serializable]
     public class BetweenExpression : ExpressionBase
     {
         /// <summary>
@@ -108,30 +110,36 @@ namespace com.espertech.esper.common.client.soda
         /// <param name="writer">to output to</param>
         public override void ToPrecedenceFreeEPL(TextWriter writer)
         {
-            if (IsLowEndpointIncluded && IsHighEndpointIncluded) {
+            if (IsLowEndpointIncluded && IsHighEndpointIncluded)
+            {
                 Children[0].ToEPL(writer, Precedence);
                 writer.Write(" between ");
                 Children[1].ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
                 writer.Write(" and ");
                 Children[2].ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
             }
-            else {
+            else
+            {
                 Children[0].ToEPL(writer, Precedence);
                 writer.Write(" in ");
-                if (IsLowEndpointIncluded) {
+                if (IsLowEndpointIncluded)
+                {
                     writer.Write('[');
                 }
-                else {
+                else
+                {
                     writer.Write('(');
                 }
 
                 Children[1].ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
                 writer.Write(':');
                 Children[2].ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
-                if (IsHighEndpointIncluded) {
+                if (IsHighEndpointIncluded)
+                {
                     writer.Write(']');
                 }
-                else {
+                else
+                {
                     writer.Write(')');
                 }
             }

@@ -9,9 +9,6 @@
 using System;
 using System.IO;
 
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
-
 namespace com.espertech.esper.common.client.soda
 {
     /// <summary>
@@ -43,7 +40,8 @@ namespace com.espertech.esper.common.client.soda
         /// Returns true for descending, false for ascending.
         /// </summary>
         /// <returns>indicator for descending sort</returns>
-        public bool IsDescending {
+        public bool IsDescending
+        {
             get => descending;
         }
 
@@ -51,7 +49,8 @@ namespace com.espertech.esper.common.client.soda
         /// Returns true for descending, false for ascending.
         /// </summary>
         /// <returns>indicator for descending sort</returns>
-        public bool Descending {
+        public bool Descending
+        {
             get => descending;
         }
 
@@ -68,17 +67,20 @@ namespace com.espertech.esper.common.client.soda
         /// Return precedence.
         /// </summary>
         /// <returns>precedence</returns>
-        public override ExpressionPrecedenceEnum Precedence {
+        public override ExpressionPrecedenceEnum Precedence
+        {
             get => ExpressionPrecedenceEnum.UNARY;
         }
 
         public override void ToPrecedenceFreeEPL(TextWriter writer)
         {
             this.Children[0].ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
-            if (descending) {
+            if (descending)
+            {
                 writer.Write(" desc");
             }
-            else {
+            else
+            {
                 writer.Write(" asc");
             }
         }

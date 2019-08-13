@@ -58,7 +58,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.plugin
                 injectionStrategy.GetInitializationExpression(classScope));
 
             plugin = membersColumnized.AddMember(col, typeof(AggregationFunction), "plugin");
-            rowCtor.Block.AssignRef(plugin, ExprDotMethod(factoryField, "newAggregator", ConstantNull()));
+            rowCtor.Block.AssignRef(plugin, ExprDotMethod(factoryField, "NewAggregator", ConstantNull()));
         }
 
         protected override void ApplyEvalEnterNonNull(

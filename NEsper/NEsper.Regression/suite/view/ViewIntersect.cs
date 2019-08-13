@@ -150,7 +150,7 @@ namespace com.espertech.esper.regressionlib.suite.view
             RegressionEnvironment env,
             AtomicLong milestone)
         {
-            var fields = "c0,c1".SplitCsv();
+            var fields = new [] { "c0", "c1" };
 
             env.SendEventBean(new SupportBean("A1", 10));
             env.SendEventBean(new SupportBean("A2", 11));
@@ -391,7 +391,7 @@ namespace com.espertech.esper.regressionlib.suite.view
             long startTime,
             AtomicLong milestone)
         {
-            var fields = "theString,IntPrimitive".SplitCsv();
+            var fields = new [] { "TheString","IntPrimitive" };
             env.Listener("s0").Reset();
 
             SendEvent(env, "E1", 1);
@@ -425,7 +425,7 @@ namespace com.espertech.esper.regressionlib.suite.view
             RegressionEnvironment env,
             AtomicLong milestone)
         {
-            var fields = "theString,IntPrimitive".SplitCsv();
+            var fields = new [] { "TheString","IntPrimitive" };
 
             SendEvent(env, "E1", 1);
             SendEvent(env, "E2", 2);

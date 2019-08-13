@@ -136,35 +136,36 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                     classScope);
             }
 
-            //var evaluate = new CodegenExpressionLambda(method.Block)
-            //    .WithParams(PARAMS);
-            //var evaluator = NewInstance<ProxyExprEvaluator>(evaluate);
+            var evaluate = new CodegenExpressionLambda(method.Block).WithParams(PARAMS);
+            var evaluator = NewInstance<ProxyExprEvaluator>(evaluate);
             
-            var evaluator = NewAnonymousClass(method.Block, typeof(ExprEvaluator));
-            var evaluate = CodegenMethod.MakeParentNode<object>(generator, classScope).AddParam(PARAMS);
-            evaluator.AddMethod("Evaluate", evaluate);
+            //var evaluator = NewAnonymousClass(method.Block, typeof(ExprEvaluator));
+            //var evaluate = CodegenMethod.MakeParentNode<object>(generator, classScope).AddParam(PARAMS);
+            //evaluator.AddMethod("Evaluate", evaluate);
 
             var exprSymbol = new ExprForgeCodegenSymbol(true, null);
-            var exprMethod = evaluate.MakeChildWithScope(
+
+            var exprMethod = method.MakeChildWithScope(
                     typeof(object),
                     typeof(CodegenLegoMethodExpression),
                     exprSymbol,
                     classScope)
                 .AddParam(PARAMS);
 
+            var exprBlock = exprMethod.Block;
+
             var expressions = new CodegenExpression[forges.Count];
             for (var i = 0; i < forges.Count; i++) {
-                expressions[i] = forges[i]
-                    .EvaluateCodegen(
+                expressions[i] = forges[i].EvaluateCodegen(
                         forges[i].EvaluationType,
                         exprMethod,
                         exprSymbol,
                         classScope);
             }
 
-            exprSymbol.DerivedSymbolsCodegen(evaluate, exprMethod.Block, classScope);
+            exprSymbol.DerivedSymbolsCodegen(exprMethod, exprBlock, classScope);
 
-            exprMethod.Block.DeclareVar<object[]>(
+            exprBlock.DeclareVar<object[]>(
                     "values",
                     NewArrayByLength(typeof(object), Constant(forges.Count)))
                 .DeclareVar<HashableMultiKey>("valuesMk", NewInstance<HashableMultiKey>(Ref("values")));
@@ -176,15 +177,16 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                         forges[i].EvaluationType,
                         optCoercionTypes[i].GetBoxedType());
                     var name = "result_" + i;
-                    exprMethod.Block.DeclareVar(forges[i].EvaluationType, name, expressions[i]);
+                    exprBlock.DeclareVar(forges[i].EvaluationType, name, expressions[i]);
                     result = coercer.CoerceCodegen(Ref(name), forges[i].EvaluationType);
                 }
 
-                exprMethod.Block.AssignArrayElement("values", Constant(i), result);
+                exprBlock.AssignArrayElement("values", Constant(i), result);
             }
 
-            exprMethod.Block.MethodReturn(Ref("valuesMk"));
-            evaluate.Block.MethodReturn(LocalMethod(exprMethod, REF_EPS, REF_ISNEWDATA, REF_EXPREVALCONTEXT));
+            exprBlock.ReturnMethodOrBlock(Ref("valuesMk"));
+            evaluate.Block.ReturnMethodOrBlock(
+                LocalMethod(exprMethod, REF_EPS, REF_ISNEWDATA, REF_EXPREVALCONTEXT));
 
             return evaluator;
         }

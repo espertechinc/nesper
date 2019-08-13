@@ -78,7 +78,7 @@ namespace com.espertech.esper.regressionrun.suite.epl
 
         private static void Configure(Configuration configuration)
         {
-            foreach (var clazz in new Type[]{
+            foreach (var clazz in new Type[] {
                 typeof(SupportBean),
                 typeof(OrderBean),
                 typeof(BookDesc),
@@ -88,8 +88,8 @@ namespace com.espertech.esper.regressionrun.suite.epl
                 typeof(SupportObjectArrayEvent),
                 typeof(SupportCollectionEvent),
                 typeof(SupportResponseEvent),
-                typeof(SupportAvroArrayEvent)})
-            {
+                typeof(SupportAvroArrayEvent)
+            }) {
                 configuration.Common.AddEventType(clazz);
             }
 
@@ -99,10 +99,8 @@ namespace com.espertech.esper.regressionrun.suite.epl
             configuration.Common.AddEventType("MyOuterMap", outerMapDef);
 
             var funcs = "splitSentence,splitSentenceBean,splitWord".SplitCsv();
-            for (var i = 0; i < funcs.Length; i++)
-            {
-                foreach (var rep in EnumHelper.GetValues<EventRepresentationChoice>())
-                {
+            for (var i = 0; i < funcs.Length; i++) {
+                foreach (var rep in EnumHelper.GetValues<EventRepresentationChoice>()) {
                     string[] methods;
                     if (rep.IsObjectArrayEvent()) {
                         methods = new string[] {
@@ -125,25 +123,33 @@ namespace com.espertech.esper.regressionrun.suite.epl
                             "splitWordMethodReturnAvro"
                         };
                     }
-                    else
-                    {
+                    else {
                         throw new IllegalStateException("Unrecognized enum " + rep);
                     }
 
-                    configuration.Compiler.AddPlugInSingleRowFunction(funcs[i] + "_" + rep.GetName(), typeof(EPLContainedEventSplitExpr), methods[i]);
+                    configuration.Compiler.AddPlugInSingleRowFunction(
+                        funcs[i] + "_" + rep.GetName(),
+                        typeof(EPLContainedEventSplitExpr),
+                        methods[i]);
                 }
             }
 
             var config = new ConfigurationCommonEventTypeXMLDOM();
             var resourceManager = configuration.ResourceManager;
             config.SchemaResource = resourceManager.ResolveResourceURL("regression/mediaOrderSchema.xsd").ToString();
-            config.RootElementName = "mediaorder";
+            config.RootElementName = "MediaOrder";
             configuration.Common.AddEventType("MediaOrder", config);
             configuration.Common.AddEventType("Cancel", config);
 
             configuration.Compiler.ByteCode.AllowSubscriber = true;
-            configuration.Compiler.AddPlugInSingleRowFunction("invalidSentence", typeof(EPLContainedEventSplitExpr), "InvalidSentenceMethod");
-            configuration.Compiler.AddPlugInSingleRowFunction("mySplitUDFReturnEventBeanArray", typeof(EPLContainedEventSplitExpr), "MySplitUDFReturnEventBeanArray");
+            configuration.Compiler.AddPlugInSingleRowFunction(
+                "invalidSentence",
+                typeof(EPLContainedEventSplitExpr),
+                "InvalidSentenceMethod");
+            configuration.Compiler.AddPlugInSingleRowFunction(
+                "mySplitUDFReturnEventBeanArray",
+                typeof(EPLContainedEventSplitExpr),
+                "MySplitUDFReturnEventBeanArray");
         }
     }
 } // end of namespace

@@ -76,7 +76,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 
             EPAssertionUtil.AssertProps(
                 env.Listener("s0").AssertOneGetNewAndReset(),
-                "c0,c1,c2,c3,c4,c5,c6,c7,c8".SplitCsv(),
+                new [] { "c0", "c1", "c2", "c3", "c4", "c5", "c6", "c7", "c8" },
                 new object[] {
                     dateYYMMddDate.DateTime, // c0
                     dateYYMMddDate.DateTime.DateTime, // c1
@@ -318,7 +318,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
             AtomicLong milestone)
         {
             var sdt = SupportDateTime.Make("2002-05-30T09:00:00.000");
-            var sdfDate = sdt.ExDate.DateTime.ToString("s");
+            var sdfDate = sdt.DtxDate.DateTime.ToString("s");
 
             var epl = "@Name('s0') select " +
                       "cast('" +
@@ -339,10 +339,10 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
             env.SendEventBean(new SupportBean());
             var @event = env.Listener("s0").AssertOneGetNewAndReset();
 
-            Assert.That(@event.Get("c0"), Is.EqualTo(sdt.ExDate));
-            Assert.That(@event.Get("c1"), Is.EqualTo(sdt.ExDate.DateTime));
-            Assert.That(@event.Get("c2"), Is.EqualTo(sdt.ExDate.DateTime.DateTime));
-            Assert.That(@event.Get("c3"), Is.EqualTo(sdt.ExDate.TimeInMillis));
+            Assert.That(@event.Get("c0"), Is.EqualTo(sdt.DtxDate));
+            Assert.That(@event.Get("c1"), Is.EqualTo(sdt.DtxDate.DateTime));
+            Assert.That(@event.Get("c2"), Is.EqualTo(sdt.DtxDate.DateTime.DateTime));
+            Assert.That(@event.Get("c3"), Is.EqualTo(sdt.DtxDate.TimeInMillis));
 
             env.UndeployAll();
         }
@@ -496,7 +496,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                            "cast(anFloat, float) as floatVal, " +
                            "cast(anByte, byte) as byteVal, " +
                            "cast(anShort, short) as shortVal, " +
-                           "cast(IntPrimitive, int) as intOne, " +
+                           "cast(IntPrimitive, int) as IntOne, " +
                            "cast(IntBoxed, int) as intTwo, " +
                            "cast(IntPrimitive, System.Long) as longOne, " +
                            "cast(IntBoxed, long) as longTwo " +
@@ -522,7 +522,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                 Assert.AreEqual(1.001f, row.Get("floatVal"));
                 Assert.AreEqual((byte) 10, row.Get("byteVal"));
                 Assert.AreEqual((short) 223, row.Get("shortVal"));
-                Assert.AreEqual(10, row.Get("intOne"));
+                Assert.AreEqual(10, row.Get("IntOne"));
                 Assert.AreEqual(11, row.Get("intTwo"));
                 Assert.AreEqual(10L, row.Get("longOne"));
                 Assert.AreEqual(11L, row.Get("longTwo"));
@@ -535,7 +535,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "c0,c1,c2,c3,c4,c5,c6,c7,c8".SplitCsv();
+                var fields = new [] { "c0", "c1", "c2", "c3", "c4", "c5", "c6", "c7", "c8" };
                 var epl = "@Name('s0') select " +
                           "cast(IntPrimitive, float) as c0," +
                           "cast(IntPrimitive, short) as c1," +
@@ -591,7 +591,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                           " cast(IntBoxed, int) as t1, " +
                           " cast(FloatBoxed, System.Single) as t2, " +
                           " cast(TheString, System.String) as t3, " +
-                          " cast(IntPrimitive, System.Integer) as t4, " +
+                          " cast(IntPrimitive, System.Int32) as t4, " +
                           " cast(IntPrimitive, long) as t5, " +
                           " cast(FloatBoxed, long) as t7 " +
                           " from SupportBean";

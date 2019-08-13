@@ -10,9 +10,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
-
 namespace com.espertech.esper.common.client.soda
 {
     /// <summary>
@@ -82,7 +79,8 @@ namespace com.espertech.esper.common.client.soda
         /// Returns the name of the event type to filter for.
         /// </summary>
         /// <returns>event type name</returns>
-        public string EventTypeName {
+        public string EventTypeName
+        {
             get => eventTypeName;
             set { this.eventTypeName = value; }
         }
@@ -91,7 +89,8 @@ namespace com.espertech.esper.common.client.soda
         /// Returns the optional filter expression that tests the event, or null if no filter expression was defined.
         /// </summary>
         /// <returns>filter expression</returns>
-        public Expression FilterExpression {
+        public Expression FilterExpression
+        {
             get => filter;
             set => this.filter = value;
         }
@@ -100,7 +99,8 @@ namespace com.espertech.esper.common.client.soda
         /// Returns contained-event spec.
         /// </summary>
         /// <returns>spec</returns>
-        public IList<ContainedEventSelect> OptionalPropertySelects {
+        public IList<ContainedEventSelect> OptionalPropertySelects
+        {
             get => optionalPropertySelects;
             set => this.optionalPropertySelects = value;
         }
@@ -115,13 +115,15 @@ namespace com.espertech.esper.common.client.soda
             EPStatementFormatter formatter)
         {
             writer.Write(eventTypeName);
-            if (filter != null) {
+            if (filter != null)
+            {
                 writer.Write('(');
                 filter.ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
                 writer.Write(')');
             }
 
-            if (optionalPropertySelects != null) {
+            if (optionalPropertySelects != null)
+            {
                 ContainedEventSelect.ToEPL(writer, formatter, optionalPropertySelects);
             }
         }

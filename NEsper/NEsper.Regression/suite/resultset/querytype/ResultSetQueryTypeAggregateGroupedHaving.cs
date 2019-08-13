@@ -100,7 +100,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
                 var received = env.Listener("s0").NewDataListFlattened;
                 EPAssertionUtil.AssertPropsPerRow(
                     received,
-                    "theString,IntPrimitive".SplitCsv(),
+                    new [] { "TheString","IntPrimitive" },
                     new[] {new object[] {"E2", 20}, new object[] {"E2", 21}});
 
                 env.UndeployAll();

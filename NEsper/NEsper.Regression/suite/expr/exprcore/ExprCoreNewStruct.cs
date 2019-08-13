@@ -44,7 +44,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
             Assert.AreEqual(typeof(int?), fragType.FragmentType.GetPropertyType("IntPrimitive"));
             Assert.AreEqual(typeof(string), fragType.FragmentType.GetPropertyType("col2"));
 
-            var fieldsInner = "theString,IntPrimitive,col2".SplitCsv();
+            var fieldsInner = "TheString,IntPrimitive,col2".SplitCsv();
             env.SendEventBean(new SupportBean("E1", 1));
             EPAssertionUtil.AssertPropsMap(
                 (IDictionary<string, object>) env.Listener("s0").AssertOneGetNewAndReset().Get("val0"),
@@ -134,7 +134,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
             Assert.AreEqual(typeof(string), fragType.FragmentType.GetPropertyType("TheString"));
             Assert.AreEqual(typeof(int?), fragType.FragmentType.GetPropertyType("IntPrimitive").GetBoxedType());
 
-            var fieldsInner = "theString,IntPrimitive".SplitCsv();
+            var fieldsInner = new [] { "TheString","IntPrimitive" };
             env.SendEventBean(new SupportBean("E1", -5));
             var @event = env.Listener("s0").AssertOneGetNewAndReset();
             if (rep.IsAvroEvent()) {
@@ -244,7 +244,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
                     epl,
-                    "Failed to validate select-clause expression 'case when true then new{col1=\"a\"} e...(54 chars)': Incompatible case-when return types by new-operator in case-when number 1: Type by name 'Case-when number 1' in property 'col1' expected class System.String but receives class System.Integer [select case when true then new { col1 = 'a' } else new { col1 = 1 } end from SupportBean]");
+                    "Failed to validate select-clause expression 'case when true then new{col1=\"a\"} e...(54 chars)': Incompatible case-when return types by new-operator in case-when number 1: Type by name 'Case-when number 1' in property 'col1' expected class System.String but receives class System.Int32 [select case when true then new { col1 = 'a' } else new { col1 = 1 } end from SupportBean]");
 
                 epl = "select case when true then new { col1 = 'a' } else new { col2 = 'a' } end from SupportBean";
                 SupportMessageAssertUtil.TryInvalidCompile(

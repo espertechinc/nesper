@@ -318,9 +318,9 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
                 env.UndeployAll();
                 fields = "c1,c2,c3".SplitCsv();
                 epl = "@Name('s0') select " +
-                      "avg(bigdec, bigint < 100) as c1," +
-                      "sum(bigdec, bigint < 100) as c2, " +
-                      "sum(bigint, bigint < 100) as c3 " +
+                      "avg(DecimalOne, Bigint < 100) as c1," +
+                      "sum(DecimalOne, Bigint < 100) as c2, " +
+                      "sum(Bigint, Bigint < 100) as c3 " +
                       "from SupportBeanNumeric#length(2)";
                 env.CompileDeploy(epl).AddListener("s0");
 
@@ -476,7 +476,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
                 TryInvalidCompile(
                     env,
                     "select count(*, IntPrimitive) from SupportBean",
-                    "Failed to validate select-clause expression 'count(*,IntPrimitive)': Invalid filter expression parameter to the aggregation function 'count' is expected to return a boolean value but returns System.Integer [select count(*, IntPrimitive) from SupportBean]");
+                    "Failed to validate select-clause expression 'count(*,IntPrimitive)': Invalid filter expression parameter to the aggregation function 'count' is expected to return a boolean value but returns System.Int32 [select count(*, IntPrimitive) from SupportBean]");
 
                 TryInvalidCompile(
                     env,

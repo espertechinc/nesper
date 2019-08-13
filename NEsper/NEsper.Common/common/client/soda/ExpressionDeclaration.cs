@@ -81,12 +81,15 @@ namespace com.espertech.esper.common.client.soda
             IList<ExpressionDeclaration> expressionDeclarations,
             EPStatementFormatter formatter)
         {
-            if ((expressionDeclarations == null) || (expressionDeclarations.IsEmpty())) {
+            if ((expressionDeclarations == null) || (expressionDeclarations.IsEmpty()))
+            {
                 return;
             }
 
-            foreach (var part in expressionDeclarations) {
-                if (part.Name == null) {
+            foreach (var part in expressionDeclarations)
+            {
+                if (part.Name == null)
+                {
                     continue;
                 }
 
@@ -103,19 +106,24 @@ namespace com.espertech.esper.common.client.soda
         {
             writer.Write("expression ");
             writer.Write(Name);
-            if (IsAlias) {
+            if (IsAlias)
+            {
                 writer.Write(" alias for");
             }
 
             writer.Write(" {");
-            if (!IsAlias) {
-                if (ParameterNames != null && ParameterNames.Count == 1) {
+            if (!IsAlias)
+            {
+                if (ParameterNames != null && ParameterNames.Count == 1)
+                {
                     writer.Write(ParameterNames[0]);
                 }
-                else if (ParameterNames != null && !ParameterNames.IsEmpty()) {
+                else if (ParameterNames != null && !ParameterNames.IsEmpty())
+                {
                     var delimiter = "";
                     writer.Write("(");
-                    foreach (var name in ParameterNames) {
+                    foreach (var name in ParameterNames)
+                    {
                         writer.Write(delimiter);
                         writer.Write(name);
                         delimiter = ",";
@@ -124,12 +132,14 @@ namespace com.espertech.esper.common.client.soda
                     writer.Write(")");
                 }
 
-                if (ParameterNames != null && !ParameterNames.IsEmpty()) {
+                if (ParameterNames != null && !ParameterNames.IsEmpty())
+                {
                     writer.Write(" => ");
                 }
             }
 
-            if (Expression != null) {
+            if (Expression != null)
+            {
                 Expression.ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
             }
 

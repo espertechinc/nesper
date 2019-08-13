@@ -10,7 +10,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 
-using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.client.soda
@@ -18,6 +17,7 @@ namespace com.espertech.esper.common.client.soda
     /// <summary>
     /// Table access expression.
     /// </summary>
+    [Serializable]
     public class TableAccessExpression : ExpressionBase
     {
         private string tableName;
@@ -51,25 +51,29 @@ namespace com.espertech.esper.common.client.soda
             this.optionalAggregate = optionalAggregate;
         }
 
-        public override ExpressionPrecedenceEnum Precedence {
+        public override ExpressionPrecedenceEnum Precedence
+        {
             get => ExpressionPrecedenceEnum.UNARY;
         }
 
         public override void ToPrecedenceFreeEPL(TextWriter writer)
         {
             writer.Write(tableName);
-            if (keyExpressions != null && !keyExpressions.IsEmpty()) {
+            if (keyExpressions != null && !keyExpressions.IsEmpty())
+            {
                 writer.Write("[");
                 ExpressionBase.ToPrecedenceFreeEPL(keyExpressions, writer);
                 writer.Write("]");
             }
 
-            if (optionalColumn != null) {
+            if (optionalColumn != null)
+            {
                 writer.Write(".");
                 writer.Write(optionalColumn);
             }
 
-            if (optionalAggregate != null) {
+            if (optionalAggregate != null)
+            {
                 writer.Write(".");
                 optionalAggregate.ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
             }
@@ -79,7 +83,8 @@ namespace com.espertech.esper.common.client.soda
         /// Returns the table name.
         /// </summary>
         /// <returns>table name</returns>
-        public string TableName {
+        public string TableName
+        {
             get => tableName;
         }
 
@@ -96,7 +101,8 @@ namespace com.espertech.esper.common.client.soda
         /// Returns the primary key expressions.
         /// </summary>
         /// <returns>primary key expressions</returns>
-        public IList<Expression> KeyExpressions {
+        public IList<Expression> KeyExpressions
+        {
             get => keyExpressions;
         }
 
@@ -113,7 +119,8 @@ namespace com.espertech.esper.common.client.soda
         /// Returns the optional table column name to access.
         /// </summary>
         /// <returns>table column name or null if accessing row</returns>
-        public string OptionalColumn {
+        public string OptionalColumn
+        {
             get => optionalColumn;
         }
 
@@ -130,7 +137,8 @@ namespace com.espertech.esper.common.client.soda
         /// Returns the optional table column aggregation accessor to use.
         /// </summary>
         /// <returns>table column aggregation accessor</returns>
-        public Expression OptionalAggregate {
+        public Expression OptionalAggregate
+        {
             get => optionalAggregate;
         }
 

@@ -136,15 +136,15 @@ namespace com.espertech.esper.common.@internal.util
             Assert.IsFalse(e[0].Equals(e[1]));
 
             object[][] testData = {
-                new object[] {new EventBean[] { }, new EventBean[] { }, "p2"},
-                new object[] {new EventBean[] { }, new[] {e[0], e[1]}, "p2"},
-                new object[] {new[] {e[0]}, new EventBean[] { }, "p1"},
-                new object[] {new[] {e[0]}, new[] {e[0]}, "p1"},
+                new object[] {new EventBean[] { }, new EventBean[] { }, "P2"},
+                new object[] {new EventBean[] { }, new[] {e[0], e[1]}, "P2"},
+                new object[] {new[] {e[0]}, new EventBean[] { }, "P1"},
+                new object[] {new[] {e[0]}, new[] {e[0]}, "P1"},
                 new object[] {new[] {e[0]}, new[] {e[1]}, new[] {e[0], e[1]}},
-                new object[] {new[] {e[0], e[1]}, new[] {e[1]}, "p1"},
-                new object[] {new[] {e[0], e[1]}, new[] {e[0]}, "p1"},
-                new object[] {new[] {e[0]}, new[] {e[0], e[1]}, "p2"},
-                new object[] {new[] {e[1]}, new[] {e[0], e[1]}, "p2"},
+                new object[] {new[] {e[0], e[1]}, new[] {e[1]}, "P1"},
+                new object[] {new[] {e[0], e[1]}, new[] {e[0]}, "P1"},
+                new object[] {new[] {e[0]}, new[] {e[0], e[1]}, "P2"},
+                new object[] {new[] {e[1]}, new[] {e[0], e[1]}, "P2"},
                 new object[] {new[] {e[2]}, new[] {e[0], e[1]}, new[] {e[0], e[1], e[2]}},
                 new object[] {new[] {e[2], e[0]}, new[] {e[0], e[1]}, new[] {e[0], e[1], e[2]}},
                 new object[] {new[] {e[2], e[0]}, new[] {e[0], e[1], e[2]}, new[] {e[0], e[1], e[2]}}
@@ -158,11 +158,11 @@ namespace com.espertech.esper.common.@internal.util
 
                 object result = CollectionUtil.AddArrayWithSetSemantics(p1, p2);
 
-                if (expectedObj.Equals("p1"))
+                if (expectedObj.Equals("P1"))
                 {
                     Assert.IsTrue(result == p1);
                 }
-                else if (expectedObj.Equals("p2"))
+                else if (expectedObj.Equals("P2"))
                 {
                     Assert.IsTrue(result == p2);
                 }

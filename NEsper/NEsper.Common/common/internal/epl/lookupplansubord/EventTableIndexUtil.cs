@@ -200,8 +200,8 @@ namespace com.espertech.esper.common.@internal.epl.lookupplansubord
                 throw new ArgumentException("Invalid zero element list for hash and btree columns");
             }
 
-            var indexCandidates =
-                (IDictionary<IndexMultiKey, EventTableIndexRepositoryEntry>) FindCandidates(
+            // (IDictionary<IndexMultiKey, EventTableIndexRepositoryEntry>) 
+            IDictionary<IndexMultiKey, EventTableIndexMetadataEntry> indexCandidates = FindCandidates(
                     tableIndexesRefCount,
                     hashProps,
                     btreeProps);

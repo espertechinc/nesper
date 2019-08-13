@@ -46,7 +46,7 @@ namespace com.espertech.esper.common.@internal.util
             {
                 return CodegenCoerceMayNull(
                     typeof(byte),
-                    typeof(byte),
+                    typeof(byte?),
                     "AsByte",
                     value,
                     valueTypeMustNumeric,

@@ -168,7 +168,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
                 env.UndeployAll();
 
                 // test "prev" and "prior"
-                var fields = "c0,c1,c2,c3".SplitCsv();
+                var fields = new [] { "c0", "c1", "c2", "c3" };
                 var eplTwo =
                     "@Name('s0') select prev(1, Name) as c0, prior(1, Name) as c1, Name as c2, sum(count) as c3 " +
                     "from SupportCarEvent#keepall ce group by rollup(Name)";

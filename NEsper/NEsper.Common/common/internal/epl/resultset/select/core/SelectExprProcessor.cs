@@ -31,4 +31,33 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
             bool isSynthesize,
             ExprEvaluatorContext exprEvaluatorContext);
     }
+
+    public class ProxySelectExprProcessor : SelectExprProcessor
+    {
+        public delegate EventBean ProcessFunc(
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            bool isSynthesize,
+            ExprEvaluatorContext exprEvaluatorContext);
+
+        public ProcessFunc ProcProcess { get; set; }
+
+        public ProxySelectExprProcessor()
+        {
+        }
+
+        public ProxySelectExprProcessor(ProcessFunc procProcess)
+        {
+            ProcProcess = procProcess;
+        }
+
+        public EventBean Process(
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            bool isSynthesize,
+            ExprEvaluatorContext exprEvaluatorContext)
+        {
+            return ProcProcess(eventsPerStream, isNewData, isSynthesize, exprEvaluatorContext);
+        }
+    }
 } // end of namespace

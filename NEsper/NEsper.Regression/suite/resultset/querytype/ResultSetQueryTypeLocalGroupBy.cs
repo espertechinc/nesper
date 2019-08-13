@@ -174,7 +174,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "c0,c1,c2,c3".SplitCsv();
+                var fields = new [] { "c0", "c1", "c2", "c3" };
                 env.Milestone(0);
 
                 env.AdvanceTime(0);
@@ -356,7 +356,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
         {
             public void Run(RegressionEnvironment env)
             {
-                var colsC0 = "c0".SplitCsv();
+                var colsC0 = new [] { "c0" };
 
                 // full-aggregated and un-grouped (row for all)
                 TryAssertionAggAndFullyAgg(
@@ -388,7 +388,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
                     listener => {
                         EPAssertionUtil.AssertPropsPerRowAnyOrder(
                             env.Listener("s0").GetAndResetLastNewData(),
-                            "theString,c0,c1".SplitCsv(),
+                            "TheString,c0,c1".SplitCsv(),
                             new[] {new object[] {"E1", 60, 10}, new object[] {"E2", 60, 50}});
                     });
 
@@ -403,7 +403,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
                     listener => {
                         EPAssertionUtil.AssertPropsPerRowAnyOrder(
                             env.Listener("s0").GetAndResetLastNewData(),
-                            "theString,c0,c1,c2".SplitCsv(),
+                            "TheString,c0,c1,c2".SplitCsv(),
                             new[] {
                                 new object[] {"E1", 600L, 100L, 100L}, new object[] {"E2", 600L, 500L, 200L},
                                 new object[] {"E2", 600L, 500L, 300L}
@@ -416,7 +416,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
         {
             public void Run(RegressionEnvironment env)
             {
-                var cols = "theString,IntPrimitive,c0,c1".SplitCsv();
+                var cols = "TheString,IntPrimitive,c0,c1".SplitCsv();
                 var epl = "create window MyWindow#keepall as SupportBean;\n" +
                           "insert into MyWindow select * from SupportBean;\n" +
                           "on SupportBean_S0 delete from MyWindow where P00 = TheString and Id = IntPrimitive;\n" +
@@ -478,7 +478,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
         {
             public void Run(RegressionEnvironment env)
             {
-                var cols = "theString,IntPrimitive,c0,c1".SplitCsv();
+                var cols = "TheString,IntPrimitive,c0,c1".SplitCsv();
                 var epl = "create window MyWindow#keepall as SupportBean;\n" +
                           "insert into MyWindow select * from SupportBean;\n" +
                           "on SupportBean_S0 delete from MyWindow where P00 = TheString and Id = IntPrimitive;\n" +
@@ -548,7 +548,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             public void Run(RegressionEnvironment env)
             {
                 SendTime(env, 0);
-                var fields = "theString,IntPrimitive,c0,c1,c2,c3,c4".SplitCsv();
+                var fields = "TheString,IntPrimitive,c0,c1,c2,c3,c4".SplitCsv();
                 var epl = "@Name('s0') select" +
                           "   TheString, IntPrimitive," +
                           "   sum(LongPrimitive, group_by:(IntPrimitive, TheString)) as c0," +
@@ -598,7 +598,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             public void Run(RegressionEnvironment env)
             {
                 SendTime(env, 0);
-                var fields = "theString,IntPrimitive,c0,c1,c2,c3,c4".SplitCsv();
+                var fields = "TheString,IntPrimitive,c0,c1,c2,c3,c4".SplitCsv();
                 var epl = "@Name('s0') select" +
                           "   TheString, IntPrimitive," +
                           "   window(*, group_by:(IntPrimitive, TheString)) as c0," +
@@ -660,7 +660,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             public void Run(RegressionEnvironment env)
             {
                 SendTime(env, 0);
-                var fields = "theString,IntPrimitive,c0,c1,c2".SplitCsv();
+                var fields = "TheString,IntPrimitive,c0,c1,c2".SplitCsv();
                 var epl = "@Name('s0') select" +
                           "   TheString, IntPrimitive," +
                           "   sum(LongPrimitive, group_by:(TheString)) as c0," +
@@ -707,7 +707,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             public void Run(RegressionEnvironment env)
             {
                 SendTime(env, 0);
-                var fields = "theString,pct".SplitCsv();
+                var fields = "TheString,pct".SplitCsv();
                 var epl = "@Name('s0') select TheString, count(*) / count(*, group_by:()) as pct" +
                           " from SupportBean#time(30 sec)" +
                           " group by TheString" +
@@ -759,7 +759,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
 
             public void Run(RegressionEnvironment env)
             {
-                var cols = "c0,c1,c2,c3,c4".SplitCsv();
+                var cols = new [] { "c0", "c1", "c2", "c3", "c4" };
                 var epl = "@Name('s0') select LongPrimitive, " +
                           "sum(LongPrimitive) as c0, " +
                           "sum(group_by:(),LongPrimitive) as c1, " +
@@ -1026,7 +1026,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
                           "@Name('s0') select sum(val, group_by: d1) as c0, sum(val, group_by: d2) as c1 from MyEventOne";
                 env.CompileDeployWBusPublicType(epl, new RegressionPath()).AddListener("s0");
 
-                var cols = "c0,c1".SplitCsv();
+                var cols = new [] { "c0", "c1" };
 
                 env.SendEventObjectArray(new object[] {"E1", "E1", 10}, "MyEventOne");
                 EPAssertionUtil.AssertProps(
@@ -1070,7 +1070,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
                           "@Name('s0') select sum(val) as c0, sum(val, group_by: d1) as c1, sum(val, group_by: d2) as c2 from MyEventTwo group by g1";
                 env.CompileDeployWBusPublicType(epl, new RegressionPath()).AddListener("s0");
 
-                var cols = "c0,c1,c2".SplitCsv();
+                var cols = new [] { "c0", "c1", "c2" };
 
                 env.SendEventObjectArray(new object[] {"E1", "E1", "E1", 10}, "MyEventTwo");
                 EPAssertionUtil.AssertProps(
@@ -1180,7 +1180,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
 
                 EPAssertionUtil.AssertPropsPerRow(
                     env.Listener("s0").GetAndResetLastNewData(),
-                    "theString,c0".SplitCsv(),
+                    "TheString,c0".SplitCsv(),
                     new[] {
                         new object[] {"E1", 40}, new object[] {"E1", 40}, new object[] {"E3", 40},
                         new object[] {"E2", 70}, new object[] {"E2", 70}
@@ -1213,7 +1213,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
                 env.SendEventBean(new SupportBean_S0(0));
                 EPAssertionUtil.AssertPropsPerRowAnyOrder(
                     env.Listener("s0").GetAndResetLastNewData(),
-                    "theString,c0,c1".SplitCsv(),
+                    "TheString,c0,c1".SplitCsv(),
                     new[] {
                         new object[] {"E1", 40, 150}, new object[] {"E2", 70, 150}, new object[] {"E3", 40, 150}
                     });
@@ -1223,7 +1223,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
                 env.SendEventBean(new SupportBean_S0(0));
                 EPAssertionUtil.AssertPropsPerRowAnyOrder(
                     env.Listener("s0").GetAndResetLastNewData(),
-                    "theString,c0,c1".SplitCsv(),
+                    "TheString,c0,c1".SplitCsv(),
                     new[] {
                         new object[] {"E1", 100, 210}, new object[] {"E2", 70, 210}, new object[] {"E3", 40, 210}
                     });
@@ -1247,7 +1247,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
                 env.SendEventBean(new SupportBean_S0(1));
                 EPAssertionUtil.AssertPropsPerRowAnyOrder(
                     env.Listener("s0").GetAndResetLastNewData(),
-                    "theString,c0".SplitCsv(),
+                    "TheString,c0".SplitCsv(),
                     new[] {new object[] {"E1", 40}, new object[] {"E1", 40}, new object[] {"E2", 20}});
 
                 MakeSendEvent(env, "E1", 40);
@@ -1255,7 +1255,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
                 env.SendEventBean(new SupportBean_S0(1));
                 EPAssertionUtil.AssertPropsPerRowAnyOrder(
                     env.Listener("s0").GetAndResetLastNewData(),
-                    "theString,c0".SplitCsv(),
+                    "TheString,c0".SplitCsv(),
                     new[] {
                         new object[] {"E1", 80}, new object[] {"E1", 80}, new object[] {"E1", 80},
                         new object[] {"E2", 20}
@@ -1269,7 +1269,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "c0,c1,c2,c3,c4,c5,c6,c7,c8,c9".SplitCsv();
+                var fields = new [] { "c0", "c1", "c2", "c3", "c4", "c5", "c6", "c7", "c8", "c9" };
                 var epl = "@Name('s0') select " +
                           "sum(LongPrimitive, group_by:TheString) as c0," +
                           "count(*, group_by:TheString) as c1," +
@@ -1357,7 +1357,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "c0,c1,c2,c3,c4,c5,c6,c7,c8,c9".SplitCsv();
+                var fields = new [] { "c0", "c1", "c2", "c3", "c4", "c5", "c6", "c7", "c8", "c9" };
                 var epl = "@Name('s0') select " +
                           "sum(LongPrimitive, group_by:TheString) as c0," +
                           "count(*, group_by:TheString) as c1," +
@@ -1467,7 +1467,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
                 var b1 = MakeSendEvent(env, "E1", 10);
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    "c0,c1,c2,c3,c4,c5".SplitCsv(),
+                    new [] { "c0", "c1", "c2", "c3", "c4", "c5" },
                     new object[] {b1, b1, 10, 10, 10, 10});
 
                 env.UndeployAll();

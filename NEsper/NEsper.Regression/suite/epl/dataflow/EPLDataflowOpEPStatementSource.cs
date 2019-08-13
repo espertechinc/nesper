@@ -287,7 +287,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 captureOp.WaitForInvocation(200, 1);
                 EPAssertionUtil.AssertProps(
                     (EventBean) captureOp.GetCurrentAndReset()[0],
-                    "theString,IntPrimitive".SplitCsv(),
+                    new [] { "TheString","IntPrimitive" },
                     new object[] {"E1", 1});
 
                 env.CompileDeploy("@Name('s2') select Id from SupportBean_A");

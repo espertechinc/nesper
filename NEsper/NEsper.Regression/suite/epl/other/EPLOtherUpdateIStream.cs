@@ -268,7 +268,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
 
             env.CompileDeploy("@Name('s0') select * from MyStream where IntPrimitive > 0", path).AddListener("s0");
 
-            var fields = "theString,IntPrimitive".SplitCsv();
+            var fields = new [] { "TheString","IntPrimitive" };
             env.SendEventBean(new SupportBean("A1", 0));
             EPAssertionUtil.AssertProps(
                 env.Listener("s0").AssertOneGetNewAndReset(),
@@ -398,7 +398,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 text = "@Name('Select') select * from MyStream";
                 env.CompileDeploy(text, path).AddListener("Select");
 
-                var fields = "theString,IntPrimitive".SplitCsv();
+                var fields = new [] { "TheString","IntPrimitive" };
                 env.SendEventBean(new SupportBean("E1", 9));
                 EPAssertionUtil.AssertProps(
                     env.Listener("Select").AssertOneGetNewAndReset(),
@@ -575,7 +575,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 env.CompileDeploy("@Name('s0') select * from MyStreamBW", path);
                 env.AddListener("s0");
 
-                var fields = "theString,IntPrimitive".SplitCsv();
+                var fields = new [] { "TheString","IntPrimitive" };
                 env.SendEventBean(new SupportBean("E1", 9));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
@@ -762,7 +762,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 env.CompileDeploy("@Name('s0') select * from MyStreamII", path).AddListener("s0");
 
                 var fields = "p0,p1,p2".SplitCsv();
-                env.SendEventMap(MakeMap("p0", 10L, "p1", 1L, "p2", 100L), "MyMapTypeII");
+                env.SendEventMap(MakeMap("P0", 10L, "P1", 1L, "P2", 100L), "MyMapTypeII");
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     fields,
@@ -775,7 +775,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 env.UndeployModuleContaining("update");
                 env.Deploy(update).AddListener("update");
 
-                env.SendEventMap(MakeMap("p0", 5L, "p1", 4L, "p2", 101L), "MyMapTypeII");
+                env.SendEventMap(MakeMap("P0", 5L, "P1", 4L, "P2", 101L), "MyMapTypeII");
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     fields,
@@ -787,7 +787,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
 
                 env.UndeployModuleContaining("update");
 
-                env.SendEventMap(MakeMap("p0", 20L, "p1", 0L, "p2", 102L), "MyMapTypeII");
+                env.SendEventMap(MakeMap("P0", 20L, "P1", 0L, "P2", 102L), "MyMapTypeII");
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     fields,
@@ -842,13 +842,13 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 env.CompileDeploy("@Name('s0') select * from BaseOne", path).AddListener("s0");
 
                 var fields = "i,p".SplitCsv();
-                env.SendEventMap(MakeMap("p0", "E1", "p1", "E1"), "MyMapTypeIDB");
+                env.SendEventMap(MakeMap("P0", "E1", "P1", "E1"), "MyMapTypeIDB");
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     fields,
                     new object[] {"XYZ", "E1"});
 
-                env.SendEventMap(MakeMap("p0", "F1", "p1", "E2"), "MyMapTypeIDB");
+                env.SendEventMap(MakeMap("P0", "F1", "P1", "E2"), "MyMapTypeIDB");
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     fields,
@@ -856,7 +856,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
 
                 env.CompileDeploy("@Priority(2) @Name('b') update istream BaseOne set i='BLANK'", path);
 
-                env.SendEventMap(MakeMap("p0", "somevalue", "p1", "E3"), "MyMapTypeIDB");
+                env.SendEventMap(MakeMap("P0", "somevalue", "P1", "E3"), "MyMapTypeIDB");
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     fields,
@@ -864,7 +864,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
 
                 env.CompileDeploy("@Priority(3) @Name('c') update istream BaseOneA set i='FINAL'", path);
 
-                env.SendEventMap(MakeMap("p0", "somevalue", "p1", "E4"), "MyMapTypeIDB");
+                env.SendEventMap(MakeMap("P0", "somevalue", "P1", "E4"), "MyMapTypeIDB");
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     fields,
@@ -875,7 +875,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                     "@Name('insert') insert into BaseOneA select p0 as i, p1 as p, 'a' as pa from MyMapTypeIDB",
                     path);
 
-                env.SendEventMap(MakeMap("p0", "somevalue", "p1", "E5"), "MyMapTypeIDB");
+                env.SendEventMap(MakeMap("P0", "somevalue", "P1", "E5"), "MyMapTypeIDB");
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     fields,
@@ -886,7 +886,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                     "@Name('insert') insert into BaseOneB select p0 as i, p1 as p, 'b' as pb from MyMapTypeIDB",
                     path);
 
-                env.SendEventMap(MakeMap("p0", "somevalue", "p1", "E6"), "MyMapTypeIDB");
+                env.SendEventMap(MakeMap("P0", "somevalue", "P1", "E6"), "MyMapTypeIDB");
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     fields,
@@ -900,7 +900,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 env.UndeployModuleContaining("s0");
                 env.CompileDeploy("@Name('s0') select * from BaseInterface", path).AddListener("s0");
 
-                env.SendEventMap(MakeMap("p0", "E2", "p1", "E7"), "MyMapTypeIDB");
+                env.SendEventMap(MakeMap("P0", "E2", "P1", "E7"), "MyMapTypeIDB");
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     new[] {"i"},
@@ -926,7 +926,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
 
                 env.Milestone(0);
 
-                env.SendEventMap(MakeMap("p0", "E1", "p1", "oldvalue"), "MyMapTypeNW");
+                env.SendEventMap(MakeMap("P0", "E1", "P1", "oldvalue"), "MyMapTypeNW");
                 EPAssertionUtil.AssertProps(
                     env.Listener("window").AssertOneGetNewAndReset(),
                     fields,
@@ -985,7 +985,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             public void Run(RegressionEnvironment env)
             {
                 var path = new RegressionPath();
-                var fields = "theString,LongBoxed,IntBoxed".SplitCsv();
+                var fields = "TheString,LongBoxed,IntBoxed".SplitCsv();
 
                 env.CompileDeploy("insert into AStream select * from SupportBean", path);
                 env.CompileDeploy("update istream AStream set LongBoxed=IntBoxed, IntBoxed=null", path);
@@ -1013,13 +1013,13 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 env.CompileDeploy("update istream MyMapTypeSR set p0='a'");
 
                 var fields = "p0,p1".SplitCsv();
-                env.SendEventMap(MakeMap("p0", "E1", "p1", "E1"), "MyMapTypeSR");
+                env.SendEventMap(MakeMap("P0", "E1", "P1", "E1"), "MyMapTypeSR");
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     fields,
                     new object[] {"a", "E1"});
 
-                env.SendEventMap(MakeMap("p0", "E2", "p1", "E2"), "MyMapTypeSR");
+                env.SendEventMap(MakeMap("P0", "E2", "P1", "E2"), "MyMapTypeSR");
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     fields,
@@ -1029,7 +1029,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 env.Statement("trigger").Events += (
                     sender,
                     updateEventArgs) => env
-                    .EventService.RouteEventMap(MakeMap("p0", "E3", "p1", "E3"), "MyMapTypeSR");
+                    .EventService.RouteEventMap(MakeMap("P0", "E3", "P1", "E3"), "MyMapTypeSR");
 
                 env.SendEventBean(new SupportBean());
                 EPAssertionUtil.AssertProps(
@@ -1038,8 +1038,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                     new object[] {"a", "E3"});
 
                 env.CompileDeploy("@Drop @Name('drop') update istream MyMapTypeSR set p0='a'");
-                env.SendEventMap(MakeMap("p0", "E4", "p1", "E4"), "MyMapTypeSR");
-                env.SendEventMap(MakeMap("p0", "E5", "p1", "E5"), "MyMapTypeSR");
+                env.SendEventMap(MakeMap("P0", "E4", "P1", "E4"), "MyMapTypeSR");
+                env.SendEventMap(MakeMap("P0", "E5", "P1", "E5"), "MyMapTypeSR");
                 env.SendEventBean(new SupportBean());
                 Assert.IsFalse(env.Listener("s0").IsInvoked);
 
@@ -1051,7 +1051,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 env.CompileDeploy("@Name('s0') select * from SupportBean").AddListener("s0");
                 env.CompileDeploy("update istream SupportBean set IntPrimitive=999");
 
-                fields = "theString,IntPrimitive".SplitCsv();
+                fields = new [] { "TheString","IntPrimitive" };
                 env.SendEventBean(new SupportBean("E1", 0));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
@@ -1069,7 +1069,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                     sender,
                     updateEventArgs) => env.EventService.RouteEventBean(new SupportBean("E3", 0), "SupportBean");
 
-                env.SendEventMap(MakeMap("p0", "", "p1", ""), "MyMapTypeSR");
+                env.SendEventMap(MakeMap("P0", "", "P1", ""), "MyMapTypeSR");
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     fields,
@@ -1078,7 +1078,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 env.CompileDeploy("@Drop update istream SupportBean set IntPrimitive=1");
                 env.SendEventBean(new SupportBean("E4", 0));
                 env.SendEventBean(new SupportBean("E4", 0));
-                env.SendEventMap(MakeMap("p0", "", "p1", ""), "MyMapTypeSR");
+                env.SendEventMap(MakeMap("P0", "", "P1", ""), "MyMapTypeSR");
                 Assert.IsFalse(env.Listener("s0").IsInvoked);
 
                 env.UndeployAll();
@@ -1092,9 +1092,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 var model = new EPStatementObjectModel();
                 model.UpdateClause = UpdateClause.Create(
                     "MyMapTypeSODA",
-                    Expressions.Eq(Expressions.Property("p1"), Expressions.Constant("newvalue")));
+                    Expressions.Eq(Expressions.Property("P1"), Expressions.Constant("newvalue")));
                 model.UpdateClause.OptionalAsClauseStreamName = "mytype";
-                model.UpdateClause.OptionalWhereClause = Expressions.Eq("p0", "E1");
+                model.UpdateClause.OptionalWhereClause = Expressions.Eq("P0", "E1");
                 Assert.AreEqual(
                     "update istream MyMapTypeSODA as mytype set p1=\"newvalue\" where p0=\"E1\"",
                     model.ToEPL());
@@ -1104,7 +1104,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 env.CompileDeploy(model);
 
                 var fields = "p0,p1".SplitCsv();
-                env.SendEventMap(MakeMap("p0", "E1", "p1", "E1"), "MyMapTypeSODA");
+                env.SendEventMap(MakeMap("P0", "E1", "P1", "E1"), "MyMapTypeSODA");
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     fields,
@@ -1203,7 +1203,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             public void Run(RegressionEnvironment env)
             {
                 var path = new RegressionPath();
-                var fields = "theString,IntPrimitive".SplitCsv();
+                var fields = new [] { "TheString","IntPrimitive" };
                 env.CompileDeploy("insert into ABCStreamSQ select * from SupportBean", path);
                 env.CompileDeploy(
                     "@Name('Update') update istream ABCStreamSQ set TheString = (select s0 from MyMapTypeSelect#lastevent) where IntPrimitive in (select w0 from MyMapTypeWhere#keepall)",
@@ -1321,7 +1321,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 }
 
                 var path = new RegressionPath();
-                var fields = "theString,IntPrimitive,value1".SplitCsv();
+                var fields = "TheString,IntPrimitive,value1".SplitCsv();
                 env.CompileDeploy(
                         "@Name('insert') insert into ABCStreamLD select *, 'orig' as value1 from SupportBean",
                         path)
@@ -1443,7 +1443,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 }
 
                 var path = new RegressionPath();
-                var fields = "theString,IntPrimitive,value1".SplitCsv();
+                var fields = "TheString,IntPrimitive,value1".SplitCsv();
                 env.CompileDeploy(
                         "@Name('insert') insert into ABCStreamLDM select *, 'orig' as value1 from SupportBean",
                         path)

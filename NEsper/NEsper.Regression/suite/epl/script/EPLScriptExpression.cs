@@ -216,7 +216,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.script
             env.SendEventBean(new SupportBean());
             EPAssertionUtil.AssertProps(
                 env.Listener("s0").AssertOneGetNewAndReset(),
-                "val0,val1".SplitCsv(),
+                new [] { "val0", "val1" },
                 new object[] {9, 5});
 
             env.UndeployAll();
@@ -225,7 +225,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.script
             env.SendEventBean(new SupportBean());
             EPAssertionUtil.AssertProps(
                 env.Listener("s0").AssertOneGetNewAndReset(),
-                "val0,val1".SplitCsv(),
+                new [] { "val0", "val1" },
                 new object[] {9, 5});
 
             env.UndeployAll();
@@ -247,7 +247,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.script
             env.SendEventBean(new SupportBean());
             EPAssertionUtil.AssertProps(
                 env.Listener("s0").AssertOneGetNewAndReset(),
-                "c0".SplitCsv(),
+                new [] { "c0" },
                 new object[] {1000});
 
             env.UndeployAll();
@@ -267,7 +267,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.script
             env.SendEventBean(new SupportBean());
             EPAssertionUtil.AssertProps(
                 env.Listener("s0").AssertOneGetNewAndReset(),
-                "c0".SplitCsv(),
+                new [] { "c0" },
                 new object[] {"x"});
 
             env.UndeployAll();
@@ -292,7 +292,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.script
             env.SendEventBean(new SupportBean());
             EPAssertionUtil.AssertProps(
                 env.Listener("s0").AssertOneGetNewAndReset(),
-                "c0,c1,c2".SplitCsv(),
+                new [] { "c0", "c1", "c2" },
                 new object[] {10, 20, 60});
 
             env.UndeployAll();
@@ -349,7 +349,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.script
             env.SendEventBean(new SupportBean());
             EPAssertionUtil.AssertProps(
                 env.Listener("s0").AssertOneGetNewAndReset(),
-                "val0".SplitCsv(),
+                new [] { "val0" },
                 new object[] {2});
 
             env.UndeployAll();
@@ -358,7 +358,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.script
             env.SendEventBean(new SupportBean());
             EPAssertionUtil.AssertProps(
                 env.Listener("s0").AssertOneGetNewAndReset(),
-                "val0".SplitCsv(),
+                new [] { "val0" },
                 new object[] {2});
 
             env.UndeployAll();
@@ -473,7 +473,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.script
             Assert.AreEqual(type, env.Statement("s0").EventType.GetPropertyType("val1"));
             EPAssertionUtil.AssertProps(
                 env.Listener("s0").AssertOneGetNewAndReset(),
-                "val0,val1".SplitCsv(),
+                new [] { "val0", "val1" },
                 new[] {value, value});
 
             env.UndeployAll();
@@ -495,7 +495,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.script
             env.SendEventBean(new SupportBean_S0(0));
             EPAssertionUtil.AssertProps(
                 env.Listener("s0").AssertOneGetNewAndReset(),
-                "c0".SplitCsv(),
+                new [] { "c0" },
                 new object[] {-1d});
 
             env.UndeployAll();

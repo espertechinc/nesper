@@ -78,7 +78,7 @@ namespace com.espertech.esper.common.@internal.epl.pattern.observer
                 typeof(TimerIntervalObserverFactory),
                 typeof(TimerIntervalObserverForge),
                 classScope);
-            var patternDelta = PatternDeltaComputeUtil.MakePatternDeltaAnonymous(
+            var patternDelta = PatternDeltaComputeUtil.MakePatternDeltaLambda(
                 parameter,
                 convertor,
                 timeAbacus,

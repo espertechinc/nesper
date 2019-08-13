@@ -9,9 +9,6 @@
 using System;
 using System.IO;
 
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
-
 namespace com.espertech.esper.common.client.soda
 {
     /// <summary>
@@ -27,7 +24,8 @@ namespace com.espertech.esper.common.client.soda
         {
         }
 
-        public override ExpressionPrecedenceEnum Precedence {
+        public override ExpressionPrecedenceEnum Precedence
+        {
             get => ExpressionPrecedenceEnum.UNARY;
         }
 
@@ -35,7 +33,8 @@ namespace com.espertech.esper.common.client.soda
         {
             string delimiter = "";
             writer.Write("[");
-            foreach (Expression expr in this.Children) {
+            foreach (Expression expr in this.Children)
+            {
                 writer.Write(delimiter);
                 expr.ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
                 delimiter = ",";

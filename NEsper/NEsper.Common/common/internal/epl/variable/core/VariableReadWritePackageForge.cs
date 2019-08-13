@@ -347,7 +347,7 @@ namespace com.espertech.esper.common.@internal.epl.variable.core
             CodegenClassScope classScope)
         {
             if (copyMethods.IsEmpty()) {
-                return StaticMethod(typeof(Collections), "GetEmptyMap");
+                return StaticMethod(typeof(Collections), "GetEmptyMap", new[] { typeof(string), typeof(object) });
             }
 
             var method = parent.MakeChild(

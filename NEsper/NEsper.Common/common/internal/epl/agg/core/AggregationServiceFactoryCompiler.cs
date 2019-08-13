@@ -22,6 +22,7 @@ using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.serde;
 using com.espertech.esper.common.@internal.settings;
+using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.function;
 using com.espertech.esper.compat.io;
@@ -298,7 +299,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
             ctorParams.Add(new CodegenTypedParam(providerClassName, "o"));
             var ctor = new CodegenCtor(forgeClass, classScope, ctorParams);
 
-            // generic interface must still cast in Janino
+            // Generic interface must be cast in Janino, is this true for Roslyn?
             var input = Ref("input");
             var output = Ref("output");
             var unitKey = Ref("unitKey");
@@ -401,13 +402,15 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
             CodegenStackGenerator.RecursiveBuildStack(writeMethod, "Write", methods, properties);
             CodegenStackGenerator.RecursiveBuildStack(readMethod, "Read", methods, properties);
 
+            var innerClassInterface = typeof(DataInputOutputSerdeWCollation<>);
             var innerClass = new CodegenInnerClass(
                 classNameSerde,
-                typeof(DataInputOutputSerdeWCollation<object>),
+                innerClassInterface,
                 ctor,
                 Collections.GetEmptyList<CodegenTypedParam>(),
                 methods,
                 properties);
+            innerClass.InterfaceGenericClass = "object";
             //innerClass.InterfaceGenericClass = classNameRow;
             innerClasses.Add(innerClass);
         }
@@ -1046,7 +1049,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
                     NAME_AGGVISITOR);
             forge.AcceptGroupDetailCodegen(acceptGroupDetailMethod, classScope);
 
-            var isGroupedProperty = CodegenProperty.MakeParentNode(
+            var isGroupedProperty = CodegenProperty.MakePropertyNode(
                 typeof(bool),
                 forge.GetType(),
                 CodegenSymbolProviderEmpty.INSTANCE,

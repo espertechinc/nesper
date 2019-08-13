@@ -24,7 +24,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
                       "@Name('s0') context MyCtx\n" +
                       "select count(*) as c \n" +
                       "from SupportBean_S0\n" +
-                      "output last at(context.sse.atminute, context.sse.athour, *, *, *, *) and when terminated\n";
+                      "output last at(context.sse.Atminute, context.sse.Athour, *, *, *, *) and when terminated\n";
             env.CompileDeploy(epl).AddListener("s0");
 
             env.SendEventBean(new SupportScheduleSimpleEvent(10, 15));

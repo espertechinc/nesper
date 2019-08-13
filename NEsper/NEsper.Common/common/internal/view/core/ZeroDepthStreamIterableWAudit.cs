@@ -42,7 +42,7 @@ namespace com.espertech.esper.common.@internal.view.core
 
         public override void Insert(EventBean theEvent)
         {
-            _agentInstanceContext.AuditProvider.Stream(theEvent, _agentInstanceContext, _filterSpecText);
+            _agentInstanceContext.AuditProvider.StreamSingle(theEvent, _agentInstanceContext, _filterSpecText);
             _agentInstanceContext.InstrumentationProvider.QFilterActivationStream(
                 theEvent.EventType.Name,
                 _streamNumber,
@@ -58,7 +58,7 @@ namespace com.espertech.esper.common.@internal.view.core
 
         public override void Insert(EventBean[] events)
         {
-            _agentInstanceContext.AuditProvider.Stream(events, null, _agentInstanceContext, _filterSpecText);
+            _agentInstanceContext.AuditProvider.StreamMulti(events, null, _agentInstanceContext, _filterSpecText);
             base.Insert(events);
         }
     }

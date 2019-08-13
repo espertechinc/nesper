@@ -10,9 +10,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
-
 namespace com.espertech.esper.common.client.soda
 {
     /// <summary>
@@ -146,7 +143,8 @@ namespace com.espertech.esper.common.client.soda
         /// Returns the filter.
         /// </summary>
         /// <returns>filter</returns>
-        public Filter Filter {
+        public Filter Filter
+        {
             get => filter;
             set => filter = value;
         }

@@ -58,7 +58,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
                            "SupportBean_S0#length(1000) as s0," +
                            " sql:" +
                            dbname +
-                           "['select myvarchar from mytesttable where ${Id} = mytesttable.mybigint'] as s1";
+                           "['select myvarchar from mytesttable where ${Id} = mytesttable.myBigint'] as s1";
             env.CompileDeploy(stmtText).AddListener("s0");
 
             // 1000 events should enter the window fast, no joins
@@ -92,7 +92,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
                            "SupportBean_S0#time(1 sec) as s0," +
                            " sql:" +
                            dbname +
-                           " ['select myvarchar from mytesttable where ${Id} = mytesttable.mybigint'] as s1";
+                           " ['select myvarchar from mytesttable where ${Id} = mytesttable.myBigint'] as s1";
             env.CompileDeploy(stmtText).AddListener("s0");
 
             // Send 100 events which all fireStatementStopped a join
@@ -147,7 +147,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
                            "SupportBean_S0 as s0," +
                            " sql:" +
                            dbname +
-                           " ['select myint from mytesttable where ${Id} = mytesttable.mybigint'] as s1";
+                           " ['select myint from mytesttable where ${Id} = mytesttable.myBigint'] as s1";
             env.CompileDeploy(stmtText).AddListener("s0");
 
             for (var i = 0; i < 100; i++) {

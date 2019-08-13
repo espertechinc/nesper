@@ -242,7 +242,7 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.realize
             }
 
             foreach (var method in target.GetMethods()) {
-                var eligible = method.Name.Equals("onInput");
+                var eligible = method.Name.Equals("OnInput");
                 if (!eligible && method.Name.Equals(channelSpecificMethodName)) {
                     eligible = true;
                 }

@@ -32,11 +32,13 @@ namespace com.espertech.esper.common.client.soda
             Expression then)
         {
             var size = Children.Count;
-            if (size % 2 == 0) {
+            if (size % 2 == 0)
+            {
                 AddChild(when);
                 AddChild(then);
             }
-            else {
+            else
+            {
                 // add next to last as the last node is the else clause
                 Children.Insert(Children.Count - 1, when);
                 Children.Insert(Children.Count - 1, then);
@@ -54,7 +56,8 @@ namespace com.espertech.esper.common.client.soda
         {
             var size = Children.Count;
             // remove last node representing the else
-            if (size % 2 != 0) {
+            if (size % 2 != 0)
+            {
                 Children.RemoveAt(size - 1);
             }
 
@@ -66,11 +69,13 @@ namespace com.espertech.esper.common.client.soda
         {
             writer.Write("case");
             var index = 0;
-            while (index < Children.Count - 1) {
+            while (index < Children.Count - 1)
+            {
                 writer.Write(" when ");
                 Children[index].ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
                 index++;
-                if (index == Children.Count) {
+                if (index == Children.Count)
+                {
                     throw new IllegalStateException(
                         "Invalid case-when expression, count of when-to-then nodes not matching");
                 }
@@ -80,7 +85,8 @@ namespace com.espertech.esper.common.client.soda
                 index++;
             }
 
-            if (index < Children.Count) {
+            if (index < Children.Count)
+            {
                 writer.Write(" else ");
                 Children[index].ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
             }

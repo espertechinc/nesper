@@ -337,7 +337,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowforall
                             "Add",
                             ExprDotMethod(
                                 REF_ORDERBYPROCESSOR,
-                                "getSortKey",
+                                "GetSortKey",
                                 ConstantNull(),
                                 ConstantFalse(),
                                 REF_AGENTINSTANCECONTEXT));
@@ -358,7 +358,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowforall
                         "Add",
                         ExprDotMethod(
                             REF_ORDERBYPROCESSOR,
-                            "getSortKey",
+                            "GetSortKey",
                             ConstantNull(),
                             ConstantTrue(),
                             REF_AGENTINSTANCECONTEXT));
@@ -485,7 +485,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowforall
                             "Add",
                             ExprDotMethod(
                                 REF_ORDERBYPROCESSOR,
-                                "getSortKey",
+                                "GetSortKey",
                                 ConstantNull(),
                                 ConstantFalse(),
                                 REF_AGENTINSTANCECONTEXT));
@@ -507,7 +507,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowforall
                         "Add",
                         ExprDotMethod(
                             REF_ORDERBYPROCESSOR,
-                            "getSortKey",
+                            "GetSortKey",
                             ConstantNull(),
                             ConstantTrue(),
                             REF_AGENTINSTANCECONTEXT));
@@ -652,7 +652,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowforall
             };
             return instance.Methods.AddMethod(
                 typeof(EventBean),
-                "getSelectListEventSingle",
+                "GetSelectListEventSingle",
                 CodegenNamedParam.From(typeof(bool), NAME_ISNEWDATA, typeof(bool), NAME_ISSYNTHESIZE),
                 typeof(ResultSetProcessorRowForAllImpl),
                 classScope,
@@ -689,7 +689,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowforall
             };
             return instance.Methods.AddMethod(
                 typeof(void),
-                "getSelectListEventsAddList",
+                "GetSelectListEventsAddList",
                 CodegenNamedParam.From(
                     typeof(bool),
                     NAME_ISNEWDATA,

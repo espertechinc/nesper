@@ -15,7 +15,7 @@ namespace com.espertech.esper.common.client.soda
     /// Interface representing an expression for use in match-recognize.
     /// <para/>
     /// Event row regular expressions are organized into a tree-like structure with
-    /// nodes representing sub-expressions. 
+    /// nodes representing sub-expressions.
     /// </summary>
     [Serializable]
     public class MatchRecognizeRegExConcatenation : MatchRecognizeRegEx
@@ -23,7 +23,8 @@ namespace com.espertech.esper.common.client.soda
         public override void WriteEPL(TextWriter writer)
         {
             String delimiter = "";
-            foreach (MatchRecognizeRegEx node in Children) {
+            foreach (MatchRecognizeRegEx node in Children)
+            {
                 writer.Write(delimiter);
                 node.WriteEPL(writer);
                 delimiter = " ";

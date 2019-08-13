@@ -68,7 +68,7 @@ namespace com.espertech.esper.regressionrun.suite.@event
                 configuration.Common.AddEventType(clazz);
             }
 
-            string[] props = { "p0", "p1", "p2", "p3", "p4" };
+            string[] props = { "P0", "P1", "P2", "p3", "p4" };
             object[] types = { typeof(string), typeof(int), typeof(SupportBean_S0), typeof(long), typeof(double?) };
             configuration.Common.AddEventType("MyObjectArrayType", props, types);
 

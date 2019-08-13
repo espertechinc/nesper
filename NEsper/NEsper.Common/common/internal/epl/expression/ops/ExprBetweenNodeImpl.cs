@@ -234,11 +234,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                 object upper);
 
             CodegenExpression CodegenNoNullCheck(
-                CodegenExpressionRef value,
+                CodegenExpression value,
                 Type valueType,
-                CodegenExpressionRef lower,
+                CodegenExpression lower,
                 Type lowerType,
-                CodegenExpressionRef higher,
+                CodegenExpression higher,
                 Type higherType,
                 CodegenMethodScope codegenMethodScope,
                 CodegenClassScope codegenClassScope);
@@ -300,11 +300,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             }
 
             public CodegenExpression CodegenNoNullCheck(
-                CodegenExpressionRef value,
+                CodegenExpression value,
                 Type valueType,
-                CodegenExpressionRef lower,
+                CodegenExpression lower,
                 Type lowerType,
-                CodegenExpressionRef higher,
+                CodegenExpression higher,
                 Type higherType,
                 CodegenMethodScope codegenMethodScope,
                 CodegenClassScope codegenClassScope)
@@ -395,11 +395,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             }
 
             public CodegenExpression CodegenNoNullCheck(
-                CodegenExpressionRef value,
+                CodegenExpression value,
                 Type valueType,
-                CodegenExpressionRef lower,
+                CodegenExpression lower,
                 Type lowerType,
-                CodegenExpressionRef higher,
+                CodegenExpression higher,
                 Type higherType,
                 CodegenMethodScope codegenMethodScope,
                 CodegenClassScope codegenClassScope)
@@ -488,11 +488,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             }
 
             public CodegenExpression CodegenNoNullCheck(
-                CodegenExpressionRef value,
+                CodegenExpression value,
                 Type valueType,
-                CodegenExpressionRef lower,
+                CodegenExpression lower,
                 Type lowerType,
-                CodegenExpressionRef higher,
+                CodegenExpression higher,
                 Type higherType,
                 CodegenMethodScope codegenMethodScope,
                 CodegenClassScope codegenClassScope)
@@ -582,11 +582,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             }
 
             public CodegenExpression CodegenNoNullCheck(
-                CodegenExpressionRef value,
+                CodegenExpression value,
                 Type valueType,
-                CodegenExpressionRef lower,
+                CodegenExpression lower,
                 Type lowerType,
-                CodegenExpressionRef higher,
+                CodegenExpression higher,
                 Type higherType,
                 CodegenMethodScope codegenMethodScope,
                 CodegenClassScope codegenClassScope)
@@ -685,11 +685,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             }
 
             public CodegenExpression CodegenNoNullCheck(
-                CodegenExpressionRef value,
+                CodegenExpression value,
                 Type valueType,
-                CodegenExpressionRef lower,
+                CodegenExpression lower,
                 Type lowerType,
-                CodegenExpressionRef higher,
+                CodegenExpression higher,
                 Type higherType,
                 CodegenMethodScope codegenMethodScope,
                 CodegenClassScope codegenClassScope)

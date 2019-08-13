@@ -6,7 +6,6 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Collections.Generic;
 
 namespace com.espertech.esper.common.client.soda
@@ -276,7 +275,7 @@ namespace com.espertech.esper.common.client.soda
             double seconds,
             PatternExpr guarded)
         {
-            return new PatternGuardExpr("timer", "within", new Expression[] {Expressions.Constant(seconds)}, guarded);
+            return new PatternGuardExpr("timer", "within", new Expression[] { Expressions.Constant(seconds) }, guarded);
         }
 
         /// <summary>While-guard expression. </summary>
@@ -290,7 +289,7 @@ namespace com.espertech.esper.common.client.soda
             return new PatternGuardExpr(
                 GuardEnum.WHILE_GUARD.GetNamespace(),
                 GuardEnum.WHILE_GUARD.GetName(),
-                new[] {expression},
+                new[] { expression },
                 guarded);
         }
 
@@ -307,7 +306,7 @@ namespace com.espertech.esper.common.client.soda
             return new PatternGuardExpr(
                 "timer",
                 "withinmax",
-                new Expression[] {Expressions.Constant(seconds), Expressions.Constant(max)},
+                new Expression[] { Expressions.Constant(seconds), Expressions.Constant(max) },
                 guarded);
         }
 
@@ -316,7 +315,7 @@ namespace com.espertech.esper.common.client.soda
         /// <returns>pattern observer</returns>
         public static PatternObserverExpr TimerInterval(double seconds)
         {
-            return new PatternObserverExpr("timer", "interval", new Expression[] {Expressions.Constant(seconds)});
+            return new PatternObserverExpr("timer", "interval", new Expression[] { Expressions.Constant(seconds) });
         }
 
         /// <summary>

@@ -118,27 +118,24 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
             CodegenCtor factoryCtor,
             IList<CodegenTypedParam> factoryMembers)
         {
-            instance.Methods.AddMethod(
+            instance.Properties.AddProperty(
                 typeof(AggregationService),
-                "getAggregationService",
-                Collections.GetEmptyList<CodegenNamedParam>(),
+                "AggregationService",
                 GetType(),
                 classScope,
-                methodNode => methodNode.Block.MethodReturn(REF_AGGREGATIONSVC));
-            instance.Methods.AddMethod(
+                node => node.GetterBlock.BlockReturn(REF_AGGREGATIONSVC));
+            instance.Properties.AddProperty(
                 typeof(AgentInstanceContext),
-                "getAgentInstanceContext",
-                Collections.GetEmptyList<CodegenNamedParam>(),
+                "AgentInstanceContext",
                 GetType(),
                 classScope,
-                methodNode => methodNode.Block.MethodReturn(REF_AGENTINSTANCECONTEXT));
-            instance.Methods.AddMethod(
+                node => node.GetterBlock.BlockReturn(REF_AGENTINSTANCECONTEXT));
+            instance.Properties.AddProperty(
                 typeof(bool),
-                "isSelectRStream",
-                Collections.GetEmptyList<CodegenNamedParam>(),
+                "IsSelectRStream",
                 typeof(ResultSetProcessorRowForAll),
                 classScope,
-                methodNode => methodNode.Block.MethodReturn(Constant(IsSelectRStream)));
+                node => node.GetterBlock.BlockReturn(Constant(IsSelectRStream)));
 
             var rollupDesc = classScope.AddFieldUnshared(
                 true,
@@ -146,7 +143,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                 GroupByRollupDesc.Codegen());
             instance.Methods.AddMethod(
                 typeof(AggregationGroupByRollupDesc),
-                "getGroupByRollupDesc",
+                "GetGroupByRollupDesc",
                 Collections.GetEmptyList<CodegenNamedParam>(),
                 typeof(ResultSetProcessorRowPerGroupRollup),
                 classScope,

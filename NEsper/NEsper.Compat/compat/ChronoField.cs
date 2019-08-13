@@ -9,13 +9,20 @@ namespace com.espertech.esper.compat
 {
     public enum ChronoField
     {
-        MILLI_OF_SECOND,
-        SECOND_OF_MINUTE,
-        MINUTE_OF_HOUR,
-        HOUR_OF_DAY,
-        DAY_OF_MONTH,
-        ALIGNED_WEEK_OF_YEAR,
-        MONTH_OF_YEAR,
-        YEAR
+        MILLI_OF_SECOND = 0,
+        MILLISEC = 0,
+        SECOND_OF_MINUTE = 1,
+        SECOND = 1,
+        MINUTE_OF_HOUR = 2,
+        MINUTE = 2,
+        HOUR_OF_DAY = 3,
+        HOUR = 3,
+        DAY_OF_MONTH = 4,
+        DAY = 4,
+        MONTH_OF_YEAR = 5,
+        MONTH = 5,
+        ALIGNED_WEEK_OF_YEAR = 6,
+        WEEK = 6,
+        YEAR = 7
     }
 }

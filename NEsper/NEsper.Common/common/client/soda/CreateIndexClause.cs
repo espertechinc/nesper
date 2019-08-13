@@ -52,7 +52,6 @@ namespace com.espertech.esper.common.client.soda
             IsUnique = isUnique;
         }
 
-
         /// <summary>Ctor. </summary>
         /// <param name="windowName">is the name of the window to create</param>
         /// <param name="indexName">index name</param>
@@ -82,7 +81,8 @@ namespace com.espertech.esper.common.client.soda
             IndexName = indexName;
             WindowName = windowName;
             IsUnique = isUnique;
-            foreach (var prop in properties) {
+            foreach (var prop in properties)
+            {
                 Columns.Add(new CreateIndexColumn(prop));
             }
         }
@@ -138,7 +138,8 @@ namespace com.espertech.esper.common.client.soda
         public void ToEPL(TextWriter writer)
         {
             writer.Write("create ");
-            if (IsUnique) {
+            if (IsUnique)
+            {
                 writer.Write("unique ");
             }
 
@@ -149,7 +150,8 @@ namespace com.espertech.esper.common.client.soda
             writer.Write('(');
             var delimiter = "";
 
-            foreach (var prop in Columns) {
+            foreach (var prop in Columns)
+            {
                 writer.Write(delimiter);
                 prop.ToEPL(writer);
                 delimiter = ", ";

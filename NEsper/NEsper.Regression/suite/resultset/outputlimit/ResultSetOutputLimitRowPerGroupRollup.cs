@@ -204,7 +204,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
             bool join,
             SupportOutputLimitOpt opt)
         {
-            var fields = "c0,c1,c2".SplitCsv();
+            var fields = new [] { "c0", "c1", "c2" };
             env.AdvanceTime(0);
 
             var epl = opt.GetHint() +
@@ -313,7 +313,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
             SupportOutputLimitOpt opt,
             AtomicLong milestone)
         {
-            var fields = "c0,c1,c2".SplitCsv();
+            var fields = new [] { "c0", "c1", "c2" };
             env.AdvanceTime(0);
 
             var epl = opt.GetHint() +
@@ -462,7 +462,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
 
                 EPAssertionUtil.AssertPropsPerRow(
                     env.Listener("s0").LastNewData,
-                    "c0,c1".SplitCsv(),
+                    new [] { "c0", "c1" },
                     new[] {new object[] {"E3", 10}, new object[] {"E1", 12}, new object[] {"E4", 13}});
 
                 env.UndeployAll();
@@ -812,7 +812,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
 
             public void Run(RegressionEnvironment env)
             {
-                var fields = "c0,c1,c2".SplitCsv();
+                var fields = new [] { "c0", "c1", "c2" };
                 env.AdvanceTime(0);
 
                 var epl = "@Name('s0')" +
@@ -918,7 +918,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
 
             public void Run(RegressionEnvironment env)
             {
-                var fields = "c0,c1,c2".SplitCsv();
+                var fields = new [] { "c0", "c1", "c2" };
                 env.AdvanceTime(0);
 
                 var epl = "@Name('s0')" +
@@ -1076,7 +1076,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
 
             public void Run(RegressionEnvironment env)
             {
-                var fields = "c0,c1,c2".SplitCsv();
+                var fields = new [] { "c0", "c1", "c2" };
                 env.AdvanceTime(0);
 
                 var epl = "@Name('s0')" +
@@ -1219,7 +1219,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
 
             public void Run(RegressionEnvironment env)
             {
-                var fields = "c0,c1,c2".SplitCsv();
+                var fields = new [] { "c0", "c1", "c2" };
                 env.AdvanceTime(0);
 
                 var epl = "@Name('s0')" +
@@ -1337,7 +1337,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
 
             public void Run(RegressionEnvironment env)
             {
-                var fields = "c0,c1,c2".SplitCsv();
+                var fields = new [] { "c0", "c1", "c2" };
                 env.AdvanceTime(0);
 
                 var epl = "@Name('s0')" +
@@ -1479,7 +1479,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
 
             public void Run(RegressionEnvironment env)
             {
-                var fields = "c0,c1,c2".SplitCsv();
+                var fields = new [] { "c0", "c1", "c2" };
                 env.AdvanceTime(0);
 
                 var epl = "@Name('s0')" +
@@ -1612,7 +1612,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
 
             public void Run(RegressionEnvironment env)
             {
-                var fields = "c0,c1,c2".SplitCsv();
+                var fields = new [] { "c0", "c1", "c2" };
                 env.AdvanceTime(0);
 
                 var epl = "@Name('s0')" +

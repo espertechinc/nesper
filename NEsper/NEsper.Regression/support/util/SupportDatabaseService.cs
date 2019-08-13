@@ -26,7 +26,7 @@ namespace com.espertech.esper.regressionlib.support.util
         public static string DBNAME =>
             Environment.GetEnvironmentVariable("ESPER_MYSQL_DBNAME") ?? "test";
 
-        public static string DRIVER => "Npgsql.NpgsqlFactory";
+        public static string DRIVER => "PgSQL";
 
         public static Builder NewBuilder()
         {

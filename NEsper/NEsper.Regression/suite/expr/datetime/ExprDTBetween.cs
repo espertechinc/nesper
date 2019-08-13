@@ -149,13 +149,12 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "c0,c1,c2,c3,c4".SplitCsv();
+                var fields = new [] { "c0", "c1", "c2", "c3", "c4" };
                 var eplCurrentTS = "@Name('s0') select " +
-                                   "longdate.between(LongPrimitive, LongBoxed) as c0, " +
-                                   "utildate.between(LongPrimitive, LongBoxed) as c1, " +
-                                   "exdate.between(LongPrimitive, LongBoxed) as c2," +
-                                   "localdate.between(LongPrimitive, LongBoxed) as c3," +
-                                   "zoneddate.between(LongPrimitive, LongBoxed) as c4 " +
+                                   "LongDate.between(LongPrimitive, LongBoxed) as c0, " +
+                                   "DtoDate.between(LongPrimitive, LongBoxed) as c1, " +
+                                   "DtxDate.between(LongPrimitive, LongBoxed) as c2," +
+                                   "DateTime.between(LongPrimitive, LongBoxed) as c3" +
                                    " from SupportDateTime unidirectional, SupportBean#lastevent";
                 env.CompileDeploy(eplCurrentTS).AddListener("s0");
 
@@ -168,7 +167,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     fields,
-                    new object[] {false, false, false, false, false});
+                    new object[] {false, false, false, false});
 
                 bean = new SupportBean();
                 bean.LongPrimitive = 0;
@@ -179,7 +178,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     fields,
-                    new object[] {true, true, true, true, true});
+                    new object[] {true, true, true, true});
 
                 env.UndeployAll();
             }

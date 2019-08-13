@@ -30,11 +30,11 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "val0,val1,val2,val3,val4".SplitCsv();
+                var fields = new [] { "val0", "val1", "val2", "val3", "val4" };
                 var epl = "@Name('s0') select " +
-                          "utildate.Get('month') as val0," +
-                          "longdate.Get('month') as val1," +
-                          "exdate.Get('month') as val2 " +
+                          "DtoDate.Get('month') as val0," +
+                          "LongDate.Get('month') as val1," +
+                          "DtxDate.Get('month') as val2 " +
                           " from SupportDateTime";
                 env.CompileDeploy(epl).AddListener("s0");
                 LambdaAssertionUtil.AssertTypes(
@@ -58,7 +58,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                 env.SendEventBean(SupportTimeStartEndA.Make("A0", startTime, 0));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    "val0".SplitCsv(),
+                    new [] { "val0" },
                     new object[] {4});
 
                 env.UndeployAll();
@@ -69,7 +69,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                 env.SendEventBean(new SupportEventWithJustGet());
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    "c0,c1".SplitCsv(),
+                    new [] { "c0", "c1" },
                     new object[] {1, 2});
 
                 env.UndeployAll();
@@ -82,14 +82,14 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
             {
                 var fields = "val0,val1,val2,val3,val4,val5,val6,val7".SplitCsv();
                 var eplFragment = "@Name('s0') select " +
-                                  "utildate.Get('msec') as val0," +
-                                  "utildate.Get('sec') as val1," +
-                                  "utildate.Get('minutes') as val2," +
-                                  "utildate.Get('hour') as val3," +
-                                  "utildate.Get('day') as val4," +
-                                  "utildate.Get('month') as val5," +
-                                  "utildate.Get('year') as val6," +
-                                  "utildate.Get('week') as val7" +
+                                  "DtoDate.Get('msec') as val0," +
+                                  "DtoDate.Get('sec') as val1," +
+                                  "DtoDate.Get('minutes') as val2," +
+                                  "DtoDate.Get('hour') as val3," +
+                                  "DtoDate.Get('day') as val4," +
+                                  "DtoDate.Get('month') as val5," +
+                                  "DtoDate.Get('year') as val6," +
+                                  "DtoDate.Get('week') as val7" +
                                   " from SupportDateTime";
                 env.CompileDeploy(eplFragment).AddListener("s0");
                 LambdaAssertionUtil.AssertTypes(

@@ -62,7 +62,8 @@ namespace com.espertech.esper.common.client.soda
         /// Returns the filter.
         /// </summary>
         /// <returns>filter</returns>
-        public Filter Filter {
+        public Filter Filter
+        {
             get => filter;
             set => filter = value;
         }
@@ -81,7 +82,8 @@ namespace com.espertech.esper.common.client.soda
         /// Returns the property names.
         /// </summary>
         /// <returns>list</returns>
-        public IList<string> PropertyNames {
+        public IList<string> PropertyNames
+        {
             get => propertyNames;
             set => propertyNames = value;
         }
@@ -100,7 +102,8 @@ namespace com.espertech.esper.common.client.soda
         /// Returns the stream name.
         /// </summary>
         /// <returns>stream name</returns>
-        public string StreamName {
+        public string StreamName
+        {
             get => streamName;
             set => streamName = value;
         }
@@ -120,7 +123,8 @@ namespace com.espertech.esper.common.client.soda
             EPStatementFormatter formatter)
         {
             string delimiter = "";
-            foreach (string prop in propertyNames) {
+            foreach (string prop in propertyNames)
+            {
                 writer.Write(delimiter);
                 writer.Write(prop);
                 delimiter = " and ";
@@ -128,7 +132,8 @@ namespace com.espertech.esper.common.client.soda
 
             writer.Write(" from ");
             filter.ToEPL(writer, formatter);
-            if (streamName != null) {
+            if (streamName != null)
+            {
                 writer.Write(" as ");
                 writer.Write(streamName);
             }

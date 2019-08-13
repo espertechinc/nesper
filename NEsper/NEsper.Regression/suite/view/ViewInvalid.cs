@@ -352,7 +352,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 "select case BoolPrimitive when 1 then true end from SupportBean#length(1) as aStr");
             SupportMessageAssertUtil.AssertMessage(
                 exception,
-                "Failed to validate select-clause expression 'case BoolPrimitive when 1 then true end': Implicit conversion not allowed: Cannot coerce to Boolean type System.Integer [");
+                "Failed to validate select-clause expression 'case BoolPrimitive when 1 then true end': Implicit conversion not allowed: Cannot coerce to Boolean type System.Int32 [");
 
             // mismatched case result type
             exception = GetStatementExceptionView(
@@ -360,7 +360,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 "select case when 1=2 then 1 when 1=3 then true end from SupportBean#length(1) as aStr");
             SupportMessageAssertUtil.AssertMessage(
                 exception,
-                "Failed to validate select-clause expression 'case when 1=2 then 1 when 1=3 then ...(43 chars)': Implicit conversion not allowed: Cannot coerce types System.Integer and System.Boolean [");
+                "Failed to validate select-clause expression 'case when 1=2 then 1 when 1=3 then ...(43 chars)': Implicit conversion not allowed: Cannot coerce types System.Int32 and System.Boolean [");
 
             // case expression not returning bool
             exception = GetStatementExceptionView(

@@ -45,7 +45,7 @@ namespace com.espertech.esper.common.@internal.epl.join.@base
             ExprEvaluatorContext staticEvalExprEvaluatorContext)
         {
             this.allowInitIndex = allowInitIndex;
-            this.repositories = JoinSetComposerUtil.ToArray(repositories);
+            this.repositories = JoinSetComposerUtil.ToArray(repositories, streamViews.Length);
             QueryStrategies = queryStrategies;
             this.streamViews = streamViews;
             this.staticEvalExprEvaluatorContext = staticEvalExprEvaluatorContext;

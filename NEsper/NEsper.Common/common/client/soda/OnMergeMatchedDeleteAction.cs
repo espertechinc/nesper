@@ -36,12 +36,13 @@ namespace com.espertech.esper.common.client.soda
         public void ToEPL(TextWriter writer)
         {
             writer.Write("then delete");
-            if (WhereClause != null) {
+            if (WhereClause != null)
+            {
                 writer.Write(" where ");
                 WhereClause.ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
             }
         }
 
-        #endregion
+        #endregion OnMergeMatchedAction Members
     }
 }

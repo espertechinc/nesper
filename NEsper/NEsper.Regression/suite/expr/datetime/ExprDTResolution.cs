@@ -111,15 +111,15 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                     .SetMillis(4);
 
                 var select =
-                    "longdate.withTime(1, 2, 3, 4) as c0," +
-                    "longdate.set('hour', 1).set('minute', 2).set('second', 3).set('millisecond', 4).toCalendar() as c1," +
-                    "longdate.Get('month') as c2," +
-                    "current_timestamp.Get('month') as c3," +
+                    "LongDate.withTime(1, 2, 3, 4) as c0," +
+                    "LongDate.set('hour', 1).set('minute', 2).set('second', 3).set('millisecond', 4).toCalendar() as c1," +
+                    "LongDate.get('month') as c2," +
+                    "current_timestamp.get('month') as c3," +
                     "current_timestamp.getMinuteOfHour() as c4," +
                     "current_timestamp.toDate() as c5," +
                     "current_timestamp.toCalendar() as c6," +
                     "current_timestamp.minus(1) as c7";
-                var fields = "c0,c1,c2,c3,c4,c5,c6,c7".SplitCsv();
+                var fields = new [] { "c0", "c1", "c2", "c3", "c4", "c5", "c6", "c7" };
 
                 if (!isMicrosecond) {
                     RunAssertionLongProperty(

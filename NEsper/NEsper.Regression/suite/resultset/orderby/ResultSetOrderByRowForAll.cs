@@ -73,7 +73,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.orderby
 
                 env.SendEventBean(new SupportBean("E3", 12));
 
-                var fields = "c0,c1".SplitCsv();
+                var fields = new [] { "c0", "c1" };
                 EPAssertionUtil.AssertPropsPerRow(
                     env.Listener("s0").LastNewData,
                     fields,

@@ -100,7 +100,7 @@ namespace NEsper.Avro.Getter
         {
             return CodegenExpressionBuilder.StaticMethod(
                 GetType(),
-                "getAvroFieldValue",
+                "GetAvroFieldValue",
                 underlyingExpression,
                 CodegenExpressionBuilder.Constant(_propertyName),
                 CodegenExpressionBuilder.Constant(_index));
@@ -113,7 +113,7 @@ namespace NEsper.Avro.Getter
         {
             return CodegenExpressionBuilder.StaticMethod(
                 GetType(),
-                "isAvroFieldExists",
+                "IsAvroFieldExists",
                 underlyingExpression,
                 CodegenExpressionBuilder.Constant(_propertyName));
         }

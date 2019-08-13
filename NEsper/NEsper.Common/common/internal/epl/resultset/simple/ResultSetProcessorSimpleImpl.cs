@@ -60,8 +60,8 @@ namespace com.espertech.esper.common.@internal.epl.resultset.simple
             CodegenInstanceAux instance)
         {
             method.Block
-                .DeclareVar<EventBean[]>("SelectOldEvents", ConstantNull())
-                .DeclareVarNoInit(typeof(EventBean[]), "SelectNewEvents");
+                .DeclareVar<EventBean[]>("selectOldEvents", ConstantNull())
+                .DeclareVarNoInit(typeof(EventBean[]), "selectNewEvents");
             ResultSetProcessorUtil.ProcessViewResultCodegen(
                 method,
                 classScope,
@@ -92,7 +92,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.simple
             method.Block
                 .DeclareVar<EventBean[]>("eventsPerStream", NewArrayByLength(typeof(EventBean), Constant(1)))
                 .DeclareVar<IList<EventBean>>("events", NewInstance(typeof(List<EventBean>)))
-                .DeclareVar<IList<EventBean>>("orderKeys", NewInstance(typeof(List<EventBean>)))
+                .DeclareVar<IList<object>>("orderKeys", NewInstance(typeof(List<object>)))
                 .DeclareVar<IEnumerator<EventBean>>("parentIterator", ExprDotMethod(REF_VIEWABLE, "GetEnumerator"))
                 .IfCondition(EqualsNull(Ref("parentIterator")))
                 .BlockReturn(PublicConstValue(typeof(CollectionUtil), "NULL_EVENT_ITERATOR"));
@@ -155,10 +155,9 @@ namespace com.espertech.esper.common.@internal.epl.resultset.simple
                         Ref("orderKeysArr"),
                         REF_AGENTINSTANCECONTEXT))
                 .MethodReturn(
-                    StaticMethod(
-                        typeof(Arrays),
-                        "Iterate",
-                        Ref("orderedEvents")));
+                    ExprDotMethod(
+                        StaticMethod(typeof(Arrays), "Enumerate", Ref("orderedEvents")),
+                        "GetEnumerator"));
         }
 
         public static void GetIteratorJoinCodegen(
@@ -173,15 +172,18 @@ namespace com.espertech.esper.common.@internal.epl.resultset.simple
                         Ref("this"),
                         "ProcessJoinResult",
                         REF_JOINSET,
-                        StaticMethod(typeof(Collections), "GetEmptySet", new []{ typeof(MultiKey<EventBean>) }),
+                        StaticMethod(typeof(Collections), "GetEmptySet", new[] {typeof(MultiKey<EventBean>)}),
                         ConstantTrue()))
                 .IfRefNull("result")
-                .BlockReturn(StaticMethod(typeof(Collections), "GetEmptyEnumerator", new[] { typeof(MultiKey<EventBean>) }))
+                .BlockReturn(
+                    StaticMethod(typeof(Collections), "GetEmptyEnumerator", new[] {typeof(MultiKey<EventBean>)}))
                 .MethodReturn(
-                    StaticMethod(
-                        typeof(Arrays),
-                        "Iterate",
-                        Cast(typeof(EventBean[]), GetProperty(Ref("result"), "First"))));
+                    ExprDotMethod(
+                        StaticMethod(
+                            typeof(Arrays),
+                            "Enumerate",
+                            Cast(typeof(EventBean[]), GetProperty(Ref("result"), "First"))),
+                        "GetEnumerator"));
         }
 
         public static void ProcessOutputLimitedLastAllNonBufferedViewCodegen(
@@ -300,7 +302,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.simple
             CodegenMethod method)
         {
             if (!forge.IsOutputLast) {
-                method.Block.DeclareVar<UniformPair<EventBean>>(
+                method.Block.DeclareVar<UniformPair<EventBean[]>>(
                         "pair",
                         StaticMethod(
                             typeof(EventBeanUtility),
@@ -324,7 +326,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.simple
             CodegenMethod method)
         {
             if (!forge.IsOutputLast) {
-                method.Block.DeclareVar<UniformPair<EventBean>>(
+                method.Block.DeclareVar<UniformPair<EventBean[]>>(
                         "pair",
                         StaticMethod(
                             typeof(EventBeanUtility),

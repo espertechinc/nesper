@@ -119,41 +119,36 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergroup
             CodegenCtor factoryCtor,
             IList<CodegenTypedParam> factoryMembers)
         {
-            instance.Methods.AddMethod(
+            instance.Properties.AddProperty(
                 typeof(SelectExprProcessor),
-                "getSelectExprProcessor",
-                Collections.GetEmptyList<CodegenNamedParam>(),
+                "SelectExprProcessor",
                 GetType(),
                 classScope,
-                methodNode => methodNode.Block.MethodReturn(REF_SELECTEXPRPROCESSOR));
-            instance.Methods.AddMethod(
+                propertyNode => propertyNode.GetterBlock.BlockReturn(REF_SELECTEXPRPROCESSOR));
+            instance.Properties.AddProperty(
                 typeof(AggregationService),
-                "getAggregationService",
-                Collections.GetEmptyList<CodegenNamedParam>(),
+                "AggregationService",
                 GetType(),
                 classScope,
-                methodNode => methodNode.Block.MethodReturn(REF_AGGREGATIONSVC));
-            instance.Methods.AddMethod(
+                propertyNode => propertyNode.GetterBlock.BlockReturn(REF_AGGREGATIONSVC));
+            instance.Properties.AddProperty(
                 typeof(AgentInstanceContext),
-                "getAgentInstanceContext",
-                Collections.GetEmptyList<CodegenNamedParam>(),
+                "AgentInstanceContext",
                 GetType(),
                 classScope,
-                methodNode => methodNode.Block.MethodReturn(REF_AGENTINSTANCECONTEXT));
-            instance.Methods.AddMethod(
+                propertyNode => propertyNode.GetterBlock.BlockReturn(REF_AGENTINSTANCECONTEXT));
+            instance.Properties.AddProperty(
                 typeof(bool),
-                "hasHavingClause",
-                Collections.GetEmptyList<CodegenNamedParam>(),
+                "HasHavingClause",
                 GetType(),
                 classScope,
-                methodNode => methodNode.Block.MethodReturn(Constant(OptionalHavingNode != null)));
-            instance.Methods.AddMethod(
+                propertyNode => propertyNode.GetterBlock.BlockReturn(Constant(OptionalHavingNode != null)));
+            instance.Properties.AddProperty(
                 typeof(bool),
-                "isSelectRStream",
-                Collections.GetEmptyList<CodegenNamedParam>(),
+                "IsSelectRStream",
                 typeof(ResultSetProcessorRowForAll),
                 classScope,
-                methodNode => methodNode.Block.MethodReturn(Constant(IsSelectRStream)));
+                propertyNode => propertyNode.GetterBlock.BlockReturn(Constant(IsSelectRStream)));
             ResultSetProcessorUtil.EvaluateHavingClauseCodegen(OptionalHavingNode, classScope, instance);
             ResultSetProcessorGroupedUtil.GenerateGroupKeySingleCodegen(GroupKeyNodeExpressions, classScope, instance);
             ResultSetProcessorRowPerGroupImpl.GenerateOutputBatchedNoSortWMapCodegen(this, classScope, instance);
@@ -171,7 +166,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergroup
                         NAME_GROUPREPS,
                         ExprDotMethod(
                             factory,
-                            "makeRSRowPerGroupUnboundGroupRep",
+                            "MakeRSRowPerGroupUnboundGroupRep",
                             Constant(groupKeyTypes),
                             eventType,
                             REF_AGENTINSTANCECONTEXT))

@@ -110,7 +110,7 @@ namespace com.espertech.esper.common.@internal.metrics.audit
         /// <summary>
         ///     NOTE: Code-generation-invoked method, method name and parameter order matters
         /// </summary>
-        /// <param name="@event">event</param>
+        /// <param name="event">event</param>
         /// <param name="context">context</param>
         /// <param name="filterText">text for filter</param>
         public static void AuditStream(

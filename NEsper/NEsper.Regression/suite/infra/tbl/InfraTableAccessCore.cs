@@ -81,7 +81,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                             "varMyAgg[P00].c3 as c3" +
                             " from SupportBean_S0";
             env.CompileDeploy(soda, eplSelect, path).AddListener("s0");
-            var fields = "c0,c1,c2,c3".SplitCsv();
+            var fields = new [] { "c0", "c1", "c2", "c3" };
 
             var eventType = env.Statement("s0").EventType;
             Assert.AreEqual(typeof(long?), eventType.GetPropertyType("c0"));
@@ -134,7 +134,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             SendEventsAndAssert(env, "C", 30, "A", 21);
             SendEventsAndAssert(env, "D", 40, "C", 30);
 
-            var fields = "c0,c1".SplitCsv();
+            var fields = new [] { "c0", "c1" };
             int[] expected = {21, 41, 30, 40};
             var count = 0;
             foreach (var p00 in "A,B,C,D".SplitCsv()) {
@@ -160,7 +160,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             string p00,
             int total)
         {
-            var fields = "c0,c1".SplitCsv();
+            var fields = new [] { "c0", "c1" };
             env.SendEventBean(new SupportBean(theString, intPrimitive));
             env.SendEventBean(new SupportBean_S0(0, p00));
             EPAssertionUtil.AssertProps(
@@ -269,7 +269,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                             (ungrouped ? "" : "group by TheString ");
             env.CompileDeploy(eplSelect, path).AddListener("into");
 
-            var fieldsSelect = "c0,c1,c2,c3".SplitCsv();
+            var fieldsSelect = new [] { "c0", "c1", "c2", "c3" };
             var groupKey = ungrouped ? "" : "['E1']";
             env.CompileDeploy(
                     "@Name('s0') select " +
@@ -663,7 +663,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 env.SendEventBean(new SupportBean_S0(0, "E2"));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    "c0".SplitCsv(),
+                    new [] { "c0" },
                     new object[] {2});
 
                 env.UndeployAll();
@@ -688,7 +688,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 env.SendEventBean(new SupportBean_S0(0, "E2"));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    "c0".SplitCsv(),
+                    new [] { "c0" },
                     new object[] {2});
 
                 env.UndeployAll();
@@ -757,7 +757,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
 
                 MakeSendBean(env, "E1", 10, 100);
 
-                var fields = "c0,c1".SplitCsv();
+                var fields = new [] { "c0", "c1" };
                 env.SendEventBean(new SupportBean_S0(10, "E1"));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
@@ -795,7 +795,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                               "from SupportBean group by TheString, IntPrimitive, LongPrimitive";
                 env.CompileDeploy(eplBind, path);
 
-                var fields = "c0,c1".SplitCsv();
+                var fields = new [] { "c0", "c1" };
                 var eplUse =
                     "@Name('s0') select varTotalG3K[P00, Id, 100L].total as c0, varTotalG3K[P00, Id, 100L].cnt as c1 from SupportBean_S0";
                 env.CompileDeploy(eplUse, path).AddListener("s0");
@@ -954,7 +954,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                                  ")";
                 env.CompileDeploy(eplDeclare, path);
 
-                var fieldsSelect = "c0,c1,c2,c3,c4,c5".SplitCsv();
+                var fieldsSelect = new [] { "c0", "c1", "c2", "c3", "c4", "c5" };
                 var eplSelectUngrouped = "@Name('s0') select varaggMSC.s0sum as c0, varaggMSC.s0cnt as c1," +
                                          "varaggMSC.s0win as c2, varaggMSC.s1sum as c3, varaggMSC.s1cnt as c4," +
                                          "varaggMSC.s1win as c5 from SupportBean";
@@ -1122,7 +1122,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                     path);
                 EPAssertionUtil.AssertProps(
                     resultInsert.Array[0],
-                    "theString,IntPrimitive".SplitCsv(),
+                    new [] { "TheString","IntPrimitive" },
                     new object[] {"A", 20});
 
                 env.UndeployAll();

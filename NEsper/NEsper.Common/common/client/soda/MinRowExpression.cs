@@ -39,7 +39,8 @@ namespace com.espertech.esper.common.client.soda
         {
             AddChild(new PropertyValueExpression(propertyOne));
             AddChild(new PropertyValueExpression(propertyTwo));
-            for (var i = 0; i < moreProperties.Length; i++) {
+            for (var i = 0; i < moreProperties.Length; i++)
+            {
                 AddChild(new PropertyValueExpression(moreProperties[i]));
             }
         }
@@ -57,7 +58,8 @@ namespace com.espertech.esper.common.client.soda
         {
             AddChild(exprOne);
             AddChild(exprTwo);
-            for (var i = 0; i < moreExpressions.Length; i++) {
+            for (var i = 0; i < moreExpressions.Length; i++)
+            {
                 AddChild(moreExpressions[i]);
             }
         }
@@ -102,7 +104,8 @@ namespace com.espertech.esper.common.client.soda
             writer.Write("min(");
 
             var delimiter = "";
-            foreach (var expr in Children) {
+            foreach (var expr in Children)
+            {
                 writer.Write(delimiter);
                 expr.ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
                 delimiter = ",";

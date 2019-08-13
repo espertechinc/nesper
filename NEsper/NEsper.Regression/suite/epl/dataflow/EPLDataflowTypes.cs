@@ -43,8 +43,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
             int p1)
         {
             IDictionary<string, object> map = new Dictionary<string, object>();
-            map.Put("p0", p0);
-            map.Put("p1", p1);
+            map.Put("P0", p0);
+            map.Put("P1", p1);
             return map;
         }
 
@@ -69,14 +69,14 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
 
                 SupportBean.Compare(
                     outputOne.GetAndReset().ToArray(),
-                    "theString,IntPrimitive".SplitCsv(),
+                    new [] { "TheString","IntPrimitive" },
                     new[] {
                         new object[] {"E1", 1}
                     });
                 var received = outputTwo.GetAndReset();
                 SupportBean.Compare(
                     received.First.ToArray(),
-                    "theString,IntPrimitive".SplitCsv(),
+                    new [] { "TheString","IntPrimitive" },
                     new[] {
                         new object[] {"E1", 1}
                     });
@@ -110,13 +110,13 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
 
                 EPAssertionUtil.AssertPropsPerRow(
                     outputOne.GetAndReset().ToArray(),
-                    new[] {"p0", "p1"},
+                    new[] {"P0", "P1"},
                     new[] {
                         new object[] {"E1", 1}
                     });
                 EPAssertionUtil.AssertPropsPerRow(
                     outputTwo.GetAndReset()[0].ToArray(),
-                    new[] {"p0", "p1"},
+                    new[] {"P0", "P1"},
                     new[] {
                         new object[] {"E1", 1}
                     });

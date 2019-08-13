@@ -17,13 +17,13 @@ namespace com.espertech.esper.common.client.context
         /// <summary>
         ///     Invoked when a new context is created.
         /// </summary>
-        /// <param name="@event">event</param>
+        /// <param name="event">event</param>
         void OnContextCreated(ContextStateEventContextCreated @event);
 
         /// <summary>
         ///     Invoked when a context is destroyed.
         /// </summary>
-        /// <param name="@event">event</param>
+        /// <param name="event">event</param>
         void OnContextDestroyed(ContextStateEventContextDestroyed @event);
     }
 } // end of namespace

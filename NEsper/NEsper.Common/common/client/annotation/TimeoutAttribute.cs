@@ -12,11 +12,16 @@ namespace com.espertech.esper.client.annotation
 {
     public class TimeoutAttribute : Attribute
     {
+        private int _value;
+
         /// <summary>
         /// Gets or sets the value.
         /// </summary>
         /// <value>The value.</value>
-        public int Value { get; set; }
+        public int Value {
+            get => _value;
+            set => _value = value;
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TimeoutAttribute"/> class.
@@ -24,7 +29,7 @@ namespace com.espertech.esper.client.annotation
         /// <param name="value">The value.</param>
         public TimeoutAttribute(int value)
         {
-            Value = value;
+            _value = value;
         }
 
         /// <summary>

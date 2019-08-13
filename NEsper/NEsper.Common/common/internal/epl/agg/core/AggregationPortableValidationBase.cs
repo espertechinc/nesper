@@ -63,7 +63,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
             var method = parent.MakeChild(TypeOf(), GetType(), classScope);
             method.Block
                 .DeclareVar(TypeOf(), "v", NewInstance(TypeOf()))
-                .SetProperty(Ref("v"), "Distinct", Constant(distinct));
+                .SetProperty(Ref("v"), "IsDistinct", Constant(distinct));
             CodegenInlineSet(Ref("v"), method, symbols, classScope);
             method.Block.MethodReturn(Ref("v"));
             return LocalMethod(method);

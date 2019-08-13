@@ -58,7 +58,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
 
         private void RunAssertionManagedCollEvent(RegressionEnvironment env)
         {
-            var fieldsEnumEvent = "c0,c1,c2".SplitCsv();
+            var fieldsEnumEvent = new [] { "c0", "c1", "c2" };
             var eplEnumEvent = "@Name('s0') select " +
                                "ee() as c0, " +
                                "ee().allOf(v -> v.TheString = 'E1') as c1, " +
@@ -95,7 +95,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
         private void RunAssertionManagedSingleEvent(RegressionEnvironment env)
         {
             // test single-event return
-            var fieldsSingleEvent = "c0,c1,c2,c3,c4".SplitCsv();
+            var fieldsSingleEvent = new [] { "c0", "c1", "c2", "c3", "c4" };
             var eplSingleEvent = "@Name('s0') select " +
                                  "se1() as c0, " +
                                  "se1().allOf(v -> v.TheString = 'E1') as c1, " +
@@ -183,7 +183,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
 
         private void RunAssertionManagedScalarArray(RegressionEnvironment env)
         {
-            var fieldsScalarArray = "c0,c1,c2,c3".SplitCsv();
+            var fieldsScalarArray = new [] { "c0", "c1", "c2", "c3" };
             var eplScalarArray = "@Name('s0') select " +
                                  "sa(TheString) as c0, " +
                                  "sa(IntPrimitive) as c1, " +
@@ -222,7 +222,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
 
         private void RunAssertionManagedScalarOnly(RegressionEnvironment env)
         {
-            var fieldsScalar = "c0,c1".SplitCsv();
+            var fieldsScalar = new [] { "c0", "c1" };
             var eplScalar = "@Name('s0') select ss(TheString) as c0, ss(IntPrimitive) as c1 from SupportBean";
             env.CompileDeploy(eplScalar).AddListener("s0");
 
@@ -292,7 +292,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
 
         private void TryAssertion(RegressionEnvironment env)
         {
-            var fields = "c0,c1".SplitCsv();
+            var fields = new [] { "c0", "c1" };
             var eventType = env.Statement("s0").EventType;
             foreach (var prop in fields)
             {

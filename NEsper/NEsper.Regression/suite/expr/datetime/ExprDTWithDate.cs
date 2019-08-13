@@ -31,9 +31,9 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                       "create variable int varday;\n" +
                       "@Name('s0') select " +
                       "current_timestamp.withDate(varyear, varmonth, varday) as val0," +
-                      "utildate.withDate(varyear, varmonth, varday) as val1," +
-                      "longdate.withDate(varyear, varmonth, varday) as val2," +
-                      "exdate.withDate(varyear, varmonth, varday) as val3" +
+                      "DtoDate.withDate(varyear, varmonth, varday) as val1," +
+                      "LongDate.withDate(varyear, varmonth, varday) as val2," +
+                      "DtxDate.withDate(varyear, varmonth, varday) as val3" +
                       " from SupportDateTime";
             env.CompileDeploy(epl).AddListener("s0");
             var deployId = env.DeploymentId("s0");

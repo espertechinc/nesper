@@ -38,12 +38,14 @@ namespace com.espertech.esper.common.client.soda
             this.value = value;
         }
 
-        public string Name {
+        public string Name
+        {
             get => name;
             set => name = value;
         }
 
-        public object Value {
+        public object Value
+        {
             get => value;
             set => this.value = value;
         }

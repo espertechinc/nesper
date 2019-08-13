@@ -57,7 +57,8 @@ namespace com.espertech.esper.common.client.soda
         ///     Returns the type of the constant.
         /// </summary>
         /// <returns>type</returns>
-        public string ConstantType {
+        public string ConstantType
+        {
             get => constantType;
             set => constantType = value;
         }
@@ -68,17 +69,20 @@ namespace com.espertech.esper.common.client.soda
         ///     Returns the constant value that the expression represents.
         /// </summary>
         /// <returns>value of constant</returns>
-        public object Constant {
+        public object Constant
+        {
             get => constant;
             set => constant = value;
         }
 
         public override void ToPrecedenceFreeEPL(TextWriter writer)
         {
-            if (constant is IDictionary<string, object> map) {
+            if (constant is IDictionary<string, object> map)
+            {
                 writer.Write("{");
                 var delimiter = "";
-                foreach (var entry in map) {
+                foreach (var entry in map)
+                {
                     writer.Write(delimiter);
                     writer.Write(entry.Key);
                     writer.Write(": ");
@@ -88,14 +92,17 @@ namespace com.espertech.esper.common.client.soda
 
                 writer.Write("}");
             }
-            else if (constant is string) {
+            else if (constant is string)
+            {
                 EPStatementObjectModelHelper.RenderEPL(writer, constant);
             }
-            else if (constant is IEnumerable iterable) {
+            else if (constant is IEnumerable iterable)
+            {
                 writer.Write("[");
                 var delimiter = "";
 
-                foreach (var next in iterable) {
+                foreach (var next in iterable)
+                {
                     writer.Write(delimiter);
                     DataFlowOperatorParameter.RenderValue(writer, next);
                     delimiter = ",";
@@ -103,7 +110,8 @@ namespace com.espertech.esper.common.client.soda
 
                 writer.Write("]");
             }
-            else {
+            else
+            {
                 StringValue.RenderConstantAsEPL(writer, constant);
             }
         }

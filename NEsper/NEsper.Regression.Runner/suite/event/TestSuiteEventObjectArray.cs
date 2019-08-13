@@ -64,7 +64,7 @@ namespace com.espertech.esper.regressionrun.suite.@event
         }
 
         [Test]
-        public void TestEventObjectArrayEventNestedPojo()
+        public void TestEventObjectArrayEventNestedPono()
         {
             RegressionRunner.Run(session, new EventObjectArrayEventNestedPono());
         }
@@ -86,14 +86,14 @@ namespace com.espertech.esper.regressionrun.suite.@event
             object[] MyObjectArrayTypes = { typeof(int?), typeof(string), typeof(SupportBeanComplexProps) };
             configuration.Common.AddEventType("MyObjectArrayEvent", myObjectArrayEvent, MyObjectArrayTypes);
 
-            string[] myArrayOAProps = { "p0", "p1" };
+            string[] myArrayOAProps = { "P0", "P1" };
             object[] MyArrayOATypes = { typeof(int[]), typeof(SupportBean[]) };
             configuration.Common.AddEventType("MyArrayOA", myArrayOAProps, MyArrayOATypes);
 
             configuration.Common.AddEventType("MyArrayOAMapOuter", new string[] { "outer" }, new object[] { "MyArrayOA" });
 
             IDictionary<string, object> mappedDef = MakeMap(new object[][] {
-                new object[]{"p0", typeof(IDictionary<string, object>)}
+                new object[]{"P0", typeof(IDictionary<string, object>)}
             });
             configuration.Common.AddEventType("MyMappedPropertyMap", mappedDef);
 
@@ -113,17 +113,17 @@ namespace com.espertech.esper.regressionrun.suite.@event
             configuration.Common.AddEventType("MyNamedMap", namedDef);
 
             IDictionary<string, object> eventDef = MakeMap(new object[][] {
-                new object[]{"p0", "MyNamedMap"},
-                new object[]{"p1", "MyNamedMap[]"}
+                new object[]{"P0", "MyNamedMap"},
+                new object[]{"P1", "MyNamedMap[]"}
             });
             configuration.Common.AddEventType("MyMapWithAMap", eventDef);
             configuration.Common.AddEventType("MyObjectArrayMapOuter", new string[] { "outer" }, new object[] { eventDef });
 
-            configuration.Common.AddEventType("MyOAWithAMap", new string[] { "p0", "p1" }, new object[] { "MyNamedMap", "MyNamedMap[]" });
+            configuration.Common.AddEventType("MyOAWithAMap", new string[] { "P0", "P1" }, new object[] { "MyNamedMap", "MyNamedMap[]" });
 
             configuration.Common.AddEventType("TypeLev1", new string[] { "p1id" }, new object[] { typeof(int) });
-            configuration.Common.AddEventType("TypeLev0", new string[] { "p0id", "p1" }, new object[] { typeof(int), "TypeLev1" });
-            configuration.Common.AddEventType("TypeRoot", new string[] { "rootId", "p0" }, new object[] { typeof(int), "TypeLev0" });
+            configuration.Common.AddEventType("TypeLev0", new string[] { "p0id", "P1" }, new object[] { typeof(int), "TypeLev1" });
+            configuration.Common.AddEventType("TypeRoot", new string[] { "rootId", "P0" }, new object[] { typeof(int), "TypeLev0" });
 
             Pair<string[], object[]> pair = GetTestDef();
             configuration.Common.AddEventType("NestedObjectArr", pair.First, pair.Second);

@@ -354,11 +354,11 @@ namespace com.espertech.esper.regressionlib.suite.view
                     new[] {new object[] {"E2", 2}});
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").LastOldData[0],
-                    "TheString".SplitCsv(),
+                    new [] { "TheString" },
                     new object[] {"E1"});
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").LastOldData[1],
-                    "TheString".SplitCsv(),
+                    new [] { "TheString" },
                     new object[] {"E1"});
                 env.Listener("s0").Reset();
 

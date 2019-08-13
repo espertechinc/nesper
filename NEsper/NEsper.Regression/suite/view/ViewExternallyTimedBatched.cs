@@ -127,7 +127,7 @@ namespace com.espertech.esper.regressionlib.suite.view
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "c0".SplitCsv();
+                var fields = new [] { "c0" };
 
                 var epl =
                     "@Name('s0') select irstream TheString as c0 from SupportBean#ext_timed_batch(LongPrimitive, 10 sec)";
@@ -391,7 +391,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 SendExtTimeEvent(env, DateTimeParsingFunctions.ParseDefaultMSec("2002-03-01T09:00:00.000"), "E3");
                 EPAssertionUtil.AssertPropsPerRow(
                     env.Listener("s0").GetAndResetLastNewData(),
-                    "TheString".SplitCsv(),
+                    new [] { "TheString" },
                     new[] {new object[] {"E1"}, new object[] {"E2"}});
 
                 env.UndeployAll();

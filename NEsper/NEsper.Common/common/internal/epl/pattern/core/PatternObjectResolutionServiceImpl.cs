@@ -95,8 +95,7 @@ namespace com.espertech.esper.common.@internal.epl.pattern.core
             // Find the factory class for this pattern object
             Type forgeClass = null;
 
-            var namespaceMap =
-                patternObjects.Pluggables.Get(spec.ObjectNamespace);
+            var namespaceMap = patternObjects.Pluggables.Get(spec.ObjectNamespace);
             if (namespaceMap != null) {
                 var pair = namespaceMap.Get(spec.ObjectName);
                 if (pair != null) {

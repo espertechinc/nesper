@@ -6,11 +6,7 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.IO;
-
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.client.soda
 {
@@ -59,7 +55,8 @@ namespace com.espertech.esper.common.client.soda
             return this;
         }
 
-        public override ExpressionPrecedenceEnum Precedence {
+        public override ExpressionPrecedenceEnum Precedence
+        {
             get => ExpressionPrecedenceEnum.UNARY;
         }
 
@@ -67,8 +64,10 @@ namespace com.espertech.esper.common.client.soda
         {
             writer.Write("{");
             bool isFirst = true;
-            foreach (Expression child in this.Children) {
-                if (!isFirst) {
+            foreach (Expression child in this.Children)
+            {
+                if (!isFirst)
+                {
                     writer.Write(",");
                 }
 

@@ -161,8 +161,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                 }
                 catch (Exception rtex) {
                     Log.Debug("Failed to render nice validation message text: " + rtex.Message, rtex);
-                    throw ex;
+                    // fall through
                 }
+
+                throw;
             }
         }
 

@@ -84,9 +84,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 MyOperatorOneForge.Operators.Clear();
                 env.Compile(
                     "@Name('flow') create dataflow MyGraph MyOperatorOne {" +
-                    "  TheString = 'a'," +
+                    "  theString = 'a'," +
                     "  theInt: 1," +
-                    "  theBool: true," +
+                    "  isTheBool: true," +
                     "  theLongOne: 1L," +
                     "  theLongTwo: 2," +
                     "  theLongThree: null," +
@@ -94,7 +94,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                     "  theDoubleTwo: 2," +
                     "  theFloatOne: 1f," +
                     "  theFloatTwo: 2," +
-                    "  TheStringWithSetter: 'b'," +
+                    "  theStringWithSetter: 'b'," +
                     "  theSystemProperty: systemProperties('log4j.configuration')" +
                     "}");
                 Assert.AreEqual(1, MyOperatorOneForge.Operators.Count);
@@ -118,7 +118,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 MyOperatorTwoForge.Operators.Clear();
                 env.Compile(
                     "@Name('flow') create dataflow MyGraph MyOperatorTwo {\n" +
-                    "  TheStringArray: ['a', \"b\"],\n" +
+                    "  theStringArray: ['a', \"b\"],\n" +
                     "  theIntArray: [1, 2, 3],\n" +
                     "  theObjectArray: ['a', 1],\n" +
                     "  theMap: {\n" +
@@ -154,50 +154,49 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
 
         public class MyOperatorOneForge : DataFlowOperatorForge
         {
-            [DataFlowOpParameter] private readonly bool _isTheBool;
-            [DataFlowOpParameter] private readonly double _theDoubleOne;
-            [DataFlowOpParameter] private readonly double? _theDoubleTwo;
-            [DataFlowOpParameter] private readonly float _theFloatOne;
-            [DataFlowOpParameter] private readonly float? _theFloatTwo;
-            [DataFlowOpParameter] private readonly int _theInt;
-            [DataFlowOpParameter] private readonly long? _theLongOne;
-            [DataFlowOpParameter] private readonly long? _theLongThree;
-            [DataFlowOpParameter] private readonly long _theLongTwo;
-            [DataFlowOpParameter] private readonly string _theNotSetString;
-
-            [DataFlowOpParameter] private readonly string _theString;
-            [DataFlowOpParameter] private string _theStringWithSetter;
+            [DataFlowOpParameter] private readonly bool isTheBool;
+            [DataFlowOpParameter] private readonly double theDoubleOne;
+            [DataFlowOpParameter] private readonly double? theDoubleTwo;
+            [DataFlowOpParameter] private readonly float theFloatOne;
+            [DataFlowOpParameter] private readonly float? theFloatTwo;
+            [DataFlowOpParameter] private readonly int theInt;
+            [DataFlowOpParameter] private readonly long? theLongOne;
+            [DataFlowOpParameter] private readonly long? theLongThree;
+            [DataFlowOpParameter] private readonly long theLongTwo;
+            [DataFlowOpParameter] private readonly string theNotSetString;
+            [DataFlowOpParameter] private readonly string theString;
+            [DataFlowOpParameter] private string theStringWithSetter;
 
             public MyOperatorOneForge()
             {
                 Operators.Add(this);
             }
 
-            public string TheString => _theString;
+            public string TheString => theString;
 
-            public string TheNotSetString => _theNotSetString;
+            public string TheNotSetString => theNotSetString;
 
-            public int TheInt => _theInt;
+            public int TheInt => theInt;
 
-            public bool IsTheBool => _isTheBool;
+            public bool IsTheBool => isTheBool;
 
-            public long? TheLongOne => _theLongOne;
+            public long? TheLongOne => theLongOne;
 
-            public long TheLongTwo => _theLongTwo;
+            public long TheLongTwo => theLongTwo;
 
-            public long? TheLongThree => _theLongThree;
+            public long? TheLongThree => theLongThree;
 
-            public float TheFloatOne => _theFloatOne;
+            public float TheFloatOne => theFloatOne;
 
-            public float? TheFloatTwo => _theFloatTwo;
+            public float? TheFloatTwo => theFloatTwo;
 
-            public double TheDoubleOne => _theDoubleOne;
+            public double TheDoubleOne => theDoubleOne;
 
-            public double? TheDoubleTwo => _theDoubleTwo;
+            public double? TheDoubleTwo => theDoubleTwo;
 
             public string TheStringWithSetter {
-                get => _theStringWithSetter;
-                set => _theStringWithSetter = ">" + value + "<";
+                get => theStringWithSetter;
+                set => theStringWithSetter = ">" + value + "<";
             }
 
             public string TheSystemProperty { get; }
@@ -220,24 +219,51 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
 
         public class MyOperatorTwoForge : DataFlowOperatorForge
         {
+            private static readonly IList<MyOperatorTwoForge> OPERATORS = new List<MyOperatorTwoForge>();
+
+            private string[] theStringArray;
+            private int[] theIntArray;
+            private object[] theObjectArray;
+            private MyOperatorTwoInner theInnerOp;
+            private MyOperatorTwoInterface theInnerOpInterface;
+            private IDictionary<string, object> theMap;
+
             public MyOperatorTwoForge()
             {
                 Operators.Add(this);
             }
 
-            public string[] TheStringArray { get; set; }
+            public string[] TheStringArray {
+                get => theStringArray;
+                set => theStringArray = value;
+            }
 
-            public int[] TheIntArray { get; set; }
+            public int[] TheIntArray {
+                get => theIntArray;
+                set => theIntArray = value;
+            }
 
-            public object[] TheObjectArray { get; set; }
+            public object[] TheObjectArray {
+                get => theObjectArray;
+                set => theObjectArray = value;
+            }
 
-            public MyOperatorTwoInner TheInnerOp { get; set; }
+            public MyOperatorTwoInner TheInnerOp {
+                get => theInnerOp;
+                set => theInnerOp = value;
+            }
 
-            public MyOperatorTwoInterface TheInnerOpInterface { get; set; }
+            public MyOperatorTwoInterface TheInnerOpInterface {
+                get => theInnerOpInterface;
+                set => theInnerOpInterface = value;
+            }
 
-            public static IList<MyOperatorTwoForge> Operators { get; } = new List<MyOperatorTwoForge>();
+            public static IList<MyOperatorTwoForge> Operators => OPERATORS;
 
-            public IDictionary<string, object> TheMap { get; set; }
+            public IDictionary<string, object> TheMap {
+                get => theMap;
+                set => theMap = value;
+            }
 
             public DataFlowOpForgeInitializeResult InitializeForge(DataFlowOpForgeInitializeContext context)
             {
@@ -256,7 +282,6 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
         public class MyOperatorTwoInner
         {
             [DataFlowOpParameter] internal string fieldOne;
-
             [DataFlowOpParameter] internal int fieldTwo;
         }
 

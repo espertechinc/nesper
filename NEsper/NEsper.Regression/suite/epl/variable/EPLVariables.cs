@@ -428,7 +428,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
                 env.SendEventBean(new SupportBean("E1", 1));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    "c0,c1".SplitCsv(),
+                    new [] { "c0", "c1" },
                     new object[] {"hello", "hello"});
 
                 env.UndeployAll();
@@ -592,7 +592,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
                 TryOperator(
                     env,
                     path,
-                    "shortBoxed = MYCONST",
+                    "ShortBoxed = MYCONST",
                     new[] {
                         new object[] {(short) 10, true}, new object[] {(short) 9, false}, new object[] {null, false}
                     });
@@ -609,7 +609,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
                 TryOperator(
                     env,
                     path,
-                    "shortBoxed < MYCONST",
+                    "ShortBoxed < MYCONST",
                     new[] {
                         new object[] {(short) 11, false}, new object[] {(short) 10, false},
                         new object[] {(short) 9, true},
@@ -619,7 +619,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
                 TryOperator(
                     env,
                     path,
-                    "shortBoxed in (MYCONST)",
+                    "ShortBoxed in (MYCONST)",
                     new[] {
                         new object[] {(short) 11, false}, new object[] {(short) 10, true},
                         new object[] {(short) 9, false},
@@ -729,7 +729,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
                 TryOperator(
                     env,
                     path,
-                    "var_enumone = enumValue",
+                    "var_enumone = EnumValue",
                     new[] {
                         new object[] {SupportEnum.ENUM_VALUE_3, false}, new object[] {SupportEnum.ENUM_VALUE_2, true},
                         new object[] {SupportEnum.ENUM_VALUE_1, false}
@@ -741,14 +741,14 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
                 TryOperator(
                     env,
                     path,
-                    "enumValue in (var_enumarr, var_enumone)",
+                    "EnumValue in (var_enumarr, var_enumone)",
                     new[] {
                         new object[] {SupportEnum.ENUM_VALUE_3, false}, new object[] {SupportEnum.ENUM_VALUE_2, true},
                         new object[] {SupportEnum.ENUM_VALUE_1, true}
                     });
 
                 env.CompileDeploy("create variable SupportEnum var_enumtwo = SupportEnum.ENUM_VALUE_2", path);
-                env.CompileDeploy("on SupportBean set var_enumtwo = enumValue", path);
+                env.CompileDeploy("on SupportBean set var_enumtwo = EnumValue", path);
 
                 env.UndeployAll();
             }
@@ -884,7 +884,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
                 catch (VariableValueException ex) {
                     // expected
                     Assert.AreEqual(
-                        "Variable 'dummy' of declared type System.Integer cannot be assigned a value of type System.String",
+                        "Variable 'dummy' of declared type System.Int32 cannot be assigned a value of type System.String",
                         ex.Message);
                 }
 
@@ -895,7 +895,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
                 catch (VariableValueException ex) {
                     // expected
                     Assert.AreEqual(
-                        "Variable 'dummy' of declared type System.Integer cannot be assigned a value of type System.Long",
+                        "Variable 'dummy' of declared type System.Int32 cannot be assigned a value of type System.Long",
                         ex.Message);
                 }
 
@@ -906,7 +906,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
                 catch (VariableValueException ex) {
                     // expected
                     Assert.AreEqual(
-                        "Variable 'var2' of declared type System.String cannot be assigned a value of type System.Integer",
+                        "Variable 'var2' of declared type System.String cannot be assigned a value of type System.Int32",
                         ex.Message);
                 }
 
@@ -1749,12 +1749,12 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
                 TryInvalidCompile(
                     env,
                     "on SupportBean set var3IS = 'abc'",
-                    "Variable 'var3IS' of declared type System.Integer cannot be assigned a value of type System.String");
+                    "Variable 'var3IS' of declared type System.Int32 cannot be assigned a value of type System.String");
 
                 TryInvalidCompile(
                     env,
                     "on SupportBean set var3IS = DoublePrimitive",
-                    "Variable 'var3IS' of declared type System.Integer cannot be assigned a value of type System.Double");
+                    "Variable 'var3IS' of declared type System.Int32 cannot be assigned a value of type System.Double");
 
                 TryInvalidCompile(env, "on SupportBean set var2IS = 'false'", "skip");
                 TryInvalidCompile(env, "on SupportBean set var3IS = 1.1", "skip");

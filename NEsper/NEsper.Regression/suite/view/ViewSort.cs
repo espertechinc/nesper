@@ -64,7 +64,7 @@ namespace com.espertech.esper.regressionlib.suite.view
             {
                 var epl = "@Name('s0') select irstream * from SupportBean#sort(3, IntPrimitive desc, LongPrimitive)";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
-                var fields = "theString,IntPrimitive,LongPrimitive".SplitCsv();
+                var fields = "TheString,IntPrimitive,LongPrimitive".SplitCsv();
 
                 env.SendEventBean(MakeEvent("E1", 100, 0L));
                 EPAssertionUtil.AssertProps(
@@ -152,7 +152,7 @@ namespace com.espertech.esper.regressionlib.suite.view
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "theString,IntPrimitive".SplitCsv();
+                var fields = new [] { "TheString","IntPrimitive" };
 
                 var epl = "@Name('s0') select irstream * from SupportBean#sort(3, TheString)";
                 env.CompileDeployAddListenerMileZero(epl, "s0");

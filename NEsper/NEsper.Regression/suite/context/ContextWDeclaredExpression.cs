@@ -28,7 +28,7 @@ namespace com.espertech.esper.regressionlib.suite.context
 
         private static void TryAssertionExpression(RegressionEnvironment env)
         {
-            var fields = "c0,c1,c2".SplitCsv();
+            var fields = new [] { "c0", "c1", "c2" };
             env.SendEventBean(new SupportBean("E1", -2));
             EPAssertionUtil.AssertProps(
                 env.Listener("s0").AssertOneGetNewAndReset(),

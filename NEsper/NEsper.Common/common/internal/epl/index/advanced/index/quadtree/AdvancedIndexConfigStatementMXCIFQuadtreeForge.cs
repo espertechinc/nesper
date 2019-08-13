@@ -50,8 +50,8 @@ namespace com.espertech.esper.common.@internal.epl.index.advanced.index.quadtree
                 .DeclareVar<AdvancedIndexConfigStatementMXCIFQuadtree>(
                     "factory",
                     NewInstance(typeof(AdvancedIndexConfigStatementMXCIFQuadtree)))
-                .SetProperty(Ref("factory"), "xEval", expr.Invoke(XEval))
-                .SetProperty(Ref("factory"), "yEval", expr.Invoke(YEval))
+                .SetProperty(Ref("factory"), "XEval", expr.Invoke(XEval))
+                .SetProperty(Ref("factory"), "YEval", expr.Invoke(YEval))
                 .SetProperty(Ref("factory"), "WidthEval", expr.Invoke(WidthEval))
                 .SetProperty(Ref("factory"), "HeightEval", expr.Invoke(HeightEval))
                 .MethodReturn(Ref("factory"));

@@ -36,9 +36,9 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
             var fields = "val0,val1,val2,val3".SplitCsv();
             epl = "@Name('s0') select " +
                   "current_timestamp.withTime(varhour, varmin, varsec, varmsec) as val0," +
-                  "utildate.withTime(varhour, varmin, varsec, varmsec) as val1," +
-                  "longdate.withTime(varhour, varmin, varsec, varmsec) as val2," +
-                  "exdate.withTime(varhour, varmin, varsec, varmsec) as val3" +
+                  "DtoDate.withTime(varhour, varmin, varsec, varmsec) as val1," +
+                  "LongDate.withTime(varhour, varmin, varsec, varmsec) as val2," +
+                  "DtxDate.withTime(varhour, varmin, varsec, varmsec) as val3" +
                   " from SupportDateTime";
             env.CompileDeploy(epl, path).AddListener("s0");
             LambdaAssertionUtil.AssertTypes(

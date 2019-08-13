@@ -40,7 +40,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 return;
             }
 
-            EPAssertionUtil.AssertPropsPerRowAnyOrder(events, "c0,c1".SplitCsv(), values);
+            EPAssertionUtil.AssertPropsPerRowAnyOrder(events, new [] { "c0", "c1" }, values);
         }
 
         internal class InfraSubSelStar : RegressionExecution

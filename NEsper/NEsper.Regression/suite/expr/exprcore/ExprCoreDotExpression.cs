@@ -67,7 +67,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
             env.SendEventBean(new SupportBean(UuidGenerator.Generate(), intPrimitive));
             EPAssertionUtil.AssertProps(
                 env.Listener("s0").AssertOneGetNewAndReset(),
-                "c0".SplitCsv(),
+                new [] { "c0" },
                 new object[] {expected});
         }
 
@@ -93,7 +93,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "c0,c1,c2,c3".SplitCsv();
+                var fields = new [] { "c0", "c1", "c2", "c3" };
                 var epl = "@Name('s0') select " +
                           "IntPrimitive = SupportEnumTwo.ENUM_VALUE_1.getAssociatedValue() as c0," +
                           "SupportEnumTwo.ENUM_VALUE_2.checkAssociatedValue(IntPrimitive) as c1," +
@@ -160,7 +160,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                 env.SendEventBean(@event);
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    "c0,c1,c2,c3,c4,c5,c6,c7".SplitCsv(),
+                    new [] { "c0", "c1", "c2", "c3", "c4", "c5", "c6", "c7" },
                     new object[] {
                         @event.InnerTypes.Get("key1"),
                         @event.InnerTypes.Get("key1"),
@@ -183,10 +183,10 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                     "' taking no parameters [select abc.noSuchMethod() from SupportBean abc]");
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
-                    "select abc.getChildOne(\"abc\", 10).noSuchMethod() from SupportChainTop abc",
-                    "Failed to validate select-clause expression 'abc.getChildOne(\"abc\",10).noSuchMethod()': Failed to solve 'getChildOne' to either an date-time or enumeration method, an event property or a method on the event underlying object: Failed to resolve method 'noSuchMethod': Could not find enumeration method, date-time method or instance method named 'noSuchMethod' in class '" +
+                    "select abc.GetChildOne(\"abc\", 10).noSuchMethod() from SupportChainTop abc",
+                    "Failed to validate select-clause expression 'abc.GetChildOne(\"abc\",10).noSuchMethod()': Failed to solve 'getChildOne' to either an date-time or enumeration method, an event property or a method on the event underlying object: Failed to resolve method 'noSuchMethod': Could not find enumeration method, date-time method or instance method named 'noSuchMethod' in class '" +
                     typeof(SupportChainChildOne).Name +
-                    "' taking no parameters [select abc.getChildOne(\"abc\", 10).noSuchMethod() from SupportChainTop abc]");
+                    "' taking no parameters [select abc.GetChildOne(\"abc\", 10).noSuchMethod() from SupportChainTop abc]");
             }
         }
 
@@ -270,7 +270,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
         {
             public void Run(RegressionEnvironment env)
             {
-                var subexpr = "top.getChildOne(\"abc\",10).getChildTwo(\"append\")";
+                var subexpr = "top.GetChildOne(\"abc\",10).GetChildTwo(\"append\")";
                 var epl = "@Name('s0') select " + subexpr + " from SupportChainTop as top";
                 env.CompileDeploy(epl).AddListener("s0");
                 AssertChainedParam(env, subexpr);

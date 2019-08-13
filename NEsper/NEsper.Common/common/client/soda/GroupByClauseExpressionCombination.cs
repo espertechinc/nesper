@@ -13,7 +13,7 @@ using System.IO;
 namespace com.espertech.esper.common.client.soda
 {
     /// <summary>
-    /// A combination of expressions is for example "(a, b)", wherein the list of expressions 
+    /// A combination of expressions is for example "(a, b)", wherein the list of expressions
     /// provided together logically make up a grouping level.
     /// </summary>
     [Serializable]
@@ -41,7 +41,8 @@ namespace com.espertech.esper.common.client.soda
         /// Returns the combined expressions.
         /// </summary>
         /// <value>expressions</value>
-        public IList<Expression> Expressions {
+        public IList<Expression> Expressions
+        {
             get { return _expressions; }
             set { this._expressions = value; }
         }
@@ -50,7 +51,8 @@ namespace com.espertech.esper.common.client.soda
         {
             writer.Write("(");
             String delimiter = "";
-            foreach (Expression e in _expressions) {
+            foreach (Expression e in _expressions)
+            {
                 writer.Write(delimiter);
                 e.ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
                 delimiter = ", ";

@@ -562,15 +562,16 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createdataflow
                 var operatorName = operatorSpec.OperatorName;
                 var operatorPrettyPrint = ToPrettyPrint(i, operatorSpec);
                 var operatorAnnotation = operatorAnnotations.Get(operatorSpec);
+                var operatorCaseName = char.ToUpper(operatorName[0]) + operatorName.Substring(1);
 
                 Type forgeClass = null;
                 try {
-                    var forgeClassName = operatorSpec.OperatorName + "Forge";
+                    var forgeClassName = operatorCaseName + "Forge";
                     forgeClass = services.ImportServiceCompileTime.ResolveClass(forgeClassName, false);
                 }
                 catch (ImportException e) {
                     try {
-                        var forgeClassName = operatorSpec.OperatorName;
+                        var forgeClassName = operatorCaseName;
                         forgeClass = services.ImportServiceCompileTime.ResolveClass(forgeClassName, false);
                     }
                     catch (ImportException) {
@@ -579,10 +580,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createdataflow
 
                     if (forgeClass == null) {
                         throw new ExprValidationException(
-                            "Failed to resolve forge class for operator '" +
-                            operatorSpec.OperatorName +
-                            "': " +
-                            e.Message,
+                            $"Failed to resolve forge class for operator '{operatorName}': {e.Message}",
                             e);
                     }
                 }
@@ -590,13 +588,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createdataflow
                 // if the factory implements the interface use that
                 if (!TypeHelper.IsImplementsInterface(forgeClass, typeof(DataFlowOperatorForge))) {
                     throw new ExprValidationException(
-                        "Forge class for operator '" +
-                        operatorSpec.OperatorName +
-                        "' does not implement interface '" +
-                        typeof(DataFlowOperatorForge).Name +
-                        "' (class '" +
-                        forgeClass.Name +
-                        "')");
+                        $"Forge class for operator '{operatorName}' does not implement interface '{typeof(DataFlowOperatorForge).Name}' (class '{forgeClass.Name}')");
                 }
 
                 var descriptor = new OperatorMetadataDescriptor(

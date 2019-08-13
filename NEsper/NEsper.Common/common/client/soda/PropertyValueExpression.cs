@@ -9,9 +9,6 @@
 using System;
 using System.IO;
 
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
-
 namespace com.espertech.esper.common.client.soda
 {
     /// <summary>
@@ -42,7 +39,8 @@ namespace com.espertech.esper.common.client.soda
         /// Returns the property name.
         /// </summary>
         /// <returns>name of the property</returns>
-        public string PropertyName {
+        public string PropertyName
+        {
             get => propertyName;
         }
 
@@ -55,7 +53,8 @@ namespace com.espertech.esper.common.client.soda
             this.propertyName = propertyName;
         }
 
-        public override ExpressionPrecedenceEnum Precedence {
+        public override ExpressionPrecedenceEnum Precedence
+        {
             get => ExpressionPrecedenceEnum.UNARY;
         }
 

@@ -73,7 +73,7 @@ namespace com.espertech.esper.compiler.@internal.parse
                 foreach (var cfgctx in cfgctxs)
                 {
                     string name;
-                    object value = astGraphNodeMap.Remove(cfgctx);
+                    object value = astGraphNodeMap.Delete(cfgctx);
                     if (cfgctx.n != null)
                     {
                         name = cfgctx.n.Text;

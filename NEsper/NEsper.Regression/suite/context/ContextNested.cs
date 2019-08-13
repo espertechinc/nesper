@@ -73,7 +73,7 @@ namespace com.espertech.esper.regressionlib.suite.context
             RegressionPath path)
         {
             env.AdvanceTime(0);
-            var fields = "c0,c1".SplitCsv();
+            var fields = new [] { "c0", "c1" };
             env.CompileDeploy(
                 "@Name('s0') context NestedContext " +
                 "select TheString as c0, sum(IntPrimitive) as c1 from SupportBean \n" +
@@ -407,7 +407,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 SendSupportBean(env, "C", 2, -10);
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    "theString,theSum".SplitCsv(),
+                    "TheString,theSum".SplitCsv(),
                     new object[] {"C", -1L});
 
                 env.Milestone(2);
@@ -415,7 +415,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 SendSupportBean(env, "D", 2, 5);
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    "theString,theSum".SplitCsv(),
+                    "TheString,theSum".SplitCsv(),
                     new object[] {"D", 9L});
 
                 env.UndeployAll();
@@ -470,7 +470,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                     "context BCtx group by IntPrimitive < 0 as grp1, group by IntPrimitive = 0 as grp2, group by IntPrimitive > 0 as grp3 from SupportBean",
                     path);
 
-                var fields = "c0,c1,c2,c3".SplitCsv();
+                var fields = new [] { "c0", "c1", "c2", "c3" };
                 env.CompileDeploy(
                     "@Name('s0') context NestedContext " +
                     "select context.ACtx.s0.P00 as c0, context.BCtx.label as c1, TheString as c2, sum(IntPrimitive) as c3 from SupportBean#length(5) group by TheString",
@@ -558,7 +558,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                     "context CCtx group by BoolPrimitive = true as b1, group by BoolPrimitive = false as b2 from SupportBean",
                     path);
 
-                var fieldsSelect = "c0,c1,c2,c3".SplitCsv();
+                var fieldsSelect = new [] { "c0", "c1", "c2", "c3" };
                 env.CompileDeploy(
                     "@Name('StmtOne') context NestedContext " +
                     "select context.ACtx.label as c0, context.BCtx.label as c1, context.CCtx.label as c2, count(*) as c3 from SupportBean#length(5) having count(*) > 0",
@@ -657,7 +657,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                     "context SegByString partition by TheString from SupportBean",
                     path);
 
-                var fields = "c0,c1,c2".SplitCsv();
+                var fields = new [] { "c0", "c1", "c2" };
                 env.CompileDeploy(
                     "@Name('s0') context NestedContext select " +
                     "context.EightToNine.startTime as c0, context.SegByString.Key1 as c1, IntPrimitive as c2 from SupportBean#keepall",
@@ -865,7 +865,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                              "context InitCtx as initiated by pattern [every a=SupportBean_S0 -> b=SupportBean_S1(Id = a.Id)] terminated after 10 sec";
                 env.CompileDeploy(eplCtx, path);
 
-                var fields = "c0,c1,c2,c3".SplitCsv();
+                var fields = new [] { "c0", "c1", "c2", "c3" };
                 env.CompileDeploy(
                     "@Name('s0') context NestedContext select " +
                     "context.ByCat.label as c0, context.InitCtx.a.P00 as c1, context.InitCtx.b.P10 as c2, sum(IntPrimitive) as c3 from SupportBean group by TheString",
@@ -974,7 +974,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                              "context InitCtx initiated by SupportBean_S0 as s0 terminated after 60 seconds";
                 env.CompileDeploy(eplCtx, path);
 
-                var fields = "c0,c1,c2".SplitCsv();
+                var fields = new [] { "c0", "c1", "c2" };
                 env.CompileDeploy(
                     "@Name('s0') context NestedContext select " +
                     "context.InitCtx.s0.P00 as c0, TheString as c1, sum(IntPrimitive) as c2 from SupportBean group by TheString",
@@ -1081,7 +1081,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                                 "context SegByLong as partition by LongPrimitive from SupportBean ";
                 env.CompileDeploy(eplCtxOne, path);
 
-                var fieldsOne = "c0,c1,c2,c3".SplitCsv();
+                var fieldsOne = new [] { "c0", "c1", "c2", "c3" };
                 env.CompileDeploy(
                     "@Name('s0') context NestedContext select " +
                     "context.SegByString.Key1 as c0, context.SegByInt.Key1 as c1, context.SegByLong.Key1 as c2, count(*) as c3 from SupportBean",
@@ -1950,7 +1950,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                     "context SegmentedByAString partition by TheString from SupportBean",
                     path);
 
-                var fields = "c0,c1,c2,c3,c4,c5,c6".SplitCsv();
+                var fields = new [] { "c0", "c1", "c2", "c3", "c4", "c5", "c6" };
                 var epl = "@Name('s0') context NestedContext select " +
                           "context.EightToNine.name as c0, " +
                           "context.EightToNine.startTime as c1, " +
@@ -2050,7 +2050,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                     "context SegmentedByAString partition by TheString from SupportBean",
                     path);
 
-                var fields = "c0,c1".SplitCsv();
+                var fields = new [] { "c0", "c1" };
                 env.CompileDeploy(
                     "@Name('s0') context NestedContext select TheString as c0, count(*) as c1 from SupportBean",
                     path);
@@ -2159,7 +2159,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                     "end SupportBean_S0(Id=e1.IntPrimitive and P00=e1.TheString)",
                     path);
 
-                var fields = "c0,c1,c2".SplitCsv();
+                var fields = new [] { "c0", "c1", "c2" };
                 env.CompileDeploy(
                     "@Name('s0') context NestedContext " +
                     "select TheString as c0, IntPrimitive as c1, count(LongPrimitive) as c2 from SupportBean \n" +
@@ -2254,7 +2254,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                     "@Name('s0') context NestedCtxWPartition select TheString, IntPrimitive, sum(LongPrimitive) as thesum from SupportBean output last when terminated",
                     path);
                 env.AddListener("s0");
-                var fields = "theString,IntPrimitive,thesum".SplitCsv();
+                var fields = "TheString,IntPrimitive,thesum".SplitCsv();
 
                 SendBean(env, "A", 1, 10, true);
                 SendBean(env, "B", 1, 11, true);
@@ -2329,7 +2329,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                     "select TheString, context.Lvl1Ctx.s0.P00 as P00, context.Lvl2Ctx.s1.P10 as P10 from SupportBean",
                     path);
                 env.AddListener("s0");
-                var fields = "theString,P00,P10".SplitCsv();
+                var fields = "TheString,P00,P10".SplitCsv();
 
                 env.SendEventBean(new SupportBean("P1", 100));
 
@@ -2508,7 +2508,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                     (preallocate ? "preallocate" : ""),
                     path);
 
-                var fields = "c0,c1".SplitCsv();
+                var fields = new [] { "c0", "c1" };
                 env.CompileDeploy(
                     "@Name('s0') context NestedContext select " +
                     "context.FirstCtx.s0.Id as c0, TheString as c1 from SupportBean#keepall",
@@ -2603,7 +2603,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                     "context SecondCtx partition by TheString from SupportBean",
                     path);
 
-                var fields = "c0,c1".SplitCsv();
+                var fields = new [] { "c0", "c1" };
                 env.CompileDeploy(
                     "@Name('s0') context NestedContext select " +
                     "context.FirstCtx.s0.Id as c0, TheString as c1 from SupportBean#keepall",
@@ -2693,7 +2693,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                     "context SecondCtx group by TheString = 'E1' as cat1, group by TheString = 'E2' as cat2 from SupportBean",
                     path);
 
-                var fields = "c0,c1".SplitCsv();
+                var fields = new [] { "c0", "c1" };
                 env.CompileDeploy(
                     "@Name('s0') context NestedContext select " +
                     "context.FirstCtx.s0.Id as c0, TheString as c1 from SupportBean#keepall",
@@ -2781,7 +2781,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                     "context SecondCtx initiated by SupportBean_S2 as s2 terminated after 24 hours",
                     path);
 
-                var fields = "c0,c1,c2".SplitCsv();
+                var fields = new [] { "c0", "c1", "c2" };
                 env.CompileDeploy(
                     "@Name('s0') context NestedContext select " +
                     "context.FirstCtx.s0.Id as c0, context.SecondCtx.s2.Id as c1, TheString as c2 from SupportBean#keepall",

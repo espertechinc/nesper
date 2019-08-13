@@ -25,10 +25,10 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
         private const bool FITH_EVENT = false;
 
         private const string EPL = "select BytePrimitive&ByteBoxed as myFirstProperty, " +
-                                   "shortPrimitive|ShortBoxed as mySecondProperty, " +
+                                   "ShortPrimitive|ShortBoxed as mySecondProperty, " +
                                    "IntPrimitive|IntBoxed as myThirdProperty, " +
                                    "LongPrimitive^LongBoxed as myFourthProperty, " +
-                                   "boolPrimitive&BoolBoxed as myFifthProperty " +
+                                   "BoolPrimitive&BoolBoxed as myFifthProperty " +
                                    "from SupportBean";
 
         public static IList<RegressionExecution> Executions()

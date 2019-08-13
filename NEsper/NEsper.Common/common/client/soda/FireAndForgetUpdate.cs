@@ -27,7 +27,6 @@ namespace com.espertech.esper.common.client.soda
             Assignments = new List<Assignment>();
         }
 
-
         /// <summary>Add an assignment </summary>
         /// <param name="assignment">to add</param>
         /// <returns>assignment</returns>

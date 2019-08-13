@@ -60,7 +60,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
             env.UndeployAll();
 
             // test scalar-coll with lambda
-            var fieldsLambda = "val0,val1".SplitCsv();
+            var fieldsLambda = new [] { "val0", "val1" };
             var eplLambda = "@Name('s0') select " +
                             "Strvals.minBy(v -> extractNum(v)) as val0, " +
                             "Strvals.maxBy(v -> extractNum(v)) as val1 " +

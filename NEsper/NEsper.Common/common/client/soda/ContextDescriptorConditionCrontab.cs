@@ -54,13 +54,15 @@ namespace com.espertech.esper.common.client.soda
             IList<Expression> expressions,
             bool now)
         {
-            if (now) {
+            if (now)
+            {
                 writer.Write("@now and ");
             }
 
             writer.Write("(");
             string delimiter = "";
-            foreach (Expression e in expressions) {
+            foreach (Expression e in expressions)
+            {
                 writer.Write(delimiter);
                 e.ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
                 delimiter = ", ";

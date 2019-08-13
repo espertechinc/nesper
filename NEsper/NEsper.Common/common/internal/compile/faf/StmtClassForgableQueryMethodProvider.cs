@@ -76,7 +76,7 @@ namespace com.espertech.esper.common.@internal.compile.faf
                 forge.MakeMethod(makeMethod, symbols, classScope);
 
                 // make provider methods
-                var propQueryMethod = CodegenProperty.MakeParentNode(
+                var propQueryMethod = CodegenProperty.MakePropertyNode(
                     typeof(FAFQueryMethod),
                     GetType(),
                     CodegenSymbolProviderEmpty.INSTANCE,
@@ -86,7 +86,7 @@ namespace com.espertech.esper.common.@internal.compile.faf
                     .BlockReturn(Ref(MEMBERNAME_QUERYMETHOD));
 
                 // add get-informational methods
-                var propQueryInformationals = CodegenProperty.MakeParentNode(
+                var propQueryInformationals = CodegenProperty.MakePropertyNode(
                     typeof(FAFQueryInformationals),
                     GetType(),
                     CodegenSymbolProviderEmpty.INSTANCE,
@@ -100,7 +100,7 @@ namespace com.espertech.esper.common.@internal.compile.faf
                         propQueryInformationals, classScope));
 
                 // add get-statement-fields method
-                var propSubstitutionFieldSetter = CodegenProperty.MakeParentNode(
+                var propSubstitutionFieldSetter = CodegenProperty.MakePropertyNode(
                     typeof(FAFQueryMethodAssignerSetter),
                     GetType(),
                     CodegenSymbolProviderEmpty.INSTANCE,

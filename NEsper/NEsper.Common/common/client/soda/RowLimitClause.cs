@@ -137,24 +137,30 @@ namespace com.espertech.esper.common.client.soda
         public void ToEPL(TextWriter writer)
         {
             var numRowsVariable = NumRowsVariable;
-            if (numRowsVariable != null) {
+            if (numRowsVariable != null)
+            {
                 writer.Write(numRowsVariable);
             }
-            else {
+            else
+            {
                 var numRows = NumRows;
-                if (numRows != null) {
+                if (numRows != null)
+                {
                     writer.Write(numRows);
                 }
-                else {
+                else
+                {
                     writer.Write(Int32.MaxValue);
                 }
             }
 
-            if (OptionalOffsetRowsVariable != null) {
+            if (OptionalOffsetRowsVariable != null)
+            {
                 writer.Write(" offset ");
                 writer.Write(OptionalOffsetRowsVariable);
             }
-            else if (OptionalOffsetRows.GetValueOrDefault(0) != 0) {
+            else if (OptionalOffsetRows.GetValueOrDefault(0) != 0)
+            {
                 writer.Write(" offset ");
                 writer.Write(OptionalOffsetRows);
             }

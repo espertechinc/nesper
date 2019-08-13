@@ -47,7 +47,8 @@ namespace com.espertech.esper.common.client.soda
         {
             AddChild(first);
             AddChild(second);
-            for (int i = 0; i < patternExprs.Length; i++) {
+            for (int i = 0; i < patternExprs.Length; i++)
+            {
                 AddChild(patternExprs[i]);
             }
         }
@@ -63,7 +64,8 @@ namespace com.espertech.esper.common.client.soda
             return this;
         }
 
-        public override PatternExprPrecedenceEnum Precedence {
+        public override PatternExprPrecedenceEnum Precedence
+        {
             get { return PatternExprPrecedenceEnum.FOLLOWED_BY; }
         }
 
@@ -77,14 +79,17 @@ namespace com.espertech.esper.common.client.soda
         {
             String delimiter = "";
             int childNum = 0;
-            foreach (PatternExpr child in Children) {
+            foreach (PatternExpr child in Children)
+            {
                 writer.Write(delimiter);
                 child.ToEPL(writer, Precedence, formatter);
 
                 delimiter = " -> ";
-                if (OptionalMaxPerSubexpression != null && OptionalMaxPerSubexpression.Count > childNum) {
+                if (OptionalMaxPerSubexpression != null && OptionalMaxPerSubexpression.Count > childNum)
+                {
                     var maxExpr = OptionalMaxPerSubexpression[childNum];
-                    if (maxExpr != null) {
+                    if (maxExpr != null)
+                    {
                         var inner = new StringWriter();
                         maxExpr.ToEPL(inner, ExpressionPrecedenceEnum.MINIMUM);
                         delimiter = " -[" + inner.ToString() + "]> ";

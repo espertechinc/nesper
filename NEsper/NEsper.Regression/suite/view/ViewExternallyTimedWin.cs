@@ -72,7 +72,7 @@ namespace com.espertech.esper.regressionlib.suite.view
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "Symbol".SplitCsv();
+                var fields = new [] { "Symbol" };
                 var text = "@Name('s0') select irstream * from  SupportMarketDataBean#ext_timed(Volume, 1 sec)";
                 env.CompileDeployAddListenerMileZero(text, "s0");
 
@@ -159,7 +159,7 @@ namespace com.espertech.esper.regressionlib.suite.view
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "c0".SplitCsv();
+                var fields = new [] { "c0" };
                 var epl =
                     "@Name('s0') select irstream TheString as c0 from SupportBean#ext_timed(LongPrimitive, 10 sec)";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
@@ -272,7 +272,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 SendExtTimeEvent(env, DateTimeParsingFunctions.ParseDefaultMSec("2002-03-01T09:00:00.000"), "E3");
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    "TheString".SplitCsv(),
+                    new [] { "TheString" },
                     new object[] {"E1"});
 
                 env.UndeployAll();

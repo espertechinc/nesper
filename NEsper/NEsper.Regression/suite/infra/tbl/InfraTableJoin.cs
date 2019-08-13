@@ -184,7 +184,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "theString, p1".SplitCsv();
+                var fields = "TheString, p1".SplitCsv();
                 var path = new RegressionPath();
                 var epl = "create table MyTable as (p0 string primary key, p1 int);\n" +
                           "@Name('s0') select TheString, p1 from SupportBean unidirectional left outer join MyTable on TheString = p0;\n";

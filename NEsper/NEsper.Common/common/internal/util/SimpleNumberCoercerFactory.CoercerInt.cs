@@ -46,7 +46,7 @@ namespace com.espertech.esper.common.@internal.util
             {
                 return CodegenCoerceMayNull(
                     typeof(int),
-                    typeof(int),
+                    typeof(int?),
                     "AsInt",
                     param,
                     valueTypeMustNumeric,
@@ -70,7 +70,7 @@ namespace com.espertech.esper.common.@internal.util
             {
                 return CodegenCoerceMayNull(
                     typeof(int),
-                    typeof(int),
+                    typeof(int?),
                     "AsInt",
                     param,
                     type,

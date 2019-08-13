@@ -27,7 +27,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
             FilterTestMultiStmtPermutable.AddCase(
                 cases,
                 stats,
-                "theString = 'A' and (IntPrimitive = 0 or LongPrimitive = 0)",
+                "TheString = 'A' and (IntPrimitive = 0 or LongPrimitive = 0)",
                 FilterTestMultiStmtAssertItem.MakeItem(SupportBean.MakeBean("A", 0, 1), true),
                 FilterTestMultiStmtAssertItem.MakeItem(SupportBean.MakeBean("A", 1, 0), true),
                 FilterTestMultiStmtAssertItem.MakeItem(SupportBean.MakeBean("A", 1, 1), false),

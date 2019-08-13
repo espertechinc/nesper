@@ -99,7 +99,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
             {
                 env.AdvanceTime(0);
 
-                var fields = "val0".SplitCsv();
+                var fields = new [] { "val0" };
                 var query =
                     "@Name('s0') select sum(DoublePrimitive) as val0 from SupportBean#length(5) having sum(DoublePrimitive) > 100 output first every 2 seconds";
                 env.CompileDeploy(query).AddListener("s0");

@@ -40,7 +40,7 @@ namespace com.espertech.esper.common.@internal.epl.pattern.guard
             MatchedEventMap beginState,
             PatternAgentInstanceContext context)
         {
-            return deltaCompute.ComputeDelta(beginState, context);
+            return deltaCompute.Invoke(beginState, context);
         }
     }
 } // end of namespace

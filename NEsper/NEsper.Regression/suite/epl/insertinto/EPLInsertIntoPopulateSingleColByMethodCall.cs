@@ -46,7 +46,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                 "SupportMarketDataBean",
                 new SupportMarketDataBean("ACME", 0, 0L, null),
                 FBEANWTYPE,
-                "TheString".SplitCsv(),
+                new [] { "TheString" },
                 new object[] {"ACME"});
 
             // Map

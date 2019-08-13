@@ -54,6 +54,6 @@ namespace com.espertech.esper.common.client.soda
             writer.Write(Label);
         }
 
-        #endregion
+        #endregion ContextDescriptor Members
     }
 }

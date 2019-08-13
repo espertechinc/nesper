@@ -40,7 +40,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.map
                 "OAType");
             EPAssertionUtil.AssertProps(
                 env.Listener("s0").AssertOneGetNewAndReset(),
-                "c0,c1,c2,c3".SplitCsv(),
+                new [] { "c0", "c1", "c2", "c3" },
                 new object[] {"E1", "IM1", "IM2", "OM1"});
 
             env.UndeployAll();
@@ -79,7 +79,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.map
             env.SendEventMap(data, "MapTypeWOA");
             EPAssertionUtil.AssertProps(
                 env.Listener("s0").AssertOneGetNewAndReset(),
-                "c0,c1,c2,c3".SplitCsv(),
+                new [] { "c0", "c1", "c2", "c3" },
                 new object[] {"A", 100, "B", 300});
             env.UndeployModuleContaining("s0");
 
@@ -88,8 +88,8 @@ namespace com.espertech.esper.regressionlib.suite.@event.map
                 .AddListener("s0");
             env.SendEventMap(data, "MapTypeWOA");
             Assert.IsTrue(env.Listener("s0").AssertOneGetNew() is ObjectArrayBackedEventBean);
-            Assert.AreEqual("a", env.Listener("s0").AssertOneGetNew().Get("p0"));
-            Assert.AreEqual(1, env.Listener("s0").AssertOneGetNewAndReset().Get("p1"));
+            Assert.AreEqual("a", env.Listener("s0").AssertOneGetNew().Get("P0"));
+            Assert.AreEqual(1, env.Listener("s0").AssertOneGetNewAndReset().Get("P1"));
 
             env.UndeployAll();
         }

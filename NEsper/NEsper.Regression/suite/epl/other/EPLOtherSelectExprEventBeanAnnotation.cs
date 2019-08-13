@@ -52,7 +52,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                             "from MyEvent#length(2) as s0";
             env.CompileDeploy(eplInsert, path).AddListener("insert");
 
-            foreach (var prop in "c0,c1,c2".SplitCsv()) {
+            foreach (var prop in new [] { "c0", "c1", "c2" }) {
                 AssertFragment(
                     prop,
                     env.Statement("insert").EventType,
@@ -177,7 +177,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                                 "from SupportBean";
                 env.CompileDeploy(eplInsert, path);
 
-                foreach (var prop in "c0".SplitCsv()) {
+                foreach (var prop in new [] { "c0" }) {
                     AssertFragment(prop, env.Statement("insert").EventType, "MyEvent", true);
                 }
 

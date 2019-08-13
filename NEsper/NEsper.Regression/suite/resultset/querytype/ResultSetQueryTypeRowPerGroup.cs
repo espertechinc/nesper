@@ -348,7 +348,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "c0,c1,c2,c3".SplitCsv();
+                var fields = new [] { "c0", "c1", "c2", "c3" };
 
                 var epl = "@Name('s0') select TheString as c0, sum(IntPrimitive) as c1," +
                           "min(IntPrimitive) as c2, max(IntPrimitive) as c3 from SupportBean group by TheString";
@@ -495,8 +495,8 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
                     "@Name('S3') @Hint('reclaim_group_aged=10,reclaim_group_freq=5') select sum(IntPrimitive) as val1, window(IntPrimitive) as val2 from SupportBean.win:keepall() group by TheString";
                 env.CompileDeploy(eplFour).AddListener("S3");
 
-                var fieldsOne = "val".SplitCsv();
-                var fieldsTwo = "val".SplitCsv();
+                var fieldsOne = new [] { "val" };
+                var fieldsTwo = new [] { "val" };
                 var fieldsThree = "val1,val2".SplitCsv();
                 var fieldsFour = "val1,val2".SplitCsv();
 
@@ -610,7 +610,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
                 env.SendEventBean(new SupportBean("E1", 20));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    "c0,c1".SplitCsv(),
+                    new [] { "c0", "c1" },
                     new object[] {"E1", 30});
 
                 env.UndeployAll();
@@ -621,7 +621,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "c0,c1".SplitCsv();
+                var fields = new [] { "c0", "c1" };
                 var milestone = new AtomicLong();
 
                 // with output snapshot
@@ -794,7 +794,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
                 epl =
                     "@Hint('DISABLE_RECLAIM_GROUP') @Name('s0') select TheString, sum(IntPrimitive) as mysum from MyWindow group by TheString order by TheString";
                 env.CompileDeploy(epl, path).AddListener("s0");
-                var fields = "theString,mysum".SplitCsv();
+                var fields = "TheString,mysum".SplitCsv();
 
                 TryAssertionNamedWindowDelete(env, fields, milestone);
 

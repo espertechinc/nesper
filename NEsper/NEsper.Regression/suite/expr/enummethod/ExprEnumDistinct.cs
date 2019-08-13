@@ -29,7 +29,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "val0".SplitCsv();
+                var fields = new [] { "val0" };
                 var eplFragment = "@Name('s0') select " +
                                   "Contained.distinctOf(x -> P00) as val0 " +
                                   " from SupportBean_ST0_Container";
@@ -70,7 +70,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "val0,val1".SplitCsv();
+                var fields = new [] { "val0", "val1" };
                 var eplFragment = "@Name('s0') select " +
                                   "Strvals.distinctOf() as val0, " +
                                   "Strvals.distinctOf(v -> extractNum(v)) as val1 " +

@@ -40,9 +40,9 @@ namespace com.espertech.esper.regressionlib.suite.multithread
             env.CompileDeploy(eplStatement, path);
 
             var aggStatement = "@Name('select') context StartThenTwoSeconds " +
-                               "select account, count(*) as totalCount " +
+                               "select Account, count(*) as totalCount " +
                                "from PayloadEvent " +
-                               "group by account " +
+                               "group by Account " +
                                "output snapshot when terminated";
             env.CompileDeploy(aggStatement, path);
             env.Statement("select").Events += (

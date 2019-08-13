@@ -63,7 +63,7 @@ namespace com.espertech.esper.common.@internal.rettype
         public class CodegenSharableSerdeName
         {
             public static readonly CodegenSharableSerdeName OBJECTARRAYMAYNULLNULL =
-                new CodegenSharableSerdeName("objectArrayMayNullNull");
+                new CodegenSharableSerdeName("ObjectArrayMayNullNull");
 
             private CodegenSharableSerdeName(string methodName)
             {

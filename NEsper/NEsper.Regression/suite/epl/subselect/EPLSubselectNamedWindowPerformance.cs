@@ -162,7 +162,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
                 }
 
                 // single-field compare
-                var fields = "val".SplitCsv();
+                var fields = new [] { "val" };
                 var eplSingle =
                     "@Name('s0') select (select IntPrimitive from MyWindow where TheString = 'E9734') as val from SupportBeanRange sbr";
                 env.CompileDeploy(eplSingle, path).AddListener("s0");

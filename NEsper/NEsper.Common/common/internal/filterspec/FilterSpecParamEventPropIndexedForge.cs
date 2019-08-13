@@ -146,7 +146,7 @@ namespace com.espertech.esper.common.@internal.filterspec
                         typeof(EventBean[]),
                         ExprDotMethod(
                             Ref("matchedEvents"),
-                            "getMatchingEventAsObjectByTag",
+                            "GetMatchingEventAsObjectByTag",
                             Constant(ResultEventAsName))))
                 .DeclareVar<object>("value", ConstantNull())
                 .IfRefNotNull("events")

@@ -10,10 +10,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 
-using com.espertech.esper.common.@internal.compile.stage1.spec;
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
-
 namespace com.espertech.esper.common.client.soda
 {
     /// <summary>
@@ -58,7 +54,8 @@ namespace com.espertech.esper.common.client.soda
         /// Returns the table name
         /// </summary>
         /// <returns>table name</returns>
-        public string TableName {
+        public string TableName
+        {
             get => tableName;
             set { this.tableName = value; }
         }
@@ -67,7 +64,8 @@ namespace com.espertech.esper.common.client.soda
         /// Returns the table columns
         /// </summary>
         /// <returns>table columns</returns>
-        public IList<CreateTableColumn> Columns {
+        public IList<CreateTableColumn> Columns
+        {
             get => columns;
             set { this.columns = value; }
         }
@@ -82,7 +80,8 @@ namespace com.espertech.esper.common.client.soda
             writer.Write(tableName);
             writer.Write(" (");
             string delimiter = "";
-            foreach (CreateTableColumn col in columns) {
+            foreach (CreateTableColumn col in columns)
+            {
                 writer.Write(delimiter);
                 col.ToEPL(writer);
                 delimiter = ", ";

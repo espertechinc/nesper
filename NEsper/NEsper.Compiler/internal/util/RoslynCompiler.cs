@@ -176,7 +176,7 @@ namespace com.espertech.esper.compiler.@internal.util
 
                 foreach (var syntaxTree in syntaxTrees) {
                     string tempClassPath =
-                        $@"C:\Src\Espertech\NEsper-master\NEsper\NEsper.Runtime.Tests\foobar\Class{DebugSequence}.cs";
+                        $@"C:\Src\Espertech\NEsper-master\NEsper\NEsper.Regression.Review\Class{DebugSequence}.cs";
                     DebugSequence++;
                     File.WriteAllText(tempClassPath, syntaxTree.ToString());
                 }

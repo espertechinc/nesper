@@ -235,7 +235,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 
                 EPAssertionUtil.AssertPropsPerRowAnyOrder(
                     env.GetEnumerator("create"),
-                    "theString,IntPrimitive".SplitCsv(),
+                    new [] { "TheString","IntPrimitive" },
                     new[] {new object[] {"E1", 3}, new object[] {"E2", 7}});
                 env.UndeployAll();
             }

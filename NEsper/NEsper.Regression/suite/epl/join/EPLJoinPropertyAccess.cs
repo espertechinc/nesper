@@ -33,20 +33,20 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                 var complex = SupportBeanComplexProps.MakeDefaultBean();
                 Assert.AreEqual("0ma0", combined.GetIndexed(0).GetMapped("0ma").Value);
 
-                var epl = "@Name('s0') select nested.Nested, s1.indexed[0], nested.indexed[1] from " +
-                          "SupportBeanComplexProps#length(3) nested, " +
+                var epl = "@Name('s0') select Nested.Nested, s1.Indexed[0], Nested.Indexed[1] from " +
+                          "SupportBeanComplexProps#length(3) Nested, " +
                           "SupportBeanCombinedProps#length(3) s1" +
-                          " where mapped('keyOne') = indexed[2].mapped('2ma').Value and" +
-                          " indexed[0].mapped('0ma').Value = '0ma0'";
+                          " where Mapped('keyOne') = Indexed[2].Mapped('2ma').Value and" +
+                          " Indexed[0].Mapped('0ma').Value = '0ma0'";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 env.SendEventBean(combined);
                 env.SendEventBean(complex);
 
                 var theEvent = env.Listener("s0").GetAndResetLastNewData()[0];
-                Assert.AreSame(complex.Nested, theEvent.Get("nested.Nested"));
-                Assert.AreSame(combined.GetIndexed(0), theEvent.Get("s1.indexed[0]"));
-                Assert.AreEqual(complex.GetIndexed(1), theEvent.Get("nested.indexed[1]"));
+                Assert.AreSame(complex.Nested, theEvent.Get("Nested.Nested"));
+                Assert.AreSame(combined.GetIndexed(0), theEvent.Get("s1.Indexed[0]"));
+                Assert.AreEqual(complex.GetIndexed(1), theEvent.Get("Nested.Indexed[1]"));
 
                 env.UndeployAll();
             }
@@ -60,7 +60,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                           "SupportBeanComplexProps#length(3) s0" +
                           " left outer join " +
                           "SupportBeanCombinedProps#length(3) s1" +
-                          " on mapped('keyOne') = indexed[2].mapped('2ma').Value";
+                          " on Mapped('keyOne') = Indexed[2].Mapped('2ma').Value";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 var combined = SupportBeanCombinedProps.MakeDefaultBean();

@@ -23,13 +23,13 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.sorted
             int numStreams,
             QueryGraphValueEntryRange rangeKeyPair)
         {
-            if (rangeKeyPair.Type.IsRange) {
+            if (rangeKeyPair.Type.IsRange()) {
                 QueryGraphValueEntryRangeIn rangeIn = (QueryGraphValueEntryRangeIn) rangeKeyPair;
                 ExprEvaluator startExpr = rangeIn.ExprStart;
                 ExprEvaluator endExpr = rangeIn.ExprEnd;
-                bool includeStart = rangeKeyPair.Type.IsIncludeStart;
+                bool includeStart = rangeKeyPair.Type.IsIncludeStart();
 
-                bool includeEnd = rangeKeyPair.Type.IsIncludeEnd;
+                bool includeEnd = rangeKeyPair.Type.IsIncludeEnd();
                 if (!rangeKeyPair.Type.IsRangeInverted()) {
                     return new SortedAccessStrategyRange(
                         isNWOnTrigger,

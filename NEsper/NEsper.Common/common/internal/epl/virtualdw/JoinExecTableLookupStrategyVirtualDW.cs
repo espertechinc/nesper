@@ -62,7 +62,7 @@ namespace com.espertech.esper.common.@internal.epl.virtualdw
             }
 
             foreach (var rangeKey in rangeKeys) {
-                if (rangeKey.Type.IsRange) {
+                if (rangeKey.Type.IsRange()) {
                     var range = (QueryGraphValueEntryRangeIn) rangeKey;
                     var evaluatorStart = range.ExprStart;
                     var evaluatorEnd = range.ExprEnd;

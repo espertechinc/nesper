@@ -105,7 +105,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
             {
                 SupportSQLColumnTypeConversion.Reset();
 
-                var fields = "theString,IntPrimitive".SplitCsv();
+                var fields = new [] { "TheString","IntPrimitive" };
                 var hookType = typeof(SupportSQLOutputRowConversion).FullName;
                 var stmtText =
                     $"@Name('s0') @Hook(HookType=HookType.SQLROW, Hook='{hookType}')select * from sql:MyDBWithTxnIso1WithReadOnly ['select * from mytesttable where myint = ${{myvariableORC}}']";

@@ -67,7 +67,7 @@ namespace NEsper.Avro.SelectExprRep
                 codegenClassScope.AddOrGetFieldSharable(new AvroSchemaFieldSharable(_inner));
             return CodegenExpressionBuilder.StaticMethod(
                 typeof(SelectExprProcessorEvalAvroMapToAvro),
-                "selectExprProcessAvroMap",
+                "SelectExprProcessAvroMap",
                 _forge.EvaluateCodegen(requiredType, codegenMethodScope, exprSymbol, codegenClassScope),
                 schema);
         }

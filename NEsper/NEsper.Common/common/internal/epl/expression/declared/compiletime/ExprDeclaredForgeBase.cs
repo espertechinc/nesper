@@ -404,14 +404,14 @@ namespace com.espertech.esper.common.@internal.epl.expression.declared.compileti
                             .Get("AllocateDeclaredExprLastValue"))
                     .DeclareVar<ExpressionResultCacheEntryEventBeanArrayAndObj>(
                         "entry",
-                        ExprDotMethod(Ref("cache"), "getDeclaredExpressionLastValue", nodeObject, refEPS))
+                        ExprDotMethod(Ref("cache"), "GetDeclaredExpressionLastValue", nodeObject, refEPS))
                     .IfCondition(NotEqualsNull(Ref("entry")))
                     .BlockReturn(eval)
                     .DeclareVar(evaluationType, "result", innerValue)
                     .Expression(
                         ExprDotMethod(
                             Ref("cache"),
-                            "saveDeclaredExpressionLastValue",
+                            "SaveDeclaredExpressionLastValue",
                             nodeObject,
                             refEPS,
                             Ref("result")));
@@ -459,14 +459,14 @@ namespace com.espertech.esper.common.@internal.epl.expression.declared.compileti
                             .Get("AllocateDeclaredExprLastColl"))
                     .DeclareVar<ExpressionResultCacheEntryEventBeanArrayAndCollBean>(
                         "entry",
-                        ExprDotMethod(Ref("cache"), "getDeclaredExpressionLastColl", nodeObject, refEPS))
+                        ExprDotMethod(Ref("cache"), "GetDeclaredExpressionLastColl", nodeObject, refEPS))
                     .IfCondition(NotEqualsNull(Ref("entry")))
                     .BlockReturn(ExprDotName(Ref("entry"), "Result"))
                     .DeclareVar<ICollection<object>>("result", innerValue)
                     .Expression(
                         ExprDotMethod(
                             Ref("cache"),
-                            "saveDeclaredExpressionLastColl",
+                            "SaveDeclaredExpressionLastColl",
                             nodeObject,
                             refEPS,
                             Ref("result")));
@@ -515,14 +515,14 @@ namespace com.espertech.esper.common.@internal.epl.expression.declared.compileti
                             .Get("AllocateDeclaredExprLastColl"))
                     .DeclareVar<ExpressionResultCacheEntryEventBeanArrayAndCollBean>(
                         "entry",
-                        ExprDotMethod(Ref("cache"), "getDeclaredExpressionLastColl", nodeObject, refEPS))
+                        ExprDotMethod(Ref("cache"), "GetDeclaredExpressionLastColl", nodeObject, refEPS))
                     .IfCondition(NotEqualsNull(Ref("entry")))
                     .BlockReturn(ExprDotName(Ref("entry"), "Result"))
                     .DeclareVar<ICollection<object>>("result", innerValue)
                     .Expression(
                         ExprDotMethod(
                             Ref("cache"),
-                            "saveDeclaredExpressionLastColl",
+                            "SaveDeclaredExpressionLastColl",
                             nodeObject,
                             refEPS,
                             Ref("result")));

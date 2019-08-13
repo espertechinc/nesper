@@ -60,7 +60,7 @@ namespace com.espertech.esper.regressionrun.suite.view
 
             configuration.Common.AddEventType(
                 "OAEventStringInt",
-                new[] {"p1", "p2"},
+                new[] {"P1", "P2"},
                 new object[] {typeof(string), typeof(int)});
 
             configuration.Common.AddVariable("TIME_WIN_ONE", typeof(int), 4);

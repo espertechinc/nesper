@@ -73,7 +73,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                 .ForEach(typeof(object), "num", EnumForgeCodegenNames.REF_ENUMCOLL)
                 .IfRefNull("num")
                 .BlockContinue()
-                .Expression(ExprDotMethod(Ref("agg"), "enter", Ref("num")))
+                .Expression(ExprDotMethod(Ref("agg"), "Enter", Ref("num")))
                 .BlockEnd()
                 .MethodReturn(ExprDotName(Ref("agg"), "Value"));
             return LocalMethod(method, args.Expressions);

@@ -47,7 +47,8 @@ namespace com.espertech.esper.common.client.soda
     {
         public static string GetText(this OutputLimitSelector @enum)
         {
-            switch (@enum) {
+            switch (@enum)
+            {
                 case OutputLimitSelector.FIRST:
                     return "first";
 

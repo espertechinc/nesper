@@ -212,7 +212,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
                 caster = SimpleTypeCasterFactory.GetCaster(fromType, targetType);
                 numeric = caster.IsNumericCast;
             }
-            else if (classIdentifierInvariant.Equals("bigint") || classIdentifierInvariant.Equals("biginteger")) {
+            else if (classIdentifierInvariant.Equals("Bigint") || classIdentifierInvariant.Equals("Biginteger")) {
                 targetType = typeof(BigInteger);
                 targetType = ApplyDimensions(targetType);
                 caster = SimpleTypeCasterFactory.GetCaster(fromType, targetType);

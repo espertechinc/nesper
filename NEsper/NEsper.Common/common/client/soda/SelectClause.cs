@@ -15,8 +15,8 @@ using com.espertech.esper.compat.collections;
 namespace com.espertech.esper.common.client.soda
 {
     /// <summary>
-    /// A select-clause consists of a list of selection elements (expressions, Wildcard(s), stream wildcard 
-    /// and the like) and an optional stream selector. 
+    /// A select-clause consists of a list of selection elements (expressions, Wildcard(s), stream wildcard
+    /// and the like) and an optional stream selector.
     /// </summary>
     [Serializable]
     public class SelectClause
@@ -62,7 +62,8 @@ namespace com.espertech.esper.common.client.soda
         public static SelectClause Create(params String[] propertyNames)
         {
             var selectList = new List<SelectClauseElement>();
-            foreach (String name in propertyNames) {
+            foreach (String name in propertyNames)
+            {
                 selectList.Add(new SelectClauseExpression(new PropertyValueExpression(name)));
             }
 
@@ -106,7 +107,8 @@ namespace com.espertech.esper.common.client.soda
             params String[] propertyNames)
         {
             var selectList = new List<SelectClauseElement>();
-            foreach (String name in propertyNames) {
+            foreach (String name in propertyNames)
+            {
                 selectList.Add(new SelectClauseExpression(new PropertyValueExpression(name)));
             }
 
@@ -118,7 +120,8 @@ namespace com.espertech.esper.common.client.soda
         /// <returns>clause</returns>
         public SelectClause Add(params String[] propertyNames)
         {
-            foreach (String name in propertyNames) {
+            foreach (String name in propertyNames)
+            {
                 _selectList.Add(new SelectClauseExpression(new PropertyValueExpression(name)));
             }
 
@@ -160,7 +163,8 @@ namespace com.espertech.esper.common.client.soda
 
         /// <summary>Returns the list of expressions in the select clause. </summary>
         /// <value>list of expressions with column names</value>
-        public IList<SelectClauseElement> SelectList {
+        public IList<SelectClauseElement> SelectList
+        {
             get { return _selectList; }
             set { _selectList = value; }
         }
@@ -213,11 +217,11 @@ namespace com.espertech.esper.common.client.soda
         /// Gets or sets the stream selector.
         /// </summary>
         /// <value>The stream selector.</value>
-        public StreamSelector StreamSelector {
+        public StreamSelector StreamSelector
+        {
             get { return _streamSelector; }
             set { _streamSelector = value; }
         }
-
 
         /// <summary>Add a select expression element. </summary>
         /// <param name="selectClauseElements">to add</param>
@@ -241,33 +245,41 @@ namespace com.espertech.esper.common.client.soda
         {
             formatter.BeginSelect(writer, isTopLevel);
             writer.Write("select ");
-            if (andDelete) {
+            if (andDelete)
+            {
                 writer.Write("and delete ");
             }
 
-            if (IsDistinct) {
+            if (IsDistinct)
+            {
                 writer.Write("distinct ");
             }
 
-            if (_streamSelector == soda.StreamSelector.ISTREAM_ONLY) {
+            if (_streamSelector == soda.StreamSelector.ISTREAM_ONLY)
+            {
                 // the default, no action
             }
-            else if (_streamSelector == soda.StreamSelector.RSTREAM_ONLY) {
+            else if (_streamSelector == soda.StreamSelector.RSTREAM_ONLY)
+            {
                 writer.Write("rstream ");
             }
-            else if (_streamSelector == soda.StreamSelector.RSTREAM_ISTREAM_BOTH) {
+            else if (_streamSelector == soda.StreamSelector.RSTREAM_ISTREAM_BOTH)
+            {
                 writer.Write("irstream ");
             }
 
-            if (_selectList != null && !_selectList.IsEmpty()) {
+            if (_selectList != null && !_selectList.IsEmpty())
+            {
                 String delimiter = "";
-                foreach (SelectClauseElement element in _selectList) {
+                foreach (SelectClauseElement element in _selectList)
+                {
                     writer.Write(delimiter);
                     element.ToEPLElement(writer);
                     delimiter = ", ";
                 }
             }
-            else {
+            else
+            {
                 writer.Write('*');
             }
         }

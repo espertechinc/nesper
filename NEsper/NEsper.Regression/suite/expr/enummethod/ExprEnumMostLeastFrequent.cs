@@ -30,7 +30,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "val0,val1".SplitCsv();
+                var fields = new [] { "val0", "val1" };
                 var eplFragment = "@Name('s0') select " +
                                   "Contained.mostFrequent(x -> P00) as val0," +
                                   "Contained.leastFrequent(x -> P00) as val1 " +
@@ -104,7 +104,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "val0,val1".SplitCsv();
+                var fields = new [] { "val0", "val1" };
                 var eplFragment = "@Name('s0') select " +
                                   "Strvals.mostFrequent() as val0, " +
                                   "Strvals.leastFrequent() as val1 " +

@@ -45,7 +45,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             object[][] expectedType = {
                 new object[] {"keyOne", typeof(string)},
                 new object[] {"keyTwo", typeof(int?)},
-                new object[] {"p0", typeof(long?)}
+                new object[] {"P0", typeof(long?)}
             };
             var updateStmtEventType = env.Statement("update").EventType;
             SupportEventTypeAssertionUtil.AssertEventTypeProperties(

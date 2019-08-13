@@ -160,7 +160,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                     "from SupportBean#keepall sb " +
                     "full outer join " +
                     "SupportBeanRange#keepall sbr " +
-                    "on TheString = key " +
+                    "on TheString = Key " +
                     "where IntPrimitive between RangeStart and RangeEnd " +
                     "order by RangeStart asc, IntPrimitive asc";
                 TryAssertion(env, stmtOne, milestone);
@@ -170,7 +170,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                     "from SupportBeanRange#keepall sbr " +
                     "full outer join " +
                     "SupportBean#keepall sb " +
-                    "on TheString = key " +
+                    "on TheString = Key " +
                     "where IntPrimitive between RangeStart and RangeEnd " +
                     "order by RangeStart asc, IntPrimitive asc";
                 TryAssertion(env, stmtTwo, milestone);
@@ -180,7 +180,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                     "from SupportBeanRange#keepall sbr " +
                     "full outer join " +
                     "SupportBean#keepall sb " +
-                    "on TheString = key " +
+                    "on TheString = Key " +
                     "where IntPrimitive >= RangeStart and IntPrimitive <= RangeEnd " +
                     "order by RangeStart asc, IntPrimitive asc";
                 TryAssertion(env, stmtThree, milestone);
@@ -305,7 +305,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
 
                 EPAssertionUtil.AssertPropsPerRow(
                     events,
-                    "theString,IntPrimitive,Symbol,Volume".SplitCsv(),
+                    "TheString,IntPrimitive,Symbol,Volume".SplitCsv(),
                     new[] {
                         new object[] {null, null, "c3", 400L},
                         new object[] {"c0", 0, "c0", 200L},

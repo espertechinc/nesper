@@ -78,10 +78,10 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.ontri
                     saiff,
                     "ResultSetProcessorFactoryProvider",
                     NewInstance(resultSetProcessorProviderClassName, symbols.GetAddInitSvc(method)))
-                .SetProperty(saiff, "InsertInto", Constant(insertInto))
-                .SetProperty(saiff, "AddToFront", Constant(addToFront))
-                .SetProperty(saiff, "SelectAndDelete", Constant(selectAndDelete))
-                .SetProperty(saiff, "Distinct", Constant(distinct))
+                .SetProperty(saiff, "IsInsertInto", Constant(insertInto))
+                .SetProperty(saiff, "IsAddToFront", Constant(addToFront))
+                .SetProperty(saiff, "IsSelectAndDelete", Constant(selectAndDelete))
+                .SetProperty(saiff, "IsDistinct", Constant(distinct))
                 .SetProperty(
                     saiff,
                     "OptionalInsertIntoTable",

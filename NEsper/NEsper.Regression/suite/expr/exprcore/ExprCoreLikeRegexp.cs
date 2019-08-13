@@ -136,13 +136,13 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                 env.SendEventBean(new SupportBean("Bxx", 0));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    "c0,c1".SplitCsv(),
+                    new [] { "c0", "c1" },
                     new object[] {false, false});
 
                 env.SendEventBean(new SupportBean("Ayyy", 100));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    "c0,c1".SplitCsv(),
+                    new [] { "c0", "c1" },
                     new object[] {true, true});
 
                 env.UndeployAll();
@@ -159,19 +159,19 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                 SendS0Event(env, 413, "%XXaXX", "%a%", "%1%", null);
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    "c0,c1".SplitCsv(),
+                    new [] { "c0", "c1" },
                     new object[] {true, true});
 
                 SendS0Event(env, 413, "%XXcXX", "%b%", "%2%", null);
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    "c0,c1".SplitCsv(),
+                    new [] { "c0", "c1" },
                     new object[] {false, false});
 
                 SendS0Event(env, 413, "%XXcXX", "%c%", "%3%", null);
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    "c0,c1".SplitCsv(),
+                    new [] { "c0", "c1" },
                     new object[] {true, true});
 
                 env.UndeployAll();
@@ -189,13 +189,13 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                 env.SendEventBean(new SupportBean("Joe", 0));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    "c0,c1".SplitCsv(),
+                    new [] { "c0", "c1" },
                     new object[] {false, false});
 
                 env.SendEventBean(new SupportBean("TheJackWhite", 100));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    "c0,c1".SplitCsv(),
+                    new [] { "c0", "c1" },
                     new object[] {true, true});
 
                 env.UndeployAll();
@@ -212,19 +212,19 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                 SendS0Event(env, 413, "XXAXX", ".*A.*", ".*1.*", null);
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    "c0,c1".SplitCsv(),
+                    new [] { "c0", "c1" },
                     new object[] {true, true});
 
                 SendS0Event(env, 413, "XXaXX", ".*B.*", ".*2.*", null);
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    "c0,c1".SplitCsv(),
+                    new [] { "c0", "c1" },
                     new object[] {false, false});
 
                 SendS0Event(env, 413, "XXCXX", ".*C.*", ".*3.*", null);
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    "c0,c1".SplitCsv(),
+                    new [] { "c0", "c1" },
                     new object[] {true, true});
 
                 env.UndeployAll();
@@ -237,7 +237,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
             {
                 var epl = "@Name('s0') select P00 like P01 as r1, " +
                           " P00 like P01 escape \"!\" as r2," +
-                          " P02 regexp p03 as r3 " +
+                          " P02 regexp P03 as r3 " +
                           " from SupportBean_S0";
                 env.CompileDeploy(epl).AddListener("s0");
 
@@ -253,12 +253,12 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
             {
                 TryInvalidExpr(env, "IntPrimitive like 'a' escape null");
                 TryInvalidExpr(env, "IntPrimitive like BoolPrimitive");
-                TryInvalidExpr(env, "boolPrimitive like string");
+                TryInvalidExpr(env, "BoolPrimitive like string");
                 TryInvalidExpr(env, "string like string escape IntPrimitive");
 
                 TryInvalidExpr(env, "IntPrimitive regexp doublePrimitve");
                 TryInvalidExpr(env, "IntPrimitive regexp BoolPrimitive");
-                TryInvalidExpr(env, "boolPrimitive regexp string");
+                TryInvalidExpr(env, "BoolPrimitive regexp string");
                 TryInvalidExpr(env, "string regexp IntPrimitive");
 
                 TryInvalidCompile(
@@ -291,7 +291,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
             {
                 var stmtText = "@Name('s0') select P00 like P01 as r1, " +
                                "P00 like P01 escape \"!\" as r2, " +
-                               "P02 regexp p03 as r3 " +
+                               "P02 regexp P03 as r3 " +
                                "from SupportBean_S0";
 
                 var model = new EPStatementObjectModel();
@@ -304,7 +304,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                             Expressions.Property("P01"),
                             Expressions.Constant("!")),
                         "r2")
-                    .Add(Expressions.Regexp(Expressions.Property("P02"), Expressions.Property("p03")), "r3");
+                    .Add(Expressions.Regexp(Expressions.Property("P02"), Expressions.Property("P03")), "r3");
 
                 model.FromClause = FromClause.Create(FilterStream.Create("SupportBean_S0"));
                 model = env.CopyMayFail(model);
@@ -325,7 +325,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
             {
                 var epl = "@Name('s0') select P00 like P01 as r1, " +
                           "P00 like P01 escape \"!\" as r2, " +
-                          "P02 regexp p03 as r3 " +
+                          "P02 regexp P03 as r3 " +
                           "from SupportBean_S0";
 
                 var model = env.EplToModel(epl);

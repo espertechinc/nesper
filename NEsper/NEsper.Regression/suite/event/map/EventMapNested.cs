@@ -25,7 +25,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.map
             IList<RegressionExecution> execs = new List<RegressionExecution>();
             execs.Add(new EventMapNestedInsertInto());
             execs.Add(new EventMapNestedEventType());
-            execs.Add(new EventMapNestedNestedPojo());
+            execs.Add(new EventMapNestedNestedPono());
             execs.Add(new EventMapNestedIsExists());
             return execs;
         }
@@ -169,7 +169,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.map
             }
         }
 
-        internal class EventMapNestedNestedPojo : RegressionExecution
+        internal class EventMapNestedNestedPono : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {

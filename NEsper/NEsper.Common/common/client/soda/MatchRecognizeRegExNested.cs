@@ -55,7 +55,8 @@ namespace com.espertech.esper.common.client.soda
         ///     Returns multiplicity.
         /// </summary>
         /// <returns>multiplicity</returns>
-        public MatchRecogizePatternElementType Type {
+        public MatchRecogizePatternElementType Type
+        {
             get => type;
             set => type = value;
         }
@@ -64,7 +65,8 @@ namespace com.espertech.esper.common.client.soda
         ///     Returns the repetition
         /// </summary>
         /// <returns>repetition</returns>
-        public MatchRecognizeRegExRepeat OptionalRepeat {
+        public MatchRecognizeRegExRepeat OptionalRepeat
+        {
             get => optionalRepeat;
             set => optionalRepeat = value;
         }
@@ -73,7 +75,8 @@ namespace com.espertech.esper.common.client.soda
         {
             writer.Write("(");
             var delimiter = "";
-            foreach (var node in Children) {
+            foreach (var node in Children)
+            {
                 writer.Write(delimiter);
                 node.WriteEPL(writer);
                 delimiter = " ";
@@ -81,7 +84,8 @@ namespace com.espertech.esper.common.client.soda
 
             writer.Write(")");
             writer.Write(type.GetText());
-            if (optionalRepeat != null) {
+            if (optionalRepeat != null)
+            {
                 optionalRepeat.WriteEPL(writer);
             }
         }

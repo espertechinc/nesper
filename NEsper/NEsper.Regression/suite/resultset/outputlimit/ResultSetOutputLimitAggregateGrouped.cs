@@ -297,8 +297,8 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
             string statementText,
             AtomicLong milestone)
         {
-            var fields = "theString,LongPrimitive,value".SplitCsv();
-            var fieldsLimited = "theString,value".SplitCsv();
+            var fields = "TheString,LongPrimitive,value".SplitCsv();
+            var fieldsLimited = "TheString,value".SplitCsv();
             var epl = "create window MyWindow#keepall as SupportBean;\n" +
                       "insert into MyWindow select * from SupportBean;\n" +
                       "on SupportMarketDataBean md delete from MyWindow mw where mw.IntPrimitive = md.Price;\n" +
@@ -1025,7 +1025,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
             {
                 SendTimer(env, 0);
 
-                var fields = "theString,IntPrimitive".SplitCsv();
+                var fields = new [] { "TheString","IntPrimitive" };
                 var epl = "@Name('s0') select * from SupportBean\n" +
                           "     group by TheString\n" +
                           "     output first every 10 seconds";

@@ -50,7 +50,10 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.core
                 return builder;
             }
 
-            if (clazz.IsGenericType) {
+            if (clazz.IsGenericTypeDefinition) {
+                var nameWithoutArgCount = clazz.Name.Substring(0, clazz.Name.IndexOf('`'));
+                builder.Append(nameWithoutArgCount);
+            } else if (clazz.IsGenericType) {
                 var delimiter = "";
                 var nameWithoutArgCount = clazz.Name.Substring(0, clazz.Name.IndexOf('`'));
 

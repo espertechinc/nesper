@@ -38,7 +38,7 @@ namespace com.espertech.esper.common.@internal.epl.pattern.observer
             bool isFilterChildNonQuitting)
         {
             return new TimerIntervalObserver(
-                deltaCompute.ComputeDelta(beginState, context),
+                deltaCompute.Invoke(beginState, context),
                 beginState,
                 observerEventEvaluator);
         }

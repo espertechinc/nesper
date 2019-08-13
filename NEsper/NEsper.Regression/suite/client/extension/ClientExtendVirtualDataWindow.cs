@@ -58,7 +58,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
             env.CompileDeploy("insert into MyVDW select * from SupportBean", path);
 
             // test aggregated consumer - wherein the virtual data window does not return an iterator that prefills the aggregation state
-            var fields = "val0".SplitCsv();
+            var fields = new [] { "val0" };
             env.CompileDeploy("@Name('s0') select sum(IntPrimitive) as val0 from MyVDW", path).AddListener("s0");
             EPAssertionUtil.AssertProps(
                 env.Statement("s0").First(),
@@ -136,7 +136,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
             env.CompileDeploy("insert into MyVDW select * from SupportBean", path);
 
             // test straight consume
-            fields = "theString,IntPrimitive".SplitCsv();
+            fields = new [] { "TheString","IntPrimitive" };
             env.CompileDeploy("@Name('s0') select irstream * from MyVDW", path).AddListener("s0");
 
             env.SendEventBean(new SupportBean("E1", 200));
@@ -148,7 +148,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
             env.UndeployModuleContaining("s0");
 
             // test aggregated consumer - wherein the virtual data window does not return an iterator that prefills the aggregation state
-            fields = "val0".SplitCsv();
+            fields = new [] { "val0" };
             env.CompileDeploy("@Name('s0') select sum(IntPrimitive) as val0 from MyVDW", path).AddListener("s0");
 
             env.SendEventBean(new SupportBean("E1", 100));
@@ -292,7 +292,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
                     "@Name('s0') select * from MyVDW vdw, SupportBean_ST0#lastevent st0 where vdw.TheString = st0.Id",
                     path)
                 .AddListener("s0");
-            AssertIndexSpec(window.RequestedLookups[1], "theString=(String)", "");
+            AssertIndexSpec(window.RequestedLookups[1], "TheString=(String)", "");
 
             env.SendEventBean(new SupportBean_ST0("E1", 0));
             EPAssertionUtil.AssertEqualsExactOrder(new object[] {"E1"}, window.LastAccessKeys);
@@ -313,7 +313,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
             env.AddListener("s0");
             AssertIndexSpec(
                 window.RequestedLookups[1],
-                "theString=(String)|LongPrimitive=(Long)",
+                "TheString=(String)|LongPrimitive=(Long)",
                 "IntPrimitive[,](Integer)");
 
             env.SendEventBean(SupportBeanRange.MakeKeyLong("S1", 50L, 80, 120));
@@ -361,13 +361,13 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
             env.SendEventBean(new SupportBean_ST0("E1", 0));
             EPAssertionUtil.AssertProps(
                 env.Listener("s0").AssertOneGetNewAndReset(),
-                "val0".SplitCsv(),
+                new [] { "val0" },
                 new object[] {null});
             EPAssertionUtil.AssertEqualsExactOrder(new object[] {"E1"}, window.LastAccessKeys);
             env.SendEventBean(new SupportBean_ST0("key1", 0));
             EPAssertionUtil.AssertProps(
                 env.Listener("s0").AssertOneGetNewAndReset(),
-                "val0".SplitCsv(),
+                new [] { "val0" },
                 new object[] {"key1"});
             EPAssertionUtil.AssertEqualsExactOrder(new object[] {"key1"}, window.LastAccessKeys);
             env.UndeployModuleContaining("s0");
@@ -384,7 +384,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
             env.SendEventBean(new SupportBeanRange("key1", "key2", 5, 10));
             EPAssertionUtil.AssertProps(
                 env.Listener("s0").AssertOneGetNewAndReset(),
-                "val0".SplitCsv(),
+                new [] { "val0" },
                 new object[] {"key1"});
             EPAssertionUtil.AssertEqualsExactOrder(
                 new object[] {"key1", "key2", new VirtualDataWindowKeyRange(5, 10)},

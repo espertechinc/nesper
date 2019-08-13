@@ -41,4 +41,8 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.util
                 .Build();
         }
     }
+
+    public class DefaultSupportCaptureOpForge : DefaultSupportCaptureOpForge<object>
+    {
+    }
 } // end of namespace

@@ -6,7 +6,6 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -68,15 +67,19 @@ namespace com.espertech.esper.common.client.soda
             bool prefixDot)
         {
             var delimiterOuter = prefixDot ? "." : "";
-            foreach (var item in chain) {
+            foreach (var item in chain)
+            {
                 writer.Write(delimiterOuter);
                 writer.Write(item.Name);
 
-                if (!item.IsProperty || !item.Parameters.IsEmpty()) {
+                if (!item.IsProperty || !item.Parameters.IsEmpty())
+                {
                     writer.Write("(");
-                    if (!item.Parameters.IsEmpty()) {
+                    if (!item.Parameters.IsEmpty())
+                    {
                         String delimiter = "";
-                        foreach (var param in item.Parameters) {
+                        foreach (var param in item.Parameters)
+                        {
                             writer.Write(delimiter);
                             delimiter = ",";
                             param.ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);

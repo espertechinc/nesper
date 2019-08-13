@@ -67,7 +67,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "TheString".SplitCsv();
+                var fields = new [] { "TheString" };
                 var path = new RegressionPath();
 
                 var eplCreate = "@Name('create') create window MyWindow.win:keepall() as SupportBean";

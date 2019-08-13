@@ -407,7 +407,7 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
 
         internal class ClientVisibilityNamedWindowSimple : RegressionExecution
         {
-            private readonly string[] fields = "c0,c1".SplitCsv();
+            private readonly string[] fields = new [] { "c0", "c1" };
 
             public void Run(RegressionEnvironment env)
             {

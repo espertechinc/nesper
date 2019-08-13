@@ -59,7 +59,7 @@ namespace com.espertech.esper.common.@internal.@event.map
             CodegenClassScope codegenClassScope)
         {
             return ExprDotMethod(
-                CastUnderlying(typeof(IDictionary<object, object>), beanExpression),
+                CastUnderlying(typeof(IDictionary<string, object>), beanExpression),
                 "Get",
                 Constant(propertyName));
         }
@@ -70,7 +70,7 @@ namespace com.espertech.esper.common.@internal.@event.map
             CodegenClassScope codegenClassScope)
         {
             return ExprDotMethod(
-                CastUnderlying(typeof(IDictionary<object, object>), beanExpression),
+                CastUnderlying(typeof(IDictionary<string, object>), beanExpression),
                 "containsKey",
                 Constant(propertyName));
         }
@@ -96,7 +96,7 @@ namespace com.espertech.esper.common.@internal.@event.map
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            return ExprDotMethod(underlyingExpression, "containsKey", Constant(propertyName));
+            return ExprDotMethod(underlyingExpression, "ContainsKey", Constant(propertyName));
         }
 
         public CodegenExpression UnderlyingFragmentCodegen(

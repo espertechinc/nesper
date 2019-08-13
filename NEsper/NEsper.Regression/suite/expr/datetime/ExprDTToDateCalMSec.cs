@@ -41,17 +41,17 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
 
             var eplFragment = "@Name('s0') select " +
                               "current_timestamp.toDate() as val0," +
-                              "utildate.toDate() as val1," +
-                              "longdate.toDate() as val2," +
-                              "exdate.toDate() as val3," +
+                              "DtoDate.toDate() as val1," +
+                              "LongDate.toDate() as val2," +
+                              "DtxDate.toDate() as val3," +
                               "current_timestamp.toCalendar() as val6," +
-                              "utildate.toCalendar() as val7," +
-                              "longdate.toCalendar() as val8," +
-                              "exdate.toCalendar() as val9," +
+                              "DtoDate.toCalendar() as val7," +
+                              "LongDate.toCalendar() as val8," +
+                              "DtxDate.toCalendar() as val9," +
                               "current_timestamp.toMillisec() as val12," +
-                              "utildate.toMillisec() as val13," +
-                              "longdate.toMillisec() as val14," +
-                              "exdate.toMillisec() as val15" +
+                              "DtoDate.toMillisec() as val13," +
+                              "LongDate.toMillisec() as val14," +
+                              "DtxDate.toMillisec() as val15" +
                               " from SupportDateTime";
             env.CompileDeploy(eplFragment).AddListener("s0");
             LambdaAssertionUtil.AssertTypes(

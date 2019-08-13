@@ -55,7 +55,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
                 typeof(EventType),
                 EventTypeUtility.ResolveTypeCodegen(innerEventType, EPStatementInitServicesConstants.REF));
             CodegenExpression inner = ExprDotMethod(eventBeanFactory, "AdapterForTypedMap", props, innerType);
-            return ExprDotMethod(variantType, "getValueAddEventBean", inner);
+            return ExprDotMethod(variantType, "GetValueAddEventBean", inner);
         }
     }
 } // end of namespace

@@ -30,7 +30,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "val0,val1".SplitCsv();
+                var fields = new [] { "val0", "val1" };
                 var eplFragment = "@Name('s0') select " +
                                   "Contained.allof(x -> P00 = 12) as val0," +
                                   "Contained.anyof(x -> P00 = 12) as val1 " +
@@ -80,7 +80,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "val0,val1".SplitCsv();
+                var fields = new [] { "val0", "val1" };
                 var eplFragment = "@Name('s0') select " +
                                   "Strvals.allof(x -> x='E2') as val0," +
                                   "Strvals.anyof(x -> x='E2') as val1 " +

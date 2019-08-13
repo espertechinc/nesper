@@ -6,11 +6,7 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.IO;
-
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.client.soda
 {
@@ -98,7 +94,8 @@ namespace com.espertech.esper.common.client.soda
         /// Returns the database name.
         /// </summary>
         /// <returns>database name</returns>
-        public string DatabaseName {
+        public string DatabaseName
+        {
             get => databaseName;
         }
 
@@ -115,7 +112,8 @@ namespace com.espertech.esper.common.client.soda
         /// Returns the SQL with optional substitution parameters in the SQL.
         /// </summary>
         /// <returns>SQL</returns>
-        public string SqlWithSubsParams {
+        public string SqlWithSubsParams
+        {
             get => sqlWithSubsParams;
         }
 
@@ -132,7 +130,8 @@ namespace com.espertech.esper.common.client.soda
         /// Returns the metadata SQL if any.
         /// </summary>
         /// <returns>metadata SQL</returns>
-        public string OptionalMetadataSQL {
+        public string OptionalMetadataSQL
+        {
             get => optionalMetadataSQL;
             set { this.optionalMetadataSQL = value; }
         }

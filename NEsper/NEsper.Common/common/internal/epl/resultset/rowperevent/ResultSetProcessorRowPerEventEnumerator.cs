@@ -25,7 +25,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowperevent
         {
             var eventsPerStream = new EventBean[1];
             var hasHavingClause = resultSetProcessor.HasHavingClause();
-            var selectExprProcessor = resultSetProcessor.SelectExprProcessor;
+            var selectExprProcessor = resultSetProcessor.GetSelectExprProcessor();
 
             if (!hasHavingClause) {
                 while (sourceIterator.MoveNext()) {

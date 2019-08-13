@@ -72,7 +72,7 @@ namespace com.espertech.esper.common.@internal.filterspec
                         typeof(EventBean[]),
                         ExprDotMethod(
                             Ref("matchedEvents"),
-                            "getMatchingEventAsObjectByTag",
+                            "GetMatchingEventAsObjectByTag",
                             CodegenExpressionBuilder.Constant(ResultEventAsName))))
                 .DeclareVar<object>("value", ConstantNull())
                 .IfRefNotNull("events")

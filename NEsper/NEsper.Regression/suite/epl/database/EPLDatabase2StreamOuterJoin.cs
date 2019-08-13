@@ -21,7 +21,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
     public class EPLDatabase2StreamOuterJoin
     {
         private const string ALL_FIELDS =
-            "mybigint, myint, myvarchar, mychar, mybool, mynumeric, mydecimal, mydouble, myreal";
+            "myBigint, myint, myvarchar, mychar, mybool, mynumeric, mydecimal, mydouble, myreal";
 
         public static IList<RegressionExecution> Executions()
         {
@@ -86,7 +86,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
             double? mydouble,
             double? myreal)
         {
-            Assert.AreEqual(mybigint, theEvent.Get("mybigint"));
+            Assert.AreEqual(mybigint, theEvent.Get("myBigint"));
             Assert.AreEqual(myint, theEvent.Get("myint"));
             Assert.AreEqual(myvarchar, theEvent.Get("myvarchar"));
             Assert.AreEqual(mychar, theEvent.Get("mychar"));
@@ -127,7 +127,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
                                "SupportBean as s0 left outer join " +
                                " sql:MyDBWithRetain ['select " +
                                ALL_FIELDS +
-                               " from mytesttable where ${s0.IntPrimitive} = mytesttable.mybigint'] as s1 on IntPrimitive = mybigint";
+                               " from mytesttable where ${s0.IntPrimitive} = mytesttable.myBigint'] as s1 on IntPrimitive = myBigint";
                 TryOuterJoinResult(env, stmtText);
             }
         }
@@ -141,8 +141,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
                                " from " +
                                " sql:MyDBWithRetain ['select " +
                                ALL_FIELDS +
-                               " from mytesttable where ${s0.IntPrimitive} = mytesttable.mybigint'] as s1 right outer join " +
-                               "SupportBean as s0 on IntPrimitive = mybigint";
+                               " from mytesttable where ${s0.IntPrimitive} = mytesttable.myBigint'] as s1 right outer join " +
+                               "SupportBean as s0 on IntPrimitive = myBigint";
                 TryOuterJoinResult(env, stmtText);
             }
         }
@@ -156,8 +156,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
                                " from " +
                                " sql:MyDBWithRetain ['select " +
                                ALL_FIELDS +
-                               " from mytesttable where ${s0.IntPrimitive} = mytesttable.mybigint'] as s1 full outer join " +
-                               "SupportBean as s0 on IntPrimitive = mybigint";
+                               " from mytesttable where ${s0.IntPrimitive} = mytesttable.myBigint'] as s1 full outer join " +
+                               "SupportBean as s0 on IntPrimitive = myBigint";
                 TryOuterJoinResult(env, stmtText);
             }
         }
@@ -172,7 +172,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
                                "SupportBean as s0 full outer join " +
                                " sql:MyDBWithRetain ['select " +
                                ALL_FIELDS +
-                               " from mytesttable where ${s0.IntPrimitive} = mytesttable.mybigint'] as s1 on IntPrimitive = mybigint";
+                               " from mytesttable where ${s0.IntPrimitive} = mytesttable.myBigint'] as s1 on IntPrimitive = myBigint";
                 TryOuterJoinResult(env, stmtText);
             }
         }
@@ -187,7 +187,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
                                "SupportBean as s0 right outer join " +
                                " sql:MyDBWithRetain ['select " +
                                ALL_FIELDS +
-                               " from mytesttable where ${s0.IntPrimitive} = mytesttable.mybigint'] as s1 on IntPrimitive = mybigint";
+                               " from mytesttable where ${s0.IntPrimitive} = mytesttable.myBigint'] as s1 on IntPrimitive = myBigint";
                 TryOuterJoinNoResult(env, stmtText);
             }
         }
@@ -201,8 +201,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
                                " from " +
                                " sql:MyDBWithRetain ['select " +
                                ALL_FIELDS +
-                               " from mytesttable where ${s0.IntPrimitive} = mytesttable.mybigint'] as s1 left outer join " +
-                               "SupportBean as s0 on IntPrimitive = mybigint";
+                               " from mytesttable where ${s0.IntPrimitive} = mytesttable.myBigint'] as s1 left outer join " +
+                               "SupportBean as s0 on IntPrimitive = myBigint";
                 TryOuterJoinNoResult(env, stmtText);
             }
         }
@@ -219,7 +219,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
                                " left outer join " +
                                " sql:MyDBWithRetain ['select " +
                                ALL_FIELDS +
-                               " from mytesttable where ${s0.IntPrimitive} = mytesttable.mybigint'] as s1 " +
+                               " from mytesttable where ${s0.IntPrimitive} = mytesttable.myBigint'] as s1 " +
                                "on TheString = myvarchar";
                 env.CompileDeploy(stmtText).AddListener("s0");
 
@@ -268,7 +268,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
                                " from " +
                                " sql:MyDBWithRetain ['select " +
                                ALL_FIELDS +
-                               " from mytesttable where ${s0.IntPrimitive} = mytesttable.mybigint'] as s1 right outer join " +
+                               " from mytesttable where ${s0.IntPrimitive} = mytesttable.myBigint'] as s1 right outer join " +
                                "SupportBean as s0 on TheString = myvarchar";
                 env.CompileDeploy(stmtText).AddListener("s0");
 

@@ -168,7 +168,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
             env.SendEventBean(new SupportBean_S0(0, p00));
             EPAssertionUtil.AssertProps(
                 env.Listener("s0").AssertOneGetNewAndReset(),
-                "c0".SplitCsv(),
+                new [] { "c0" },
                 new[] {expected});
         }
 
@@ -204,7 +204,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "c0".SplitCsv();
+                var fields = new [] { "c0" };
                 var epl =
                     "@Name('s0') select concatMethodAgg(TheString, filter:TheString like 'A%') as c0 from SupportBean";
                 env.CompileDeploy(epl).AddListener("s0");
@@ -338,7 +338,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
             {
                 env.AdvanceTime(0);
 
-                var fields = "c0".SplitCsv();
+                var fields = new [] { "c0" };
                 var epl = "@Name('s0') select rate(1, filter:TheString like 'A%') as c0 from SupportBean";
                 env.CompileDeploy(epl).AddListener("s0");
 
@@ -388,7 +388,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "c0".SplitCsv();
+                var fields = new [] { "c0" };
                 var epl = "@Name('s0') select nth(IntPrimitive, 1, filter:TheString like 'A%') as c0 from SupportBean";
                 env.CompileDeploy(epl).AddListener("s0");
 
@@ -452,7 +452,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "c0,c1".SplitCsv();
+                var fields = new [] { "c0", "c1" };
                 var epl = "@Name('s0') select " +
                           "leaving(filter:IntPrimitive=1) as c0," +
                           "leaving(filter:IntPrimitive=2) as c1" +
@@ -618,7 +618,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "c0,c1,c2,c3".SplitCsv();
+                var fields = new [] { "c0", "c1", "c2", "c3" };
                 var epl = "@Name('s0') select " +
                           "first(IntPrimitive, 0, filter:TheString like 'A%') as c0," +
                           "first(IntPrimitive, 1, filter:TheString like 'A%') as c1," +
@@ -1055,7 +1055,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "c0,c1,c2".SplitCsv();
+                var fields = new [] { "c0", "c1", "c2" };
                 var epl = "@Name('s0') select " +
                           "window(sb, filter:TheString like 'A%') as c0," +
                           "window(sb) as c1," +
@@ -1091,7 +1091,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "c0,c1,c2".SplitCsv();
+                var fields = new [] { "c0", "c1", "c2" };
                 var epl = "@Name('s0') select " +
                           "sum(IntPrimitive, filter:TheString like 'A%') as c0," +
                           "sum(IntPrimitive) as c1," +
@@ -1253,7 +1253,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
 
             public void Run(RegressionEnvironment env)
             {
-                var fields = "c0,c1".SplitCsv();
+                var fields = new [] { "c0", "c1" };
                 var epl = "@Name('s0') select " +
                           "first(*,filter:IntPrimitive=1).TheString as c0, " +
                           "first(*,filter:IntPrimitive=2).TheString as c1" +

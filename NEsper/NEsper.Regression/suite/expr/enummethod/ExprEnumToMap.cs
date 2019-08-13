@@ -32,7 +32,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 
             LambdaAssertionUtil.AssertTypes(
                 env.Statement("s0").EventType,
-                "val".SplitCsv(),
+                new [] { "val" },
                 new[] {typeof(IDictionary<string, object>)});
 
             env.SendEventBean(SupportBean_ST0_Container.Make2Value("E1,1", "E3,12", "E2,5"));
@@ -62,7 +62,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
             env.UndeployAll();
 
             // test scalar-coll with lambda
-            var fields = "val0".SplitCsv();
+            var fields = new [] { "val0" };
             var eplLambda = "@Name('s0') select " +
                             "Strvals.toMap(c => c, c -> extractNum(c)) as val0 " +
                             "from SupportCollection";

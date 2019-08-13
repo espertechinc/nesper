@@ -28,6 +28,8 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.core
         public IList<CodegenTypedParam> Members =>
             members ?? Collections.GetEmptyList<CodegenTypedParam>();
 
+        public CodegenNamedProperties Properties { get; } = new CodegenNamedProperties();
+
         public CodegenNamedMethods Methods { get; } = new CodegenNamedMethods();
 
         public void AddMember(

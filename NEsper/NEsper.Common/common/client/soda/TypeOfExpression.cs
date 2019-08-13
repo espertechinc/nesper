@@ -9,9 +9,6 @@
 using System;
 using System.IO;
 
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
-
 namespace com.espertech.esper.common.client.soda
 {
     /// <summary>
@@ -19,6 +16,7 @@ namespace com.espertech.esper.common.client.soda
     /// the fragment event type if passing a property name that results in a fragment event otherwise
     /// the class simple name of the expression result or null if the expression returns a null value.
     /// </summary>
+    [Serializable]
     public class TypeOfExpression : ExpressionBase
     {
         /// <summary>
@@ -37,7 +35,8 @@ namespace com.espertech.esper.common.client.soda
             this.Children.Add(expression);
         }
 
-        public override ExpressionPrecedenceEnum Precedence {
+        public override ExpressionPrecedenceEnum Precedence
+        {
             get => ExpressionPrecedenceEnum.UNARY;
         }
 

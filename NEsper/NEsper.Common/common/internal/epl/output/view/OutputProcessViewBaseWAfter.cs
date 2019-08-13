@@ -82,7 +82,7 @@ namespace com.espertech.esper.common.@internal.epl.output.view
 
         public override void Stop(AgentInstanceStopServices services)
         {
-            OptionalAfterConditionState.Destroy();
+            OptionalAfterConditionState?.Destroy();
         }
     }
 } // end of namespace

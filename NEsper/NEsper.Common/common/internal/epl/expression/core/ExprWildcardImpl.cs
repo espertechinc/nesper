@@ -87,7 +87,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            return EnumValue(typeof(WildcardParameter), "INSTANCE");
+            return EnumValue(typeof(WildcardParameter), "Instance");
         }
 
         public Type EvaluationType {

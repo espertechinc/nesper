@@ -14,7 +14,7 @@ namespace com.espertech.esper.common.@internal.context.activator
 {
     public class ViewableActivatorDataFlow : ViewableActivator
     {
-        public EventType EventType { get; private set; }
+        public EventType EventType { get; set; }
 
         public ViewableActivationResult Activate(
             AgentInstanceContext agentInstanceContext,
@@ -30,11 +30,6 @@ namespace com.espertech.esper.common.@internal.context.activator
                 false,
                 null,
                 null);
-        }
-
-        public void SetEventType(EventType eventType)
-        {
-            EventType = eventType;
         }
     }
 } // end of namespace

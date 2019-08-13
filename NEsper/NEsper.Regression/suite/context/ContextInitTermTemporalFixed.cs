@@ -106,7 +106,7 @@ namespace com.espertech.esper.regressionlib.suite.context
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "c0,c1,c2,c3".SplitCsv();
+                var fields = new [] { "c0", "c1", "c2", "c3" };
                 env.AdvanceTime(0);
                 var path = new RegressionPath();
 
@@ -640,7 +640,7 @@ namespace com.espertech.esper.regressionlib.suite.context
 
                 var fields = "s1.mychar".SplitCsv();
                 var stmtText =
-                    "context NineToFive select * from SupportBean_S0 as s0, sql:MyDB ['select * from mytesttable where ${Id} = mytesttable.mybigint'] as s1";
+                    "context NineToFive select * from SupportBean_S0 as s0, sql:MyDB ['select * from mytesttable where ${Id} = mytesttable.myBigint'] as s1";
                 env.CompileDeploy(stmtText, path);
                 env.AddListener("s0");
 
@@ -881,7 +881,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 SendTimeEvent(env, "2002-05-1T08:00:00.000");
                 env.CompileDeploy("create context NineToFive as start (0, 9, *, *, *) end (0, 17, *, *, *)", path);
 
-                var fields = "theString,col".SplitCsv();
+                var fields = "TheString,col".SplitCsv();
 
                 env.CompileDeploy(
                     "@Name('s0') context NineToFive select TheString, (select P00 from SupportBean_S0#lastevent) as col from SupportBean",
@@ -972,7 +972,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                     "@Name('ctx') create context NineToFive as start (0, 9, *, *, *) end (0, 17, *, *, *)",
                     path);
 
-                var fields = "theString,col".SplitCsv();
+                var fields = "TheString,col".SplitCsv();
                 env.CompileDeploy(
                     "@Name('s0') context NineToFive select TheString, " +
                     "(select Id from SupportBean_S0#keepall as s0 where s0.P00 = sb.TheString) as col from SupportBean as sb",
@@ -1065,7 +1065,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 env.CompileDeploy("create context NineToFive as start (0, 9, *, *, *) end (0, 17, *, *, *)", path);
 
                 // no started yet
-                var fields = "theString,IntPrimitive".SplitCsv();
+                var fields = new [] { "TheString","IntPrimitive" };
                 env.CompileDeploy("@Name('s0') context NineToFive create window MyWindow#keepall as SupportBean", path);
                 env.AddListener("s0");
 

@@ -74,7 +74,7 @@ namespace com.espertech.esper.common.@internal.compile.stage3
 
             // REGION: Properties
             var properties = new CodegenClassProperties();
-            var factoryProp = CodegenProperty.MakeParentNode(
+            var factoryProp = CodegenProperty.MakePropertyNode(
                 typeof(StatementAgentInstanceFactory),
                 GetType(),
                 CodegenSymbolProviderEmpty.INSTANCE,

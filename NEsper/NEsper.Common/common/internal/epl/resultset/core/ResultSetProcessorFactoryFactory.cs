@@ -443,7 +443,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
             var isSelectRStream =
                 spec.SelectClauseStreamSelector == SelectClauseStreamSelectorEnum.RSTREAM_ISTREAM_BOTH ||
                 spec.SelectClauseStreamSelector == SelectClauseStreamSelectorEnum.RSTREAM_ONLY;
-            if (spec.InsertIntoDesc != null && spec.InsertIntoDesc.StreamSelector.IsSelectsRStream) {
+            if (spec.InsertIntoDesc != null && spec.InsertIntoDesc.StreamSelector.IsSelectsRStream()) {
                 isSelectRStream = true;
             }
 

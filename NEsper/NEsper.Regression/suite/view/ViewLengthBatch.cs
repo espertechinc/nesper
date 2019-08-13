@@ -133,7 +133,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 env.SendEventBean(MakeMarketDataEvent("E6"));
                 EPAssertionUtil.AssertPropsPerRow(
                     env.Listener("s0").NewDataListFlattened,
-                    "Symbol".SplitCsv(),
+                    new [] { "Symbol" },
                     new[] {
                         new object[] {"E4"},
                         new object[] {"E5"},
@@ -141,7 +141,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                     });
                 EPAssertionUtil.AssertPropsPerRow(
                     env.Listener("s0").OldDataListFlattened,
-                    "Symbol".SplitCsv(),
+                    new [] { "Symbol" },
                     new[] {
                         new object[] {"E1"},
                         new object[] {"E2"},
@@ -162,7 +162,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 env.SendEventBean(MakeMarketDataEvent("E9"));
                 EPAssertionUtil.AssertPropsPerRow(
                     env.Listener("s0").NewDataListFlattened,
-                    "Symbol".SplitCsv(),
+                    new [] { "Symbol" },
                     new[] {
                         new object[] {"E7"},
                         new object[] {"E8"},
@@ -170,7 +170,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                     });
                 EPAssertionUtil.AssertPropsPerRow(
                     env.Listener("s0").OldDataListFlattened,
-                    "Symbol".SplitCsv(),
+                    new [] { "Symbol" },
                     new[] {
                         new object[] {"E4"},
                         new object[] {"E5"},
@@ -374,7 +374,7 @@ namespace com.espertech.esper.regressionlib.suite.view
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "TheString".SplitCsv();
+                var fields = new [] { "TheString" };
 
                 var epl = "create window ABCWin#length_batch(3) as SupportBean;\n" +
                           "insert into ABCWin select * from SupportBean;\n" +
@@ -482,7 +482,7 @@ namespace com.espertech.esper.regressionlib.suite.view
 
             public void Run(RegressionEnvironment env)
             {
-                var fields = "TheString".SplitCsv();
+                var fields = new [] { "TheString" };
 
                 string epl;
                 if (runType == ViewLengthBatchNormalRunType.VIEW) {

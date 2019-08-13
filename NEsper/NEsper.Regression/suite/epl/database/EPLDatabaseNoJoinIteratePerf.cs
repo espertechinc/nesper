@@ -28,8 +28,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
                 path);
 
             var stmtText =
-                "@Name('s0') select * from sql:MyDBWithLRU100000 ['select mybigint, mybool from mytesttable where ${queryvar_bool} = mytesttable.mybool and myint between ${lower} and ${upper} order by mybigint']";
-            string[] fields = {"mybigint", "mybool"};
+                "@Name('s0') select * from sql:MyDBWithLRU100000 ['select myBigint, mybool from mytesttable where ${queryvar_bool} = mytesttable.mybool and myint between ${lower} and ${upper} order by myBigint']";
+            string[] fields = {"myBigint", "mybool"};
             env.CompileDeploy(stmtText, path);
             SendSupportBeanEvent(env, true, 20, 60);
 

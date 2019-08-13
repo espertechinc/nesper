@@ -57,7 +57,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
         {
             CodegenMethod methodNode = codegenMethodScope
                 .MakeChild(typeof(ICollection<object>), typeof(ExprDotForgeUnpackCollEventBean), codegenClassScope)
-                .AddParam(typeof(ICollection<object>), "target");
+                .AddParam(typeof(ICollection<EventBean>), "target");
 
             methodNode.Block
                 .IfRefNullReturnNull("target")

@@ -178,7 +178,7 @@ namespace com.espertech.esper.common.@internal.@event.xml
                     "result",
                     Cast(typeof(XmlNode), UnderlyingGetCodegen(Ref("node"), codegenMethodScope, codegenClassScope)))
                 .IfRefNullReturnNull("result")
-                .MethodReturn(ExprDotMethod(member, "getEvent", Ref("result")));
+                .MethodReturn(ExprDotMethod(member, "GetEvent", Ref("result")));
         }
     }
 } // end of namespace

@@ -125,7 +125,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             public void Run(RegressionEnvironment env)
             {
                 var path = new RegressionPath();
-                var fields = "p0".SplitCsv();
+                var fields = "P0".SplitCsv();
                 env.CompileDeploy(
                     "@Name('TheTable') create table MyTableSEL as (p0 string primary key, thesum sum(int))",
                     path);

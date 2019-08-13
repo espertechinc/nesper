@@ -33,14 +33,14 @@ namespace com.espertech.esper.regressionlib.suite.multithread
 
             var path = new RegressionPath();
             var eplContext = "create context theContext " +
-                             "context perPartition partition by partitionKey from TestEvent," +
+                             "context perPartition partition by PartitionKey from TestEvent," +
                              "context per10Seconds start @now end after 100 milliseconds";
             var compiledContext = Compile(eplContext, configuration, path);
             path.Add(compiledContext);
             Deploy(compiledContext, runtime);
 
             var eplStmt = "context theContext " +
-                          "select sum(value) as thesum, count(*) as thecnt, context.perPartition.Key1 as thekey " +
+                          "select sum(value) as thesum, count(*) as thecnt, context.PerPartition.Key1 as thekey " +
                           "from TestEvent output snapshot when terminated";
             var compiledStmt = Compile(eplStmt, configuration, path);
             var listener = new SupportUpdateListener();
@@ -67,9 +67,9 @@ namespace com.espertech.esper.regressionlib.suite.multithread
             var sum = 0;
             long count = 0;
             foreach (var @event in listener.NewDataListFlattened) {
-                var sumBatch = @event.Get("thesum").AsInt();
+                var sumBatch = @event.Get("thesum").AsBoxedInt();
                 if (sumBatch != null) { // can be null when there is nothing to deliver
-                    sum += sumBatch;
+                    sum += sumBatch.Value;
                     count += @event.Get("thecnt").AsLong();
                 }
             }

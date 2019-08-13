@@ -18,8 +18,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
         public void Run(RegressionEnvironment env)
         {
             var epl = "@Name('s0') select\n" +
-                      "Math.signum(stream1.slope) as s1,\n" +
-                      "Math.signum(stream2.slope) as s2\n" +
+                      "Math.Sign(stream1.slope) as s1,\n" +
+                      "Math.Sign(stream2.slope) as s2\n" +
                       "from\n" +
                       "SupportBean#length_batch(3)#linest(IntPrimitive, LongPrimitive) as stream1,\n" +
                       "SupportBean#length_batch(2)#linest(IntPrimitive, LongPrimitive) as stream2";

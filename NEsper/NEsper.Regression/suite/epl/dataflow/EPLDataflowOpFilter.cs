@@ -40,7 +40,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
         {
             var graph = "@Name('flow') create dataflow MySelect\n" +
                         "DefaultSupportSourceOp -> instream<SupportBean>{}\n" +
-                        "Filter(instream as ME) -> outstream {filter: " +
+                        "filter(instream as ME) -> outstream {filter: " +
                         filter +
                         "}\n" +
                         "DefaultSupportCaptureOp(outstream) {}";
@@ -56,7 +56,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                         "DefaultSupportSourceOp -> instream.with.dot<" +
                         typeName +
                         ">{}\n" +
-                        "Filter(instream.with.dot) -> outstream.dot {filter: myString = 'two'}\n" +
+                        "filter(instream.with.dot) -> outstream.dot {filter: myString = 'two'}\n" +
                         "DefaultSupportCaptureOp(outstream.dot) {}";
             env.CompileDeploy(graph);
 
@@ -106,7 +106,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 // invalid filter expressions
                 TryInvalidFilter(
                     env,
-                    "theString = 1",
+                    "TheString = 1",
                     "Failed to obtain operator 'Filter': Failed to validate filter dataflow operator expression 'TheString=1': Implicit conversion from datatype 'Integer' to 'String' is not allowed");
 
                 TryInvalidFilter(
@@ -150,7 +150,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 DefaultSupportCaptureOpStatic<SupportBean>.GetInstances().Clear();
                 var graph = "@Name('flow') create dataflow MyFilter\n" +
                             "Emitter -> sb<SupportBean> {name : 'e1'}\n" +
-                            "Filter(sb) -> out.ok, out.fail {filter: TheString = 'x'}\n" +
+                            "filter(sb) -> out.ok, out.fail {filter: TheString = 'x'}\n" +
                             "DefaultSupportCaptureOpStatic(out.ok) {}" +
                             "DefaultSupportCaptureOpStatic(out.fail) {}";
                 env.CompileDeploy(graph);

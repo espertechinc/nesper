@@ -27,7 +27,7 @@ namespace com.espertech.esper.common.@internal.epl.join.querygraph
             bool isBetweenPart)
             : base(type)
         {
-            if (type.IsRange) {
+            if (type.IsRange()) {
                 throw new ArgumentException("Invalid ctor for use with ranges");
             }
 
@@ -45,7 +45,7 @@ namespace com.espertech.esper.common.@internal.epl.join.querygraph
 
         public override string ToQueryPlan()
         {
-            return Type.StringOp + " on " + ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(Expression);
+            return Type.StringOp() + " on " + ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(Expression);
         }
 
         public override CodegenExpression Make(

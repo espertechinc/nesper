@@ -43,7 +43,8 @@ namespace com.espertech.esper.common.client.soda
             TextWriter writer,
             EPStatementFormatter formatter)
         {
-            if (IsNow) {
+            if (IsNow)
+            {
                 writer.Write("@now and");
             }
 

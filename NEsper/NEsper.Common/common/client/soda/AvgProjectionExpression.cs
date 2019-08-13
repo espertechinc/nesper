@@ -9,15 +9,13 @@
 using System;
 using System.IO;
 
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
-
 namespace com.espertech.esper.common.client.soda
 {
     /// <summary>
     /// Average of the (distinct) values returned by an expression.
     /// <para />Expects a single child expression providing the values to aggregate.
     /// </summary>
+    [Serializable]
     public class AvgProjectionExpression : ExpressionBase
     {
         private bool distinct;
@@ -51,7 +49,8 @@ namespace com.espertech.esper.common.client.soda
             this.Children.Add(expression);
         }
 
-        public override ExpressionPrecedenceEnum Precedence {
+        public override ExpressionPrecedenceEnum Precedence
+        {
             get => ExpressionPrecedenceEnum.UNARY;
         }
 
@@ -64,7 +63,8 @@ namespace com.espertech.esper.common.client.soda
         /// Returns true if the projection considers distinct values only.
         /// </summary>
         /// <returns>true if distinct</returns>
-        public bool IsDistinct {
+        public bool IsDistinct
+        {
             get => distinct;
             set => this.distinct = value;
         }
@@ -73,7 +73,8 @@ namespace com.espertech.esper.common.client.soda
         /// Returns true if the projection considers distinct values only.
         /// </summary>
         /// <returns>true if distinct</returns>
-        public bool Distinct {
+        public bool Distinct
+        {
             get => distinct;
             set => this.distinct = value;
         }

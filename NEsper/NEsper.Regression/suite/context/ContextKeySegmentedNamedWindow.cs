@@ -101,7 +101,7 @@ namespace com.espertech.esper.regressionlib.suite.context
 
                 EPAssertionUtil.AssertPropsPerRow(
                     env.Runtime.FireAndForgetService.ExecuteQuery(compiled).Array,
-                    "TheString".SplitCsv(),
+                    new [] { "TheString" },
                     new[] {new object[] {"G1"}});
 
                 env.SendEventBean(new SupportBean("G2", 0));
@@ -110,7 +110,7 @@ namespace com.espertech.esper.regressionlib.suite.context
 
                 EPAssertionUtil.AssertPropsPerRowAnyOrder(
                     env.Runtime.FireAndForgetService.ExecuteQuery(compiled).Array,
-                    "TheString".SplitCsv(),
+                    new [] { "TheString" },
                     new[] {new object[] {"G1"}, new object[] {"G2"}});
 
                 env.UndeployAll();

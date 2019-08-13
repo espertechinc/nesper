@@ -75,7 +75,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "val0".SplitCsv();
+                var fields = new [] { "val0" };
                 var eplFragment = "@Name('s0') select " +
                                   "Strvals.aggregate('', (result, item) -> result || '+' || item) as val0 " +
                                   "from SupportCollection";

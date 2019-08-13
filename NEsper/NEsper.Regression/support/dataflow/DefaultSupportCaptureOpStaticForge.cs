@@ -30,4 +30,8 @@ namespace com.espertech.esper.regressionlib.support.dataflow
             return NewInstance(typeof(DefaultSupportCaptureOpStaticFactory<object>));
         }
     }
+
+    public class DefaultSupportCaptureOpStaticForge : DefaultSupportCaptureOpStaticForge<object>
+    {
+    }
 } // end of namespace

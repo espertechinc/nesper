@@ -14,8 +14,8 @@ namespace com.espertech.esper.common.@internal.supportunit.bean
     [Serializable]
     public class SupportBeanNumeric
     {
-        private decimal _decOne;
-        private decimal _decTwo;
+        private decimal _decimalOne;
+        private decimal _decimalTwo;
         private BigInteger bigint;
         private double doubleOne;
         private double doubleTwo;
@@ -28,14 +28,14 @@ namespace com.espertech.esper.common.@internal.supportunit.bean
             int? intOne,
             int? intTwo,
             BigInteger bigint,
-            decimal decOne,
+            decimal decimalOne,
             double doubleOne,
             double doubleTwo)
         {
             this.intOne = intOne;
             this.intTwo = intTwo;
             this.bigint = bigint;
-            _decOne = decOne;
+            _decimalOne = decimalOne;
             this.doubleOne = doubleOne;
             this.doubleTwo = doubleTwo;
         }
@@ -50,10 +50,10 @@ namespace com.espertech.esper.common.@internal.supportunit.bean
 
         public SupportBeanNumeric(
             BigInteger bigint,
-            decimal decOne)
+            decimal decimalOne)
         {
             this.bigint = bigint;
-            _decOne = decOne;
+            _decimalOne = decimalOne;
         }
 
         public SupportBeanNumeric(
@@ -65,56 +65,47 @@ namespace com.espertech.esper.common.@internal.supportunit.bean
             this.floatTwo = floatTwo;
         }
 
-        public int? IntOne
-        {
+        public int? IntOne {
             get => intOne;
             set => intOne = value;
         }
 
-        public int? IntTwo
-        {
+        public int? IntTwo {
             get => intTwo;
             set => intTwo = value;
         }
 
-        public BigInteger Bigint
-        {
+        public BigInteger Bigint {
             get => bigint;
             set => bigint = value;
         }
 
-        public decimal DecOne
-        {
-            get => _decOne;
-            set => _decOne = value;
+        public decimal DecimalOne {
+            get => _decimalOne;
+            set => _decimalOne = value;
         }
 
-        public double DoubleOne
-        {
+        public double DoubleOne {
             get => doubleOne;
             set => doubleOne = value;
         }
 
-        public double DoubleTwo
-        {
+        public double DoubleTwo {
             get => doubleTwo;
             set => doubleTwo = value;
         }
 
-        public decimal DecTwo
-        {
-            get => _decTwo;
-            set => _decTwo = value;
+        public decimal DecimalTwo {
+            get => _decimalTwo;
+            set => _decimalTwo = value;
         }
 
-        public float FloatOne
-        {
+        public float FloatOne {
             get => floatOne;
             set => floatOne = value;
         }
 
-        public float FloatTwo
-        {
+        public float FloatTwo {
             get => floatTwo;
             set => floatTwo = value;
         }

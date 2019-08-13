@@ -83,7 +83,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
                         eventBeanFactory,
                         "AdapterForTypedWrapper",
                         @Ref("recast"),
-                        StaticMethod(typeof(Collections), "GetEmptyMap"),
+                        StaticMethod(typeof(Collections), "GetEmptyMap", new[] { typeof(string), typeof(object) }),
                         resultEventType));
             return methodNode;
         }

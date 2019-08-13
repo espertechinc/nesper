@@ -317,11 +317,11 @@ namespace com.espertech.esper.common.@internal.@event.core
             }
 
             // If there is a map value in the map, return the Object value if this is a dynamic property
-            if (ReferenceEquals(nestedType, typeof(IDictionary<object, object>))) {
+            if (ReferenceEquals(nestedType, typeof(IDictionary<string, object>))) {
                 return null;
             }
 
-            if (nestedType is IDictionary<object, object>) {
+            if (nestedType is IDictionary<string, object>) {
                 return null;
             }
 

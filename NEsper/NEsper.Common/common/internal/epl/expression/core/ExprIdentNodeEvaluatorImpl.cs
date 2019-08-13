@@ -87,7 +87,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                     ExprDotMethodChain(symbols.GetAddExprEvalCtx(method))
                         .Get("AuditProvider")
                         .Add(
-                            "property",
+                            "Property",
                             Constant(identNode.ResolvedPropertyName),
                             @Ref("value"),
                             symbols.GetAddExprEvalCtx(method)))

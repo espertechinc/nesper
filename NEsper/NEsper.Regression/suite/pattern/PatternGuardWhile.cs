@@ -42,7 +42,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "c0".SplitCsv();
+                var fields = new [] { "c0" };
 
                 var epl =
                     "@Name('s0') select a.TheString as c0 from pattern [(every a=SupportBean) while (a.TheString like 'E%')]";

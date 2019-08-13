@@ -53,17 +53,20 @@ namespace com.espertech.esper.common.client.soda
             TextWriter writer,
             EPStatementFormatter formatter)
         {
-            if (IsNow) {
+            if (IsNow)
+            {
                 writer.Write("@now and");
             }
 
             writer.Write("pattern [");
-            if (Pattern != null) {
+            if (Pattern != null)
+            {
                 Pattern.ToEPL(writer, PatternExprPrecedenceEnum.MINIMUM, formatter);
             }
 
             writer.Write("]");
-            if (IsInclusive) {
+            if (IsInclusive)
+            {
                 writer.Write("@Inclusive");
             }
         }

@@ -37,7 +37,7 @@ namespace com.espertech.esper.regressionlib.suite.view
             RegressionEnvironment env,
             object[][] expected)
         {
-            var fields = "theString,IntPrimitive,LongPrimitive".SplitCsv();
+            var fields = "TheString,IntPrimitive,LongPrimitive".SplitCsv();
             var @event = env.Listener("s0").AssertOneGetNewAndReset();
             SupportBeanAssertionUtil.AssertPropsPerRow((object[]) @event.Get("win"), fields, expected);
             for (var i = 0; i < 5; i++) {
@@ -164,7 +164,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                     "@Name('s0') select irstream * from SupportBean#groupwin(TheString)#rank(IntPrimitive, 2, DoublePrimitive) as ev";
                 env.CompileDeployAddListenerMile(epl, "s0", 1);
 
-                var fields = "theString,IntPrimitive,LongPrimitive,DoublePrimitive".SplitCsv();
+                var fields = "TheString,IntPrimitive,LongPrimitive,DoublePrimitive".SplitCsv();
                 env.SendEventBean(MakeEvent("E1", 100, 0L, 1d));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
@@ -233,7 +233,7 @@ namespace com.espertech.esper.regressionlib.suite.view
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "theString,IntPrimitive,LongPrimitive,DoublePrimitive".SplitCsv();
+                var fields = "TheString,IntPrimitive,LongPrimitive,DoublePrimitive".SplitCsv();
                 var epl =
                     "@Name('s0') select irstream * from SupportBean#rank(TheString, IntPrimitive, 3, LongPrimitive, DoublePrimitive)";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
@@ -341,7 +341,7 @@ namespace com.espertech.esper.regressionlib.suite.view
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "theString,IntPrimitive,LongPrimitive".SplitCsv();
+                var fields = "TheString,IntPrimitive,LongPrimitive".SplitCsv();
                 var epl =
                     "@Name('create') create window MyWindow#rank(TheString, 3, IntPrimitive asc) as SupportBean;\n" +
                     "insert into MyWindow select * from SupportBean;\n" +
@@ -453,7 +453,7 @@ namespace com.espertech.esper.regressionlib.suite.view
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "theString,IntPrimitive,LongPrimitive".SplitCsv();
+                var fields = "TheString,IntPrimitive,LongPrimitive".SplitCsv();
                 var epl = "@Name('s0') select irstream * from SupportBean.ext:rank(TheString, 3, IntPrimitive)";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
@@ -576,7 +576,7 @@ namespace com.espertech.esper.regressionlib.suite.view
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "theString,IntPrimitive,LongPrimitive".SplitCsv();
+                var fields = "TheString,IntPrimitive,LongPrimitive".SplitCsv();
                 var epl = "@Name('s0') select irstream * from SupportBean#rank(TheString, 4, IntPrimitive desc)";
                 env.CompileDeploy(epl).AddListener("s0");
 

@@ -20,7 +20,7 @@ namespace com.espertech.esper.common.@internal.epl.join.querygraph
             bool isBetweenPart)
             : base(type)
         {
-            if (type.IsRange) {
+            if (type.IsRange()) {
                 throw new ArgumentException("Invalid ctor for use with ranges");
             }
 

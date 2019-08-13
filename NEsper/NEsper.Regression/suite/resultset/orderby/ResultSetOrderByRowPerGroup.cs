@@ -442,7 +442,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.orderby
 
                 EPAssertionUtil.AssertPropsPerRow(
                     env.Listener("s0").LastNewData,
-                    "c0,c1".SplitCsv(),
+                    new [] { "c0", "c1" },
                     new[] {new object[] {14, "E1"}, new object[] {13, "E2"}, new object[] {12, "E3"}});
 
                 env.UndeployAll();

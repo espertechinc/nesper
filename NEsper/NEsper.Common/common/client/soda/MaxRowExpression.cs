@@ -9,14 +9,12 @@
 using System;
 using System.IO;
 
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
-
 namespace com.espertech.esper.common.client.soda
 {
     /// <summary>
     /// Maximum-value per-row expression (not aggregating) determines the maximum value among a set of values.
     /// </summary>
+    [Serializable]
     public class MaxRowExpression : ExpressionBase
     {
         /// <summary>
@@ -40,7 +38,8 @@ namespace com.espertech.esper.common.client.soda
         {
             AddChild(new PropertyValueExpression(propertyOne));
             AddChild(new PropertyValueExpression(propertyTwo));
-            for (int i = 0; i < moreProperties.Length; i++) {
+            for (int i = 0; i < moreProperties.Length; i++)
+            {
                 AddChild(new PropertyValueExpression(moreProperties[i]));
             }
         }
@@ -58,7 +57,8 @@ namespace com.espertech.esper.common.client.soda
         {
             AddChild(exprOne);
             AddChild(exprTwo);
-            for (int i = 0; i < moreExpressions.Length; i++) {
+            for (int i = 0; i < moreExpressions.Length; i++)
+            {
                 AddChild(moreExpressions[i]);
             }
         }
@@ -96,7 +96,8 @@ namespace com.espertech.esper.common.client.soda
             return this;
         }
 
-        public override ExpressionPrecedenceEnum Precedence {
+        public override ExpressionPrecedenceEnum Precedence
+        {
             get => ExpressionPrecedenceEnum.UNARY;
         }
 
@@ -105,7 +106,8 @@ namespace com.espertech.esper.common.client.soda
             writer.Write("max(");
 
             string delimiter = "";
-            foreach (Expression expr in this.Children) {
+            foreach (Expression expr in this.Children)
+            {
                 writer.Write(delimiter);
                 expr.ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
                 delimiter = ",";

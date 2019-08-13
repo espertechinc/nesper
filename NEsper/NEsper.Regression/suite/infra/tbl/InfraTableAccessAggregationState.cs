@@ -145,7 +145,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                     SupportEventTypeAssertionEnum.NAME,
                     SupportEventTypeAssertionEnum.TYPE);
 
-                var fields = "c0,c1,c2,c3,c4,c5".SplitCsv();
+                var fields = new [] { "c0", "c1", "c2", "c3", "c4", "c5" };
                 var b1 = MakeSendBean(env, "E1", 10);
                 env.SendEventBean(new SupportBean_S0(0));
                 EPAssertionUtil.AssertProps(
@@ -210,7 +210,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 env.SendEventBean(new SupportBean_S0(1));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    "c0".SplitCsv(),
+                    new [] { "c0" },
                     new object[] {new object[] {b1}});
 
                 var b2 = MakeSendBean(env, "E2", 20);
@@ -224,7 +224,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 env.SendEventBean(new SupportBean_S0(2));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    "c0".SplitCsv(),
+                    new [] { "c0" },
                     new object[] {new object[] {b1, b2}});
 
                 env.UndeployAll();
@@ -247,7 +247,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
 
                 env.Milestone(0);
 
-                var fields = "c0,c1".SplitCsv();
+                var fields = new [] { "c0", "c1" };
                 var eplUse =
                     "@Name('s0') select varTotal[P00, Id, 100L].total as c0, varTotal[P00, Id, 100L].cnt as c1 from SupportBean_S0";
                 env.CompileDeploy(eplUse, path).AddListener("s0");
@@ -314,7 +314,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                                 "varMyAgg[P00].c3 as c3" +
                                 " from SupportBean_S0";
                 env.CompileDeploy(eplSelect, path).AddListener("s0");
-                var fields = "c0,c1,c2,c3".SplitCsv();
+                var fields = new [] { "c0", "c1", "c2", "c3" };
 
                 env.Milestone(2);
 

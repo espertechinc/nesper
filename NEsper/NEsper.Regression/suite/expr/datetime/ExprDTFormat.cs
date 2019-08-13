@@ -39,9 +39,9 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                 var fields = "val0,val1,val2,val3".SplitCsv();
                 var eplFragment = "@Name('s0') select " +
                                   "current_timestamp.format() as val0," +
-                                  "utildate.format() as val1," +
-                                  "longdate.format() as val2," +
-                                  "exdate.format() as val3" +
+                                  "DtoDate.format() as val1," +
+                                  "LongDate.format() as val2," +
+                                  "DtxDate.format() as val3" +
                                   " from SupportDateTime";
                 env.CompileDeploy(eplFragment).AddListener("s0");
                 LambdaAssertionUtil.AssertTypes(
@@ -76,13 +76,13 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
 
                 var fields = "val0,val1,val2,val3,val4,val5,val6".SplitCsv();
                 var eplFragment = "@Name('s0') select " +
-                                  "longdate.format(\"" +
+                                  "LongDate.format(\"" +
                                   sdfPattern +
                                   "\") as val0," +
-                                  "utildate.format(\"" +
+                                  "DtoDate.format(\"" +
                                   sdfPattern +
                                   "\") as val1," +
-                                  "exdate.format(\"" +
+                                  "DtxDate.format(\"" +
                                   sdfPattern +
                                   "\") as val2" +
                                   " from SupportDateTime";
@@ -94,8 +94,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
 
                 var received = env.Listener("s0").AssertOneGetNewAndReset();
                 Assert.That(received.Get("val0"), Is.EqualTo(sdf.Format(sdt.LongDate)));
-                Assert.That(received.Get("val1"), Is.EqualTo(sdf.Format(sdt.UtilDate)));
-                Assert.That(received.Get("val2"), Is.EqualTo(sdf.Format(sdt.ExDate)));
+                Assert.That(received.Get("val1"), Is.EqualTo(sdf.Format(sdt.DtoDate)));
+                Assert.That(received.Get("val2"), Is.EqualTo(sdf.Format(sdt.DtxDate)));
 
                 env.SendEventBean(SupportDateTime.Make(null));
                 received = env.Listener("s0").AssertOneGetNewAndReset();

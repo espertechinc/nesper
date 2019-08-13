@@ -148,15 +148,15 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 Assert.AreEqual(3, env.Listener("s0").NewDataList.Count);
                 EPAssertionUtil.AssertPropsPerRow(
                     env.Listener("s0").NewDataList[0],
-                    "theString,IntPrimitive".SplitCsv(),
+                    new [] { "TheString","IntPrimitive" },
                     new[] {new object[] {"E1", 1}});
                 EPAssertionUtil.AssertPropsPerRow(
                     env.Listener("s0").NewDataList[1],
-                    "theString,IntPrimitive".SplitCsv(),
+                    new [] { "TheString","IntPrimitive" },
                     new[] {new object[] {"E2", 2}});
                 EPAssertionUtil.AssertPropsPerRow(
                     env.Listener("s0").NewDataList[2],
-                    "theString,IntPrimitive".SplitCsv(),
+                    new [] { "TheString","IntPrimitive" },
                     new[] {new object[] {"E3", 1}});
                 env.UndeployAll();
 
@@ -193,12 +193,12 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 Assert.AreEqual(2, env.Listener("s0").NewDataList[0].Length);
                 EPAssertionUtil.AssertPropsPerRow(
                     env.Listener("s0").NewDataList[0],
-                    "theString,IntPrimitive".SplitCsv(),
+                    new [] { "TheString","IntPrimitive" },
                     new[] {new object[] {"E1", 1}, new object[] {"E3", 1}});
                 Assert.AreEqual(1, env.Listener("s0").NewDataList[1].Length);
                 EPAssertionUtil.AssertPropsPerRow(
                     env.Listener("s0").NewDataList[1],
-                    "theString,IntPrimitive".SplitCsv(),
+                    new [] { "TheString","IntPrimitive" },
                     new[] {new object[] {"E2", 2}});
 
                 // test sorted
@@ -215,18 +215,18 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 Assert.AreEqual(1, env.Listener("s0").NewDataList[0].Length);
                 EPAssertionUtil.AssertPropsPerRow(
                     env.Listener("s0").NewDataList[0],
-                    "theString,IntPrimitive".SplitCsv(),
+                    new [] { "TheString","IntPrimitive" },
                     new[] {new object[] {"E2", 2}});
                 Assert.AreEqual(2, env.Listener("s0").NewDataList[1].Length);
                 EPAssertionUtil.AssertPropsPerRow(
                     env.Listener("s0").NewDataList[1],
-                    "theString,IntPrimitive".SplitCsv(),
+                    new [] { "TheString","IntPrimitive" },
                     new[] {new object[] {"E1", 1}, new object[] {"E3", 1}});
 
                 // test multiple criteria
                 env.UndeployAll();
                 var stmtText =
-                    "@Name('s0') select TheString, DoubleBoxed, enumValue from SupportBean#time_batch(1) order by TheString, DoubleBoxed, enumValue for grouped_delivery(DoubleBoxed, enumValue)";
+                    "@Name('s0') select TheString, DoubleBoxed, EnumValue from SupportBean#time_batch(1) order by TheString, DoubleBoxed, EnumValue for grouped_delivery(DoubleBoxed, EnumValue)";
                 env.CompileDeploy(stmtText).AddListener("s0");
 
                 SendEvent(env, "E1", 10d, SupportEnum.ENUM_VALUE_2); // A (1)
@@ -239,7 +239,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 SendEvent(env, "E8", 10d, SupportEnum.ENUM_VALUE_1); // D
                 SendTimer(env, 3000);
                 Assert.AreEqual(4, env.Listener("s0").NewDataList.Count);
-                var fields = "theString,DoubleBoxed,enumValue".SplitCsv();
+                var fields = "TheString,DoubleBoxed,EnumValue".SplitCsv();
                 EPAssertionUtil.AssertPropsPerRow(
                     env.Listener("s0").NewDataList[0],
                     fields,

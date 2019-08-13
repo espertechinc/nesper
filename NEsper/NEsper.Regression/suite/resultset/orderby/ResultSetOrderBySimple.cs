@@ -379,7 +379,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.orderby
                 Assert.AreEqual(2, receivedTwo.Length);
                 EPAssertionUtil.AssertPropsPerRow(
                     receivedTwo,
-                    "TheString".SplitCsv(),
+                    new [] { "TheString" },
                     new[] {new object[] {"A2"}, new object[] {"A1"}});
 
                 env.UndeployAll();

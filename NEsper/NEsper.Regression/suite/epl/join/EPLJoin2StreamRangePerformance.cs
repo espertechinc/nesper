@@ -95,7 +95,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                                "from SB sb " +
                                "full outer join " +
                                "SBR sbr " +
-                               "on TheString = key " +
+                               "on TheString = Key " +
                                "where IntPrimitive between RangeStart and RangeEnd";
                 env.CompileDeploy(eplQuery, path).AddListener("s0").Milestone(1);
 

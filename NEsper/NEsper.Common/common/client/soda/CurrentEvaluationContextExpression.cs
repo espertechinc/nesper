@@ -9,14 +9,12 @@
 using System;
 using System.IO;
 
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
-
 namespace com.espertech.esper.common.client.soda
 {
     /// <summary>
     /// Current execution context supplies the current expression execution context.
     /// </summary>
+    [Serializable]
     public class CurrentEvaluationContextExpression : ExpressionBase
     {
         /// <summary>
@@ -26,7 +24,8 @@ namespace com.espertech.esper.common.client.soda
         {
         }
 
-        public override ExpressionPrecedenceEnum Precedence {
+        public override ExpressionPrecedenceEnum Precedence
+        {
             get => ExpressionPrecedenceEnum.UNARY;
         }
 

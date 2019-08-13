@@ -28,7 +28,8 @@ namespace com.espertech.esper.common.client.soda
         {
         }
 
-        public override string AggregationFunctionName {
+        public override string AggregationFunctionName
+        {
             get { return "window"; }
         }
     }

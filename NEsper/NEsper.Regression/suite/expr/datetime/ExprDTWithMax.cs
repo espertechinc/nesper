@@ -33,18 +33,20 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
             {
                 var fields = "val0,val1,val2".SplitCsv();
                 var eplFragment = "@Name('s0') select " +
-                                  "utildate.withMax('month') as val0," +
-                                  "longdate.withMax('month') as val1," +
-                                  "exdate.withMax('month') as val2" +
+                                  "DateTime.withMax('month') as val0," +
+                                  "DtoDate.withMax('month') as val1" +
+                                  "DtxDate.withMax('month') as val2," +
+                                  "LongDate.withMax('month') as val3" +
                                   " from SupportDateTime";
                 env.CompileDeploy(eplFragment).AddListener("s0");
                 LambdaAssertionUtil.AssertTypes(
                     env.Statement("s0").EventType,
                     fields,
                     new[] {
+                        typeof(DateTime?),
                         typeof(DateTimeOffset?),
-                        typeof(long?),
-                        typeof(DateTimeEx)
+                        typeof(DateTimeEx),
+                        typeof(long?)
                     });
 
                 var startTime = "2002-05-30T09:00:00.000";
@@ -54,7 +56,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
                     fields,
-                    SupportDateTime.GetArrayCoerced(expectedTime, "util", "long", "dtx"));
+                    SupportDateTime.GetArrayCoerced(expectedTime, "datetime", "dto", "dtx", "long"));
 
                 env.UndeployAll();
             }
@@ -66,14 +68,14 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
             {
                 var fields = "val0,val1,val2,val3,val4,val5,val6,val7".SplitCsv();
                 var eplFragment = "@Name('s0') select " +
-                                  "utildate.withMax('msec') as val0," +
-                                  "utildate.withMax('sec') as val1," +
-                                  "utildate.withMax('minutes') as val2," +
-                                  "utildate.withMax('hour') as val3," +
-                                  "utildate.withMax('day') as val4," +
-                                  "utildate.withMax('month') as val5," +
-                                  "utildate.withMax('year') as val6," +
-                                  "utildate.withMax('week') as val7" +
+                                  "DtoDate.withMax('msec') as val0," +
+                                  "DtoDate.withMax('sec') as val1," +
+                                  "DtoDate.withMax('minutes') as val2," +
+                                  "DtoDate.withMax('hour') as val3," +
+                                  "DtoDate.withMax('day') as val4," +
+                                  "DtoDate.withMax('month') as val5," +
+                                  "DtoDate.withMax('year') as val6," +
+                                  "DtoDate.withMax('week') as val7" +
                                   " from SupportDateTime";
                 env.CompileDeploy(eplFragment).AddListener("s0");
                 LambdaAssertionUtil.AssertTypes(

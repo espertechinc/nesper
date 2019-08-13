@@ -95,7 +95,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 
                 env.CompileDeploy(epl).AddListener("s0");
 
-                var fields = "c0,c1,c2,c3,c4".SplitCsv();
+                var fields = new [] { "c0", "c1", "c2", "c3", "c4" };
                 AssertTypes(
                     env.Statement("s0"),
                     fields,
@@ -128,7 +128,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 
                 env.CompileDeploy(epl).AddListener("s0");
 
-                var fields = "c0,c1,c2,c3".SplitCsv();
+                var fields = new [] { "c0", "c1", "c2", "c3" };
                 AssertTypes(env.Statement("s0"), fields, typeof(long?), typeof(long?), typeof(long?), typeof(double?));
 
                 env.SendEventBean(new SupportBean());
@@ -154,7 +154,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                           " from SupportBean";
                 env.CompileDeploy(epl).AddListener("s0");
 
-                var fields = "c0,c1,c2,c3,c4".SplitCsv();
+                var fields = new [] { "c0", "c1", "c2", "c3", "c4" };
                 AssertTypes(
                     env.Statement("s0"),
                     fields,
@@ -204,15 +204,15 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
             public void Run(RegressionEnvironment env)
             {
                 var epl = "@Name('s0') select " +
-                          "10+BigDecimal.ValueOf(5,0) as c0," +
-                          "10-BigDecimal.ValueOf(5,0) as c1," +
-                          "10*BigDecimal.ValueOf(5,0) as c2," +
-                          "10/BigDecimal.ValueOf(5,0) as c3" +
+                          "10+5.0m as c0," +
+                          "10-5.0m as c1," +
+                          "10*5.0m as c2," +
+                          "10/5.0m as c3" +
                           " from SupportBean";
 
                 env.CompileDeploy(epl).AddListener("s0");
 
-                var fields = "c0,c1,c2,c3".SplitCsv();
+                var fields = new [] { "c0", "c1", "c2", "c3" };
                 AssertTypes(
                     env.Statement("s0"),
                     fields,
@@ -247,7 +247,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 
                 env.CompileDeploy(epl).AddListener("s0");
 
-                var fields = "c0,c1,c2,c3".SplitCsv();
+                var fields = new [] { "c0", "c1", "c2", "c3" };
                 AssertTypes(
                     env.Statement("s0"),
                     fields,
@@ -279,7 +279,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 
                 env.CompileDeploy(epl).AddListener("s0");
 
-                var fields = "c0,c1,c2,c3".SplitCsv();
+                var fields = new [] { "c0", "c1", "c2", "c3" };
                 AssertTypes(
                     env.Statement("s0"),
                     fields,
@@ -303,15 +303,15 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
             public void Run(RegressionEnvironment env)
             {
                 var epl = "@Name('s0') select " +
-                          "BigDecimal.ValueOf(10,0)+BigDecimal.ValueOf(5,0) as c0," +
-                          "BigDecimal.ValueOf(10,0)-BigDecimal.ValueOf(5,0) as c1," +
-                          "BigDecimal.ValueOf(10,0)*BigDecimal.ValueOf(5,0) as c2," +
-                          "BigDecimal.ValueOf(10,0)/BigDecimal.ValueOf(5,0) as c3" +
+                          "10.0m+5.0m as c0," +
+                          "10.0m-5.0m as c1," +
+                          "10.0m*5.0m as c2," +
+                          "10.0m/5.0m as c3" +
                           " from SupportBean";
 
                 env.CompileDeploy(epl).AddListener("s0");
 
-                var fields = "c0,c1,c2,c3".SplitCsv();
+                var fields = new [] { "c0", "c1", "c2", "c3" };
                 AssertTypes(
                     env.Statement("s0"),
                     fields,
@@ -338,19 +338,19 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
             public void Run(RegressionEnvironment env)
             {
                 var epl = "@Name('s0') select " +
-                          "shortPrimitive + ShortBoxed as c0," +
-                          "bytePrimitive + ByteBoxed as c1, " +
-                          "shortPrimitive - ShortBoxed as c2," +
-                          "bytePrimitive - ByteBoxed as c3, " +
-                          "shortPrimitive * ShortBoxed as c4," +
-                          "bytePrimitive * ByteBoxed as c5, " +
-                          "shortPrimitive / ShortBoxed as c6," +
-                          "bytePrimitive / ByteBoxed as c7," +
-                          "shortPrimitive + LongPrimitive as c8," +
-                          "bytePrimitive + LongPrimitive as c9 " +
+                          "ShortPrimitive + ShortBoxed as c0," +
+                          "BytePrimitive + ByteBoxed as c1, " +
+                          "ShortPrimitive - ShortBoxed as c2," +
+                          "BytePrimitive - ByteBoxed as c3, " +
+                          "ShortPrimitive * ShortBoxed as c4," +
+                          "BytePrimitive * ByteBoxed as c5, " +
+                          "ShortPrimitive / ShortBoxed as c6," +
+                          "BytePrimitive / ByteBoxed as c7," +
+                          "ShortPrimitive + LongPrimitive as c8," +
+                          "BytePrimitive + LongPrimitive as c9 " +
                           "from SupportBean";
                 env.CompileDeploy(epl).AddListener("s0");
-                var fields = "c0,c1,c2,c3,c4,c5,c6,c7,c8,c9".SplitCsv();
+                var fields = new [] { "c0", "c1", "c2", "c3", "c4", "c5", "c6", "c7", "c8", "c9" };
 
                 foreach (var field in fields) {
                     var expected = typeof(int?);

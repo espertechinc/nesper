@@ -30,10 +30,10 @@ namespace com.espertech.esper.regressionlib.support.bean
 
                 LongdateStart = start;
                 UtildateStart = SupportDateTime.ToDate(start);
-                CaldateStart = SupportDateTime.ToDateTimeEx(start);
+                DateTimeExStart = SupportDateTime.ToDateTimeEx(start);
                 LongdateEnd = end;
                 UtildateEnd = SupportDateTime.ToDate(end);
-                CaldateEnd = SupportDateTime.ToDateTimeEx(end);
+                DateTimeExEnd = SupportDateTime.ToDateTimeEx(end);
             }
         }
 
@@ -43,8 +43,8 @@ namespace com.espertech.esper.regressionlib.support.bean
         [PropertyName("utildateStart")]
         public DateTime UtildateStart { get; }
 
-        [PropertyName("caldateStart")]
-        public DateTimeEx CaldateStart { get; }
+        [PropertyName("dateTimeExStart")]
+        public DateTimeEx DateTimeExStart { get; }
 
         [PropertyName("longdateEnd")]
         public long? LongdateEnd { get; }
@@ -52,8 +52,8 @@ namespace com.espertech.esper.regressionlib.support.bean
         [PropertyName("utildateEnd")]
         public DateTime UtildateEnd { get; }
 
-        [PropertyName("caldateEnd")]
-        public DateTimeEx CaldateEnd { get; }
+        [PropertyName("dateTimeExEnd")]
+        public DateTimeEx DateTimeExEnd { get; }
 
         public string Key { get; set; }
     }

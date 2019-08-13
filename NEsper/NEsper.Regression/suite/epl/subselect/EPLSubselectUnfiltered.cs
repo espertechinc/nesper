@@ -504,7 +504,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "theString,col".SplitCsv();
+                var fields = "TheString,col".SplitCsv();
                 var epl =
                     "@Name('s0') select TheString, (select P00 from SupportBean_S0#lastevent()) as col from SupportBean";
                 env.CompileDeployAddListenerMileZero(epl, "s0");

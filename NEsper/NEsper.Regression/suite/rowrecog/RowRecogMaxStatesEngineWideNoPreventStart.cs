@@ -37,7 +37,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
             Assert.AreEqual(conditionHandlerFactoryContext.RuntimeURI, env.RuntimeURI);
             handler = SupportConditionHandlerFactory.LastHandler;
 
-            var fields = "c0".SplitCsv();
+            var fields = new [] { "c0" };
 
             var epl = "@Name('s0') select * from SupportBean " +
                       "match_recognize (" +

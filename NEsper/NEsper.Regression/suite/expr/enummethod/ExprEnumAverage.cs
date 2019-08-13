@@ -96,10 +96,10 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "val0,val1".SplitCsv();
+                var fields = new [] { "val0", "val1" };
                 var eplFragment = "@Name('s0') select " +
-                                  "intvals.average() as val0," +
-                                  "bdvals.average() as val1 " +
+                                  "Intvals.average() as val0," +
+                                  "Bdvals.average() as val1 " +
                                   "from SupportCollection";
                 env.CompileDeploy(eplFragment).AddListener("s0");
 
@@ -128,7 +128,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
                 env.UndeployAll();
 
                 // test average with lambda
-                var fieldsLambda = "val0,val1".SplitCsv();
+                var fieldsLambda = new [] { "val0", "val1" };
                 var eplLambda = "@Name('s0') select " +
                                 "Strvals.average(v -> extractNum(v)) as val0, " +
                                 "Strvals.average(v -> extractDecimal(v)) as val1 " +

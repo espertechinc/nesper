@@ -70,7 +70,7 @@ namespace com.espertech.esper.common.@internal.@event.arr
             }
 
             var result = Get(eventBean);
-            return BaseNestableEventUtil.GetBNFragmentPojo(result, eventType, eventBeanTypedEventFactory);
+            return BaseNestableEventUtil.GetBNFragmentPono(result, eventType, eventBeanTypedEventFactory);
         }
 
         public CodegenExpression EventBeanGetCodegen(

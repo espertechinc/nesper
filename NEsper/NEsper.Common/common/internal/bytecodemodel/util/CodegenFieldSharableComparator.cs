@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Collections.Generic;
 
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -37,7 +38,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.util
 
         public Type Type()
         {
-            return typeof(Comparison<object>);
+            return typeof(IComparer<object>);
         }
 
         public CodegenExpression InitCtorScoped()
@@ -53,10 +54,10 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.util
         public class CodegenSharableSerdeName
         {
             public static readonly CodegenSharableSerdeName COMPARATORHASHABLEMULTIKEYS =
-                new CodegenSharableSerdeName("ComparatorHashableMultiKeys");
+                new CodegenSharableSerdeName("GetComparatorHashableMultiKeys");
 
             public static readonly CodegenSharableSerdeName COMPARATOROBJECTARRAYNONHASHABLE =
-                new CodegenSharableSerdeName("ComparatorObjectArrayNonHashable");
+                new CodegenSharableSerdeName("GetComparatorObjectArrayNonHashable");
 
             private CodegenSharableSerdeName(string methodName)
             {

@@ -58,42 +58,42 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
         {
             SendMarketDataEvent(env, "DELL", 10000, 50);
             var theEvent = env.Listener("s0").AssertOneGetNewAndReset();
-            Assert.AreEqual(50.0, theEvent.Get("p1"));
+            Assert.AreEqual(50.0, theEvent.Get("P1"));
 
             SendMarketDataEvent(env, "DELL", 10000, 50);
             theEvent = env.Listener("s0").AssertOneGetNewAndReset();
-            Assert.AreEqual(100.0, theEvent.Get("p1"));
+            Assert.AreEqual(100.0, theEvent.Get("P1"));
 
             SendMarketDataEvent(env, "CSCO", 4000, 5);
             theEvent = env.Listener("s0").AssertOneGetNewAndReset();
-            Assert.AreEqual(null, theEvent.Get("p1"));
+            Assert.AreEqual(null, theEvent.Get("P1"));
 
             SendMarketDataEvent(env, "GE", 20, 30);
             theEvent = env.Listener("s0").AssertOneGetNewAndReset();
-            Assert.AreEqual(20.0, theEvent.Get("p1"));
+            Assert.AreEqual(20.0, theEvent.Get("P1"));
         }
 
         private static void RunCaseSyntax1WithElse(RegressionEnvironment env)
         {
             SendMarketDataEvent(env, "CSCO", 4000, 0);
             var theEvent = env.Listener("s0").AssertOneGetNewAndReset();
-            Assert.AreEqual(4000L, theEvent.Get("p1"));
+            Assert.AreEqual(4000L, theEvent.Get("P1"));
 
             SendMarketDataEvent(env, "DELL", 20, 0);
             theEvent = env.Listener("s0").AssertOneGetNewAndReset();
-            Assert.AreEqual(3 * 20L, theEvent.Get("p1"));
+            Assert.AreEqual(3 * 20L, theEvent.Get("P1"));
         }
 
         private static void RunCaseSyntax2WithNull(RegressionEnvironment env)
         {
             SendSupportBeanEvent(env, 4);
-            Assert.AreEqual(2.0, env.Listener("s0").AssertOneGetNewAndReset().Get("p1"));
+            Assert.AreEqual(2.0, env.Listener("s0").AssertOneGetNewAndReset().Get("P1"));
             SendSupportBeanEvent(env, 1);
-            Assert.AreEqual(null, env.Listener("s0").AssertOneGetNewAndReset().Get("p1"));
+            Assert.AreEqual(null, env.Listener("s0").AssertOneGetNewAndReset().Get("P1"));
             SendSupportBeanEvent(env, 2);
-            Assert.AreEqual(1.0, env.Listener("s0").AssertOneGetNewAndReset().Get("p1"));
+            Assert.AreEqual(1.0, env.Listener("s0").AssertOneGetNewAndReset().Get("P1"));
             SendSupportBeanEvent(env, 3);
-            Assert.AreEqual(null, env.Listener("s0").AssertOneGetNewAndReset().Get("p1"));
+            Assert.AreEqual(null, env.Listener("s0").AssertOneGetNewAndReset().Get("P1"));
         }
 
         private static void SendSupportBeanEvent(
@@ -229,7 +229,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                           "end as p1 from SupportMarketDataBean#length(10)";
 
                 env.CompileDeploy(epl).AddListener("s0");
-                Assert.AreEqual(typeof(double?), env.Statement("s0").EventType.GetPropertyType("p1"));
+                Assert.AreEqual(typeof(double?), env.Statement("s0").EventType.GetPropertyType("P1"));
 
                 RunCaseSyntax1Sum(env);
 
@@ -247,7 +247,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                         Expressions.CaseWhenThen()
                             .Add(Expressions.Eq("Symbol", "GE"), Expressions.Property("Volume"))
                             .Add(Expressions.Eq("Symbol", "DELL"), Expressions.Sum("Price")),
-                        "p1");
+                        "P1");
                 model.FromClause = FromClause.Create(
                     FilterStream.Create(typeof(SupportMarketDataBean).Name)
                         .AddView("win", "length", Expressions.Constant(10)));
@@ -262,7 +262,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                 model.Annotations = Collections.SingletonList(AnnotationPart.NameAnnotation("s0"));
                 env.CompileDeploy(model).AddListener("s0").Milestone(0);
 
-                Assert.AreEqual(typeof(double?), env.Statement("s0").EventType.GetPropertyType("p1"));
+                Assert.AreEqual(typeof(double?), env.Statement("s0").EventType.GetPropertyType("P1"));
 
                 RunCaseSyntax1Sum(env);
 
@@ -280,7 +280,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                           "end as p1 from SupportMarketDataBean#length(10)";
                 env.EplToModelCompileDeploy(epl).AddListener("s0").Milestone(0);
 
-                Assert.AreEqual(typeof(double?), env.Statement("s0").EventType.GetPropertyType("p1"));
+                Assert.AreEqual(typeof(double?), env.Statement("s0").EventType.GetPropertyType("P1"));
 
                 RunCaseSyntax1Sum(env);
 
@@ -300,7 +300,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                           "end as p1 from SupportMarketDataBean#length(3)";
 
                 env.CompileDeploy(epl).AddListener("s0");
-                Assert.AreEqual(typeof(long?), env.Statement("s0").EventType.GetPropertyType("p1"));
+                Assert.AreEqual(typeof(long?), env.Statement("s0").EventType.GetPropertyType("P1"));
 
                 RunCaseSyntax1WithElse(env);
 
@@ -320,7 +320,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                             .Add(
                                 Expressions.Eq("Symbol", "DELL"),
                                 Expressions.Multiply(Expressions.Property("Volume"), Expressions.Constant(3))),
-                        "p1");
+                        "P1");
                 model.FromClause = FromClause.Create(
                     FilterStream.Create(typeof(SupportMarketDataBean).Name)
                         .AddView("length", Expressions.Constant(10)));
@@ -335,7 +335,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                 model.Annotations = Collections.SingletonList(AnnotationPart.NameAnnotation("s0"));
                 env.CompileDeploy(model).AddListener("s0").Milestone(0);
 
-                Assert.AreEqual(typeof(long?), env.Statement("s0").EventType.GetPropertyType("p1"));
+                Assert.AreEqual(typeof(long?), env.Statement("s0").EventType.GetPropertyType("P1"));
 
                 RunCaseSyntax1WithElse(env);
 
@@ -353,7 +353,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                           "end as p1 from SupportMarketDataBean#length(10)";
                 env.EplToModelCompileDeploy(epl).AddListener("s0");
 
-                Assert.AreEqual(typeof(long?), env.Statement("s0").EventType.GetPropertyType("p1"));
+                Assert.AreEqual(typeof(long?), env.Statement("s0").EventType.GetPropertyType("P1"));
 
                 RunCaseSyntax1WithElse(env);
 
@@ -373,19 +373,19 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                           " end as p1 from " +
                           typeof(SupportMarketDataBean).Name;
                 env.CompileDeploy(epl).AddListener("s0");
-                Assert.AreEqual(typeof(double?), env.Statement("s0").EventType.GetPropertyType("p1"));
+                Assert.AreEqual(typeof(double?), env.Statement("s0").EventType.GetPropertyType("P1"));
 
                 SendMarketDataEvent(env, "DELL", 10000, 0);
                 var theEvent = env.Listener("s0").AssertOneGetNewAndReset();
-                Assert.AreEqual(10000 / 2.0, theEvent.Get("p1"));
+                Assert.AreEqual(10000 / 2.0, theEvent.Get("P1"));
 
                 SendMarketDataEvent(env, "MSFT", 10000, 0);
                 theEvent = env.Listener("s0").AssertOneGetNewAndReset();
-                Assert.AreEqual(10000 / 3.0, theEvent.Get("p1"));
+                Assert.AreEqual(10000 / 3.0, theEvent.Get("P1"));
 
                 SendMarketDataEvent(env, "GE", 10000, 0);
                 theEvent = env.Listener("s0").AssertOneGetNewAndReset();
-                Assert.AreEqual(10000.0, theEvent.Get("p1"));
+                Assert.AreEqual(10000.0, theEvent.Get("P1"));
 
                 env.UndeployAll();
             }
@@ -404,28 +404,28 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 
                 env.CompileDeploy(epl).AddListener("s0");
 
-                Assert.AreEqual(typeof(double?), env.Statement("s0").EventType.GetPropertyType("p1"));
+                Assert.AreEqual(typeof(double?), env.Statement("s0").EventType.GetPropertyType("P1"));
 
                 // intPrimitive = longPrimitive
                 // case result is IntPrimitive + longPrimitive
                 SendSupportBeanEvent(env, 2, 2L, 1.0f, 1.0);
                 var theEvent = env.Listener("s0").AssertOneGetNewAndReset();
-                Assert.AreEqual(4.0, theEvent.Get("p1"));
+                Assert.AreEqual(4.0, theEvent.Get("P1"));
                 // intPrimitive = doublePrimitive
                 // case result is IntPrimitive * doublePrimitive
                 SendSupportBeanEvent(env, 5, 1L, 1.0f, 5.0);
                 theEvent = env.Listener("s0").AssertOneGetNewAndReset();
-                Assert.AreEqual(25.0, theEvent.Get("p1"));
+                Assert.AreEqual(25.0, theEvent.Get("P1"));
                 // IntPrimitive = floatPrimitive
                 // case result is floatPrimitive / doublePrimitive
                 SendSupportBeanEvent(env, 12, 1L, 12.0f, 4.0);
                 theEvent = env.Listener("s0").AssertOneGetNewAndReset();
-                Assert.AreEqual(3.0, theEvent.Get("p1"));
+                Assert.AreEqual(3.0, theEvent.Get("P1"));
                 // all the properties of the event are different
                 // The else part is computed: 1+2+3+4 = 10
                 SendSupportBeanEvent(env, 1, 2L, 3.0f, 4.0);
                 theEvent = env.Listener("s0").AssertOneGetNewAndReset();
-                Assert.AreEqual(10.0, theEvent.Get("p1"));
+                Assert.AreEqual(10.0, theEvent.Get("P1"));
 
                 env.UndeployAll();
             }
@@ -459,7 +459,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 
                 env.CompileDeploy(epl).AddListener("s0");
 
-                Assert.AreEqual(typeof(string), env.Statement("s0").EventType.GetPropertyType("p1"));
+                Assert.AreEqual(typeof(string), env.Statement("s0").EventType.GetPropertyType("P1"));
 
                 SendSupportBeanEvent(
                     env,
@@ -482,7 +482,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                     null,
                     SupportEnum.ENUM_VALUE_1);
                 var theEvent = env.Listener("s0").GetAndResetLastNewData()[0];
-                Assert.AreEqual("true", theEvent.Get("p1"));
+                Assert.AreEqual("true", theEvent.Get("P1"));
 
                 SendSupportBeanEvent(
                     env,
@@ -505,7 +505,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                     null,
                     SupportEnum.ENUM_VALUE_1);
                 theEvent = env.Listener("s0").GetAndResetLastNewData()[0];
-                Assert.AreEqual("false", theEvent.Get("p1"));
+                Assert.AreEqual("false", theEvent.Get("P1"));
 
                 SendSupportBeanEvent(
                     env,
@@ -528,7 +528,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                     null,
                     SupportEnum.ENUM_VALUE_1);
                 theEvent = env.Listener("s0").GetAndResetLastNewData()[0];
-                Assert.AreEqual("3", theEvent.Get("p1"));
+                Assert.AreEqual("3", theEvent.Get("P1"));
 
                 SendSupportBeanEvent(
                     env,
@@ -551,7 +551,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                     null,
                     SupportEnum.ENUM_VALUE_1);
                 theEvent = env.Listener("s0").GetAndResetLastNewData()[0];
-                Assert.AreEqual("4", theEvent.Get("p1"));
+                Assert.AreEqual("4", theEvent.Get("P1"));
 
                 SendSupportBeanEvent(
                     env,
@@ -574,7 +574,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                     null,
                     SupportEnum.ENUM_VALUE_1);
                 theEvent = env.Listener("s0").GetAndResetLastNewData()[0];
-                Assert.AreEqual("5", theEvent.Get("p1"));
+                Assert.AreEqual("5", theEvent.Get("P1"));
 
                 SendSupportBeanEvent(
                     env,
@@ -597,7 +597,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                     null,
                     SupportEnum.ENUM_VALUE_1);
                 theEvent = env.Listener("s0").GetAndResetLastNewData()[0];
-                Assert.AreEqual("6", theEvent.Get("p1"));
+                Assert.AreEqual("6", theEvent.Get("P1"));
 
                 SendSupportBeanEvent(
                     env,
@@ -620,7 +620,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                     null,
                     SupportEnum.ENUM_VALUE_1);
                 theEvent = env.Listener("s0").GetAndResetLastNewData()[0];
-                Assert.AreEqual("A", theEvent.Get("p1"));
+                Assert.AreEqual("A", theEvent.Get("P1"));
 
                 SendSupportBeanEvent(
                     env,
@@ -643,7 +643,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                     null,
                     SupportEnum.ENUM_VALUE_1);
                 theEvent = env.Listener("s0").GetAndResetLastNewData()[0];
-                Assert.AreEqual("a", theEvent.Get("p1"));
+                Assert.AreEqual("a", theEvent.Get("P1"));
 
                 SendSupportBeanEvent(
                     env,
@@ -666,7 +666,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                     null,
                     SupportEnum.ENUM_VALUE_1);
                 theEvent = env.Listener("s0").GetAndResetLastNewData()[0];
-                Assert.AreEqual("9", theEvent.Get("p1"));
+                Assert.AreEqual("9", theEvent.Get("P1"));
 
                 SendSupportBeanEvent(
                     env,
@@ -689,7 +689,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                     "testCoercion",
                     SupportEnum.ENUM_VALUE_1);
                 theEvent = env.Listener("s0").GetAndResetLastNewData()[0];
-                Assert.AreEqual("10", theEvent.Get("p1"));
+                Assert.AreEqual("10", theEvent.Get("P1"));
 
                 SendSupportBeanEvent(
                     env,
@@ -712,7 +712,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                     "testCoercion",
                     SupportEnum.ENUM_VALUE_1);
                 theEvent = env.Listener("s0").GetAndResetLastNewData()[0];
-                Assert.AreEqual("11", theEvent.Get("p1"));
+                Assert.AreEqual("11", theEvent.Get("P1"));
 
                 SendSupportBeanEvent(
                     env,
@@ -735,7 +735,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                     "testCoercion",
                     SupportEnum.ENUM_VALUE_1);
                 theEvent = env.Listener("s0").GetAndResetLastNewData()[0];
-                Assert.AreEqual("12", theEvent.Get("p1"));
+                Assert.AreEqual("12", theEvent.Get("P1"));
 
                 SendSupportBeanEvent(
                     env,
@@ -758,7 +758,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                     "testCoercion",
                     SupportEnum.ENUM_VALUE_1);
                 theEvent = env.Listener("s0").GetAndResetLastNewData()[0];
-                Assert.AreEqual("13.0", theEvent.Get("p1"));
+                Assert.AreEqual("13.0", theEvent.Get("P1"));
 
                 SendSupportBeanEvent(
                     env,
@@ -781,7 +781,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                     "testCoercion",
                     SupportEnum.ENUM_VALUE_1);
                 theEvent = env.Listener("s0").GetAndResetLastNewData()[0];
-                Assert.AreEqual("14.0", theEvent.Get("p1"));
+                Assert.AreEqual("14.0", theEvent.Get("P1"));
 
                 SendSupportBeanEvent(
                     env,
@@ -804,7 +804,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                     "testCoercion",
                     SupportEnum.ENUM_VALUE_1);
                 theEvent = env.Listener("s0").GetAndResetLastNewData()[0];
-                Assert.AreEqual("15.0", theEvent.Get("p1"));
+                Assert.AreEqual("15.0", theEvent.Get("P1"));
 
                 SendSupportBeanEvent(
                     env,
@@ -827,7 +827,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                     "testCoercion",
                     SupportEnum.ENUM_VALUE_1);
                 theEvent = env.Listener("s0").GetAndResetLastNewData()[0];
-                Assert.AreEqual("16.0", theEvent.Get("p1"));
+                Assert.AreEqual("16.0", theEvent.Get("P1"));
 
                 SendSupportBeanEvent(
                     env,
@@ -850,7 +850,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                     "testCoercion",
                     SupportEnum.ENUM_VALUE_1);
                 theEvent = env.Listener("s0").GetAndResetLastNewData()[0];
-                Assert.AreEqual("testCoercion", theEvent.Get("p1"));
+                Assert.AreEqual("testCoercion", theEvent.Get("P1"));
 
                 SendSupportBeanEvent(
                     env,
@@ -873,7 +873,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                     "testCoercion",
                     SupportEnum.ENUM_VALUE_1);
                 theEvent = env.Listener("s0").GetAndResetLastNewData()[0];
-                Assert.AreEqual("x", theEvent.Get("p1"));
+                Assert.AreEqual("x", theEvent.Get("P1"));
 
                 env.UndeployAll();
             }
@@ -889,19 +889,19 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                           " from SupportBean#length(100)";
 
                 env.CompileDeploy(epl).AddListener("s0");
-                Assert.AreEqual(typeof(bool?), env.Statement("s0").EventType.GetPropertyType("p1"));
+                Assert.AreEqual(typeof(bool?), env.Statement("s0").EventType.GetPropertyType("P1"));
 
                 SendSupportBeanEvent(env, "x");
-                Assert.AreEqual(null, env.Listener("s0").AssertOneGetNewAndReset().Get("p1"));
+                Assert.AreEqual(null, env.Listener("s0").AssertOneGetNewAndReset().Get("P1"));
 
                 SendSupportBeanEvent(env, "null");
-                Assert.AreEqual(null, env.Listener("s0").AssertOneGetNewAndReset().Get("p1"));
+                Assert.AreEqual(null, env.Listener("s0").AssertOneGetNewAndReset().Get("P1"));
 
                 SendSupportBeanEvent(env, null);
-                Assert.AreEqual(true, env.Listener("s0").AssertOneGetNewAndReset().Get("p1"));
+                Assert.AreEqual(true, env.Listener("s0").AssertOneGetNewAndReset().Get("P1"));
 
                 SendSupportBeanEvent(env, "");
-                Assert.AreEqual(false, env.Listener("s0").AssertOneGetNewAndReset().Get("p1"));
+                Assert.AreEqual(false, env.Listener("s0").AssertOneGetNewAndReset().Get("P1"));
 
                 env.UndeployAll();
             }
@@ -917,19 +917,19 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                           " from SupportBean#length(100)";
 
                 env.CompileDeploy(epl).AddListener("s0");
-                Assert.AreEqual(typeof(bool?), env.Statement("s0").EventType.GetPropertyType("p1"));
+                Assert.AreEqual(typeof(bool?), env.Statement("s0").EventType.GetPropertyType("P1"));
 
                 SendSupportBeanEvent(env, "x");
-                Assert.AreEqual(null, env.Listener("s0").AssertOneGetNewAndReset().Get("p1"));
+                Assert.AreEqual(null, env.Listener("s0").AssertOneGetNewAndReset().Get("P1"));
 
                 SendSupportBeanEvent(env, "null");
-                Assert.AreEqual(null, env.Listener("s0").AssertOneGetNewAndReset().Get("p1"));
+                Assert.AreEqual(null, env.Listener("s0").AssertOneGetNewAndReset().Get("P1"));
 
                 SendSupportBeanEvent(env, null);
-                Assert.AreEqual(true, env.Listener("s0").AssertOneGetNewAndReset().Get("p1"));
+                Assert.AreEqual(true, env.Listener("s0").AssertOneGetNewAndReset().Get("P1"));
 
                 SendSupportBeanEvent(env, "");
-                Assert.AreEqual(false, env.Listener("s0").AssertOneGetNewAndReset().Get("p1"));
+                Assert.AreEqual(false, env.Listener("s0").AssertOneGetNewAndReset().Get("P1"));
 
                 env.UndeployAll();
             }
@@ -954,7 +954,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                             .Add(Expressions.Constant(1), Expressions.Constant(null))
                             .Add(Expressions.Constant(2), Expressions.Constant(1.0))
                             .Add(Expressions.Constant(3), Expressions.Constant(null)),
-                        "p1");
+                        "P1");
                 model.FromClause = FromClause.Create(
                     FilterStream.Create(typeof(SupportBean).Name).AddView("length", Expressions.Constant(100)));
                 model = env.CopyMayFail(model);
@@ -962,7 +962,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                 Assert.AreEqual(epl, model.ToEPL());
                 model.Annotations = Collections.SingletonList(AnnotationPart.NameAnnotation("s0"));
                 env.CompileDeploy(model).AddListener("s0").Milestone(0);
-                Assert.AreEqual(typeof(double?), env.Statement("s0").EventType.GetPropertyType("p1"));
+                Assert.AreEqual(typeof(double?), env.Statement("s0").EventType.GetPropertyType("P1"));
 
                 RunCaseSyntax2WithNull(env);
 
@@ -982,7 +982,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                           "end as p1 from SupportBean#length(100)";
 
                 env.EplToModelCompileDeploy(epl).AddListener("s0");
-                Assert.AreEqual(typeof(double?), env.Statement("s0").EventType.GetPropertyType("p1"));
+                Assert.AreEqual(typeof(double?), env.Statement("s0").EventType.GetPropertyType("P1"));
 
                 RunCaseSyntax2WithNull(env);
 
@@ -1002,7 +1002,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                           " end as p1 from SupportBean#length(100)";
 
                 env.CompileDeploy(epl).AddListener("s0");
-                Assert.AreEqual(typeof(double?), env.Statement("s0").EventType.GetPropertyType("p1"));
+                Assert.AreEqual(typeof(double?), env.Statement("s0").EventType.GetPropertyType("P1"));
 
                 RunCaseSyntax2WithNull(env);
 
@@ -1021,14 +1021,14 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                           " end as p1 from SupportBean#length(100)";
 
                 env.CompileDeploy(epl).AddListener("s0");
-                Assert.AreEqual(typeof(long?), env.Statement("s0").EventType.GetPropertyType("p1"));
+                Assert.AreEqual(typeof(long?), env.Statement("s0").EventType.GetPropertyType("P1"));
 
                 SendSupportBeanEvent(env, null);
-                Assert.AreEqual(1L, env.Listener("s0").AssertOneGetNewAndReset().Get("p1"));
+                Assert.AreEqual(1L, env.Listener("s0").AssertOneGetNewAndReset().Get("P1"));
                 SendSupportBeanEvent(env, false);
-                Assert.AreEqual(3L, env.Listener("s0").AssertOneGetNewAndReset().Get("p1"));
+                Assert.AreEqual(3L, env.Listener("s0").AssertOneGetNewAndReset().Get("P1"));
                 SendSupportBeanEvent(env, true);
-                Assert.AreEqual(2L, env.Listener("s0").AssertOneGetNewAndReset().Get("p1"));
+                Assert.AreEqual(2L, env.Listener("s0").AssertOneGetNewAndReset().Get("P1"));
 
                 env.UndeployAll();
             }
@@ -1044,14 +1044,14 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                           " end as p1 from SupportBean#length(100)";
 
                 env.CompileDeploy(epl).AddListener("s0");
-                Assert.AreEqual(typeof(string), env.Statement("s0").EventType.GetPropertyType("p1"));
+                Assert.AreEqual(typeof(string), env.Statement("s0").EventType.GetPropertyType("P1"));
 
                 SendSupportBeanEvent(env, 1);
-                Assert.AreEqual(null, env.Listener("s0").AssertOneGetNewAndReset().Get("p1"));
+                Assert.AreEqual(null, env.Listener("s0").AssertOneGetNewAndReset().Get("P1"));
                 SendSupportBeanEvent(env, 2);
-                Assert.AreEqual("x", env.Listener("s0").AssertOneGetNewAndReset().Get("p1"));
+                Assert.AreEqual("x", env.Listener("s0").AssertOneGetNewAndReset().Get("P1"));
                 SendSupportBeanEvent(env, 3);
-                Assert.AreEqual(null, env.Listener("s0").AssertOneGetNewAndReset().Get("p1"));
+                Assert.AreEqual(null, env.Listener("s0").AssertOneGetNewAndReset().Get("P1"));
 
                 env.UndeployAll();
             }
@@ -1068,19 +1068,19 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                           " from SupportBean#length(1)";
 
                 env.CompileDeploy(epl).AddListener("s0");
-                Assert.AreEqual(typeof(int?), env.Statement("s0").EventType.GetPropertyType("p1"));
+                Assert.AreEqual(typeof(int?), env.Statement("s0").EventType.GetPropertyType("P1"));
 
                 SendSupportBeanEvent(env, 1);
                 var theEvent = env.Listener("s0").GetAndResetLastNewData()[0];
-                Assert.AreEqual(4, theEvent.Get("p1"));
+                Assert.AreEqual(4, theEvent.Get("P1"));
 
                 SendSupportBeanEvent(env, 2);
                 theEvent = env.Listener("s0").GetAndResetLastNewData()[0];
-                Assert.AreEqual(6, theEvent.Get("p1"));
+                Assert.AreEqual(6, theEvent.Get("P1"));
 
                 SendSupportBeanEvent(env, 3);
                 theEvent = env.Listener("s0").GetAndResetLastNewData()[0];
-                Assert.AreEqual(20, theEvent.Get("p1"));
+                Assert.AreEqual(20, theEvent.Get("P1"));
 
                 env.UndeployAll();
             }
@@ -1096,31 +1096,31 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                           " from SupportBean#length(10)";
 
                 env.CompileDeploy(epl).AddListener("s0");
-                Assert.AreEqual(typeof(double?), env.Statement("s0").EventType.GetPropertyType("p1"));
+                Assert.AreEqual(typeof(double?), env.Statement("s0").EventType.GetPropertyType("P1"));
 
                 SendSupportBeanEvent(env, 1, 10L, 3.0f, 4.0);
                 var theEvent = env.Listener("s0").GetAndResetLastNewData()[0];
-                Assert.AreEqual(10d, theEvent.Get("p1"));
+                Assert.AreEqual(10d, theEvent.Get("P1"));
 
                 SendSupportBeanEvent(env, 1, 15L, 3.0f, 4.0);
                 theEvent = env.Listener("s0").GetAndResetLastNewData()[0];
-                Assert.AreEqual(25d, theEvent.Get("p1"));
+                Assert.AreEqual(25d, theEvent.Get("P1"));
 
                 SendSupportBeanEvent(env, 2, 1L, 3.0f, 4.0);
                 theEvent = env.Listener("s0").GetAndResetLastNewData()[0];
-                Assert.AreEqual(9d, theEvent.Get("p1"));
+                Assert.AreEqual(9d, theEvent.Get("P1"));
 
                 SendSupportBeanEvent(env, 2, 1L, 3.0f, 4.0);
                 theEvent = env.Listener("s0").GetAndResetLastNewData()[0];
-                Assert.AreEqual(12.0d, theEvent.Get("p1"));
+                Assert.AreEqual(12.0d, theEvent.Get("P1"));
 
                 SendSupportBeanEvent(env, 5, 1L, 1.0f, 1.0);
                 theEvent = env.Listener("s0").GetAndResetLastNewData()[0];
-                Assert.AreEqual(11.0d, theEvent.Get("p1"));
+                Assert.AreEqual(11.0d, theEvent.Get("P1"));
 
                 SendSupportBeanEvent(env, 5, 1L, 1.0f, 1.0);
                 theEvent = env.Listener("s0").GetAndResetLastNewData()[0];
-                Assert.AreEqual(16d, theEvent.Get("p1"));
+                Assert.AreEqual(16d, theEvent.Get("P1"));
 
                 env.UndeployAll();
             }
@@ -1143,19 +1143,19 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                           "#length(10)";
 
                 env.CompileDeploy(epl).AddListener("s0");
-                Assert.AreEqual(typeof(int?), env.Statement("s0").EventType.GetPropertyType("p1"));
+                Assert.AreEqual(typeof(int?), env.Statement("s0").EventType.GetPropertyType("P1"));
 
                 SendSupportBeanEvent(env, "a", SupportEnum.ENUM_VALUE_1);
                 var theEvent = env.Listener("s0").GetAndResetLastNewData()[0];
-                Assert.AreEqual(1, theEvent.Get("p1"));
+                Assert.AreEqual(1, theEvent.Get("P1"));
 
                 SendSupportBeanEvent(env, "b", SupportEnum.ENUM_VALUE_2);
                 theEvent = env.Listener("s0").GetAndResetLastNewData()[0];
-                Assert.AreEqual(2, theEvent.Get("p1"));
+                Assert.AreEqual(2, theEvent.Get("P1"));
 
                 SendSupportBeanEvent(env, "c", SupportEnum.ENUM_VALUE_3);
                 theEvent = env.Listener("s0").GetAndResetLastNewData()[0];
-                Assert.AreEqual(null, theEvent.Get("p1"));
+                Assert.AreEqual(null, theEvent.Get("P1"));
 
                 env.UndeployAll();
             }
@@ -1179,19 +1179,19 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                           " from SupportBean#length(10)";
 
                 env.CompileDeploy(epl).AddListener("s0");
-                Assert.AreEqual(typeof(SupportEnum), env.Statement("s0").EventType.GetPropertyType("p1"));
+                Assert.AreEqual(typeof(SupportEnum), env.Statement("s0").EventType.GetPropertyType("P1"));
 
                 SendSupportBeanEvent(env, 1);
                 var theEvent = env.Listener("s0").GetAndResetLastNewData()[0];
-                Assert.AreEqual(SupportEnum.ENUM_VALUE_1, theEvent.Get("p1"));
+                Assert.AreEqual(SupportEnum.ENUM_VALUE_1, theEvent.Get("P1"));
 
                 SendSupportBeanEvent(env, 2);
                 theEvent = env.Listener("s0").GetAndResetLastNewData()[0];
-                Assert.AreEqual(SupportEnum.ENUM_VALUE_2, theEvent.Get("p1"));
+                Assert.AreEqual(SupportEnum.ENUM_VALUE_2, theEvent.Get("P1"));
 
                 SendSupportBeanEvent(env, 3);
                 theEvent = env.Listener("s0").GetAndResetLastNewData()[0];
-                Assert.AreEqual(SupportEnum.ENUM_VALUE_3, theEvent.Get("p1"));
+                Assert.AreEqual(SupportEnum.ENUM_VALUE_3, theEvent.Get("P1"));
 
                 env.UndeployAll();
             }

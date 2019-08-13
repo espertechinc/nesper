@@ -33,9 +33,9 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
             {
                 var fields = "val0,val1,val2".SplitCsv();
                 var eplFragment = "@Name('s0') select " +
-                                  "utildate.withMin('month') as val0," +
-                                  "longdate.withMin('month') as val1," +
-                                  "exdate.withMin('month') as val2" +
+                                  "DtoDate.withMin('month') as val0," +
+                                  "LongDate.withMin('month') as val1," +
+                                  "DtxDate.withMin('month') as val2" +
                                   " from SupportDateTime";
                 env.CompileDeploy(eplFragment).AddListener("s0");
 
@@ -67,14 +67,14 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
             {
                 var fields = "val0,val1,val2,val3,val4,val5,val6,val7".SplitCsv();
                 var eplFragment = "@Name('s0') select " +
-                                  "utildate.withMin('msec') as val0," +
-                                  "utildate.withMin('sec') as val1," +
-                                  "utildate.withMin('minutes') as val2," +
-                                  "utildate.withMin('hour') as val3," +
-                                  "utildate.withMin('day') as val4," +
-                                  "utildate.withMin('month') as val5," +
-                                  "utildate.withMin('year') as val6," +
-                                  "utildate.withMin('week') as val7" +
+                                  "DtoDate.withMin('msec') as val0," +
+                                  "DtoDate.withMin('sec') as val1," +
+                                  "DtoDate.withMin('minutes') as val2," +
+                                  "DtoDate.withMin('hour') as val3," +
+                                  "DtoDate.withMin('day') as val4," +
+                                  "DtoDate.withMin('month') as val5," +
+                                  "DtoDate.withMin('year') as val6," +
+                                  "DtoDate.withMin('week') as val7" +
                                   " from SupportDateTime";
                 env.CompileDeploy(eplFragment).AddListener("s0");
                 LambdaAssertionUtil.AssertTypes(

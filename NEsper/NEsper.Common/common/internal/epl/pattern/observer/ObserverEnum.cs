@@ -79,13 +79,13 @@ namespace com.espertech.esper.common.@internal.epl.pattern.observer
         {
             switch (observerEnum) {
                 case ObserverEnum.TIMER_INTERVAL:
-                    return typeof(TimerIntervalObserverFactory);
+                    return typeof(TimerIntervalObserverForge);
 
                 case ObserverEnum.TIMER_CRON:
-                    return typeof(TimerAtObserverFactory);
+                    return typeof(TimerAtObserverForge);
 
                 case ObserverEnum.TIMER_ISO8601:
-                    return typeof(TimerScheduleObserverFactory);
+                    return typeof(TimerScheduleObserverForge);
             }
 
             throw new ArgumentException();

@@ -173,7 +173,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "c0,c1,c2,c3".SplitCsv();
+                var fields = new [] { "c0", "c1", "c2", "c3" };
 
                 env.Milestone(0);
                 env.AdvanceTime(0);
@@ -235,7 +235,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "c0,c1,c2".SplitCsv();
+                var fields = new [] { "c0", "c1", "c2" };
 
                 var epl = "@Name('s0') select irstream TheString as c0, sum(IntPrimitive) as c1," +
                           "window(*) as c2 from SupportBean.win:length(2)";
@@ -638,7 +638,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "c0,c1".SplitCsv();
+                var fields = new [] { "c0", "c1" };
                 var epl = "create window ABCWin.win:keepall() as SupportBean;\n" +
                           "insert into ABCWin select * from SupportBean;\n" +
                           "on SupportBean_A delete from ABCWin where TheString = Id;\n" +

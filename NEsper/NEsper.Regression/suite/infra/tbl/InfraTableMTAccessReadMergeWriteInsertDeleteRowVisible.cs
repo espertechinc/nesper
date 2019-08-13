@@ -189,7 +189,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 log.Info("Started event send for read");
 
                 try {
-                    var fields = "c0,c1,c2,c3,c4,c5".SplitCsv();
+                    var fields = new [] { "c0", "c1", "c2", "c3", "c4", "c5" };
                     object[] expected = {1, 1, 1, 1, 1, 1};
                     while (!shutdown) {
                         env.SendEventBean(new SupportBean_S0(0));

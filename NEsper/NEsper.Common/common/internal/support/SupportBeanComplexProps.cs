@@ -18,7 +18,7 @@ namespace com.espertech.esper.common.@internal.support
     public class SupportBeanComplexProps : SupportMarkerInterface
     {
         public static readonly string[] PROPERTIES = {
-            "simpleProperty", "mapped", "indexed", "mapProperty", "arrayProperty", "nested", "objectArray"
+            "SimpleProperty", "Mapped", "Indexed", "MapProperty", "ArrayProperty", "Nested", "ObjectArray"
         };
 
         private int[] arrayProperty;
@@ -109,7 +109,7 @@ namespace com.espertech.esper.common.@internal.support
                 mapProp,
                 arrayProp,
                 "NestedValue",
-                "nestedNestedValue");
+                "NestedNestedValue");
         }
 
         public string GetMapped(string key)

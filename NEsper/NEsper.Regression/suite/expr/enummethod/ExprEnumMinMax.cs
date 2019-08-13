@@ -38,7 +38,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
                 env.CompileDeploy(
                     "@Name('s0') select coll.max().minus(1 minute) >= coll.min() as c0 from SupportEventWithLongArray");
                 env.AddListener("s0");
-                var fields = "c0".SplitCsv();
+                var fields = new [] { "c0" };
 
                 env.SendEventBean(new SupportEventWithLongArray(new long[] {150000, 140000, 200000, 190000}));
                 EPAssertionUtil.AssertProps(
@@ -106,7 +106,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "val0,val1".SplitCsv();
+                var fields = new [] { "val0", "val1" };
                 var eplFragment = "@Name('s0') select " +
                                   "Contained.min(x -> P00) as val0, " +
                                   "Contained.max(x -> P00) as val1 " +
@@ -150,7 +150,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "val0,val1".SplitCsv();
+                var fields = new [] { "val0", "val1" };
                 var eplFragment = "@Name('s0') select " +
                                   "Strvals.min() as val0, " +
                                   "Strvals.max() as val1 " +

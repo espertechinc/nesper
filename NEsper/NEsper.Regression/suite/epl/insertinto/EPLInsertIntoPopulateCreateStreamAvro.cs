@@ -46,24 +46,23 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@Name('s0') insert into AvroExistingType select 1 as myLong," +
-                          "{1L, 2L} as myLongArray," +
-                          typeof(EPLInsertIntoPopulateCreateStreamAvro).Name +
-                          ".MakeByteArray() as myByteArray, " +
-                          typeof(EPLInsertIntoPopulateCreateStreamAvro).Name +
-                          ".MakeMapStringString() as myMap " +
+                var epl = "@Name('s0') insert into AvroExistingType select " +
+                          "1 as MyLong," +
+                          "{1L, 2L} as MyLongArray," +
+                          typeof(EPLInsertIntoPopulateCreateStreamAvro).Name + ".MakeByteArray() as MyByteArray, " +
+                          typeof(EPLInsertIntoPopulateCreateStreamAvro).Name + ".MakeMapStringString() as MyMap " +
                           "from SupportBean";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 env.SendEventBean(new SupportBean());
                 var @event = env.Listener("s0").AssertOneGetNewAndReset();
                 SupportAvroUtil.AvroToJson(@event);
-                Assert.AreEqual(1L, @event.Get("myLong"));
+                Assert.AreEqual(1L, @event.Get("MyLong"));
                 EPAssertionUtil.AssertEqualsExactOrder(
                     new[] {1L, 2L},
-                    @event.Get("myLongArray").UnwrapIntoArray<long>());
-                Assert.IsTrue(Equals(new byte[] {1, 2, 3}, (byte[]) @event.Get("myByteArray")));
-                Assert.AreEqual("{k1=v1}", ((IDictionary<string, object>) @event.Get("myMap")).ToString());
+                    @event.Get("MyLongArray").UnwrapIntoArray<long>());
+                Assert.IsTrue(Equals(new byte[] {1, 2, 3}, (byte[]) @event.Get("MyByteArray")));
+                Assert.AreEqual("{k1=v1}", ((IDictionary<string, object>) @event.Get("MyMap")).ToString());
 
                 env.UndeployAll();
             }
@@ -88,27 +87,27 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                 var @event = env.Listener("s0").AssertOneGetNewAndReset();
                 var json = SupportAvroUtil.AvroToJson(@event);
                 Console.Out.WriteLine(json);
-                Assert.AreEqual(1, @event.Get("myInt"));
+                Assert.AreEqual(1, @event.Get("MyInt"));
                 EPAssertionUtil.AssertEqualsExactOrder(
                     new[] {1L, 2L},
-                    @event.Get("myLongArray").UnwrapIntoArray<long>());
-                Assert.IsTrue(Equals(new byte[] {1, 2, 3}, (byte[]) @event.Get("myByteArray")));
-                Assert.AreEqual("{k1=v1}", ((IDictionary<string, object>) @event.Get("myMap")).ToString());
+                    @event.Get("MyLongArray").UnwrapIntoArray<long>());
+                Assert.IsTrue(Equals(new byte[] {1, 2, 3}, (byte[]) @event.Get("MyByteArray")));
+                Assert.AreEqual("{k1=v1}", ((IDictionary<string, object>) @event.Get("MyMap")).ToString());
 
                 var designSchema = SchemaBuilder.Record(
                     "name",
-                    TypeBuilder.RequiredInt("myInt"),
+                    TypeBuilder.RequiredInt("MyInt"),
                     TypeBuilder.Field(
-                        "myLongArray",
+                        "MyLongArray",
                         TypeBuilder.Array(
                             TypeBuilder.Union(
                                 TypeBuilder.NullType(),
                                 TypeBuilder.LongType()))),
                     TypeBuilder.Field(
-                        "myByteArray",
+                        "MyByteArray",
                         TypeBuilder.BytesType()),
                     TypeBuilder.Field(
-                        "myMap",
+                        "MyMap",
                         TypeBuilder.Map(
                             TypeBuilder.StringType(
                                 TypeBuilder.Property(

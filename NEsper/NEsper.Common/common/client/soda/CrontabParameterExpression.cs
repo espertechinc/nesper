@@ -43,14 +43,16 @@ namespace com.espertech.esper.common.client.soda
         ///     Returns crontab parameter type.
         /// </summary>
         /// <returns>crontab parameter type</returns>
-        public ScheduleItemType Type {
+        public ScheduleItemType Type
+        {
             get => type;
             set => type = value;
         }
 
         public override void ToPrecedenceFreeEPL(TextWriter writer)
         {
-            if (!Children.IsEmpty()) {
+            if (!Children.IsEmpty())
+            {
                 Children[0].ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
                 writer.Write(' ');
             }

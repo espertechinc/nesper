@@ -17,39 +17,39 @@ namespace com.espertech.esper.common.client.context
         /// <summary>
         ///     Invoked when a context is activated.
         /// </summary>
-        /// <param name="@event">event</param>
+        /// <param name="event">event</param>
         void OnContextActivated(ContextStateEventContextActivated @event);
 
         /// <summary>
         ///     Invoked when a context is de-activated.
         /// </summary>
-        /// <param name="@event">event</param>
+        /// <param name="event">event</param>
         void OnContextDeactivated(ContextStateEventContextDeactivated @event);
 
         /// <summary>
         ///     Invoked when a statement is added to a context.
         /// </summary>
-        /// <param name="@event">event</param>
+        /// <param name="event">event</param>
         void OnContextStatementAdded(ContextStateEventContextStatementAdded @event);
 
         /// <summary>
         ///     Invoked when a statement is removed from a context.
         /// </summary>
-        /// <param name="@event">event</param>
+        /// <param name="event">event</param>
         void OnContextStatementRemoved(ContextStateEventContextStatementRemoved @event);
 
         /// <summary>
         ///     Invoked when a context partition is allocated, provided once per context
         ///     and per partition independent of the number of statements.
         /// </summary>
-        /// <param name="@event">event</param>
+        /// <param name="event">event</param>
         void OnContextPartitionAllocated(ContextStateEventContextPartitionAllocated @event);
 
         /// <summary>
         ///     Invoked when a context partition is destroyed, provided once per context
         ///     and per partition independent of the number of statements.
         /// </summary>
-        /// <param name="@event">event</param>
+        /// <param name="event">event</param>
         void OnContextPartitionDeallocated(ContextStateEventContextPartitionDeallocated @event);
     }
 } // end of namespace

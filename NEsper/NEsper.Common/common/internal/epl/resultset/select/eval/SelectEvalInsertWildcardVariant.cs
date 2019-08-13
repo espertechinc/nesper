@@ -51,7 +51,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
             CodegenExpressionRef refEPS = exprSymbol.GetAddEPS(methodNode);
             CodegenExpressionField type = VariantEventTypeUtil.GetField(variantEventType, codegenClassScope);
             methodNode.Block.MethodReturn(
-                ExprDotMethod(type, "getValueAddEventBean", ArrayAtIndex(refEPS, Constant(0))));
+                ExprDotMethod(type, "GetValueAddEventBean", ArrayAtIndex(refEPS, Constant(0))));
             return methodNode;
         }
     }

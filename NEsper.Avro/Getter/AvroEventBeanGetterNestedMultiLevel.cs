@@ -99,7 +99,7 @@ namespace NEsper.Avro.Getter
         {
             return CodegenExpressionBuilder.StaticMethod(
                 typeof(AvroEventBeanGetterNestedMultiLevel),
-                "getRecordValueTopWPath",
+                "GetRecordValueTopWPath",
                 underlyingExpression,
                 CodegenExpressionBuilder.Constant(_top),
                 CodegenExpressionBuilder.Constant(_path));

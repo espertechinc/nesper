@@ -6,6 +6,7 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System.Collections;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
@@ -47,20 +48,42 @@ namespace com.espertech.esper.common.@internal.@event.bean.manufacturer
                 typeof(EventType),
                 EventTypeUtility.ResolveTypeCodegen(mapEventType, EPStatementInitServicesConstants.REF));
 
-            var manufacturer = NewAnonymousClass(init.Block, typeof(EventBeanManufacturer));
+            var makeUndMethod = new CodegenExpressionLambda(init.Block)
+                .WithParam<object[]>("properties");
+            init.Block.DeclareVar<ProxyEventBeanManufacturer.MakeUnderlyingFunc>(
+                "makeUndFunc", makeUndMethod);
+            MakeUnderlyingCodegen(makeUndMethod.Block, codegenClassScope);
 
-            var makeUndMethod = CodegenMethod
-                .MakeMethod(typeof(IDictionary<object, object>), GetType(), codegenClassScope)
-                .AddParam(typeof(object[]), "properties");
-            manufacturer.AddMethod("MakeUnderlying", makeUndMethod);
-            MakeUnderlyingCodegen(makeUndMethod, codegenClassScope);
-
-            var makeMethod = CodegenMethod.MakeMethod(typeof(EventBean), GetType(), codegenClassScope)
-                .AddParam(typeof(object[]), "properties");
-            manufacturer.AddMethod("Make", makeMethod);
+            var makeMethod = new CodegenExpressionLambda(init.Block)
+                .WithParam<object[]>("properties");
+            init.Block.DeclareVar<ProxyEventBeanManufacturer.MakeFunc>(
+                "makeFunc", makeMethod);
             makeMethod.Block
-                .DeclareVar<IDictionary<object, object>>("und", LocalMethod(makeUndMethod, Ref("properties")))
-                .MethodReturn(ExprDotMethod(factory, "AdapterForTypedMap", Ref("und"), eventType));
+                .DeclareVar<IDictionary<string, object>>(
+                    "und",
+                    Cast<IDictionary<string, object>>(
+                        ExprDotMethod(
+                            Ref("makeUndFunc"), "Invoke", Ref("properties"))))
+                .BlockReturn(ExprDotMethod(factory, "AdapterForTypedMap", Ref("und"), eventType));
+
+            var manufacturer = NewInstance<ProxyEventBeanManufacturer>(
+                Ref("makeFunc"),
+                Ref("makeUndFunc"));
+
+            //var manufacturer = NewAnonymousClass(init.Block, typeof(EventBeanManufacturer));
+
+            //var makeUndMethod = CodegenMethod
+            //    .MakeMethod(typeof(IDictionary<object, object>), GetType(), codegenClassScope)
+            //    .AddParam(typeof(object[]), "properties");
+            //manufacturer.AddMethod("MakeUnderlying", makeUndMethod);
+            //MakeUnderlyingCodegen(makeUndMethod, codegenClassScope);
+
+            //var makeMethod = CodegenMethod.MakeMethod(typeof(EventBean), GetType(), codegenClassScope)
+            //    .AddParam(typeof(object[]), "properties");
+            //manufacturer.AddMethod("Make", makeMethod);
+            //makeMethod.Block
+            //    .DeclareVar<IDictionary<object, object>>("und", LocalMethod(makeUndMethod, Ref("properties")))
+            //    .MethodReturn(ExprDotMethod(factory, "AdapterForTypedMap", Ref("und"), eventType));
 
             return codegenClassScope.AddFieldUnshared(true, typeof(EventBeanManufacturer), manufacturer);
         }
@@ -71,21 +94,21 @@ namespace com.espertech.esper.common.@internal.@event.bean.manufacturer
         }
 
         private void MakeUnderlyingCodegen(
-            CodegenMethod method,
+            CodegenBlock block,
             CodegenClassScope codegenClassScope)
         {
-            method.Block.DeclareVar<IDictionary<object, object>>(
+            block.DeclareVar<IDictionary<string, object>>(
                 "values",
-                NewInstance(typeof(Dictionary<object, object>)));
+                NewInstance(typeof(Dictionary<string, object>)));
             for (var i = 0; i < writables.Length; i++) {
-                method.Block.ExprDotMethod(
+                block.ExprDotMethod(
                     Ref("values"),
                     "Put",
                     Constant(writables[i].PropertyName),
                     ArrayAtIndex(Ref("properties"), Constant(i)));
             }
 
-            method.Block.MethodReturn(Ref("values"));
+            block.BlockReturn(Ref("values"));
         }
     }
 } // end of namespace

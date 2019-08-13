@@ -74,7 +74,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 SupportEventTypeAssertionEnum.NAME,
                 SupportEventTypeAssertionEnum.TYPE);
 
-            var fields = "c0,c1,c2".SplitCsv();
+            var fields = new [] { "c0", "c1", "c2" };
             MakeSendBean(env, "E1", 10, 0);
             env.SendEventBean(new SupportBean_S0(0));
             EPAssertionUtil.AssertProps(
@@ -160,7 +160,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 SupportEventTypeAssertionEnum.NAME,
                 SupportEventTypeAssertionEnum.TYPE);
 
-            var fields = "c0,c1".SplitCsv();
+            var fields = new [] { "c0", "c1" };
             MakeSendBean(env, "E1", 10, 100);
             env.SendEventBean(new SupportBean_S0(0));
             EPAssertionUtil.AssertProps(

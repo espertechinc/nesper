@@ -41,8 +41,8 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.util
             CodegenClassScope classScope)
         {
             return new SAIFFInitializeBuilder(typeof(GraphTypeDesc), GetType(), "gtd", parent, symbols, classScope)
-                .Constant("wildcard", IsWildcard)
-                .Constant("underlying", IsUnderlying)
+                .Constant("isWildcard", IsWildcard)
+                .Constant("isUnderlying", IsUnderlying)
                 .Eventtype("eventType", EventType)
                 .Build();
         }

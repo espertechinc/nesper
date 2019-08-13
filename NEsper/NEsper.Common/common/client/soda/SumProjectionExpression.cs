@@ -9,9 +9,6 @@
 using System;
 using System.IO;
 
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
-
 namespace com.espertech.esper.common.client.soda
 {
     /// <summary>
@@ -51,7 +48,8 @@ namespace com.espertech.esper.common.client.soda
             this.Children.Add(expression);
         }
 
-        public override ExpressionPrecedenceEnum Precedence {
+        public override ExpressionPrecedenceEnum Precedence
+        {
             get => ExpressionPrecedenceEnum.UNARY;
         }
 
@@ -64,7 +62,8 @@ namespace com.espertech.esper.common.client.soda
         /// Returns true if the projection considers distinct values only.
         /// </summary>
         /// <returns>true if distinct</returns>
-        public bool IsDistinct {
+        public bool IsDistinct
+        {
             get => distinct;
         }
 

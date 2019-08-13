@@ -26,7 +26,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
             _col = col;
         }
 
-        public override string Ref => base.Ref + _col;
+        public override string Ref => _ref + _col;
 
         public override void Render(
             StringBuilder builder,

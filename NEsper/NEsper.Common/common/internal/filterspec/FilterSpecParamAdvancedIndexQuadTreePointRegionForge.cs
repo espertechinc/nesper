@@ -52,11 +52,11 @@ namespace com.espertech.esper.common.@internal.filterspec
                     NewInstance<FilterSpecParamAdvancedIndexQuadTreePointRegion>(Ref("lookupable"), Ref("op")))
                 .SetProperty(
                     Ref("fpai"),
-                    "xEval",
+                    "XEval",
                     FilterSpecParamFilterForEvalDoubleForgeHelper.MakeAnonymous(_xEval, GetType(), classScope, method))
                 .SetProperty(
                     Ref("fpai"),
-                    "yEval",
+                    "YEval",
                     FilterSpecParamFilterForEvalDoubleForgeHelper.MakeAnonymous(_yEval, GetType(), classScope, method))
                 .MethodReturn(Ref("fpai"));
             return method;
@@ -79,11 +79,6 @@ namespace com.espertech.esper.common.@internal.filterspec
 
             return _xEval.Equals(other._xEval) &&
                    _yEval.Equals(other._yEval);
-        }
-
-        public override int GetHashCode()
-        {
-            return base.GetHashCode();
         }
     }
 } // end of namespace

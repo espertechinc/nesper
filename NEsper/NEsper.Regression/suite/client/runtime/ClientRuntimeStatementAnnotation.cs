@@ -176,7 +176,7 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
 
                 // test array
                 stmtText =
-                    "@MyAnnotationValueArray(value={1,2,3},intArray={4,5},doubleArray={},stringArray={'X'}) @Name('s0') select * from SupportBean";
+                    "@MyAnnotationValueArray(value={1,2,3},IntArray={4,5},doubleArray={},stringArray={'X'}) @Name('s0') select * from SupportBean";
                 env.CompileDeploy(stmtText);
 
                 Assert.That(() => env.Statement("s0").Annotations, Throws.Nothing);
@@ -227,15 +227,15 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
 
                 TryInvalidAnnotation(
                     env,
-                    "@MyAnnotationValueArray(intArray={},doubleArray={},stringArray={null},value={}) select * from Bean",
+                    "@MyAnnotationValueArray(IntArray={},doubleArray={},stringArray={null},value={}) select * from Bean",
                     false,
-                    "Failed to process statement annotations: Annotation 'MyAnnotationValueArray' requires a non-null value for array elements for attribute 'stringArray' [@MyAnnotationValueArray(intArray={},doubleArray={},stringArray={null},value={}) select * from Bean]");
+                    "Failed to process statement annotations: Annotation 'MyAnnotationValueArray' requires a non-null value for array elements for attribute 'stringArray' [@MyAnnotationValueArray(IntArray={},doubleArray={},stringArray={null},value={}) select * from Bean]");
 
                 TryInvalidAnnotation(
                     env,
-                    "@MyAnnotationValueArray(intArray={},doubleArray={},stringArray={1},value={}) select * from Bean",
+                    "@MyAnnotationValueArray(IntArray={},doubleArray={},stringArray={1},value={}) select * from Bean",
                     false,
-                    "Failed to process statement annotations: Annotation 'MyAnnotationValueArray' requires a String-typed value for array elements for attribute 'stringArray' but received a Integer-typed value [@MyAnnotationValueArray(intArray={},doubleArray={},stringArray={1},value={}) select * from Bean]");
+                    "Failed to process statement annotations: Annotation 'MyAnnotationValueArray' requires a String-typed value for array elements for attribute 'stringArray' but received a Integer-typed value [@MyAnnotationValueArray(IntArray={},doubleArray={},stringArray={1},value={}) select * from Bean]");
 
                 TryInvalidAnnotation(
                     env,
@@ -272,9 +272,9 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
                     "Failed to process statement annotations: Annotation 'MyAnnotationValue' requires a String-typed value for attribute 'value' but received a Integer-typed value [@MyAnnotationValue(5) select * from Bean]");
                 TryInvalidAnnotation(
                     env,
-                    "@MyAnnotationValueArray(value=\"ABC\", intArray={}, doubleArray={}, stringArray={}) select * from Bean",
+                    "@MyAnnotationValueArray(value=\"ABC\", IntArray={}, doubleArray={}, stringArray={}) select * from Bean",
                     false,
-                    "Failed to process statement annotations: Annotation 'MyAnnotationValueArray' requires a long[]-typed value for attribute 'value' but received a String-typed value [@MyAnnotationValueArray(value=\"ABC\", intArray={}, doubleArray={}, stringArray={}) select * from Bean]");
+                    "Failed to process statement annotations: Annotation 'MyAnnotationValueArray' requires a long[]-typed value for attribute 'value' but received a String-typed value [@MyAnnotationValueArray(value=\"ABC\", IntArray={}, doubleArray={}, stringArray={}) select * from Bean]");
                 TryInvalidAnnotation(
                     env,
                     "@MyAnnotationValueEnum(a.b.CC) select * from Bean",

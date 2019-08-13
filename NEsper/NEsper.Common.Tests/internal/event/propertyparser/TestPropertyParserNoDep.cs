@@ -53,13 +53,13 @@ namespace com.espertech.esper.common.@internal.@event.propertyparser
             nested = ((NestedProperty) property).Properties;
             Assert.AreEqual(2, nested.Count);
             Assert.AreEqual("order", ((SimpleProperty) nested[0]).PropertyNameAtomic);
-            Assert.AreEqual("p0", ((SimpleProperty) nested[1]).PropertyNameAtomic);
+            Assert.AreEqual("P0", ((SimpleProperty) nested[1]).PropertyNameAtomic);
 
             property = PropertyParser.ParseAndWalk("`jim's strings`.p0", false);
             nested = ((NestedProperty) property).Properties;
             Assert.AreEqual(2, nested.Count);
             Assert.AreEqual("jim's strings", ((SimpleProperty) nested[0]).PropertyNameAtomic);
-            Assert.AreEqual("p0", ((SimpleProperty) nested[1]).PropertyNameAtomic);
+            Assert.AreEqual("P0", ((SimpleProperty) nested[1]).PropertyNameAtomic);
 
             property = PropertyParser.ParseAndWalk("`children's books`[0]", false);
             IndexedProperty indexed = (IndexedProperty) property;

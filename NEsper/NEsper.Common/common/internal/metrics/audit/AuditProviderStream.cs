@@ -13,12 +13,12 @@ namespace com.espertech.esper.common.@internal.metrics.audit
 {
     public interface AuditProviderStream
     {
-        void Stream(
+        void StreamSingle(
             EventBean @event,
             ExprEvaluatorContext context,
             string filterSpecText);
 
-        void Stream(
+        void StreamMulti(
             EventBean[] newData,
             EventBean[] oldData,
             ExprEvaluatorContext context,

@@ -132,18 +132,38 @@ namespace com.espertech.esper.regressionrun.suite.epl
         private static void Configure(Configuration configuration)
         {
             foreach (Type clazz in new[] {
-                typeof(SupportBean), typeof(SupportObjectArrayOneDim), typeof(SupportBeanSimple),
-                typeof(SupportBean_A), typeof(SupportRFIDEvent), typeof(SupportBean_S0), typeof(SupportBean_S1),
-                typeof(SupportMarketDataBean), typeof(SupportTemperatureBean), typeof(SupportBeanComplexProps),
+                typeof(SupportBean),
+                typeof(SupportObjectArrayOneDim),
+                typeof(SupportBeanSimple),
+                typeof(SupportBean_A),
+                typeof(SupportRFIDEvent),
+                typeof(SupportBean_S0),
+                typeof(SupportBean_S1),
+                typeof(SupportMarketDataBean),
+                typeof(SupportTemperatureBean),
+                typeof(SupportBeanComplexProps),
                 typeof(SupportBeanInterfaceProps),
-                typeof(SupportBeanErrorTestingOne), typeof(SupportBeanErrorTestingTwo), typeof(SupportBeanReadOnly),
-                typeof(SupportBeanArrayCollMap), typeof(SupportBean_N), typeof(SupportBeanObject),
-                typeof(SupportBeanCtorOne), typeof(SupportBeanCtorTwo), typeof(SupportBean_ST0),
+                typeof(SupportBeanErrorTestingOne),
+                typeof(SupportBeanErrorTestingTwo),
+                typeof(SupportBeanReadOnly),
+                typeof(SupportBeanArrayCollMap),
+                typeof(SupportBean_N),
+                typeof(SupportBeanObject),
+                typeof(SupportBeanCtorOne),
+                typeof(SupportBeanCtorTwo),
+                typeof(SupportBean_ST0),
                 typeof(SupportBean_ST1),
-                typeof(SupportEventWithCtorSameType), typeof(SupportBeanCtorThree), typeof(SupportBeanCtorOne),
-                typeof(SupportBean_ST0), typeof(SupportBean_ST1), typeof(SupportEventWithMapFieldSetter),
-                typeof(SupportBeanNumeric), typeof(SupportBeanArrayEvent),
-                typeof(SupportBean_A), typeof(SupportBean_B), typeof(SupportEventContainsSupportBean)
+                typeof(SupportEventWithCtorSameType),
+                typeof(SupportBeanCtorThree),
+                typeof(SupportBeanCtorOne),
+                typeof(SupportBean_ST0),
+                typeof(SupportBean_ST1),
+                typeof(SupportEventWithMapFieldSetter),
+                typeof(SupportBeanNumeric),
+                typeof(SupportBeanArrayEvent),
+                typeof(SupportBean_A),
+                typeof(SupportBean_B),
+                typeof(SupportEventContainsSupportBean)
             })
             {
                 configuration.Common.AddEventType(clazz);

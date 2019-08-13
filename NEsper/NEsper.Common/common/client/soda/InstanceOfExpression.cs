@@ -9,14 +9,12 @@
 using System;
 using System.IO;
 
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
-
 namespace com.espertech.esper.common.client.soda
 {
     /// <summary>
     /// Instance-of expression checks if an expression returns a certain type.
     /// </summary>
+    [Serializable]
     public class InstanceOfExpression : ExpressionBase
     {
         private string[] typeNames;
@@ -49,17 +47,20 @@ namespace com.espertech.esper.common.client.soda
             params string[] moreTypes)
         {
             this.Children.Add(expressionToCheck);
-            if (moreTypes == null) {
-                typeNames = new string[] {typeName};
+            if (moreTypes == null)
+            {
+                typeNames = new string[] { typeName };
             }
-            else {
+            else
+            {
                 typeNames = new string[moreTypes.Length + 1];
                 typeNames[0] = typeName;
                 Array.Copy(moreTypes, 0, this.typeNames, 1, moreTypes.Length);
             }
         }
 
-        public override ExpressionPrecedenceEnum Precedence {
+        public override ExpressionPrecedenceEnum Precedence
+        {
             get => ExpressionPrecedenceEnum.UNARY;
         }
 
@@ -70,7 +71,8 @@ namespace com.espertech.esper.common.client.soda
             writer.Write(",");
 
             string delimiter = "";
-            foreach (string typeName in typeNames) {
+            foreach (string typeName in typeNames)
+            {
                 writer.Write(delimiter);
                 writer.Write(typeName);
                 delimiter = ",";
@@ -83,7 +85,8 @@ namespace com.espertech.esper.common.client.soda
         /// Returns the types to compare to.
         /// </summary>
         /// <returns>list of types to compare to</returns>
-        public string[] TypeNames {
+        public string[] TypeNames
+        {
             get => typeNames;
         }
 

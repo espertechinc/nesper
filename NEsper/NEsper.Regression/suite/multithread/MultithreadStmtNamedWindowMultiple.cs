@@ -41,7 +41,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
                     i +
                     "') create window MyWindow_" +
                     i +
-                    "#unique(orderId) as select * from OrderEvent",
+                    "#unique(OrderId) as select * from OrderEvent",
                     path);
                 env.CompileDeploy(
                     "@Name('insert_" +
@@ -53,7 +53,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
                     "')",
                     path);
                 env.CompileDeploy(
-                    "on OrderCancelEvent as d delete from MyWindow_" + i + " w where w.orderId = d.orderId",
+                    "on OrderCancelEvent as d delete from MyWindow_" + i + " w where w.OrderId = d.OrderId",
                     path);
                 env.CompileDeploy(
                     "@Name('select_" +

@@ -39,7 +39,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
             RegressionEnvironment env,
             AtomicLong milestone)
         {
-            var fields = "c0,c1,c2,c3,c4,c5,c6".SplitCsv();
+            var fields = new [] { "c0", "c1", "c2", "c3", "c4", "c5", "c6" };
             var eventOne = MakeEvent("E1", 1, 1);
             env.SendEventBean(eventOne);
             EPAssertionUtil.AssertProps(
@@ -237,7 +237,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
                 env.UndeployAll();
 
                 // test join multirow
-                var fields = "c0".SplitCsv();
+                var fields = new [] { "c0" };
                 var joinMultirow =
                     "@Name('s0') select sorted(IntPrimitive desc) as c0 from SupportBean_S0#keepall, SupportBean#length(2)";
                 env.CompileDeploy(joinMultirow).AddListener("s0");
@@ -281,7 +281,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "c0,c1,c2,c3,c4,c5,c6,c7,c8,c9".SplitCsv();
+                var fields = new [] { "c0", "c1", "c2", "c3", "c4", "c5", "c6", "c7", "c8", "c9" };
                 var epl = "@Name('s0') select " +
                           "maxbyever(LongPrimitive) as c0, " +
                           "minbyever(LongPrimitive) as c1, " +
@@ -382,7 +382,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "c0,c1,c2,c3,c4,c5,c6,c7".SplitCsv();
+                var fields = new [] { "c0", "c1", "c2", "c3", "c4", "c5", "c6", "c7" };
                 var epl = "@Name('s0') select " +
                           "maxbyever(IntPrimitive).LongPrimitive as c0," +
                           "maxbyever(TheString).LongPrimitive as c1," +
@@ -461,7 +461,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
                 string epl;
 
                 // test sorted multiple criteria
-                var fields = "c0,c1,c2,c3".SplitCsv();
+                var fields = new [] { "c0", "c1", "c2", "c3" };
                 epl = "@Name('s0') select " +
                       "sorted(TheString desc, IntPrimitive desc) as c0," +
                       "sorted(TheString, IntPrimitive) as c1," +
@@ -525,7 +525,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
                 env.UndeployAll();
 
                 // test min/max
-                var fieldsTwo = "c0,c1,c2,c3,c4,c5,c6,c7".SplitCsv();
+                var fieldsTwo = new [] { "c0", "c1", "c2", "c3", "c4", "c5", "c6", "c7" };
                 epl = "@Name('s0') select " +
                       "maxbyever(IntPrimitive, TheString).LongPrimitive as c0," +
                       "minbyever(IntPrimitive, TheString).LongPrimitive as c1," +
@@ -586,7 +586,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "c0,c1,c2,c3".SplitCsv();
+                var fields = new [] { "c0", "c1", "c2", "c3" };
                 var epl = "@Name('s0') select " +
                           "maxbyever(IntPrimitive).TheString as c0, " +
                           "minbyever(IntPrimitive).TheString as c1, " +

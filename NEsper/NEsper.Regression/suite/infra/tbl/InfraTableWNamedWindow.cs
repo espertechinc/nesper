@@ -31,7 +31,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                     "@Name('s0') on SupportBean_S0 select TheString, varagg[P00].total as c0 from MyWindow where TheString = P00",
                     path)
                 .AddListener("s0");
-            var fields = "theString,c0".SplitCsv();
+            var fields = "TheString,c0".SplitCsv();
 
             env.SendEventBean(new SupportBean("E1", 10));
 

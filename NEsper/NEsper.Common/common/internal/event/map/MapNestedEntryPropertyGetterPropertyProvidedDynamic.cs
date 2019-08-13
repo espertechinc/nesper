@@ -88,15 +88,15 @@ namespace com.espertech.esper.common.@internal.@event.map
             CodegenClassScope codegenClassScope)
         {
             var block = codegenMethodScope.MakeChild(typeof(bool), GetType(), codegenClassScope)
-                .AddParam(typeof(IDictionary<object, object>), "map")
+                .AddParam(typeof(IDictionary<string, object>), "map")
                 .Block
                 .DeclareVar<object>("value", ExprDotMethod(Ref("map"), "Get", Constant(propertyMap)))
                 .IfRefNullReturnFalse("value")
-                .IfRefNotTypeReturnConst("value", typeof(IDictionary<object, object>), false);
+                .IfRefNotTypeReturnConst("value", typeof(IDictionary<string, object>), false);
             if (nestedGetter is MapEventPropertyGetter) {
                 return block.MethodReturn(
                     ((MapEventPropertyGetter) nestedGetter).UnderlyingExistsCodegen(
-                        Cast(typeof(IDictionary<object, object>), Ref("value")),
+                        Cast(typeof(IDictionary<string, object>), Ref("value")),
                         codegenMethodScope,
                         codegenClassScope));
             }
@@ -131,7 +131,7 @@ namespace com.espertech.esper.common.@internal.@event.map
             CodegenClassScope codegenClassScope)
         {
             return UnderlyingExistsCodegen(
-                CastUnderlying(typeof(IDictionary<object, object>), beanExpression),
+                CastUnderlying(typeof(IDictionary<string, object>), beanExpression),
                 codegenMethodScope,
                 codegenClassScope);
         }

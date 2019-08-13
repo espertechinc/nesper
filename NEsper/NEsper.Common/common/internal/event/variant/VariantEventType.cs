@@ -270,7 +270,7 @@ namespace com.espertech.esper.common.@internal.@event.variant
         /// <summary>
         ///     NOTE: Code-generation-invoked method, method name and parameter order matters
         /// </summary>
-        /// <param name="@event">event</param>
+        /// <param name="event">event</param>
         /// <returns>event type</returns>
         public EventType EventTypeForNativeObject(object @event)
         {

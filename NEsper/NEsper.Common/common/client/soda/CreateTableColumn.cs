@@ -55,7 +55,8 @@ namespace com.espertech.esper.common.client.soda
         /// <summary>
         /// The table column name
         /// </summary>
-        public string ColumnName {
+        public string ColumnName
+        {
             get => columnName;
             set => columnName = value;
         }
@@ -64,7 +65,8 @@ namespace com.espertech.esper.common.client.soda
         /// The aggregation expression, if the type of the column is aggregation,
         /// or null if a type name is provided instead.
         /// </summary>
-        public Expression OptionalExpression {
+        public Expression OptionalExpression
+        {
             get => optionalExpression;
             set => optionalExpression = value;
         }
@@ -73,7 +75,8 @@ namespace com.espertech.esper.common.client.soda
         /// Returns the type name, or null if the column is an aggregation and an
         /// aggregation expression is provided instead.
         /// </summary>
-        public string OptionalTypeName {
+        public string OptionalTypeName
+        {
             get => optionalTypeName;
             set => optionalTypeName = value;
         }
@@ -81,7 +84,8 @@ namespace com.espertech.esper.common.client.soda
         /// <summary>
         /// Returns optional annotations, or null if there are none.
         /// </summary>
-        public IList<AnnotationPart> Annotations {
+        public IList<AnnotationPart> Annotations
+        {
             get => annotations;
             set => annotations = value;
         }
@@ -89,7 +93,8 @@ namespace com.espertech.esper.common.client.soda
         /// <summary>
         /// Returns indicator whether the column is a primary key.
         /// </summary>
-        public bool? PrimaryKey {
+        public bool? PrimaryKey
+        {
             get => primaryKey;
             set => primaryKey = value;
         }
@@ -102,21 +107,27 @@ namespace com.espertech.esper.common.client.soda
         {
             writer.Write(columnName);
             writer.Write(" ");
-            if (optionalExpression != null) {
+            if (optionalExpression != null)
+            {
                 optionalExpression.ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
             }
-            else {
+            else
+            {
                 writer.Write(optionalTypeName);
-                if (primaryKey ?? false) {
+                if (primaryKey ?? false)
+                {
                     writer.Write(" primary key");
                 }
             }
 
-            if (annotations != null && !annotations.IsEmpty()) {
+            if (annotations != null && !annotations.IsEmpty())
+            {
                 writer.Write(" ");
                 string delimiter = "";
-                foreach (AnnotationPart part in annotations) {
-                    if (part.Name == null) {
+                foreach (AnnotationPart part in annotations)
+                {
+                    if (part.Name == null)
+                    {
                         continue;
                     }
 

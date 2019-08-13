@@ -186,9 +186,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
         {
             var path = new RegressionPath();
             var epl = "on OrderBean as oe " +
-                      "insert into StartEvent select oe.orderdetail.orderId as oi " +
-                      "insert into ThenEvent select * from [select oe.orderdetail.orderId as oi, itemId from orderdetail.items] as item " +
-                      "insert into MoreEvent select oe.orderdetail.orderId as oi, item.itemId as itemId from [select oe, * from orderdetail.items] as item " +
+                      "insert into StartEvent select oe.OrderDetail.OrderId as oi " +
+                      "insert into ThenEvent select * from [select oe.OrderDetail.OrderId as oi, itemId from OrderDetail.items] as item " +
+                      "insert into MoreEvent select oe.OrderDetail.OrderId as oi, item.ItemId as itemId from [select oe, * from OrderDetail.items] as item " +
                       "output all";
             env.CompileDeploy(soda, epl, path);
 
@@ -225,9 +225,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
         {
             var path = new RegressionPath();
             var epl = "@Name('split') on OrderBean " +
-                      "insert into BeginEvent select orderdetail.orderId as orderId " +
-                      "insert into OrderItem select * from [select orderdetail.orderId as orderId, * from orderdetail.items] " +
-                      "insert into EndEvent select orderdetail.orderId as orderId " +
+                      "insert into BeginEvent select OrderDetail.OrderId as OrderId " +
+                      "insert into OrderItem select * from [select OrderDetail.OrderId as OrderId, * from OrderDetail.items] " +
+                      "insert into EndEvent select OrderDetail.OrderId as OrderId " +
                       "output all";
             env.CompileDeploy(soda, epl, path);
             Assert.AreEqual(
@@ -240,7 +240,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             env.CompileDeploy("@Name('s2') select * from EndEvent", path).AddListener("s2", listeners[2]);
 
             var orderItemType = env.Runtime.EventTypeService.GetEventType(env.DeploymentId("split"), "OrderItem");
-            Assert.AreEqual("[amount, itemId, Price, productId, orderId]", orderItemType.PropertyNames.RenderAny());
+            Assert.AreEqual("[Amount, ItemId, Price, ProductId, OrderId]", orderItemType.PropertyNames.RenderAny());
 
             env.SendEventBean(OrderBeanFactory.MakeEventOne());
             AssertFromClauseWContained(
@@ -274,12 +274,12 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             bool soda)
         {
             var path = new RegressionPath();
-            var fieldsOrderId = "oe.orderdetail.orderId".SplitCsv();
+            var fieldsOrderId = "oe.OrderDetail.OrderId".SplitCsv();
             var epl = "on OrderBean as oe " +
-                      "insert into HeaderEvent select orderdetail.orderId as orderId where 1=2 " +
-                      "insert into StreamOne select * from [select oe, * from orderdetail.items] where productId=\"10020\" " +
-                      "insert into StreamTwo select * from [select oe, * from orderdetail.items] where productId=\"10022\" " +
-                      "insert into StreamThree select * from [select oe, * from orderdetail.items] where productId in (\"10020\",\"10025\",\"10022\")";
+                      "insert into HeaderEvent select OrderDetail.OrderId as OrderId where 1=2 " +
+                      "insert into StreamOne select * from [select oe, * from OrderDetail.items] where ProductId=\"10020\" " +
+                      "insert into StreamTwo select * from [select oe, * from OrderDetail.items] where ProductId=\"10022\" " +
+                      "insert into StreamThree select * from [select oe, * from OrderDetail.items] where ProductId in (\"10020\",\"10025\",\"10022\")";
             env.CompileDeploy(soda, epl, path);
 
             var listeners = GetListeners(env);
@@ -325,20 +325,20 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
         {
             var epl =
                 "create schema MyOrderItem(itemId string);\n" +
-                "create schema MyOrderEvent(orderId string, items MyOrderItem[]);\n" +
+                "create schema MyOrderEvent(OrderId string, items MyOrderItem[]);\n" +
                 "on MyOrderEvent\n" +
-                "  insert into MyOrderBeginEvent select orderId\n" +
-                "  insert into MyOrderItemEvent select * from [select orderId, * from items]\n" +
-                "  insert into MyOrderEndEvent select orderId\n" +
+                "  insert into MyOrderBeginEvent select OrderId\n" +
+                "  insert into MyOrderItemEvent select * from [select OrderId, * from items]\n" +
+                "  insert into MyOrderEndEvent select OrderId\n" +
                 "  output all;\n" +
                 "create context MyOrderContext \n" +
                 "  initiated by MyOrderBeginEvent as obe\n" +
-                "  terminated by MyOrderEndEvent(orderId = obe.orderId);\n" +
+                "  terminated by MyOrderEndEvent(OrderId = obe.OrderId);\n" +
                 "@Name('count') context MyOrderContext select count(*) as orderItemCount from MyOrderItemEvent output when terminated;\n";
             env.CompileDeployWBusPublicType(epl, new RegressionPath()).AddListener("count");
 
             IDictionary<string, object> @event = new Dictionary<string, object>();
-            @event.Put("orderId", "1010");
+            @event.Put("OrderId", "1010");
             @event.Put(
                 "items",
                 new[] {
@@ -356,8 +356,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             string orderId,
             object[][] expected)
         {
-            var fieldsOrderId = "orderId".SplitCsv();
-            var fieldsItems = "orderId,itemId".SplitCsv();
+            var fieldsOrderId = "OrderId".SplitCsv();
+            var fieldsItems = "OrderId,itemId".SplitCsv();
             EPAssertionUtil.AssertProps(
                 listeners[0].AssertOneGetNewAndReset(),
                 fieldsOrderId,

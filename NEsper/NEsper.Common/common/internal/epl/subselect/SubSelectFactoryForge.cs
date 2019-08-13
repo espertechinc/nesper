@@ -68,11 +68,11 @@ namespace com.espertech.esper.common.@internal.epl.subselect
             SAIFFInitializeSymbol symbols,
             CodegenClassScope classScope)
         {
-            var method = parent.MakeChild(typeof(IDictionary<object, object>), generator, classScope);
+            var method = parent.MakeChild(typeof(IDictionary<int, SubSelectFactory>), generator, classScope);
             method.Block
-                .DeclareVar<IDictionary<object, object>>(
+                .DeclareVar<IDictionary<int, SubSelectFactory>>(
                     "subselects",
-                    NewInstance(typeof(LinkedHashMap<object, object>)));
+                    NewInstance(typeof(LinkedHashMap<int, SubSelectFactory>)));
             foreach (var entry in subselects) {
                 method.Block.ExprDotMethod(
                     Ref("subselects"),

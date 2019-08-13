@@ -486,7 +486,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 
                 var epl = "@Name('merge') on OrderBean[books] " +
                           "merge MyInfra mw " +
-                          "insert select bookId as c1, title as c2 ";
+                          "insert select BookId as c1, title as c2 ";
                 env.CompileDeploy(epl, path).AddListener("merge");
 
                 env.SendEventBean(OrderBeanFactory.MakeEventOne());
@@ -514,7 +514,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 
             public void Run(RegressionEnvironment env)
             {
-                string[] fields = {"p0", "p1"};
+                string[] fields = {"P0", "P1"};
                 var path = new RegressionPath();
                 var stmtTextCreateOne = namedWindow
                     ? "@Name('create') create window MyInfra#keepall() as (p0 string, p1 int)"
@@ -553,7 +553,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
             public void Run(RegressionEnvironment env)
             {
                 // There is no guarantee whether the delete or the update wins
-                string[] fields = {"p0", "p1"};
+                string[] fields = {"P0", "P1"};
                 var path = new RegressionPath();
 
                 // create window
@@ -603,7 +603,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 
             public void Run(RegressionEnvironment env)
             {
-                string[] fields = {"p0", "p1"};
+                string[] fields = {"P0", "P1"};
                 var path = new RegressionPath();
 
                 // create window
@@ -790,7 +790,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                     fields,
                     new[] {new object[] {"E1", 1}});
                 var onEvent = env.Listener("on").AssertOneGetNewAndReset();
-                Assert.AreEqual("E1", onEvent.Get("p0"));
+                Assert.AreEqual("E1", onEvent.Get("P0"));
                 Assert.AreSame(onEvent.EventType, onType);
 
                 env.Milestone(0);
@@ -800,7 +800,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                     env.GetEnumerator("Window"),
                     fields,
                     new[] {new object[] {"E1", 1}, new object[] {"E2", 2}});
-                Assert.AreEqual("E2", env.Listener("on").AssertOneGetNewAndReset().Get("p0"));
+                Assert.AreEqual("E2", env.Listener("on").AssertOneGetNewAndReset().Get("P0"));
 
                 env.UndeployAll();
             }
@@ -817,7 +817,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 
             public void Run(RegressionEnvironment env)
             {
-                var fields = "theString,IntPrimitive,IntBoxed".SplitCsv();
+                var fields = "TheString,IntPrimitive,IntBoxed".SplitCsv();
                 var path = new RegressionPath();
                 var createEPL = namedWindow
                     ? "@Name('Window') create window MyMergeInfra#unique(TheString) as SupportBean"
@@ -840,7 +840,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                           "update set IntPrimitive=up.IntPrimitive, IntBoxed=up.IntBoxed+mv.IntBoxed " +
                           "when not matched then " +
                           "insert select " +
-                          (namedWindow ? "*" : "theString, IntPrimitive, IntBoxed");
+                          (namedWindow ? "*" : "TheString, IntPrimitive, IntBoxed");
                 env.CompileDeploy(epl, path).AddListener("Merge");
 
                 RunAssertionFlow(env, namedWindow, fields);
@@ -861,7 +861,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                       "where mv.TheString = up.TheString " +
                       "when not matched then " +
                       "insert select " +
-                      (namedWindow ? "up.*" : "theString, IntPrimitive, IntBoxed");
+                      (namedWindow ? "up.*" : "TheString, IntPrimitive, IntBoxed");
                 env.CompileDeploy(epl, path).AddListener("Merge");
 
                 SendSupportBeanEvent(env, false, "E99", 2, 3); // insert via merge
@@ -1421,7 +1421,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                           "then update set IntPrimitive=1999 where IntPrimitive=2000 " +
                           "then delete where IntPrimitive=2000";
                 env.CompileDeploy(epl, path);
-                var fields = "theString,IntPrimitive".SplitCsv();
+                var fields = new [] { "TheString","IntPrimitive" };
 
                 env.SendEventBean(new SupportBean("E1", 1));
                 env.SendEventBean(new SupportBean_ST0("ST0", "E1", 0));

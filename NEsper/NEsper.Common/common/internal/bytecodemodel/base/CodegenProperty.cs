@@ -141,14 +141,14 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
             return AddChild(new CodegenProperty(null, returnType, generator, symbolProvider, env));
         }
 
-        public static CodegenProperty MakeParentNode<T>(
+        public static CodegenProperty MakePropertyNode<T>(
             Type generator,
             CodegenScope env)
         {
-            return MakeParentNode(typeof(T), generator, env);
+            return MakePropertyNode(typeof(T), generator, env);
         }
 
-        public static CodegenProperty MakeParentNode(
+        public static CodegenProperty MakePropertyNode(
             Type returnType,
             Type generator,
             CodegenScope env)
@@ -160,7 +160,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
             return new CodegenProperty(returnType, null, generator, CodegenSymbolProviderEmpty.INSTANCE, env);
         }
 
-        public static CodegenProperty MakeParentNode(
+        public static CodegenProperty MakePropertyNode(
             Type returnType,
             Type generator,
             CodegenSymbolProvider symbolProvider,
@@ -177,7 +177,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
             return new CodegenProperty(returnType, null, generator, symbolProvider, env);
         }
 
-        public static CodegenProperty MakeParentNode(
+        public static CodegenProperty MakePropertyNode(
             string returnTypeName,
             Type generator,
             CodegenSymbolProvider symbolProvider,

@@ -120,7 +120,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 env.SendEventBean(new SupportBean("E1", 1));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    "c0,c1".SplitCsv(),
+                    new [] { "c0", "c1" },
                     new object[] {"--x--", "--E1--"});
                 env.UndeployModuleContaining("s0");
 
@@ -174,7 +174,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 env.SendEventBean(MakeBean("E1", 10, 3.5));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    "c0,c1".SplitCsv(),
+                    new [] { "c0", "c1" },
                     new object[] {350, 100});
 
                 env.UndeployAll();
@@ -204,7 +204,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 env.CompileDeploy("create expression TwoPi {Math.PI * 2}", path);
                 env.CompileDeploy("create expression factorPi {sb -> Math.PI * IntPrimitive}", path);
 
-                var fields = "c0,c1,c2".SplitCsv();
+                var fields = new [] { "c0", "c1", "c2" };
                 var epl = "@Name('s0') select " +
                           "TwoPi() as c0," +
                           "(select TwoPi() from SupportBean_S0#lastevent) as c1," +
@@ -230,7 +230,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 env.SendEventBean(new SupportBean("E1", 0));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    "c0".SplitCsv(),
+                    new [] { "c0" },
                     new object[] {Math.PI * 10});
 
                 // test SODA
@@ -274,7 +274,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 env.SendEventBean(new SupportBean_S0(1, "E1"));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    "c0".SplitCsv(),
+                    new [] { "c0" },
                     new object[] {100});
 
                 env.UndeployAll();

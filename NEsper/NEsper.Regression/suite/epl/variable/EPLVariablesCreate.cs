@@ -403,7 +403,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
                 TryInvalidCompile(
                     env,
                     stmt,
-                    "Variable 'myvar' of declared type System.String cannot be initialized by a value of type System.Integer [create variable string myvar = 5]");
+                    "Variable 'myvar' of declared type System.String cannot be initialized by a value of type System.Int32 [create variable string myvar = 5]");
 
                 stmt = "create variable string myvar = 'a'";
                 var path = new RegressionPath();

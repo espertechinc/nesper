@@ -54,7 +54,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
 
             public void Run(RegressionEnvironment env)
             {
-                var fields = "c0,c1".SplitCsv();
+                var fields = new [] { "c0", "c1" };
                 var epl = "@Name('s0')" +
                           "select TheString as c0, sum(IntPrimitive) as c1 " +
                           "from SupportBean#length(3) " +
@@ -100,7 +100,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "c0,c1,c2".SplitCsv();
+                var fields = new [] { "c0", "c1", "c2" };
 
                 var epl = "@Name('s0')" +
                           "select TheString as c0, IntPrimitive as c1, sum(LongPrimitive) as c2 " +
@@ -163,7 +163,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             public void Run(RegressionEnvironment env)
             {
                 // test having on the aggregation alone
-                var fields = "c0,c1,c2".SplitCsv();
+                var fields = new [] { "c0", "c1", "c2" };
 
                 var epl = "@Name('s0')" +
                           "select TheString as c0, IntPrimitive as c1, sum(LongPrimitive) as c2 " +
@@ -197,7 +197,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
                 env.UndeployAll();
 
                 // test having on the aggregation alone
-                var fieldsC0C1 = "c0,c1".SplitCsv();
+                var fieldsC0C1 = new [] { "c0", "c1" };
                 epl = "@Name('s0')" +
                       "select TheString as c0, sum(IntPrimitive) as c1 " +
                       "from SupportBean#keepall " +
@@ -252,7 +252,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             public void Run(RegressionEnvironment env)
             {
                 env.AdvanceTime(0);
-                var fields = "c0,c1,c2".SplitCsv();
+                var fields = new [] { "c0", "c1", "c2" };
 
                 var epl = "@Name('s0')" +
                           "select irstream TheString as c0, IntPrimitive as c1, sum(LongPrimitive) as c2 " +
@@ -335,7 +335,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             public void Run(RegressionEnvironment env)
             {
                 env.AdvanceTime(0);
-                var fields = "c0,c1,c2".SplitCsv();
+                var fields = new [] { "c0", "c1", "c2" };
 
                 var epl = "@Name('s0')" +
                           "select irstream TheString as c0, IntPrimitive as c1, sum(LongPrimitive) as c2 from SupportBean#time_batch(1 sec) " +

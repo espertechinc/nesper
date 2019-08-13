@@ -82,8 +82,6 @@ namespace com.espertech.esper.common.@internal.supportunit.db
         /// </summary>
         public DbDriver DriverODBC => DriverConnectionFactoryOdbc.Driver;
 
-	    public const string PGSQLDB_PROVIDER_TYPE = "Npgsql.NpgsqlFactory";
-
         public const string DBNAME_FULL = "mydb";
         public const string DBNAME_PART = "mydb2";
 

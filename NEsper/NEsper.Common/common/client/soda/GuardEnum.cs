@@ -31,7 +31,8 @@ namespace com.espertech.esper.common.client.soda
         /// <value>The namespace.</value>
         public static string GetNamespace(this GuardEnum value)
         {
-            switch (value) {
+            switch (value)
+            {
                 case GuardEnum.TIMER_WITHIN:
                     return "timer";
 
@@ -51,7 +52,8 @@ namespace com.espertech.esper.common.client.soda
         /// <value>The name.</value>
         public static string GetName(this GuardEnum value)
         {
-            switch (value) {
+            switch (value)
+            {
                 case GuardEnum.TIMER_WITHIN:
                     return "within";
 
@@ -73,9 +75,11 @@ namespace com.espertech.esper.common.client.soda
             string nspace,
             string name)
         {
-            foreach (var value in EnumHelper.GetValues<GuardEnum>()) {
+            foreach (var value in EnumHelper.GetValues<GuardEnum>())
+            {
                 if (value.GetNamespace() == nspace &&
-                    value.GetName() == name) {
+                    value.GetName() == name)
+                {
                     return value;
                 }
             }
@@ -99,7 +103,8 @@ namespace com.espertech.esper.common.client.soda
         /// <returns></returns>
         public static Type GetClazz(this GuardEnum guardEnum)
         {
-            switch (guardEnum) {
+            switch (guardEnum)
+            {
                 case GuardEnum.TIMER_WITHIN:
                     return typeof(TimerWithinGuardForge);
 

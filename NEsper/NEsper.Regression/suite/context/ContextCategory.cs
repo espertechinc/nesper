@@ -45,7 +45,7 @@ namespace com.espertech.esper.regressionlib.suite.context
             string ctx,
             AtomicLong milestone)
         {
-            var fields = "c0,c1,c2".SplitCsv();
+            var fields = new [] { "c0", "c1", "c2" };
             env.SendEventBean(new SupportBean("E1", 5));
             EPAssertionUtil.AssertProps(
                 env.Listener("s0").AssertOneGetNewAndReset(),
@@ -76,7 +76,7 @@ namespace com.espertech.esper.regressionlib.suite.context
             string groupExpected,
             long countExpected)
         {
-            var fields = "c0,c1".SplitCsv();
+            var fields = new [] { "c0", "c1" };
             env.SendEventBean(new SupportBean(theString, 1));
             EPAssertionUtil.AssertProps(
                 env.Listener("s0").AssertOneGetNewAndReset(),
@@ -86,7 +86,7 @@ namespace com.espertech.esper.regressionlib.suite.context
 
         public class ContextCategorySceneOne : RegressionExecution
         {
-            private static readonly string[] FIELDS = "c0,c1".SplitCsv();
+            private static readonly string[] FIELDS = new [] { "c0", "c1" };
 
             public void Run(RegressionEnvironment env)
             {
@@ -271,7 +271,7 @@ namespace com.espertech.esper.regressionlib.suite.context
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "c0,c1,c2,c3".SplitCsv();
+                var fields = new [] { "c0", "c1", "c2", "c3" };
                 var milestone = new AtomicLong();
                 var path = new RegressionPath();
 
@@ -426,7 +426,7 @@ namespace com.espertech.esper.regressionlib.suite.context
             {
                 var milestone = new AtomicLong();
                 var ctx = "CategorizedContext";
-                var fields = "c0,c1,c2".SplitCsv();
+                var fields = new [] { "c0", "c1", "c2" };
 
                 var epl = "@Name('context') create context " +
                           ctx +
@@ -587,7 +587,7 @@ namespace com.espertech.esper.regressionlib.suite.context
 
                 env.Milestone(1);
 
-                var fields = "c0,c1,c2".SplitCsv();
+                var fields = new [] { "c0", "c1", "c2" };
                 env.SendEventBean(new SupportBean("E1", -2));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),

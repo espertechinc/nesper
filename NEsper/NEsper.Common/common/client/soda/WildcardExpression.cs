@@ -9,14 +9,12 @@
 using System;
 using System.IO;
 
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
-
 namespace com.espertech.esper.common.client.soda
 {
     /// <summary>
     /// Represents "*" in for example "last(*)"
     /// </summary>
+    [Serializable]
     public class WildcardExpression : ExpressionBase
     {
         public override void ToPrecedenceFreeEPL(TextWriter writer)
@@ -24,7 +22,8 @@ namespace com.espertech.esper.common.client.soda
             writer.Write("*");
         }
 
-        public override ExpressionPrecedenceEnum Precedence {
+        public override ExpressionPrecedenceEnum Precedence
+        {
             get => ExpressionPrecedenceEnum.UNARY;
         }
     }

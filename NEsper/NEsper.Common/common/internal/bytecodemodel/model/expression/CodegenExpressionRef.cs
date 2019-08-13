@@ -16,12 +16,17 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
 {
     public class CodegenExpressionRef : CodegenExpression
     {
+        protected internal string _ref;
+
         public CodegenExpressionRef(string @ref)
         {
-            Ref = @ref;
+            if (@ref == "refSet0") {
+                Console.WriteLine("stop");
+            }
+            _ref = @ref;
         }
 
-        public virtual string Ref { get; internal set; }
+        public virtual string Ref => _ref;
 
         public virtual void Render(
             StringBuilder builder,
@@ -29,7 +34,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
             int level,
             CodegenIndent indent)
         {
-            builder.Append(Ref);
+            builder.Append(_ref);
         }
 
         public virtual void MergeClasses(ISet<Type> classes)
@@ -48,12 +53,12 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
 
             var that = (CodegenExpressionRef) obj;
 
-            return Ref.Equals(that.Ref);
+            return _ref.Equals(that._ref);
         }
 
         public override int GetHashCode()
         {
-            return Ref.GetHashCode();
+            return _ref.GetHashCode();
         }
     }
 } // end of namespace

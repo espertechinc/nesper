@@ -450,10 +450,10 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 object[][] expectedType = {
                     new object[] {"key", typeof(string)},
                     new object[] {"totalInt", typeof(int?)},
-                    new object[] {"p0", typeof(string)},
+                    new object[] {"P0", typeof(string)},
                     new object[] {"winsb", typeof(SupportBean[])},
                     new object[] {"totalLong", typeof(long?)},
-                    new object[] {"p1", typeof(string)},
+                    new object[] {"P1", typeof(string)},
                     new object[] {"winsb0", typeof(SupportBean_S0[])}
                 };
 

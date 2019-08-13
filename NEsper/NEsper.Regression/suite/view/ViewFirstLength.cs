@@ -46,7 +46,7 @@ namespace com.espertech.esper.regressionlib.suite.view
             {
                 env.Milestone(0);
 
-                var fields = "c0".SplitCsv();
+                var fields = new [] { "c0" };
                 var epl = "@Name('s0') select irstream TheString as c0 from SupportBean#firstlength(2)";
                 env.CompileDeploy(epl).AddListener("s0");
 
@@ -104,7 +104,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 env.Listener("s0").AssertNewOldData(new[] {new object[] {"Symbol", "E1"}}, null);
                 EPAssertionUtil.AssertPropsPerRow(
                     env.GetEnumerator("s0"),
-                    "Symbol".SplitCsv(),
+                    new [] { "Symbol" },
                     new[] {new object[] {"E1"}});
 
                 env.Milestone(1);
@@ -113,7 +113,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 env.Listener("s0").AssertNewOldData(new[] {new object[] {"Symbol", "E2"}}, null);
                 EPAssertionUtil.AssertPropsPerRow(
                     env.GetEnumerator("s0"),
-                    "Symbol".SplitCsv(),
+                    new [] { "Symbol" },
                     new[] {new object[] {"E1"}, new object[] {"E2"}});
 
                 env.Milestone(2);
@@ -122,7 +122,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 env.Listener("s0").AssertNewOldData(new[] {new object[] {"Symbol", "E3"}}, null);
                 EPAssertionUtil.AssertPropsPerRow(
                     env.GetEnumerator("s0"),
-                    "Symbol".SplitCsv(),
+                    new [] { "Symbol" },
                     new[] {new object[] {"E1"}, new object[] {"E2"}, new object[] {"E3"}});
 
                 env.Milestone(3);
@@ -131,7 +131,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 Assert.IsFalse(env.Listener("s0").IsInvoked);
                 EPAssertionUtil.AssertPropsPerRow(
                     env.GetEnumerator("s0"),
-                    "Symbol".SplitCsv(),
+                    new [] { "Symbol" },
                     new[] {new object[] {"E1"}, new object[] {"E2"}, new object[] {"E3"}});
 
                 env.UndeployAll();

@@ -215,7 +215,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
                         false,
                         true),
                     new EventPropertyDescriptor("arrayProperty", typeof(int[]), typeof(int), false, false, true, false, false),
-                    new EventPropertyDescriptor("objectArray", typeof(object[]), typeof(object), false, false, true, false, false)
+                    new EventPropertyDescriptor("ObjectArray", typeof(object[]), typeof(object), false, false, true, false, false)
                 },
                 eventTypeComplex.PropertyDescriptors);
 

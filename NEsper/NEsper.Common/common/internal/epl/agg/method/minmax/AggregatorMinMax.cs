@@ -110,7 +110,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.minmax
             CodegenClassScope classScope)
         {
             method.Block.MethodReturn(
-                ExprDotMethod(refSet, factory.Parent.MinMaxTypeEnum == MinMaxTypeEnum.MAX ? "maxValue" : "minValue"));
+                ExprDotName(refSet, factory.Parent.MinMaxTypeEnum == MinMaxTypeEnum.MAX ? "MaxValue" : "MinValue"));
         }
 
         protected override void WriteWODistinct(

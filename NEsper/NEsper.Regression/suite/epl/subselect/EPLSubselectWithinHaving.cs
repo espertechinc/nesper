@@ -52,7 +52,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
                                "having sum(IntPrimitive) > (select maxAmount from MyInfra as mw where sb.TheString = mw.Key)";
                 env.CompileDeploy(stmtText, path).AddListener("s0");
 
-                var fields = "c0,c1".SplitCsv();
+                var fields = new [] { "c0", "c1" };
 
                 // set some amounts
                 env.SendEventBean(new SupportMaxAmountEvent("G1", 10));

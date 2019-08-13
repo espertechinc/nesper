@@ -17,6 +17,7 @@ namespace com.espertech.esper.common.client.soda
     /// <summary>
     ///     Represents a single annotation.
     /// </summary>
+    [Serializable]
     public class AnnotationPart
     {
         // Map of identifier name and value can be any of the following:
@@ -111,12 +112,15 @@ namespace com.espertech.esper.common.client.soda
             IList<AnnotationPart> annotations,
             EPStatementFormatter formatter)
         {
-            if (annotations == null || annotations.IsEmpty()) {
+            if (annotations == null || annotations.IsEmpty())
+            {
                 return;
             }
 
-            foreach (var part in annotations) {
-                if (part.Name == null) {
+            foreach (var part in annotations)
+            {
+                if (part.Name == null)
+                {
                     continue;
                 }
 
@@ -134,12 +138,15 @@ namespace com.espertech.esper.common.client.soda
             writer.Write("@");
             writer.Write(Name);
 
-            if (Attributes.IsEmpty()) {
+            if (Attributes.IsEmpty())
+            {
                 return;
             }
 
-            if (Attributes.Count == 1) {
-                if (Attributes[0].Name == null || Attributes[0].Name.Equals("value")) {
+            if (Attributes.Count == 1)
+            {
+                if ((Attributes[0].Name == null) || (Attributes[0].Name == "Value"))
+                {
                     writer.Write("(");
                     ToEPL(writer, Attributes[0].Value);
                     writer.Write(")");
@@ -149,8 +156,10 @@ namespace com.espertech.esper.common.client.soda
 
             var delimiter = "";
             writer.Write("(");
-            foreach (var attribute in Attributes) {
-                if (attribute.Value == null) {
+            foreach (var attribute in Attributes)
+            {
+                if (attribute.Value == null)
+                {
                     return;
                 }
 
@@ -168,24 +177,29 @@ namespace com.espertech.esper.common.client.soda
             TextWriter writer,
             object second)
         {
-            if (second is string) {
+            if (second is string)
+            {
                 writer.Write("'");
                 writer.Write(second.ToString());
                 writer.Write("'");
             }
-            else if (second is AnnotationPart) {
+            else if (second is AnnotationPart)
+            {
                 ((AnnotationPart) second).ToEPL(writer);
             }
-            else if (second.GetType().IsEnum) {
+            else if (second.GetType().IsEnum)
+            {
                 writer.Write(second.GetType().Name);
                 writer.Write(".");
                 writer.Write(second.ToString());
             }
-            else if (second.GetType().IsArray) {
+            else if (second.GetType().IsArray)
+            {
                 var array = (Array) second;
                 var delimiter = "";
                 writer.Write("{");
-                for (var i = 0; i < array.Length; i++) {
+                for (var i = 0; i < array.Length; i++)
+                {
                     writer.Write(delimiter);
                     ToEPL(writer, array.GetValue(i));
                     delimiter = ",";
@@ -193,7 +207,8 @@ namespace com.espertech.esper.common.client.soda
 
                 writer.Write("}");
             }
-            else {
+            else
+            {
                 writer.Write(second.ToString());
             }
         }

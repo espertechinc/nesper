@@ -49,9 +49,9 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
             {
                 var epl = "@Name('s0') select instanceof(TheString, string) as t0, " +
                           " instanceof(IntBoxed, int) as t1, " +
-                          " instanceof(FloatBoxed, System.Float) as t2, " +
-                          " instanceof(TheString, System.Float, char, byte) as t3, " +
-                          " instanceof(IntPrimitive, System.Integer) as t4, " +
+                          " instanceof(FloatBoxed, System.Single) as t2, " +
+                          " instanceof(TheString, System.Single, char, byte) as t3, " +
+                          " instanceof(IntPrimitive, System.Int32) as t4, " +
                           " instanceof(IntPrimitive, long) as t5, " +
                           " instanceof(IntPrimitive, long, long, System.Number) as t6, " +
                           " instanceof(FloatBoxed, long, float) as t7 " +
@@ -142,9 +142,9 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
             {
                 var epl = "@Name('s0') select instanceof(item?, string) as t0, " +
                           " instanceof(item?, int) as t1, " +
-                          " instanceof(item?, System.Float) as t2, " +
-                          " instanceof(item?, System.Float, char, byte) as t3, " +
-                          " instanceof(item?, System.Integer) as t4, " +
+                          " instanceof(item?, System.Single) as t2, " +
+                          " instanceof(item?, System.Single, char, byte) as t3, " +
+                          " instanceof(item?, System.Int32) as t4, " +
                           " instanceof(item?, long) as t5, " +
                           " instanceof(item?, long, long, System.Number) as t6, " +
                           " instanceof(item?, long, float) as t7 " +

@@ -188,14 +188,14 @@ namespace com.espertech.esper.regressionrun.suite.@event
 
             // create a map using the name
             IDictionary<string, object> eventDef = EventMapCore.MakeMap(new object[][]{
-                new object[] {"p0", "MyNamedMap"},
-                new object[] {"p1", "MyNamedMap[]"}});
+                new object[] {"P0", "MyNamedMap"},
+                new object[] {"P1", "MyNamedMap[]"}});
             configuration.Common.AddEventType("MyMapWithAMap", eventDef);
 
             // test map containing first-level property that is an array of primitive or Class
             IDictionary<string, object> arrayDef = EventMapCore.MakeMap(new object[][]{
-                new object[] {"p0", typeof(int[])},
-                new object[] {"p1", typeof(SupportBean[])}});
+                new object[] {"P0", typeof(int[])},
+                new object[] {"P1", typeof(SupportBean[])}});
             configuration.Common.AddEventType("MyArrayMap", arrayDef);
 
             // test map at the second level of a nested map that is an array of primitive or Class
@@ -205,7 +205,7 @@ namespace com.espertech.esper.regressionrun.suite.@event
 
             // test map containing first-level property that is an array of primitive or Class
             IDictionary<string, object> mappedDef = EventMapCore.MakeMap(new object[][] {
-                new object[] {"p0", typeof(IDictionary<string, object>)}
+                new object[] {"P0", typeof(IDictionary<string, object>)}
             });
             configuration.Common.AddEventType("MyMappedPropertyMap", mappedDef);
 
@@ -228,8 +228,8 @@ namespace com.espertech.esper.regressionrun.suite.@event
 
             // create a map using the name
             IDictionary<string, object> myMapWithAMap = EventMapCore.MakeMap(new object[][]{
-                new object[] {"p0", "MyNamedMap"},
-                new object[] {"p1", "MyNamedMap[]"}});
+                new object[] {"P0", "MyNamedMap"},
+                new object[] {"P1", "MyNamedMap[]"}});
             configuration.Common.AddEventType("MyMapWithAMap", myMapWithAMap);
 
             // test named-map at the second level of a nested map

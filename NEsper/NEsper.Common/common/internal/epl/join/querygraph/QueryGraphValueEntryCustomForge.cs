@@ -33,7 +33,7 @@ namespace com.espertech.esper.common.@internal.epl.join.querygraph
 
             CodegenExpression map;
             if (operations.IsEmpty()) {
-                map = StaticMethod(typeof(Collections), "GetEmptyMap");
+                map = StaticMethod(typeof(Collections), "GetEmptyMap", new [] { typeof(string), typeof(object) });
             }
             else {
                 method.Block.DeclareVar<IDictionary<string, object>>(

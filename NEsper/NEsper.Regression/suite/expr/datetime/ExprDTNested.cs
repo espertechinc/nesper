@@ -20,11 +20,11 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
     {
         public void Run(RegressionEnvironment env)
         {
-            var fields = "val0,val1,val2,val3,val4".SplitCsv();
+            var fields = new [] { "val0", "val1", "val2", "val3", "val4" };
             var eplFragment = "@Name('s0') select " +
-                              "utildate.set('hour', 1).set('minute', 2).set('second', 3) as val0," +
-                              "longdate.set('hour', 1).set('minute', 2).set('second', 3) as val1," +
-                              "exdate.set('hour', 1).set('minute', 2).set('second', 3) as val2" +
+                              "DtoDate.set('hour', 1).set('minute', 2).set('second', 3) as val0," +
+                              "LongDate.set('hour', 1).set('minute', 2).set('second', 3) as val1," +
+                              "DtxDate.set('hour', 1).set('minute', 2).set('second', 3) as val2" +
                               " from SupportDateTime";
             env.CompileDeploy(eplFragment).AddListener("s0");
             LambdaAssertionUtil.AssertTypes(
@@ -48,9 +48,9 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
             env.UndeployAll();
 
             eplFragment = "@Name('s0') select " +
-                          "utildate.set('hour', 1).set('minute', 2).set('second', 3).toCalendar() as val0," +
-                          "longdate.set('hour', 1).set('minute', 2).set('second', 3).toCalendar() as val1," +
-                          "exdate.set('hour', 1).set('minute', 2).set('second', 3).toCalendar() as val2" +
+                          "DtoDate.set('hour', 1).set('minute', 2).set('second', 3).toCalendar() as val0," +
+                          "LongDate.set('hour', 1).set('minute', 2).set('second', 3).toCalendar() as val1," +
+                          "DtxDate.set('hour', 1).set('minute', 2).set('second', 3).toCalendar() as val2" +
                           " from SupportDateTime";
             env.CompileDeployAddListenerMile(eplFragment, "s0", 1);
             LambdaAssertionUtil.AssertTypes(

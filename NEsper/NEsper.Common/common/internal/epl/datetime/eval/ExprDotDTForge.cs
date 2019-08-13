@@ -120,6 +120,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.eval
             IntervalForge intervalForge)
         {
             if (inputEventType == null) {
+                var inputTypeBoxed = inputType.GetBoxedType();
                 if (reformatForge != null) {
                     if (TypeHelper.IsSubclassOrImplementsInterface(inputType, typeof(DateTimeEx))) {
                         if (calendarForges.IsEmpty()) {
@@ -129,7 +130,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.eval
                         return new DTLocalDtxOpsReformatForge(calendarForges, reformatForge);
                     }
 
-                    if (inputType.GetBoxedType() == typeof(long?)) {
+                    if (inputTypeBoxed == typeof(long?)) {
                         if (calendarForges.IsEmpty()) {
                             return new DTLocalLongReformatForge(reformatForge);
                         }
@@ -137,7 +138,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.eval
                         return new DTLocalLongOpsReformatForge(calendarForges, reformatForge, timeAbacus);
                     }
 
-                    if (TypeHelper.IsSubclassOrImplementsInterface(inputType, typeof(DateTimeOffset))) {
+                    if (inputTypeBoxed == typeof(DateTimeOffset?)) {
                         if (calendarForges.IsEmpty()) {
                             return new DTLocalDtoReformatForge(reformatForge);
                         }
@@ -145,7 +146,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.eval
                         return new DTLocalDtoOpsReformatForge(calendarForges, reformatForge);
                     }
 
-                    if (TypeHelper.IsSubclassOrImplementsInterface(inputType, typeof(DateTime))) {
+                    if (inputTypeBoxed == typeof(DateTime?)) {
                         if (calendarForges.IsEmpty()) {
                             return new DTLocalDateTimeReformatForge(reformatForge);
                         }
@@ -162,7 +163,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.eval
                         return new DTLocalDtxOpsIntervalForge(calendarForges, intervalForge);
                     }
 
-                    if (inputType.GetBoxedType() == typeof(long?)) {
+                    if (inputTypeBoxed == typeof(long?)) {
                         if (calendarForges.IsEmpty()) {
                             return new DTLocalLongIntervalForge(intervalForge);
                         }
@@ -170,7 +171,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.eval
                         return new DTLocalLongOpsIntervalForge(calendarForges, intervalForge, timeAbacus);
                     }
 
-                    if (TypeHelper.IsSubclassOrImplementsInterface(inputType, typeof(DateTimeOffset))) {
+                    if (inputTypeBoxed == typeof(DateTimeOffset?)) {
                         if (calendarForges.IsEmpty()) {
                             return new DTLocalDtoIntervalForge(intervalForge);
                         }
@@ -178,7 +179,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.eval
                         return new DTLocalDtoOpsIntervalForge(calendarForges, intervalForge);
                     }
 
-                    if (TypeHelper.IsSubclassOrImplementsInterface(inputType, typeof(DateTime))) {
+                    if (inputTypeBoxed == typeof(DateTime?)) {
                         if (calendarForges.IsEmpty()) {
                             return new DTLocalDateTimeIntervalForge(intervalForge);
                         }
@@ -191,20 +192,20 @@ namespace com.espertech.esper.common.@internal.epl.datetime.eval
                         return new DTLocalDtxOpsDtxForge(calendarForges);
                     }
 
-                    if (inputType.GetBoxedType() == typeof(long?)) {
+                    if (inputTypeBoxed == typeof(long?)) {
                         return new DTLocalDtxOpsLongForge(calendarForges, timeAbacus);
                     }
 
-                    if (TypeHelper.IsSubclassOrImplementsInterface(inputType, typeof(DateTimeOffset))) {
+                    if (inputTypeBoxed == typeof(DateTimeOffset?)) {
                         return new DTLocalDtxOpsDtoForge(calendarForges);
                     }
 
-                    if (TypeHelper.IsSubclassOrImplementsInterface(inputType, typeof(DateTime))) {
+                    if (inputTypeBoxed == typeof(DateTime?)) {
                         return new DTLocalDtxOpsDtzForge(calendarForges);
                     }
                 }
 
-                throw new ArgumentException("Invalid input type '" + inputType + "'");
+                throw new ArgumentException("Invalid input type '" + inputTypeBoxed + "'");
             }
 
             var getter = ((EventTypeSPI) inputEventType).GetGetterSPI(inputEventType.StartTimestampPropertyName);

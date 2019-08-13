@@ -62,7 +62,7 @@ namespace com.espertech.esper.common.@internal.util
             {
                 return CodegenCoerceMayNull(
                     typeof(long),
-                    typeof(long),
+                    typeof(long?),
                     "AsLong",
                     param,
                     type,

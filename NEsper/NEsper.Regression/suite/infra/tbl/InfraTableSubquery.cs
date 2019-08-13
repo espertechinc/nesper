@@ -62,7 +62,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             string @string,
             int? expectedSum)
         {
-            var fields = "c0".SplitCsv();
+            var fields = new [] { "c0" };
             env.SendEventBean(new SupportBean(@string, -1));
             EPAssertionUtil.AssertProps(
                 env.Listener("s0").AssertOneGetNewAndReset(),
@@ -124,7 +124,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 env.SendEventBean(new SupportBean_S0(0, "E1"));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    "c0".SplitCsv(),
+                    new [] { "c0" },
                     new object[] {10});
 
                 env.UndeployAll();

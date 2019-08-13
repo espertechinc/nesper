@@ -50,7 +50,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.variant
 
         private static void AssertEventTypeDefault(EventType eventType)
         {
-            var expected = "theString,BoolBoxed,IntPrimitive,LongPrimitive,DoublePrimitive,enumValue".SplitCsv();
+            var expected = "TheString,BoolBoxed,IntPrimitive,LongPrimitive,DoublePrimitive,EnumValue".SplitCsv();
             var propertyNames = eventType.PropertyNames;
             EPAssertionUtil.AssertEqualsAnyOrder(expected, propertyNames);
             Assert.AreEqual(typeof(string), eventType.GetPropertyType("TheString"));
@@ -300,7 +300,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.variant
 
                 env.UndeployModuleContaining("s0");
 
-                fields = "theString,BoolBoxed,IntPrimitive,LongPrimitive,DoublePrimitive,enumValue";
+                fields = "TheString,BoolBoxed,IntPrimitive,LongPrimitive,DoublePrimitive,EnumValue";
                 env.CompileDeploy("@Name('s0') select " + fields + " from MyVariantTwoTypedSB").AddListener("s0");
                 AssertEventTypeDefault(env.Statement("s0").EventType);
 
@@ -367,9 +367,9 @@ namespace com.espertech.esper.regressionlib.suite.@event.variant
                 var expected = "p0,p1,p2,p3,p4,p5,indexed,mapped,inneritem".SplitCsv();
                 var propertyNames = eventType.PropertyNames;
                 EPAssertionUtil.AssertEqualsAnyOrder(expected, propertyNames);
-                Assert.AreEqual(typeof(ISupportBaseAB), eventType.GetPropertyType("p0"));
-                Assert.AreEqual(typeof(ISupportAImplSuperG), eventType.GetPropertyType("p1"));
-                Assert.AreEqual(typeof(LinkedList<object>), eventType.GetPropertyType("p2"));
+                Assert.AreEqual(typeof(ISupportBaseAB), eventType.GetPropertyType("P0"));
+                Assert.AreEqual(typeof(ISupportAImplSuperG), eventType.GetPropertyType("P1"));
+                Assert.AreEqual(typeof(LinkedList<object>), eventType.GetPropertyType("P2"));
                 Assert.AreEqual(typeof(IList<object>), eventType.GetPropertyType("p3"));
                 Assert.AreEqual(typeof(ICollection<object>), eventType.GetPropertyType("p4"));
                 Assert.AreEqual(typeof(ICollection<object>), eventType.GetPropertyType("p5"));
@@ -573,7 +573,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.variant
                 Assert.AreEqual(typeof(object), eventType.GetPropertyType("Id"));
                 Assert.AreEqual(typeof(object), eventType.GetPropertyType("IntPrimitive"));
 
-                var fields = "theString,Id,IntPrimitive".SplitCsv();
+                var fields = "TheString,Id,IntPrimitive".SplitCsv();
                 env.SendEventBean(new SupportBeanVariantStream("E1"));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),

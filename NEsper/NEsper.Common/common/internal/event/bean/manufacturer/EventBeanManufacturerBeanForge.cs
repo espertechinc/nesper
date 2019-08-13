@@ -88,28 +88,47 @@ namespace com.espertech.esper.common.@internal.@event.bean.manufacturer
                 typeof(EventType),
                 EventTypeUtility.ResolveTypeCodegen(beanEventType, EPStatementInitServicesConstants.REF));
 
-            var manufacturer = NewAnonymousClass(init.Block, typeof(EventBeanManufacturer));
+            var makeUndLambda = new CodegenExpressionLambda(init.Block)
+                .WithParam<object[]>("properties");
+            init.Block.DeclareVar<ProxyEventBeanManufacturer.MakeUnderlyingFunc>(
+                "makeUndLambda", makeUndLambda);
+            MakeUnderlyingCodegen(
+                codegenMethodScope, makeUndLambda.Block, codegenClassScope);
 
-            var makeUndMethod = CodegenMethod.MakeMethod(typeof(object), GetType(), codegenClassScope)
-                .AddParam(typeof(object[]), "properties");
-            manufacturer.AddMethod("MakeUnderlying", makeUndMethod);
-            MakeUnderlyingCodegen(makeUndMethod, codegenClassScope);
+            var makeLambda = new CodegenExpressionLambda(init.Block)
+                .WithParam<object[]>("properties");
+            makeLambda.Block
+                .DeclareVar<object>("und", ExprDotMethod(Ref("makeUndFunc"), "Invoke", Ref("properties")))
+                .ReturnMethodOrBlock(ExprDotMethod(factory, "AdapterForTypedBean", Ref("und"), beanType));
 
-            var makeMethod = CodegenMethod.MakeMethod(typeof(EventBean), GetType(), codegenClassScope)
-                .AddParam(typeof(object[]), "properties");
-            manufacturer.AddMethod("Make", makeMethod);
-            makeMethod.Block
-                .DeclareVar<object>("und", LocalMethod(makeUndMethod, Ref("properties")))
-                .MethodReturn(ExprDotMethod(factory, "AdapterForTypedBean", Ref("und"), beanType));
+            init.Block.DeclareVar<ProxyEventBeanManufacturer.MakeFunc>(
+                "makeLambda", makeLambda);
+
+            var manufacturer = NewInstance<ProxyEventBeanManufacturer>(Ref("makeFunc"), Ref("makeUndFunc"));
+
+            //var manufacturer = NewAnonymousClass(init.Block, typeof(EventBeanManufacturer));
+
+            //var makeUndMethod = CodegenMethod.MakeMethod(typeof(object), GetType(), codegenClassScope)
+            //    .AddParam(typeof(object[]), "properties");
+            //manufacturer.AddMethod("MakeUnderlying", makeUndMethod);
+            //MakeUnderlyingCodegen(makeUndMethod, codegenClassScope);
+
+            //var makeMethod = CodegenMethod.MakeMethod(typeof(EventBean), GetType(), codegenClassScope)
+            //    .AddParam(typeof(object[]), "properties");
+            //manufacturer.AddMethod("Make", makeMethod);
+            //makeMethod.Block
+            //    .DeclareVar<object>("und", LocalMethod(makeUndMethod, Ref("properties")))
+            //    .MethodReturn(ExprDotMethod(factory, "AdapterForTypedBean", Ref("und"), beanType));
 
             return codegenClassScope.AddFieldUnshared(true, typeof(EventBeanManufacturer), manufacturer);
         }
 
         private void MakeUnderlyingCodegen(
-            CodegenMethod method,
+            CodegenMethodScope method,
+            CodegenBlock block,
             CodegenClassScope codegenClassScope)
         {
-            method.Block
+            block
                 .DeclareVar(
                     beanEventType.UnderlyingType,
                     "und",
@@ -117,7 +136,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.manufacturer
                 .DeclareVar<object>("value", ConstantNull());
 
             for (var i = 0; i < writeMethodsReflection.Length; i++) {
-                method.Block.AssignRef("value", ArrayAtIndex(Ref("properties"), Constant(i)));
+                block.AssignRef("value", ArrayAtIndex(Ref("properties"), Constant(i)));
 
                 Type targetType = writeMethodsReflection[i].GetParameters()[0].ParameterType;
                 CodegenExpression value;
@@ -131,14 +150,14 @@ namespace com.espertech.esper.common.@internal.@event.bean.manufacturer
 
                 var set = ExprDotMethod(Ref("und"), writeMethodsReflection[i].Name, value);
                 if (primitiveType[i]) {
-                    method.Block.IfRefNotNull("value").Expression(set).BlockEnd();
+                    block.IfRefNotNull("value").Expression(set).BlockEnd();
                 }
                 else {
-                    method.Block.Expression(set);
+                    block.Expression(set);
                 }
             }
 
-            method.Block.MethodReturn(Ref("und"));
+            block.ReturnMethodOrBlock(Ref("und"));
         }
     }
 } // end of namespace

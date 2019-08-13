@@ -23,7 +23,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
 {
     public class SelectExprProcessorUtil
     {
-        public static CodegenExpressionNewAnonymousClass MakeAnonymous(
+        public static CodegenExpression MakeAnonymous(
             SelectExprProcessorForge insertHelper,
             CodegenMethod method,
             CodegenExpressionRef initSvc,
@@ -44,17 +44,25 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
                 }
             };
 
-            var anonymousSelect = NewAnonymousClass(method.Block, typeof(SelectExprProcessor));
-            var processMethod = CodegenMethod.MakeMethod(
-                    typeof(EventBean),
-                    typeof(SelectExprProcessorUtil),
-                    symbolProvider,
-                    classScope)
-                .AddParam(typeof(EventBean[]), NAME_EPS)
-                .AddParam(typeof(bool), ExprForgeCodegenNames.NAME_ISNEWDATA)
-                .AddParam(typeof(bool), SelectExprProcessorCodegenSymbol.NAME_ISSYNTHESIZE)
-                .AddParam(typeof(ExprEvaluatorContext), NAME_EXPREVALCONTEXT);
-            anonymousSelect.AddMethod("Process", processMethod);
+            var processMethod = new CodegenExpressionLambda(method.Block)
+                .WithParam(typeof(EventBean[]), NAME_EPS)
+                .WithParam(typeof(bool), ExprForgeCodegenNames.NAME_ISNEWDATA)
+                .WithParam(typeof(bool), SelectExprProcessorCodegenSymbol.NAME_ISSYNTHESIZE)
+                .WithParam(typeof(ExprEvaluatorContext), NAME_EXPREVALCONTEXT);
+            var anonymousSelect = NewInstance<ProxySelectExprProcessor>(processMethod);
+
+            //var anonymousSelect = NewAnonymousClass(method.Block, typeof(ProxySelectExprProcessor));
+            //var processMethod = CodegenMethod.MakeMethod(
+            //        typeof(EventBean),
+            //        typeof(SelectExprProcessorUtil),
+            //        symbolProvider,
+            //        classScope)
+            //    .AddParam(typeof(EventBean[]), NAME_EPS)
+            //    .AddParam(typeof(bool), ExprForgeCodegenNames.NAME_ISNEWDATA)
+            //    .AddParam(typeof(bool), SelectExprProcessorCodegenSymbol.NAME_ISSYNTHESIZE)
+            //    .AddParam(typeof(ExprEvaluatorContext), NAME_EXPREVALCONTEXT);
+            //anonymousSelect.AddMethod("Process", processMethod);
+
             processMethod.Block.Apply(
                 Instblock(
                     classScope,
@@ -67,11 +75,12 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
             var performMethod = insertHelper.ProcessCodegen(
                 resultType,
                 eventBeanFactory,
-                processMethod,
+                method, //processMethod,
                 selectEnv,
                 exprSymbol,
                 classScope);
-            exprSymbol.DerivedSymbolsCodegen(processMethod, processMethod.Block, classScope);
+            exprSymbol.DerivedSymbolsCodegen(method, processMethod.Block, classScope);
+            //exprSymbol.DerivedSymbolsCodegen(processMethod, processMethod.Block, classScope);
             processMethod.Block
                 .DeclareVar<EventBean>("result", LocalMethod(performMethod))
                 .Apply(
@@ -81,7 +90,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
                         ResultSetProcessorCodegenNames.REF_ISNEWDATA,
                         Ref("result"),
                         ConstantNull()))
-                .MethodReturn(Ref("result"));
+                .BlockReturn(Ref("result"));
 
             return anonymousSelect;
         }

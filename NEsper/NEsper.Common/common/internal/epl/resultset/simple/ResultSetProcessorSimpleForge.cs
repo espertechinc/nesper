@@ -79,21 +79,19 @@ namespace com.espertech.esper.common.@internal.epl.resultset.simple
             CodegenCtor factoryCtor,
             IList<CodegenTypedParam> factoryMembers)
         {
-            instance.Methods.AddMethod(
+            instance.Properties.AddProperty(
                 typeof(bool),
                 "HasHavingClause",
-                new EmptyList<CodegenNamedParam>(),
                 typeof(ResultSetProcessorSimple),
                 classScope,
-                methodNode => methodNode.Block.MethodReturn(Constant(OptionalHavingNode != null)));
+                propertyNode => propertyNode.GetterBlock.BlockReturn(Constant(OptionalHavingNode != null)));
             ResultSetProcessorUtil.EvaluateHavingClauseCodegen(OptionalHavingNode, classScope, instance);
-            instance.Methods.AddMethod(
+            instance.Properties.AddProperty(
                 typeof(ExprEvaluatorContext),
-                "GetAgentInstanceContext",
-                new EmptyList<CodegenNamedParam>(),
+                "AgentInstanceContext",
                 GetType(),
                 classScope,
-                methodNode => methodNode.Block.MethodReturn(REF_AGENTINSTANCECONTEXT));
+                propertyNode => propertyNode.GetterBlock.BlockReturn(REF_AGENTINSTANCECONTEXT));
         }
 
         public void ProcessViewResultCodegen(

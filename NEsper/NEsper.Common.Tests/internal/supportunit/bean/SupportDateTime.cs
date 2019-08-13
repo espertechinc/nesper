@@ -17,22 +17,22 @@ namespace com.espertech.esper.common.@internal.supportunit.bean
     public class SupportDateTime
     {
         public SupportDateTime(
-            long? longdate,
+            long? longDate,
             DateTimeEx dtxDate,
-            DateTimeOffset? offsetDateTime,
+            DateTimeOffset? dtoDate,
             DateTime? dateTime)
         {
-            Longdate = longdate;
+            LongDate = longDate;
             DtxDate = dtxDate;
-            OffsetDateTime = offsetDateTime;
+            DtoDate = dtoDate;
             DateTime = dateTime;
         }
 
-        public long? Longdate { get; }
+        public long? LongDate { get; }
 
         public DateTimeEx DtxDate { get; }
 
-        public DateTimeOffset? OffsetDateTime { get; }
+        public DateTimeOffset? DtoDate { get; }
 
         public DateTime? DateTime { get; }
 

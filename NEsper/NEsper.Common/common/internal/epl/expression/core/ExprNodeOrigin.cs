@@ -212,7 +212,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                     return ("api");
             }
 
-            throw new ArgumentException("invalid value for enumValue", nameof(enumValue));
+            throw new ArgumentException("invalid value for EnumValue", nameof(enumValue));
         }
     }
 } // end of namespace

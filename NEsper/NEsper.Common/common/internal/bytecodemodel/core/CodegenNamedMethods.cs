@@ -54,9 +54,11 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.core
                 methods = new Dictionary<string, CodegenMethod>();
             }
 
+            Console.WriteLine("AddMethodWithSymbols: {0}", methodName);
+
             var existing = methods.Get(methodName);
             if (existing != null) {
-                if (@params.Equals(existing.LocalParams)) {
+                if (ListExtensions.AreEqual(@params, existing.LocalParams)) {
                     return existing;
                 }
 

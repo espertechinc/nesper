@@ -29,10 +29,17 @@ namespace com.espertech.esper.common.client.configuration.common
         {
             TypeName = typeName;
 
-            int lastIndex = typeName.LastIndexOf('.');
+            int lastIndex = typeName.LastIndexOf('+');
             if (lastIndex == -1) {
-                Namespace = null;
-                TypeNameBase = typeName;
+                lastIndex = typeName.LastIndexOf('.');
+                if (lastIndex == -1) {
+                    Namespace = null;
+                    TypeNameBase = typeName;
+                }
+                else {
+                    Namespace = typeName.Substring(0, lastIndex);
+                    TypeNameBase = typeName.Substring(lastIndex + 1);
+                }
             }
             else {
                 Namespace = typeName.Substring(0, lastIndex);

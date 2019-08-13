@@ -163,7 +163,7 @@ namespace NEsper.Avro.Getter
                 .MethodReturn(
                     CodegenExpressionBuilder.StaticMethod(
                         typeof(AvroEventBeanGetterIndexed),
-                        "getAvroIndexedValue",
+                        "GetAvroIndexedValue",
                         CodegenExpressionBuilder.Ref("collection"),
                         CodegenExpressionBuilder.Constant(_index)));
         }

@@ -9,9 +9,6 @@
 using System;
 using System.IO;
 
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
-
 namespace com.espertech.esper.common.client.soda
 {
     /// <summary>
@@ -53,11 +50,14 @@ namespace com.espertech.esper.common.client.soda
         {
             this.notIn = isNotIn;
             this.Children.Add(value);
-            for (int i = 0; i < parameters.Length; i++) {
-                if (parameters[i] is Expression) {
+            for (int i = 0; i < parameters.Length; i++)
+            {
+                if (parameters[i] is Expression)
+                {
                     this.Children.Add((Expression) parameters[i]);
                 }
-                else {
+                else
+                {
                     this.Children.Add(new ConstantExpression(parameters[i]));
                 }
             }
@@ -76,7 +76,8 @@ namespace com.espertech.esper.common.client.soda
         {
             this.notIn = isNotIn;
             this.Children.Add(value);
-            foreach (Expression parameter in parameters) {
+            foreach (Expression parameter in parameters)
+            {
                 this.Children.Add(parameter);
             }
         }
@@ -85,7 +86,8 @@ namespace com.espertech.esper.common.client.soda
         /// Returns true for the not-in expression, or false for an in-expression.
         /// </summary>
         /// <returns>true for not-in</returns>
-        public bool IsNotIn {
+        public bool IsNotIn
+        {
             get => notIn;
         }
 
@@ -93,7 +95,8 @@ namespace com.espertech.esper.common.client.soda
         /// Returns true for the not-in expression, or false for an in-expression.
         /// </summary>
         /// <returns>true for not-in</returns>
-        public bool NotIn {
+        public bool NotIn
+        {
             get => notIn;
         }
 
@@ -139,22 +142,26 @@ namespace com.espertech.esper.common.client.soda
             return this;
         }
 
-        public override ExpressionPrecedenceEnum Precedence {
+        public override ExpressionPrecedenceEnum Precedence
+        {
             get => ExpressionPrecedenceEnum.RELATIONAL_BETWEEN_IN;
         }
 
         public override void ToPrecedenceFreeEPL(TextWriter writer)
         {
             this.Children[0].ToEPL(writer, Precedence);
-            if (notIn) {
+            if (notIn)
+            {
                 writer.Write(" not in (");
             }
-            else {
+            else
+            {
                 writer.Write(" in (");
             }
 
             string delimiter = "";
-            for (int i = 1; i < this.Children.Count; i++) {
+            for (int i = 1; i < this.Children.Count; i++)
+            {
                 writer.Write(delimiter);
                 this.Children[i].ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
                 delimiter = ",";

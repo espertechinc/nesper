@@ -308,280 +308,368 @@ namespace com.espertech.esper.common.@internal.context.module
                 return PublicConstValue(typeof(AuditProviderDefault), "INSTANCE");
             }
 
-            var anonymousClass = NewAnonymousClass(method.Block, typeof(AuditProvider));
+            var auditProviderVar = method.Block.DeclareVar<ProxyAuditProvider>(
+                "auditProvider",
+                NewInstance<ProxyAuditProvider>());
 
-            var activated = CodegenMethod.MakeMethod(typeof(bool), GetType(), classScope);
-            anonymousClass.AddMethod("Activated", activated);
-            activated.Block.MethodReturn(ConstantTrue());
+            //var auditProvider = NewAnonymousClass(method.Block, typeof(ProxyAuditProvider));
 
-            var view = CodegenMethod.MakeMethod(typeof(void), GetType(), classScope)
-                .AddParam(typeof(EventBean[]), "newData")
-                .AddParam(typeof(EventBean[]), "oldData")
-                .AddParam(typeof(AgentInstanceContext), REF_AGENTINSTANCECONTEXT.Ref)
-                .AddParam(typeof(ViewFactory), "viewFactory");
-            anonymousClass.AddMethod("View", view);
-            if (AuditEnum.VIEW.GetAudit(_annotations) != null) {
-                view.Block.StaticMethod(
-                    typeof(AuditPath),
-                    "AuditView",
-                    Ref("newData"),
-                    Ref("oldData"),
-                    REF_AGENTINSTANCECONTEXT,
-                    Ref("viewFactory"));
-            }
+            //var activated = CodegenMethod.MakeMethod(typeof(bool), GetType(), classScope);
+            //auditProvider.AddMethod("Activated", activated);
+            //activated.Block.MethodReturn(ConstantTrue());
 
-            var streamOne = CodegenMethod.MakeMethod(typeof(void), GetType(), classScope)
-                .AddParam(typeof(EventBean), "@event")
-                .AddParam(typeof(ExprEvaluatorContext), REF_EXPREVALCONTEXT.Ref)
-                .AddParam(typeof(string), "filterText");
-            anonymousClass.AddMethod("Stream", streamOne);
-            var streamTwo = CodegenMethod.MakeMethod(typeof(void), GetType(), classScope)
-                .AddParam(typeof(EventBean[]), "newData")
-                .AddParam(typeof(EventBean[]), "oldData")
-                .AddParam(typeof(ExprEvaluatorContext), REF_EXPREVALCONTEXT.Ref)
-                .AddParam(typeof(string), "filterText");
-            anonymousClass.AddMethod("Stream", streamTwo);
-            if (AuditEnum.STREAM.GetAudit(_annotations) != null) {
-                streamOne.Block.StaticMethod(
-                    typeof(AuditPath),
-                    "AuditStream",
-                    Ref("@event"),
-                    REF_EXPREVALCONTEXT,
-                    Ref("filterText"));
-                streamTwo.Block.StaticMethod(
-                    typeof(AuditPath),
-                    "AuditStream",
-                    Ref("newData"),
-                    Ref("oldData"),
-                    REF_EXPREVALCONTEXT,
-                    Ref("filterText"));
-            }
+            method.Block.SetProperty(
+                Ref("auditProvider"),
+                "ProcActivated",
+                new CodegenExpressionLambda(method.Block)
+                    .WithBody(block => block.BlockReturn(ConstantTrue())));
 
-            var scheduleAdd = CodegenMethod.MakeMethod(typeof(void), GetType(), classScope)
-                .AddParam(typeof(long), "time")
-                .AddParam(typeof(AgentInstanceContext), REF_AGENTINSTANCECONTEXT.Ref)
-                .AddParam(typeof(ScheduleHandle), "scheduleHandle")
-                .AddParam(typeof(ScheduleObjectType), "type")
-                .AddParam(typeof(string), "name");
-            var scheduleRemove = CodegenMethod.MakeMethod(typeof(void), GetType(), classScope)
-                .AddParam(typeof(AgentInstanceContext), REF_AGENTINSTANCECONTEXT.Ref)
-                .AddParam(typeof(ScheduleHandle), "scheduleHandle")
-                .AddParam(typeof(ScheduleObjectType), "type")
-                .AddParam(typeof(string), "name");
-            var scheduleFire = CodegenMethod.MakeMethod(typeof(void), GetType(), classScope)
-                .AddParam(typeof(AgentInstanceContext), REF_AGENTINSTANCECONTEXT.Ref)
-                .AddParam(typeof(ScheduleObjectType), "type")
-                .AddParam(typeof(string), "name");
-            anonymousClass.AddMethod("ScheduleAdd", scheduleAdd);
-            anonymousClass.AddMethod("ScheduleRemove", scheduleRemove);
-            anonymousClass.AddMethod("ScheduleFire", scheduleFire);
-            if (AuditEnum.SCHEDULE.GetAudit(_annotations) != null) {
-                scheduleAdd.Block.StaticMethod(
-                    typeof(AuditPath),
-                    "AuditScheduleAdd",
-                    Ref("time"),
-                    REF_AGENTINSTANCECONTEXT,
-                    Ref("scheduleHandle"),
-                    Ref("type"),
-                    Ref("name"));
-                scheduleRemove.Block.StaticMethod(
-                    typeof(AuditPath),
-                    "AuditScheduleRemove",
-                    REF_AGENTINSTANCECONTEXT,
-                    Ref("scheduleHandle"),
-                    Ref("type"),
-                    Ref("name"));
-                scheduleFire.Block.StaticMethod(
-                    typeof(AuditPath),
-                    "AuditScheduleFire",
-                    REF_AGENTINSTANCECONTEXT,
-                    Ref("type"),
-                    Ref("name"));
-            }
+            method.Block.SetProperty(
+                Ref("auditProvider"),
+                "ProcView",
+                new CodegenExpressionLambda(method.Block)
+                    .WithParam<EventBean[]>("newData")
+                    .WithParam<EventBean[]>("oldData")
+                    .WithParam<AgentInstanceContext>(REF_AGENTINSTANCECONTEXT.Ref)
+                    .WithParam<ViewFactory>("viewFactory")
+                    .WithBody(
+                        block => block.StaticMethod(
+                            typeof(AuditPath),
+                            "AuditView",
+                            Ref("newData"),
+                            Ref("oldData"),
+                            REF_AGENTINSTANCECONTEXT,
+                            Ref("viewFactory"))));
 
-            var property = CodegenMethod.MakeMethod(typeof(void), GetType(), classScope)
-                .AddParam(typeof(string), "name")
-                .AddParam(typeof(object), "value")
-                .AddParam(
-                    typeof(ExprEvaluatorContext),
-                    REF_EXPREVALCONTEXT.Ref);
-            anonymousClass.AddMethod("Property", property);
-            if (AuditEnum.PROPERTY.GetAudit(_annotations) != null) {
-                property.Block.StaticMethod(
-                    typeof(AuditPath),
-                    "AuditProperty",
-                    Ref("name"),
-                    Ref("value"),
-                    REF_EXPREVALCONTEXT);
-            }
+            method.Block.SetProperty(
+                Ref("auditProvider"),
+                "ProcStreamSingle",
+                new CodegenExpressionLambda(method.Block)
+                    .WithParam<EventBean>("@event")
+                    .WithParam<ExprEvaluatorContext>(REF_EXPREVALCONTEXT.Ref)
+                    .WithParam<string>("filterText")
+                    .WithBody(
+                        block => {
+                            if (AuditEnum.STREAM.GetAudit(_annotations) != null) {
+                                block.StaticMethod(
+                                    typeof(AuditPath),
+                                    "AuditStream",
+                                    Ref("@event"),
+                                    REF_EXPREVALCONTEXT,
+                                    Ref("filterText"));
+                            }
+                        }));
 
-            var insert = CodegenMethod.MakeMethod(typeof(void), GetType(), classScope)
-                .AddParam(typeof(EventBean), "@event")
-                .AddParam(typeof(ExprEvaluatorContext), REF_EXPREVALCONTEXT.Ref);
-            anonymousClass.AddMethod("insert", insert);
-            if (AuditEnum.INSERT.GetAudit(_annotations) != null) {
-                insert.Block.StaticMethod(typeof(AuditPath), "AuditInsert", Ref("@event"), REF_EXPREVALCONTEXT);
-            }
+            method.Block.SetProperty(
+                Ref("auditProvider"),
+                "ProcStreamMulti",
+                new CodegenExpressionLambda(method.Block)
+                    .WithParam<EventBean[]>("newData")
+                    .WithParam<EventBean[]>("oldData")
+                    .WithParam<ExprEvaluatorContext>(REF_EXPREVALCONTEXT.Ref)
+                    .WithParam<string>("filterText")
+                    .WithBody(
+                        block => {
+                            if (AuditEnum.STREAM.GetAudit(_annotations) != null) {
+                                block.StaticMethod(
+                                    typeof(AuditPath),
+                                    "AuditStream",
+                                    Ref("newData"),
+                                    Ref("oldData"),
+                                    REF_EXPREVALCONTEXT,
+                                    Ref("filterText"));
+                            }
+                        }
+                    ));
 
-            var expression = CodegenMethod.MakeMethod(typeof(void), GetType(), classScope)
-                .AddParam(typeof(string), "text")
-                .AddParam(typeof(object), "value")
-                .AddParam(
-                    typeof(ExprEvaluatorContext),
-                    REF_EXPREVALCONTEXT.Ref);
-            anonymousClass.AddMethod("Expression", expression);
-            if (AuditEnum.EXPRESSION.GetAudit(_annotations) != null ||
-                AuditEnum.EXPRESSION_NESTED.GetAudit(_annotations) != null) {
-                expression.Block.StaticMethod(
-                    typeof(AuditPath),
-                    "AuditExpression",
-                    Ref("text"),
-                    Ref("value"),
-                    REF_EXPREVALCONTEXT);
-            }
+            method.Block.SetProperty(
+                Ref("auditProvider"),
+                "ProcScheduleAdd",
+                new CodegenExpressionLambda(method.Block)
+                    .WithParam<long>("time")
+                    .WithParam<AgentInstanceContext>(REF_AGENTINSTANCECONTEXT.Ref)
+                    .WithParam<ScheduleHandle>("scheduleHandle")
+                    .WithParam<ScheduleObjectType>("type")
+                    .WithParam<string>("name")
+                    .WithBody(
+                        block => {
+                            if (AuditEnum.SCHEDULE.GetAudit(_annotations) != null) {
+                                block.StaticMethod(
+                                    typeof(AuditPath),
+                                    "AuditScheduleAdd",
+                                    Ref("time"),
+                                    REF_AGENTINSTANCECONTEXT,
+                                    Ref("scheduleHandle"),
+                                    Ref("type"),
+                                    Ref("name"));
+                            }
+                        }));
 
-            var patternTrue = CodegenMethod.MakeMethod(typeof(void), GetType(), classScope)
-                .AddParam(typeof(EvalFactoryNode), "factoryNode")
-                .AddParam(typeof(object), "from")
-                .AddParam(typeof(MatchedEventMapMinimal), "matchEvent")
-                .AddParam(typeof(bool), "isQuitted")
-                .AddParam(
-                    typeof(AgentInstanceContext),
-                    NAME_AGENTINSTANCECONTEXT);
-            var patternFalse = CodegenMethod.MakeMethod(typeof(void), GetType(), classScope)
-                .AddParam(typeof(EvalFactoryNode), "factoryNode")
-                .AddParam(typeof(object), "from")
-                .AddParam(
-                    typeof(AgentInstanceContext),
-                    NAME_AGENTINSTANCECONTEXT);
-            anonymousClass.AddMethod("PatternTrue", patternTrue);
-            anonymousClass.AddMethod("PatternFalse", patternFalse);
-            if (AuditEnum.PATTERN.GetAudit(_annotations) != null) {
-                patternTrue.Block.StaticMethod(
-                    typeof(AuditPath),
-                    "AuditPatternTrue",
-                    Ref("factoryNode"),
-                    Ref("from"),
-                    Ref("matchEvent"),
-                    Ref("isQuitted"),
-                    REF_AGENTINSTANCECONTEXT);
-                patternFalse.Block.StaticMethod(
-                    typeof(AuditPath),
-                    "AuditPatternFalse",
-                    Ref("factoryNode"),
-                    Ref("from"),
-                    REF_AGENTINSTANCECONTEXT);
-            }
+            method.Block.SetProperty(
+                Ref("auditProvider"),
+                "ProcScheduleRemove",
+                new CodegenExpressionLambda(method.Block)
+                    .WithParam<AgentInstanceContext>(REF_AGENTINSTANCECONTEXT.Ref)
+                    .WithParam<ScheduleHandle>("scheduleHandle")
+                    .WithParam<ScheduleObjectType>("type")
+                    .WithParam<string>("name")
+                    .WithBody(
+                        block => {
+                            if (AuditEnum.SCHEDULE.GetAudit(_annotations) != null) {
+                                block.StaticMethod(
+                                    typeof(AuditPath),
+                                    "AuditScheduleRemove",
+                                    REF_AGENTINSTANCECONTEXT,
+                                    Ref("scheduleHandle"),
+                                    Ref("type"),
+                                    Ref("name"));
+                            }
+                        }));
 
-            var patternInstance = CodegenMethod.MakeMethod(typeof(void), GetType(), classScope)
-                .AddParam(typeof(bool), "increase")
-                .AddParam(typeof(EvalFactoryNode), "factoryNode")
-                .AddParam(
-                    typeof(AgentInstanceContext),
-                    NAME_AGENTINSTANCECONTEXT);
-            anonymousClass.AddMethod("PatternInstance", patternInstance);
-            if (AuditEnum.PATTERNINSTANCES.GetAudit(_annotations) != null) {
-                patternInstance.Block.StaticMethod(
-                    typeof(AuditPath),
-                    "AuditPatternInstance",
-                    Ref("increase"),
-                    Ref("factoryNode"),
-                    REF_AGENTINSTANCECONTEXT);
-            }
+            method.Block.SetProperty(
+                Ref("auditProvider"),
+                "ProcScheduleFire",
+                new CodegenExpressionLambda(method.Block)
+                    .WithParam<AgentInstanceContext>(REF_AGENTINSTANCECONTEXT.Ref)
+                    .WithParam<ScheduleObjectType>("type")
+                    .WithParam<string>("name")
+                    .WithBody(
+                        block => {
+                            if (AuditEnum.SCHEDULE.GetAudit(_annotations) != null) {
+                                block.StaticMethod(
+                                    typeof(AuditPath),
+                                    "AuditScheduleFire",
+                                    REF_AGENTINSTANCECONTEXT,
+                                    Ref("type"),
+                                    Ref("name"));
+                            }
+                        }));
 
-            var exprdef = CodegenMethod.MakeMethod(typeof(void), GetType(), classScope)
-                .AddParam(typeof(string), "name")
-                .AddParam(typeof(object), "value")
-                .AddParam(
-                    typeof(ExprEvaluatorContext),
-                    REF_EXPREVALCONTEXT.Ref);
-            anonymousClass.AddMethod("Exprdef", exprdef);
-            if (AuditEnum.EXPRDEF.GetAudit(_annotations) != null) {
-                exprdef.Block.StaticMethod(
-                    typeof(AuditPath),
-                    "AuditExprDef",
-                    Ref("name"),
-                    Ref("value"),
-                    REF_EXPREVALCONTEXT);
-            }
+            method.Block.SetProperty(
+                Ref("auditProvider"),
+                "ProcProperty",
+                new CodegenExpressionLambda(method.Block)
+                    .WithParam<string>("name")
+                    .WithParam<object>("value")
+                    .WithParam<ExprEvaluatorContext>(REF_EXPREVALCONTEXT.Ref)
+                    .WithBody(
+                        block => {
+                            if (AuditEnum.PROPERTY.GetAudit(_annotations) != null) {
+                                block.StaticMethod(
+                                    typeof(AuditPath),
+                                    "AuditProperty",
+                                    Ref("name"),
+                                    Ref("value"),
+                                    REF_EXPREVALCONTEXT);
+                            }
+                        }));
 
-            var dataflowTransition = CodegenMethod.MakeMethod(typeof(void), GetType(), classScope)
-                .AddParam(typeof(string), "name")
-                .AddParam(typeof(string), "instance")
-                .AddParam(typeof(EPDataFlowState), "state")
-                .AddParam(typeof(EPDataFlowState), "newState")
-                .AddParam(
-                    typeof(AgentInstanceContext),
-                    REF_AGENTINSTANCECONTEXT.Ref);
-            anonymousClass.AddMethod("DataflowTransition", dataflowTransition);
-            if (AuditEnum.DATAFLOW_TRANSITION.GetAudit(_annotations) != null) {
-                dataflowTransition.Block.StaticMethod(
-                    typeof(AuditPath),
-                    "AuditDataflowTransition",
-                    Ref("name"),
-                    Ref("instance"),
-                    Ref("state"),
-                    Ref("newState"),
-                    REF_AGENTINSTANCECONTEXT);
-            }
+            method.Block.SetProperty(
+                Ref("auditProvider"),
+                "ProcInsert",
+                new CodegenExpressionLambda(method.Block)
+                    .WithParam<EventBean>("@event")
+                    .WithParam<ExprEvaluatorContext>(REF_EXPREVALCONTEXT.Ref)
+                    .WithBody(
+                        block => {
+                            if (AuditEnum.INSERT.GetAudit(_annotations) != null) {
+                                block.StaticMethod(
+                                    typeof(AuditPath),
+                                    "AuditInsert",
+                                    Ref("@event"),
+                                    REF_EXPREVALCONTEXT);
+                            }
+                        }));
 
-            var dataflowSource = CodegenMethod.MakeMethod(typeof(void), GetType(), classScope)
-                .AddParam(typeof(string), "name")
-                .AddParam(typeof(string), "instance")
-                .AddParam(typeof(string), "operatorName")
-                .AddParam(typeof(int), "operatorNum")
-                .AddParam(
-                    typeof(AgentInstanceContext),
-                    REF_AGENTINSTANCECONTEXT.Ref);
-            anonymousClass.AddMethod("DataflowSource", dataflowSource);
-            if (AuditEnum.DATAFLOW_SOURCE.GetAudit(_annotations) != null) {
-                dataflowSource.Block.StaticMethod(
-                    typeof(AuditPath),
-                    "AuditDataflowSource",
-                    Ref("name"),
-                    Ref("instance"),
-                    Ref("operatorName"),
-                    Ref("operatorNum"),
-                    REF_AGENTINSTANCECONTEXT);
-            }
+            method.Block.SetProperty(
+                Ref("auditProvider"),
+                "ProcExpression",
+                new CodegenExpressionLambda(method.Block)
+                    .WithParam<string>("text")
+                    .WithParam<object>("value")
+                    .WithParam<ExprEvaluatorContext>(REF_EXPREVALCONTEXT.Ref)
+                    .WithBody(
+                        block => {
+                            if (AuditEnum.EXPRESSION.GetAudit(_annotations) != null ||
+                                AuditEnum.EXPRESSION_NESTED.GetAudit(_annotations) != null) {
+                                block.StaticMethod(
+                                    typeof(AuditPath),
+                                    "AuditExpression",
+                                    Ref("text"),
+                                    Ref("value"),
+                                    REF_EXPREVALCONTEXT);
+                            }
+                        }));
 
-            var dataflowOp = CodegenMethod.MakeMethod(typeof(void), GetType(), classScope)
-                .AddParam(typeof(string), "name")
-                .AddParam(typeof(string), "instance")
-                .AddParam(typeof(string), "operatorName")
-                .AddParam(typeof(int), "operatorNum")
-                .AddParam(typeof(object[]), "parameters")
-                .AddParam(
-                    typeof(AgentInstanceContext),
-                    REF_AGENTINSTANCECONTEXT.Ref);
-            anonymousClass.AddMethod("DataflowOp", dataflowOp);
-            if (AuditEnum.DATAFLOW_OP.GetAudit(_annotations) != null) {
-                dataflowOp.Block.StaticMethod(
-                    typeof(AuditPath),
-                    "AuditDataflowOp",
-                    Ref("name"),
-                    Ref("instance"),
-                    Ref("operatorName"),
-                    Ref("operatorNum"),
-                    Ref("parameters"),
-                    REF_AGENTINSTANCECONTEXT);
-            }
+            method.Block.SetProperty(
+                Ref("auditProvider"),
+                "ProcPatternTrue",
+                new CodegenExpressionLambda(method.Block)
+                    .WithParam<EvalFactoryNode>("factoryNode")
+                    .WithParam<object>("from")
+                    .WithParam<MatchedEventMapMinimal>("matchEvent")
+                    .WithParam<bool>("isQuitted")
+                    .WithParam<AgentInstanceContext>(NAME_AGENTINSTANCECONTEXT)
+                    .WithBody(
+                        block => {
+                            if (AuditEnum.PATTERN.GetAudit(_annotations) != null) {
+                                block.StaticMethod(
+                                    typeof(AuditPath),
+                                    "AuditPatternTrue",
+                                    Ref("factoryNode"),
+                                    Ref("from"),
+                                    Ref("matchEvent"),
+                                    Ref("isQuitted"),
+                                    REF_AGENTINSTANCECONTEXT);
+                            }
+                        }));
 
-            var contextPartition = CodegenMethod.MakeMethod(typeof(void), GetType(), classScope)
-                .AddParam(typeof(bool), "allocate")
-                .AddParam(
-                    typeof(AgentInstanceContext),
-                    REF_AGENTINSTANCECONTEXT.Ref);
-            anonymousClass.AddMethod("contextPartition", contextPartition);
-            if (AuditEnum.CONTEXTPARTITION.GetAudit(_annotations) != null) {
-                contextPartition.Block.StaticMethod(
-                    typeof(AuditPath),
-                    "AuditContextPartition",
-                    Ref("allocate"),
-                    REF_AGENTINSTANCECONTEXT);
-            }
+            method.Block.SetProperty(
+                Ref("auditProvider"),
+                "ProcPatternFalse",
+                new CodegenExpressionLambda(method.Block)
+                    .WithParam<EvalFactoryNode>("factoryNode")
+                    .WithParam<object>("from")
+                    .WithParam<AgentInstanceContext>(NAME_AGENTINSTANCECONTEXT)
+                    .WithBody(
+                        block => {
+                            if (AuditEnum.PATTERN.GetAudit(_annotations) != null) {
+                                block.StaticMethod(
+                                    typeof(AuditPath),
+                                    "AuditPatternFalse",
+                                    Ref("factoryNode"),
+                                    Ref("from"),
+                                    REF_AGENTINSTANCECONTEXT);
+                            }
+                        }));
 
-            return anonymousClass;
+            method.Block.SetProperty(
+                Ref("auditProvider"),
+                "ProcPatternInstance",
+                new CodegenExpressionLambda(method.Block)
+                    .WithParam<bool>("increase")
+                    .WithParam<EvalFactoryNode>("factoryNode")
+                    .WithParam<AgentInstanceContext>(NAME_AGENTINSTANCECONTEXT)
+                    .WithBody(
+                        block => {
+                            if (AuditEnum.PATTERNINSTANCES.GetAudit(_annotations) != null) {
+                                block.StaticMethod(
+                                    typeof(AuditPath),
+                                    "AuditPatternInstance",
+                                    Ref("increase"),
+                                    Ref("factoryNode"),
+                                    REF_AGENTINSTANCECONTEXT);
+                            }
+                        }));
+
+            method.Block.SetProperty(
+                Ref("auditProvider"),
+                "ProcExprdef",
+                new CodegenExpressionLambda(method.Block)
+                    .WithParam<string>("name")
+                    .WithParam<object>("value")
+                    .WithParam<ExprEvaluatorContext>(REF_EXPREVALCONTEXT.Ref)
+                    .WithBody(
+                        block => {
+                            if (AuditEnum.EXPRDEF.GetAudit(_annotations) != null) {
+                                block.StaticMethod(
+                                    typeof(AuditPath),
+                                    "AuditExprDef",
+                                    Ref("name"),
+                                    Ref("value"),
+                                    REF_EXPREVALCONTEXT);
+                            }
+                        }));
+
+            method.Block.SetProperty(
+                Ref("auditProvider"),
+                "ProcDataflowTransition",
+                new CodegenExpressionLambda(method.Block)
+                    .WithParam<string>("name")
+                    .WithParam<string>("instance")
+                    .WithParam<EPDataFlowState>("state")
+                    .WithParam<EPDataFlowState>("newState")
+                    .WithParam<AgentInstanceContext>(REF_AGENTINSTANCECONTEXT.Ref)
+                    .WithBody(
+                        block => {
+                            if (AuditEnum.DATAFLOW_TRANSITION.GetAudit(_annotations) != null) {
+                                block.StaticMethod(
+                                    typeof(AuditPath),
+                                    "AuditDataflowTransition",
+                                    Ref("name"),
+                                    Ref("instance"),
+                                    Ref("state"),
+                                    Ref("newState"),
+                                    REF_AGENTINSTANCECONTEXT);
+                            }
+                        }));
+
+            method.Block.SetProperty(
+                Ref("auditProvider"),
+                "ProcDataflowSource",
+                new CodegenExpressionLambda(method.Block)
+                    .WithParam<string>("name")
+                    .WithParam<string>("instance")
+                    .WithParam<string>("operatorName")
+                    .WithParam<int>("operatorNum")
+                    .WithParam<AgentInstanceContext>(REF_AGENTINSTANCECONTEXT.Ref)
+                    .WithBody(
+                        block => {
+                            if (AuditEnum.DATAFLOW_SOURCE.GetAudit(_annotations) != null) {
+                                block.StaticMethod(
+                                    typeof(AuditPath),
+                                    "AuditDataflowSource",
+                                    Ref("name"),
+                                    Ref("instance"),
+                                    Ref("operatorName"),
+                                    Ref("operatorNum"),
+                                    REF_AGENTINSTANCECONTEXT);
+                            }
+                        }));
+
+            method.Block.SetProperty(
+                Ref("auditProvider"),
+                "ProcDataflowOp",
+                new CodegenExpressionLambda(method.Block)
+                    .WithParam<string>("name")
+                    .WithParam<string>("instance")
+                    .WithParam<string>("operatorName")
+                    .WithParam<int>("operatorNum")
+                    .WithParam<object[]>("parameters")
+                    .WithParam<AgentInstanceContext>(REF_AGENTINSTANCECONTEXT.Ref)
+                    .WithBody(
+                        block => {
+                            if (AuditEnum.DATAFLOW_OP.GetAudit(_annotations) != null) {
+                                block.StaticMethod(
+                                    typeof(AuditPath),
+                                    "AuditDataflowOp",
+                                    Ref("name"),
+                                    Ref("instance"),
+                                    Ref("operatorName"),
+                                    Ref("operatorNum"),
+                                    Ref("parameters"),
+                                    REF_AGENTINSTANCECONTEXT);
+                            }
+                        }));
+
+            method.Block.SetProperty(
+                Ref("auditProvider"),
+                "ProcContextPartition",
+                new CodegenExpressionLambda(method.Block)
+                    .WithParam<bool>("allocate")
+                    .WithParam<AgentInstanceContext>(REF_AGENTINSTANCECONTEXT.Ref)
+                    .WithBody(
+                        block => {
+                            if (AuditEnum.CONTEXTPARTITION.GetAudit(_annotations) != null) {
+                                block.StaticMethod(
+                                    typeof(AuditPath),
+                                    "AuditContextPartition",
+                                    Ref("allocate"),
+                                    REF_AGENTINSTANCECONTEXT);
+                            }
+                        }));
+
+            return Ref("auditProvider");
         }
 
         private CodegenExpression MakeProperties(
@@ -614,7 +702,7 @@ namespace com.espertech.esper.common.@internal.context.module
                     NewInstance(typeof(Dictionary<StatementProperty, object>)));
             foreach (var entry in properties) {
                 method.Block.ExprDotMethod(
-                    Ref("properties"),
+                    Ref("Properties"),
                     "Put",
                     field.Invoke(entry.Key),
                     value.Invoke(entry.Value));

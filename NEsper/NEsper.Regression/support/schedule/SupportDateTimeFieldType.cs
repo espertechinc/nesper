@@ -17,16 +17,20 @@ namespace com.espertech.esper.regressionlib.support.schedule
     {
         MSEC,
         DATE,
-        CAL
+        DATETIMEOFFSET,
+        DATETIMEEX
     }
 
     public static class SupportDateTimeFieldTypeExtensions
     {
-        public static string GetDateTimeFieldType(this SupportDateTimeFieldType enumValue)
+        public static string GetFieldType(this SupportDateTimeFieldType enumValue)
         {
             switch (enumValue) {
-                case SupportDateTimeFieldType.CAL:
+                case SupportDateTimeFieldType.DATETIMEEX:
                     return typeof(DateTimeEx).FullName;
+
+                case SupportDateTimeFieldType.DATETIMEOFFSET:
+                    return typeof(DateTimeOffset).FullName;
 
                 case SupportDateTimeFieldType.DATE:
                     return typeof(DateTime).FullName;
@@ -42,8 +46,11 @@ namespace com.espertech.esper.regressionlib.support.schedule
         public static Func<SupportTimeStartEndA, object> GetEndDateTimeProvider(this SupportDateTimeFieldType enumValue)
         {
             switch (enumValue) {
-                case SupportDateTimeFieldType.CAL:
-                    return input => input.CaldateEnd;
+                case SupportDateTimeFieldType.DATETIMEEX:
+                    return input => input.DateTimeExEnd;
+
+                case SupportDateTimeFieldType.DATETIMEOFFSET:
+                    return input => input.DateTimeExEnd.DateTime;
 
                 case SupportDateTimeFieldType.DATE:
                     return input => input.UtildateEnd;

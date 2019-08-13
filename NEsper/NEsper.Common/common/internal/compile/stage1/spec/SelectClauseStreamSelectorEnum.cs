@@ -11,32 +11,34 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
     /// <summary>
     ///     Enumeration for representing select-clause selection of the remove stream or the insert stream, or both.
     /// </summary>
-    public class SelectClauseStreamSelectorEnum
+    public enum SelectClauseStreamSelectorEnum
     {
         /// <summary>
         ///     Indicates selection of the remove stream only.
         /// </summary>
-        public static readonly SelectClauseStreamSelectorEnum RSTREAM_ONLY =
-            new SelectClauseStreamSelectorEnum();
+        RSTREAM_ONLY,
 
         /// <summary>
         ///     Indicates selection of the insert stream only.
         /// </summary>
-        public static readonly SelectClauseStreamSelectorEnum ISTREAM_ONLY =
-            new SelectClauseStreamSelectorEnum();
+        ISTREAM_ONLY,
 
         /// <summary>
         ///     Indicates selection of both the insert and the remove stream.
         /// </summary>
-        public static readonly SelectClauseStreamSelectorEnum RSTREAM_ISTREAM_BOTH =
-            new SelectClauseStreamSelectorEnum();
+        RSTREAM_ISTREAM_BOTH
+    }
 
-        private SelectClauseStreamSelectorEnum()
+    public static class SelectClauseStreamSelectorEnumExtensions
+    {
+        public static bool IsSelectsRStream(this SelectClauseStreamSelectorEnum value)
         {
+            return value != SelectClauseStreamSelectorEnum.ISTREAM_ONLY;
         }
 
-        public bool IsSelectsRStream => this != ISTREAM_ONLY;
-
-        public bool IsSelectsIStream => this != RSTREAM_ONLY;
+        public static bool IsSelectsIStream(this SelectClauseStreamSelectorEnum value)
+        {
+            return value != SelectClauseStreamSelectorEnum.RSTREAM_ONLY;
+        }
     }
 } // end of namespace

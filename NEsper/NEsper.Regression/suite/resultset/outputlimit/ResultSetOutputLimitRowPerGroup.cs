@@ -191,7 +191,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
             RegressionEnvironment env,
             string statementText)
         {
-            var fields = "theString,value".SplitCsv();
+            var fields = "TheString,value".SplitCsv();
             var epl = "create window MyWindow#keepall as SupportBean;\n" +
                       "insert into MyWindow select * from SupportBean;\n" +
                       "on SupportMarketDataBean md delete from MyWindow mw where mw.IntPrimitive = md.Price;\n" +
@@ -988,7 +988,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
             public void Run(RegressionEnvironment env)
             {
                 SendTimer(env, 0);
-                var fields = "theString,value".SplitCsv();
+                var fields = "TheString,value".SplitCsv();
                 var epl = "create window MyWindow#keepall as SupportBean;\n" +
                           "insert into MyWindow select * from SupportBean;\n" +
                           "on SupportMarketDataBean md delete from MyWindow mw where mw.IntPrimitive = md.Price;\n" +
@@ -1044,7 +1044,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "theString,value".SplitCsv();
+                var fields = "TheString,value".SplitCsv();
                 var epl = "create window MyWindow#keepall as SupportBean;\n" +
                           "insert into MyWindow select * from SupportBean;\n" +
                           "on SupportMarketDataBean md delete from MyWindow mw where mw.IntPrimitive = md.Price;\n" +
@@ -1083,7 +1083,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "theString,value".SplitCsv();
+                var fields = "TheString,value".SplitCsv();
                 var path = new RegressionPath();
                 var epl = "create window MyWindow#keepall as SupportBean;\n" +
                           "insert into MyWindow select * from SupportBean;\n" +

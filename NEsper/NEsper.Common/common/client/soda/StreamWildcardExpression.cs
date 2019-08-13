@@ -9,9 +9,6 @@
 using System;
 using System.IO;
 
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
-
 namespace com.espertech.esper.common.client.soda
 {
     /// <summary>
@@ -42,7 +39,8 @@ namespace com.espertech.esper.common.client.soda
         /// Returns the stream name.
         /// </summary>
         /// <returns>stream name</returns>
-        public string StreamName {
+        public string StreamName
+        {
             get => streamName;
         }
 
@@ -61,7 +59,8 @@ namespace com.espertech.esper.common.client.soda
             writer.Write(".*");
         }
 
-        public override ExpressionPrecedenceEnum Precedence {
+        public override ExpressionPrecedenceEnum Precedence
+        {
             get => ExpressionPrecedenceEnum.UNARY;
         }
     }

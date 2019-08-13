@@ -49,7 +49,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
 
         private static void TryAssertionVariable(RegressionEnvironment env)
         {
-            var fields = "TheString".SplitCsv();
+            var fields = new [] { "TheString" };
 
             EPAssertionUtil.AssertPropsPerRow(env.Statement("s0").GetEnumerator(), fields, null);
 
@@ -201,7 +201,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
 
         private static void TryAssertion(RegressionEnvironment env)
         {
-            var fields = "TheString".SplitCsv();
+            var fields = new [] { "TheString" };
 
             SendEvent(env, "E1", 1);
             EPAssertionUtil.AssertPropsPerRow(
@@ -268,7 +268,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
             env.SendEventBean(new SupportBean_S1(0));
             EPAssertionUtil.AssertProps(
                 env.Listener("s0").AssertOneGetNewAndReset(),
-                "TheString".SplitCsv(),
+                new [] { "TheString" },
                 new object[] {expected});
         }
 
@@ -286,7 +286,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
             env.SendEventBean(new SupportBean_S1(0));
             EPAssertionUtil.AssertProps(
                 env.Listener("s0").AssertOneGetNewAndReset(),
-                "theString,IntPrimitive".SplitCsv(),
+                new [] { "TheString","IntPrimitive" },
                 new object[] {expectedString, expectedInt});
         }
 
@@ -391,7 +391,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
                 var path = new RegressionPath();
                 env.CompileDeploy("create variable int myrows = 2", path);
                 env.CompileDeploy("create variable int myoffset = 1", path);
-                env.CompileDeploy("on SupportBeanNumeric set myrows = intOne, myoffset = intTwo", path);
+                env.CompileDeploy("on SupportBeanNumeric set myrows = IntOne, myoffset = intTwo", path);
 
                 string epl;
 
@@ -425,7 +425,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
                     "@Name('s0') select * from SupportBean#length(5) output every 5 events order by IntPrimitive limit 2 offset 2";
                 env.CompileDeploy(epl).AddListener("s0");
 
-                var fields = "TheString".SplitCsv();
+                var fields = new [] { "TheString" };
 
                 EPAssertionUtil.AssertPropsPerRow(env.Statement("s0").GetEnumerator(), fields, null);
 
@@ -496,7 +496,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
                     "@Name('s0') select TheString, sum(IntPrimitive) as mysum from SupportBean#length(5) group by TheString order by sum(IntPrimitive) limit 2";
                 env.CompileDeploy(epl).AddListener("s0");
 
-                var fields = "theString,mysum".SplitCsv();
+                var fields = "TheString,mysum".SplitCsv();
 
                 EPAssertionUtil.AssertPropsPerRow(env.Statement("s0").GetEnumerator(), fields, null);
 
@@ -543,7 +543,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
                     "@Name('s0') select TheString, sum(IntPrimitive) as mysum from SupportBean#length(5) output every 10 seconds order by TheString desc limit 2";
                 env.CompileDeploy(epl).AddListener("s0");
 
-                var fields = "theString,mysum".SplitCsv();
+                var fields = "TheString,mysum".SplitCsv();
 
                 EPAssertionUtil.AssertPropsPerRow(env.Statement("s0").GetEnumerator(), fields, null);
 
@@ -571,7 +571,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
                     "@Name('s0') select TheString, sum(IntPrimitive) as mysum from SupportBean#length(5) group by TheString output snapshot every 10 seconds order by sum(IntPrimitive) desc limit 2";
                 env.CompileDeploy(epl).AddListener("s0");
 
-                var fields = "theString,mysum".SplitCsv();
+                var fields = "TheString,mysum".SplitCsv();
 
                 EPAssertionUtil.AssertPropsPerRow(env.Statement("s0").GetEnumerator(), fields, null);
 
@@ -599,7 +599,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
                     "@Name('s0') select TheString, sum(IntPrimitive) as mysum from SupportBean#length(5) group by TheString output snapshot every 10 seconds order by sum(IntPrimitive) desc limit -1 offset 1";
                 env.CompileDeploy(epl).AddListener("s0");
 
-                var fields = "theString,mysum".SplitCsv();
+                var fields = "TheString,mysum".SplitCsv();
 
                 EPAssertionUtil.AssertPropsPerRow(env.Statement("s0").GetEnumerator(), fields, null);
 

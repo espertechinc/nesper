@@ -87,7 +87,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 env.SendEventBean(new SupportBean_S0(-1)); // terminated
                 EPAssertionUtil.AssertPropsPerRowAnyOrder(
                     env.Listener("s0").GetAndResetLastNewData(),
-                    "c0,c1".SplitCsv(),
+                    new [] { "c0", "c1" },
                     new[] {
                         new object[] {"E1", 110},
                         new object[] {"E2", 20}
@@ -105,7 +105,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 env.SendEventBean(new SupportBean_S0(-1)); // terminated
                 EPAssertionUtil.AssertPropsPerRowAnyOrder(
                     env.Listener("s0").GetAndResetLastNewData(),
-                    "c0,c1".SplitCsv(),
+                    new [] { "c0", "c1" },
                     new[] {
                         new object[] {"E1", 30},
                         new object[] {"E3", 100}

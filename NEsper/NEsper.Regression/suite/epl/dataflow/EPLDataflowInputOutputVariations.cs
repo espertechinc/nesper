@@ -53,23 +53,23 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                           "create objectarray schema SchemaOne (p1 string),\n" +
                           "\n" +
                           "BeaconSource -> InStream<SchemaOne> {p1:'A1', iterations:1}\n" +
-                          "Select(InStream) -> out_1 { select: (select p1 from InStream) }\n" +
-                          "Select(out_1) -> out_2 { select: (select p1 from out_1) }\n" +
-                          "Select(out_2) -> out_3 { select: (select p1 from out_2) }\n" +
-                          "Select(out_3) -> out_4 { select: (select p1 from out_3) }\n" +
-                          "Select(out_4) -> out_5 { select: (select p1 from out_4) }\n" +
-                          "Select(out_5) -> out_6 { select: (select p1 from out_5) }\n" +
-                          "Select(out_6) -> out_7 { select: (select p1 from out_6) }\n" +
-                          "Select(out_7) -> out_8 { select: (select p1 from out_7) }\n" +
-                          "Select(out_8) -> out_9 { select: (select p1 from out_8) }\n" +
-                          "Select(out_9) -> out_10 { select: (select p1 from out_9) }\n" +
-                          "Select(out_10) -> out_11 { select: (select p1 from out_10) }\n" +
-                          "Select(out_11) -> out_12 { select: (select p1 from out_11) }\n" +
-                          "Select(out_12) -> out_13 { select: (select p1 from out_12) }\n" +
-                          "Select(out_13) -> out_14 { select: (select p1 from out_13) }\n" +
-                          "Select(out_14) -> out_15 { select: (select p1 from out_14) }\n" +
-                          "Select(out_15) -> out_16 { select: (select p1 from out_15) }\n" +
-                          "Select(out_16) -> out_17 { select: (select p1 from out_16) }\n" +
+                          "select(InStream) -> out_1 { select: (select p1 from InStream) }\n" +
+                          "select(out_1) -> out_2 { select: (select p1 from out_1) }\n" +
+                          "select(out_2) -> out_3 { select: (select p1 from out_2) }\n" +
+                          "select(out_3) -> out_4 { select: (select p1 from out_3) }\n" +
+                          "select(out_4) -> out_5 { select: (select p1 from out_4) }\n" +
+                          "select(out_5) -> out_6 { select: (select p1 from out_5) }\n" +
+                          "select(out_6) -> out_7 { select: (select p1 from out_6) }\n" +
+                          "select(out_7) -> out_8 { select: (select p1 from out_7) }\n" +
+                          "select(out_8) -> out_9 { select: (select p1 from out_8) }\n" +
+                          "select(out_9) -> out_10 { select: (select p1 from out_9) }\n" +
+                          "select(out_10) -> out_11 { select: (select p1 from out_10) }\n" +
+                          "select(out_11) -> out_12 { select: (select p1 from out_11) }\n" +
+                          "select(out_12) -> out_13 { select: (select p1 from out_12) }\n" +
+                          "select(out_13) -> out_14 { select: (select p1 from out_13) }\n" +
+                          "select(out_14) -> out_15 { select: (select p1 from out_14) }\n" +
+                          "select(out_15) -> out_16 { select: (select p1 from out_15) }\n" +
+                          "select(out_16) -> out_17 { select: (select p1 from out_16) }\n" +
                           "\n" +
                           "DefaultSupportCaptureOp(out_17) {}\n";
                 env.CompileDeploy(epl);

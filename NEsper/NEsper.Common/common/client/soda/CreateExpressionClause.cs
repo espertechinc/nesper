@@ -51,10 +51,12 @@ namespace com.espertech.esper.common.client.soda
         public void ToEPL(TextWriter writer)
         {
             writer.Write("create ");
-            if (ExpressionDeclaration != null) {
+            if (ExpressionDeclaration != null)
+            {
                 ExpressionDeclaration.ToEPL(writer);
             }
-            else {
+            else
+            {
                 ScriptExpression.ToEPL(writer);
             }
         }

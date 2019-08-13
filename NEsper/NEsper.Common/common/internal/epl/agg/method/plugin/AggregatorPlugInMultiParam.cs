@@ -44,7 +44,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.plugin
                 injectionStrategy.GetInitializationExpression(classScope));
 
             plugin = membersColumnized.AddMember(col, typeof(AggregationFunction), "plugin");
-            rowCtor.Block.AssignRef(plugin, ExprDotMethod(factoryField, "newAggregator", ConstantNull()));
+            rowCtor.Block.AssignRef(plugin, ExprDotMethod(factoryField, "NewAggregator", ConstantNull()));
         }
 
         public void ApplyEvalEnterCodegen(
@@ -152,7 +152,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.plugin
                 expression = Ref("parameters");
             }
 
-            method.Block.ExprDotMethod(plugin, enter ? "enter" : "leave", expression);
+            method.Block.ExprDotMethod(plugin, enter ? "Enter" : "Leave", expression);
         }
     }
 } // end of namespace

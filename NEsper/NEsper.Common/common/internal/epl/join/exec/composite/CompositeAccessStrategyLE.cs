@@ -37,9 +37,7 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.composite
         {
             var index = (OrderedDictionary<object, CompositeIndexEntry>) parent;
             var comparable = EvaluateLookup(theEvent, context);
-            if (optionalKeyCollector != null) {
-                optionalKeyCollector.Add(comparable);
-            }
+            optionalKeyCollector?.Add(comparable);
 
             if (comparable == null) {
                 return null;

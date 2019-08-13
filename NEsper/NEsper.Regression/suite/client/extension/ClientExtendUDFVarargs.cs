@@ -134,8 +134,8 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
                 env,
                 milestone,
                 MakePair("varargOverload()", "many"),
-                MakePair("varargOverload(1)", "p1"),
-                MakePair("varargOverload(1, 2)", "p2"),
+                MakePair("varargOverload(1)", "P1"),
+                MakePair("varargOverload(1, 2)", "P2"),
                 MakePair("varargOverload(1, 2, 3)", "p3"),
                 MakePair("varargOverload(1, 2, 3, 4)", "many")
             );

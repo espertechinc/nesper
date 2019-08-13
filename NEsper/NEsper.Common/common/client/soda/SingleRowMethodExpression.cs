@@ -10,9 +10,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
-
 namespace com.espertech.esper.common.client.soda
 {
     /// <summary>
@@ -33,11 +30,14 @@ namespace com.espertech.esper.common.client.soda
             object[] parameters)
         {
             IList<Expression> parameterList = new List<Expression>();
-            for (int i = 0; i < parameters.Length; i++) {
-                if (parameters[i] is Expression) {
+            for (int i = 0; i < parameters.Length; i++)
+            {
+                if (parameters[i] is Expression)
+                {
                     parameterList.Add((Expression) parameters[i]);
                 }
-                else {
+                else
+                {
                     parameterList.Add(new ConstantExpression(parameters[i]));
                 }
             }
@@ -50,7 +50,8 @@ namespace com.espertech.esper.common.client.soda
         /// pairs of method name and list of parameters.
         /// </summary>
         /// <returns>chain of method invocations</returns>
-        public IList<DotExpressionItem> Chain {
+        public IList<DotExpressionItem> Chain
+        {
             get => chain;
         }
 
@@ -63,7 +64,8 @@ namespace com.espertech.esper.common.client.soda
             this.chain = chain;
         }
 
-        public override ExpressionPrecedenceEnum Precedence {
+        public override ExpressionPrecedenceEnum Precedence
+        {
             get => ExpressionPrecedenceEnum.UNARY;
         }
 
