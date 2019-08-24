@@ -13,16 +13,11 @@ namespace com.espertech.esper.regressionlib.support.extend.aggmultifunc
 {
     public class SupportAggMFMultiRTPlainScalarStateFactory : AggregationMultiFunctionStateFactory
     {
-        public ExprEvaluator Param { get; private set; }
+        public ExprEvaluator Param { get; set; }
 
         public AggregationMultiFunctionState NewState(AggregationMultiFunctionStateFactoryContext ctx)
         {
             return new SupportAggMFMultiRTPlainScalarState(this);
-        }
-
-        public void SetParam(ExprEvaluator param)
-        {
-            Param = param;
         }
     }
 } // end of namespace

@@ -80,22 +80,22 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
 
                 env.SendEventBean(new SupportBeanSimple("e1", 1));
                 var @event = env.Listener("s2").AssertOneGetNewAndReset();
-                Assert.AreEqual("e1", @event.Get("myString"));
+                Assert.AreEqual("e1", @event.Get("MyString"));
                 Assert.AreEqual("e1AB", @event.Get("propB"));
 
                 env.Milestone(1);
 
                 env.SendEventBean(new SupportBeanSimple("e2", 1));
                 @event = env.Listener("s2").AssertOneGetNewAndReset();
-                Assert.AreEqual("e2", @event.Get("myString"));
+                Assert.AreEqual("e2", @event.Get("MyString"));
                 Assert.AreEqual("e2AB", @event.Get("propB"));
 
                 env.SendEventBean(new SupportBeanSimple("e3", 1));
                 @event = env.Listener("s2").LastNewData[0];
-                Assert.AreEqual("e3", @event.Get("myString"));
+                Assert.AreEqual("e3", @event.Get("MyString"));
                 Assert.AreEqual("e3AB", @event.Get("propB"));
                 @event = env.Listener("s2").LastOldData[0];
-                Assert.AreEqual("e1", @event.Get("myString"));
+                Assert.AreEqual("e1", @event.Get("MyString"));
                 Assert.AreEqual("e1AB", @event.Get("propB"));
 
                 env.UndeployAll();

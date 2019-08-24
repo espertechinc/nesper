@@ -328,7 +328,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.order
             Consumer<CodegenMethod> code = method => {
                 method.Block.DeclareVar<object[]>(
                         "sortProperties",
-                        NewArrayByLength(typeof(object), ExprDotMethod(REF_ORDERCURRENTGENERATORS, "Size")))
+                        NewArrayByLength(typeof(object), ExprDotName(REF_ORDERCURRENTGENERATORS, "Count")))
                     .DeclareVar<int>("count", Constant(0));
 
                 var forEach = method.Block.ForEach(typeof(GroupByRollupKey), "rollup", REF_ORDERCURRENTGENERATORS);

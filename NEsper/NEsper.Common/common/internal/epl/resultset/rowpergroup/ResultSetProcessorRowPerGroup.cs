@@ -21,9 +21,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergroup
     {
         AggregationService AggregationService { get; }
 
-#if DUPLICATE
-        ExprEvaluatorContext AgentInstanceContext { get; }
-#endif
+        ExprEvaluatorContext GetAgentInstanceContext();
 
         SelectExprProcessor SelectExprProcessor { get; }
 

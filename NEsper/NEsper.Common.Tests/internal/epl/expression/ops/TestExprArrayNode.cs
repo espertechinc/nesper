@@ -16,7 +16,7 @@ using NUnit.Framework;
 namespace com.espertech.esper.common.@internal.epl.expression.ops
 {
     [TestFixture]
-    public class TestExprArrayNode : AbstractTestBase
+    public class TestExprArrayNode : AbstractCommonTest
     {
         [SetUp]
         public void SetUp()
@@ -68,10 +68,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             Assert.AreEqual(3, (int) ((int?[]) result)[1]);
 
             result = arrayNodes[2].Forge.ExprEvaluator.Evaluate(null, true, null);
-            Assert.AreEqual(typeof(double[]), result.GetType());
-            Assert.AreEqual(2, ((double[]) result).Length);
-            Assert.AreEqual(1.5, ((double[]) result)[0]);
-            Assert.AreEqual(1.0, ((double[]) result)[1]);
+            Assert.That(result, Is.InstanceOf<double?[]>());
+            Assert.That(result, Has.Length.EqualTo(2));
+            Assert.That(result, Has.Member(1.5));
+            Assert.That(result, Has.Member(1.0));
 
             result = arrayNodes[3].Forge.ExprEvaluator.Evaluate(null, true, null);
             Assert.AreEqual(typeof(object[]), result.GetType());
@@ -85,7 +85,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
         {
             Assert.AreEqual(typeof(object[]), arrayNodes[0].Forge.EvaluationType);
             Assert.AreEqual(typeof(int?[]), arrayNodes[1].Forge.EvaluationType);
-            Assert.AreEqual(typeof(double[]), arrayNodes[2].Forge.EvaluationType);
+            Assert.AreEqual(typeof(double?[]), arrayNodes[2].Forge.EvaluationType);
             Assert.AreEqual(typeof(object[]), arrayNodes[3].Forge.EvaluationType);
         }
 

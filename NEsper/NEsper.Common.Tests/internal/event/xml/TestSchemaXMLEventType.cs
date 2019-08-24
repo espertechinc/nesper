@@ -19,7 +19,7 @@ using NUnit.Framework;
 namespace com.espertech.esper.common.@internal.@event.xml
 {
     [TestFixture]
-    public class TestSchemaXmlEventType : AbstractTestBase
+    public class TestSchemaXmlEventType : AbstractCommonTest
     {
         private EventBean eventSchemaOne;
 

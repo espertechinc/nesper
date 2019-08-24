@@ -99,7 +99,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
                 .AddParam(typeof(int), "index");
             method.Block.IfCondition(Relational(Ref("index"), LT, Constant(0)))
                 .BlockReturn(ConstantNull())
-                .IfCondition(Relational(Ref("index"), GE, ExprDotMethod(events, "Size")))
+                .IfCondition(Relational(Ref("index"), GE, ExprDotName(events, "Count")))
                 .BlockReturn(ConstantNull())
                 .MethodReturn(Cast(typeof(EventBean), ExprDotMethod(events, "Get", Ref("index"))));
             return LocalMethod(method, index);
@@ -119,15 +119,14 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
                 .AddParam(typeof(int), "index");
             method.Block.IfCondition(Relational(Ref("index"), LT, Constant(0)))
                 .BlockReturn(ConstantNull())
-                .IfCondition(Relational(Ref("index"), GE, ExprDotMethod(events, "Size")))
+                .IfCondition(Relational(Ref("index"), GE, ExprDotName(events, "Count")))
                 .BlockReturn(ConstantNull())
                 .MethodReturn(
                     Cast(
                         typeof(EventBean),
-                        ExprDotMethod(
+                        ArrayAtIndex(
                             events,
-                            "Get",
-                            Op(Op(ExprDotMethod(events, "size"), "-", Ref("index")), "-", Constant(1)))));
+                            Op(Op(ExprDotName(events, "Count"), "-", Ref("index")), "-", Constant(1)))));
             return LocalMethod(method, index);
         }
 
@@ -161,7 +160,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
                 .MethodReturn(
                     Cast(
                         typeof(EventBean),
-                        ExprDotMethod(events, "Get", Op(ExprDotMethod(events, "size"), "-", Constant(1)))));
+                        ArrayAtIndex(events, Op(ExprDotName(events, "Count"), "-", Constant(1)))));
             return LocalMethod(method);
         }
 
@@ -183,7 +182,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
 
         public CodegenExpression SizeCodegen()
         {
-            return ExprDotMethod(events, "Size");
+            return ExprDotName(events, "Count");
         }
 
         public override void WriteCodegen(
@@ -208,7 +207,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
         {
             method.Block.AssignRef(
                 RowDotRef(row, events),
-                Cast(typeof(IList<object>), ExprDotMethod(GetSerde(classScope), "Read", input, unitKey)));
+                Cast(typeof(IList<EventBean>), ExprDotMethod(GetSerde(classScope), "Read", input, unitKey)));
         }
 
         private CodegenExpressionField GetSerde(CodegenClassScope classScope)

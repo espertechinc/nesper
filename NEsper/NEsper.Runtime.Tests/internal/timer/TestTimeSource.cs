@@ -24,7 +24,7 @@ namespace com.espertech.esper.runtime.@internal.timer
     /// </summary>
     /// <author>Jerry Shea</author>
     [TestFixture]
-    public class TestTimeSource : AbstractTestBase
+    public class TestTimeSource : AbstractRuntimeTest
     {
         [TearDown]
         public void TearDown()

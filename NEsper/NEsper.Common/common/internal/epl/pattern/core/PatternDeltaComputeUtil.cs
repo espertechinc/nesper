@@ -62,7 +62,7 @@ namespace com.espertech.esper.common.@internal.epl.pattern.core
                                 time,
                                 ConstantNull(),
                                 ConstantTrue(),
-                                ExprDotName(Ref("context"), "AgentInstanceContext")));
+                                ExprDotMethod(Ref("context"), "GetAgentInstanceContext")));
                 }
                 else {
                     var delta = classScope.AddFieldUnshared<TimePeriodCompute>(
@@ -84,7 +84,7 @@ namespace com.espertech.esper.common.@internal.epl.pattern.core
                                 time,
                                 Ref("events"),
                                 ConstantTrue(),
-                                ExprDotMethod(Ref("context"), "AgentInstanceContext")));
+                                ExprDotMethod(Ref("context"), "GetAgentInstanceContext")));
                 }
             }
             else {
@@ -109,7 +109,7 @@ namespace com.espertech.esper.common.@internal.epl.pattern.core
                             eval,
                             Ref("events"),
                             ConstantTrue(),
-                            ExprDotName(Ref("context"), "AgentInstanceContext")));
+                            ExprDotMethod(Ref("context"), "GetAgentInstanceContext")));
                 if (!parameter.Forge.EvaluationType.IsPrimitive) {
                     computeDelta.Block.IfRefNull("result")
                         .BlockThrow(

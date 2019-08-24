@@ -1209,7 +1209,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                              "context InitCtx2 initiated by SupportBean_S2 as s2 terminated after 10 seconds";
                 env.CompileDeploy(eplCtx, path);
 
-                var fields = "c1,c2,c3,c4".SplitCsv();
+                var fields = new [] { "c1","c2","c3","c4" };
                 env.CompileDeploy(
                     "@Name('s0') context NestedContext select " +
                     "context.InitCtx0.s0.P00 as c1, context.InitCtx1.s1.P10 as c2, context.InitCtx2.s2.P20 as c3, sum(IntPrimitive) as c4 from SupportBean",

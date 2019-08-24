@@ -55,7 +55,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
                 .DeclareVar<EventBean>("@event", ArrayAtIndex(refEPS, Constant(0)))
                 .IfRefNullReturnNull("@event")
                 .MethodReturn(
-                    ExprDotMethod(eventToPublic, "convert", @Ref("@event"), refEPS, refIsNewData, refExprEvalCtx));
+                    ExprDotMethod(eventToPublic, "Convert", @Ref("@event"), refEPS, refIsNewData, refExprEvalCtx));
             return methodNode;
         }
 

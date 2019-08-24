@@ -114,6 +114,14 @@ namespace com.espertech.esper.common.@internal.@event.util
             return GetMismatchException(field.DeclaringType, @object, e);
         }
 
+        public static PropertyAccessException GetMismatchException(
+            PropertyInfo property,
+            object @object,
+            InvalidCastException e)
+        {
+            return GetMismatchException(property.DeclaringType, @object, e);
+        }
+
         public static PropertyAccessException GetTargetException(
             MethodInfo method,
             TargetException e)

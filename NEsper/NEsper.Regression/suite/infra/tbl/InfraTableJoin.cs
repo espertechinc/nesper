@@ -257,7 +257,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                     env.SendEventBean(new SupportBean_S0(-1, null));
                     EPAssertionUtil.AssertPropsPerRowAnyOrder(
                         env.Listener("s0").NewDataListFlattened,
-                        "value".SplitCsv(),
+                        new [] { "value" },
                         new[] {new object[] {2000L}, new object[] {3000L}});
                     env.Listener("s0").Reset();
                 };
@@ -267,7 +267,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                     env.SendEventBean(new SupportBean_S0(10, "G1"));
                     EPAssertionUtil.AssertPropsPerRow(
                         env.Listener("s0").NewDataListFlattened,
-                        "value".SplitCsv(),
+                        new [] { "value" },
                         new[] {new object[] {1000L}});
                     env.Listener("s0").Reset();
                 };
@@ -436,7 +436,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                     env.SendEventBean(new SupportBean_S0(-1, null));
                     EPAssertionUtil.AssertPropsPerRowAnyOrder(
                         env.Listener("s0").NewDataListFlattened,
-                        "value".SplitCsv(),
+                        new [] { "value" },
                         new[] {new object[] {2000L}});
                     env.Listener("s0").Reset();
                 };
@@ -544,7 +544,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                     env.SendEventBean(new SupportBeanRange(20L));
                     EPAssertionUtil.AssertPropsPerRowAnyOrder(
                         env.Listener("s0").NewDataListFlattened,
-                        "value".SplitCsv(),
+                        new [] { "value" },
                         new[] {new object[] {2000L}});
                     env.Listener("s0").Reset();
                 };

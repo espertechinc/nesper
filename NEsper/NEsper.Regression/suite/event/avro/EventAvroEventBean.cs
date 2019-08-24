@@ -18,18 +18,16 @@ using NEsper.Avro.Extensions;
 using NUnit.Framework;
 
 using static NEsper.Avro.Core.AvroConstant;
+using static NEsper.Avro.Extensions.TypeBuilder;
 
 namespace com.espertech.esper.regressionlib.suite.@event.avro
 {
     public class EventAvroEventBean : RegressionExecution
     {
         public static readonly RecordSchema INNER_SCHEMA = SchemaBuilder.Record(
-            "InnerSchema",
-            TypeBuilder.Field("mymap", TypeBuilder.StringType()));
-
+            "InnerSchema", Field("mymap", StringType()));
         public static readonly RecordSchema RECORD_SCHEMA = SchemaBuilder.Record(
-            "InnerSchema",
-            TypeBuilder.Field("i", INNER_SCHEMA));
+            "OuterSchema", Field("i", INNER_SCHEMA));
 
         public void Run(RegressionEnvironment env)
         {
@@ -66,16 +64,11 @@ namespace com.espertech.esper.regressionlib.suite.@event.avro
             Assert.AreEqual(null, @event.Get("a?.b"));
 
             var innerSchema = SchemaBuilder.Record(
-                "InnerSchema",
-                TypeBuilder.Field(
-                    "b",
-                    TypeBuilder.StringType(
-                        TypeBuilder.Property(PROP_STRING_KEY, PROP_STRING_VALUE))));
+                "InnerSchema", Field("b", StringType(Property(PROP_STRING_KEY, PROP_STRING_VALUE))));
             var inner = new GenericRecord(innerSchema);
             inner.Put("b", "X");
             var recordSchema = SchemaBuilder.Record(
-                "RecordSchema",
-                TypeBuilder.Field("a", innerSchema));
+                "RecordSchema", Field("a", innerSchema));
             var record = new GenericRecord(recordSchema);
             record.Put("a", inner);
             env.SendEventAvro(record, "MyEvent");

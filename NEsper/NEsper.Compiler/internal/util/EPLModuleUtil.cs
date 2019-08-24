@@ -115,10 +115,10 @@ namespace com.espertech.esper.compiler.@internal.util
                     }
 
                     if (IsNamespaceWildcard(parseNodeImport.Imported)) {
-                        imports.Add(new ImportNamespace(parseNodeImport.Imported));
+                        imports.Add(new ImportNamespace(parseNodeImport.Imported, null));
                     }
                     else {
-                        imports.Add(new ImportType(parseNodeImport.Imported));
+                        imports.Add(new ImportType(parseNodeImport.Imported, null));
                     }
 
                     continue;

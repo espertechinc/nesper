@@ -21,16 +21,19 @@ namespace com.espertech.esper.common.client.configuration.common
         {
         }
 
-        public ImportNamespace(string ns)
+        public ImportNamespace(string ns, string assemblyName = null)
         {
             Namespace = ns;
+            AssemblyName = assemblyName;
         }
 
         public ImportNamespace(Type typeInNamespace)
         {
             Namespace = typeInNamespace.Namespace;
+            AssemblyName = typeInNamespace.Assembly.FullName;
         }
 
+        public string AssemblyName { get; set; }
         public string Namespace { get; set; }
 
         public override Type Resolve(
@@ -51,6 +54,37 @@ namespace com.espertech.esper.common.client.configuration.common
                 }
 
                 return null;
+            }
+        }
+
+        protected bool Equals(ImportNamespace other)
+        {
+            return string.Equals(AssemblyName, other.AssemblyName) && 
+                   string.Equals(Namespace, other.Namespace);
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) {
+                return false;
+            }
+
+            if (ReferenceEquals(this, obj)) {
+                return true;
+            }
+
+            if (obj.GetType() != this.GetType()) {
+                return false;
+            }
+
+            return Equals((ImportNamespace) obj);
+        }
+
+        public override int GetHashCode()
+        {
+            unchecked {
+                return ((AssemblyName != null ? AssemblyName.GetHashCode() : 0) * 397) ^ 
+                       (Namespace != null ? Namespace.GetHashCode() : 0);
             }
         }
 

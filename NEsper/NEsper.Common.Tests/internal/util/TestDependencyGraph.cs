@@ -15,7 +15,7 @@ using NUnit.Framework;
 namespace com.espertech.esper.common.@internal.util
 {
     [TestFixture]
-    public class TestDependencyGraph : AbstractTestBase
+    public class TestDependencyGraph : AbstractCommonTest
     {
         [Test]
         public void TestGetRootNodes()

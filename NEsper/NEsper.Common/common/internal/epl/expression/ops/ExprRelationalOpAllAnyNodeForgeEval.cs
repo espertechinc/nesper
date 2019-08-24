@@ -318,7 +318,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                         var forEach = blockIfNotNull.ForEach(
                             typeof(object),
                             "item",
-                            ExprDotMethod(Ref(refname), "KeySet"));
+                            ExprDotName(Ref(refname), "Keys"));
                         {
                             var ifNotNumber = forEach.IfCondition(Not(InstanceOf(Ref("item"), typeof(object))));
                             {

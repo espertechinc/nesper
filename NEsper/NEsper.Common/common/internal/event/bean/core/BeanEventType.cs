@@ -75,7 +75,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
         ///     Returns the factory methods name, or null if none defined.
         /// </summary>
         /// <returns>factory methods name</returns>
-        public string FactoryMethodName => Stem.OptionalLegacyDef == null ? null : Stem.OptionalLegacyDef.FactoryMethod;
+        public string FactoryMethodName => Stem.OptionalLegacyDef?.FactoryMethod;
 
         /// <summary>
         ///     Returns the property resolution style.
@@ -251,13 +251,12 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
             }
 
             var property = PropertyParser.ParseAndWalkLaxToSimple(propertyName);
-            if (property is MappedProperty) {
+            if (property is MappedProperty mapProp) {
                 EventPropertyWriter writer = GetWriter(propertyName);
                 if (writer == null) {
                     return null;
                 }
 
-                var mapProp = (MappedProperty) property;
                 return new EventPropertyDescriptor(
                     mapProp.PropertyNameAtomic,
                     typeof(object),
@@ -269,13 +268,12 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
                     false);
             }
 
-            if (property is IndexedProperty) {
+            if (property is IndexedProperty indexedProp) {
                 EventPropertyWriter writer = GetWriter(propertyName);
                 if (writer == null) {
                     return null;
                 }
 
-                var indexedProp = (IndexedProperty) property;
                 return new EventPropertyDescriptor(
                     indexedProp.PropertyNameAtomic,
                     typeof(object),
@@ -296,7 +294,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
 
         public EventBeanCopyMethodForge GetCopyMethodForge(string[] properties)
         {
-            var copyMethodName = Stem.OptionalLegacyDef == null ? null : Stem.OptionalLegacyDef.CopyMethod;
+            var copyMethodName = Stem.OptionalLegacyDef?.CopyMethod;
             if (copyMethodName == null) {
                 if (Stem.Clazz.IsSerializable) {
                     return new BeanEventBeanSerializableCopyMethodForge(
@@ -362,7 +360,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
 
         public ExprValidationException EqualsCompareType(EventType eventType)
         {
-            if (this != eventType) {
+            if (!Equals(this, eventType)) {
                 return new ExprValidationException("Bean event types mismatch");
             }
 
@@ -462,11 +460,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
         public PropertyStem GetSimpleProperty(string propertyName)
         {
             var simpleProp = GetSimplePropertyInfo(propertyName);
-            if (simpleProp != null) {
-                return simpleProp.Descriptor;
-            }
-
-            return null;
+            return simpleProp?.Descriptor;
         }
 
         /// <summary>
@@ -482,9 +476,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
 
             if (PropertyResolutionStyle.Equals(PropertyResolutionStyle.CASE_INSENSITIVE)) {
                 var propertyInfos = Stem.MappedSmartPropertyTable.Get(propertyName.ToLowerInvariant());
-                return propertyInfos != null
-                    ? propertyInfos[0].Descriptor
-                    : null;
+                return propertyInfos?[0].Descriptor;
             }
 
             if (PropertyResolutionStyle.Equals(PropertyResolutionStyle.DISTINCT_CASE_INSENSITIVE)) {
@@ -517,9 +509,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
 
             if (PropertyResolutionStyle.Equals(PropertyResolutionStyle.CASE_INSENSITIVE)) {
                 var propertyInfos = Stem.IndexedSmartPropertyTable.Get(propertyName.ToLowerInvariant());
-                return propertyInfos != null
-                    ? propertyInfos[0].Descriptor
-                    : null;
+                return propertyInfos?[0].Descriptor;
             }
 
             if (PropertyResolutionStyle.Equals(PropertyResolutionStyle.DISTINCT_CASE_INSENSITIVE)) {
@@ -564,10 +554,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
                 }
 
                 simplePropertyInfoList = Stem.SimpleSmartPropertyTable.Get(propertyName.ToLowerInvariant());
-                return
-                    simplePropertyInfoList != null
-                        ? simplePropertyInfoList[0]
-                        : null;
+                return simplePropertyInfoList?[0];
             }
 
             if (PropertyResolutionStyle.Equals(PropertyResolutionStyle.DISTINCT_CASE_INSENSITIVE)) {

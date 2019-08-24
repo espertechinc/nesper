@@ -62,7 +62,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.render
                 Assert.AreEqual("someProperties", context.PropertyName);
 
                 var expectedJson =
-                    "{ \"MyEvent\": { \"id\": \"id1\", \"someProperties\": [\"index#0=1;index#1=x\", \"index#0=2;index#1=y\"], \"mappedProperty\": { \"key\": \"value\" } } }";
+                    "{ \"MyEvent\": { \"id\": \"id1\", \"someProperties\": [\"index#0=1;index#1=x\", \"index#0=2;index#1=y\"], \"MappedProperty\": { \"key\": \"value\" } } }";
                 Assert.AreEqual(RemoveNewline(expectedJson), RemoveNewline(json));
 
                 MyRenderer.Contexts.Clear();

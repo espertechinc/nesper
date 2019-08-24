@@ -8,60 +8,44 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.bytecodemodel.core
 {
     public class CodegenInstanceAux
     {
-        private IList<CodegenTypedParam> members;
-
         public CodegenInstanceAux(CodegenCtor serviceCtor)
         {
             ServiceCtor = serviceCtor;
+            Members = new List<CodegenTypedParam>();
+            Properties = new CodegenNamedProperties();
+            Methods = new CodegenNamedMethods();
         }
 
         public CodegenCtor ServiceCtor { get; }
 
-        public IList<CodegenTypedParam> Members =>
-            members ?? Collections.GetEmptyList<CodegenTypedParam>();
+        public IList<CodegenTypedParam> Members { get; }
 
-        public CodegenNamedProperties Properties { get; } = new CodegenNamedProperties();
+        public CodegenNamedProperties Properties { get; }
 
-        public CodegenNamedMethods Methods { get; } = new CodegenNamedMethods();
+        public CodegenNamedMethods Methods { get; }
 
         public void AddMember(
             string name,
             Type type)
         {
-            if (members == null) {
-                members = new List<CodegenTypedParam>(2);
+            if (Members.Any(member => member.Name == name)) {
+                throw new IllegalStateException("Member by name '" + name + "' already added");
             }
 
-            foreach (var member in members) {
-                if (member.Name.Equals(name)) {
-                    throw new IllegalStateException("Member by name '" + name + "' already added");
-                }
-            }
-
-            members.Add(new CodegenTypedParam(type, name));
+            Members.Add(new CodegenTypedParam(type, name));
         }
 
         public bool HasMember(string name)
         {
-            if (members == null) {
-                return false;
-            }
-
-            foreach (var member in members) {
-                if (member.Name.Equals(name)) {
-                    return true;
-                }
-            }
-
-            return false;
+            return Members.Any(member => member.Name == name);
         }
     }
 } // end of namespace

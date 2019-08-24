@@ -15,7 +15,7 @@ using static com.espertech.esper.common.@internal.epl.expression.core.ExprNodeUt
 namespace com.espertech.esper.common.@internal.epl.expression.core
 {
     [TestFixture]
-    public class TestExprNodeUtilityCompare : AbstractTestBase
+    public class TestExprNodeUtilityCompare : AbstractCommonTest
     {
         private readonly SupportExprNode e1 = new SupportExprNode(1);
         private readonly SupportExprNode e2 = new SupportExprNode(2);

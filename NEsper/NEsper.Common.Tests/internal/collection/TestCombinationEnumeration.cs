@@ -18,7 +18,7 @@ using NUnit.Framework;
 namespace com.espertech.esper.common.@internal.collection
 {
     [TestFixture]
-    public class TestCombinationEnumeration : AbstractTestBase
+    public class TestCombinationEnumeration : AbstractCommonTest
     {
         private void TryEnumerate(
             string expected,

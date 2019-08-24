@@ -801,18 +801,12 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
                 typeof(void),
                 "GenerateOutputBatchedJoinUnkeyed",
                 CodegenNamedParam.From(
-                    typeof(ISet<object>),
-                    "outputEvents",
-                    typeof(object[]),
-                    "groupByKeys",
-                    typeof(bool),
-                    NAME_ISNEWDATA,
-                    typeof(bool),
-                    NAME_ISSYNTHESIZE,
-                    typeof(ICollection<object>),
-                    "resultEvents",
-                    typeof(IList<object>),
-                    "optSortKeys"),
+                    typeof(ISet<object>), "outputEvents",
+                    typeof(object[]), "groupByKeys",
+                    typeof(bool), NAME_ISNEWDATA,
+                    typeof(bool), NAME_ISSYNTHESIZE,
+                    typeof(ICollection<EventBean>), "resultEvents",
+                    typeof(IList<object>), "optSortKeys"),
                 typeof(ResultSetProcessorAggregateGrouped),
                 classScope,
                 code);
@@ -936,20 +930,13 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
                 typeof(void),
                 "GenerateOutputBatchedViewPerKey",
                 CodegenNamedParam.From(
-                    typeof(EventBean[]),
-                    "outputEvents",
-                    typeof(object[]),
-                    "groupByKeys",
-                    typeof(bool),
-                    NAME_ISNEWDATA,
-                    typeof(bool),
-                    NAME_ISSYNTHESIZE,
-                    typeof(IDictionary<object, object>),
-                    "resultEvents",
-                    typeof(IDictionary<object, object>),
-                    "optSortKeys",
-                    typeof(EventBean[]),
-                    "eventsPerStream"),
+                    typeof(EventBean[]), "outputEvents",
+                    typeof(object[]), "groupByKeys",
+                    typeof(bool), NAME_ISNEWDATA,
+                    typeof(bool), NAME_ISSYNTHESIZE,
+                    typeof(IDictionary<object, EventBean>), "resultEvents",
+                    typeof(IDictionary<object, object>), "optSortKeys",
+                    typeof(EventBean[]), "eventsPerStream"),
                 typeof(ResultSetProcessorAggregateGrouped),
                 classScope,
                 code);
@@ -1021,18 +1008,12 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
                 typeof(void),
                 "GenerateOutputBatchedJoinPerKey",
                 CodegenNamedParam.From(
-                    typeof(ISet<object>),
-                    "outputEvents",
-                    typeof(object[]),
-                    "groupByKeys",
-                    typeof(bool),
-                    NAME_ISNEWDATA,
-                    typeof(bool),
-                    NAME_ISSYNTHESIZE,
-                    typeof(IDictionary<object, object>),
-                    "resultEvents",
-                    typeof(IDictionary<object, object>),
-                    "optSortKeys"),
+                    typeof(ISet<object>), "outputEvents",
+                    typeof(object[]), "groupByKeys",
+                    typeof(bool), NAME_ISNEWDATA,
+                    typeof(bool), NAME_ISSYNTHESIZE,
+                    typeof(IDictionary<object, EventBean>), "resultEvents",
+                    typeof(IDictionary<object, object>), "optSortKeys"),
                 typeof(ResultSetProcessorAggregateGrouped),
                 classScope,
                 code);
@@ -1097,7 +1078,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
                     NAME_OUTPUTALLHELPER,
                     ExprDotMethod(
                         factory,
-                        "makeRSAggregateGroupedOutputAll",
+                        "MakeRSAggregateGroupedOutputAll",
                         REF_AGENTINSTANCECONTEXT,
                         Ref("this"),
                         groupKeyTypes,
@@ -1115,7 +1096,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
                     NAME_OUTPUTLASTHELPER,
                     ExprDotMethod(
                         factory,
-                        "makeRSAggregateGroupedOutputLastOpt",
+                        "MakeRSAggregateGroupedOutputLastOpt",
                         REF_AGENTINSTANCECONTEXT,
                         Ref("this"),
                         groupKeyTypes));
@@ -1142,10 +1123,10 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
             CodegenMethod method)
         {
             if (forge.IsOutputAll) {
-                method.Block.MethodReturn(ExprDotMethod(Ref(NAME_OUTPUTALLHELPER), "outputView", REF_ISSYNTHESIZE));
+                method.Block.MethodReturn(ExprDotMethod(Ref(NAME_OUTPUTALLHELPER), "OutputView", REF_ISSYNTHESIZE));
             }
             else if (forge.IsOutputLast) {
-                method.Block.MethodReturn(ExprDotMethod(Ref(NAME_OUTPUTLASTHELPER), "outputView", REF_ISSYNTHESIZE));
+                method.Block.MethodReturn(ExprDotMethod(Ref(NAME_OUTPUTLASTHELPER), "OutputView", REF_ISSYNTHESIZE));
             }
             else {
                 method.Block.MethodReturn(ConstantNull());
@@ -1318,7 +1299,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
                 NAME_OUTPUTFIRSTHELPER,
                 ExprDotMethod(
                     helperFactory,
-                    "makeRSGroupedOutputFirst",
+                    "MakeRSGroupedOutputFirst",
                     REF_AGENTINSTANCECONTEXT,
                     groupKeyTypes,
                     outputFactory,
@@ -1611,7 +1592,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
                 NAME_OUTPUTALLGROUPREPS,
                 ExprDotMethod(
                     helperFactory,
-                    "makeRSGroupedOutputAllNoOpt",
+                    "MakeRSGroupedOutputAllNoOpt",
                     REF_AGENTINSTANCECONTEXT,
                     groupKeyTypes,
                     eventTypes));
@@ -1964,7 +1945,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
                 NAME_OUTPUTFIRSTHELPER,
                 ExprDotMethod(
                     helperFactory,
-                    "makeRSGroupedOutputFirst",
+                    "MakeRSGroupedOutputFirst",
                     REF_AGENTINSTANCECONTEXT,
                     groupKeyTypes,
                     outputFactory,
@@ -2271,7 +2252,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
                 NAME_OUTPUTALLGROUPREPS,
                 ExprDotMethod(
                     helperFactory,
-                    "makeRSGroupedOutputAllNoOpt",
+                    "MakeRSGroupedOutputAllNoOpt",
                     REF_AGENTINSTANCECONTEXT,
                     groupKeyTypes,
                     eventTypes));
@@ -2478,9 +2459,9 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
 
             Consumer<CodegenMethod> code = methodNode => {
                 methodNode.Block.ForEach(
-                        typeof(KeyValuePair<object, object>),
+                        typeof(KeyValuePair<object, EventBean>),
                         "entry",
-                        ExprDotMethod(Ref("keysAndEvents"), "EntrySet"))
+                        Ref("keysAndEvents"))
                     .InstanceMethod(
                         generateOutputBatchedAddToListSingle,
                         ExprDotName(Ref("entry"), "Key"),
@@ -2495,16 +2476,11 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
                 typeof(void),
                 "GenerateOutputBatchedAddToList",
                 CodegenNamedParam.From(
-                    typeof(IDictionary<object, object>),
-                    "keysAndEvents",
-                    typeof(bool),
-                    NAME_ISNEWDATA,
-                    typeof(bool),
-                    NAME_ISSYNTHESIZE,
-                    typeof(IList<object>),
-                    "resultEvents",
-                    typeof(IList<object>),
-                    "optSortKeys"),
+                    typeof(IDictionary<object, object>), "keysAndEvents",
+                    typeof(bool), NAME_ISNEWDATA,
+                    typeof(bool), NAME_ISSYNTHESIZE,
+                    typeof(IList<EventBean>), "resultEvents",
+                    typeof(IList<object>), "optSortKeys"),
                 typeof(ResultSetProcessorAggregateGroupedImpl),
                 classScope,
                 code);
@@ -2564,18 +2540,12 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
                 typeof(void),
                 "GenerateOutputBatchedAddToListSingle",
                 CodegenNamedParam.From(
-                    typeof(object),
-                    "key",
-                    typeof(EventBean[]),
-                    "eventsPerStream",
-                    typeof(bool),
-                    NAME_ISNEWDATA,
-                    typeof(bool),
-                    NAME_ISSYNTHESIZE,
-                    typeof(IList<object>),
-                    "resultEvents",
-                    typeof(IList<object>),
-                    "optSortKeys"),
+                    typeof(object), "key",
+                    typeof(EventBean[]), "eventsPerStream",
+                    typeof(bool), NAME_ISNEWDATA,
+                    typeof(bool), NAME_ISSYNTHESIZE,
+                    typeof(IList<EventBean>), "resultEvents",
+                    typeof(IList<object>), "optSortKeys"),
                 typeof(ResultSetProcessorAggregateGroupedImpl),
                 classScope,
                 code);
@@ -2728,7 +2698,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
 
             return instance.Methods.AddMethod(
                 typeof(UniformPair<EventBean[]>),
-                "processViewResultPairDepthOne",
+                "ProcessViewResultPairDepthOne",
                 CodegenNamedParam.From(
                     typeof(EventBean[]),
                     NAME_NEWDATA,
@@ -2778,7 +2748,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
 
             return instance.Methods.AddMethod(
                 typeof(UniformPair<EventBean[]>),
-                "processViewResultNewDepthOneCodegen",
+                "ProcessViewResultNewDepthOneCodegen",
                 CodegenNamedParam.From(typeof(EventBean[]), NAME_NEWDATA, typeof(bool), NAME_ISSYNTHESIZE),
                 typeof(ResultSetProcessorRowPerGroupImpl),
                 classScope,
@@ -2821,7 +2791,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
 
             return instance.Methods.AddMethod(
                 typeof(EventBean),
-                "shortcutEvalGivenKey",
+                "ShortcutEvalGivenKey",
                 CodegenNamedParam.From(
                     typeof(EventBean[]),
                     ExprForgeCodegenNames.NAME_EPS,

@@ -23,7 +23,7 @@ using NUnit.Framework;
 namespace com.espertech.esper.runtime.@internal.filtersvcimpl
 {
     [TestFixture]
-    public class TestFilterParamIndexCompare : AbstractTestBase
+    public class TestFilterParamIndexCompare : AbstractRuntimeTest
     {
         [SetUp]
         public void SetUp()
@@ -119,7 +119,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
 
             Assert.That(
                 () => index.Put("a", testEvaluator),
-                Throws.InstanceOf<InvalidCastException>());
+                Throws.InstanceOf<InvalidOperationException>());
         }
 
         [Test]
@@ -160,11 +160,11 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
             VerifyLongBoxed(index, 10L, 3);
 
             // Put a long primitive in - should work
-            index.Put(9l, testEvaluator);
+            index.Put(9L, testEvaluator);
 
             Assert.That(
                 () => index.Put(10, testEvaluator),
-                Throws.InstanceOf<InvalidCastException>());
+                Throws.InstanceOf<InvalidOperationException>());
         }
 
         [Test]

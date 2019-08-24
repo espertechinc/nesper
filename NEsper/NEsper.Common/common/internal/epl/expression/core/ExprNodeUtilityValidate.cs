@@ -312,8 +312,12 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                         result = ResolveStaticMethodOrField(identNode, e, validationContext);
                     }
                     catch (ExprValidationException ex) {
-                        e = ex;
-                        result = ResolveAsStreamName(identNode, e, validationContext);
+                        var resolutionStream = ResolveAsStreamName(identNode, validationContext);
+                        if (resolutionStream.First == false) {
+                            throw;
+                        }
+
+                        result = resolutionStream.Second;
                     }
                 }
                 else {
@@ -528,9 +532,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             throw propertyException;
         }
 
-        private static ExprNode ResolveAsStreamName(
+        private static Pair<bool, ExprNode> ResolveAsStreamName(
             ExprIdentNode identNode,
-            ExprValidationException existingException,
             ExprValidationContext validationContext)
         {
             ExprStreamUnderlyingNode exprStream = new ExprStreamUnderlyingNodeImpl(
@@ -541,10 +544,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                 exprStream.Validate(validationContext);
             }
             catch (ExprValidationException) {
-                throw existingException;
+                return new Pair<bool, ExprNode>(false, null);
             }
 
-            return exprStream;
+            return new Pair<bool, ExprNode>(true, exprStream);
         }
 
         private static ExprConstantNode ResolveIdentAsEnumConst(

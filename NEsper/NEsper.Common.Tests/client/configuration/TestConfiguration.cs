@@ -7,7 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using com.espertech.esper.common.client.configuration.common;
-using com.espertech.esper.common.@internal.supportunit.util;
+using com.espertech.esper.common.@internal.epl.dataflow.ops;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.container;
 
@@ -16,7 +16,7 @@ using NUnit.Framework;
 namespace com.espertech.esper.common.client.configuration
 {
     [TestFixture]
-    public class TestConfiguration : AbstractTestBase
+    public class TestConfiguration : AbstractCommonTest
     {
         public const string ESPER_TEST_CONFIG = "regression/esper.test.readconfig.cfg.xml";
 
@@ -65,12 +65,21 @@ namespace com.espertech.esper.common.client.configuration
         private void AssertDefaultConfig()
         {
             ConfigurationCommon common = config.Common;
-            Assert.AreEqual(5, common.Imports.Count);
-            Assert.AreEqual("System", common.Imports[0]);
-            Assert.AreEqual("System.Collections", common.Imports[1]);
-            Assert.AreEqual("System.Text", common.Imports[2]);
-            Assert.AreEqual("com.espertech.esper.common.client.annotation", common.Imports[3]);
-            Assert.AreEqual("com.espertech.esper.common.internal.epl.dataflow.ops", common.Imports[4]);
+            Assert.That(
+                common.Imports,
+                Has.Count.EqualTo(4));
+            Assert.That(
+                common.Imports,
+                Contains.Item(ImportBuiltinAnnotations.Instance));
+            Assert.That(
+                common.Imports,
+                Contains.Item(new ImportNamespace("System")));
+            Assert.That(
+                common.Imports,
+                Contains.Item(new ImportNamespace("System.Text")));
+            Assert.That(
+                common.Imports,
+                Contains.Item(new ImportNamespace(typeof(BeaconSourceForge))));
         }
     }
 } // end of namespace

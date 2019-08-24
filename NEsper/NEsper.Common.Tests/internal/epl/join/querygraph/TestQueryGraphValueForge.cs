@@ -8,15 +8,13 @@
 
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.supportunit.bean;
-using com.espertech.esper.common.@internal.supportunit.@event;
-using com.espertech.esper.common.@internal.supportunit.util;
-using com.espertech.esper.container;
+
 using NUnit.Framework;
 
 namespace com.espertech.esper.common.@internal.epl.join.querygraph
 {
     [TestFixture]
-    public class TestQueryGraphValueForge : AbstractTestBase
+    public class TestQueryGraphValueForge : AbstractCommonTest
     {
         private ExprIdentNode MakeIdent(string prop)
         {
@@ -82,64 +80,64 @@ namespace com.espertech.esper.common.@internal.epl.join.querygraph
         public void TestNoDup()
         {
             var value = new QueryGraphValueForge();
-            value.AddRelOp(MakeIdent("b"), QueryGraphRangeEnum.LESS_OR_EQUAL, MakeIdent("a"), false);
-            value.AddRelOp(MakeIdent("b"), QueryGraphRangeEnum.LESS_OR_EQUAL, MakeIdent("a"), false);
-            AssertRanges(new[] { new object[] { "b", null, null, QueryGraphRangeEnum.LESS_OR_EQUAL, "a" } }, value);
+            value.AddRelOp(MakeIdent("B"), QueryGraphRangeEnum.LESS_OR_EQUAL, MakeIdent("A"), false);
+            value.AddRelOp(MakeIdent("B"), QueryGraphRangeEnum.LESS_OR_EQUAL, MakeIdent("A"), false);
+            AssertRanges(new[] { new object[] { "B", null, null, QueryGraphRangeEnum.LESS_OR_EQUAL, "A" } }, value);
 
             value = new QueryGraphValueForge();
-            value.AddRange(QueryGraphRangeEnum.RANGE_CLOSED, MakeIdent("b"), MakeIdent("c"), MakeIdent("a"));
-            value.AddRange(QueryGraphRangeEnum.RANGE_CLOSED, MakeIdent("b"), MakeIdent("c"), MakeIdent("a"));
-            AssertRanges(new[] { new object[] { null, "b", "c", QueryGraphRangeEnum.RANGE_CLOSED, "a" } }, value);
+            value.AddRange(QueryGraphRangeEnum.RANGE_CLOSED, MakeIdent("B"), MakeIdent("C"), MakeIdent("A"));
+            value.AddRange(QueryGraphRangeEnum.RANGE_CLOSED, MakeIdent("B"), MakeIdent("C"), MakeIdent("A"));
+            AssertRanges(new[] { new object[] { null, "B", "C", QueryGraphRangeEnum.RANGE_CLOSED, "A" } }, value);
         }
 
         [Test]
         public void TestRangeRelOp()
         {
             TryAdd(
-                "b",
+                "B",
                 QueryGraphRangeEnum.GREATER_OR_EQUAL,
-                MakeIdent("a"), // read a >= b
-                "c",
+                MakeIdent("A"), // read a >= b
+                "C",
                 QueryGraphRangeEnum.LESS_OR_EQUAL,
-                MakeIdent("a"), // read a <= c
-                new[] { new object[] { null, "b", "c", QueryGraphRangeEnum.RANGE_CLOSED, "a" } });
+                MakeIdent("A"), // read a <= c
+                new[] { new object[] { null, "B", "C", QueryGraphRangeEnum.RANGE_CLOSED, "A" } });
 
             TryAdd(
-                "b",
+                "B",
                 QueryGraphRangeEnum.GREATER,
-                MakeIdent("a"), // read a > b
-                "c",
+                MakeIdent("A"), // read a > b
+                "C",
                 QueryGraphRangeEnum.LESS,
-                MakeIdent("a"), // read a < c
-                new[] { new object[] { null, "b", "c", QueryGraphRangeEnum.RANGE_OPEN, "a" } });
+                MakeIdent("A"), // read a < c
+                new[] { new object[] { null, "B", "C", QueryGraphRangeEnum.RANGE_OPEN, "A" } });
 
             TryAdd(
-                "b",
+                "B",
                 QueryGraphRangeEnum.GREATER_OR_EQUAL,
-                MakeIdent("a"), // read a >= b
-                "c",
+                MakeIdent("A"), // read a >= b
+                "C",
                 QueryGraphRangeEnum.LESS,
-                MakeIdent("a"), // read a < c
-                new[] { new object[] { null, "b", "c", QueryGraphRangeEnum.RANGE_HALF_OPEN, "a" } });
+                MakeIdent("A"), // read a < c
+                new[] { new object[] { null, "B", "C", QueryGraphRangeEnum.RANGE_HALF_OPEN, "A" } });
 
             TryAdd(
-                "b",
+                "B",
                 QueryGraphRangeEnum.GREATER,
-                MakeIdent("a"), // read a > b
-                "c",
+                MakeIdent("A"), // read a > b
+                "C",
                 QueryGraphRangeEnum.LESS_OR_EQUAL,
-                MakeIdent("a"), // read a <= c
-                new[] { new object[] { null, "b", "c", QueryGraphRangeEnum.RANGE_HALF_CLOSED, "a" } });
+                MakeIdent("A"), // read a <= c
+                new[] { new object[] { null, "B", "C", QueryGraphRangeEnum.RANGE_HALF_CLOSED, "A" } });
 
             // sanity
             TryAdd(
-                "b",
+                "B",
                 QueryGraphRangeEnum.LESS_OR_EQUAL,
-                MakeIdent("a"), // read a <= b
-                "c",
+                MakeIdent("A"), // read a <= b
+                "C",
                 QueryGraphRangeEnum.GREATER_OR_EQUAL,
-                MakeIdent("a"), // read a >= c
-                new[] { new object[] { null, "c", "b", QueryGraphRangeEnum.RANGE_CLOSED, "a" } });
+                MakeIdent("A"), // read a >= c
+                new[] { new object[] { null, "C", "B", QueryGraphRangeEnum.RANGE_CLOSED, "A" } });
         }
     }
 } // end of namespace

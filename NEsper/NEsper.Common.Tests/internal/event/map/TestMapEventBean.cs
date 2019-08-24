@@ -22,7 +22,7 @@ using NUnit.Framework;
 namespace com.espertech.esper.common.@internal.@event.map
 {
     [TestFixture]
-    public class TestMapEventBean : AbstractTestBase
+    public class TestMapEventBean : AbstractCommonTest
     {
         private IDictionary<string, object> testTypesMap;
         private IDictionary<string, object> testValuesMap;
@@ -38,12 +38,12 @@ namespace com.espertech.esper.common.@internal.@event.map
             testTypesMap = new Dictionary<string, object>();
             testTypesMap.Put("aString", typeof(string));
             testTypesMap.Put("anInt", typeof(int?));
-            testTypesMap.Put("myComplexBean", typeof(SupportBeanComplexProps));
+            testTypesMap.Put("MyComplexBean", typeof(SupportBeanComplexProps));
 
             testValuesMap = new Dictionary<string, object>();
             testValuesMap.Put("aString", "test");
             testValuesMap.Put("anInt", 10);
-            testValuesMap.Put("myComplexBean", supportBean);
+            testValuesMap.Put("MyComplexBean", supportBean);
 
             EventTypeMetadata metadata = new EventTypeMetadata("MyType", null, EventTypeTypeClass.STREAM, EventTypeApplicationType.MAP, NameAccessModifier.INTERNAL, EventTypeBusModifier.NONBUS, false, EventTypeIdPair.Unassigned());
             eventType = new MapEventType(metadata, testTypesMap, null, null, null, null,
@@ -60,7 +60,7 @@ namespace com.espertech.esper.common.@internal.@event.map
             Assert.AreEqual("test", eventBean.Get("aString"));
             Assert.AreEqual(10, eventBean.Get("anInt"));
 
-            Assert.AreEqual("NestedValue", eventBean.Get("myComplexBean.Nested.NestedValue"));
+            Assert.AreEqual("NestedValue", eventBean.Get("MyComplexBean.Nested.NestedValue"));
 
             // test wrong property name
             try

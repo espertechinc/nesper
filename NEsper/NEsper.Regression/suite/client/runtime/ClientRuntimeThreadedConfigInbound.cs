@@ -45,7 +45,7 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
             configuration.Common.AddImportType(typeof(SupportStaticMethodLib));
 
             var xmlDOMEventTypeDesc = new ConfigurationCommonEventTypeXMLDOM();
-            xmlDOMEventTypeDesc.RootElementName = "myevent";
+            xmlDOMEventTypeDesc.RootElementName = "Myevent";
             configuration.Common.AddEventType("XMLType", xmlDOMEventTypeDesc);
 
             configuration.Compiler.AddPlugInSingleRowFunction(
@@ -120,8 +120,8 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
                 senderOne.SendEvent(new Dictionary<string, object>());
                 env.SendEventBean(new SupportBean());
                 senderTwo.SendEvent(new SupportBean());
-                env.SendEventXMLDOM(SupportXML.GetDocument("<myevent/>"), "XMLType");
-                senderThree.SendEvent(SupportXML.GetDocument("<myevent/>"));
+                env.SendEventXMLDOM(SupportXML.GetDocument("<Myevent/>"), "XMLType");
+                senderThree.SendEvent(SupportXML.GetDocument("<Myevent/>"));
             }
 
             var end = PerformanceObserver.NanoTime;

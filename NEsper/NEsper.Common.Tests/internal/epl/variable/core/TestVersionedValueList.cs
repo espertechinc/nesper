@@ -14,7 +14,7 @@ using NUnit.Framework;
 namespace com.espertech.esper.common.@internal.epl.variable.core
 {
     [TestFixture]
-    public class TestVersionedValueList : AbstractTestBase
+    public class TestVersionedValueList : AbstractCommonTest
     {
         private VersionedValueList<string> list;
 

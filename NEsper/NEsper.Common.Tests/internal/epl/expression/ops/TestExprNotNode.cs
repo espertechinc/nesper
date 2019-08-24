@@ -17,7 +17,7 @@ using NUnit.Framework;
 namespace com.espertech.esper.common.@internal.epl.expression.ops
 {
     [TestFixture]
-    public class TestExprNotNode : AbstractTestBase
+    public class TestExprNotNode : AbstractCommonTest
     {
         [SetUp]
         public void SetUp()

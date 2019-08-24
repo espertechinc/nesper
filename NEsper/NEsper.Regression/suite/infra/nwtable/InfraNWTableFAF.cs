@@ -414,7 +414,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 InsertInfra2Event(env, path, "Y", 10);
 
                 query = "select distinct value from Infra1 as i1, Infra2 as i2 where i1.KeyJoin = i2.KeyJoin";
-                fields = "value".SplitCsv();
+                fields = new [] { "value" };
                 result = env.CompileExecuteFAF(query, path);
                 EPAssertionUtil.AssertPropsPerRow(
                     result.Array,

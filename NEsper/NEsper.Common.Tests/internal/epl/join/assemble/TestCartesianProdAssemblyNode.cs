@@ -19,7 +19,7 @@ using NUnit.Framework;
 namespace com.espertech.esper.common.@internal.epl.join.assemble
 {
     [TestFixture]
-    public class TestCartesianProdAssemblyNode : AbstractTestBase
+    public class TestCartesianProdAssemblyNode : AbstractCommonTest
     {
         [SetUp]
         public void SetUp()

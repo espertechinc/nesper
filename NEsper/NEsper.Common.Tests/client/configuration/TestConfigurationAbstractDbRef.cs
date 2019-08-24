@@ -14,7 +14,7 @@ using NUnit.Framework;
 namespace com.espertech.esper.common.client.configuration
 {
     [TestFixture]
-    public class TestConfigurationAbstractDbRef : AbstractTestBase
+    public class TestConfigurationAbstractDbRef : AbstractCommonTest
     {
         private void TryInvalid(
             Type type,
@@ -36,7 +36,7 @@ namespace com.espertech.esper.common.client.configuration
         {
             TryInvalid(
                 typeof(Console),
-                "Unsupported type 'Console' when expecting any of: [String, Decimal, Boolean, Byte, Short, Int, Long, Float, Double, ByteArray]");
+                "Unsupported type 'System.Console' when expecting any of: [String, Decimal, Boolean, Byte, Short, Int, Long, Float, Double, ByteArray]");
 
             var config = new ConfigurationCommonDBRef();
             config.AddTypeBinding(typeof(long), typeof(int));

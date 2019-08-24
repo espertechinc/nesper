@@ -23,7 +23,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
     public class EventXMLNoSchemaSimpleXMLXPathProperties : RegressionExecution
     {
         protected const string XML_NOSCHEMAEVENT =
-            "<myevent>\n" +
+            "<Myevent>\n" +
             "  <element1>VAL1</element1>\n" +
             "  <element2>\n" +
             "    <element21 Id=\"e21_1\">VAL21-1</element21>\n" +
@@ -31,7 +31,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
             "  </element2>\n" +
             "  <element3 attrString=\"VAL3\" attrNum=\"5\" attrBool=\"true\"/>\n" +
             "  <element4><element41>VAL4-1</element41></element4>\n" +
-            "</myevent>";
+            "</Myevent>";
 
         private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 

@@ -6,13 +6,16 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
+using System.IO;
+
 using com.espertech.esper.common.@internal.supportunit.db;
 using com.espertech.esper.common.@internal.supportunit.@event;
+using com.espertech.esper.common.@internal.supportunit.util;
 using com.espertech.esper.compat;
-using com.espertech.esper.compat.function;
 using com.espertech.esper.container;
 
-namespace com.espertech.esper.common.@internal.supportunit.util
+namespace com.espertech.esper.common
 {
     public class SupportContainer
     {
@@ -36,12 +39,15 @@ namespace com.espertech.esper.common.@internal.supportunit.util
 
         private static IContainer CreateContainer()
         {
+            var baseDirectory = AppDomain.CurrentDomain.BaseDirectory;
+
             var container = ContainerExtensions.CreateDefaultContainer(false);
             container.Register<IResourceManager>(
-                xx => new DefaultResourceManager(true,
-                    @"..\..\..\etc",
-                    @"..\..\..\..\etc",
-                    @"..\..\..\..\..\etc"),
+                xx => new DefaultResourceManager(
+                    true,
+                    Path.GetFullPath(Path.Combine(baseDirectory, "..", "..", "..", "etc")),
+                    Path.GetFullPath(Path.Combine(baseDirectory, "..", "..", "..", "..", "etc")),
+                    Path.GetFullPath(Path.Combine(baseDirectory, "..", "..", "..", "..", "..", "etc"))),
                 Lifespan.Singleton);
 
             SupportEventTypeFactory.RegisterSingleton(container);

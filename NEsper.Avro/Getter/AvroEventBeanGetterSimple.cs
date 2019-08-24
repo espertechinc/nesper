@@ -114,10 +114,11 @@ namespace NEsper.Avro.Getter
         {
             return CodegenExpressionBuilder.Cast(
                 _propertyType,
-                CodegenExpressionBuilder.ExprDotMethod(
-                    underlyingExpression,
+                CodegenExpressionBuilder.StaticMethod(
+                    typeof(GenericRecordExtensions),
                     "Get",
-                    CodegenExpressionBuilder.Constant(_propertyIndex)));
+                    underlyingExpression,
+                    CodegenExpressionBuilder.Constant(_propertyIndex.Name)));
         }
 
         public CodegenExpression UnderlyingExistsCodegen(
@@ -185,7 +186,8 @@ namespace NEsper.Avro.Getter
                 true,
                 typeof(EventType),
                 EventTypeUtility.ResolveTypeCodegen(_fragmentType, EPStatementInitServicesConstants.REF));
-            return codegenMethodScope.MakeChild(typeof(object), GetType(), codegenClassScope)
+            return codegenMethodScope
+                .MakeChild(typeof(object), GetType(), codegenClassScope)
                 .AddParam(typeof(GenericRecord), "record")
                 .Block
                 .DeclareVar<object>(

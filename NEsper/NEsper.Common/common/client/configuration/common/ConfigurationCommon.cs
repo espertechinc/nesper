@@ -611,33 +611,39 @@ namespace com.espertech.esper.common.client.configuration.common
         /// <summary>
         ///     Adds a namespace to the list of automatically-imported classes and packages.
         /// </summary>
-        /// <param name="autoImportNamespace">is a fully-qualified class name or a package name with wildcard</param>
-        public void AddImportNamespace(string autoImportNamespace)
+        /// <param name="autoImportNamespace">is a namespace</param>
+        /// <param name="assemblyName">the optional assembly name</param>
+        public void AddImportNamespace(
+            string autoImportNamespace,
+            string assemblyName)
         {
             if (autoImportNamespace == ANNOTATION_NAMESPACE) {
-                imports.Add(new ImportBuiltinAnnotations());
+                imports.Add(ImportBuiltinAnnotations.Instance);
             }
             else {
-                imports.Add(new ImportNamespace(autoImportNamespace));
+                imports.Add(new ImportNamespace(autoImportNamespace, assemblyName));
             }
         }
 
         /// <summary>
         ///     Adds a namespace to the list of automatically-imported classes and packages.
         /// </summary>
-        /// <param name="typeInNamespace">is a fully-qualified class name within a namespace</param>
+        /// <param name="typeInNamespace">is a fully-qualified type within a namespace</param>
         public void AddImportNamespace(Type typeInNamespace)
         {
-            AddImportNamespace(typeInNamespace.Namespace);
+            imports.Add(new ImportNamespace(typeInNamespace));
         }
 
         /// <summary>
-        ///     Adds a Type to the list of automatically-imported classes.
+        ///     Adds a type to the list of automatically-imported classes.
         /// </summary>
         /// <param name="autoImportTypeName">a type to import</param>
-        public void AddImportType(string autoImportTypeName)
+        /// <param name="assemblyName">the optional assembly name</param>
+        public void AddImportType(
+            string autoImportTypeName, 
+            string assemblyName)
         {
-            imports.Add(new ImportType(autoImportTypeName));
+            imports.Add(new ImportType(autoImportTypeName, assemblyName));
         }
 
         /// <summary>
@@ -646,7 +652,7 @@ namespace com.espertech.esper.common.client.configuration.common
         /// <param name="autoImport">is a class to import</param>
         public void AddImportType(Type autoImport)
         {
-            imports.Add(new ImportType(autoImport.FullName));
+            imports.Add(new ImportType(autoImport));
         }
 
         /// <summary>
@@ -662,9 +668,10 @@ namespace com.espertech.esper.common.client.configuration.common
         ///     Remove a type import.
         /// </summary>
         /// <param name="typeName">the type</param>
-        public void RemoveImportType(string typeName)
+        /// <param name="assemblyName">the optional assembly name</param>
+        public void RemoveImportType(string typeName, string assemblyName)
         {
-            imports.Remove(new ImportType(typeName));
+            imports.Remove(new ImportType(typeName, null));
         }
 
         /// <summary>
@@ -673,25 +680,27 @@ namespace com.espertech.esper.common.client.configuration.common
         /// <param name="type">the type</param>
         public void RemoveImportType(Type type)
         {
-            imports.Remove(new ImportType(type.FullName));
+            imports.Remove(new ImportType(type));
         }
 
         /// <summary>
         ///     Remove a namespace import.
         /// </summary>
         /// <param name="namespace">the namespace</param>
-        public void RemoveImportNamespace(string @namespace)
+        /// <param name="assemblyName">the optional assembly name</param>
+        public void RemoveImportNamespace(string @namespace, string assemblyName)
         {
-            imports.Remove(new ImportNamespace(@namespace));
+            imports.Remove(new ImportNamespace(@namespace, assemblyName));
         }
 
         /// <summary>
         ///     Adds a namespace to the list of automatically-imports use by annotations only.
         /// </summary>
         /// <param name="namespace">namespace to import.</param>
-        public void AddAnnotationImportNamespace(string @namespace)
+        /// <param name="assemblyName">the optional assembly name</param>
+        public void AddAnnotationImportNamespace(string @namespace, string assemblyName)
         {
-            annotationImports.Add(new ImportNamespace(@namespace));
+            annotationImports.Add(new ImportNamespace(@namespace, assemblyName));
         }
 
         /// <summary>
@@ -700,16 +709,15 @@ namespace com.espertech.esper.common.client.configuration.common
         /// <param name="typeInNamespace">type within the namespace.</param>
         public void AddAnnotationImportNamespace(Type typeInNamespace)
         {
-            annotationImports.Add(new ImportNamespace(typeInNamespace.Namespace));
+            annotationImports.Add(new ImportNamespace(typeInNamespace));
         }
 
-        /// <summary>
-        ///     Add a type name to the imports available for annotations only
-        /// </summary>
+        /// <summary>Add a type name to the imports available for annotations only</summary>
         /// <param name="autoImportTypeName">fully qualified type name to add</param>
-        public void AddAnnotationImportType(string autoImportTypeName)
+        /// <param name="assemblyName">the assembly name</param>
+        public void AddAnnotationImportType(string autoImportTypeName, string assemblyName)
         {
-            annotationImports.Add(new ImportType(autoImportTypeName));
+            annotationImports.Add(new ImportType(autoImportTypeName, assemblyName));
         }
 
         /// <summary>
@@ -718,7 +726,7 @@ namespace com.espertech.esper.common.client.configuration.common
         /// <param name="autoImportType">type to add</param>
         public void AddAnnotationImportType(Type autoImportType)
         {
-            annotationImports.Add(new ImportType(autoImportType.FullName));
+            annotationImports.Add(new ImportType(autoImportType));
         }
 
         /// <summary>
@@ -928,8 +936,8 @@ namespace com.espertech.esper.common.client.configuration.common
         {
             imports.Add(new ImportNamespace("System"));
             imports.Add(new ImportNamespace("System.Text"));
-            imports.Add(new ImportNamespace(DATAFLOWOPERATOR_NAMESPACE));
-            imports.Add(new ImportBuiltinAnnotations()); // ANNOTATION_NAMESPACE
+            imports.Add(new ImportNamespace(typeof(SelectForge)));
+            imports.Add(ImportBuiltinAnnotations.Instance); // ANNOTATION_NAMESPACE
         }
     }
 } // end of namespace

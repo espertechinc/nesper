@@ -16,7 +16,7 @@ using NUnit.Framework;
 namespace com.espertech.esper.common.@internal.epl.join.rep
 {
     [TestFixture]
-    public class TestSingleCursorIterator : AbstractTestBase
+    public class TestSingleCursorIterator : AbstractCommonTest
     {
         private IEnumerator<Cursor> filledIterator;
         private IEnumerator<Cursor> emptyIterator;

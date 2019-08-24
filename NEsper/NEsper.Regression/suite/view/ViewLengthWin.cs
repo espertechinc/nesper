@@ -195,8 +195,8 @@ namespace com.espertech.esper.regressionlib.suite.view
             public void Run(RegressionEnvironment env)
             {
                 var epl = "@Name('s0') select mapped('keyOne') as a," +
-                          "indexed[1] as b, nested.NestedNested.NestedNestedValue as c, mapProperty, " +
-                          "arrayProperty[0] " +
+                          "Indexed[1] as b, nested.NestedNested.NestedNestedValue as c, mapProperty, " +
+                          "ArrayProperty[0] " +
                           "  from SupportBeanComplexProps#length(3) " +
                           " where mapped('keyOne') = 'valueOne' and " +
                           " indexed[1] = 2 and " +
@@ -209,8 +209,8 @@ namespace com.espertech.esper.regressionlib.suite.view
                 Assert.AreEqual(eventObject.GetMapped("keyOne"), theEvent.Get("a"));
                 Assert.AreEqual(eventObject.GetIndexed(1), theEvent.Get("b"));
                 Assert.AreEqual(eventObject.Nested.NestedNested.NestedNestedValue, theEvent.Get("c"));
-                Assert.AreEqual(eventObject.MapProperty, theEvent.Get("mapProperty"));
-                Assert.AreEqual(eventObject.ArrayProperty[0], theEvent.Get("arrayProperty[0]"));
+                Assert.AreEqual(eventObject.MapProperty, theEvent.Get("MapProperty"));
+                Assert.AreEqual(eventObject.ArrayProperty[0], theEvent.Get("ArrayProperty[0]"));
 
                 eventObject.SetIndexed(1, int.MinValue);
                 Assert.IsFalse(env.Listener("s0").IsInvoked);

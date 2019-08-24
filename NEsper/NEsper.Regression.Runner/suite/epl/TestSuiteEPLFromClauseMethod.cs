@@ -91,7 +91,7 @@ namespace com.espertech.esper.regressionrun.suite.epl
             ConfigurationCompilerPlugInSingleRowFunction entry = new ConfigurationCompilerPlugInSingleRowFunction();
             entry.Name = "myItemProducerUDF";
             entry.FunctionClassName = typeof(EPLFromClauseMethod).FullName;
-            entry.FunctionMethodName = "myItemProducerUDF";
+            entry.FunctionMethodName = "MyItemProducerUDF";
             entry.EventTypeName = "ItemEvent";
             configuration.Compiler.AddPlugInSingleRowFunction(entry);
         }

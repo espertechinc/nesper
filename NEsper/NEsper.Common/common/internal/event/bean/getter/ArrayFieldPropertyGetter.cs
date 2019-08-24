@@ -148,9 +148,9 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
                 .Block
                 .DeclareVar<object>("value", ExprDotName(Ref("@object"), _field.Name))
                 .IfConditionReturnConst(
-                    Relational(StaticMethod(typeof(Array), "GetLength", Ref("value")), LE, Ref("index")),
+                    Relational(ExprDotName(Ref("value"), "Length"), LE, Ref("index")),
                     null)
-                .MethodReturn(Cast(BeanPropType, StaticMethod(typeof(Array), "Get", Ref("value"), Ref("index"))));
+                .MethodReturn(Cast(BeanPropType, ExprDotMethod(Ref("value"), "Get", Ref("index"))));
         }
 
         public override string ToString()

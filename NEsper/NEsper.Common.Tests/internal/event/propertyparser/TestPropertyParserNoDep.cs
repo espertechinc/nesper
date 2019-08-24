@@ -18,7 +18,7 @@ using static com.espertech.esper.common.@internal.@event.propertyparser.Property
 namespace com.espertech.esper.common.@internal.@event.propertyparser
 {
     [TestFixture]
-    public class TestPropertyParserNoDep : AbstractTestBase
+    public class TestPropertyParserNoDep : AbstractCommonTest
     {
         [Test]
         public void TestParse()

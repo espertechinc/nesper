@@ -14,7 +14,7 @@ using NUnit.Framework;
 namespace com.espertech.esper.common.@internal.util
 {
     [TestFixture]
-    public class TestSimpleNumberCoercion : AbstractTestBase
+    public class TestSimpleNumberCoercion : AbstractCommonTest
     {
         [Test]
         public void TestGetCoercer()

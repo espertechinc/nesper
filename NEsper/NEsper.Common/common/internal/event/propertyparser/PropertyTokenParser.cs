@@ -99,7 +99,7 @@ namespace com.espertech.esper.common.@internal.@event.propertyparser
                     lookahead.token == TokenType.SINGLEQUOTEDLITERAL) {
                     var type = lookahead.token;
                     var value = lookahead.sequence.Trim();
-                    var key = value.Substring(1, value.Length - 1);
+                    var key = value.Substring(1, value.Length - 2);
                     NextToken();
 
                     ExpectOrFail(type, TokenType.RPAREN);

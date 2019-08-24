@@ -180,7 +180,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@Name('s0') select {arrayProperty, nested} as field from " +
+                var epl = "@Name('s0') select {ArrayProperty, nested} as field from " +
                           typeof(SupportBeanComplexProps).Name;
                 env.CompileDeploy(epl).AddListener("s0");
 

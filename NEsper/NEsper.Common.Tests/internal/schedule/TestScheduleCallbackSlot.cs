@@ -11,7 +11,7 @@ using NUnit.Framework;
 namespace com.espertech.esper.common.@internal.schedule
 {
     [TestFixture]
-    public class TestScheduleCallbackSlot : AbstractTestBase
+    public class TestScheduleCallbackSlot : AbstractCommonTest
     {
         [Test]
         public void TestCompare()

@@ -248,7 +248,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.rollup
         {
             method.Block.ExprDotMethod(
                 REF_AGGVISITOR,
-                "visitAggregations",
+                "VisitAggregations",
                 GetGroupKeyCountCodegen(method, classScope),
                 REF_AGGREGATORSPERGROUP,
                 REF_AGGREGATORTOPGROUP);
@@ -323,7 +323,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.rollup
                 method.Block.AssignCompound(
                     "size",
                     "+",
-                    ExprDotMethod(ArrayAtIndex(REF_AGGREGATORSPERGROUP, Constant(i)), "Size"));
+                    ExprDotName(ArrayAtIndex(REF_AGGREGATORSPERGROUP, Constant(i)), "Count"));
             }
 
             method.Block.MethodReturn(Ref("size"));
@@ -403,7 +403,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.rollup
 
                 if (!enter && !level.IsAggregationTop) {
                     var ifCanDelete = method.Block.IfCondition(
-                        Relational(ExprDotName(REF_CURRENTROW, "Refcount"), LE, Constant(0)));
+                        Relational(ExprDotMethod(REF_CURRENTROW, "GetRefcount"), LE, Constant(0)));
                     ifCanDelete.AssignRef(REF_HASREMOVEDKEY, ConstantTrue());
                     if (!level.IsAggregationTop) {
                         var removedKeyForLevel = ArrayAtIndex(REF_REMOVEDKEYS, Constant(level.AggregationOffset));

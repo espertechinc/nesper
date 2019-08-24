@@ -15,7 +15,7 @@ using NUnit.Framework;
 namespace com.espertech.esper.common.@internal.collection
 {
     [TestFixture]
-    public class TestSortedRefCountedSet : AbstractTestBase
+    public class TestSortedRefCountedSet : AbstractCommonTest
     {
         private SortedRefCountedSet<string> refSet;
         private readonly Random random = new Random();

@@ -51,7 +51,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.simple
                         var passesHaving = processor.EvaluateHavingClause(
                             eventsPerStream,
                             true,
-                            processor.AgentInstanceContext);
+                            processor.GetAgentInstanceContext());
                         if (!passesHaving) {
                             continue;
                         }
@@ -67,7 +67,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.simple
                         var passesHaving = processor.EvaluateHavingClause(
                             eventsPerStream,
                             false,
-                            processor.AgentInstanceContext);
+                            processor.GetAgentInstanceContext());
                         if (!passesHaving) {
                             continue;
                         }
@@ -97,7 +97,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.simple
                         var passesHaving = processor.EvaluateHavingClause(
                             theEvent.Array,
                             true,
-                            processor.AgentInstanceContext);
+                            processor.GetAgentInstanceContext());
                         if (!passesHaving) {
                             continue;
                         }
@@ -111,7 +111,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.simple
                         var passesHaving = processor.EvaluateHavingClause(
                             theEvent.Array,
                             false,
-                            processor.AgentInstanceContext);
+                            processor.GetAgentInstanceContext());
                         if (!passesHaving) {
                             continue;
                         }

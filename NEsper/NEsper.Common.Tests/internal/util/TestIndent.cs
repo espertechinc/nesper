@@ -13,7 +13,7 @@ using NUnit.Framework;
 namespace com.espertech.esper.common.@internal.util
 {
     [TestFixture]
-    public class TestIndent : AbstractTestBase
+    public class TestIndent : AbstractCommonTest
     {
         [Test]
         public void SimpleIndentTest()

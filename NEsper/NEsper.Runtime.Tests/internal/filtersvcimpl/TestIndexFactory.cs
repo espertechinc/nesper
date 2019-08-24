@@ -19,7 +19,7 @@ using NUnit.Framework;
 namespace com.espertech.esper.runtime.@internal.filtersvcimpl
 {
     [TestFixture]
-    public class TestIndexFactory : AbstractTestBase
+    public class TestIndexFactory : AbstractRuntimeTest
     {
         private EventType eventType;
         private FilterServiceGranularLockFactory lockFactory;

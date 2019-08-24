@@ -23,7 +23,7 @@ using NUnit.Framework;
 namespace com.espertech.esper.common.@internal.epl.join.querygraph
 {
     [TestFixture]
-    public class TestQueryGraphForge : AbstractTestBase
+    public class TestQueryGraphForge : AbstractCommonTest
     {
         private QueryGraphForge queryGraph;
         private EventType[] types;
@@ -37,7 +37,7 @@ namespace com.espertech.esper.common.@internal.epl.join.querygraph
                 supportEventTypeFactory.CreateMapType(CreateType("P1,P10,P11,P12")),
                 supportEventTypeFactory.CreateMapType(CreateType("P2,P20,P21")),
                 supportEventTypeFactory.CreateMapType(CreateType("P3,P30,P31")),
-                supportEventTypeFactory.CreateMapType(CreateType("P4,P40,P41,p42")),
+                supportEventTypeFactory.CreateMapType(CreateType("P4,P40,P41,P42")),
             };
         }
 
@@ -180,10 +180,10 @@ namespace com.espertech.esper.common.@internal.epl.join.querygraph
         {
             // s1.p11 = s0.p01 and s0.p02 = s1.p12
             queryGraph.AddStrictEquals(1, "P11", Make(1, "P11"), 0, "P01", Make(0, "P01"));
-            queryGraph.AddStrictEquals(0, "P02", Make(0, "P02"), 1, "p12", Make(1, "p12"));
+            queryGraph.AddStrictEquals(0, "P02", Make(0, "P02"), 1, "P12", Make(1, "P12"));
             log.Debug(queryGraph.ToString());
 
-            string[] expectedOne = new string[] { "P11", "p12" };
+            string[] expectedOne = new string[] { "P11", "P12" };
             string[] expectedTwo = new string[] { "P01", "P02" };
             Assert.IsTrue(Arrays.Equals(expectedTwo, SupportQueryGraphTestUtil.GetIndexProperties(queryGraph, 1, 0)));
             Assert.IsTrue(Arrays.Equals(expectedOne, SupportQueryGraphTestUtil.GetIndexProperties(queryGraph, 0, 1)));

@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.epl.spatial.quadtree.core;
 using com.espertech.esper.common.@internal.epl.spatial.quadtree.mxcif;
+using com.espertech.esper.compat;
 
 namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxciffilterindex
 {
@@ -39,7 +40,8 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxciffilteri
             TT target,
             QuadTreeCollector<TL, TT> collector)
         {
-            if (node is MXCIFQuadTreeNodeLeaf<object> leaf) {
+            if (node is MXCIFQuadTreeNodeLeaf<object> leaf)
+            {
                 CollectNode(leaf, x, y, width, height, eventBean, target, collector);
                 return;
             }
@@ -67,36 +69,64 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxciffilteri
                 return;
             }
 
-            if (rectangles is XYWHRectangleWValue<TL>) {
-                XYWHRectangleWValue<TL> rectangle = (XYWHRectangleWValue<TL>) rectangles;
+            if (rectangles is XYWHRectangleWValue<TL> rectangleWValue) {
                 if (BoundingBox.IntersectsBoxIncludingEnd(
                     x,
                     y,
                     x + width,
                     y + height,
-                    rectangle.X,
-                    rectangle.Y,
-                    rectangle.W,
-                    rectangle.H)) {
-                    collector.CollectInto(eventBean, rectangle.Value, target);
+                    rectangleWValue.X,
+                    rectangleWValue.Y,
+                    rectangleWValue.W,
+                    rectangleWValue.H)) {
+                    collector.CollectInto(eventBean, rectangleWValue.Value, target);
                 }
-
-                return;
             }
-
-            ICollection<XYWHRectangleWValue<TL>> collection = (ICollection<XYWHRectangleWValue<TL>>) rectangles;
-            foreach (XYWHRectangleWValue<TL> rectangle in collection) {
+            else if (rectangles is XYWHRectangleWValue<object> rectangleWValueGeneric) {
                 if (BoundingBox.IntersectsBoxIncludingEnd(
                     x,
                     y,
                     x + width,
                     y + height,
-                    rectangle.X,
-                    rectangle.Y,
-                    rectangle.W,
-                    rectangle.H)) {
-                    collector.CollectInto(eventBean, rectangle.Value, target);
+                    rectangleWValueGeneric.X,
+                    rectangleWValueGeneric.Y,
+                    rectangleWValueGeneric.W,
+                    rectangleWValueGeneric.H)) {
+                    collector.CollectInto(eventBean, (TL) rectangleWValueGeneric.Value, target);
                 }
+            }
+            else if (rectangles is IEnumerable<XYWHRectangleWValue<TL>> enumerableWithType) {
+                foreach (var rectangle in enumerableWithType) {
+                    if (BoundingBox.IntersectsBoxIncludingEnd(
+                        x,
+                        y,
+                        x + width,
+                        y + height,
+                        rectangle.X,
+                        rectangle.Y,
+                        rectangle.W,
+                        rectangle.H)) {
+                        collector.CollectInto(eventBean, rectangle.Value, target);
+                    }
+                }
+            }
+            else if (rectangles is IEnumerable<XYWHRectangleWValue<object>> enumerableWithoutType) {
+                foreach (var rectangle in enumerableWithoutType) {
+                    if (BoundingBox.IntersectsBoxIncludingEnd(
+                        x,
+                        y,
+                        x + width,
+                        y + height,
+                        rectangle.X,
+                        rectangle.Y,
+                        rectangle.W,
+                        rectangle.H)) {
+                        collector.CollectInto(eventBean, (TL) rectangle.Value, target);
+                    }
+                }
+            }
+            else {
+                throw new IllegalStateException("unknown type for rectangles");
             }
         }
     }

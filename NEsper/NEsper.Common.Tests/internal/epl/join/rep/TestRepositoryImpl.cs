@@ -19,7 +19,7 @@ using NUnit.Framework;
 namespace com.espertech.esper.common.@internal.epl.join.rep
 {
     [TestFixture]
-    public class TestRepositoryImpl : AbstractTestBase
+    public class TestRepositoryImpl : AbstractCommonTest
     {
         [SetUp]
         public void SetUp()

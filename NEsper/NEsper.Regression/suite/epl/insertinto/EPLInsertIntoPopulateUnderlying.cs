@@ -710,7 +710,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
             {
                 // arrays and maps
                 var stmtTextOne =
-                    "@Name('s0') insert into SupportBeanComplexProps(arrayProperty,ObjectArray,mapProperty) select " +
+                    "@Name('s0') insert into SupportBeanComplexProps(ArrayProperty,ObjectArray,mapProperty) select " +
                     "IntArr,{10,20,30},mapProp" +
                     " from MyMap as m";
                 env.CompileDeploy(stmtTextOne).AddListener("s0");
@@ -753,7 +753,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
 
                 // object to Object
                 stmtTextOne =
-                    "@Name('s0') insert into SupportBeanArrayCollMap(AnyObject) select nested from SupportBeanComplexProps";
+                    "@Name('s0') insert into SupportBeanArrayCollMap(AnyObject) select Nested from SupportBeanComplexProps";
                 env.CompileDeploy(stmtTextOne).AddListener("s0");
 
                 env.SendEventBean(SupportBeanComplexProps.MakeDefaultBean());

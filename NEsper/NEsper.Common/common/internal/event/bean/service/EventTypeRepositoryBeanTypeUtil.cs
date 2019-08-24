@@ -177,8 +177,8 @@ namespace com.espertech.esper.common.@internal.@event.bean.service
                 }
             }
 
-            BuildPublicBeanType(beanEventTypeStemService, repo, clazz.Name, clazz, privateFactory, configs);
-            return repo.GetTypeByName(clazz.Name);
+            BuildPublicBeanType(beanEventTypeStemService, repo, clazz.FullName, clazz, privateFactory, configs);
+            return repo.GetTypeByName(clazz.FullName);
         }
 
         private static void AddPredefinedBeanEventTypes(IDictionary<string, Type> resolvedBeanEventTypes)

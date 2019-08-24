@@ -39,11 +39,11 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 
             // Map
             IDictionary<string, object> mapInner = new Dictionary<string, object>();
-            mapInner.Put("myInsIdeInt", 10);
+            mapInner.Put("MyInsideInt", 10);
             IDictionary<string, object> topInner = new Dictionary<string, object>();
-            topInner.Put("myInt", 1);
-            topInner.Put("myString", "abc");
-            topInner.Put("nested", mapInner);
+            topInner.Put("MyInt", 1);
+            topInner.Put("MyString", "abc");
+            topInner.Put("Nested", mapInner);
             RunAssertion(env, MAP_TYPENAME, FMAP, topInner);
 
             // Object-array
@@ -52,20 +52,20 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
             RunAssertion(env, OA_TYPENAME, FOA, oaTop);
 
             // XML
-            var xml = "<myevent myInt=\"1\" myString=\"abc\"><nested myInsIdeInt=\"10\"/></myevent>";
+            var xml = "<Myevent MyInt=\"1\" MyString=\"abc\"><Nested MyInsideInt=\"10\"/></Myevent>";
             RunAssertion(env, XML_TYPENAME, FXML, xml);
 
             // Avro
             var schema = AvroSchemaUtil
                 .ResolveAvroSchema(env.Runtime.EventTypeService.GetEventTypePreconfigured(AVRO_TYPENAME))
                 .AsRecordSchema();
-            var innerSchema = schema.GetField("nested").Schema.AsRecordSchema();
+            var innerSchema = schema.GetField("Nested").Schema.AsRecordSchema();
             var avroInner = new GenericRecord(innerSchema);
-            avroInner.Put("myInsIdeInt", 10);
+            avroInner.Put("MyInsideInt", 10);
             var avro = new GenericRecord(schema);
-            avro.Put("myInt", 1);
-            avro.Put("myString", "abc");
-            avro.Put("nested", avroInner);
+            avro.Put("MyInt", 1);
+            avro.Put("MyString", "abc");
+            avro.Put("Nested", avroInner);
             RunAssertion(env, AVRO_TYPENAME, FAVRO, avro);
         }
 
@@ -83,12 +83,12 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 
             var jsonEventRenderer = env.Runtime.RenderEventService.GetJSONRenderer(env.Statement("s0").EventType);
             var json = jsonEventRenderer.Render(eventBean).RegexReplaceAll("(\\s|\\n|\\t)", "");
-            Assert.AreEqual("{\"myInt\":1,\"myString\":\"abc\",\"nested\":{\"myInsIdeInt\":10}}", json);
+            Assert.AreEqual("{\"MyInt\":1,\"MyString\":\"abc\",\"Nested\":{\"MyInsideInt\":10}}", json);
 
             var xmlEventRenderer = env.Runtime.RenderEventService.GetXMLRenderer(env.Statement("s0").EventType);
             var xml = xmlEventRenderer.Render("root", eventBean).RegexReplaceAll("(\\s|\\n|\\t)", "");
             Assert.AreEqual(
-                "<?xmlversion=\"1.0\"encoding=\"UTF-8\"?><root><myInt>1</myInt><myString>abc</myString><nested><myInsIdeInt>10</myInsIdeInt></nested></root>",
+                "<?xmlversion=\"1.0\"encoding=\"UTF-8\"?><root><MyInt>1</MyInt><MyString>abc</MyString><Nested><MyInsideInt>10</MyInsideInt></Nested></root>",
                 xml);
 
             env.UndeployAll();

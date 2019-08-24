@@ -20,7 +20,7 @@ using NUnit.Framework;
 namespace com.espertech.esper.common.@internal.@event.bean.core
 {
     [TestFixture]
-    public class TestBeanEventBean : AbstractTestBase
+    public class TestBeanEventBean : AbstractCommonTest
     {
         private SupportBean testEvent;
 
@@ -104,7 +104,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
             try {
                 eventType = supportEventTypeFactory.CreateBeanType(typeof(SupportBeanSimple));
                 eventBean = new BeanEventBean(testEvent, eventType);
-                eventBean.Get("myString");
+                eventBean.Get("MyString");
                 Assert.IsTrue(false);
             }
             catch (PropertyAccessException ex) {

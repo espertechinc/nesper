@@ -34,7 +34,7 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
             configuration.Runtime.Threading.IsThreadPoolRouteExec = true;
             configuration.Runtime.Threading.ThreadPoolRouteExecNumThreads = 5;
             configuration.Common.AddEventType("SupportBean", typeof(SupportBean));
-            configuration.Common.AddImportNamespace(typeof(SupportStaticMethodLib).Name);
+            configuration.Common.AddImportNamespace(typeof(SupportStaticMethodLib));
         }
 
         public bool EnableHATest => false;

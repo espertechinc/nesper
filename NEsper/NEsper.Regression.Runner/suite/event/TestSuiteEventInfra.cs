@@ -126,22 +126,22 @@ namespace com.espertech.esper.regressionrun.suite.@event
         private static void ConfigureUnderlyingSimple(Configuration configuration)
         {
             var properties = new Dictionary<string, object>();
-            properties.Put("myInt", typeof(int));
-            properties.Put("myString", "string");
+            properties.Put("MyInt", typeof(int));
+            properties.Put("MyString", "string");
             configuration.Common.AddEventType(EventInfraPropertyUnderlyingSimple.MAP_TYPENAME, properties);
 
-            string[] names = {"myInt", "myString"};
+            string[] names = {"MyInt", "MyString"};
             object[] types = {typeof(int), typeof(string)};
             configuration.Common.AddEventType(EventInfraPropertyUnderlyingSimple.OA_TYPENAME, names, types);
 
             var eventTypeMeta = new ConfigurationCommonEventTypeXMLDOM();
-            eventTypeMeta.RootElementName = "myevent";
+            eventTypeMeta.RootElementName = "Myevent";
             var schema = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
                          "<xs:schema targetNamespace=\"http://www.espertech.com/schema/esper\" elementFormDefault=\"qualified\" xmlns:esper=\"http://www.espertech.com/schema/esper\" xmlns:xs=\"http://www.w3.org/2001/XMLSchema\">\n" +
-                         "\t<xs:element name=\"myevent\">\n" +
+                         "\t<xs:element name=\"Myevent\">\n" +
                          "\t\t<xs:complexType>\n" +
-                         "\t\t\t<xs:attribute name=\"myInt\" type=\"xs:int\" use=\"required\"/>\n" +
-                         "\t\t\t<xs:attribute name=\"myString\" type=\"xs:string\" use=\"required\"/>\n" +
+                         "\t\t\t<xs:attribute name=\"MyInt\" type=\"xs:int\" use=\"required\"/>\n" +
+                         "\t\t\t<xs:attribute name=\"MyString\" type=\"xs:string\" use=\"required\"/>\n" +
                          "\t\t</xs:complexType>\n" +
                          "\t</xs:element>\n" +
                          "</xs:schema>\n";
@@ -150,9 +150,9 @@ namespace com.espertech.esper.regressionrun.suite.@event
 
             var avroSchema = SchemaBuilder.Record(
                 EventInfraPropertyUnderlyingSimple.AVRO_TYPENAME,
-                TypeBuilder.Field("myInt", TypeBuilder.IntType()),
+                TypeBuilder.Field("MyInt", TypeBuilder.IntType()),
                 TypeBuilder.Field(
-                    "myString",
+                    "MyString",
                     TypeBuilder.StringType(
                         TypeBuilder.Property(PROP_STRING_KEY, PROP_STRING_VALUE))));
             configuration.Common.AddEventTypeAvro(
@@ -197,10 +197,10 @@ namespace com.espertech.esper.regressionrun.suite.@event
             configuration.Common.AddEventType(oaTypeName, names, types);
 
             var eventTypeMeta = new ConfigurationCommonEventTypeXMLDOM();
-            eventTypeMeta.RootElementName = "myevent";
+            eventTypeMeta.RootElementName = "Myevent";
             var schema = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
                          "<xs:schema targetNamespace=\"http://www.espertech.com/schema/esper\" elementFormDefault=\"qualified\" xmlns:esper=\"http://www.espertech.com/schema/esper\" xmlns:xs=\"http://www.w3.org/2001/XMLSchema\">\n" +
-                         "\t<xs:element name=\"myevent\">\n" +
+                         "\t<xs:element name=\"Myevent\">\n" +
                          "\t\t<xs:complexType>\n" +
                          "\t\t\t<xs:sequence>\n" +
                          "\t\t\t\t<xs:element ref=\"esper:l1\"/>\n" +
@@ -301,10 +301,10 @@ namespace com.espertech.esper.regressionrun.suite.@event
             configuration.Common.AddEventType(oaTypeName, names, types);
 
             var eventTypeMeta = new ConfigurationCommonEventTypeXMLDOM();
-            eventTypeMeta.RootElementName = "myevent";
+            eventTypeMeta.RootElementName = "Myevent";
             var schema = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
                          "<xs:schema targetNamespace=\"http://www.espertech.com/schema/esper\" elementFormDefault=\"qualified\" xmlns:esper=\"http://www.espertech.com/schema/esper\" xmlns:xs=\"http://www.w3.org/2001/XMLSchema\">\n" +
-                         "\t<xs:element name=\"myevent\">\n" +
+                         "\t<xs:element name=\"Myevent\">\n" +
                          "\t\t<xs:complexType>\n" +
                          "\t\t\t<xs:sequence>\n" +
                          "\t\t\t\t<xs:element ref=\"esper:l1\" maxOccurs=\"unbounded\"/>\n" +
@@ -382,15 +382,15 @@ namespace com.espertech.esper.regressionrun.suite.@event
             string[] names_1 = {"NestedValue", "nestedNested"};
             object[] types_1 = {typeof(object), type_2};
             configuration.Common.AddEventType(type_1, names_1, types_1);
-            string[] names = {"simpleProperty", "nested"};
+            string[] names = {"simpleProperty", "Nested"};
             object[] types = {typeof(object), type_1};
             configuration.Common.AddEventType(EventInfraPropertyNestedDynamicRootedSimple.OA_TYPENAME, names, types);
 
             var eventTypeMeta = new ConfigurationCommonEventTypeXMLDOM();
-            eventTypeMeta.RootElementName = "myevent";
+            eventTypeMeta.RootElementName = "Myevent";
             var schema = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
                          "<xs:schema targetNamespace=\"http://www.espertech.com/schema/esper\" elementFormDefault=\"qualified\" xmlns:esper=\"http://www.espertech.com/schema/esper\" xmlns:xs=\"http://www.w3.org/2001/XMLSchema\">\n" +
-                         "\t<xs:element name=\"myevent\">\n" +
+                         "\t<xs:element name=\"Myevent\">\n" +
                          "\t\t<xs:complexType>\n" +
                          "\t\t</xs:complexType>\n" +
                          "\t</xs:element>\n" +
@@ -417,7 +417,7 @@ namespace com.espertech.esper.regressionrun.suite.@event
                         TypeBuilder.IntType(),
                         TypeBuilder.StringType())),
                 TypeBuilder.Field(
-                    "nested",
+                    "Nested",
                     TypeBuilder.Union(
                         TypeBuilder.IntType(),
                         s2)));
@@ -434,7 +434,7 @@ namespace com.espertech.esper.regressionrun.suite.@event
                 Collections.EmptyDataMap);
 
             var nestedName = EventInfraPropertyNestedDynamicRootedNonSimple.OA_TYPENAME + "_1";
-            string[] namesNested = {"indexed", "mapped", "arrayProperty", "mapProperty"};
+            string[] namesNested = {"Indexed", "Mapped", "ArrayProperty", "MapProperty"};
             object[] typesNested = {
                 typeof(int[]), typeof(IDictionary<string, object>), typeof(int[]), typeof(IDictionary<string, object>)
             };
@@ -444,10 +444,10 @@ namespace com.espertech.esper.regressionrun.suite.@event
             configuration.Common.AddEventType(EventInfraPropertyNestedDynamicRootedNonSimple.OA_TYPENAME, names, types);
 
             var eventTypeMeta = new ConfigurationCommonEventTypeXMLDOM();
-            eventTypeMeta.RootElementName = "myevent";
+            eventTypeMeta.RootElementName = "Myevent";
             var schema = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
                          "<xs:schema targetNamespace=\"http://www.espertech.com/schema/esper\" elementFormDefault=\"qualified\" xmlns:esper=\"http://www.espertech.com/schema/esper\" xmlns:xs=\"http://www.w3.org/2001/XMLSchema\">\n" +
-                         "\t<xs:element name=\"myevent\">\n" +
+                         "\t<xs:element name=\"Myevent\">\n" +
                          "\t\t<xs:complexType>\n" +
                          "\t\t</xs:complexType>\n" +
                          "\t</xs:element>\n" +
@@ -460,14 +460,14 @@ namespace com.espertech.esper.regressionrun.suite.@event
             var s1 = SchemaBuilder.Record(
                 EventInfraPropertyNestedDynamicRootedNonSimple.AVRO_TYPENAME + "_1",
                 TypeBuilder.Field(
-                    "indexed",
+                    "Indexed",
                     TypeBuilder.Union(
                         TypeBuilder.NullType(),
                         TypeBuilder.IntType(),
                         TypeBuilder.Array(
                             TypeBuilder.IntType()))),
                 TypeBuilder.Field(
-                    "mapped",
+                    "Mapped",
                     TypeBuilder.Union(
                         TypeBuilder.NullType(),
                         TypeBuilder.IntType(),
@@ -499,7 +499,7 @@ namespace com.espertech.esper.regressionrun.suite.@event
             object[] types_2 = {type_3, typeof(object)};
             configuration.Common.AddEventType(type_2, names_2, types_2);
             var type_1 = EventInfraPropertyNestedDynamicDeep.OA_TYPENAME + "_1";
-            string[] names_1 = {"nested"};
+            string[] names_1 = {"Nested"};
             object[] types_1 = {type_2};
             configuration.Common.AddEventType(type_1, names_1, types_1);
             string[] names = {"item"};
@@ -507,10 +507,10 @@ namespace com.espertech.esper.regressionrun.suite.@event
             configuration.Common.AddEventType(EventInfraPropertyNestedDynamicDeep.OA_TYPENAME, names, types);
 
             var eventTypeMeta = new ConfigurationCommonEventTypeXMLDOM();
-            eventTypeMeta.RootElementName = "myevent";
+            eventTypeMeta.RootElementName = "Myevent";
             var schema = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
                          "<xs:schema targetNamespace=\"http://www.espertech.com/schema/esper\" elementFormDefault=\"qualified\" xmlns:esper=\"http://www.espertech.com/schema/esper\" xmlns:xs=\"http://www.w3.org/2001/XMLSchema\">\n" +
-                         "\t<xs:element name=\"myevent\">\n" +
+                         "\t<xs:element name=\"Myevent\">\n" +
                          "\t\t<xs:complexType>\n" +
                          "\t\t\t<xs:sequence>\n" +
                          "\t\t\t\t<xs:element ref=\"esper:item\"/>\n" +
@@ -539,7 +539,7 @@ namespace com.espertech.esper.regressionrun.suite.@event
             var s1 = SchemaBuilder.Record(
                 EventInfraPropertyNestedDynamicDeep.AVRO_TYPENAME + "_1",
                 TypeBuilder.Field(
-                    "nested",
+                    "Nested",
                     TypeBuilder.Union(
                         TypeBuilder.IntType(),
                         s2)));
@@ -554,10 +554,10 @@ namespace com.espertech.esper.regressionrun.suite.@event
         private static void ConfigureNestedDynamic(Configuration configuration)
         {
             var eventTypeMeta = new ConfigurationCommonEventTypeXMLDOM();
-            eventTypeMeta.RootElementName = "myevent";
+            eventTypeMeta.RootElementName = "Myevent";
             var schema = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
                          "<xs:schema targetNamespace=\"http://www.espertech.com/schema/esper\" elementFormDefault=\"qualified\" xmlns:esper=\"http://www.espertech.com/schema/esper\" xmlns:xs=\"http://www.w3.org/2001/XMLSchema\">\n" +
-                         "\t<xs:element name=\"myevent\">\n" +
+                         "\t<xs:element name=\"Myevent\">\n" +
                          "\t\t<xs:complexType>\n" +
                          "\t\t\t<xs:sequence>\n" +
                          "\t\t\t\t<xs:element ref=\"esper:item\"/>\n" +
@@ -603,24 +603,24 @@ namespace com.espertech.esper.regressionrun.suite.@event
             configuration.Common.AddEventType(
                 EventInfraPropertyMappedIndexed.MAP_TYPENAME,
                 TwoEntryMap<string, object>(
-                    "indexed",
+                    "Indexed",
                     typeof(string[]),
-                    "mapped",
+                    "Mapped",
                     typeof(IDictionary<string, object>)));
 
-            string[] names = {"indexed", "mapped"};
+            string[] names = {"Indexed", "Mapped"};
             object[] types = {typeof(string[]), typeof(IDictionary<string, object>)};
             configuration.Common.AddEventType(EventInfraPropertyMappedIndexed.OA_TYPENAME, names, types);
 
             var avroSchema = SchemaBuilder.Record(
                 "AvroSchema",
                 TypeBuilder.Field(
-                    "indexed",
+                    "Indexed",
                     TypeBuilder.Array(
                         TypeBuilder.StringType(
                             TypeBuilder.Property(PROP_STRING_KEY, PROP_STRING_VALUE)))),
                 TypeBuilder.Field(
-                    "mapped",
+                    "Mapped",
                     TypeBuilder.Map(
                         TypeBuilder.StringType(TypeBuilder.Property(PROP_STRING_KEY, PROP_STRING_VALUE)))));
             configuration.Common.AddEventTypeAvro(
@@ -631,10 +631,10 @@ namespace com.espertech.esper.regressionrun.suite.@event
         private static void ConfigureDynamicSimpleTypes(Configuration configuration)
         {
             var eventTypeMeta = new ConfigurationCommonEventTypeXMLDOM();
-            eventTypeMeta.RootElementName = "myevent";
+            eventTypeMeta.RootElementName = "Myevent";
             var schema = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
                          "<xs:schema targetNamespace=\"http://www.espertech.com/schema/esper\" elementFormDefault=\"qualified\" xmlns:esper=\"http://www.espertech.com/schema/esper\" xmlns:xs=\"http://www.w3.org/2001/XMLSchema\">\n" +
-                         "\t<xs:element name=\"myevent\">\n" +
+                         "\t<xs:element name=\"Myevent\">\n" +
                          "\t\t<xs:complexType>\n" +
                          "\t\t</xs:complexType>\n" +
                          "\t</xs:element>\n" +
@@ -666,15 +666,15 @@ namespace com.espertech.esper.regressionrun.suite.@event
                 EventInfraPropertyDynamicNonSimple.MAP_TYPENAME,
                 Collections.EmptyDataMap);
 
-            string[] names = {"indexed", "mapped"};
+            string[] names = {"Indexed", "Mapped"};
             object[] types = {typeof(int[]), typeof(IDictionary<string, object>)};
             configuration.Common.AddEventType(EventInfraPropertyDynamicNonSimple.OA_TYPENAME, names, types);
 
             var eventTypeMeta = new ConfigurationCommonEventTypeXMLDOM();
-            eventTypeMeta.RootElementName = "myevent";
+            eventTypeMeta.RootElementName = "Myevent";
             var schema = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
                          "<xs:schema targetNamespace=\"http://www.espertech.com/schema/esper\" elementFormDefault=\"qualified\" xmlns:esper=\"http://www.espertech.com/schema/esper\" xmlns:xs=\"http://www.w3.org/2001/XMLSchema\">\n" +
-                         "\t<xs:element name=\"myevent\">\n" +
+                         "\t<xs:element name=\"Myevent\">\n" +
                          "\t\t<xs:complexType>\n" +
                          "\t\t</xs:complexType>\n" +
                          "\t</xs:element>\n" +
@@ -685,14 +685,14 @@ namespace com.espertech.esper.regressionrun.suite.@event
             var avroSchema = SchemaBuilder.Record(
                 EventInfraPropertyDynamicNonSimple.AVRO_TYPENAME,
                 TypeBuilder.Field(
-                    "indexed",
+                    "Indexed",
                     TypeBuilder.Union(
                         TypeBuilder.NullType(),
                         TypeBuilder.IntType(),
                         TypeBuilder.Array(
                             TypeBuilder.IntType()))),
                 TypeBuilder.Field(
-                    "mapped",
+                    "Mapped",
                     TypeBuilder.Union(
                         TypeBuilder.NullType(),
                         TypeBuilder.IntType(),
@@ -706,10 +706,10 @@ namespace com.espertech.esper.regressionrun.suite.@event
         private static void ConfigureSenderTypes(Configuration configuration)
         {
             var eventInfraEventSenderMeta = new ConfigurationCommonEventTypeXMLDOM();
-            eventInfraEventSenderMeta.RootElementName = "myevent";
+            eventInfraEventSenderMeta.RootElementName = "Myevent";
             var eventInfraEventSenderSchema = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
                                               "<xs:schema targetNamespace=\"http://www.espertech.com/schema/esper\" elementFormDefault=\"qualified\" xmlns:esper=\"http://www.espertech.com/schema/esper\" xmlns:xs=\"http://www.w3.org/2001/XMLSchema\">\n" +
-                                              "\t<xs:element name=\"myevent\">\n" +
+                                              "\t<xs:element name=\"Myevent\">\n" +
                                               "\t\t<xs:complexType>\n" +
                                               "\t\t</xs:complexType>\n" +
                                               "\t</xs:element>\n" +
@@ -731,23 +731,23 @@ namespace com.espertech.esper.regressionrun.suite.@event
         private static void ConfigureRenderTypes(Configuration configuration)
         {
             var myXMLEventConfig = new ConfigurationCommonEventTypeXMLDOM();
-            myXMLEventConfig.RootElementName = "myevent";
+            myXMLEventConfig.RootElementName = "Myevent";
             var schema = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
                          "<xs:schema targetNamespace=\"http://www.espertech.com/schema/esper\" elementFormDefault=\"qualified\" xmlns:esper=\"http://www.espertech.com/schema/esper\" xmlns:xs=\"http://www.w3.org/2001/XMLSchema\">\n" +
-                         "\t<xs:element name=\"myevent\">\n" +
+                         "\t<xs:element name=\"Myevent\">\n" +
                          "\t\t<xs:complexType>\n" +
                          "\t\t\t<xs:sequence minOccurs=\"0\" maxOccurs=\"unbounded\">\n" +
                          "\t\t\t\t<xs:choice>\n" +
-                         "\t\t\t\t\t<xs:element ref=\"esper:nested\" minOccurs=\"1\" maxOccurs=\"1\"/>\n" +
+                         "\t\t\t\t\t<xs:element ref=\"esper:Nested\" minOccurs=\"1\" maxOccurs=\"1\"/>\n" +
                          "\t\t\t\t</xs:choice>\n" +
                          "\t\t\t</xs:sequence>\n" +
-                         "\t\t\t<xs:attribute name=\"myInt\" type=\"xs:int\" use=\"required\"/>\n" +
-                         "\t\t\t<xs:attribute name=\"myString\" type=\"xs:string\" use=\"required\"/>\n" +
+                         "\t\t\t<xs:attribute name=\"MyInt\" type=\"xs:int\" use=\"required\"/>\n" +
+                         "\t\t\t<xs:attribute name=\"MyString\" type=\"xs:string\" use=\"required\"/>\n" +
                          "\t\t</xs:complexType>\n" +
                          "\t</xs:element>\n" +
-                         "\t<xs:element name=\"nested\">\n" +
+                         "\t<xs:element name=\"Nested\">\n" +
                          "\t\t<xs:complexType>\n" +
-                         "\t\t\t<xs:attribute name=\"myInsideInt\" type=\"xs:int\" use=\"required\"/>\n" +
+                         "\t\t\t<xs:attribute name=\"MyInsideInt\" type=\"xs:int\" use=\"required\"/>\n" +
                          "\t\t</xs:complexType>\n" +
                          "\t</xs:element>\n" +
                          "</xs:schema>\n";
@@ -755,32 +755,32 @@ namespace com.espertech.esper.regressionrun.suite.@event
             configuration.Common.AddEventType(EventInfraEventRenderer.XML_TYPENAME, myXMLEventConfig);
 
             IDictionary<string, object> inner = new Dictionary<string, object>();
-            inner.Put("myInsideInt", "int");
+            inner.Put("MyInsideInt", "int");
             IDictionary<string, object> top = new Dictionary<string, object>();
-            top.Put("myInt", "int");
-            top.Put("myString", "string");
-            top.Put("nested", inner);
+            top.Put("MyInt", "int");
+            top.Put("MyString", "string");
+            top.Put("Nested", inner);
             configuration.Common.AddEventType(EventInfraEventRenderer.MAP_TYPENAME, top);
 
-            string[] namesInner = {"myInsideInt"};
+            string[] namesInner = {"MyInsideInt"};
             object[] typesInner = {typeof(int)};
             configuration.Common.AddEventType(EventInfraEventRenderer.OA_TYPENAME + "_1", namesInner, typesInner);
 
-            string[] names = {"myInt", "myString", "nested"};
+            string[] names = {"MyInt", "MyString", "Nested"};
             object[] types = {typeof(int), typeof(string), EventInfraEventRenderer.OA_TYPENAME + "_1"};
             configuration.Common.AddEventType(EventInfraEventRenderer.OA_TYPENAME, names, types);
 
             var eventInfraEventRenderSchemaInner = SchemaBuilder.Record(
                 EventInfraEventRenderer.AVRO_TYPENAME + "_inside",
-                TypeBuilder.Field("myInsideInt", TypeBuilder.IntType()));
+                TypeBuilder.Field("MyInsideInt", TypeBuilder.IntType()));
             var eventInfraEventRenderSchema = SchemaBuilder.Record(
                 EventInfraEventRenderer.AVRO_TYPENAME,
-                TypeBuilder.Field("myInt", TypeBuilder.IntType()),
+                TypeBuilder.Field("MyInt", TypeBuilder.IntType()),
                 TypeBuilder.Field(
-                    "myString",
+                    "MyString",
                     TypeBuilder.StringType(
                         TypeBuilder.Property(PROP_STRING_KEY, PROP_STRING_VALUE))),
-                TypeBuilder.Field("nested", eventInfraEventRenderSchemaInner));
+                TypeBuilder.Field("Nested", eventInfraEventRenderSchemaInner));
             configuration.Common.AddEventTypeAvro(
                 EventInfraEventRenderer.AVRO_TYPENAME,
                 new ConfigurationCommonEventTypeAvro(eventInfraEventRenderSchema));

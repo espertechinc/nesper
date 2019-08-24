@@ -74,7 +74,7 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.querymethod
                 }
 
                 var rows = snapshot.ToArray();
-                resultSetProcessor.AgentInstanceContext = contextPartitionResult.Context;
+                resultSetProcessor.SetAgentInstanceContext(contextPartitionResult.Context);
                 var results = resultSetProcessor.ProcessViewResult(rows, null, true);
                 if (results != null && results.First != null && results.First.Length > 0) {
                     events.Add(results.First);

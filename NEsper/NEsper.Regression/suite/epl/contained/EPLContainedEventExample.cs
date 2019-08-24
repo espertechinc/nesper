@@ -76,7 +76,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.contained
                 var stmtTextFour = "@Name('s4') select count(*) from MediaOrder[Books.Book]#unique(BookId)";
                 env.CompileDeploy(stmtTextFour).AddListener("s4");
 
-                var stmtTextFive = "@Name('s5') select * from MediaOrder[Books.Book][review]";
+                var stmtTextFive = "@Name('s5') select * from MediaOrder[Books.Book][Review]";
                 env.CompileDeploy(stmtTextFive).AddListener("s5");
 
                 var stmtTextSix =
@@ -84,25 +84,25 @@ namespace com.espertech.esper.regressionlib.suite.epl.contained
                 env.CompileDeploy(stmtTextSix).AddListener("s6");
 
                 var stmtTextSeven =
-                    "@Name('s7') select * from MediaOrder[select OrderId, BookId from Books.Book][select * from review]";
+                    "@Name('s7') select * from MediaOrder[select OrderId, BookId from Books.Book][select * from Review]";
                 env.CompileDeploy(stmtTextSeven).AddListener("s7");
 
                 var stmtTextEight =
-                    "@Name('s8') select * from MediaOrder[select * from Books.Book][select ReviewId, Comment from review]";
+                    "@Name('s8') select * from MediaOrder[select * from Books.Book][select ReviewId, Comment from Review]";
                 env.CompileDeploy(stmtTextEight).AddListener("s8");
 
                 var stmtTextNine =
-                    "@Name('s9') select * from MediaOrder[Books.Book as book][select book.*, ReviewId, Comment from review]";
+                    "@Name('s9') select * from MediaOrder[Books.Book as book][select book.*, ReviewId, Comment from Review]";
                 env.CompileDeploy(stmtTextNine).AddListener("s9");
 
                 var stmtTextTen =
-                    "@Name('s10') select * from MediaOrder[Books.Book as book][select mediaOrder.*, BookId, ReviewId from review] as mediaOrder";
+                    "@Name('s10') select * from MediaOrder[Books.Book as book][select MediaOrder.*, BookId, ReviewId from Review] as MediaOrder";
                 env.CompileDeploy(stmtTextTen).AddListener("s10");
 
                 var path = new RegressionPath();
                 var stmtTextElevenZero =
-                    "@Name('s11_0') insert into ReviewStream select * from MediaOrder[Books.Book as book]\n" +
-                    "    [select mediaOrder.* as mediaOrder, book.* as book, review.* as review from review as review] as mediaOrder";
+                    "@Name('s11_0') insert into ReviewStream select * from MediaOrder[Books.Book as Book]\n" +
+                    "    [select MediaOrder.* as MediaOrder, Book.* as Book, Review.* as Review from Review as Review] as MediaOrder";
                 env.CompileDeploy(stmtTextElevenZero, path);
                 var stmtTextElevenOne =
                     "@Name('s11') select mediaOrder.OrderId, book.BookId, review.ReviewId from ReviewStream";

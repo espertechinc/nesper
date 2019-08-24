@@ -40,7 +40,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
             method.Block
                 .IfCondition(
                     Relational(
-                        ExprDotMethod(symbols.GetAddMatchingEvents(method), "Size"),
+                        ExprDotName(symbols.GetAddMatchingEvents(method), "Count"),
                         CodegenExpressionRelational.CodegenRelational.GT,
                         Constant(1)))
                 .BlockReturn(ConstantNull())
@@ -53,7 +53,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                 .MethodReturn(
                     ExprDotMethod(
                         eventToPublic,
-                        "convertToUnd",
+                        "ConvertToUnd",
                         Ref("@event"),
                         symbols.GetAddEPS(method),
                         symbols.GetAddIsNewData(method),

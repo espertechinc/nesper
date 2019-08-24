@@ -430,10 +430,10 @@ namespace com.espertech.esper.common.@internal.compile.stage3
             }
 
             // Set-Agent-Instance is supported for fire-and-forget queries only
-            var agentInstanceContextProperty = CodegenProperty
-                .MakePropertyNode(typeof(AgentInstanceContext), forge.GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope);
-            agentInstanceContextProperty.GetterBlock.BlockReturn(ExprDotName(Ref("this"), NAME_AGENTINSTANCECONTEXT));
-            agentInstanceContextProperty.SetterBlock.AssignRef(NAME_AGENTINSTANCECONTEXT, Ref("value"));
+            var setAgentInstanceContextMethod = CodegenMethod
+                .MakeMethod(typeof(void), forge.GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope)
+                .AddParam(typeof(AgentInstanceContext), "value");
+            setAgentInstanceContextMethod.Block.AssignRef(NAME_AGENTINSTANCECONTEXT, Ref("value"));
 
             // Apply-view
             var applyViewResultMethod = CodegenMethod
@@ -589,8 +589,8 @@ namespace com.espertech.esper.common.@internal.compile.stage3
                 innerMethods,
                 innerProperties);
             CodegenStackGenerator.RecursiveBuildStack(
-                agentInstanceContextProperty,
-                "AgentInstanceContext",
+                setAgentInstanceContextMethod,
+                "SetAgentInstanceContext",
                 innerMethods,
                 innerProperties);
             CodegenStackGenerator.RecursiveBuildStack(

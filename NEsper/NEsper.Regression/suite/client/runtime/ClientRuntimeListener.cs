@@ -77,7 +77,7 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
                     processEvent.RouteEventMap(Collections.SingletonDataMap("ident", ident), MAP_TYPENAME);
                     processEvent.RouteEventObjectArray(new object[] {ident}, OA_TYPENAME);
 
-                    var xml = "<myevent ident=\"XXXXXX\"></myevent>\n".Replace("XXXXXX", ident);
+                    var xml = "<Myevent ident=\"XXXXXX\"></Myevent>\n".Replace("XXXXXX", ident);
                     processEvent.RouteEventXMLDOM(SupportXML.GetDocument(xml).DocumentElement, XML_TYPENAME);
 
                     var avroSchema = AvroSchemaUtil
@@ -88,7 +88,8 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
                 };
 
                 env.SendEventBean(new SupportBean("xy", -1));
-                foreach (var name in "map,bean,oa,xml,avro".SplitCsv()) {
+
+                foreach (var name in new[] { "map", "bean", "oa", "xml", "avro" }) {
                     var listener = env.Listener(name);
                     Assert.IsTrue(listener.IsInvoked, "failed for " + name);
                     Assert.AreEqual("xy", env.Listener(name).AssertOneGetNewAndReset().Get("ident"));
@@ -102,10 +103,10 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
         {
             public RoutedBeanEvent(string ident)
             {
-                ident = ident;
+                Ident = ident;
             }
 
-            public string ident { get; }
+            public string Ident { get; }
         }
     }
 } // end of namespace

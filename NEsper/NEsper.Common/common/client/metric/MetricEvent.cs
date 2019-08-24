@@ -6,8 +6,6 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
-
 namespace com.espertech.esper.common.client.metric
 {
     /// <summary>
@@ -18,17 +16,17 @@ namespace com.espertech.esper.common.client.metric
         /// <summary>
         /// Ctor.
         /// </summary>
-        /// <param name="engineURI">the engine URI</param>
-        protected MetricEvent(String engineURI)
+        /// <param name="runtimeUri">the engine URI</param>
+        protected MetricEvent(string runtimeUri)
         {
-            EngineURI = engineURI;
+            RuntimeURI = runtimeUri;
         }
 
         /// <summary>
-        /// Returns the engine URI.
+        /// Returns the runtime URI.
         /// </summary>
-        /// <value>The engine URI.</value>
+        /// <value>The runtime URI.</value>
         /// <returns>uri</returns>
-        public string EngineURI { get; private set; }
+        public string RuntimeURI { get; private set; }
     }
 }

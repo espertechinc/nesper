@@ -27,7 +27,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
     /// Test for multithread-safety for managing statements, i.e. creating and stopping statements
     /// </summary>
     [TestFixture]
-    public class TestFilterServiceMT : AbstractTestBase
+    public class TestFilterServiceMT : AbstractRuntimeTest
     {
         [Test]
         public void TestFilterService()

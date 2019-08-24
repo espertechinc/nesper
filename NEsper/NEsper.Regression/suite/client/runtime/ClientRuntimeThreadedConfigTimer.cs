@@ -38,7 +38,7 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
             configuration.Runtime.Threading.IsThreadPoolTimerExec = true;
             configuration.Runtime.Threading.ThreadPoolTimerExecNumThreads = 5;
             configuration.Common.AddEventType("MyMap", new Dictionary<string, object>());
-            configuration.Common.AddImportNamespace(typeof(SupportStaticMethodLib).Name);
+            configuration.Common.AddImportNamespace(typeof(SupportStaticMethodLib));
         }
 
         public void Run(RegressionEnvironment env)

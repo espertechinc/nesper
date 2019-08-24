@@ -18,7 +18,7 @@ using NUnit.Framework;
 namespace com.espertech.esper.common.@internal.collection
 {
     [TestFixture]
-    public class TestIterablesListEnumerator : AbstractTestBase
+    public class TestIterablesListEnumerator : AbstractCommonTest
     {
         [SetUp]
         public void SetUp()

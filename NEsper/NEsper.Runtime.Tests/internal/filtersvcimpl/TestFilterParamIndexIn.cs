@@ -24,7 +24,7 @@ using NUnit.Framework;
 namespace com.espertech.esper.runtime.@internal.filtersvcimpl
 {
     [TestFixture]
-    public class TestFilterParamIndexIn : AbstractTestBase
+    public class TestFilterParamIndexIn : AbstractRuntimeTest
     {
         private SupportEventEvaluator testEvaluator;
         private SupportBean testBean;

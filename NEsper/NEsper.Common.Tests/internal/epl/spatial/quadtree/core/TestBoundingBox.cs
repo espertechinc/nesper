@@ -15,7 +15,7 @@ using NUnit.Framework;
 namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.core
 {
     [TestFixture]
-    public class TestBoundingBox : AbstractTestBase
+    public class TestBoundingBox : AbstractCommonTest
     {
         private void AssertIntersectsIncludingEnd(
             bool expected,

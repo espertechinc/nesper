@@ -310,9 +310,9 @@ namespace com.espertech.esper.compiler.@internal.util
                     builder.Append("internal ");
                 }
 
-                if (param.IsReadonly) {
-                    builder.Append("readonly ");
-                }
+                //if (param.IsReadonly) {
+                //    builder.Append("readonly ");
+                //}
 
                 if (param.IsStatic) {
                     builder.Append("static ");

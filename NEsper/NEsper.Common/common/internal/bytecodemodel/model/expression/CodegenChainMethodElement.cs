@@ -17,14 +17,17 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
     public class CodegenChainMethodElement : CodegenChainElement
     {
         private readonly string _method;
+        private readonly Type[] _methodTypeParameters;
         private readonly CodegenExpression[] _optionalParams;
 
         public CodegenChainMethodElement(
             string method,
+            Type[] methodTypeParameters,
             CodegenExpression[] optionalParams)
         {
-            this._method = method;
-            this._optionalParams = optionalParams;
+            _method = method;
+            _methodTypeParameters = methodTypeParameters;
+            _optionalParams = optionalParams;
         }
 
         public override void Render(
@@ -32,7 +35,23 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
             bool isInnerClass)
         {
             var indent = new CodegenIndent(true);
-            builder.Append(_method).Append("(");
+            builder.Append(_method);
+
+            if (_methodTypeParameters != null && _methodTypeParameters.Length > 0) {
+                var delimiter = "";
+                builder.Append('<');
+
+                foreach (var typeParameter in _methodTypeParameters) {
+                    builder.Append(delimiter);
+                    CodeGenerationHelper.AppendClassName(builder, typeParameter);
+                    delimiter = ",";
+                }
+
+                builder.Append('>');
+            }
+
+            builder.Append('(');
+
             if (_optionalParams != null) {
                 var delimiter = "";
                 foreach (var param in _optionalParams) {
@@ -42,7 +61,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
                 }
             }
 
-            builder.Append(")");
+            builder.Append(')');
         }
 
         public override void MergeClasses(ISet<Type> classes)

@@ -82,7 +82,7 @@ namespace com.espertech.esper.regressionrun.suite.@event
                 configuration.Common.AddEventType(clazz);
             }
 
-            string[] myObjectArrayEvent = { "myInt", "myString", "beanA" };
+            string[] myObjectArrayEvent = { "MyInt", "MyString", "beanA" };
             object[] MyObjectArrayTypes = { typeof(int?), typeof(string), typeof(SupportBeanComplexProps) };
             configuration.Common.AddEventType("MyObjectArrayEvent", myObjectArrayEvent, MyObjectArrayTypes);
 

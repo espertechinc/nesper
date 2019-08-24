@@ -20,7 +20,7 @@ using NUnit.Framework;
 namespace com.espertech.esper.common.@internal.epl.expression.core
 {
     [TestFixture]
-    public class TestExprIdentNode : AbstractTestBase
+    public class TestExprIdentNode : AbstractCommonTest
     {
         private ExprIdentNode[] identNodes;
         private SupportStreamTypeSvc3Stream streamTypeService;

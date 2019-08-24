@@ -17,7 +17,7 @@ using NUnit.Framework;
 namespace com.espertech.esper.common.@internal.collection
 {
     [TestFixture]
-    public class TestTimeWindow : AbstractTestBase
+    public class TestTimeWindow : AbstractCommonTest
     {
         private readonly TimeWindow window = new TimeWindow(false);
         private readonly TimeWindow windowRemovable = new TimeWindow(true);

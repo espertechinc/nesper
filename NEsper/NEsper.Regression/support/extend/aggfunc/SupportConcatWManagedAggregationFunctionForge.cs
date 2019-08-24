@@ -33,6 +33,6 @@ namespace com.espertech.esper.regressionlib.support.extend.aggfunc
 
         public AggregationFunctionMode AggregationFunctionMode =>
             new AggregationFunctionModeManaged().SetInjectionStrategyAggregationFunctionFactory(
-                new InjectionStrategyClassNewInstance(typeof(SupportConcatWManagedAggregationFunctionFactory).Name));
+                new InjectionStrategyClassNewInstance(typeof(SupportConcatWManagedAggregationFunctionFactory).FullName));
     }
 } // end of namespace

@@ -10,6 +10,7 @@ using System.Linq;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.support;
+using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.regressionlib.framework;
 
 using NUnit.Framework;
@@ -51,8 +52,8 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
             catch (EPException ex) {
                 Assert.AreEqual(
                     "Unexpected event object type '" +
-                    typeof(SupportBean).Name +
-                    "' encountered, please supply a org.w3c.dom.Document or Element node",
+                    typeof(SupportBean).GetCleanName() +
+                    "' encountered, please supply a XmlDocument or XmlElement node",
                     ex.Message);
             }
 

@@ -50,7 +50,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 env.SendEventMap(Collections.SingletonDataMap("value", 100L), "ValueEvent");
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    "value".SplitCsv(),
+                    new [] { "value" },
                     new object[] {100L});
 
                 env.SendEventMap(Collections.SingletonDataMap("value", 101L), "ValueEvent");
@@ -63,7 +63,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 env.SendEventMap(Collections.SingletonDataMap("value", 200L), "ValueEvent");
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    "value".SplitCsv(),
+                    new [] { "value" },
                     new object[] {200L});
 
                 env.SendEventMap(Collections.SingletonDataMap("value", 201L), "ValueEvent");
@@ -71,7 +71,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 env.SendEventMap(Collections.SingletonDataMap("value", 301L), "ValueEvent");
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    "value".SplitCsv(),
+                    new [] { "value" },
                     new object[] {301L});
 
                 env.UndeployAll();

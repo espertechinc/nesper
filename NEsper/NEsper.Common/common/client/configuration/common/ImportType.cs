@@ -21,13 +21,14 @@ namespace com.espertech.esper.common.client.configuration.common
         {
         }
 
-        public ImportType(Type type) : this(type.FullName)
+        public ImportType(Type type) : this(type.FullName, type.Assembly.FullName)
         {
         }
 
-        public ImportType(string typeName)
+        public ImportType(string typeName, string assemblyName = null)
         {
             TypeName = typeName;
+            AssemblyName = assemblyName;
 
             int lastIndex = typeName.LastIndexOf('+');
             if (lastIndex == -1) {
@@ -50,6 +51,7 @@ namespace com.espertech.esper.common.client.configuration.common
         public string Namespace { get; set; }
         public string TypeNameBase { get; set; }
         public string TypeName { get; set; }
+        public string AssemblyName { get; set; }
 
         public override Type Resolve(
             string providedTypeName,
@@ -76,6 +78,42 @@ namespace com.espertech.esper.common.client.configuration.common
             }
 
             return null;
+        }
+
+        protected bool Equals(ImportType other)
+        {
+            return string.Equals(Namespace, other.Namespace) 
+                   && string.Equals(TypeNameBase, other.TypeNameBase) 
+                   && string.Equals(TypeName, other.TypeName)
+                   && string.Equals(AssemblyName, other.AssemblyName);
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) {
+                return false;
+            }
+
+            if (ReferenceEquals(this, obj)) {
+                return true;
+            }
+
+            if (obj.GetType() != this.GetType()) {
+                return false;
+            }
+
+            return Equals((ImportType) obj);
+        }
+
+        public override int GetHashCode()
+        {
+            unchecked {
+                var hashCode = (Namespace != null ? Namespace.GetHashCode() : 0);
+                hashCode = (hashCode * 397) ^ (TypeNameBase != null ? TypeNameBase.GetHashCode() : 0);
+                hashCode = (hashCode * 397) ^ (TypeName != null ? TypeName.GetHashCode() : 0);
+                hashCode = (hashCode * 397) ^ (AssemblyName != null ? AssemblyName.GetHashCode() : 0);
+                return hashCode;
+            }
         }
 
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);

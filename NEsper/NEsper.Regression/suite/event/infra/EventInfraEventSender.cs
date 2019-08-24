@@ -12,6 +12,7 @@ using Avro.Generic;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.support;
+using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
 using com.espertech.esper.regressionlib.support.util;
@@ -51,7 +52,10 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
                 env,
                 MAP_TYPENAME,
                 new SupportBean(),
-                "Unexpected event object of type " + typeof(SupportBean).FullName + ", expected IDictionary");
+                "Unexpected event object of type " +
+                typeof(SupportBean).GetCleanName() +
+                ", expected " +
+                typeof(IDictionary<string, object>).GetCleanName());
 
             // Object-Array
             RunAssertionSuccess(env, OA_TYPENAME);
@@ -59,17 +63,17 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
                 env,
                 OA_TYPENAME,
                 new SupportBean(),
-                "Unexpected event object of type " + typeof(SupportBean).FullName + ", expected Object[]");
+                "Unexpected event object of type " + typeof(SupportBean).GetCleanName() + ", expected Object[]");
 
             // XML
-            RunAssertionSuccess(env, XML_TYPENAME, SupportXML.GetDocument("<myevent/>").DocumentElement);
+            RunAssertionSuccess(env, XML_TYPENAME, SupportXML.GetDocument("<Myevent/>").DocumentElement);
             RunAssertionInvalid(
                 env,
                 XML_TYPENAME,
                 new SupportBean(),
                 "Unexpected event object type '" +
-                typeof(SupportBean).Name +
-                "' encountered, please supply a org.w3c.dom.Document or Element node");
+                typeof(SupportBean).GetCleanName() +
+                "' encountered, please supply a XmlDocument or XmlElement node");
             RunAssertionInvalid(
                 env,
                 XML_TYPENAME,
@@ -86,7 +90,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
                 AVRO_TYPENAME,
                 new SupportBean(),
                 "Unexpected event object type '" +
-                typeof(SupportBean).Name +
+                typeof(SupportBean).GetCleanName() +
                 "' encountered, please supply a GenericRecord");
 
             // No such type

@@ -27,7 +27,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
 {
     public class ExprDotMethodForgeNoDuckEvalPlain : ExprDotEval
     {
-        public const string METHOD_HANDLETARGETEXCEPTION = "handleTargetException";
+        public const string METHOD_HANDLETARGETEXCEPTION = "HandleTargetException";
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         internal readonly ExprDotMethodForgeNoDuck forge;

@@ -21,7 +21,7 @@ using NUnit.Framework;
 namespace com.espertech.esper.common.@internal.util
 {
     [TestFixture]
-    public class TestCollectionUtil : AbstractTestBase
+    public class TestCollectionUtil : AbstractCommonTest
     {
         private void RunAssertionShrink(
             string expected,
@@ -45,8 +45,8 @@ namespace com.espertech.esper.common.@internal.util
             var resultAddColl = CollectionUtil.ArrayExpandAddElements(existingArr, addCollection);
             EPAssertionUtil.AssertEqualsExactOrder(expectedArr, resultAddColl);
 
-            var resultAddArr = (string[]) CollectionUtil.ArrayExpandAddElements(
-                existingArr, addCollection.Unwrap<object>());
+            var resultAddArr = CollectionUtil.ArrayExpandAddElements(existingArr, addCollection.Unwrap<object>())
+                .Unwrap<string>();
             EPAssertionUtil.AssertEqualsExactOrder(expectedArr, resultAddArr);
         }
 

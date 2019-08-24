@@ -24,7 +24,7 @@ using NUnit.Framework;
 namespace com.espertech.esper.runtime.@internal.filtersvcimpl
 {
     [TestFixture]
-    public class TestFilterServiceImpl : AbstractTestBase
+    public class TestFilterServiceImpl : AbstractRuntimeTest
     {
         private SupportEventBeanFactory supportEventBeanFactory;
 
@@ -65,8 +65,8 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
                     SupportFilterSpecBuilder.Build(
                             eventTypeTwo,
                             new object[] {
-                                "myInt", FilterOperator.RANGE_HALF_CLOSED, 1, 10,
-                                "myString", FilterOperator.EQUAL, "Hello"
+                                "MyInt", FilterOperator.RANGE_HALF_CLOSED, 1, 10,
+                                "MyString", FilterOperator.EQUAL, "Hello"
                             })
                         .GetValueSet(null, null, null, null)));
 
@@ -160,7 +160,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
             var callbackTwo = new SupportFilterHandle();
 
             // callback that removes another matching filter spec callback
-            FilterHandle callbackOne = new MySupportFilterHandle(
+            var callbackOne = new MySupportFilterHandle(
                 filterService,
                 callbackTwo,
                 eventTypeOne,
@@ -171,17 +171,16 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
 
             // send event
             var theEvent = MakeTypeOneEvent(1, "HELLO", false, 1);
-            IList<FilterHandle> matches = new List<FilterHandle>();
+            var matches = new List<FilterHandle>();
             filterService.Evaluate(theEvent, matches);
             foreach (var match in matches)
             {
-                var handle = (FilterHandleCallback) match;
-                handle.MatchFound(theEvent, null);
+                ((FilterHandleCallback) match).MatchFound(theEvent, null);
             }
 
             // Callback two MUST be invoked, was removed by callback one, but since the
             // callback invocation order should not matter, the second one MUST also execute
-            Assert.AreEqual(1, callbackTwo.GetAndResetCountInvoked());
+            Assert.That(callbackTwo.GetAndResetCountInvoked(), Is.EqualTo(1));
         }
 
         [Test]

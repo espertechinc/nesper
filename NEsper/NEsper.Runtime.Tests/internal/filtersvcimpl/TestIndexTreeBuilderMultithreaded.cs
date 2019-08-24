@@ -28,7 +28,7 @@ using NUnit.Framework;
 namespace com.espertech.esper.runtime.@internal.filtersvcimpl
 {
     [TestFixture]
-    public class TestIndexTreeBuilderMultithreaded : AbstractTestBase
+    public class TestIndexTreeBuilderMultithreaded : AbstractRuntimeTest
     {
         [SetUp]
         public void SetUp()

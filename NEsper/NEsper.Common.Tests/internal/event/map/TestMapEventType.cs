@@ -26,7 +26,7 @@ using NUnit.Framework;
 namespace com.espertech.esper.common.@internal.@event.map
 {
     [TestFixture]
-    public class TestMapEventType : AbstractTestBase
+    public class TestMapEventType : AbstractCommonTest
     {
         [SetUp]
         public void SetUp()
@@ -42,13 +42,13 @@ namespace com.espertech.esper.common.@internal.@event.map
                 EventTypeIdPair.Unassigned());
 
             IDictionary<string, object> testTypesMap = new Dictionary<string, object>();
-            testTypesMap.Put("myInt", typeof(int?));
-            testTypesMap.Put("myString", typeof(string));
-            testTypesMap.Put("myNullableString", typeof(string));
-            testTypesMap.Put("mySupportBean", typeof(SupportBean));
-            testTypesMap.Put("myComplexBean", typeof(SupportBeanComplexProps));
-            testTypesMap.Put("myNullableSupportBean", typeof(SupportBean));
-            testTypesMap.Put("myNullType", null);
+            testTypesMap.Put("MyInt", typeof(int?));
+            testTypesMap.Put("MyString", typeof(string));
+            testTypesMap.Put("MyNullableString", typeof(string));
+            testTypesMap.Put("MySupportBean", typeof(SupportBean));
+            testTypesMap.Put("MyComplexBean", typeof(SupportBeanComplexProps));
+            testTypesMap.Put("MyNullableSupportBean", typeof(SupportBean));
+            testTypesMap.Put("MyNullType", null);
             eventType = new MapEventType(metadata, testTypesMap, null, null, null, null,
                 supportEventTypeFactory.BEAN_EVENT_TYPE_FACTORY);
         }
@@ -98,15 +98,15 @@ namespace com.espertech.esper.common.@internal.@event.map
                 EventTypeIdPair.Unassigned());
 
             IDictionary<string, object> mapTwo = new LinkedHashMap<string, object>();
-            mapTwo.Put("myInt", typeof(int));
-            mapTwo.Put("mySupportBean", typeof(SupportBean));
-            mapTwo.Put("myNullableSupportBean", typeof(SupportBean));
-            mapTwo.Put("myComplexBean", typeof(SupportBeanComplexProps));
+            mapTwo.Put("MyInt", typeof(int));
+            mapTwo.Put("MySupportBean", typeof(SupportBean));
+            mapTwo.Put("MyNullableSupportBean", typeof(SupportBean));
+            mapTwo.Put("MyComplexBean", typeof(SupportBeanComplexProps));
             Assert.IsFalse(
                 new MapEventType(metadata, mapTwo, null, null, null, null, supportEventTypeFactory.BEAN_EVENT_TYPE_FACTORY).Equals(eventType));
-            mapTwo.Put("myString", typeof(string));
-            mapTwo.Put("myNullableString", typeof(string));
-            mapTwo.Put("myNullType", null);
+            mapTwo.Put("MyString", typeof(string));
+            mapTwo.Put("MyNullableString", typeof(string));
+            mapTwo.Put("MyNullType", null);
 
             // compare, should equal
             Assert.IsNull(
@@ -119,9 +119,9 @@ namespace com.espertech.esper.common.@internal.@event.map
 
             // Test boxed and primitive compatible
             IDictionary<string, object> mapOne = new LinkedHashMap<string, object>();
-            mapOne.Put("myInt", typeof(int));
+            mapOne.Put("MyInt", typeof(int));
             mapTwo = new LinkedHashMap<string, object>();
-            mapTwo.Put("myInt", typeof(int?));
+            mapTwo.Put("MyInt", typeof(int?));
             Assert.IsNull(
                 new MapEventType(metadata, mapOne, null, null, null, null, supportEventTypeFactory.BEAN_EVENT_TYPE_FACTORY).EqualsCompareType(
                     new MapEventType(metadata, mapTwo, null, null, null, null,
@@ -136,16 +136,16 @@ namespace com.espertech.esper.common.@internal.@event.map
             var complexPropBean = SupportBeanComplexProps.MakeDefaultBean();
 
             IDictionary<string, object> valuesMap = new Dictionary<string, object>();
-            valuesMap.Put("myInt", 20);
-            valuesMap.Put("myString", "a");
-            valuesMap.Put("mySupportBean", nestedSupportBean);
-            valuesMap.Put("myComplexBean", complexPropBean);
-            valuesMap.Put("myNullableSupportBean", null);
-            valuesMap.Put("myNullableString", null);
+            valuesMap.Put("MyInt", 20);
+            valuesMap.Put("MyString", "a");
+            valuesMap.Put("MySupportBean", nestedSupportBean);
+            valuesMap.Put("MyComplexBean", complexPropBean);
+            valuesMap.Put("MyNullableSupportBean", null);
+            valuesMap.Put("MyNullableString", null);
 
-            Assert.AreEqual(20, eventType.GetValue("myInt", valuesMap));
-            Assert.AreEqual(100, eventType.GetValue("mySupportBean.IntPrimitive", valuesMap));
-            Assert.AreEqual("NestedValue", eventType.GetValue("myComplexBean.Nested.NestedValue", valuesMap));
+            Assert.AreEqual(20, eventType.GetValue("MyInt", valuesMap));
+            Assert.AreEqual(100, eventType.GetValue("MySupportBean.IntPrimitive", valuesMap));
+            Assert.AreEqual("NestedValue", eventType.GetValue("MyComplexBean.Nested.NestedValue", valuesMap));
         }
 
         [Test]
@@ -158,33 +158,33 @@ namespace com.espertech.esper.common.@internal.@event.map
             Assert.AreEqual(null, eventType.GetGetter("dummy"));
 
             IDictionary<string, object> valuesMap = new Dictionary<string, object>();
-            valuesMap.Put("myInt", 20);
-            valuesMap.Put("myString", "a");
-            valuesMap.Put("mySupportBean", nestedSupportBean);
-            valuesMap.Put("myComplexBean", complexPropBean);
-            valuesMap.Put("myNullableSupportBean", null);
-            valuesMap.Put("myNullableString", null);
+            valuesMap.Put("MyInt", 20);
+            valuesMap.Put("MyString", "a");
+            valuesMap.Put("MySupportBean", nestedSupportBean);
+            valuesMap.Put("MyComplexBean", complexPropBean);
+            valuesMap.Put("MyNullableSupportBean", null);
+            valuesMap.Put("MyNullableString", null);
             EventBean eventBean = new MapEventBean(valuesMap, eventType);
 
-            var getter = eventType.GetGetter("myInt");
+            var getter = eventType.GetGetter("MyInt");
             Assert.AreEqual(20, getter.Get(eventBean));
 
-            getter = eventType.GetGetter("myString");
+            getter = eventType.GetGetter("MyString");
             Assert.AreEqual("a", getter.Get(eventBean));
 
-            getter = eventType.GetGetter("myNullableString");
+            getter = eventType.GetGetter("MyNullableString");
             Assert.IsNull(getter.Get(eventBean));
 
-            getter = eventType.GetGetter("mySupportBean");
+            getter = eventType.GetGetter("MySupportBean");
             Assert.AreEqual(nestedSupportBean, getter.Get(eventBean));
 
-            getter = eventType.GetGetter("mySupportBean.IntPrimitive");
+            getter = eventType.GetGetter("MySupportBean.IntPrimitive");
             Assert.AreEqual(100, getter.Get(eventBean));
 
-            getter = eventType.GetGetter("myNullableSupportBean.IntPrimitive");
+            getter = eventType.GetGetter("MyNullableSupportBean.IntPrimitive");
             Assert.IsNull(getter.Get(eventBean));
 
-            getter = eventType.GetGetter("myComplexBean.Nested.NestedValue");
+            getter = eventType.GetGetter("MyComplexBean.Nested.NestedValue");
             Assert.AreEqual("NestedValue", getter.Get(eventBean));
         }
 
@@ -194,26 +194,26 @@ namespace com.espertech.esper.common.@internal.@event.map
             var properties = eventType.PropertyNames;
             EPAssertionUtil.AssertEqualsAnyOrder(
                 properties,
-                new[] { "myInt", "myString", "myNullableString", "mySupportBean", "myComplexBean", "myNullableSupportBean", "myNullType" });
+                new[] { "MyInt", "MyString", "MyNullableString", "MySupportBean", "MyComplexBean", "MyNullableSupportBean", "MyNullType" });
         }
 
         [Test]
         public void TestGetPropertyType()
         {
-            Assert.AreEqual(typeof(int?), eventType.GetPropertyType("myInt"));
-            Assert.AreEqual(typeof(string), eventType.GetPropertyType("myString"));
-            Assert.AreEqual(typeof(SupportBean), eventType.GetPropertyType("mySupportBean"));
-            Assert.AreEqual(typeof(SupportBeanComplexProps), eventType.GetPropertyType("myComplexBean"));
-            Assert.AreEqual(typeof(int?), eventType.GetPropertyType("mySupportBean.IntPrimitive"));
-            Assert.AreEqual(typeof(string), eventType.GetPropertyType("myComplexBean.Nested.NestedValue"));
-            Assert.AreEqual(typeof(int?), eventType.GetPropertyType("myComplexBean.Indexed[1]"));
-            Assert.AreEqual(typeof(string), eventType.GetPropertyType("myComplexBean.Mapped('a')"));
-            Assert.AreEqual(null, eventType.GetPropertyType("myNullType"));
+            Assert.AreEqual(typeof(int?), eventType.GetPropertyType("MyInt"));
+            Assert.AreEqual(typeof(string), eventType.GetPropertyType("MyString"));
+            Assert.AreEqual(typeof(SupportBean), eventType.GetPropertyType("MySupportBean"));
+            Assert.AreEqual(typeof(SupportBeanComplexProps), eventType.GetPropertyType("MyComplexBean"));
+            Assert.AreEqual(typeof(int?), eventType.GetPropertyType("MySupportBean.IntPrimitive"));
+            Assert.AreEqual(typeof(string), eventType.GetPropertyType("MyComplexBean.Nested.NestedValue"));
+            Assert.AreEqual(typeof(int?), eventType.GetPropertyType("MyComplexBean.Indexed[1]"));
+            Assert.AreEqual(typeof(string), eventType.GetPropertyType("MyComplexBean.Mapped('a')"));
+            Assert.AreEqual(null, eventType.GetPropertyType("MyNullType"));
 
             Assert.IsNull(eventType.GetPropertyType("dummy"));
-            Assert.IsNull(eventType.GetPropertyType("mySupportBean.dfgdg"));
+            Assert.IsNull(eventType.GetPropertyType("MySupportBean.dfgdg"));
             Assert.IsNull(eventType.GetPropertyType("xxx.IntPrimitive"));
-            Assert.IsNull(eventType.GetPropertyType("myComplexBean.Nested.NestedValueXXX"));
+            Assert.IsNull(eventType.GetPropertyType("MyComplexBean.Nested.NestedValueXXX"));
         }
 
         [Test]
@@ -231,18 +231,18 @@ namespace com.espertech.esper.common.@internal.@event.map
         [Test]
         public void TestIsValidProperty()
         {
-            Assert.IsTrue(eventType.IsProperty("myInt"));
-            Assert.IsTrue(eventType.IsProperty("myString"));
-            Assert.IsTrue(eventType.IsProperty("mySupportBean.IntPrimitive"));
-            Assert.IsTrue(eventType.IsProperty("myComplexBean.Nested.NestedValue"));
-            Assert.IsTrue(eventType.IsProperty("myComplexBean.Indexed[1]"));
-            Assert.IsTrue(eventType.IsProperty("myComplexBean.Mapped('a')"));
-            Assert.IsTrue(eventType.IsProperty("myNullType"));
+            Assert.IsTrue(eventType.IsProperty("MyInt"));
+            Assert.IsTrue(eventType.IsProperty("MyString"));
+            Assert.IsTrue(eventType.IsProperty("MySupportBean.IntPrimitive"));
+            Assert.IsTrue(eventType.IsProperty("MyComplexBean.Nested.NestedValue"));
+            Assert.IsTrue(eventType.IsProperty("MyComplexBean.Indexed[1]"));
+            Assert.IsTrue(eventType.IsProperty("MyComplexBean.Mapped('a')"));
+            Assert.IsTrue(eventType.IsProperty("MyNullType"));
 
             Assert.IsFalse(eventType.IsProperty("dummy"));
-            Assert.IsFalse(eventType.IsProperty("mySupportBean.dfgdg"));
+            Assert.IsFalse(eventType.IsProperty("MySupportBean.dfgdg"));
             Assert.IsFalse(eventType.IsProperty("xxx.IntPrimitive"));
-            Assert.IsFalse(eventType.IsProperty("myComplexBean.Nested.NestedValueXXX"));
+            Assert.IsFalse(eventType.IsProperty("MyComplexBean.Nested.NestedValueXXX"));
         }
 
         [Test]

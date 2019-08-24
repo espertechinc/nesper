@@ -9,8 +9,6 @@
 using System;
 
 using com.espertech.esper.common.client;
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.serde
 {
@@ -26,7 +24,7 @@ namespace com.espertech.esper.common.@internal.serde
 
         DataInputOutputSerdeWCollation<E> ListEvents<E>(EventType eventType);
 
-        DataInputOutputSerdeWCollation<E> LinkedHashMapEventsAndInt<E>(EventType eventType);
+        DataInputOutputSerdeWCollation<E> LinkedMapEventsAndInt<E>(EventType eventType);
 
         DataInputOutputSerdeWCollation<E> EventNullable<E>(EventType eventType);
 

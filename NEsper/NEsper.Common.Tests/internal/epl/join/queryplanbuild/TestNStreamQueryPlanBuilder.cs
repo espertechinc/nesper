@@ -29,7 +29,7 @@ using static com.espertech.esper.common.@internal.supportunit.util.SupportExprNo
 namespace com.espertech.esper.common.@internal.epl.join.queryplanbuild
 {
     [TestFixture]
-    public class TestNStreamQueryPlanBuilder : AbstractTestBase
+    public class TestNStreamQueryPlanBuilder : AbstractCommonTest
     {
         private EventType[] typesPerStream;
         private QueryGraphForge queryGraph;
@@ -50,8 +50,8 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanbuild
             queryGraph.AddStrictEquals(0, "P00", Make(0, "P00"), 1, "P10", Make(1, "P10"));
             queryGraph.AddStrictEquals(0, "P01", Make(0, "P01"), 2, "P20", Make(2, "P20"));
             queryGraph.AddStrictEquals(4, "P40", Make(4, "P40"), 3, "P30", Make(3, "P30"));
-            queryGraph.AddStrictEquals(4, "p41", Make(4, "p41"), 3, "p31", Make(3, "p31"));
-            queryGraph.AddStrictEquals(4, "p42", Make(4, "p42"), 2, "P21", Make(2, "P21"));
+            queryGraph.AddStrictEquals(4, "P41", Make(4, "P41"), 3, "P31", Make(3, "P31"));
+            queryGraph.AddStrictEquals(4, "P42", Make(4, "P42"), 2, "P21", Make(2, "P21"));
 
             dependencyGraph = new DependencyGraph(5, false);
         }

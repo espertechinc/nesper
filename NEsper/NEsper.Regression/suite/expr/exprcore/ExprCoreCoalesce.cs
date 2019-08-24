@@ -119,12 +119,12 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 
                 var theEvent = SendEvent(env, "s0");
                 var eventReceived = env.Listener("s0").AssertOneGetNewAndReset();
-                Assert.AreEqual("s0", eventReceived.Get("myString"));
+                Assert.AreEqual("s0", eventReceived.Get("MyString"));
                 Assert.AreSame(theEvent, eventReceived.Get("myBean"));
 
                 theEvent = SendEvent(env, "s1");
                 eventReceived = env.Listener("s0").AssertOneGetNewAndReset();
-                Assert.AreEqual("s1", eventReceived.Get("myString"));
+                Assert.AreEqual("s1", eventReceived.Get("MyString"));
                 Assert.AreSame(theEvent, eventReceived.Get("myBean"));
 
                 env.UndeployAll();

@@ -142,7 +142,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 model = env.CopyMayFail(model);
 
                 var reverse = model.ToEPL();
-                var stmtText = "select s0.Id as IdS0, s1.Id as IdS1 " +
+                var stmtText = "select s0.Id as idS0, s1.Id as idS1 " +
                                "from pattern [every s0=SupportBean_S0" +
                                " or every s1=SupportBean_S1] " +
                                "where s0.Id is not null and s0.Id<100 or s1.Id is not null and s1.Id>=100";
@@ -171,7 +171,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
         {
             public void Run(RegressionEnvironment env)
             {
-                var stmtText = "@Name('s0') select s0.Id as IdS0, s1.Id as IdS1 " +
+                var stmtText = "@Name('s0') select s0.Id as idS0, s1.Id as idS1 " +
                                "from pattern [every s0=SupportBean_S0" +
                                " or every s1=SupportBean_S1] " +
                                "where s0.Id is not null and s0.Id<100 or s1.Id is not null and s1.Id>=100";
@@ -204,7 +204,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
         {
             public void Run(RegressionEnvironment env)
             {
-                var stmtText = "@Name('s0') select s0.Id as IdS0, s1.Id as IdS1 " +
+                var stmtText = "@Name('s0') select s0.Id as idS0, s1.Id as idS1 " +
                                "from pattern [every s0=SupportBean_S0" +
                                " or every s1=SupportBean_S1] " +
                                "where (s0.Id is not null and s0.Id < 100) or (s1.Id is not null and s1.Id >= 100)";

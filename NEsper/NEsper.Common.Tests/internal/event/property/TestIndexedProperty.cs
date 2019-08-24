@@ -19,12 +19,8 @@ using NUnit.Framework;
 namespace com.espertech.esper.common.@internal.@event.property
 {
     [TestFixture]
-    public class TestIndexedProperty : AbstractTestBase
+    public class TestIndexedProperty : AbstractCommonTest
     {
-        private IndexedProperty[] indexed;
-        private EventBean theEvent;
-        private BeanEventType eventType;
-
         [SetUp]
         public void SetUp()
         {
@@ -40,37 +36,51 @@ namespace com.espertech.esper.common.@internal.@event.property
             eventType = (BeanEventType) theEvent.EventType;
         }
 
+        private IndexedProperty[] indexed;
+        private EventBean theEvent;
+        private BeanEventType eventType;
+
         [Test]
         public void TestGetGetter()
         {
-            int[] expected = new int[] { 1, 2, 10, 20 };
-            for (int i = 0; i < indexed.Length; i++)
-            {
-                EventPropertyGetter getter = indexed[i].GetGetter(eventType, EventBeanTypedEventFactoryCompileTime.INSTANCE,
-                    supportEventTypeFactory.BEAN_EVENT_TYPE_FACTORY);
+            int[] expected = {1, 2, 10, 20};
+            for (var i = 0; i < indexed.Length; i++) {
+                EventPropertyGetter getter = indexed[i]
+                    .GetGetter(
+                        eventType,
+                        EventBeanTypedEventFactoryCompileTime.INSTANCE,
+                        supportEventTypeFactory.BEAN_EVENT_TYPE_FACTORY);
                 Assert.AreEqual(expected[i], getter.Get(theEvent));
             }
 
             // try invalid case
-            IndexedProperty ind = new IndexedProperty("dummy", 0);
-            Assert.IsNull(ind.GetGetter(eventType, EventBeanTypedEventFactoryCompileTime.INSTANCE,
-                supportEventTypeFactory.BEAN_EVENT_TYPE_FACTORY));
+            var ind = new IndexedProperty("dummy", 0);
+            Assert.IsNull(
+                ind.GetGetter(
+                    eventType,
+                    EventBeanTypedEventFactoryCompileTime.INSTANCE,
+                    supportEventTypeFactory.BEAN_EVENT_TYPE_FACTORY));
         }
 
         [Test]
         public void TestGetPropertyType()
         {
-            Type[] expected = new Type[] { typeof(int), typeof(int), typeof(int), typeof(int) };
-            for (int i = 0; i < indexed.Length; i++)
-            {
-                Assert.AreEqual(expected[i], indexed[i].GetPropertyType(eventType,
-                    supportEventTypeFactory.BEAN_EVENT_TYPE_FACTORY));
+            Type[] expected = {typeof(int), typeof(int), typeof(int), typeof(int)};
+            for (var i = 0; i < indexed.Length; i++) {
+                Assert.AreEqual(
+                    expected[i],
+                    indexed[i]
+                        .GetPropertyType(
+                            eventType,
+                            supportEventTypeFactory.BEAN_EVENT_TYPE_FACTORY));
             }
 
             // try invalid case
-            IndexedProperty ind = new IndexedProperty("dummy", 0);
-            Assert.IsNull(ind.GetPropertyType(eventType,
-                supportEventTypeFactory.BEAN_EVENT_TYPE_FACTORY));
+            var ind = new IndexedProperty("dummy", 0);
+            Assert.IsNull(
+                ind.GetPropertyType(
+                    eventType,
+                    supportEventTypeFactory.BEAN_EVENT_TYPE_FACTORY));
         }
     }
 } // end of namespace

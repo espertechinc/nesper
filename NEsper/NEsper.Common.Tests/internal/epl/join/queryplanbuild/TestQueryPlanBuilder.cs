@@ -24,7 +24,7 @@ using NUnit.Framework;
 namespace com.espertech.esper.common.@internal.epl.join.queryplanbuild
 {
     [TestFixture]
-    public class TestQueryPlanBuilder : AbstractTestBase
+    public class TestQueryPlanBuilder : AbstractCommonTest
     {
         private EventType[] typesPerStream;
         private DependencyGraph dependencyGraph;

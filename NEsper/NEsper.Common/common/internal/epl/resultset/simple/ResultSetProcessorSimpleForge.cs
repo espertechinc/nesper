@@ -86,12 +86,13 @@ namespace com.espertech.esper.common.@internal.epl.resultset.simple
                 classScope,
                 propertyNode => propertyNode.GetterBlock.BlockReturn(Constant(OptionalHavingNode != null)));
             ResultSetProcessorUtil.EvaluateHavingClauseCodegen(OptionalHavingNode, classScope, instance);
-            instance.Properties.AddProperty(
+            instance.Methods.AddMethod(
                 typeof(ExprEvaluatorContext),
-                "AgentInstanceContext",
+                "GetAgentInstanceContext",
+                new EmptyList<CodegenNamedParam>(),
                 GetType(),
                 classScope,
-                propertyNode => propertyNode.GetterBlock.BlockReturn(REF_AGENTINSTANCECONTEXT));
+                node => node.Block.ReturnMethodOrBlock(REF_AGENTINSTANCECONTEXT));
         }
 
         public void ProcessViewResultCodegen(

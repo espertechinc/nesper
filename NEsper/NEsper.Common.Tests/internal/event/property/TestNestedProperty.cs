@@ -19,7 +19,7 @@ using NUnit.Framework;
 namespace com.espertech.esper.common.@internal.@event.property
 {
     [TestFixture]
-    public class TestNestedProperty : AbstractTestBase
+    public class TestNestedProperty : AbstractCommonTest
     {
         private NestedProperty[] nested;
         private EventBean theEvent;

@@ -22,7 +22,7 @@ using NUnit.Framework;
 namespace com.espertech.esper.common.@internal.epl.join.queryplanbuild
 {
     [TestFixture]
-    public class TestTwoStreamQueryPlanBuilder : AbstractTestBase
+    public class TestTwoStreamQueryPlanBuilder : AbstractCommonTest
     {
         private EventType[] typesPerStream;
 
@@ -39,7 +39,7 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanbuild
         {
             var graph = new QueryGraphForge(2, null, false);
             graph.AddStrictEquals(0, "P01", Make(0, "P01"), 1, "P11", Make(1, "P11"));
-            graph.AddStrictEquals(0, "P02", Make(0, "P02"), 1, "p12", Make(1, "p12"));
+            graph.AddStrictEquals(0, "P02", Make(0, "P02"), 1, "P12", Make(1, "P12"));
             return graph;
         }
 
@@ -57,7 +57,7 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanbuild
             var spec = TwoStreamQueryPlanBuilder.Build(typesPerStream, graph, null, new StreamJoinAnalysisResultCompileTime(2));
 
             EPAssertionUtil.AssertEqualsExactOrder(new[] { "P01", "P02" }, spec.IndexSpecs[0].IndexProps[0]);
-            EPAssertionUtil.AssertEqualsExactOrder(new[] { "P11", "p12" }, spec.IndexSpecs[1].IndexProps[0]);
+            EPAssertionUtil.AssertEqualsExactOrder(new[] { "P11", "P12" }, spec.IndexSpecs[1].IndexProps[0]);
             Assert.AreEqual(2, spec.ExecNodeSpecs.Length);
         }
 
@@ -68,7 +68,7 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanbuild
             var spec = TwoStreamQueryPlanBuilder.Build(typesPerStream, graph, OuterJoinType.LEFT, new StreamJoinAnalysisResultCompileTime(2));
 
             EPAssertionUtil.AssertEqualsExactOrder(new[] { "P01", "P02" }, spec.IndexSpecs[0].IndexProps[0]);
-            EPAssertionUtil.AssertEqualsExactOrder(new[] { "P11", "p12" }, spec.IndexSpecs[1].IndexProps[0]);
+            EPAssertionUtil.AssertEqualsExactOrder(new[] { "P11", "P12" }, spec.IndexSpecs[1].IndexProps[0]);
             Assert.AreEqual(2, spec.ExecNodeSpecs.Length);
             Assert.AreEqual(typeof(TableOuterLookupNodeForge), spec.ExecNodeSpecs[0].GetType());
             Assert.AreEqual(typeof(TableLookupNodeForge), spec.ExecNodeSpecs[1].GetType());

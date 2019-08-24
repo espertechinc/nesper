@@ -21,7 +21,7 @@ using NUnit.Framework;
 namespace com.espertech.esper.runtime.@internal.filtersvcimpl
 {
     [TestFixture]
-    public class TestFilterParamIndexEquals : AbstractTestBase
+    public class TestFilterParamIndexEquals : AbstractRuntimeTest
     {
         [SetUp]
         public void SetUp()

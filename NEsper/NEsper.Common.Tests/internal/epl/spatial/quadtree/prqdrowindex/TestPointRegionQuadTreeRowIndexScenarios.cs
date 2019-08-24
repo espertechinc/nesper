@@ -9,6 +9,7 @@
 using System.Collections.Generic;
 
 using com.espertech.esper.common.@internal.epl.spatial.quadtree.pointregion;
+using com.espertech.esper.compat.collections;
 
 using NUnit.Framework;
 
@@ -18,7 +19,7 @@ using static com.espertech.esper.common.@internal.epl.spatial.quadtree.prqdrowin
 namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.prqdrowindex
 {
     [TestFixture]
-    public class TestPointRegionQuadTreeRowIndexScenarios : AbstractTestBase
+    public class TestPointRegionQuadTreeRowIndexScenarios : AbstractCommonTest
     {
         [Test]
         public void TestSubdivideAdd()
@@ -44,7 +45,7 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.prqdrowindex
         }
 
         [Test]
-        public void TestSuperslim()
+        public void TestSuperSlim()
         {
             PointRegionQuadTree<object> tree = PointRegionQuadTreeFactory<object>.Make(0, 0, 100, 100, 1, 100);
             AddNonUnique(tree, 10, 90, "P1");
@@ -80,7 +81,7 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.prqdrowindex
             Assert.AreEqual(1, se.Count);
 
             PointRegionQuadTreeNodeLeaf<object> sw = NavigateLeaf(ne, "sw");
-            IList<XYPointMultiType> collection = (IList<XYPointMultiType>) sw.Points;
+            var collection = AssertPointCollection(sw);
             Compare(60, 40, "P2", collection[0]);
             Compare(70, 30, "P3", collection[1]);
             Assert.AreEqual(2, sw.Count);
@@ -89,9 +90,9 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.prqdrowindex
             Remove(tree, 60, 40, "P2");
 
             PointRegionQuadTreeNodeLeaf<object> root = NavigateLeaf(tree, "");
-            collection = (IList<XYPointMultiType>) root.Points;
+            collection = AssertPointCollection(root);
             Assert.AreEqual(3, root.Count);
-            Assert.AreEqual(3, collection.Count);
+            Assert.AreEqual(3, collection.Length);
             Compare(60, 10, "[P4]", collection[0]);
             Compare(70, 30, "P3", collection[1]);
             Compare(90, 45, "P5", collection[2]);
@@ -146,8 +147,9 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.prqdrowindex
 
             Assert.IsFalse(tree.Root is PointRegionQuadTreeNodeLeaf<object>);
             Assert.AreEqual(4, NavigateLeaf(tree, "se").Count);
-            IList<XYPointMultiType> collection = (IList<XYPointMultiType>) NavigateLeaf(tree, "se").Points;
-            Assert.AreEqual(3, collection.Count);
+
+            var collection = AssertPointCollection(NavigateLeaf(tree, "se"));
+            Assert.That(collection, Has.Length.EqualTo(3));
             Compare(65, 75, "P1", collection[0]);
             Compare(80, 75, "P2", collection[1]);
             Compare(80, 60, "[P3, P4]", collection[2]);
@@ -156,9 +158,11 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.prqdrowindex
             Remove(tree, 65, 75, "P1");
             Remove(tree, 80, 60, "P3");
 
-            Assert.AreEqual(3, NavigateLeaf(tree, "se").Count);
+            var leaf = NavigateLeaf(tree, "se");
+            collection = AssertPointCollection(leaf);
+            Assert.That(leaf.Count, Is.EqualTo(3));
             AssertFound(tree, 60, 60, 21, 21, "P2,P4,P5");
-            Assert.AreEqual(3, collection.Count);
+            Assert.AreEqual(3, collection.Length);
             Compare(80, 75, "P2", collection[0]);
             Compare(80, 60, "[P4]", collection[1]);
             Compare(66, 78, "P5", collection[2]);
@@ -166,9 +170,11 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.prqdrowindex
             Remove(tree, 66, 78, "P5");
 
             AssertFound(tree, 60, 60, 21, 21, "P2,P4");
-            Assert.AreEqual(2, NavigateLeaf(tree, "").Count);
-            collection = (IList<XYPointMultiType>) NavigateLeaf(tree, "").Points;
-            Assert.AreEqual(2, collection.Count);
+
+            leaf = NavigateLeaf(tree, "");
+            Assert.AreEqual(2, leaf.Count);
+            collection = AssertPointCollection(NavigateLeaf(tree, ""));
+            Assert.That(collection, Has.Length.EqualTo(2));
             Compare(80, 75, "P2", collection[0]);
             Compare(80, 60, "[P4]", collection[1]);
         }
@@ -195,8 +201,9 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.prqdrowindex
             Assert.IsFalse(tree.Root is PointRegionQuadTreeNodeLeaf<object>);
             Assert.AreEqual(1, tree.Root.Level);
             Assert.AreEqual(7, NavigateLeaf(tree, "nw").Count);
-            IList<XYPointMultiType> collection = (IList<XYPointMultiType>) NavigateLeaf(tree, "nw").Points;
-            Assert.AreEqual(3, collection.Count);
+
+            var collection = AssertPointCollection(NavigateLeaf(tree, "nw"));
+            Assert.That(collection, Has.Length.EqualTo(3));
             Compare(10, 10, "[P1, P4, P7]", collection[0]);
             Compare(9.9, 10, "[P2, P6]", collection[1]);
             Compare(10, 9.9, "[P3, P5]", collection[2]);
@@ -213,7 +220,8 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.prqdrowindex
 
             Assert.AreEqual(12, NavigateLeaf(tree, "nw").Count);
             Assert.AreEqual(2, NavigateLeaf(tree, "nw").Level);
-            Assert.AreEqual(3, collection.Count);
+            collection = AssertPointCollection(NavigateLeaf(tree, "nw"));
+            Assert.That(collection, Has.Length.EqualTo(3));
             Compare(10, 10, "[P1, P4, P7, P10, P11, P12]", collection[0]);
             Compare(9.9, 10, "[P2, P6, P8]", collection[1]);
             Compare(10, 9.9, "[P3, P5, P9]", collection[2]);
@@ -232,7 +240,8 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.prqdrowindex
             AssertFound(tree, 9, 9, 2, 2, "P1,P2,P4,P6,P7,P10,P11,P12");
 
             Assert.AreEqual(8, NavigateLeaf(tree, "nw").Count);
-            Assert.AreEqual(2, collection.Count);
+            collection = AssertPointCollection(NavigateLeaf(tree, "nw"));
+            Assert.That(collection, Has.Length.EqualTo(2));
             Compare(10, 10, "[P1, P4, P7, P10, P11, P12]", collection[0]);
             Compare(9.9, 10, "[P2, P6]", collection[1]);
             Assert.IsFalse(tree.Root is PointRegionQuadTreeNodeLeaf<object>);
@@ -242,14 +251,23 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.prqdrowindex
             Remove(tree, 10, 10, "P10");
             Assert.IsInstanceOf<PointRegionQuadTreeNodeLeaf<object>>(tree.Root);
             Assert.AreEqual(5, NavigateLeaf(tree, "").Count);
-            collection = (IList<XYPointMultiType>) NavigateLeaf(tree, "").Points;
-            Assert.AreEqual(2, collection.Count);
+            collection = AssertPointCollection(NavigateLeaf(tree, ""));
+            Assert.That(collection, Has.Length.EqualTo(2));
             Compare(10, 10, "[P4, P7, P11, P12]", collection[0]);
             Compare(9.9, 10, "[P6]", collection[1]);
             AssertFound(tree, 9, 10, 1, 1, "P6");
             AssertFound(tree, 10, 9, 1, 1, "");
             AssertFound(tree, 10, 10, 1, 1, "P4,P7,P11,P12");
             AssertFound(tree, 9, 9, 2, 2, "P4,P6,P7,P11,P12");
+        }
+
+
+        static XYPointMultiType[] AssertPointCollection(
+            PointRegionQuadTreeNodeLeaf<object> leaf)
+        {
+            Assert.That(leaf, Is.Not.Null);
+            Assert.That(leaf.Points, Is.InstanceOf<ICollection<XYPointMultiType>>());
+            return leaf.Points.UnwrapIntoArray<XYPointMultiType>();
         }
     }
 } // end of namespace

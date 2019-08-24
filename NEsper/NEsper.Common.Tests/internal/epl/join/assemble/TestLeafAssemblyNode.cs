@@ -19,7 +19,7 @@ using NUnit.Framework;
 namespace com.espertech.esper.common.@internal.epl.join.assemble
 {
     [TestFixture]
-    public class TestLeafAssemblyNode : AbstractTestBase
+    public class TestLeafAssemblyNode : AbstractCommonTest
     {
         private SupportJoinProcNode parentNode;
         private LeafAssemblyNode leafNode;

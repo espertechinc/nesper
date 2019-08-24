@@ -95,11 +95,11 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
             {
                 var fields = new [] { "c0", "c1", "c2", "c3" };
                 var epl = "@Name('s0') select " +
-                          "IntPrimitive = SupportEnumTwo.ENUM_VALUE_1.getAssociatedValue() as c0," +
-                          "SupportEnumTwo.ENUM_VALUE_2.checkAssociatedValue(IntPrimitive) as c1," +
-                          "SupportEnumTwo.ENUM_VALUE_3.getNested().getValue() as c2," +
-                          "SupportEnumTwo.ENUM_VALUE_2.checkEventBeanPropInt(sb, 'IntPrimitive') as c3," +
-                          "SupportEnumTwo.ENUM_VALUE_2.checkEventBeanPropInt(*, 'IntPrimitive') as c4 " +
+                          "IntPrimitive = SupportEnumTwo.ENUM_VALUE_1.GetAssociatedValue() as c0," +
+                          "SupportEnumTwo.ENUM_VALUE_2.CheckAssociatedValue(IntPrimitive) as c1," +
+                          "SupportEnumTwo.ENUM_VALUE_3.GetNested().GetValue() as c2," +
+                          "SupportEnumTwo.ENUM_VALUE_2.CheckEventBeanPropInt(sb, 'IntPrimitive') as c3," +
+                          "SupportEnumTwo.ENUM_VALUE_2.CheckEventBeanPropInt(*, 'IntPrimitive') as c4 " +
                           "from SupportBean as sb";
                 env.CompileDeploy(epl).AddListener("s0");
 
@@ -129,14 +129,14 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
             public void Run(RegressionEnvironment env)
             {
                 var epl = "@Name('s0') select " +
-                          "innerTypes('key1') as c0,\n" +
-                          "innerTypes(key) as c1,\n" +
-                          "innerTypes('key1').Ids[1] as c2,\n" +
-                          "innerTypes(key).getIds(subkey) as c3,\n" +
-                          "innerTypesArray[1].Ids[1] as c4,\n" +
-                          "innerTypesArray(subkey).getIds(subkey) as c5,\n" +
-                          "innerTypesArray(subkey).getIds(s0, 'xyz') as c6,\n" +
-                          "innerTypesArray(subkey).getIds(*, 'xyz') as c7\n" +
+                          "InnerTypes('key1') as c0,\n" +
+                          "InnerTypes(key) as c1,\n" +
+                          "InnerTypes('key1').Ids[1] as c2,\n" +
+                          "InnerTypes(key).GetIds(subkey) as c3,\n" +
+                          "InnerTypesArray[1].Ids[1] as c4,\n" +
+                          "InnerTypesArray(Subkey).GetIds(Subkey) as c5,\n" +
+                          "InnerTypesArray(Subkey).GetIds(s0, 'xyz') as c6,\n" +
+                          "InnerTypesArray(Subkey).GetIds(*, 'xyz') as c7\n" +
                           "from SupportEventTypeErasure as s0";
                 env.CompileDeploy(epl).AddListener("s0");
 
@@ -195,9 +195,9 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
             public void Run(RegressionEnvironment env)
             {
                 var epl = "@Name('s0') select " +
-                          "levelOne.getCustomLevelOne(10) as val0, " +
-                          "levelOne.levelTwo.getCustomLevelTwo(20) as val1, " +
-                          "levelOne.levelTwo.levelThree.getCustomLevelThree(30) as val2 " +
+                          "LevelOne.GetCustomLevelOne(10) as val0, " +
+                          "LevelOne.LevelTwo.GetCustomLevelTwo(20) as val1, " +
+                          "LevelOne.LevelTwo.LevelThree.GetCustomLevelThree(30) as val2 " +
                           "from SupportLevelZero";
                 env.CompileDeploy(epl).AddListener("s0");
 
@@ -205,7 +205,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                     new SupportLevelZero(new SupportLevelOne(new SupportLevelTwo(new SupportLevelThree()))));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    "val0,val1,val2".SplitCsv(),
+                    new [] { "val0","val1","val2" },
                     new object[] {"level1:10", "level2:20", "level3:30"});
 
                 env.UndeployAll();
@@ -287,11 +287,11 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
             public void Run(RegressionEnvironment env)
             {
                 var epl = "@Name('s0') select " +
-                          "(arrayProperty).size() as size, " +
-                          "(arrayProperty)[0] as get0, " +
-                          "(arrayProperty)[1] as get1, " +
-                          "(arrayProperty)[2] as get2, " +
-                          "(arrayProperty)[3] as get3 " +
+                          "(ArrayProperty).size() as size, " +
+                          "(ArrayProperty)[0] as get0, " +
+                          "(ArrayProperty)[1] as get1, " +
+                          "(ArrayProperty)[2] as get2, " +
+                          "(ArrayProperty)[3] as get3 " +
                           "from SupportBeanComplexProps";
                 env.CompileDeploy(epl).AddListener("s0");
 
@@ -327,8 +327,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
             public void Run(RegressionEnvironment env)
             {
                 var epl = "@Name('s0') select " +
-                          "(abc).getArray().size() as size, " +
-                          "(abc).getArray()[0].getNestLevOneVal() as get0 " +
+                          "(abc).GetArray().Size() as size, " +
+                          "(abc).GetArray()[0].GetNestLevOneVal() as get0 " +
                           "from SupportBeanCombinedProps as abc";
                 env.CompileDeploy(epl).AddListener("s0");
 

@@ -110,7 +110,7 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.prqdrowindex
         {
             Assert.AreEqual(x, point.X);
             Assert.AreEqual(y, point.Y);
-            Assert.AreEqual(expected, point.Multityped.ToString());
+            Assert.AreEqual(expected, point.Multityped.RenderAny());
         }
     }
 } // end of namespace

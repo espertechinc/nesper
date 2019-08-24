@@ -149,7 +149,7 @@ namespace com.espertech.esper.regressionrun.suite.epl
             configuration.Common.AddEventType("MapTypeEmpty", new Dictionary<string, object>());
 
             var testXMLNoSchemaType = new ConfigurationCommonEventTypeXMLDOM();
-            testXMLNoSchemaType.RootElementName = "myevent";
+            testXMLNoSchemaType.RootElementName = "Myevent";
             configuration.Common.AddEventType("TestXMLNoSchemaType", testXMLNoSchemaType);
 
             IDictionary<string, object> myConfiguredMape = new Dictionary<string, object>();

@@ -60,7 +60,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             ExprForgeCodegenSymbol scope = new ExprForgeCodegenSymbol(false, null);
             CodegenMethod methodNode = codegenMethodScope
                 .MakeChildWithScope(
-                    typeof(ICollection<object>),
+                    typeof(ICollection<EventBean>),
                     typeof(EnumIntersectForgeEval),
                     scope,
                     codegenClassScope)
@@ -68,12 +68,12 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
 
             CodegenBlock block = methodNode.Block;
             if (forge.scalar) {
-                block.DeclareVar<ICollection<object>>(
+                block.DeclareVar<ICollection<EventBean>>(
                     "other",
                     forge.evaluatorForge.EvaluateGetROCollectionScalarCodegen(methodNode, scope, codegenClassScope));
             }
             else {
-                block.DeclareVar<ICollection<object>>(
+                block.DeclareVar<ICollection<EventBean>>(
                     "other",
                     forge.evaluatorForge.EvaluateGetROCollectionEventsCodegen(methodNode, scope, codegenClassScope));
             }
@@ -82,6 +82,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                 StaticMethod(
                     typeof(EnumIntersectForgeEval),
                     "EnumIntersectForgeEvalSet",
+                    new[] {typeof(EventBean)},
                     @Ref("other"),
                     EnumForgeCodegenNames.REF_ENUMCOLL,
                     Constant(forge.scalar)));

@@ -13,7 +13,7 @@ using NUnit.Framework;
 namespace com.espertech.esper.common.@internal.collection
 {
     [TestFixture]
-    public class TestArrayBackedCollection : AbstractTestBase
+    public class TestArrayBackedCollection : AbstractCommonTest
     {
         [SetUp]
         public void SetUp()

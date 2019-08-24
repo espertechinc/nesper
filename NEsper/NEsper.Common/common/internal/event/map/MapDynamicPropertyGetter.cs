@@ -71,7 +71,7 @@ namespace com.espertech.esper.common.@internal.@event.map
         {
             return ExprDotMethod(
                 CastUnderlying(typeof(IDictionary<string, object>), beanExpression),
-                "containsKey",
+                "ContainsKey",
                 Constant(propertyName));
         }
 

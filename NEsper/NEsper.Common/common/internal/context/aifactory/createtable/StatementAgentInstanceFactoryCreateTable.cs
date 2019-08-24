@@ -26,20 +26,19 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createtable
     {
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-        private AggregationRowFactory aggregationRowFactory;
-        private DataInputOutputSerdeWCollation<object> aggregationSerde;
-        private TableMetadataInternalEventToPublic eventToPublic;
-        private EventPropertyValueGetter primaryKeyGetter;
-
-        private Table table;
-        private string tableName;
+        private AggregationRowFactory _aggregationRowFactory;
+        private DataInputOutputSerdeWCollation<AggregationRow> _aggregationSerde;
+        private TableMetadataInternalEventToPublic _eventToPublic;
+        private EventPropertyValueGetter _primaryKeyGetter;
+        private Table _table;
+        private string _tableName;
 
         public TableMetadataInternalEventToPublic EventToPublic {
-            set => eventToPublic = value;
+            set => _eventToPublic = value;
         }
 
         public string TableName {
-            set => tableName = value;
+            set => _tableName = value;
         }
 
         public EventType PublicEventType {
@@ -47,15 +46,15 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createtable
         }
 
         public AggregationRowFactory AggregationRowFactory {
-            set => aggregationRowFactory = value;
+            set => _aggregationRowFactory = value;
         }
 
-        public DataInputOutputSerdeWCollation<object> AggregationSerde {
-            set => aggregationSerde = value;
+        public DataInputOutputSerdeWCollation<AggregationRow> AggregationSerde {
+            set => _aggregationSerde = value;
         }
 
         public EventPropertyValueGetter PrimaryKeyGetter {
-            set => primaryKeyGetter = value;
+            set => _primaryKeyGetter = value;
         }
 
         public EventType StatementEventType { get; private set; }
@@ -66,7 +65,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createtable
 
         public void StatementDestroy(StatementContext statementContext)
         {
-            statementContext.TableManagementService.DestroyTable(statementContext.DeploymentId, tableName);
+            statementContext.TableManagementService.DestroyTable(statementContext.DeploymentId, _tableName);
         }
 
         public void StatementDestroyPreconditions(StatementContext statementContext)
@@ -78,14 +77,14 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createtable
             bool isRecoveringResilient)
         {
             var tableState =
-                agentInstanceContext.TableManagementService.AllocateTableInstance(table, agentInstanceContext);
-            var finalView = new TableInstanceViewable(table, tableState);
+                agentInstanceContext.TableManagementService.AllocateTableInstance(_table, agentInstanceContext);
+            var finalView = new TableInstanceViewable(_table, tableState);
 
             AgentInstanceStopCallback stop = new ProxyAgentInstanceStopCallback {
                 ProcStop = services => {
-                    var instance = table.GetTableInstance(agentInstanceContext.AgentInstanceId);
+                    var instance = _table.GetTableInstance(agentInstanceContext.AgentInstanceId);
                     if (instance == null) {
-                        Log.Warn("Table instance by name '" + tableName + "' has not been found");
+                        Log.Warn("Table instance by name '" + _tableName + "' has not been found");
                     }
                     else {
                         instance.Destroy();
@@ -114,18 +113,18 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createtable
             ModuleIncidentals moduleIncidentals,
             bool recovery)
         {
-            table = statementContext.TableManagementService.GetTable(statementContext.DeploymentId, tableName);
-            if (table == null) {
-                throw new IllegalStateException("Table '" + tableName + "' has not be registered");
+            _table = statementContext.TableManagementService.GetTable(statementContext.DeploymentId, _tableName);
+            if (_table == null) {
+                throw new IllegalStateException("Table '" + _tableName + "' has not be registered");
             }
 
-            table.StatementContextCreateTable = statementContext;
-            table.EventToPublic = eventToPublic;
-            table.AggregationRowFactory = aggregationRowFactory;
-            table.TableSerdes =
-                statementContext.TableManagementService.GetTableSerdes(table, aggregationSerde, statementContext);
-            table.PrimaryKeyGetter = primaryKeyGetter;
-            table.TableReady();
+            _table.StatementContextCreateTable = statementContext;
+            _table.EventToPublic = _eventToPublic;
+            _table.AggregationRowFactory = _aggregationRowFactory;
+            _table.TableSerdes =
+                statementContext.TableManagementService.GetTableSerdes(_table, _aggregationSerde, statementContext);
+            _table.PrimaryKeyGetter = _primaryKeyGetter;
+            _table.TableReady();
         }
     }
 } // end of namespace

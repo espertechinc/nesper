@@ -869,7 +869,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 env.CompileDeploy(eplStmt, path);
                 env.AddListener("s0");
 
-                var fields = "c1,c2,c3,c4".SplitCsv();
+                var fields = new [] { "c1","c2","c3","c4" };
 
                 env.Milestone(0);
 

@@ -40,21 +40,21 @@ namespace com.espertech.esper.common.@internal.type
         static BitWiseOpEnum()
         {
             computers = new Dictionary<HashableMultiKey, Computer>();
-            computers.Put(new HashableMultiKey(new object[] {typeof(byte), BAND}), new BAndByte());
-            computers.Put(new HashableMultiKey(new object[] {typeof(short), BAND}), new BAndShort());
-            computers.Put(new HashableMultiKey(new object[] {typeof(int), BAND}), new BAndInt());
-            computers.Put(new HashableMultiKey(new object[] {typeof(long), BAND}), new BAndLong());
-            computers.Put(new HashableMultiKey(new object[] {typeof(bool), BAND}), new BAndBoolean());
-            computers.Put(new HashableMultiKey(new object[] {typeof(byte), BOR}), new BOrByte());
-            computers.Put(new HashableMultiKey(new object[] {typeof(short), BOR}), new BOrShort());
-            computers.Put(new HashableMultiKey(new object[] {typeof(int), BOR}), new BOrInt());
-            computers.Put(new HashableMultiKey(new object[] {typeof(long), BOR}), new BOrLong());
-            computers.Put(new HashableMultiKey(new object[] {typeof(bool), BOR}), new BOrBoolean());
-            computers.Put(new HashableMultiKey(new object[] {typeof(byte), BXOR}), new BXorByte());
-            computers.Put(new HashableMultiKey(new object[] {typeof(short), BXOR}), new BXorShort());
-            computers.Put(new HashableMultiKey(new object[] {typeof(int), BXOR}), new BXorInt());
-            computers.Put(new HashableMultiKey(new object[] {typeof(long), BXOR}), new BXorLong());
-            computers.Put(new HashableMultiKey(new object[] {typeof(bool), BXOR}), new BXorBoolean());
+            computers.Put(new HashableMultiKey(new object[] {typeof(byte?), BAND}), new BAndByte());
+            computers.Put(new HashableMultiKey(new object[] {typeof(short?), BAND}), new BAndShort());
+            computers.Put(new HashableMultiKey(new object[] {typeof(int?), BAND}), new BAndInt());
+            computers.Put(new HashableMultiKey(new object[] {typeof(long?), BAND}), new BAndLong());
+            computers.Put(new HashableMultiKey(new object[] {typeof(bool?), BAND}), new BAndBoolean());
+            computers.Put(new HashableMultiKey(new object[] {typeof(byte?), BOR}), new BOrByte());
+            computers.Put(new HashableMultiKey(new object[] {typeof(short?), BOR}), new BOrShort());
+            computers.Put(new HashableMultiKey(new object[] {typeof(int?), BOR}), new BOrInt());
+            computers.Put(new HashableMultiKey(new object[] {typeof(long?), BOR}), new BOrLong());
+            computers.Put(new HashableMultiKey(new object[] {typeof(bool?), BOR}), new BOrBoolean());
+            computers.Put(new HashableMultiKey(new object[] {typeof(byte?), BXOR}), new BXorByte());
+            computers.Put(new HashableMultiKey(new object[] {typeof(short?), BXOR}), new BXorShort());
+            computers.Put(new HashableMultiKey(new object[] {typeof(int?), BXOR}), new BXorInt());
+            computers.Put(new HashableMultiKey(new object[] {typeof(long?), BXOR}), new BXorLong());
+            computers.Put(new HashableMultiKey(new object[] {typeof(bool?), BXOR}), new BXorBoolean());
         }
 
         private BitWiseOpEnum(string expressionText)

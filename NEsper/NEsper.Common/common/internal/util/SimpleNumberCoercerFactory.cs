@@ -95,10 +95,12 @@ namespace com.espertech.esper.common.@internal.util
             CodegenExpression param,
             Type type)
         {
-            if (type == primitive || type == boxed) {
+            if (type == primitive) {
                 return param;
             }
-
+            if (type == boxed) {
+                return ExprDotName(param, "Value");
+            }
             if (type.IsPrimitive) {
                 return Cast(primitive, param);
             }

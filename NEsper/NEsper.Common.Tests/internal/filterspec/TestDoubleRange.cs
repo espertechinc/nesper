@@ -11,7 +11,7 @@ using NUnit.Framework;
 namespace com.espertech.esper.common.@internal.filterspec
 {
     [TestFixture]
-    public class TestDoubleRange : AbstractTestBase
+    public class TestDoubleRange : AbstractCommonTest
     {
         [Test]
         public void TestNew()

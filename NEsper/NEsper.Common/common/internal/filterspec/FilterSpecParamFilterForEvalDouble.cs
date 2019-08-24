@@ -18,4 +18,39 @@ namespace com.espertech.esper.common.@internal.filterspec
             ExprEvaluatorContext exprEvaluatorContext,
             StatementContextFilterEvalEnv filterEvalEnv);
     }
+
+    public class ProxyFilterSpecParamFilterForEvalDouble : FilterSpecParamFilterForEvalDouble
+    {
+        public delegate double GetFilterValueDoubleFunc(
+            MatchedEventMap matchedEvents,
+            ExprEvaluatorContext exprEvaluatorContext,
+            StatementContextFilterEvalEnv filterEvalEnv);
+
+        public GetFilterValueDoubleFunc ProcGetFilterValueDouble { get; set; }
+
+        public ProxyFilterSpecParamFilterForEvalDouble()
+        {
+        }
+
+        public ProxyFilterSpecParamFilterForEvalDouble(GetFilterValueDoubleFunc procGetFilterValueDouble)
+        {
+            ProcGetFilterValueDouble = procGetFilterValueDouble;
+        }
+
+        public object GetFilterValue(
+            MatchedEventMap matchedEvents,
+            ExprEvaluatorContext exprEvaluatorContext,
+            StatementContextFilterEvalEnv filterEvalEnv)
+        {
+            return ProcGetFilterValueDouble.Invoke(matchedEvents, exprEvaluatorContext, filterEvalEnv);
+        }
+
+        public double GetFilterValueDouble(
+            MatchedEventMap matchedEvents,
+            ExprEvaluatorContext exprEvaluatorContext,
+            StatementContextFilterEvalEnv filterEvalEnv)
+        {
+            return ProcGetFilterValueDouble.Invoke(matchedEvents, exprEvaluatorContext, filterEvalEnv);
+        }
+    }
 } // end of namespace

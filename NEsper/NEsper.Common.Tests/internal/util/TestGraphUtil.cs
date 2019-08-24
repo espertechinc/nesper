@@ -18,7 +18,7 @@ using NUnit.Framework;
 namespace com.espertech.esper.common.@internal.util
 {
     [TestFixture]
-    public class TestGraphUtil : AbstractTestBase
+    public class TestGraphUtil : AbstractCommonTest
     {
         private void TryInvalid(
             IDictionary<string, ICollection<string>> graph,
@@ -87,7 +87,7 @@ namespace com.espertech.esper.common.@internal.util
             EPAssertionUtil.AssertEqualsExactOrder("R2,R1,A,1_1,0".SplitCsv(), GraphUtil.GetTopDownOrder(graph).ToArray());
 
             Add(graph, "R1", "0");
-            TryInvalid(graph, "Circular dependency detected between [1_1, A, R1, 0]");
+            TryInvalid(graph, "Circular dependency detected between [0, R1, A, 1_1]");
         }
 
         [Test]
@@ -96,13 +96,13 @@ namespace com.espertech.esper.common.@internal.util
             IDictionary<string, ICollection<string>> graph = new LinkedHashMap<string, ICollection<string>>();
             Add(graph, "1_1", "1");
             Add(graph, "1", "1_1");
-            TryInvalid(graph, "Circular dependency detected between [1_1, 1]");
+            TryInvalid(graph, "Circular dependency detected between [1, 1_1]");
 
             graph = new LinkedHashMap<string, ICollection<string>>();
             Add(graph, "1", "2");
             Add(graph, "2", "3");
             Add(graph, "3", "1");
-            TryInvalid(graph, "Circular dependency detected between [1, 2, 3]");
+            TryInvalid(graph, "Circular dependency detected between [3, 2, 1]");
         }
 
         [Test]
@@ -156,25 +156,39 @@ namespace com.espertech.esper.common.@internal.util
             EPAssertionUtil.AssertEqualsExactOrder(GraphUtil.GetTopDownOrder(graph).ToArray(), "1,1_1".SplitCsv());
 
             Add(graph, "1_1_1", "1_1");
-            EPAssertionUtil.AssertEqualsExactOrder(GraphUtil.GetTopDownOrder(graph).ToArray(), "1,1_1,1_1_1".SplitCsv());
+            EPAssertionUtil.AssertEqualsExactOrder(
+                GraphUtil.GetTopDownOrder(graph).ToArray(),
+                "1,1_1,1_1_1".SplitCsv());
 
             Add(graph, "0_1", "0");
-            EPAssertionUtil.AssertEqualsExactOrder(GraphUtil.GetTopDownOrder(graph).ToArray(), "0,0_1,1,1_1,1_1_1".SplitCsv());
+            EPAssertionUtil.AssertEqualsExactOrder(
+                GraphUtil.GetTopDownOrder(graph).ToArray(),
+                "0,0_1,1,1_1,1_1_1".SplitCsv());
 
             Add(graph, "1_2", "1");
-            EPAssertionUtil.AssertEqualsExactOrder(GraphUtil.GetTopDownOrder(graph).ToArray(), "0,0_1,1,1_1,1_1_1,1_2".SplitCsv());
+            EPAssertionUtil.AssertEqualsExactOrder(
+                GraphUtil.GetTopDownOrder(graph).ToArray(),
+                "0,0_1,1,1_1,1_1_1,1_2".SplitCsv());
 
             Add(graph, "1_1_2", "1_1");
-            EPAssertionUtil.AssertEqualsExactOrder(GraphUtil.GetTopDownOrder(graph).ToArray(), "0,0_1,1,1_1,1_1_1,1_1_2,1_2".SplitCsv());
+            EPAssertionUtil.AssertEqualsExactOrder(
+                GraphUtil.GetTopDownOrder(graph).ToArray(),
+                "0,0_1,1,1_1,1_1_1,1_1_2,1_2".SplitCsv());
 
             Add(graph, "1_2_1", "1_2");
-            EPAssertionUtil.AssertEqualsExactOrder(GraphUtil.GetTopDownOrder(graph).ToArray(), "0,0_1,1,1_1,1_1_1,1_1_2,1_2,1_2_1".SplitCsv());
+            EPAssertionUtil.AssertEqualsExactOrder(
+                GraphUtil.GetTopDownOrder(graph).ToArray(),
+                "0,0_1,1,1_1,1_1_1,1_1_2,1_2,1_2_1".SplitCsv());
 
             Add(graph, "0", "R");
-            EPAssertionUtil.AssertEqualsExactOrder(GraphUtil.GetTopDownOrder(graph).ToArray(), "1,1_1,1_1_1,1_1_2,1_2,1_2_1,R,0,0_1,".SplitCsv());
+            EPAssertionUtil.AssertEqualsExactOrder(
+                GraphUtil.GetTopDownOrder(graph).ToArray(),
+                "1,1_1,1_1_1,1_1_2,1_2,1_2_1,R,0,0_1".SplitCsv());
 
             Add(graph, "1", "R");
-            EPAssertionUtil.AssertEqualsExactOrder(GraphUtil.GetTopDownOrder(graph).ToArray(), "R,0,0_1,1,1_1,1_1_1,1_1_2,1_2,1_2_1".SplitCsv());
+            EPAssertionUtil.AssertEqualsExactOrder(
+                GraphUtil.GetTopDownOrder(graph).ToArray(),
+                "R,0,0_1,1,1_1,1_1_1,1_1_2,1_2,1_2_1".SplitCsv());
         }
     }
 } // end of namespace

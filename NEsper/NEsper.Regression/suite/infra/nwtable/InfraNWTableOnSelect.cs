@@ -235,7 +235,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 SendSupportBean_S0(env, 1, "E1");
                 EPAssertionUtil.AssertProps(
                     env.Listener("out").AssertOneGetNewAndReset(),
-                    "value".SplitCsv(),
+                    new [] { "value" },
                     new object[] {"E1"});
 
                 env.Milestone(0);
@@ -244,7 +244,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 SendSupportBean_S0(env, 2, "E2");
                 EPAssertionUtil.AssertProps(
                     env.Listener("out").AssertOneGetNewAndReset(),
-                    "value".SplitCsv(),
+                    new [] { "value" },
                     new object[] {"E2"});
 
                 env.UndeployAll();

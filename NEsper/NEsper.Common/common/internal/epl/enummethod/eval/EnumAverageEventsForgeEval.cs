@@ -84,7 +84,8 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             CodegenBlock block = methodNode.Block
                 .DeclareVar<double>("sum", Constant(0d))
                 .DeclareVar<int>("count", Constant(0));
-            CodegenBlock forEach = block.ForEach(typeof(EventBean), "next", EnumForgeCodegenNames.REF_ENUMCOLL)
+            CodegenBlock forEach = block
+                .ForEach(typeof(EventBean), "next", EnumForgeCodegenNames.REF_ENUMCOLL)
                 .AssignArrayElement(EnumForgeCodegenNames.REF_EPS, Constant(forge.streamNumLambda), @Ref("next"))
                 .DeclareVar(
                     innerType,
@@ -95,12 +96,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             }
 
             forEach.Increment("count")
-                .AssignRef(
-                    "sum",
-                    Op(
-                        @Ref("sum"),
-                        "+",
-                        SimpleNumberCoercerFactory.CoercerDouble.CodegenDouble(@Ref("num"), innerType)))
+                .AssignRef("sum", Op(@Ref("sum"), "+", SimpleNumberCoercerFactory.CoercerDouble.CodegenDouble(@Ref("num"), innerType)))
                 .BlockEnd();
             block.IfCondition(EqualsIdentity(@Ref("count"), Constant(0)))
                 .BlockReturn(ConstantNull())

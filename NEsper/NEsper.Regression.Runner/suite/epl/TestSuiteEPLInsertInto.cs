@@ -170,11 +170,11 @@ namespace com.espertech.esper.regressionrun.suite.epl
             }
 
             Schema avroExistingTypeSchema = SchemaBuilder.Record("name",
-                    TypeBuilder.RequiredLong("myLong"),
-                    TypeBuilder.Field("myLongArray",
+                    TypeBuilder.RequiredLong("MyLong"),
+                    TypeBuilder.Field("MyLongArray",
                             TypeBuilder.Array(TypeBuilder.LongType())),
-                    TypeBuilder.Field("myByteArray", TypeBuilder.BytesType()),
-                    TypeBuilder.Field("myMap", TypeBuilder.Map(
+                    TypeBuilder.Field("MyByteArray", TypeBuilder.BytesType()),
+                    TypeBuilder.Field("MyMap", TypeBuilder.Map(
                             TypeBuilder.StringType(TypeBuilder.Property(
                                     AvroConstant.PROP_STRING_KEY, 
                                     AvroConstant.PROP_STRING_VALUE)))));
@@ -260,10 +260,10 @@ namespace com.espertech.esper.regressionrun.suite.epl
             configuration.Common.AddEventType("BEventTE", metadata);
 
             configuration.Common.AddImportType(typeof(SupportStaticMethodLib));
-            configuration.Common.AddImportNamespace(typeof(EPLInsertIntoPopulateUnderlying).Namespace);
+            configuration.Common.AddImportNamespace(typeof(EPLInsertIntoPopulateUnderlying));
 
             IDictionary<string, object> complexMapMetadata = MakeMap(new object[][]{
-                new object[] {"nested", MakeMap(new object[][] {
+                new object[] {"Nested", MakeMap(new object[][] {
                     new object[]{"NestedValue", typeof(string)}
                 })}
             });

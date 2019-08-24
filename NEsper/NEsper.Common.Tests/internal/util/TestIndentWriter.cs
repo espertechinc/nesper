@@ -14,7 +14,7 @@ using NUnit.Framework;
 namespace com.espertech.esper.common.@internal.util
 {
     [TestFixture]
-    public class TestIndentWriter : AbstractTestBase
+    public class TestIndentWriter : AbstractCommonTest
     {
         [SetUp]
         public void SetUp()

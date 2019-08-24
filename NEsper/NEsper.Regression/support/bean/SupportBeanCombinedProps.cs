@@ -19,7 +19,7 @@ namespace com.espertech.esper.regressionlib.support.bean
     [Serializable]
     public class SupportBeanCombinedProps
     {
-        public static readonly string[] PROPERTIES = {"indexed", "array"};
+        public static readonly string[] PROPERTIES = {"Indexed", "array"};
 
         public SupportBeanCombinedProps(NestedLevOne[] indexed)
         {

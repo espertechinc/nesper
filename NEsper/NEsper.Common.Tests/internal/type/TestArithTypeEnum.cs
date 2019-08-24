@@ -16,7 +16,7 @@ using NUnit.Framework;
 namespace com.espertech.esper.common.@internal.type
 {
     [TestFixture]
-    public class TestArithTypeEnum : AbstractTestBase
+    public class TestArithTypeEnum : AbstractCommonTest
     {
         private void TryInvalid(Type clazz)
         {

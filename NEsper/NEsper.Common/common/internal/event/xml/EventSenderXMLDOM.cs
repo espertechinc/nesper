@@ -12,6 +12,7 @@ using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.@event.util;
 using com.espertech.esper.common.@internal.statement.thread;
+using com.espertech.esper.common.@internal.util;
 
 namespace com.espertech.esper.common.@internal.@event.xml
 {
@@ -74,7 +75,7 @@ namespace com.espertech.esper.common.@internal.@event.xml
             else {
                 throw new EPException(
                     "Unexpected event object type '" +
-                    node.GetType().Name +
+                    node.GetType().GetCleanName() +
                     "' encountered, please supply a XmlDocument or XmlElement node");
             }
 

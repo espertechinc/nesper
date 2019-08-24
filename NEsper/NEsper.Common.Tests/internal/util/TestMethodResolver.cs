@@ -13,7 +13,7 @@ using NUnit.Framework;
 namespace com.espertech.esper.common.@internal.util
 {
     [TestFixture]
-    public class TestMethodResolver : AbstractTestBase
+    public class TestMethodResolver : AbstractCommonTest
     {
         [Test]
         public void TestResolveMethodStaticOnly()

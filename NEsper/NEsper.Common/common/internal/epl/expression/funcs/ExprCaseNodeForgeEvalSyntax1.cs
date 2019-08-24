@@ -94,7 +94,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
                 block.AssignRef(
                     "when",
                     pair.First.Forge.EvaluateCodegen(typeof(bool?), methodNode, exprSymbol, codegenClassScope));
-                block.IfCondition(And(NotEqualsNull(@Ref("when")), @Ref("when")))
+                block.IfCondition(And(NotEqualsNull(@Ref("when")), ExprDotName(@Ref("when"), "Value")))
                     .BlockReturn(CodegenToType(forge, pair.Second, methodNode, exprSymbol, codegenClassScope));
             }
 

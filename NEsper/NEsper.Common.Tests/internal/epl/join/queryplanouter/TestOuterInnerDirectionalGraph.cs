@@ -15,7 +15,7 @@ using NUnit.Framework;
 namespace com.espertech.esper.common.@internal.epl.join.queryplanouter
 {
     [TestFixture]
-    public class TestOuterInnerDirectionalGraph : AbstractTestBase
+    public class TestOuterInnerDirectionalGraph : AbstractCommonTest
     {
         [SetUp]
         public void SetUp()

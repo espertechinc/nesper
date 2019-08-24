@@ -17,7 +17,7 @@ using NUnit.Framework;
 namespace com.espertech.esper.common.@internal.@event.bean.getter
 {
     [TestFixture]
-    public class TestArrayFieldPropertyGetter : AbstractTestBase
+    public class TestArrayFieldPropertyGetter : AbstractCommonTest
     {
         private ArrayFieldPropertyGetter getter;
         private ArrayFieldPropertyGetter getterOutOfBounds;

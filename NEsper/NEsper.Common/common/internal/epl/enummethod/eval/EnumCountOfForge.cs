@@ -44,7 +44,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            return ExprDotMethod(premade.Enumcoll, "Size");
+            return ExprDotName(premade.Enumcoll, "Count");
         }
     }
 } // end of namespace

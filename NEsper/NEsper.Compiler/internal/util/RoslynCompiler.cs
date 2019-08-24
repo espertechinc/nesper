@@ -8,14 +8,12 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Security.Cryptography;
 
+using com.espertech.esper.collection;
 using com.espertech.esper.common.@internal.bytecodemodel.core;
-using com.espertech.esper.compat;
 using com.espertech.esper.compat.logging;
 
 using Microsoft.CodeAnalysis;
@@ -34,74 +32,63 @@ namespace com.espertech.esper.compiler.@internal.util
 
         private static readonly IDictionary<Assembly, PortableExecutableReference> PortableExecutionReferenceCache =
             new Dictionary<Assembly, PortableExecutableReference>();
-        private static readonly IDictionary<Assembly, MetadataReference> MetadataCacheBindings = 
-            new Dictionary<Assembly, MetadataReference>();
+        private static readonly IDictionary<string, CacheBinding> AssemblyCacheBindings = 
+            new Dictionary<string, CacheBinding>();
 
         private IReadOnlyCollection<MetadataReference> _metadataReferences = null;
 
-        private IncrementalHash _codegenHash;
-        private IList<CodegenClass> _codegenClasses;
-        private bool _isCodeLogging;
-        private Assembly _assembly;
-        private String _assemblyCachePath;
+        static RoslynCompiler()
+        {
+            AppDomain.CurrentDomain.AssemblyResolve += (sender, args) => {
+                Log.Info("AssemblyResolve for {0}", args.Name);
+                if (AssemblyCacheBindings.TryGetValue(args.Name, out var bindingPair)) {
+                    Log.Debug("AssemblyResolve: Located {0}", args.Name);
+                    return bindingPair.Assembly;
+                }
+
+                Log.Warn("AssemblyResolve: Unable to locate {0}", args.Name);
+                return null;
+            };
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="RoslynCompiler"/> class.
         /// </summary>
         public RoslynCompiler()
         {
-            _codegenClasses = new List<CodegenClass>();
-            _codegenHash = IncrementalHash.CreateHash(HashAlgorithmName.SHA256);
-            if (AppDomain.CurrentDomain.DynamicDirectory != null) {
-                _assemblyCachePath = AppDomain.CurrentDomain.DynamicDirectory;
-            } else if (AppDomain.CurrentDomain.RelativeSearchPath != null) {
-                _assemblyCachePath = AppDomain.CurrentDomain.RelativeSearchPath;
-            }
-            else {
-                _assemblyCachePath = AppDomain.CurrentDomain.BaseDirectory;
-            }
-
-            //Directory.CreateDirectory(_assemblyCachePath);
+            CodegenClasses = new List<CodegenClass>();
         }
 
         /// <summary>
         /// Gets the assembly.
         /// </summary>
-        public Assembly Assembly {
-            get => _assembly;
-        }
+        public Assembly Assembly { get; private set; }
 
         /// <summary>
         /// Gets or sets the codegen class.
         /// </summary>
-        public IList<CodegenClass> CodegenClasses {
-            get => _codegenClasses;
-            set => _codegenClasses = value;
-        }
+        public IList<CodegenClass> CodegenClasses { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether we include code logging.
         /// </summary>
-        public bool IsCodeLogging {
-            get => _isCodeLogging;
-            set => _isCodeLogging = value;
-        }
+        public bool IsCodeLogging { get; set; }
 
         public RoslynCompiler WithCodegenClasses(IEnumerable<CodegenClass> codegenClasses)
         {
-            this.CodegenClasses = new List<CodegenClass>(codegenClasses);
+            CodegenClasses = new List<CodegenClass>(codegenClasses);
             return this;
         }
 
         public RoslynCompiler WithCodegenClass(CodegenClass codegenClass)
         {
-            this.CodegenClasses.Add(codegenClass);
+            CodegenClasses.Add(codegenClass);
             return this;
         }
 
         public RoslynCompiler WithCodeLogging(bool isCodeLogging)
         {
-            this.IsCodeLogging = isCodeLogging;
+            IsCodeLogging = isCodeLogging;
             return this;
         }
 
@@ -112,8 +99,8 @@ namespace com.espertech.esper.compiler.@internal.util
         {
             if (_metadataReferences == null) {
                 var metadataReferences = new List<MetadataReference>();
-                lock (MetadataCacheBindings) {
-                    metadataReferences.AddRange(MetadataCacheBindings.Values);
+                lock (AssemblyCacheBindings) {
+                    metadataReferences.AddRange(AssemblyCacheBindings.Values.Select(pair => pair.MetadataReference));
                 }
 
                 foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies()) {
@@ -137,18 +124,16 @@ namespace com.espertech.esper.compiler.@internal.util
             return _metadataReferences;
         }
 
-        private SyntaxTree Compile(CodegenClass codegenClass)
+        private Pair<CodegenClass, SyntaxTree> Compile(CodegenClass codegenClass)
         {
             var options = new CSharpParseOptions(kind: SourceCodeKind.Regular, languageVersion: MaxLanguageVersion);
             // Convert the codegen to source
             var source = CodegenSyntaxGenerator.Compile(codegenClass);
-            // Update the codegen hash
-            _codegenHash.AppendData(source.GetUTF8Bytes());
             // Convert the codegen source to syntax tree
-            return CSharpSyntaxTree.ParseText(source, options);
+            return new Pair<CodegenClass, SyntaxTree>(
+                codegenClass,
+                CSharpSyntaxTree.ParseText(source, options));
         }
-
-        private static int DebugSequence = 1;
 
         /// <summary>
         /// Compiles the specified code generation class into an assembly.
@@ -156,8 +141,11 @@ namespace com.espertech.esper.compiler.@internal.util
         public Assembly Compile()
         {
             // Convert the codegen class into it's source representation.
-            var syntaxTrees = _codegenClasses
+            var syntaxTreePairs = CodegenClasses
                 .Select(Compile)
+                .ToList();
+            var syntaxTrees = syntaxTreePairs
+                .Select(p => p.Second)
                 .ToList();
             
             // Create an in-memory representation of the compiled source.
@@ -165,40 +153,26 @@ namespace com.espertech.esper.compiler.@internal.util
                 .WithOptimizationLevel(OptimizationLevel.Debug)
                 .WithAllowUnsafe(true);
 
-            var assemblyHash = _codegenHash.GetHashAndReset().ToHexString();
-            var assemblyName = $"NEsper_{assemblyHash}";
-            var assemblyPath = Path.Combine(_assemblyCachePath, assemblyName + ".dll");
-            if (!File.Exists(assemblyPath)) {
-                var compilation = CSharpCompilation
-                    .Create(assemblyName, options: options)
-                    .AddReferences(GetCurrentMetadataReferences())
-                    .AddSyntaxTrees(syntaxTrees);
+            var assemblyId = Guid.NewGuid().ToString().Replace("-", "");
+            var assemblyName = $"NEsper_{assemblyId}";
+            var compilation = CSharpCompilation
+                .Create(assemblyName, options: options)
+                .AddReferences(GetCurrentMetadataReferences())
+                .AddSyntaxTrees(syntaxTrees);
 
-                foreach (var syntaxTree in syntaxTrees) {
-                    string tempClassPath =
-                        $@"C:\Src\Espertech\NEsper-master\NEsper\NEsper.Regression.Review\Class{DebugSequence}.cs";
-                    DebugSequence++;
-                    File.WriteAllText(tempClassPath, syntaxTree.ToString());
-                }
-
-                using (var stream = File.Create(assemblyPath)) {
-                    var result = compilation.Emit(stream);
-                    if (!result.Success) {
-                        foreach (var error in result.Diagnostics) {
-                            Console.WriteLine(error);
-                        }
-
-                        throw new RoslynCompilationException(
-                            "failure during module compilation",
-                            result.Diagnostics);
-                    }
-                }
+            foreach (var syntaxTreePair in syntaxTreePairs) {
+                string tempClassName = syntaxTreePair.First.ClassName;
+                string tempClassPath =
+                    $@"C:\Src\Espertech\NEsper-master\NEsper\NEsper.Regression.Review\{tempClassName}.cs";
+                File.WriteAllText(tempClassPath, syntaxTreePair.Second.ToString());
             }
+
+            var assemblyData = EmitToImage(compilation);
 
 #if DIAGNOSTICS
             Console.WriteLine($"Assembly Pre-Load: {DateTime.Now}");
 #endif
-            _assembly = Assembly.LoadFile(assemblyPath);
+            Assembly = Assembly.Load(assemblyData);
 
 #if DIAGNOSTICS
             Console.WriteLine($"Assembly Loaded (Image): {DateTime.Now}");
@@ -206,22 +180,42 @@ namespace com.espertech.esper.compiler.@internal.util
             Console.WriteLine($"\tName:{_assembly.GetName()}");
 #endif
 
-            lock (MetadataCacheBindings) {
-                var metadataReference = MetadataReference.CreateFromFile(assemblyPath);
+            lock (AssemblyCacheBindings) {
+                var metadataReference = MetadataReference.CreateFromImage(assemblyData);
+
 #if DIAGNOSTICS
                 Console.WriteLine($"MetaDataReference: {DateTime.Now}");
                 Console.WriteLine($"\tFullType: {metadataReference.GetType().FullName}");
                 Console.WriteLine($"\tDisplay: {metadataReference.Display}");
                 Console.WriteLine($"\tProperties: {metadataReference.Properties}");
 #endif
-                MetadataCacheBindings[_assembly] = metadataReference;
+                AssemblyCacheBindings[Assembly.FullName] = new CacheBinding(Assembly, metadataReference);
             }
 
-            return _assembly;
+            return Assembly;
+        }
+
+        private static byte[] EmitToImage(CSharpCompilation compilation)
+        {
+            using (var stream = new MemoryStream()) {
+                var result = compilation.Emit(stream);
+                if (!result.Success) {
+                    foreach (var error in result.Diagnostics) {
+                        Console.WriteLine(error);
+                    }
+
+                    throw new RoslynCompilationException(
+                        "failure during module compilation",
+                        result.Diagnostics);
+                }
+
+                return stream.ToArray();
+            }
         }
 
         public static void DeleteAll()
         {
+#if false
             lock (MetadataCacheBindings) {
                 foreach (var metadataAssembly in MetadataCacheBindings.Keys) {
                     try {
@@ -230,6 +224,20 @@ namespace com.espertech.esper.compiler.@internal.util
                     catch {
                     }
                 }
+            }
+#endif
+        }
+
+        struct CacheBinding
+        {
+            internal readonly Assembly Assembly;
+            internal readonly MetadataReference MetadataReference;
+
+            public CacheBinding(Assembly assembly,
+                MetadataReference metadataReference)
+            {
+                Assembly = assembly;
+                MetadataReference = metadataReference;
             }
         }
     }

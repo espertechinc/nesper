@@ -96,11 +96,11 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                     "result",
                     NewInstance<List<object>>(
                         Op(
-                            ExprDotMethod(EnumForgeCodegenNames.REF_ENUMCOLL, "Size"),
+                            ExprDotName(EnumForgeCodegenNames.REF_ENUMCOLL, "Count"),
                             "+",
-                            ExprDotMethod(@Ref("other"), "Size"))))
-                .Expression(ExprDotMethod(@Ref("result"), "addAll", EnumForgeCodegenNames.REF_ENUMCOLL))
-                .Expression(ExprDotMethod(@Ref("result"), "addAll", @Ref("other")))
+                            ExprDotName(@Ref("other"), "Count"))))
+                .Expression(ExprDotMethod(@Ref("result"), "AddAll", EnumForgeCodegenNames.REF_ENUMCOLL))
+                .Expression(ExprDotMethod(@Ref("result"), "AddAll", @Ref("other")))
                 .MethodReturn(@Ref("result"));
             return LocalMethod(methodNode, args.Eps, args.Enumcoll, args.IsNewData, args.ExprCtx);
         }

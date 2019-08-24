@@ -23,7 +23,7 @@ using Timer = com.espertech.esper.runtime.@internal.metrics.codahale_metrics.met
 namespace com.espertech.esper.runtime.@internal.metrics
 {
     [TestFixture]
-    public class TestCodahaleMetrics : AbstractTestBase
+    public class TestCodahaleMetrics : AbstractRuntimeTest
     {
         [Test]
         public void TestMetrics()

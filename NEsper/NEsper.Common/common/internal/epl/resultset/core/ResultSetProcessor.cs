@@ -98,7 +98,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
             IList<UniformPair<EventBean[]>> viewEventsList,
             bool generateSynthetic);
 
-        AgentInstanceContext AgentInstanceContext { get; set; }
+        void SetAgentInstanceContext(AgentInstanceContext value);
 
         void ApplyViewResult(
             EventBean[] newData,

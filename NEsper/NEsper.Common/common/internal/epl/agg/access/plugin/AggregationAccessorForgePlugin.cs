@@ -65,7 +65,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.plugin
                     typeof(AggregationMultiFunctionAccessor),
                     ExprDotMethod(
                         injectionStrategy.GetInitializationExpression(classScope),
-                        "newAccessor",
+                        "NewAccessor",
                         ConstantNull()));
             }
 

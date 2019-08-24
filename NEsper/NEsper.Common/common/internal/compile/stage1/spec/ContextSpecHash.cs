@@ -58,7 +58,7 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
                     NewInstance(typeof(ContextControllerDetailHash)))
                 .SetProperty(Ref("detail"), "Items", Ref("items"))
                 .SetProperty(Ref("detail"), "Granularity", Constant(Granularity))
-                .SetProperty(Ref("detail"), "Preallocate", Constant(IsPreallocate))
+                .SetProperty(Ref("detail"), "IsPreallocate", Constant(IsPreallocate))
                 .MethodReturn(Ref("detail"));
             return LocalMethod(method);
         }

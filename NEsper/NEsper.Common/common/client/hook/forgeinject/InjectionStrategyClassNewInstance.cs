@@ -36,11 +36,7 @@ namespace com.espertech.esper.common.client.hook.forgeinject
         /// <param name="clazz">class</param>
         public InjectionStrategyClassNewInstance(Type clazz)
         {
-            if (clazz == null) {
-                throw new ArgumentException("Invalid null value for class");
-            }
-
-            Clazz = clazz;
+            Clazz = clazz ?? throw new ArgumentNullException(nameof(clazz), "Invalid null value for class");
             FullyQualifiedClassName = null;
         }
 
@@ -50,11 +46,10 @@ namespace com.espertech.esper.common.client.hook.forgeinject
         /// <param name="fullyQualifiedClassName">class name</param>
         public InjectionStrategyClassNewInstance(string fullyQualifiedClassName)
         {
-            if (fullyQualifiedClassName == null) {
-                throw new ArgumentException("Invalid null value for class name");
-            }
-
-            FullyQualifiedClassName = fullyQualifiedClassName;
+            FullyQualifiedClassName = fullyQualifiedClassName ??
+                                      throw new ArgumentNullException(
+                                          nameof(fullyQualifiedClassName),
+                                          "Invalid null value for class name");
             Clazz = null;
         }
 

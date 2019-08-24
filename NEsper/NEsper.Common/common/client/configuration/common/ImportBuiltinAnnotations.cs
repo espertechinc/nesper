@@ -9,6 +9,12 @@ namespace com.espertech.esper.common.client.configuration.common
     [Serializable]
     public class ImportBuiltinAnnotations : Import
     {
+        public static ImportBuiltinAnnotations Instance = new ImportBuiltinAnnotations();
+
+        private ImportBuiltinAnnotations()
+        {
+        }
+
         public override Type Resolve(
             string providedTypeName,
             ClassForNameProvider classForNameProvider)

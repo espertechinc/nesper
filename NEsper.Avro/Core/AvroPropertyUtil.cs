@@ -136,7 +136,7 @@ namespace NEsper.Avro.Core
 
             // Take apart the nested property into a map key and a nested value class property name
             var propertyTop = StringValue.UnescapeDot(propertyName.Substring(0, index));
-            var propertyNested = propertyName.Substring(index + 1, propertyName.Length);
+            var propertyNested = propertyName.Substring(index + 1);
             var isRootedDynamic = false;
 
             // If the property is dynamic, remove the ? since the property type is defined without

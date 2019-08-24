@@ -157,7 +157,9 @@ namespace com.espertech.esper.regressionlib.suite.context
                 var epl = "@Name('CTX') create context CtxCategory " +
                           "group by IntPrimitive > 0 as cat1," +
                           "group by IntPrimitive < 0 as cat2 from SupportBean;\n" +
-                          "@Name('s0') context CtxCategory select TheString as c1, sum(IntPrimitive) as c2, context.label as c3, context.name as c4, context.Id as c5 from SupportBean;\n";
+                          "@Name('s0') context CtxCategory " +
+                          "select TheString as c1, sum(IntPrimitive) as c2, context.label as c3, context.name as c4, context.id as c5 " +
+                          "from SupportBean;\n";
                 env.CompileDeploy(epl).AddListener("s0");
                 AssertPartitionInfo(env);
 
@@ -279,7 +281,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                     "@Name('ctx') create context MyCtx as group by IntPrimitive < -5 as grp1, group by IntPrimitive between -5 and +5 as grp2, group by IntPrimitive > 5 as grp3 from SupportBean",
                     path);
                 env.CompileDeploy(
-                    "@Name('s0') context MyCtx select context.Id as c0, context.label as c1, TheString as c2, sum(IntPrimitive) as c3 from SupportBean#keepall group by TheString",
+                    "@Name('s0') context MyCtx select context.id as c0, context.label as c1, TheString as c2, sum(IntPrimitive) as c3 from SupportBean#keepall group by TheString",
                     path);
 
                 env.SendEventBean(new SupportBean("E1", 1));

@@ -675,16 +675,42 @@ namespace com.espertech.esper.common.client.configuration.common
             ConfigurationCommon configuration,
             XmlElement element)
         {
-            var name = GetRequiredAttribute(element, "import-name");
-            configuration.AddImportNamespace(name);
+            var assembly = GetOptionalAttribute(element, "assembly");
+            var @namespace = GetOptionalAttribute(element, "import-namespace");
+            if (@namespace != null) {
+                configuration.AddImportNamespace(@namespace, assembly);
+                return;
+            }
+
+            var type = GetOptionalAttribute(element, "import-type");
+            if (type != null) {
+                configuration.AddImportType(type, assembly);
+                return;
+            }
+
+            throw new ConfigurationException("Auto-import requires a namespace or a type");
         }
 
         private static void HandleAutoImportAnnotations(
             ConfigurationCommon configuration,
             XmlElement element)
         {
-            var name = GetRequiredAttribute(element, "import-name");
-            configuration.AddAnnotationImportType(name);
+            var assembly = GetOptionalAttribute(element, "assembly");
+            var @namespace = GetOptionalAttribute(element, "import-namespace");
+            if (@namespace != null)
+            {
+                configuration.AddAnnotationImportNamespace(@namespace, assembly);
+                return;
+            }
+
+            var type = GetOptionalAttribute(element, "import-type");
+            if (type != null)
+            {
+                configuration.AddAnnotationImportType(type, assembly);
+                return;
+            }
+
+            throw new ConfigurationException("Annotation-import requires a namespace or a type");
         }
 
         private static void HandleMethodReference(

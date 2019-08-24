@@ -6,14 +6,12 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.rettype;
-using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
@@ -22,16 +20,14 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
 {
     public class ExprDotStaticMethodWrapEventBeanArr : ExprDotStaticMethodWrap
     {
-        private EventType type;
+        private readonly EventType _type;
 
         public ExprDotStaticMethodWrapEventBeanArr(EventType type)
         {
-            this.type = type;
+            _type = type;
         }
 
-        public EPType TypeInfo {
-            get => EPTypeHelper.CollectionOfEvents(type);
-        }
+        public EPType TypeInfo => EPTypeHelper.CollectionOfEvents(_type);
 
         public ICollection<EventBean> ConvertNonNull(object result)
         {
@@ -47,7 +43,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            return StaticMethod(typeof(CompatExtensions), "Unwrap", result);
+            return StaticMethod(typeof(CompatExtensions), "Unwrap", new[] {typeof(EventBean)}, result);
         }
     }
 } // end of namespace

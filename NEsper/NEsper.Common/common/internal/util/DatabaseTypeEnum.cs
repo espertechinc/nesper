@@ -190,7 +190,7 @@ namespace com.espertech.esper.common.@internal.util
             BoxedType = type.GetBoxedType();
         }
 
-        /// <summary>Retuns the type for the name.</summary>
+        /// <summary>Returns the type for the name.</summary>
         public Type DataType { get; }
 
         /// <summary>

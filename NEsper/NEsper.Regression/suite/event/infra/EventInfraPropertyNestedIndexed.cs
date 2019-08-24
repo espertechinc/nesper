@@ -94,7 +94,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
             lvl3,
             lvl4) => {
             var xml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
-                      "<myevent>\n" +
+                      "<Myevent>\n" +
                       "\t<l1 lvl1=\"${lvl1}\">\n" +
                       "\t\t<l2 lvl2=\"${lvl2}\">\n" +
                       "\t\t\t<l3 lvl3=\"${lvl3}\">\n" +
@@ -103,7 +103,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
                       "\t\t\t</l3>\n" +
                       "\t\t</l2>\n" +
                       "\t</l1>\n" +
-                      "</myevent>";
+                      "</Myevent>";
             xml = xml.Replace("${lvl1}", Convert.ToString(lvl1));
             xml = xml.Replace("${lvl2}", Convert.ToString(lvl2));
             xml = xml.Replace("${lvl3}", Convert.ToString(lvl3));

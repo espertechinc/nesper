@@ -19,7 +19,7 @@ using NUnit.Framework;
 namespace com.espertech.esper.common.@internal.epl.streamtype
 {
     [TestFixture]
-    public class TestStreamTypeServiceImpl : AbstractTestBase
+    public class TestStreamTypeServiceImpl : AbstractCommonTest
     {
         private StreamTypeServiceImpl serviceRegular;
         private StreamTypeServiceImpl serviceStreamZeroUnambigous;

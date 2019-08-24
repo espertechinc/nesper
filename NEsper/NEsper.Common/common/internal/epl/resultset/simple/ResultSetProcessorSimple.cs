@@ -16,13 +16,11 @@ namespace com.espertech.esper.common.@internal.epl.resultset.simple
     {
         bool HasHavingClause { get; }
 
-#if DUPLICATE
-        ExprEvaluatorContext AgentInstanceContext { get; }
-#endif
-
         bool EvaluateHavingClause(
             EventBean[] eventsPerStream,
             bool isNewData,
             ExprEvaluatorContext exprEvaluatorContext);
+
+        ExprEvaluatorContext GetAgentInstanceContext();
     }
 } // end of namespace

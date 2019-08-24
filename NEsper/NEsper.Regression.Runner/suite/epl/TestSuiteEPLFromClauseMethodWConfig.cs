@@ -29,7 +29,7 @@ namespace com.espertech.esper.regressionrun.suite.epl
             ConfigurationCommonMethodRef methodConfig = new ConfigurationCommonMethodRef();
             methodConfig.SetExpiryTimeCache(1, 10);
             session.Configuration.Common.AddMethodRef(typeof(SupportStaticMethodInvocations), methodConfig);
-            session.Configuration.Common.AddImportNamespace(typeof(SupportStaticMethodInvocations).Namespace);
+            session.Configuration.Common.AddImportNamespace(typeof(SupportStaticMethodInvocations));
             session.Configuration.Common.AddEventType(typeof(SupportBean));
 
             RegressionRunner.Run(session, new EPLFromClauseMethodCacheExpiry());
@@ -45,7 +45,7 @@ namespace com.espertech.esper.regressionrun.suite.epl
             ConfigurationCommonMethodRef methodConfig = new ConfigurationCommonMethodRef();
             methodConfig.SetLRUCache(3);
             session.Configuration.Common.AddMethodRef(typeof(SupportStaticMethodInvocations), methodConfig);
-            session.Configuration.Common.AddImportNamespace(typeof(SupportStaticMethodInvocations).Namespace);
+            session.Configuration.Common.AddImportNamespace(typeof(SupportStaticMethodInvocations));
             session.Configuration.Common.AddEventType(typeof(SupportBean));
 
             RegressionRunner.Run(session, new EPLFromClauseMethodCacheLRU());

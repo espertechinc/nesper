@@ -8,7 +8,7 @@ using NUnit.Framework;
 
 namespace com.espertech.esper.common
 {
-    public class AbstractTestBase
+    public class AbstractCommonTest
     {
         private Supplier<SupportEventTypeFactory> supportEventTypeFactorySupplier;
         private Supplier<SupportExprNodeFactory> supportExprNodeFactorySupplier;

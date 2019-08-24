@@ -64,7 +64,11 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
             EventType eventType,
             string fieldName)
         {
-            return new ExprFilterSpecLookupable(fieldName, eventType.GetGetter(fieldName), eventType.GetPropertyType(fieldName), false);
+            return new ExprFilterSpecLookupable(
+                fieldName, 
+                eventType.GetGetter(fieldName),
+                eventType.GetPropertyType(fieldName),
+                false);
         }
     }
 } // end of namespace

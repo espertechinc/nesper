@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Text;
@@ -16,6 +17,7 @@ using com.espertech.esper.common.client.render;
 using com.espertech.esper.common.@internal.@event.util;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
+using com.espertech.esper.compat.magic;
 
 namespace com.espertech.esper.common.@internal.@event.render
 {
@@ -332,8 +334,7 @@ namespace com.espertech.esper.common.@internal.@event.render
             RendererMeta meta,
             RendererMetaOptions rendererMetaOptions)
         {
-            var simpleProps = meta.SimpleProperties;
-            foreach (var simpleProp in simpleProps) {
+            foreach (var simpleProp in meta.SimpleProperties) {
                 var value = simpleProp.Getter.Get(theEvent);
 
                 if (value == null) {
@@ -363,40 +364,28 @@ namespace com.espertech.esper.common.@internal.@event.render
                 buf.Append(Newline);
             }
 
-            var indexProps = meta.IndexProperties;
-            foreach (var indexProp in indexProps) {
+            foreach (var indexProp in meta.IndexProperties) {
                 var value = indexProp.Getter.Get(theEvent);
 
                 if (value == null) {
                     continue;
                 }
 
-                var array = value as Array;
-                if (array == null) {
-                    Log.Warn("Property '" + indexProp.Name + "' returned a non-array object");
-                    continue;
-                }
-
-                for (var i = 0; i < array.Length; i++) {
-                    var arrayItem = array.GetValue(i);
-
-                    if (arrayItem == null) {
-                        continue;
-                    }
-
+                // Strings are rendered like simple properties
+                if (value is string) {
                     Ident(buf, level);
                     buf.Append('<');
                     buf.Append(indexProp.Name);
                     buf.Append('>');
+
                     if (rendererMetaOptions.Renderer == null) {
-                        indexProp.Output.Render(arrayItem, buf);
+                        indexProp.Output.Render(value, buf);
                     }
                     else {
                         var context = rendererMetaOptions.RendererContext;
                         context.SetStringBuilderAndReset(buf);
                         context.PropertyName = indexProp.Name;
-                        context.PropertyValue = arrayItem;
-                        context.IndexedPropertyIndex = i;
+                        context.PropertyValue = value;
                         context.DefaultRenderer = indexProp.Output;
                         rendererMetaOptions.Renderer.Render(context);
                     }
@@ -406,10 +395,77 @@ namespace com.espertech.esper.common.@internal.@event.render
                     buf.Append('>');
                     buf.Append(Newline);
                 }
+                // Arrays
+                else if (value is Array array) {
+                    for (var i = 0; i < array.Length; i++) {
+                        var arrayItem = array.GetValue(i);
+                        if (arrayItem == null) {
+                            continue;
+                        }
+
+                        Ident(buf, level);
+                        buf.Append('<');
+                        buf.Append(indexProp.Name);
+                        buf.Append('>');
+                        if (rendererMetaOptions.Renderer == null) {
+                            indexProp.Output.Render(arrayItem, buf);
+                        }
+                        else {
+                            var context = rendererMetaOptions.RendererContext;
+                            context.SetStringBuilderAndReset(buf);
+                            context.PropertyName = indexProp.Name;
+                            context.PropertyValue = arrayItem;
+                            context.IndexedPropertyIndex = i;
+                            context.DefaultRenderer = indexProp.Output;
+                            rendererMetaOptions.Renderer.Render(context);
+                        }
+
+                        buf.Append("</");
+                        buf.Append(indexProp.Name);
+                        buf.Append('>');
+                        buf.Append(Newline);
+                    }
+                }
+                // Lists
+                else if (value.GetType().IsGenericList()) {
+                    // All lists are generically enumerable
+                    int listItemIndex = 0;
+                    foreach (var listItem in value.UnwrapEnumerable<object>()) {
+                        if (listItem != null) {
+                            Ident(buf, level);
+                            buf.Append('<');
+                            buf.Append(indexProp.Name);
+                            buf.Append('>');
+                            if (rendererMetaOptions.Renderer == null)
+                            {
+                                indexProp.Output.Render(listItem, buf);
+                            }
+                            else
+                            {
+                                var context = rendererMetaOptions.RendererContext;
+                                context.SetStringBuilderAndReset(buf);
+                                context.PropertyName = indexProp.Name;
+                                context.PropertyValue = listItem;
+                                context.IndexedPropertyIndex = listItemIndex;
+                                context.DefaultRenderer = indexProp.Output;
+                                rendererMetaOptions.Renderer.Render(context);
+                            }
+
+                            buf.Append("</");
+                            buf.Append(indexProp.Name);
+                            buf.Append('>');
+                            buf.Append(Newline);
+                        }
+
+                        listItemIndex++;
+                    }
+                }
+                else {
+                    Log.Warn("Property '" + indexProp.Name + "' returned a non-array object");
+                }
             }
 
-            var mappedProps = meta.MappedProperties;
-            foreach (var mappedProp in mappedProps) {
+            foreach (var mappedProp in meta.MappedProperties) {
                 var value = mappedProp.Getter.Get(theEvent);
 
                 if (value != null && !(value is IDictionary<string, object>)) {
@@ -432,9 +488,8 @@ namespace com.espertech.esper.common.@internal.@event.render
                     var map = (IDictionary<string, object>) value;
                     if (!map.IsEmpty()) {
                         var localDelimiter = "";
-                        var it = map.GetEnumerator();
-                        for (; it.MoveNext();) {
-                            var entry = it.Current;
+                        foreach (var entry in map)
+                        {
                             if (entry.Key == null) {
                                 continue;
                             }

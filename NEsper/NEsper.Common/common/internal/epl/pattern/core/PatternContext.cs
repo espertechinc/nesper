@@ -66,9 +66,9 @@ namespace com.espertech.esper.common.@internal.epl.pattern.core
 
             if (IsContextDeclaration) {
                 method.Block
-                    .SetProperty(Ref("ctx"), "ContextDeclaration", Constant(IsContextDeclaration))
+                    .SetProperty(Ref("ctx"), "IsContextDeclaration", Constant(IsContextDeclaration))
                     .SetProperty(Ref("ctx"), "NestingLevel", Constant(NestingLevel))
-                    .SetProperty(Ref("ctx"), "StartCondition", Constant(IsStartCondition));
+                    .SetProperty(Ref("ctx"), "IsStartCondition", Constant(IsStartCondition));
             }
 
             method.Block.MethodReturn(Ref("ctx"));

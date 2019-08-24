@@ -63,7 +63,7 @@ namespace com.espertech.esper.common.@internal.context.controller.category
                     "factory",
                     ExprDotMethodChain(symbols.GetAddInitSvc(method))
                         .Get(EPStatementInitServicesConstants.CONTEXTSERVICEFACTORY)
-                        .Get("CategoryFactory"))
+                        .Add("CategoryFactory"))
                 .SetProperty(Ref("factory"), "CategorySpec", detail.MakeCodegen(method, symbols, classScope))
                 .MethodReturn(Ref("factory"));
             return method;

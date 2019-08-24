@@ -11,7 +11,7 @@ using NUnit.Framework;
 namespace com.espertech.esper.common.@internal.util
 {
     [TestFixture]
-    public class TestDatabaseTypeEnum : AbstractTestBase
+    public class TestDatabaseTypeEnum : AbstractCommonTest
     {
         [Test]
         public void TestLookup()
@@ -41,7 +41,7 @@ namespace com.espertech.esper.common.@internal.util
         {
             object[][] types = {
                 new object[] {DatabaseTypeEnum.STRING, typeof(string)},
-                new object[] {DatabaseTypeEnum.DECIMAL, typeof(decimal)},
+                new object[] {DatabaseTypeEnum.DECIMAL, typeof(decimal?)},
                 new object[] {DatabaseTypeEnum.BOOLEAN, typeof(bool?)},
                 new object[] {DatabaseTypeEnum.BYTE, typeof(byte)},
                 new object[] {DatabaseTypeEnum.INT16, typeof(short?)},

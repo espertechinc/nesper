@@ -78,9 +78,9 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            Type returnType = EPTypeHelper.GetCodegenReturnType(forge.TypeInfo);
+            var returnType = EPTypeHelper.GetCodegenReturnType(forge.TypeInfo);
             var methodNode = codegenMethodScope
-                .MakeChild(returnType, typeof(ExprDotForgeEnumMethodEval), codegenClassScope)
+                .MakeChild(returnType.GetBoxedType(), typeof(ExprDotForgeEnumMethodEval), codegenClassScope)
                 .AddParam(innerType, "param");
 
             var refEPS = exprSymbol.GetAddEPS(methodNode);
@@ -90,12 +90,14 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
             var forgeMember = codegenClassScope.AddFieldUnshared(true, typeof(object), NewInstance(typeof(object)));
             var block = methodNode.Block;
             if (innerType == typeof(EventBean)) {
-                block.DeclareVar<ICollection<object>>(
+                block.DeclareVar<ICollection<EventBean>>(
                     "coll",
-                    StaticMethod(typeof(Collections), "SingletonList", Ref("param")));
+                    StaticMethod(typeof(Collections), "SingletonList", new [] { typeof(EventBean) }, Ref("param")));
             }
             else {
-                block.DeclareVar<ICollection<object>>("coll", Ref("param"));
+                block.DeclareVar<ICollection<EventBean>>(
+                    "coll",
+                    StaticMethod(typeof(CompatExtensions), "Unwrap", new[] {typeof(EventBean)}, Ref("param")));
             }
 
             block.DeclareVar<ExpressionResultCacheForEnumerationMethod>(

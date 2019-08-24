@@ -559,9 +559,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
                                " from " +
                                " sql:MyDBWithRetain ['select " +
                                ALL_FIELDS +
-                               " from mytesttable where ${s1.arrayProperty[0]} = mytesttable.myBigint'] as s0," +
+                               " from mytesttable where ${s1.ArrayProperty[0]} = mytesttable.myBigint'] as s0," +
                                "SupportBeanComplexProps as s1";
-                // s1.arrayProperty[0] returns 10 for that bean
+                // s1.ArrayProperty[0] returns 10 for that bean
                 env.CompileDeploy(stmtText).AddListener("s0");
 
                 env.SendEventBean(SupportBeanComplexProps.MakeDefaultBean());

@@ -16,7 +16,7 @@ using NUnit.Framework;
 namespace com.espertech.esper.common.@internal.collection
 {
     [TestFixture]
-    public class TestRefCountedMap : AbstractTestBase
+    public class TestRefCountedMap : AbstractCommonTest
     {
         private RefCountedMap<string, int> refMap;
 

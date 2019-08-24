@@ -13,7 +13,7 @@ using NUnit.Framework;
 namespace com.espertech.esper.common.@internal.util
 {
     [TestFixture]
-    public class TestMethodExecutableRank : AbstractTestBase
+    public class TestMethodExecutableRank : AbstractCommonTest
     {
         [Test]
         public void TestRank()

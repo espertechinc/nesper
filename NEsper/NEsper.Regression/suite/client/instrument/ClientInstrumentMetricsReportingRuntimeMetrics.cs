@@ -23,7 +23,7 @@ namespace com.espertech.esper.regressionlib.suite.client.instrument
     {
         public void Run(RegressionEnvironment env)
         {
-            var fields = Collections.Array("runtimeURI", "timestamp", "inputCount", "inputCountDelta", "scheduleDepth");
+            var fields = Collections.Array("RuntimeURI", "Timestamp", "InputCount", "InputCountDelta", "ScheduleDepth");
             SendTimer(env, 1000);
 
             var text = "@Name('s0') select * from " + typeof(RuntimeMetric).FullName;

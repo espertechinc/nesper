@@ -10,6 +10,7 @@ using System.Collections.Generic;
 
 using com.espertech.esper.common.@internal.epl.spatial.quadtree.mxcif;
 using com.espertech.esper.common.@internal.filtersvc;
+using com.espertech.esper.compat;
 
 namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxciffilterindex
 {
@@ -40,14 +41,17 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxciffilteri
             if (data is XYWHRectangleWValue<object>) {
                 return CountCallbacks(data);
             }
+            else if (data is ICollection<XYWHRectangleWValue<object>> collection) {
+                int count = 0;
+                foreach (XYWHRectangleWValue<object> p in collection) {
+                    count += CountCallbacks(p.Value);
+                }
 
-            ICollection<XYWHRectangleWValue<object>> coll = (ICollection<XYWHRectangleWValue<object>>) data;
-            int count = 0;
-            foreach (XYWHRectangleWValue<object> p in coll) {
-                count += CountCallbacks(p.Value);
+                return count;
             }
-
-            return count;
+            else {
+                throw new IllegalStateException("unknown type for data");
+            }
         }
 
         private static int CountCallbacks(object points)

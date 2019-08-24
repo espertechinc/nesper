@@ -230,7 +230,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
                 // Test all remaining types of "sum"
                 env.UndeployAll();
 
-                fields = "c1,c2,c3,c4".SplitCsv();
+                fields = new [] { "c1","c2","c3","c4" };
                 epl = "@Name('s0') select " +
                       "sum(FloatPrimitive, BoolPrimitive) as c1," +
                       "sum(DoublePrimitive, BoolPrimitive) as c2, " +

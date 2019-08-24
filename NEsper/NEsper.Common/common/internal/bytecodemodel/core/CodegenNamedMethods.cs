@@ -18,10 +18,10 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.core
 {
     public class CodegenNamedMethods
     {
-        private IDictionary<string, CodegenMethod> methods;
+        private IDictionary<string, CodegenMethod> _methods;
 
         public IDictionary<string, CodegenMethod> Methods =>
-            methods ?? Collections.GetEmptyMap<string, CodegenMethod>();
+            _methods ?? Collections.GetEmptyMap<string, CodegenMethod>();
 
         public CodegenMethod AddMethod(
             Type returnType,
@@ -50,13 +50,13 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.core
             Consumer<CodegenMethod> code,
             CodegenSymbolProvider symbolProvider)
         {
-            if (methods == null) {
-                methods = new Dictionary<string, CodegenMethod>();
+            if (_methods == null) {
+                _methods = new Dictionary<string, CodegenMethod>();
             }
 
             Console.WriteLine("AddMethodWithSymbols: {0}", methodName);
 
-            var existing = methods.Get(methodName);
+            var existing = _methods.Get(methodName);
             if (existing != null) {
                 if (ListExtensions.AreEqual(@params, existing.LocalParams)) {
                     return existing;
@@ -65,16 +65,17 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.core
                 throw new IllegalStateException("Method by name '" + methodName + "' already registered");
             }
 
-            var method = CodegenMethod.MakeMethod(returnType, generator, symbolProvider, classScope)
+            var method = CodegenMethod
+                .MakeMethod(returnType, generator, symbolProvider, classScope)
                 .AddParam(@params);
-            methods.Put(methodName, method);
+            _methods.Put(methodName, method);
             code.Invoke(method);
             return method;
         }
 
         public CodegenMethod GetMethod(string name)
         {
-            var method = methods.Get(name);
+            var method = _methods.Get(name);
             if (method == null) {
                 throw new IllegalStateException("Method by name '" + method + "' not found");
             }

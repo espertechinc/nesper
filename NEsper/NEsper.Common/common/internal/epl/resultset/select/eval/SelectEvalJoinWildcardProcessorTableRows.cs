@@ -83,7 +83,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
                             Constant(i),
                             ExprDotMethod(
                                 eventToPublic,
-                                "convert",
+                                "Convert",
                                 @Ref(refname),
                                 refEPS,
                                 refIsNewData,

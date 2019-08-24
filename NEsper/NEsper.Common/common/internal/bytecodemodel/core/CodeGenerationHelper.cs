@@ -10,6 +10,8 @@ using System;
 using System.Linq;
 using System.Text;
 
+using com.espertech.esper.compat.collections;
+
 namespace com.espertech.esper.common.@internal.bytecodemodel.core
 {
     public class CodeGenerationHelper
@@ -42,6 +44,12 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.core
                 return builder.Append("object");
             } else if (clazz == typeof(string)) {
                 return builder.Append("string");
+            }
+
+            if (clazz.IsNullable()) {
+                AppendClassName(builder, clazz.GetGenericArguments()[0]);
+                builder.Append("?");
+                return builder;
             }
 
             if (clazz.IsArray) {

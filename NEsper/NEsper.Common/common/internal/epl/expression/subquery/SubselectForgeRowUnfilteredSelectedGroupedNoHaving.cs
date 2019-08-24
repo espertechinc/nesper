@@ -51,7 +51,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                 .DeclareVar<ICollection<object>>(
                     "groupKeys",
                     ExprDotMethod(aggService, "GetGroupKeys", evalCtx))
-                .IfCondition(Not(EqualsIdentity(ExprDotMethod(@Ref("groupKeys"), "Size"), Constant(1))))
+                .IfCondition(Not(EqualsIdentity(ExprDotName(@Ref("groupKeys"), "Count"), Constant(1))))
                 .BlockReturn(ConstantNull())
                 .ExprDotMethod(
                     aggService,
@@ -126,7 +126,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                 .BlockReturn(ConstantNull())
                 .DeclareVar<ICollection<object>>(
                     "events",
-                    NewInstance<ArrayDeque<object>>(ExprDotMethod(@Ref("groupKeys"), "Size")))
+                    NewInstance<ArrayDeque<object>>(ExprDotName(@Ref("groupKeys"), "ExprDotName")))
                 .ForEach(typeof(object), "groupKey", @Ref("groupKeys"))
                 .ExprDotMethod(aggService, "SetCurrentAccess", @Ref("groupKey"), @Ref("cpid"), ConstantNull())
                 .DeclareVar<IDictionary<object, object>>(

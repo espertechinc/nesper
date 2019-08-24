@@ -207,7 +207,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
 
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNew(),
-                    "value".SplitCsv(),
+                    new [] { "value" },
                     new object[] {"E1 99"});
 
                 env.UndeployAll();
@@ -242,7 +242,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             public void Run(RegressionEnvironment env)
             {
                 var className = typeof(SupportStaticMethodLib).Name;
-                var statementText = "@Name('s0') select * from pattern [myevent=SupportBean(" +
+                var statementText = "@Name('s0') select * from pattern [Myevent=SupportBean(" +
                                     className +
                                     ".delimitPipe(TheString) = '|a|')]";
                 env.CompileDeploy(statementText).AddListener("s0");
@@ -253,7 +253,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 Assert.IsTrue(env.Listener("s0").IsInvoked);
 
                 env.UndeployAll();
-                statementText = "@Name('s0') select * from pattern [myevent=SupportBean(" +
+                statementText = "@Name('s0') select * from pattern [Myevent=SupportBean(" +
                                 className +
                                 ".delimitPipe(null) = '|<null>|')]";
                 env.CompileDeploy(statementText).AddListener("s0");

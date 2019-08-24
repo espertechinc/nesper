@@ -24,7 +24,7 @@ using NUnit.Framework;
 namespace com.espertech.esper.runtime.@internal.schedulesvcimpl
 {
     [TestFixture]
-    public class TestSchedulingServiceImpl : AbstractTestBase
+    public class TestSchedulingServiceImpl : AbstractRuntimeTest
     {
         [SetUp]
         public void SetUp()

@@ -15,7 +15,7 @@ using NUnit.Framework;
 namespace com.espertech.esper.common.@internal.util
 {
     [TestFixture]
-    public class TestLongValue : AbstractTestBase
+    public class TestLongValue : AbstractCommonTest
     {
         [Test]
         public void TestParseLong()

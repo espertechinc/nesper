@@ -11,7 +11,7 @@ using NUnit.Framework;
 namespace com.espertech.esper.common.@internal.collection
 {
     [TestFixture]
-    public class TestRefCountedSetAtomicInteger : AbstractTestBase
+    public class TestRefCountedSetAtomicInteger : AbstractCommonTest
     {
         [Test]
         public void TestFlow()

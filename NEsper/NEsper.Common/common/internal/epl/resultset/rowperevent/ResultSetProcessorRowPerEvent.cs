@@ -6,22 +6,18 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.resultset.core;
 using com.espertech.esper.common.@internal.epl.resultset.select.core;
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.resultset.rowperevent
 {
     public interface ResultSetProcessorRowPerEvent : ResultSetProcessor
     {
-        SelectExprProcessor GetSelectExprProcessor();
+        SelectExprProcessor SelectExprProcessor { get; }
 
-        bool HasHavingClause();
+        bool HasHavingClause { get; }
 
         bool EvaluateHavingClause(
             EventBean[] eventsPerStream,

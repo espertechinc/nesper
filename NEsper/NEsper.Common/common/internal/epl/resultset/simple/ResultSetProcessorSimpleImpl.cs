@@ -41,8 +41,8 @@ namespace com.espertech.esper.common.@internal.epl.resultset.simple
             CodegenMethod method,
             CodegenInstanceAux instance)
         {
-            method.Block.DeclareVar<EventBean[]>("SelectOldEvents", ConstantNull())
-                .DeclareVarNoInit(typeof(EventBean[]), "SelectNewEvents");
+            method.Block.DeclareVar<EventBean[]>("selectOldEvents", ConstantNull())
+                .DeclareVarNoInit(typeof(EventBean[]), "selectNewEvents");
             ResultSetProcessorUtil.ProcessJoinResultCodegen(
                 method,
                 classScope,

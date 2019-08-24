@@ -28,20 +28,20 @@ namespace com.espertech.esper.common.@internal.@event.arr
 
         public ObjectArrayEventType(
             EventTypeMetadata metadata,
-            IDictionary<string, object> properyTypes,
+            IDictionary<string, object> propertyTypes,
             EventType[] optionalSuperTypes,
-            ISet<EventType> optionalDeepSupertypes,
+            ISet<EventType> optionalDeepSuperTypes,
             string startTimestampName,
             string endTimestampName,
             BeanEventTypeFactory beanEventTypeFactory)
             : base(
                 metadata,
-                properyTypes,
+                propertyTypes,
                 optionalSuperTypes,
-                optionalDeepSupertypes,
+                optionalDeepSuperTypes,
                 startTimestampName,
                 endTimestampName,
-                GetGetterFactory(metadata.Name, properyTypes, optionalSuperTypes),
+                GetGetterFactory(metadata.Name, propertyTypes, optionalSuperTypes),
                 beanEventTypeFactory)
         {
         }

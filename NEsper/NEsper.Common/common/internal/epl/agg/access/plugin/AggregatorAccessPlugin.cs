@@ -45,7 +45,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.plugin
                 true,
                 typeof(AggregationMultiFunctionStateFactory),
                 injectionStrategy.GetInitializationExpression(classScope));
-            ctor.Block.AssignRef(state, ExprDotMethod(factoryField, "newState", ConstantNull()));
+            ctor.Block.AssignRef(state, ExprDotMethod(factoryField, "NewState", ConstantNull()));
         }
 
         internal override void ApplyEnterFiltered(

@@ -115,7 +115,7 @@ namespace com.espertech.esper.common.@internal.util
             // for each root, recursively add its child nodes, this becomes the default order
             ICollection<string> graphFlattened = new FIFOHashSet<string>();
             foreach (var root in roots) {
-                RecusiveAdd(graphFlattened, root, reversedGraph);
+                RecursiveAdd(graphFlattened, root, reversedGraph);
             }
 
             // now walk down the default order and for each node ensure all parents are created
@@ -163,7 +163,7 @@ namespace com.espertech.esper.common.@internal.util
             return true;
         }
 
-        private static void RecusiveAdd(
+        private static void RecursiveAdd(
             ICollection<string> graphFlattened,
             string root,
             IDictionary<string, ICollection<string>> reversedGraph)
@@ -175,7 +175,7 @@ namespace com.espertech.esper.common.@internal.util
             }
 
             foreach (var child in childNodes) {
-                RecusiveAdd(graphFlattened, child, reversedGraph);
+                RecursiveAdd(graphFlattened, child, reversedGraph);
             }
         }
 

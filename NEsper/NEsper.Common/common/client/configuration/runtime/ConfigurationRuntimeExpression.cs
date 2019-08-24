@@ -11,7 +11,7 @@ using System;
 namespace com.espertech.esper.common.client.configuration.runtime
 {
     /// <summary>
-    ///     Expression evaluation settings in the runtimeare for results of expressions.
+    ///     Expression evaluation settings in the runtime are for results of expressions.
     /// </summary>
     [Serializable]
     public class ConfigurationRuntimeExpression

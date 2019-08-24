@@ -18,7 +18,7 @@ using NUnit.Framework;
 namespace com.espertech.esper.common.@internal.epl.pattern.observer
 {
     [TestFixture]
-    public class TestTimerScheduleIso8601Parser : AbstractTestBase
+    public class TestTimerScheduleIso8601Parser : AbstractCommonTest
     {
         private void AssertParsePeriod(
             string period,

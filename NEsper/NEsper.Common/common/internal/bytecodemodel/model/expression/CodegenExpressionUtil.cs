@@ -44,10 +44,19 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
                 builder.Append(Literal((float) constant).ToFullString());
             }
             else if (constant is double) {
-                builder.Append(Literal((double) constant).ToFullString());
+                var literal = Literal((double) constant).ToFullString();
+                if (!literal.EndsWith("d")) {
+                    literal += "d";
+                }
+                builder.Append(literal);
             }
             else if (constant is decimal) {
-                builder.Append(Literal((decimal) constant).ToFullString());
+                var literal = Literal((decimal) constant).ToFullString();
+                if (!literal.EndsWith("m")) {
+                    literal += "m";
+                }
+
+                builder.Append(literal);
             }
             else if (constant is short) {
                 builder.Append("(short) ");

@@ -311,18 +311,14 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
                     classScope)
                 .AddParam(
                     CodegenNamedParam.From(
-                        typeof(object),
-                        "@object",
-                        typeof(DataOutput),
-                        output.Ref,
-                        typeof(byte[]),
-                        unitKey.Ref,
-                        typeof(EventBeanCollatedWriter),
-                        writer.Ref))
+                        typeof(AggregationRow), "@object",
+                        typeof(DataOutput), output.Ref,
+                        typeof(byte[]), unitKey.Ref,
+                        typeof(EventBeanCollatedWriter), writer.Ref))
                 .AddThrown(typeof(IOException));
 
             var readMethod = CodegenMethod.MakeMethod(
-                    typeof(object),
+                    typeof(AggregationRow),
                     typeof(AggregationServiceFactoryCompiler),
                     CodegenSymbolProviderEmpty.INSTANCE,
                     classScope)
@@ -402,7 +398,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
             CodegenStackGenerator.RecursiveBuildStack(writeMethod, "Write", methods, properties);
             CodegenStackGenerator.RecursiveBuildStack(readMethod, "Read", methods, properties);
 
-            var innerClassInterface = typeof(DataInputOutputSerdeWCollation<>);
+            var innerClassInterface = typeof(DataInputOutputSerdeWCollation<AggregationRow>);
             var innerClass = new CodegenInnerClass(
                 classNameSerde,
                 innerClassInterface,
@@ -410,8 +406,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
                 Collections.GetEmptyList<CodegenTypedParam>(),
                 methods,
                 properties);
-            innerClass.InterfaceGenericClass = "object";
-            //innerClass.InterfaceGenericClass = classNameRow;
+            innerClass.InterfaceGenericClass = classNameRow;
             innerClasses.Add(innerClass);
         }
 
@@ -761,12 +756,9 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
                     var method = parent.MakeChild(getType.ReturnType, factory.GetType(), classScope)
                         .AddParam(
                             CodegenNamedParam.From(
-                                typeof(EventBean[]),
-                                NAME_EPS,
-                                typeof(bool),
-                                ExprForgeCodegenNames.NAME_ISNEWDATA,
-                                typeof(ExprEvaluatorContext),
-                                NAME_EXPREVALCONTEXT));
+                                typeof(EventBean[]), NAME_EPS,
+                                typeof(bool), ExprForgeCodegenNames.NAME_ISNEWDATA,
+                                typeof(ExprEvaluatorContext), NAME_EXPREVALCONTEXT));
                     methods.Add(method);
 
                     if (getType == AggregationCodegenGetType.GETVALUE) {
@@ -787,12 +779,9 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
                         .MakeChild(getType.ReturnType, accessorSlotPair.AccessorForge.GetType(), classScope)
                         .AddParam(
                             CodegenNamedParam.From(
-                                typeof(EventBean[]),
-                                NAME_EPS,
-                                typeof(bool),
-                                ExprForgeCodegenNames.NAME_ISNEWDATA,
-                                typeof(ExprEvaluatorContext),
-                                NAME_EXPREVALCONTEXT));
+                                typeof(EventBean[]), NAME_EPS,
+                                typeof(bool), ExprForgeCodegenNames.NAME_ISNEWDATA,
+                                typeof(ExprEvaluatorContext), NAME_EXPREVALCONTEXT));
                     var stateNumber = numMethodStates + accessorSlotPair.Slot;
 
                     var ctx = new AggregationAccessorForgeGetCodegenContext(

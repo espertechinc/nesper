@@ -26,9 +26,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             Type resultType,
             BitWiseOpEnum.Computer computer)
         {
-            ForgeRenderable = parent;
-            EvaluationType = resultType;
-            Computer = computer;
+            ForgeRenderable = parent ?? throw new ArgumentNullException(nameof(parent));
+            EvaluationType = resultType ?? throw new ArgumentNullException(nameof(resultType));
+            Computer = computer ?? throw new ArgumentNullException(nameof(computer));
         }
 
         ExprNodeRenderable ExprForge.ExprForgeRenderable => ForgeRenderable;

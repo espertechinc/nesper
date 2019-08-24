@@ -91,8 +91,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             public void Run(RegressionEnvironment env)
             {
                 var path = new RegressionPath();
-                env.CompileDeploy("insert into MyStream select nested from SupportBeanComplexProps", path);
-                var epl = "@Name('s0') select nested.NestedValue, nested.NestedNested.NestedNestedValue from MyStream";
+                env.CompileDeploy("insert into MyStream select Nested from SupportBeanComplexProps", path);
+                var epl = "@Name('s0') select Nested.NestedValue, Nested.NestedNested.NestedNestedValue from MyStream";
                 env.CompileDeploy(epl, path).AddListener("s0");
 
                 env.SendEventBean(SupportBeanComplexProps.MakeDefaultBean());

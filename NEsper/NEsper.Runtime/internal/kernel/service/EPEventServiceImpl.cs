@@ -1108,9 +1108,6 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
                 // internal join processing, if applicable
                 handle.InternalDispatch();
             }
-            catch (EPException) {
-                throw;
-            }
             catch (Exception ex) {
                 Services.ExceptionHandlingService.HandleException(
                     ex,

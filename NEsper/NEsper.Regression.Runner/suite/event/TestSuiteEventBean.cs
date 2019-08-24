@@ -88,8 +88,8 @@ namespace com.espertech.esper.regressionrun.suite.@event
             configuration.Common.AddEventType("MyLegacyTwo", typeof(SupportLegacyBeanInt), myLegacyTwo);
 
             IDictionary<string, object> def = new Dictionary<string, object>();
-            def.Put("mapped", new Dictionary<string, object>());
-            def.Put("indexed", typeof(int[]));
+            def.Put("Mapped", new Dictionary<string, object>());
+            def.Put("Indexed", typeof(int[]));
             configuration.Common.AddEventType("MapEvent", def);
 
             IDictionary<string, object> defType = new Dictionary<string, object>();
@@ -100,7 +100,7 @@ namespace com.espertech.esper.regressionrun.suite.@event
 
             configuration.Common.AddEventType(
                 "ObjectArrayEvent",
-                new[] {"mapped", "indexed"},
+                new[] {"Mapped", "Indexed"},
                 new object[] {new Dictionary<string, object>(), typeof(int[])});
 
             var myEventWithField = new ConfigurationCommonEventTypeBean();

@@ -17,7 +17,7 @@ using NUnit.Framework;
 namespace com.espertech.esper.common.@internal.@event.bean.getter
 {
     [TestFixture]
-    public class TestKeyedMethodPropertyGetter : AbstractTestBase
+    public class TestKeyedMethodPropertyGetter : AbstractCommonTest
     {
         private KeyedMethodPropertyGetter getter;
         private EventBean theEvent;

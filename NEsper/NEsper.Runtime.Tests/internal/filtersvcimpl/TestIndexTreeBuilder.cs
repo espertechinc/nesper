@@ -22,7 +22,7 @@ using NUnit.Framework;
 namespace com.espertech.esper.runtime.@internal.filtersvcimpl
 {
     [TestFixture]
-    public class TestIndexTreeBuilder : AbstractTestBase
+    public class TestIndexTreeBuilder : AbstractRuntimeTest
     {
         private IList<FilterHandle> matches;
         private EventBean eventBean;

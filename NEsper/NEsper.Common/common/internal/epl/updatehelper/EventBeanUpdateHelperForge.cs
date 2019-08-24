@@ -97,9 +97,9 @@ namespace com.espertech.esper.common.@internal.epl.updatehelper
                 .AssignArrayElement(REF_EPS, Constant(2), Ref("matchingEvent"))
                 .InstanceMethod(updateInternal, REF_EPS, REF_EXPREVALCONTEXT, Ref("copy"))
                 .Apply(Instblock(classScope, "aInfraUpdate", Ref("copy")))
-                .MethodReturn(Ref("copy"));
+                .ReturnMethodOrBlock(Ref("copy"));
 
-            method.Block.BlockReturn(clazz);
+            method.Block.MethodReturn(clazz);
 
             return LocalMethod(method);
         }

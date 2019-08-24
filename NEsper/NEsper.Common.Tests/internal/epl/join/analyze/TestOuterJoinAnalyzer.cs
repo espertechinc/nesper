@@ -16,7 +16,7 @@ using NUnit.Framework;
 namespace com.espertech.esper.common.@internal.epl.join.analyze
 {
     [TestFixture]
-    public class TestOuterJoinAnalyzer : AbstractTestBase
+    public class TestOuterJoinAnalyzer : AbstractCommonTest
     {
         [Test]
         public void TestAnalyze()

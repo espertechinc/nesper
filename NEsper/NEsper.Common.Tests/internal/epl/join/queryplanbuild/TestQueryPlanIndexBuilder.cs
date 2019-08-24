@@ -21,7 +21,7 @@ using NUnit.Framework;
 namespace com.espertech.esper.common.@internal.epl.join.queryplanbuild
 {
     [TestFixture]
-    public class TestQueryPlanIndexBuilder : AbstractTestBase
+    public class TestQueryPlanIndexBuilder : AbstractCommonTest
     {
         [SetUp]
         public void SetUp()
@@ -30,16 +30,16 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanbuild
                 supportEventTypeFactory.CreateMapType(CreateType("P00,P01")),
                 supportEventTypeFactory.CreateMapType(CreateType("P10")),
                 supportEventTypeFactory.CreateMapType(CreateType("P20,P21")),
-                supportEventTypeFactory.CreateMapType(CreateType("P30,p31")),
-                supportEventTypeFactory.CreateMapType(CreateType("P40,p41,p42"))
+                supportEventTypeFactory.CreateMapType(CreateType("P30,P31")),
+                supportEventTypeFactory.CreateMapType(CreateType("P40,P41,P42"))
             };
 
             queryGraph = new QueryGraphForge(5, null, false);
             queryGraph.AddStrictEquals(0, "P00", Make(0, "P00"), 1, "P10", Make(1, "P10"));
             queryGraph.AddStrictEquals(0, "P01", Make(0, "P01"), 2, "P20", Make(2, "P20"));
             queryGraph.AddStrictEquals(4, "P40", Make(4, "P40"), 3, "P30", Make(3, "P30"));
-            queryGraph.AddStrictEquals(4, "p41", Make(4, "p41"), 3, "p31", Make(3, "p31"));
-            queryGraph.AddStrictEquals(4, "p42", Make(4, "p42"), 2, "P21", Make(2, "P21"));
+            queryGraph.AddStrictEquals(4, "P41", Make(4, "P41"), 3, "P31", Make(3, "P31"));
+            queryGraph.AddStrictEquals(4, "P42", Make(4, "P42"), 2, "P21", Make(2, "P21"));
         }
 
         private QueryGraphForge queryGraph;
@@ -78,10 +78,10 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanbuild
             expected = new string[][] { new string[] { "P20" }, new string[] { "P21" } };
             EPAssertionUtil.AssertEqualsExactOrder(expected, indexes[2].IndexProps);
 
-            expected = new string[][] { new string[] { "P30", "p31" } };
+            expected = new string[][] { new string[] { "P30", "P31" } };
             EPAssertionUtil.AssertEqualsExactOrder(expected, indexes[3].IndexProps);
 
-            expected = new string[][] { new string[] { "p42" }, new string[] { "P40", "p41" } };
+            expected = new string[][] { new string[] { "P42" }, new string[] { "P40", "P41" } };
             EPAssertionUtil.AssertEqualsExactOrder(expected, indexes[4].IndexProps);
 
             // Test no index, should have a single entry with a zero-length property name array

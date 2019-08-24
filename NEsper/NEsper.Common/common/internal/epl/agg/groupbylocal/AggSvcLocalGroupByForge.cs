@@ -349,7 +349,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupbylocal
         {
             method.Block.ExprDotMethod(
                 REF_AGGVISITOR,
-                "visitAggregations",
+                "VisitAggregations",
                 GetNumGroupsCodegen(method, classScope),
                 REF_AGGREGATORSTOPLEVEL,
                 REF_AGGREGATORSPERLEVELANDGROUP);
@@ -381,10 +381,10 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupbylocal
                 method.Block.ForEach(
                         typeof(KeyValuePair<object, object>),
                         "entry",
-                        ExprDotMethod(ArrayAtIndex(REF_AGGREGATORSPERLEVELANDGROUP, Constant(i)), "EntrySet"))
+                        ArrayAtIndex(REF_AGGREGATORSPERLEVELANDGROUP, Constant(i)))
                     .ExprDotMethod(
                         REF_AGGVISITOR,
-                        "visitGroup",
+                        "VisitGroup",
                         ExprDotName(Ref("entry"), "Key"),
                         ExprDotName(Ref("entry"), "Value"));
             }
@@ -410,7 +410,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupbylocal
                 method.Block.AssignCompound(
                     "size",
                     "+",
-                    ExprDotMethod(ArrayAtIndex(REF_AGGREGATORSPERLEVELANDGROUP, Constant(i)), "Size"));
+                    ExprDotMethod(ArrayAtIndex(REF_AGGREGATORSPERLEVELANDGROUP, Constant(i)), "Count"));
             }
 
             method.Block.MethodReturn(Ref("size"));
@@ -479,11 +479,11 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupbylocal
                         Ref(groupKeyName),
                         Ref(rowName))
                     .BlockEnd()
-                    .ExprDotMethod(Ref(rowName), enter ? "increaseRefcount" : "decreaseRefcount")
+                    .ExprDotMethod(Ref(rowName), enter ? "IncreaseRefcount" : "DecreaseRefcount")
                     .ExprDotMethod(Ref(rowName), enter ? "ApplyEnter" : "ApplyLeave", REF_EPS, REF_EXPREVALCONTEXT);
 
                 if (!enter) {
-                    method.Block.IfCondition(Relational(ExprDotName(Ref(rowName), "Refcount"), LE, Constant(0)))
+                    method.Block.IfCondition(Relational(ExprDotMethod(Ref(rowName), "GetRefcount"), LE, Constant(0)))
                         .ExprDotMethod(
                             REF_REMOVEDKEYS,
                             "Add",

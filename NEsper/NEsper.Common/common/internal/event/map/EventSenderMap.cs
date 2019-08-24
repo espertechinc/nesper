@@ -12,6 +12,7 @@ using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.@event.util;
 using com.espertech.esper.common.@internal.statement.thread;
+using com.espertech.esper.common.@internal.util;
 
 namespace com.espertech.esper.common.@internal.@event.map
 {
@@ -52,9 +53,9 @@ namespace com.espertech.esper.common.@internal.@event.map
             if (!(theEvent is IDictionary<string, object>)) {
                 throw new EPException(
                     "Unexpected event object of type " +
-                    theEvent.GetType().Name +
+                    theEvent.GetType().GetCleanName() +
                     ", expected " +
-                    typeof(IDictionary<object, object>).Name);
+                    typeof(IDictionary<string, object>).GetCleanName());
             }
 
             var map = (IDictionary<string, object>) theEvent;
@@ -73,9 +74,9 @@ namespace com.espertech.esper.common.@internal.@event.map
             if (!(theEvent is IDictionary<string, object>)) {
                 throw new EPException(
                     "Unexpected event object of type " +
-                    theEvent.GetType().Name +
+                    theEvent.GetType().GetCleanName() +
                     ", expected " +
-                    typeof(IDictionary<object, object>).Name);
+                    typeof(IDictionary<string, object>).GetCleanName());
             }
 
             var map = (IDictionary<string, object>) theEvent;

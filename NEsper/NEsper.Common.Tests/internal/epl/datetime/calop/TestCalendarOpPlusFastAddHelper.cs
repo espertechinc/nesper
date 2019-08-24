@@ -17,7 +17,7 @@ using NUnit.Framework;
 namespace com.espertech.esper.common.@internal.epl.datetime.calop
 {
     [TestFixture]
-    public class TestCalendarOpPlusFastAddHelper : AbstractTestBase
+    public class TestCalendarOpPlusFastAddHelper : AbstractCommonTest
     {
         [Test]
         public void TestCompute()

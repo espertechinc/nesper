@@ -11,7 +11,7 @@ using NUnit.Framework;
 namespace com.espertech.esper.common.client.util
 {
     [TestFixture]
-    public class TestTimePeriod : AbstractTestBase
+    public class TestTimePeriod : AbstractCommonTest
     {
         [Test]
         public void TestLargestAbsoluteValue()

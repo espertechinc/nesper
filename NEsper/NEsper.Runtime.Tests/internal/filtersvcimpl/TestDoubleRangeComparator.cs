@@ -18,7 +18,7 @@ using NUnit.Framework;
 namespace com.espertech.esper.runtime.@internal.filtersvcimpl
 {
     [TestFixture]
-    public class TestDoubleRangeComparator : AbstractTestBase
+    public class TestDoubleRangeComparator : AbstractRuntimeTest
     {
         private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 

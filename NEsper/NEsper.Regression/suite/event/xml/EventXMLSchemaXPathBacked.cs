@@ -66,7 +66,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
                     new EventPropertyDescriptor("nested1Prop", typeof(string), null, false, false, false, false, false),
                     new EventPropertyDescriptor("nested2Prop", typeof(bool?), null, false, false, false, false, false),
                     new EventPropertyDescriptor("complexProp", typeof(string), null, false, false, false, false, false),
-                    new EventPropertyDescriptor("indexedProp", typeof(int?), null, false, false, false, false, false),
+                    new EventPropertyDescriptor("IndexedProp", typeof(int?), null, false, false, false, false, false),
                     new EventPropertyDescriptor("customProp", typeof(double?), null, false, false, false, false, false),
                     new EventPropertyDescriptor("attrOneProp", typeof(bool?), null, false, false, false, false, false),
                     new EventPropertyDescriptor("attrTwoProp", typeof(string), null, false, false, false, false, false)
@@ -82,7 +82,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
             Assert.AreEqual("SAMPLE_V6", theEvent.Get("nested1Prop"));
             Assert.AreEqual(true, theEvent.Get("nested2Prop"));
             Assert.AreEqual("SAMPLE_V8", theEvent.Get("complexProp"));
-            Assert.AreEqual(5, theEvent.Get("indexedProp"));
+            Assert.AreEqual(5, theEvent.Get("IndexedProp"));
             Assert.AreEqual(3.0, theEvent.Get("customProp"));
             Assert.AreEqual(true, theEvent.Get("attrOneProp"));
             Assert.AreEqual("c", theEvent.Get("attrTwoProp"));

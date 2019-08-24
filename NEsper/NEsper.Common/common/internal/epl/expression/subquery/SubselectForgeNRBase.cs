@@ -64,7 +64,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                 .AddParam(leftResultType, NAME_LEFTRESULT)
                 .AddParam(typeof(EventBean[]), NAME_EPS)
                 .AddParam(typeof(bool), NAME_ISNEWDATA)
-                .AddParam(typeof(ICollection<object>), NAME_MATCHINGEVENTS)
+                .AddParam(typeof(ICollection<EventBean>), NAME_MATCHINGEVENTS)
                 .AddParam(
                     typeof(ExprEvaluatorContext),
                     NAME_EXPREVALCONTEXT);

@@ -19,7 +19,7 @@ using NUnit.Framework;
 namespace com.espertech.esper.common.@internal.epl.expression.funcs
 {
     [TestFixture]
-    public class TestExprPropertyExistsNode : AbstractTestBase
+    public class TestExprPropertyExistsNode : AbstractCommonTest
     {
         private SupportExprNodeFactory supportExprNodeFactory;
         private ExprPropertyExistsNode[] existsNodes;

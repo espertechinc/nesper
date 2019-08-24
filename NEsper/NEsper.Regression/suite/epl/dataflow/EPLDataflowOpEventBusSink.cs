@@ -95,7 +95,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                                "EventBusSink(instream) {\n" +
                                "collector : {\n" +
                                "class : '" +
-                               typeof(MyTransformToEventBus).Name +
+                               typeof(MyTransformToEventBus).FullName +
                                "'\n" +
                                "}\n" +
                                "}";
@@ -157,7 +157,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                     "EventBusSink(OutStream) {" +
                     "  collector : {" +
                     "    class: '" +
-                    typeof(MyTransformToEventBus).Name +
+                    typeof(MyTransformToEventBus).FullName +
                     "'" +
                     "  }" +
                     "}");

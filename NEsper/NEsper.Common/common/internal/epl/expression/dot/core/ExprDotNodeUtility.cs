@@ -47,9 +47,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
         {
             IDictionary<string, object> propsResult = new Dictionary<string, object>();
             propsResult.Put(propertyName, Boxing.GetBoxedType(type));
-            string eventTypeName =
+            var eventTypeName =
                 services.EventTypeNameGeneratorStatement.GetAnonymousTypeNameEnumMethod(enumMethod, propertyName);
-            EventTypeMetadata metadata = new EventTypeMetadata(
+            var metadata = new EventTypeMetadata(
                 eventTypeName,
                 statementRawInfo.ModuleName,
                 EventTypeTypeClass.ENUMDERIVED,
@@ -58,7 +58,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
                 EventTypeBusModifier.NONBUS,
                 false,
                 EventTypeIdPair.Unassigned());
-            ObjectArrayEventType oatype = BaseNestableEventUtil.MakeOATypeCompileTime(
+            var oatype = BaseNestableEventUtil.MakeOATypeCompileTime(
                 metadata,
                 propsResult,
                 null,
@@ -84,20 +84,20 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
             StatementRawInfo statementRawInfo,
             StatementCompileTimeServices compileTimeServices)
         {
-            ExprForge rootNodeForge = inputExpression.Forge;
+            var rootNodeForge = inputExpression.Forge;
             ExprEnumerationForge rootLambdaForge = null;
             EPType info = null;
 
             if (rootNodeForge is ExprEnumerationForge) {
                 rootLambdaForge = (ExprEnumerationForge) rootNodeForge;
-                EventType eventTypeCollection =
+                var eventTypeCollection =
                     rootLambdaForge.GetEventTypeCollection(statementRawInfo, compileTimeServices);
                 if (eventTypeCollection != null) {
                     info = EPTypeHelper.CollectionOfEvents(eventTypeCollection);
                 }
 
                 if (info == null) {
-                    EventType eventTypeSingle =
+                    var eventTypeSingle =
                         rootLambdaForge.GetEventTypeSingle(statementRawInfo, compileTimeServices);
                     if (eventTypeSingle != null) {
                         info = EPTypeHelper.SingleEvent(eventTypeSingle);
@@ -105,7 +105,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
                 }
 
                 if (info == null) {
-                    Type componentType = rootLambdaForge.ComponentTypeCollection;
+                    var componentType = rootLambdaForge.ComponentTypeCollection;
                     if (componentType != null) {
                         info = EPTypeHelper.CollectionOfSingleValue(rootLambdaForge.ComponentTypeCollection);
                     }
@@ -116,9 +116,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
                 }
             }
             else if (inputExpression is ExprIdentNode) {
-                ExprIdentNode identNode = (ExprIdentNode) inputExpression;
-                int streamId = identNode.StreamId;
-                EventType streamType = streamTypeService.EventTypes[streamId];
+                var identNode = (ExprIdentNode) inputExpression;
+                var streamId = identNode.StreamId;
+                var streamType = streamTypeService.EventTypes[streamId];
                 return GetPropertyEnumerationSource(
                     identNode.ResolvedPropertyName,
                     streamId,
@@ -137,16 +137,16 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
             bool allowEnumType,
             bool disablePropertyExpressionEventCollCache)
         {
-            Type propertyType = streamType.GetPropertyType(propertyName);
-            EPType typeInfo = EPTypeHelper.SingleValue(propertyType); // assume scalar for now
+            var propertyType = streamType.GetPropertyType(propertyName);
+            var typeInfo = EPTypeHelper.SingleValue(propertyType); // assume scalar for now
 
             // no enumeration methods, no need to expose as an enumeration
             if (!allowEnumType) {
                 return new ExprDotEnumerationSourceForgeForProps(null, typeInfo, streamId, null);
             }
 
-            FragmentEventType fragmentEventType = streamType.GetFragmentType(propertyName);
-            EventPropertyGetterSPI getter = ((EventTypeSPI) streamType).GetGetterSPI(propertyName);
+            var fragmentEventType = streamType.GetFragmentType(propertyName);
+            var getter = ((EventTypeSPI) streamType).GetGetterSPI(propertyName);
 
             ExprEnumerationForge enumEvaluator = null;
             if (getter != null && fragmentEventType != null) {
@@ -165,7 +165,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
                 }
             }
             else {
-                EventPropertyDescriptor desc = EventTypeUtility.GetNestablePropertyDescriptor(streamType, propertyName);
+                var desc = EventTypeUtility.GetNestablePropertyDescriptor(streamType, propertyName);
                 if (desc != null && desc.IsIndexed && !desc.IsRequiresIndex && desc.PropertyComponentType != null) {
                     if (propertyType.IsArray) {
                         enumEvaluator = new PropertyDotScalarArrayForge(
@@ -231,8 +231,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
 
         public static ExprDotEval[] GetEvaluators(ExprDotForge[] forges)
         {
-            ExprDotEval[] evals = new ExprDotEval[forges.Length];
-            for (int i = 0; i < forges.Length; i++) {
+            var evals = new ExprDotEval[forges.Length];
+            for (var i = 0; i < forges.Length; i++) {
                 evals[i] = forges[i].DotEvaluator;
             }
 
@@ -247,7 +247,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
             bool isNewData,
             ExprEvaluatorContext context)
         {
-            foreach (ExprDotEval methodEval in evaluators) {
+            foreach (var methodEval in evaluators) {
                 inner = methodEval.Evaluate(inner, eventsPerStream, isNewData, context);
                 if (inner == null) {
                     break;
@@ -266,31 +266,31 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
             ExprDotNodeFilterAnalyzerInput inputDesc)
         {
             IList<ExprDotForge> methodForges = new List<ExprDotForge>();
-            EPType currentInputType = inputType;
+            var currentInputType = inputType;
             EnumMethodEnum? lastLambdaFunc = null;
-            ExprChainedSpec lastElement = chainSpec.IsEmpty() ? null : chainSpec[chainSpec.Count - 1];
+            var lastElement = chainSpec.IsEmpty() ? null : chainSpec[chainSpec.Count - 1];
             FilterExprAnalyzerAffector filterAnalyzerDesc = null;
 
             Deque<ExprChainedSpec> chainSpecStack = new ArrayDeque<ExprChainedSpec>(chainSpec);
             while (!chainSpecStack.IsEmpty()) {
-                ExprChainedSpec chainElement = chainSpecStack.RemoveFirst();
+                var chainElement = chainSpecStack.RemoveFirst();
                 lastLambdaFunc = null; // reset
 
                 // compile parameters for chain element
-                ExprForge[] paramForges = new ExprForge[chainElement.Parameters.Count];
-                Type[] paramTypes = new Type[chainElement.Parameters.Count];
-                for (int i = 0; i < chainElement.Parameters.Count; i++) {
+                var paramForges = new ExprForge[chainElement.Parameters.Count];
+                var paramTypes = new Type[chainElement.Parameters.Count];
+                for (var i = 0; i < chainElement.Parameters.Count; i++) {
                     paramForges[i] = chainElement.Parameters[i].Forge;
                     paramTypes[i] = paramForges[i].EvaluationType;
                 }
 
                 // check if special 'size' method
                 if (currentInputType is ClassMultiValuedEPType) {
-                    ClassMultiValuedEPType type = (ClassMultiValuedEPType) currentInputType;
+                    var type = (ClassMultiValuedEPType) currentInputType;
                     if (chainElement.Name.Equals("size", StringComparison.InvariantCultureIgnoreCase) &&
                         paramTypes.Length == 0 &&
                         lastElement == chainElement) {
-                        ExprDotForgeArraySize sizeExpr = new ExprDotForgeArraySize();
+                        var sizeExpr = new ExprDotForgeArraySize();
                         methodForges.Add(sizeExpr);
                         currentInputType = sizeExpr.TypeInfo;
                         continue;
@@ -299,8 +299,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
                     if (chainElement.Name.Equals("Get", StringComparison.InvariantCultureIgnoreCase) &&
                         paramTypes.Length == 1 &&
                         Boxing.GetBoxedType(paramTypes[0]) == typeof(int?)) {
-                        Type componentType = Boxing.GetBoxedType(type.Component);
-                        ExprDotForgeArrayGet get = new ExprDotForgeArrayGet(paramForges[0], componentType);
+                        var componentType = Boxing.GetBoxedType(type.Component);
+                        var get = new ExprDotForgeArrayGet(paramForges[0], componentType);
                         methodForges.Add(get);
                         currentInputType = get.TypeInfo;
                         continue;
@@ -308,8 +308,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
                 }
 
                 // determine if there is a matching method
-                bool matchingMethod = false;
-                Type methodTarget = GetMethodTarget(currentInputType);
+                var matchingMethod = false;
+                var methodTarget = GetMethodTarget(currentInputType);
                 if (methodTarget != null) {
                     try {
                         GetValidateMethodDescriptor(
@@ -326,12 +326,12 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
 
                 if (EnumMethodEnumExtensions.IsEnumerationMethod(chainElement.Name) &&
                     (!matchingMethod || methodTarget.IsArray || methodTarget.IsGenericCollection())) {
-                    EnumMethodEnum? enumerationMethod = EnumMethodEnumExtensions.FromName(chainElement.Name);
+                    var enumerationMethod = EnumMethodEnumExtensions.FromName(chainElement.Name);
                     if (enumerationMethod == null) {
                         throw new EPException("unable to determine enumeration method from name");
                     }
 
-                    ExprDotForgeEnumMethod eval = TypeHelper.Instantiate<ExprDotForgeEnumMethod>(
+                    var eval = TypeHelper.Instantiate<ExprDotForgeEnumMethod>(
                         enumerationMethod.Value.GetImplementation());
                     eval.Init(
                         streamOfProviderIfApplicable,
@@ -357,8 +357,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
                      methodTarget == typeof(DateTimeEx) ||
                      methodTarget == typeof(DateTimeOffset) ||
                      methodTarget == typeof(DateTime))) {
-                    DateTimeMethodEnum dateTimeMethod = DateTimeMethodEnum.FromName(chainElement.Name);
-                    ExprDotDTMethodDesc datetimeImpl = ExprDotDTFactory.ValidateMake(
+                    var dateTimeMethod = DateTimeMethodEnum.FromName(chainElement.Name);
+                    var datetimeImpl = ExprDotDTFactory.ValidateMake(
                         validationContext.StreamTypeService,
                         chainSpecStack,
                         dateTimeMethod,
@@ -382,11 +382,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
 
                 // try to resolve as property if the last method returned a type
                 if (currentInputType is EventEPType) {
-                    EventTypeSPI inputEventType = (EventTypeSPI) ((EventEPType) currentInputType).EventType;
-                    Type type = inputEventType.GetPropertyType(chainElement.Name);
-                    EventPropertyGetterSPI getter = inputEventType.GetGetterSPI(chainElement.Name);
+                    var inputEventType = (EventTypeSPI) ((EventEPType) currentInputType).EventType;
+                    var type = inputEventType.GetPropertyType(chainElement.Name);
+                    var getter = inputEventType.GetGetterSPI(chainElement.Name);
                     if (type != null && getter != null) {
-                        ExprDotForgeProperty noduck = new ExprDotForgeProperty(
+                        var noduck = new ExprDotForgeProperty(
                             getter,
                             EPTypeHelper.SingleValue(Boxing.GetBoxedType(type)));
                         methodForges.Add(noduck);
@@ -399,7 +399,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
                 if (methodTarget != null) {
                     try {
                         // find descriptor again, allow for duck typing
-                        ExprNodeUtilMethodDesc desc = GetValidateMethodDescriptor(
+                        var desc = GetValidateMethodDescriptor(
                             methodTarget,
                             chainElement.Name,
                             chainElement.Parameters,
@@ -441,7 +441,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
                             throw new ExprValidationException(e.Message, e);
                         }
                         else {
-                            ExprDotMethodForgeDuck duck = new ExprDotMethodForgeDuck(
+                            var duck = new ExprDotMethodForgeDuck(
                                 validationContext.StatementName,
                                 validationContext.ImportService,
                                 chainElement.Name,
@@ -455,20 +455,20 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
                     continue;
                 }
 
-                string message = "Could not find event property, enumeration method or instance method named '" +
+                var message = "Could not find event property, enumeration method or instance method named '" +
                                  chainElement.Name +
                                  "' in " +
                                  EPTypeHelper.ToTypeDescriptive(currentInputType);
                 throw new ExprValidationException(message);
             }
 
-            ExprDotForge[] intermediateEvals = methodForges.ToArray();
+            var intermediateEvals = methodForges.ToArray();
 
             if (lastLambdaFunc != null) {
                 ExprDotForge finalEval = null;
                 if (currentInputType is EventMultiValuedEPType) {
-                    EventMultiValuedEPType mvType = (EventMultiValuedEPType) currentInputType;
-                    TableMetaData tableMetadata =
+                    var mvType = (EventMultiValuedEPType) currentInputType;
+                    var tableMetadata =
                         validationContext.TableCompileTimeResolver.ResolveTableFromEventType(mvType.Component);
                     if (tableMetadata != null) {
                         finalEval = new ExprDotForgeUnpackCollEventBeanTable(mvType.Component, tableMetadata);
@@ -478,8 +478,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
                     }
                 }
                 else if (currentInputType is EventEPType) {
-                    EventEPType epType = (EventEPType) currentInputType;
-                    TableMetaData tableMetadata =
+                    var epType = (EventEPType) currentInputType;
+                    var tableMetadata =
                         validationContext.TableCompileTimeResolver.ResolveTableFromEventType(epType.EventType);
                     if (tableMetadata != null) {
                         finalEval = new ExprDotForgeUnpackBeanTable(epType.EventType, tableMetadata);
@@ -494,7 +494,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
                 }
             }
 
-            ExprDotForge[] unpackingForges = methodForges.ToArray();
+            var unpackingForges = methodForges.ToArray();
             return new ExprDotNodeRealizedChain(intermediateEvals, unpackingForges, filterAnalyzerDesc);
         }
 
@@ -523,13 +523,14 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
                 return inner;
             }
 
-            ExprDotForge last = forges[forges.Length - 1];
-            Type lastType = EPTypeHelper.GetCodegenReturnType(last.TypeInfo);
-            CodegenMethod methodNode = parent.MakeChild(lastType, typeof(ExprDotNodeUtility), codegenClassScope)
+            var last = forges[forges.Length - 1];
+            var lastType = EPTypeHelper.GetCodegenReturnType(last.TypeInfo).GetBoxedType();
+            var methodNode = parent
+                .MakeChild(lastType, typeof(ExprDotNodeUtility), codegenClassScope)
                 .AddParam(innerType, "inner");
 
-            CodegenBlock block = methodNode.Block;
-            string currentTarget = "wrapped";
+            var block = methodNode.Block;
+            var currentTarget = "wrapped";
             Type currentTargetType;
             if (optionalResultWrapLambda != null) {
                 currentTargetType = EPTypeHelper.GetCodegenReturnType(optionalResultWrapLambda.TypeInfo);
@@ -545,8 +546,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
             }
 
             string refname = null;
-            ExprDotEvalVisitorImpl instrumentationName = new ExprDotEvalVisitorImpl();
-            for (int i = 0; i < forges.Length; i++) {
+            var instrumentationName = new ExprDotEvalVisitorImpl();
+            for (var i = 0; i < forges.Length; i++) {
                 refname = "r" + i;
                 forges[i].Visit(instrumentationName);
                 block.Apply(
@@ -557,13 +558,13 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
                         Constant(instrumentationName.MethodType),
                         Constant(instrumentationName.MethodName)));
 
-                CodegenExpression typeInformation = ConstantNull();
+                var typeInformation = ConstantNull();
                 if (codegenClassScope.IsInstrumented) {
                     typeInformation = codegenClassScope.AddOrGetFieldSharable(
                         new EPTypeCodegenSharable(forges[i].TypeInfo, codegenClassScope));
                 }
 
-                Type reftype = EPTypeHelper.GetCodegenReturnType(forges[i].TypeInfo);
+                var reftype = EPTypeHelper.GetCodegenReturnType(forges[i].TypeInfo).GetBoxedType();
                 if (reftype == typeof(void)) {
                     block.Expression(
                             forges[i]
@@ -617,7 +618,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
         {
             ExprNodeUtilResolveExceptionHandler exceptionHandler = new ProxyExprNodeUtilResolveExceptionHandler(
                 e => new ExprValidationException("Failed to resolve method '" + methodName + "': " + e.Message, e));
-            EventType wildcardType = validationContext.StreamTypeService.EventTypes.Length != 1
+            var wildcardType = validationContext.StreamTypeService.EventTypes.Length != 1
                 ? null
                 : validationContext.StreamTypeService.EventTypes[0];
             return ExprNodeUtilityResolve.ResolveMethodAllowWildcardAndStream(

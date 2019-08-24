@@ -109,7 +109,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
                 .BlockReturn(ConstantNull())
                 .IfCondition(ExprDotMethod(refSet, "IsEmpty"))
                 .BlockReturn(ConstantNull())
-                .IfCondition(Relational(Ref("index"), GE, ExprDotMethod(refSet, "Size")))
+                .IfCondition(Relational(Ref("index"), GE, ExprDotName(refSet, "Count")))
                 .BlockReturn(ConstantNull())
                 .IfCondition(EqualsNull(array))
                 .InstanceMethod(initArray)
@@ -135,7 +135,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
                 .BlockReturn(ConstantNull())
                 .IfCondition(ExprDotMethod(refSet, "IsEmpty"))
                 .BlockReturn(ConstantNull())
-                .IfCondition(Relational(Ref("index"), GE, ExprDotMethod(refSet, "Size")))
+                .IfCondition(Relational(Ref("index"), GE, ExprDotName(refSet, "Count")))
                 .BlockReturn(ConstantNull())
                 .IfCondition(EqualsNull(array))
                 .InstanceMethod(initArray)
@@ -225,7 +225,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
 
         public CodegenExpression SizeCodegen()
         {
-            return ExprDotMethod(refSet, "Size");
+            return ExprDotName(refSet, "Count");
         }
 
         internal override void ApplyEnterFiltered(
@@ -304,7 +304,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
         {
             Consumer<CodegenMethod> code = method => {
                 method.Block
-                    .DeclareVar<ISet<EventBean>>("events", ExprDotMethod(refSet, "KeySet"))
+                    .DeclareVar<ISet<EventBean>>("events", ExprDotName(refSet, "Keys"))
                     .AssignRef(array, StaticMethod(typeof(CollectionUtil), METHOD_TOARRAYEVENTS, Ref("events")));
             };
             return namedMethods.AddMethod(
@@ -319,7 +319,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
         private CodegenExpressionField GetSerde(CodegenClassScope classScope)
         {
             return classScope.AddOrGetFieldSharable(
-                new CodegenSharableSerdeEventTyped(LINKEDHASHMAPEVENTSANDINT, forge.EventType));
+                new CodegenSharableSerdeEventTyped(LINKEDMAPEVENTSANDINT, forge.EventType));
         }
     }
 } // end of namespace

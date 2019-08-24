@@ -29,7 +29,7 @@ namespace com.espertech.esper.common.@internal.settings
 
         public Type Type()
         {
-            return typeof(TimeZone);
+            return typeof(TimeZoneInfo);
         }
 
         public CodegenExpression InitCtorScoped()

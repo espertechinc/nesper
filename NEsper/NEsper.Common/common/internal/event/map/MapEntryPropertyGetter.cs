@@ -128,7 +128,7 @@ namespace com.espertech.esper.common.@internal.@event.map
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            return ExprDotMethod(underlyingExpression, "containsKey", Constant(propertyName));
+            return ExprDotMethod(underlyingExpression, "ContainsKey", Constant(propertyName));
         }
 
         public CodegenExpression UnderlyingFragmentCodegen(

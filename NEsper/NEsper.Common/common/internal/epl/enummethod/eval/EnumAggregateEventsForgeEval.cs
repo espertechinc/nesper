@@ -47,18 +47,18 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             bool isNewData,
             ExprEvaluatorContext context)
         {
-            object value = initialization.Evaluate(eventsLambda, isNewData, context);
+            var value = initialization.Evaluate(eventsLambda, isNewData, context);
 
             if (enumcoll.IsEmpty()) {
                 return value;
             }
 
-            ICollection<EventBean> beans = (ICollection<EventBean>) enumcoll;
-            ObjectArrayEventBean resultEvent = new ObjectArrayEventBean(new object[1], forge.resultEventType);
+            var beans = (ICollection<EventBean>) enumcoll;
+            var resultEvent = new ObjectArrayEventBean(new object[1], forge.resultEventType);
             eventsLambda[forge.streamNumLambda] = resultEvent;
-            object[] props = resultEvent.Properties;
+            var props = resultEvent.Properties;
 
-            foreach (EventBean next in beans) {
+            foreach (var next in beans) {
                 props[0] = value;
                 eventsLambda[forge.streamNumLambda + 1] = next;
                 value = innerExpression.Evaluate(eventsLambda, isNewData, context);
@@ -73,31 +73,36 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            CodegenExpressionField typeMember = codegenClassScope.AddFieldUnshared(
+            var typeMember = codegenClassScope.AddFieldUnshared(
                 true,
                 typeof(ObjectArrayEventType),
                 Cast(
                     typeof(ObjectArrayEventType),
                     EventTypeUtility.ResolveTypeCodegen(forge.resultEventType, EPStatementInitServicesConstants.REF)));
 
-            ExprForgeCodegenSymbol scope = new ExprForgeCodegenSymbol(false, null);
-            CodegenMethod methodNode = codegenMethodScope.MakeChildWithScope(
+            var scope = new ExprForgeCodegenSymbol(false, null);
+            var methodNode = codegenMethodScope.MakeChildWithScope(
                     forge.initialization.EvaluationType,
                     typeof(EnumAggregateEventsForgeEval),
                     scope,
                     codegenClassScope)
                 .AddParam(EnumForgeCodegenNames.PARAMS);
 
-            Type initType = forge.initialization.EvaluationType;
-            Type innerType = forge.innerExpression.EvaluationType;
+            var initType = forge.initialization.EvaluationType;
+            var initTypeBoxed = initType.GetBoxedType();
+            var unboxRequired = initType != initTypeBoxed;
+            var innerType = forge.innerExpression.EvaluationType;
 
-            CodegenBlock block = methodNode.Block;
+            var block = methodNode.Block;
             block.DeclareVar(
-                    initType,
+                    initTypeBoxed,
                     "value",
                     forge.initialization.EvaluateCodegen(initType, methodNode, scope, codegenClassScope))
                 .IfCondition(ExprDotMethod(EnumForgeCodegenNames.REF_ENUMCOLL, "IsEmpty"))
-                .BlockReturn(@Ref("value"));
+                .BlockReturn(
+                    unboxRequired
+                        ? (CodegenExpression) ExprDotName(@Ref("value"), "Value")
+                        : (CodegenExpression) @Ref("value"));
             block.DeclareVar<ObjectArrayEventBean>(
                     "resultEvent",
                     NewInstance<ObjectArrayEventBean>(NewArrayByLength(typeof(object), Constant(1)), typeMember))
@@ -110,7 +115,10 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                     "value",
                     forge.innerExpression.EvaluateCodegen(innerType, methodNode, scope, codegenClassScope))
                 .BlockEnd();
-            block.MethodReturn(@Ref("value"));
+            block.MethodReturn(
+                unboxRequired
+                    ? (CodegenExpression) ExprDotName(@Ref("value"), "Value")
+                    : (CodegenExpression) @Ref("value"));
             return LocalMethod(methodNode, args.Eps, args.Enumcoll, args.IsNewData, args.ExprCtx);
         }
     }

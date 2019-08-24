@@ -25,11 +25,11 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
                 "Failed to validate select-clause expression 'Contained.take()': Parameters mismatch for enumeration method 'take', the method requires an (non-lambda) expression providing count [select Contained.take() from SupportBean_ST0_Container]");
 
             // primitive array property
-            epl = "select arrayProperty.where(x->x.BoolPrimitive) from SupportBeanComplexProps";
+            epl = "select ArrayProperty.where(x->x.BoolPrimitive) from SupportBeanComplexProps";
             SupportMessageAssertUtil.TryInvalidCompile(
                 env,
                 epl,
-                "Failed to validate select-clause expression 'arrayProperty.where()': Error valIdating enumeration method 'where' parameter 0: Failed to validate declared expression body expression 'x.BoolPrimitive': Failed to resolve property 'x.BoolPrimitive' to a stream or nested property in a stream [select arrayProperty.where(x->x.BoolPrimitive) from SupportBeanComplexProps]");
+                "Failed to validate select-clause expression 'ArrayProperty.where()': Error valIdating enumeration method 'where' parameter 0: Failed to validate declared expression body expression 'x.BoolPrimitive': Failed to resolve property 'x.BoolPrimitive' to a stream or nested property in a stream [select ArrayProperty.where(x->x.BoolPrimitive) from SupportBeanComplexProps]");
 
             // property not there
             epl = "select Contained.where(x->x.dummy = 1) from SupportBean_ST0_Container";

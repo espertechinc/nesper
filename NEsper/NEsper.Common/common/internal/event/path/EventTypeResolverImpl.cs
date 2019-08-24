@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Threading;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.meta;
@@ -69,6 +70,13 @@ namespace com.espertech.esper.common.@internal.@event.path
         public EventType Resolve(EventTypeMetadata metadata)
         {
             EventType type;
+            Console.WriteLine(metadata.Name);
+            if (metadata.Name == "InnerSchema") {
+                var thread = Thread.CurrentThread;
+                var stack = new System.Diagnostics.StackTrace();
+                var stackAsString = stack.ToString();
+                Console.WriteLine("Break: {0}", stackAsString);
+            }
             // public can only see public
             if (metadata.AccessModifier == NameAccessModifier.PRECONFIGURED) {
                 type = publics.GetTypeByName(metadata.Name);
@@ -93,7 +101,7 @@ namespace com.espertech.esper.common.@internal.@event.path
                     var pair = path.GetAnyModuleExpectSingle(
                         metadata.Name,
                         Collections.SingletonSet(metadata.ModuleName));
-                    type = pair == null ? null : pair.First;
+                    type = pair?.First;
                 }
                 catch (PathException e) {
                     throw new EPException(e.Message, e);

@@ -15,6 +15,7 @@ using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.metrics.instrumentation;
 using com.espertech.esper.common.@internal.rettype;
+using com.espertech.esper.compat;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
@@ -119,8 +120,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            var innerType = forge.innerForge.TypeInfo.GetCodegenReturnType();
-            var evaluationType = forge.EvaluationType;
+            var innerType = forge.innerForge.TypeInfo.GetCodegenReturnType().GetBoxedType();
+            var evaluationType = forge.EvaluationType.GetBoxedType();
             var methodNode = codegenMethodScope.MakeChild(
                 evaluationType,
                 typeof(ExprDotNodeForgeRootChildEval),

@@ -44,8 +44,8 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
 
             Assert.AreEqual(element1, theEvent.Get("element1"));
             Assert.AreEqual("VAL4-1", theEvent.Get("nestedElement"));
-            Assert.AreEqual("VAL21-2", theEvent.Get("mappedElement"));
-            Assert.AreEqual("VAL21-2", theEvent.Get("indexedElement"));
+            Assert.AreEqual("VAL21-2", theEvent.Get("MappedElement"));
+            Assert.AreEqual("VAL21-2", theEvent.Get("IndexedElement"));
 
             if (isInvalidReturnsEmptyString) {
                 Assert.AreEqual("", theEvent.Get("invalidelement"));

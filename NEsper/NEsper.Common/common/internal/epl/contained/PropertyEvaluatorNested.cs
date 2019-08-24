@@ -28,6 +28,35 @@ namespace com.espertech.esper.common.@internal.epl.contained
         private string[] expressionTexts;
         private bool[] fragmentEventTypeIsIndexed;
         private ExprEvaluator[] whereClauses;
+        private EventType _fragmentEventType;
+
+        public ContainedEventEval[] ContainedEventEvals {
+            get => containedEventEvals;
+            set => containedEventEvals = value;
+        }
+
+        public EventBean[] EventsPerStream {
+            get => eventsPerStream;
+            set => eventsPerStream = value;
+        }
+
+        public string[] ExpressionTexts {
+            get => expressionTexts;
+            set => expressionTexts = value;
+        }
+
+        public bool[] FragmentEventTypeIsIndexed {
+            get => fragmentEventTypeIsIndexed;
+            set {
+                fragmentEventTypeIsIndexed = value;
+                eventsPerStream = new EventBean[fragmentEventTypeIsIndexed.Length + 1];
+            }
+        }
+
+        public ExprEvaluator[] WhereClauses {
+            get => whereClauses;
+            set => whereClauses = value;
+        }
 
         public EventBean[] GetProperty(
             EventBean theEvent,
@@ -43,7 +72,15 @@ namespace com.espertech.esper.common.@internal.epl.contained
             return resultEvents.ToArray();
         }
 
-        public EventType FragmentEventType { get; private set; }
+        public EventType FragmentEventType {
+            get => _fragmentEventType;
+            set => _fragmentEventType = value;
+        }
+
+        public EventType ResultEventType {
+            get => _fragmentEventType;
+            set => _fragmentEventType = value;
+        }
 
         public bool CompareTo(PropertyEvaluator otherEval)
         {

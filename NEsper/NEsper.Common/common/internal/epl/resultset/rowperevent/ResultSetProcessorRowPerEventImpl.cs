@@ -164,7 +164,9 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowperevent
                 .AddParam(typeof(Viewable), NAME_VIEWABLE);
             if (!forge.IsSorting) {
                 iterator.Block.MethodReturn(
-                    NewInstance<ResultSetProcessorRowPerEventEnumerator>(
+                    StaticMethod(
+                        typeof(ResultSetProcessorRowPerEventEnumerator),
+                        "For",
                         ExprDotMethod(REF_VIEWABLE, "GetEnumerator"),
                         Ref("this"),
                         REF_AGENTINSTANCECONTEXT));
@@ -354,7 +356,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowperevent
                 instance.AddMember(NAME_OUTPUTALLUNORDHELPER, typeof(ResultSetProcessorRowPerEventOutputAllHelper));
                 instance.ServiceCtor.Block.AssignRef(
                     NAME_OUTPUTALLUNORDHELPER,
-                    ExprDotMethod(factory, "makeRSRowPerEventOutputAll", Ref("this"), REF_AGENTINSTANCECONTEXT));
+                    ExprDotMethod(factory, "MakeRSRowPerEventOutputAll", Ref("this"), REF_AGENTINSTANCECONTEXT));
                 method.Block.ExprDotMethod(
                     Ref(NAME_OUTPUTALLUNORDHELPER),
                     methodName,
@@ -366,7 +368,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowperevent
                 instance.AddMember(NAME_OUTPUTLASTUNORDHELPER, typeof(ResultSetProcessorRowPerEventOutputLastHelper));
                 instance.ServiceCtor.Block.AssignRef(
                     NAME_OUTPUTLASTUNORDHELPER,
-                    ExprDotMethod(factory, "makeRSRowPerEventOutputLast", Ref("this"), REF_AGENTINSTANCECONTEXT));
+                    ExprDotMethod(factory, "MakeRSRowPerEventOutputLast", Ref("this"), REF_AGENTINSTANCECONTEXT));
                 method.Block.ExprDotMethod(
                     Ref(NAME_OUTPUTLASTUNORDHELPER),
                     methodName,

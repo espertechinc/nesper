@@ -89,9 +89,9 @@ namespace com.espertech.esper.regressionlib.suite.@event.objectarray
 
                 EPAssertionUtil.AssertEqualsAnyOrder(
                     new object[] {
-                        new EventPropertyDescriptor("myInt", typeof(int?), null, false, false, false, false, false),
+                        new EventPropertyDescriptor("MyInt", typeof(int?), null, false, false, false, false, false),
                         new EventPropertyDescriptor(
-                            "myString",
+                            "MyString",
                             typeof(string),
                             null,
                             false,
@@ -128,7 +128,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.objectarray
                     new object[] {3, "some string", SupportBeanComplexProps.MakeDefaultBean()},
                     "MyObjectArrayEvent");
                 Assert.AreEqual("NestedValue", env.Listener("s0").LastNewData[0].Get("nested"));
-                Assert.AreEqual(2, env.Listener("s0").LastNewData[0].Get("indexed"));
+                Assert.AreEqual(2, env.Listener("s0").LastNewData[0].Get("Indexed"));
                 Assert.AreEqual("nestedNestedValue", env.Listener("s0").LastNewData[0].Get("nestednested"));
 
                 env.UndeployAll();

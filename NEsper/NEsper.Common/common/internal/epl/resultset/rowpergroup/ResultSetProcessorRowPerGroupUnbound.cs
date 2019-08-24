@@ -170,10 +170,11 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergroup
             CodegenInstanceAux instance)
         {
             if (!forge.IsSorting) {
-                method.Block.DeclareVar<IEnumerator<EventBean>>("it", ExprDotMethod(@Ref("groupReps"), "ValueIterator"))
+                method.Block.DeclareVar<IEnumerator<EventBean>>("enumerator", ExprDotMethod(@Ref("groupReps"), "ValueEnumerator"))
                     .MethodReturn(
-                        NewInstance<ResultSetProcessorRowPerGroupEnumerator>(
-                            @Ref("it"),
+                        StaticMethod<ResultSetProcessorRowPerGroupEnumerator>(
+                            "For",
+                            @Ref("enumerator"),
                             @Ref("this"),
                             REF_AGGREGATIONSVC,
                             REF_AGENTINSTANCECONTEXT));
@@ -181,7 +182,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergroup
             else {
                 CodegenMethod getIteratorSorted = GetEnumeratorSortedCodegen(forge, classScope, instance);
                 method.Block.MethodReturn(
-                    LocalMethod(getIteratorSorted, ExprDotMethod(@Ref("groupReps"), "ValueIterator")));
+                    LocalMethod(getIteratorSorted, ExprDotMethod(@Ref("groupReps"), "ValueEnumerator")));
             }
         }
 
@@ -247,7 +248,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergroup
 
             return instance.Methods.AddMethod(
                 typeof(UniformPair<>),
-                "processViewResultNewDepthOneUnboundCodegen",
+                "ProcessViewResultNewDepthOneUnboundCodegen",
                 CodegenNamedParam.From(typeof(EventBean[]), NAME_NEWDATA, typeof(bool), NAME_ISSYNTHESIZE),
                 typeof(ResultSetProcessorRowPerGroupImpl),
                 classScope,

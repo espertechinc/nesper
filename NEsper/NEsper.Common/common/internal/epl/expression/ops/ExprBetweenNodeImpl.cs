@@ -314,14 +314,14 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                     .AddParam(typeof(string), "lower")
                     .AddParam(typeof(string), "upper")
                     .Block
-                    .IfCondition(Relational(ExprDotMethod(Ref("upper"), "compareTo", Ref("lower")), LT, Constant(0)))
+                    .IfCondition(Relational(ExprDotMethod(Ref("upper"), "CompareTo", Ref("lower")), LT, Constant(0)))
                     .DeclareVar<string>("temp", Ref("upper"))
                     .AssignRef("upper", Ref("lower"))
                     .AssignRef("lower", Ref("temp"))
                     .BlockEnd()
-                    .IfCondition(Relational(ExprDotMethod(Ref("value"), "compareTo", Ref("lower")), LT, Constant(0)))
+                    .IfCondition(Relational(ExprDotMethod(Ref("value"), "CompareTo", Ref("lower")), LT, Constant(0)))
                     .BlockReturn(ConstantFalse())
-                    .IfCondition(Relational(ExprDotMethod(Ref("value"), "compareTo", Ref("upper")), GT, Constant(0)))
+                    .IfCondition(Relational(ExprDotMethod(Ref("value"), "CompareTo", Ref("upper")), GT, Constant(0)))
                     .BlockReturn(ConstantFalse());
                 if (!_isLowIncluded) {
                     block.IfCondition(ExprDotMethod(Ref("value"), "Equals", Ref("lower"))).BlockReturn(ConstantFalse());
@@ -703,17 +703,17 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                     .IfRefNullReturnFalse("value")
                     .IfRefNullReturnFalse("lower")
                     .IfRefNullReturnFalse("upper")
-                    .IfCondition(Relational(ExprDotMethod(Ref("lower"), "compareTo", Ref("upper")), GT, Constant(0)))
+                    .IfCondition(Relational(ExprDotMethod(Ref("lower"), "CompareTo", Ref("upper")), GT, Constant(0)))
                     .DeclareVar<BigInteger>("temp", Ref("upper"))
                     .AssignRef("upper", Ref("lower"))
                     .AssignRef("lower", Ref("temp"))
                     .BlockEnd();
                 var ifValueGtLower = block.IfCondition(
-                    Relational(ExprDotMethod(Ref("value"), "compareTo", Ref("lower")), GT, Constant(0)));
+                    Relational(ExprDotMethod(Ref("value"), "CompareTo", Ref("lower")), GT, Constant(0)));
                 {
                     ifValueGtLower
                         .IfCondition(
-                            Relational(ExprDotMethod(Ref("value"), "compareTo", Ref("upper")), LT, Constant(0)))
+                            Relational(ExprDotMethod(Ref("value"), "CompareTo", Ref("upper")), LT, Constant(0)))
                         .BlockReturn(ConstantTrue());
                     if (_isHighIncluded) {
                         ifValueGtLower.BlockReturn(ExprDotMethod(Ref("value"), "Equals", Ref("upper")));

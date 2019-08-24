@@ -170,7 +170,7 @@ namespace com.espertech.esper.common.@internal.rettype
                 throw new ArgumentException("Invalid null event type");
             }
 
-            return new EventMultiValuedEPType(typeof(ICollection<object>), eventTypeOfCollectionEvents);
+            return new EventMultiValuedEPType(typeof(ICollection<EventBean>), eventTypeOfCollectionEvents);
         }
 
         /// <summary>
@@ -284,7 +284,7 @@ namespace com.espertech.esper.common.@internal.rettype
         public static Type GetCodegenReturnType(this EPType theType)
         {
             if (theType is EventMultiValuedEPType) {
-                return typeof(ICollection<object>);
+                return typeof(ICollection<EventBean>);
             }
 
             if (theType is ClassMultiValuedEPType) {

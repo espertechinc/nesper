@@ -20,7 +20,7 @@ using NUnit.Framework;
 namespace com.espertech.esper.common.@internal.epl.expression.ops
 {
     [TestFixture]
-    public class TestExprBitWiseNode : AbstractTestBase
+    public class TestExprBitWiseNode : AbstractCommonTest
     {
         [SetUp]
         public void SetUp()

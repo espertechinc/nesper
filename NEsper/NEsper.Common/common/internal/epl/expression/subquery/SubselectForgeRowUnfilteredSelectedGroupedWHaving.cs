@@ -79,7 +79,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                         Ref("cpid"),
                         ConstantNull())
                     .DeclareVar<bool?>("pass", Cast(typeof(bool?), havingCall))
-                    .IfCondition(And(NotEqualsNull(Ref("pass")), Ref("pass")))
+                    .IfCondition(And(NotEqualsNull(Ref("pass")), ExprDotName(Ref("pass"), "Value")))
                     .IfCondition(Ref("haveResult"))
                     .BlockReturn(ConstantNull())
                     .AssignRef("groupKeyMatch", Ref("groupKey"))
@@ -175,7 +175,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                         Ref("cpid"),
                         ConstantNull())
                     .DeclareVar<bool?>("pass", Cast(typeof(bool?), havingCall))
-                    .IfCondition(And(NotEqualsNull(Ref("pass")), Ref("pass")))
+                    .IfCondition(And(NotEqualsNull(Ref("pass")), ExprDotName(Ref("pass"), "Value")))
                     .DeclareVar<IDictionary<object, object>>(
                         "row",
                         LocalMethod(

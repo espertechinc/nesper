@@ -58,9 +58,9 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
                 new Pair<object, object>(Collections.SingletonMap("somekey", "10"), notExists),
                 new Pair<object, object>(
                     TwoEntryMap<string, object>(
-                        "indexed",
+                        "Indexed",
                         new[] {1, 2},
-                        "mapped",
+                        "Mapped",
                         TwoEntryMap<string, object>(
                             "keyOne",
                             3,
@@ -83,7 +83,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
             Pair<object, object>[] xmlTests = {
                 new Pair<object, object>("", notExists),
                 new Pair<object, object>(
-                    "<indexed>1</indexed><indexed>2</indexed><mapped Id=\"keyOne\">3</mapped><mapped Id=\"keyTwo\">4</mapped>",
+                    "<Indexed>1</Indexed><Indexed>2</Indexed><Mapped Id=\"keyOne\">3</Mapped><Mapped Id=\"keyTwo\">4</Mapped>",
                     AllExist("1", "2", "3", "4"))
             };
             RunAssertion(env, XML_TYPENAME, FXML, xmlToValue, xmlTests, typeof(XmlNode));
@@ -93,8 +93,8 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
                 AvroSchemaUtil.ResolveAvroSchema(env.Runtime.EventTypeService.GetEventTypePreconfigured(AVRO_TYPENAME));
             var datumOne = new GenericRecord(SchemaBuilder.Record(AVRO_TYPENAME));
             var datumTwo = new GenericRecord(schema.AsRecordSchema());
-            datumTwo.Put("indexed", Arrays.AsList(1, 2));
-            datumTwo.Put("mapped", TwoEntryMap("keyOne", 3, "keyTwo", 4));
+            datumTwo.Put("Indexed", Arrays.AsList(1, 2));
+            datumTwo.Put("Mapped", TwoEntryMap("keyOne", 3, "keyTwo", 4));
             Pair<object, object>[] avroTests = {
                 new Pair<object, object>(datumOne, notExists),
                 new Pair<object, object>(datumTwo, AllExist(1, 2, 3, 4))

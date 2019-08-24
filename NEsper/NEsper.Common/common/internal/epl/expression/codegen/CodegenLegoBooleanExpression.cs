@@ -48,7 +48,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.codegen
             }
 
             block.DeclareVar(evaluationType, PASS_NAME, expression);
-            var passCheck = NotOptional(!checkFor, Ref(PASS_NAME));
+            var passCheck = NotOptional(!checkFor, ExprDotName(Ref(PASS_NAME), "Value"));
 
             if (evaluationType.IsPrimitive) {
                 block.IfCondition(passCheck).BlockReturn(Constant(resultIfCheckPasses));
@@ -173,7 +173,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.codegen
             }
 
             block.DeclareVar(evaluationType, PASS_NAME, expression);
-            var passCheck = Not(Ref(PASS_NAME));
+            var passCheck = Not(ExprDotName(Ref(PASS_NAME), "Value"));
 
             CodegenExpression condition;
             if (evaluationType.IsPrimitive) {
@@ -207,7 +207,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.codegen
             }
 
             block.DeclareVar(evaluationType, PASS_NAME, expression);
-            var passCheck = Not(Ref(PASS_NAME));
+            var passCheck = Not(ExprDotName(Ref(PASS_NAME), "Value"));
 
             CodegenExpression condition;
             if (evaluationType.IsPrimitive) {

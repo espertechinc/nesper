@@ -34,7 +34,7 @@ namespace com.espertech.esper.common.@internal.@event.map
             EventTypeMetadata metadata,
             IDictionary<string, object> propertyTypes,
             EventType[] optionalSuperTypes,
-            ISet<EventType> optionalDeepSupertypes,
+            ISet<EventType> optionalDeepSuperTypes,
             string startTimestampPropertyName,
             string endTimestampPropertyName,
             BeanEventTypeFactory beanEventTypeFactory)
@@ -42,7 +42,7 @@ namespace com.espertech.esper.common.@internal.@event.map
                 metadata,
                 propertyTypes,
                 optionalSuperTypes,
-                optionalDeepSupertypes,
+                optionalDeepSuperTypes,
                 startTimestampPropertyName,
                 endTimestampPropertyName,
                 GETTER_FACTORY,

@@ -59,8 +59,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             Assert.AreEqual("stringstring", env.Listener("s0").LastNewData[0].Get("concat"));
             IDictionary<string, object> properties = new Dictionary<string, object>();
             properties.Put("concat", "stringstring");
-            properties.Put("myString", "string");
-            properties.Put("myInt", 0);
+            properties.Put("MyString", "string");
+            properties.Put("MyInt", 0);
             AssertProperties(env, "s0", properties);
 
             Assert.AreEqual(typeof(Pair<object, object>), env.Listener("s0").LastNewData[0].EventType.UnderlyingType);
@@ -147,7 +147,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             {
                 var model = new EPStatementObjectModel();
                 model.SelectClause = SelectClause.CreateWildcard()
-                    .Add(Expressions.Concat("myString", "myString"), "concat");
+                    .Add(Expressions.Concat("MyString", "MyString"), "concat");
                 model.FromClause =
                     FromClause.Create(
                         FilterStream.Create("SupportBeanSimple")
@@ -164,7 +164,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 EPAssertionUtil.AssertEqualsAnyOrder(
                     new object[] {
                         new EventPropertyDescriptor(
-                            "myString",
+                            "MyString",
                             typeof(string),
                             null,
                             false,
@@ -172,7 +172,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                             false,
                             false,
                             false),
-                        new EventPropertyDescriptor("myInt", typeof(int), null, false, false, false, false, false),
+                        new EventPropertyDescriptor("MyInt", typeof(int), null, false, false, false, false, false),
                         new EventPropertyDescriptor("concat", typeof(string), null, false, false, false, false, false)
                     },
                     env.Statement("s0").EventType.PropertyDescriptors);

@@ -153,7 +153,7 @@ namespace com.espertech.esper.regressionlib.suite.context
             EPAssertionUtil.AssertProps(
                 env.Listener("s0").AssertOneGetNewAndReset(),
                 fields,
-                new object[] {p00, p01, s0Init == null ? s0 : s0Init, expected});
+                new object[] {p00, p01, s0Init ?? s0, expected});
             return s0;
         }
 
@@ -313,7 +313,9 @@ namespace com.espertech.esper.regressionlib.suite.context
                 env.CompileDeploy(epl, path);
 
                 env.CompileDeploy(
-                    "@Name('s0') context CtxPartitionInitWCorrTerm select context.s0 as ctx0, context.s1 as ctx1, context.s0.Id as ctx0Id, context.s1.Id as ctx1Id, P20, sum(Id) as theSum from SupportBean_S2 output last when terminated",
+                    "@Name('s0') context CtxPartitionInitWCorrTerm " + 
+                    "select context.s0 as ctx0, context.s1 as ctx1, context.s0.Id as ctx0Id, context.s1.Id as ctx1Id, P20, sum(Id) as theSum " +
+                    "from SupportBean_S2 output last when terminated",
                     path);
 
                 env.AddListener("s0");
@@ -1128,10 +1130,10 @@ namespace com.espertech.esper.regressionlib.suite.context
             {
                 var path = new RegressionPath();
                 env.CompileDeploy(
-                    "@Name('ctx') create context ByP0 partition by a from ISupportA, b from ISupportB terminated by ISupportA(a='x')",
+                    "@Name('ctx') create context ByP0 partition by A from ISupportA, B from ISupportB terminated by ISupportA(A='x')",
                     path);
                 env.CompileDeploy(
-                    "@Name('s0') context ByP0 select coalesce(a.a, b.b) as p0, count(*) as cnt from pattern[every (a=ISupportA or b=ISupportB)]",
+                    "@Name('s0') context ByP0 select coalesce(a.A, b.B) as p0, count(*) as cnt from pattern[every (a=ISupportA or b=ISupportB)]",
                     path);
 
                 env.AddListener("s0");

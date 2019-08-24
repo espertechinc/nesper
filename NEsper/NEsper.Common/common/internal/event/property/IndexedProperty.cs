@@ -11,6 +11,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 
+using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.@event.arr;
 using com.espertech.esper.common.@internal.@event.bean.core;
 using com.espertech.esper.common.@internal.@event.bean.getter;
@@ -96,7 +97,16 @@ namespace com.espertech.esper.common.@internal.@event.property
                 }
 
                 var field = propertyDesc.AccessorField;
-                return new ArrayFieldPropertyGetter(field, Index, eventBeanTypedEventFactory, beanEventTypeFactory);
+                if (field != null) {
+                    return new ArrayFieldPropertyGetter(field, Index, eventBeanTypedEventFactory, beanEventTypeFactory);
+                }
+
+                var prop = propertyDesc.AccessorProp;
+                if (prop != null) {
+                    return new ArrayPropertyPropertyGetter(prop, Index, eventBeanTypedEventFactory, beanEventTypeFactory);
+                }
+
+                throw new EPRuntimeException("unable to determine property array accessor");
             }
 
             if (returnType.IsGenericList()) {

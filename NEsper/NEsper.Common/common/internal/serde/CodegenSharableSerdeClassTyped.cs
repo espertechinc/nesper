@@ -38,7 +38,7 @@ namespace com.espertech.esper.common.@internal.serde
         {
             return ExprDotMethodChain(EPStatementInitServicesConstants.REF)
                 .Get(EPStatementInitServicesConstants.DATAINPUTOUTPUTSERDEPROVIDER)
-                .Add(name.MethodName, Constant(valueType));
+                .Add(name.MethodName, name.MethodTypeArgs, Constant(valueType));
         }
 
         public override bool Equals(object o)
@@ -70,20 +70,23 @@ namespace com.espertech.esper.common.@internal.serde
         public class CodegenSharableSerdeName
         {
             public static readonly CodegenSharableSerdeName VALUE_NULLABLE =
-                new CodegenSharableSerdeName("ValueNullable");
+                new CodegenSharableSerdeName("ValueNullable", typeof(object));
 
             public static readonly CodegenSharableSerdeName REFCOUNTEDSET =
-                new CodegenSharableSerdeName("RefCountedSet");
+                new CodegenSharableSerdeName("RefCountedSet", typeof(object));
 
             public static readonly CodegenSharableSerdeName SORTEDREFCOUNTEDSET =
-                new CodegenSharableSerdeName("SortedRefCountedSet");
+                new CodegenSharableSerdeName("SortedRefCountedSet", typeof(object));
 
-            private CodegenSharableSerdeName(string methodName)
+            private CodegenSharableSerdeName(string methodName, params Type[] methodTypeArgs)
             {
                 MethodName = methodName;
+                MethodTypeArgs = methodTypeArgs;
             }
 
             public string MethodName { get; }
+
+            public Type[] MethodTypeArgs { get; set; }
         }
     }
 } // end of namespace

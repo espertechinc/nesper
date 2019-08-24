@@ -62,19 +62,29 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                 method.Block
                     .ApplyTri(SubselectForgeCodegenUtil.DECLARE_EVENTS_SHIFTED, method, symbols)
                     .AssignArrayElement(
-                        REF_EVENTS_SHIFTED, Constant(0),
+                        REF_EVENTS_SHIFTED,
+                        Constant(0),
                         StaticMethod(
-                            typeof(EventBeanUtility), "GetNonemptyFirstEvent", symbols.GetAddMatchingEvents(method)));
+                            typeof(EventBeanUtility),
+                            "GetNonemptyFirstEvent",
+                            symbols.GetAddMatchingEvents(method)));
             }
             else {
                 CodegenExpression filter = ExprNodeUtilityCodegen.CodegenEvaluator(
-                    subselect.FilterExpr, method, GetType(), classScope);
+                    subselect.FilterExpr,
+                    method,
+                    GetType(),
+                    classScope);
                 method.Block
                     .ApplyTri(SubselectForgeCodegenUtil.DECLARE_EVENTS_SHIFTED, method, symbols)
                     .DeclareVar<EventBean>(
-"subselectResult", StaticMethod(
-                            typeof(EventBeanUtility), "EvaluateFilterExpectSingleMatch",
-                            REF_EVENTS_SHIFTED, symbols.GetAddIsNewData(method), symbols.GetAddMatchingEvents(method),
+                        "subselectResult",
+                        StaticMethod(
+                            typeof(EventBeanUtility),
+                            "EvaluateFilterExpectSingleMatch",
+                            REF_EVENTS_SHIFTED,
+                            symbols.GetAddIsNewData(method),
+                            symbols.GetAddMatchingEvents(method),
                             symbols.GetAddExprEvalCtx(method),
                             filter))
                     .IfRefNullReturnNull("subselectResult")
@@ -82,14 +92,21 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
             }
 
             method.Block.DeclareVar<object[]>(
-"results", NewArrayByLength(typeof(object), Constant(subselect.SelectClause.Length)));
+                "results",
+                NewArrayByLength(typeof(object), Constant(subselect.SelectClause.Length)));
             for (var i = 0; i < subselect.SelectClause.Length; i++) {
                 var eval = CodegenLegoMethodExpression.CodegenExpression(
-                    subselect.SelectClause[i].Forge, method, classScope);
+                    subselect.SelectClause[i].Forge,
+                    method,
+                    classScope);
                 method.Block.AssignArrayElement(
-                    "results", Constant(i),
+                    "results",
+                    Constant(i),
                     LocalMethod(
-                        eval, REF_EVENTS_SHIFTED, symbols.GetAddIsNewData(method), symbols.GetAddExprEvalCtx(method)));
+                        eval,
+                        REF_EVENTS_SHIFTED,
+                        symbols.GetAddIsNewData(method),
+                        symbols.GetAddExprEvalCtx(method)));
             }
 
             method.Block.MethodReturn(Ref("results"));
@@ -110,27 +127,34 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                 var method = parent.MakeChild(typeof(object[][]), GetType(), classScope);
                 method.Block
                     .DeclareVar<object[][]>(
-"rows",
-                        NewArrayByLength(typeof(object[]), ExprDotMethod(symbols.GetAddMatchingEvents(method), "Size")))
+                        "rows",
+                        NewArrayByLength(typeof(object[]), ExprDotName(symbols.GetAddMatchingEvents(method), "Count")))
                     .DeclareVar<int>("index", Constant(-1))
                     .ApplyTri(SubselectForgeCodegenUtil.DECLARE_EVENTS_SHIFTED, method, symbols);
                 var foreachEvent = method.Block.ForEach(
-                    typeof(EventBean), "@event", symbols.GetAddMatchingEvents(method));
+                    typeof(EventBean),
+                    "@event",
+                    symbols.GetAddMatchingEvents(method));
                 {
                     foreachEvent
                         .Increment("index")
                         .AssignArrayElement(REF_EVENTS_SHIFTED, Constant(0), Ref("@event"))
                         .DeclareVar<object[]>(
-"results",
+                            "results",
                             NewArrayByLength(typeof(object), Constant(subselect.SelectClause.Length)))
                         .AssignArrayElement("rows", Ref("index"), Ref("results"));
                     for (var i = 0; i < subselect.SelectClause.Length; i++) {
                         var eval = CodegenLegoMethodExpression.CodegenExpression(
-                            subselect.SelectClause[i].Forge, method, classScope);
+                            subselect.SelectClause[i].Forge,
+                            method,
+                            classScope);
                         foreachEvent.AssignArrayElement(
-                            "results", Constant(i),
+                            "results",
+                            Constant(i),
                             LocalMethod(
-                                eval, REF_EVENTS_SHIFTED, symbols.GetAddIsNewData(method),
+                                eval,
+                                REF_EVENTS_SHIFTED,
+                                symbols.GetAddIsNewData(method),
                                 symbols.GetAddExprEvalCtx(method)));
                     }
                 }
@@ -143,30 +167,42 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                     .DeclareVar<ArrayDeque<object[]>>("rows", NewInstance(typeof(ArrayDeque<object[]>)))
                     .ApplyTri(SubselectForgeCodegenUtil.DECLARE_EVENTS_SHIFTED, method, symbols);
                 var foreachEvent = method.Block.ForEach(
-                    typeof(EventBean), "@event", symbols.GetAddMatchingEvents(method));
+                    typeof(EventBean),
+                    "@event",
+                    symbols.GetAddMatchingEvents(method));
                 {
                     foreachEvent.AssignArrayElement(REF_EVENTS_SHIFTED, Constant(0), Ref("@event"));
 
                     var filter = CodegenLegoMethodExpression.CodegenExpression(
-                        subselect.FilterExpr, method, classScope);
+                        subselect.FilterExpr,
+                        method,
+                        classScope);
                     CodegenLegoBooleanExpression.CodegenContinueIfNullOrNotPass(
-                        foreachEvent, typeof(bool?),
+                        foreachEvent,
+                        typeof(bool?),
                         LocalMethod(
-                            filter, REF_EVENTS_SHIFTED, symbols.GetAddIsNewData(method),
+                            filter,
+                            REF_EVENTS_SHIFTED,
+                            symbols.GetAddIsNewData(method),
                             symbols.GetAddExprEvalCtx(method)));
 
                     foreachEvent
                         .DeclareVar<object[]>(
-"results",
+                            "results",
                             NewArrayByLength(typeof(object), Constant(subselect.SelectClause.Length)))
                         .ExprDotMethod(Ref("rows"), "Add", Ref("results"));
                     for (var i = 0; i < subselect.SelectClause.Length; i++) {
                         var eval = CodegenLegoMethodExpression.CodegenExpression(
-                            subselect.SelectClause[i].Forge, method, classScope);
+                            subselect.SelectClause[i].Forge,
+                            method,
+                            classScope);
                         foreachEvent.AssignArrayElement(
-                            "results", Constant(i),
+                            "results",
+                            Constant(i),
                             LocalMethod(
-                                eval, REF_EVENTS_SHIFTED, symbols.GetAddIsNewData(method),
+                                eval,
+                                REF_EVENTS_SHIFTED,
+                                symbols.GetAddIsNewData(method),
                                 symbols.GetAddExprEvalCtx(method)));
                     }
                 }

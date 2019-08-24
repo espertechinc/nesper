@@ -28,7 +28,7 @@ namespace com.espertech.esper.common.@internal.@event.core
     {
         internal readonly BeanEventTypeFactory beanEventTypeFactory;
         internal readonly EventTypeNestableGetterFactory getterFactory;
-        internal readonly ISet<EventType> optionalDeepSupertypes;
+        internal readonly ISet<EventType> OptionalDeepSuperTypes;
         internal readonly EventType[] optionalSuperTypes;
 
         internal readonly IDictionary<string, PropertySetDescriptorItem> propertyItems;
@@ -55,7 +55,7 @@ namespace com.espertech.esper.common.@internal.@event.core
         /// </summary>
         /// <param name="propertyTypes">is pairs of property name and type</param>
         /// <param name="optionalSuperTypes">the supertypes to this type if any, or null if there are no supertypes</param>
-        /// <param name="optionalDeepSupertypes">the deep supertypes to this type if any, or null if there are no deep supertypes</param>
+        /// <param name="optionalDeepSuperTypes">the deep supertypes to this type if any, or null if there are no deep supertypes</param>
         /// <param name="metadata">event type metadata</param>
         /// <param name="getterFactory">getter factory</param>
         /// <param name="beanEventTypeFactory">bean factory</param>
@@ -65,7 +65,7 @@ namespace com.espertech.esper.common.@internal.@event.core
             EventTypeMetadata metadata,
             IDictionary<string, object> propertyTypes,
             EventType[] optionalSuperTypes,
-            ISet<EventType> optionalDeepSupertypes,
+            ISet<EventType> optionalDeepSuperTypes,
             string startTimestampPropertyName,
             string endTimestampPropertyName,
             EventTypeNestableGetterFactory getterFactory,
@@ -76,11 +76,11 @@ namespace com.espertech.esper.common.@internal.@event.core
             this.beanEventTypeFactory = beanEventTypeFactory;
 
             this.optionalSuperTypes = optionalSuperTypes;
-            if (optionalDeepSupertypes == null) {
-                this.optionalDeepSupertypes = Collections.GetEmptySet<EventType>();
+            if (optionalDeepSuperTypes == null) {
+                this.OptionalDeepSuperTypes = Collections.GetEmptySet<EventType>();
             }
             else {
-                this.optionalDeepSupertypes = optionalDeepSupertypes;
+                this.OptionalDeepSuperTypes = optionalDeepSuperTypes;
             }
 
             // determine property set and prepare getters
@@ -112,7 +112,7 @@ namespace com.espertech.esper.common.@internal.@event.core
         /// <returns>is the property name and types</returns>
         public IDictionary<string, object> Types => nestableTypes;
 
-        public IEnumerable<EventType> DeepSuperTypes => optionalDeepSupertypes;
+        public IEnumerable<EventType> DeepSuperTypes => OptionalDeepSuperTypes;
 
         public string Name => metadata.Name;
 
@@ -178,7 +178,7 @@ namespace com.espertech.esper.common.@internal.@event.core
 
         public EventType[] SuperTypes => optionalSuperTypes;
 
-        public ICollection<EventType> DeepSuperTypesCollection => optionalDeepSupertypes;
+        public ICollection<EventType> DeepSuperTypesCollection => OptionalDeepSuperTypes;
 
         public EventPropertyDescriptor[] PropertyDescriptors => propertyDescriptors;
 

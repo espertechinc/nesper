@@ -55,7 +55,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
             var @event = env.Listener("s0").AssertOneGetNewAndReset();
             var type = @event.EventType;
             Assert.AreEqual(2, type.GetGetterIndexed("arr").Get(@event, 1));
-            Assert.AreEqual(2, type.GetGetterMapped("mapped").Get(@event, "A"));
+            Assert.AreEqual(2, type.GetGetterMapped("Mapped").Get(@event, "A"));
 
             env.UndeployAll();
         }

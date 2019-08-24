@@ -20,7 +20,7 @@ namespace com.espertech.esper.regressionlib.suite.client.instrument
 
         public void Run(RegressionEnvironment env)
         {
-            string[] fields = {"statementName"};
+            string[] fields = {"StatementName"};
             var statements = new EPStatement[5];
 
             SendTimer(env, 1000);

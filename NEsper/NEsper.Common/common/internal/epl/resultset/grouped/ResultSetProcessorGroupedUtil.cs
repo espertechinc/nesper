@@ -32,8 +32,8 @@ namespace com.espertech.esper.common.@internal.epl.resultset.grouped
 {
     public class ResultSetProcessorGroupedUtil
     {
-        public const string METHOD_APPLYAGGVIEWRESULTKEYEDVIEW = "applyAggViewResultKeyedView";
-        public const string METHOD_APPLYAGGJOINRESULTKEYEDJOIN = "applyAggJoinResultKeyedJoin";
+        public const string METHOD_APPLYAGGVIEWRESULTKEYEDVIEW = "ApplyAggViewResultKeyedView";
+        public const string METHOD_APPLYAGGJOINRESULTKEYEDJOIN = "ApplyAggJoinResultKeyedJoin";
 
         /// <summary>
         ///     NOTE: Code-generation-invoked method, method name and parameter order matters

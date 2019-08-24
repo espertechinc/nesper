@@ -61,5 +61,10 @@ namespace com.espertech.esper.common.@internal.epl.pattern.core
         {
             return contextAddendumFunction == null ? null : contextAddendumFunction.Invoke(filterSpec);
         }
+
+        public AgentInstanceContext GetAgentInstanceContext()
+        {
+            return AgentInstanceContext;
+        }
     }
 } // end of namespace

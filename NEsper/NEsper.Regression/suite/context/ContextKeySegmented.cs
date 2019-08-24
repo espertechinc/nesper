@@ -1276,7 +1276,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 env.EplToModelCompileDeploy(contextEPL, path);
 
                 // test built-in properties
-                var fields = "c1,c2,c3,c4".SplitCsv();
+                var fields = new [] { "c1","c2","c3","c4" };
                 var ctx = "SegmentedByString";
                 env.CompileDeploy(
                     "@Name('s0') context SegmentedByString " +

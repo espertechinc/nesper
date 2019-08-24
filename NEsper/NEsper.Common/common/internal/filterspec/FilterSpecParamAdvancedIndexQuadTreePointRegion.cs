@@ -21,9 +21,9 @@ namespace com.espertech.esper.common.@internal.filterspec
         {
         }
 
-        public FilterSpecParamFilterForEvalDouble XEval { get; }
+        public FilterSpecParamFilterForEvalDouble XEval { get; set; }
 
-        public FilterSpecParamFilterForEvalDouble YEval { get; }
+        public FilterSpecParamFilterForEvalDouble YEval { get; set; }
 
         public override object GetFilterValue(
             MatchedEventMap matchedEvents,

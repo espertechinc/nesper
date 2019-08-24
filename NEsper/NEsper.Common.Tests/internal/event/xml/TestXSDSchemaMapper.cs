@@ -20,7 +20,7 @@ using NUnit.Framework;
 namespace com.espertech.esper.common.@internal.@event.xml
 {
     [TestFixture]
-    public class TestXsdSchemaMapper : AbstractTestBase
+    public class TestXsdSchemaMapper : AbstractCommonTest
     {
         private XmlSchemaType _schemaTypeId;
         private XmlSchemaType _schemaTypeString;
@@ -52,7 +52,7 @@ namespace com.espertech.esper.common.@internal.@event.xml
             VerifySizes(simpleEvent, 0, 0, 3);
 
             var nested1 = simpleEvent.ComplexElements[0];
-            VerifyComplexElement(nested1, "Nested1", false);
+            VerifyComplexElement(nested1, "nested1", false);
             VerifySizes(nested1, 1, 2, 1);
             Assert.AreEqual("attr1", nested1.Attributes[0].Name);
             Assert.AreEqual(string.Empty, nested1.Attributes[0].Namespace);
@@ -63,7 +63,7 @@ namespace com.espertech.esper.common.@internal.@event.xml
             Assert.AreEqual(_schemaTypeBoolean, nested1.SimpleElements[1].SimpleType);
 
             var nested2 = nested1.ComplexElements[0];
-            VerifyComplexElement(nested2, "Nested2", false);
+            VerifyComplexElement(nested2, "nested2", false);
             VerifySizes(nested2, 0, 1, 0);
             VerifySimpleElement(nested2.SimpleElements[0], "prop3", _schemaTypeInt);
 
@@ -75,13 +75,13 @@ namespace com.espertech.esper.common.@internal.@event.xml
             Assert.AreEqual(_schemaTypeString, prop4.OptionalSimpleType);
 
             var nested3 = simpleEvent.ComplexElements[2];
-            VerifyComplexElement(nested3, "Nested3", false);
+            VerifyComplexElement(nested3, "nested3", false);
             VerifySizes(nested3, 0, 0, 1);
 
             var nested4 = nested3.ComplexElements[0];
-            VerifyComplexElement(nested4, "Nested4", true);
+            VerifyComplexElement(nested4, "nested4", true);
             VerifySizes(nested4, 1, 4, 0);
-            Assert.AreEqual("Id", nested4.Attributes[0].Name);
+            Assert.AreEqual("id", nested4.Attributes[0].Name);
             Assert.AreEqual(_schemaTypeId, nested4.Attributes[0].SimpleType);
             VerifySimpleElement(nested4.SimpleElements[0], "prop5", _schemaTypeString);
             VerifySimpleElement(nested4.SimpleElements[1], "prop6", _schemaTypeString);
@@ -109,7 +109,7 @@ namespace com.espertech.esper.common.@internal.@event.xml
             Assert.IsNull(component.OptionalSimpleType);
 
             SchemaElementComplex nested1Element = component.ComplexElements[0];
-            Assert.AreEqual("Nested1", nested1Element.Name);
+            Assert.AreEqual("nested1", nested1Element.Name);
             Assert.AreEqual("samples:schemas:simpleSchema", nested1Element.Namespace);
             Assert.AreEqual(1, nested1Element.Attributes.Count);
             Assert.AreEqual(2, nested1Element.SimpleElements.Count);
@@ -131,7 +131,7 @@ namespace com.espertech.esper.common.@internal.@event.xml
             Assert.AreEqual(schemaTypeBoolean, nested1Element.SimpleElements[1].SimpleType);
 
             SchemaElementComplex nested2Element = nested1Element.ComplexElements[0];
-            Assert.AreEqual("Nested2", nested2Element.Name);
+            Assert.AreEqual("nested2", nested2Element.Name);
             Assert.AreEqual("samples:schemas:simpleSchema", nested2Element.Namespace);
             Assert.AreEqual(0, nested2Element.Attributes.Count);
             Assert.AreEqual(1, nested2Element.SimpleElements.Count);
@@ -157,7 +157,7 @@ namespace com.espertech.esper.common.@internal.@event.xml
             Assert.AreEqual(schemaTypeString, prop4Element.OptionalSimpleType);
 
             SchemaElementComplex nested3Element = component.ComplexElements[2];
-            Assert.AreEqual("Nested3", nested3Element.Name);
+            Assert.AreEqual("nested3", nested3Element.Name);
             Assert.AreEqual("samples:schemas:simpleSchema", nested3Element.Namespace);
             Assert.AreEqual(0, nested3Element.Attributes.Count);
             Assert.AreEqual(0, nested3Element.SimpleElements.Count);
@@ -166,12 +166,12 @@ namespace com.espertech.esper.common.@internal.@event.xml
             Assert.IsNull(nested3Element.OptionalSimpleType);
 
             SchemaElementComplex nested4Element = nested3Element.ComplexElements[0];
-            Assert.AreEqual("Nested4", nested4Element.Name);
+            Assert.AreEqual("nested4", nested4Element.Name);
             Assert.AreEqual("samples:schemas:simpleSchema", nested4Element.Namespace);
             Assert.AreEqual(1, nested4Element.Attributes.Count);
             Assert.AreEqual(1, nested4Element.SimpleElements.Count);
             Assert.AreEqual(0, nested4Element.ComplexElements.Count);
-            Assert.AreEqual("Id", nested4Element.Attributes[0].Name);
+            Assert.AreEqual("id", nested4Element.Attributes[0].Name);
             Assert.AreEqual(schemaTypeId, nested4Element.Attributes[0].SimpleType);
             Assert.IsTrue(nested4Element.IsArray);
             Assert.IsNull(nested4Element.OptionalSimpleType);

@@ -21,7 +21,7 @@ using NUnit.Framework;
 namespace com.espertech.esper.common.@internal.@event.bean.core
 {
     [TestFixture]
-    public class TestBeanEventType : AbstractTestBase
+    public class TestBeanEventType : AbstractCommonTest
     {
         [SetUp]
         public void SetUp()
@@ -176,9 +176,9 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
         {
             Assert.AreEqual(null, eventTypeSimple.GetGetter("dummy"));
 
-            var getter = eventTypeSimple.GetGetter("myInt");
+            var getter = eventTypeSimple.GetGetter("MyInt");
             Assert.AreEqual(20, getter.Get(eventSimple));
-            getter = eventTypeSimple.GetGetter("myString");
+            getter = eventTypeSimple.GetGetter("MyString");
             Assert.AreEqual("a", getter.Get(eventSimple));
         }
 
@@ -187,12 +187,12 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
         {
             var properties = eventTypeSimple.PropertyNames;
             Assert.IsTrue(properties.Length == 2);
-            Assert.IsTrue(properties[0].Equals("myInt"));
-            Assert.IsTrue(properties[1].Equals("myString"));
+            Assert.IsTrue(properties[0].Equals("MyInt"));
+            Assert.IsTrue(properties[1].Equals("MyString"));
             EPAssertionUtil.AssertEqualsAnyOrder(
                 new object[] {
-                    new EventPropertyDescriptor("myInt", typeof(int), null, false, false, false, false, false),
-                    new EventPropertyDescriptor("myString", typeof(string), null, false, false, false, false, false)
+                    new EventPropertyDescriptor("MyInt", typeof(int), null, false, false, false, false, false),
+                    new EventPropertyDescriptor("MyString", typeof(string), null, false, false, false, false, false)
                 },
                 eventTypeSimple.PropertyDescriptors);
 
@@ -226,7 +226,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
         [Test]
         public void TestGetPropertyType()
         {
-            Assert.AreEqual(typeof(string), eventTypeSimple.GetPropertyType("myString"));
+            Assert.AreEqual(typeof(string), eventTypeSimple.GetPropertyType("MyString"));
             Assert.IsNull(eventTypeSimple.GetPropertyType("dummy"));
         }
 
@@ -239,7 +239,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
         [Test]
         public void TestIsValidProperty()
         {
-            Assert.IsTrue(eventTypeSimple.IsProperty("myString"));
+            Assert.IsTrue(eventTypeSimple.IsProperty("MyString"));
             Assert.IsFalse(eventTypeSimple.IsProperty("dummy"));
         }
 
@@ -289,8 +289,8 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
 
             tests = new List<PropTestDesc>();
             tests.Add(new PropTestDesc("dummy", false, null, false, null));
-            tests.Add(new PropTestDesc("myInt", true, typeof(int), true, objSimple.MyInt));
-            tests.Add(new PropTestDesc("myString", true, typeof(string), true, objSimple.MyString));
+            tests.Add(new PropTestDesc("MyInt", true, typeof(int), true, objSimple.MyInt));
+            tests.Add(new PropTestDesc("MyString", true, typeof(string), true, objSimple.MyString));
             tests.Add(new PropTestDesc("dummy('a')", false, null, false, null));
             tests.Add(new PropTestDesc("dummy[1]", false, null, false, null));
             tests.Add(new PropTestDesc("dummy.Nested", false, null, false, null));

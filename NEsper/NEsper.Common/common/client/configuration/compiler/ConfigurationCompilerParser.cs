@@ -169,15 +169,13 @@ namespace com.espertech.esper.common.client.configuration.compiler
 
             var duckTypingStr = DOMExtensions.GetOptionalAttribute(element, "ducktyping");
             if (duckTypingStr != null) {
-                var duckTyping = bool.Parse(duckTypingStr);
-                compiler.Expression.DuckTyping = duckTyping;
+                compiler.Expression.DuckTyping = bool.Parse(duckTypingStr);
             }
 
             var mathContextStr = DOMExtensions.GetOptionalAttribute(element, "math-context");
             if (mathContextStr != null) {
                 try {
-                    var mathContext = new MathContext(mathContextStr);
-                    compiler.Expression.MathContext = mathContext;
+                    compiler.Expression.MathContext = new MathContext(mathContextStr);
                 }
                 catch (ArgumentException) {
                     throw new ConfigurationException("Failed to parse '" + mathContextStr + "' as a MathContext");

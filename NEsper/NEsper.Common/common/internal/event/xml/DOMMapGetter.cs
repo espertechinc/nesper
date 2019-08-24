@@ -23,9 +23,9 @@ namespace com.espertech.esper.common.@internal.@event.xml
     public class DOMMapGetter : EventPropertyGetterSPI,
         DOMPropertyGetter
     {
-        private readonly FragmentFactorySPI fragmentFactory;
-        private readonly string mapKey;
-        private readonly string propertyMap;
+        private readonly FragmentFactorySPI _fragmentFactory;
+        private readonly string _mapKey;
+        private readonly string _propertyMap;
 
         /// <summary>
         ///     Ctor.
@@ -38,9 +38,9 @@ namespace com.espertech.esper.common.@internal.@event.xml
             string mapKey,
             FragmentFactorySPI fragmentFactory)
         {
-            propertyMap = propertyName;
-            this.mapKey = mapKey;
-            this.fragmentFactory = fragmentFactory;
+            _propertyMap = propertyName;
+            _mapKey = mapKey;
+            _fragmentFactory = fragmentFactory;
         }
 
         public XmlNode[] GetValueAsNodeArray(XmlNode node)
@@ -50,7 +50,7 @@ namespace com.espertech.esper.common.@internal.@event.xml
 
         public object GetValueAsFragment(XmlNode node)
         {
-            if (fragmentFactory == null) {
+            if (_fragmentFactory == null) {
                 return null;
             }
 
@@ -59,12 +59,12 @@ namespace com.espertech.esper.common.@internal.@event.xml
                 return null;
             }
 
-            return fragmentFactory.GetEvent(result);
+            return _fragmentFactory.GetEvent(result);
         }
 
         public XmlNode GetValueAsNode(XmlNode node)
         {
-            return GetNodeValue(node, propertyMap, mapKey);
+            return GetNodeValue(node, _propertyMap, _mapKey);
         }
 
         public CodegenExpression GetValueAsNodeCodegen(
@@ -110,7 +110,7 @@ namespace com.espertech.esper.common.@internal.@event.xml
             }
 
             var node = (XmlNode) result;
-            return GetNodeValueExists(node, propertyMap, mapKey);
+            return GetNodeValueExists(node, _propertyMap, _mapKey);
         }
 
         public object GetFragment(EventBean eventBean)
@@ -157,8 +157,8 @@ namespace com.espertech.esper.common.@internal.@event.xml
                 GetType(),
                 "GetNodeValue",
                 underlyingExpression,
-                Constant(propertyMap),
-                Constant(mapKey));
+                Constant(_propertyMap),
+                Constant(_mapKey));
         }
 
         public CodegenExpression UnderlyingExistsCodegen(
@@ -170,8 +170,8 @@ namespace com.espertech.esper.common.@internal.@event.xml
                 GetType(),
                 "GetNodeValueExists",
                 underlyingExpression,
-                Constant(propertyMap),
-                Constant(mapKey));
+                Constant(_propertyMap),
+                Constant(_mapKey));
         }
 
         public CodegenExpression UnderlyingFragmentCodegen(
@@ -201,24 +201,14 @@ namespace com.espertech.esper.common.@internal.@event.xml
                     continue;
                 }
 
-                if (childNode.NodeType != XmlNodeType.Element) {
-                    continue;
+                if (childNode.NodeType == XmlNodeType.Element &&
+                    childNode.Name == propertyMap && 
+                    childNode.Attributes != null) {
+                    var attribute = childNode.Attributes.GetNamedItem("id");
+                    if (attribute != null && attribute.InnerText == mapKey) {
+                        return childNode;
+                    }
                 }
-
-                if (!childNode.Name.Equals(propertyMap)) {
-                    continue;
-                }
-
-                var attribute = childNode.Attributes.GetNamedItem("id");
-                if (attribute == null) {
-                    continue;
-                }
-
-                if (!attribute.InnerText.Equals(mapKey)) {
-                    continue;
-                }
-
-                return childNode;
             }
 
             return null;
@@ -273,7 +263,7 @@ namespace com.espertech.esper.common.@internal.@event.xml
             var member = codegenClassScope.AddFieldUnshared(
                 true,
                 typeof(FragmentFactory),
-                fragmentFactory.Make(codegenClassScope.NamespaceScope.InitMethod, codegenClassScope));
+                _fragmentFactory.Make(codegenClassScope.NamespaceScope.InitMethod, codegenClassScope));
             return codegenMethodScope.MakeChild(typeof(object), GetType(), codegenClassScope)
                 .AddParam(typeof(XmlNode), "node")
                 .Block

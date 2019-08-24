@@ -75,10 +75,10 @@ namespace com.espertech.esper.regressionrun.suite.client
                 typeof(ClientRuntimeListener.RoutedBeanEvent));
 
             var eventTypeMeta = new ConfigurationCommonEventTypeXMLDOM();
-            eventTypeMeta.RootElementName = "myevent";
+            eventTypeMeta.RootElementName = "Myevent";
             var schema = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
                          "<xs:schema targetNamespace=\"http://www.espertech.com/schema/esper\" elementFormDefault=\"qualified\" xmlns:esper=\"http://www.espertech.com/schema/esper\" xmlns:xs=\"http://www.w3.org/2001/XMLSchema\">\n" +
-                         "\t<xs:element name=\"myevent\">\n" +
+                         "\t<xs:element name=\"Myevent\">\n" +
                          "\t\t<xs:complexType>\n" +
                          "\t\t\t<xs:attribute name=\"ident\" type=\"xs:string\" use=\"required\"/>\n" +
                          "\t\t</xs:complexType>\n" +
@@ -98,7 +98,7 @@ namespace com.espertech.esper.regressionrun.suite.client
                 new ConfigurationCommonEventTypeAvro(avroSchema));
 
             configuration.Common.AddImportType(typeof(MyAnnotationValueEnumAttribute));
-            configuration.Common.AddImportNamespace(typeof(MyAnnotationNestableValuesAttribute).Namespace);
+            configuration.Common.AddImportNamespace(typeof(MyAnnotationNestableValuesAttribute));
             configuration.Common.AddAnnotationImportType(typeof(SupportEnum));
 
             configuration.Compiler.AddPlugInAggregationFunctionForge(

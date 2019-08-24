@@ -15,7 +15,7 @@ using NUnit.Framework;
 namespace com.espertech.esper.common.@internal.type
 {
     [TestFixture]
-    public class TestIntParameter : AbstractTestBase
+    public class TestIntParameter : AbstractCommonTest
     {
         [Test]
         public void TestIsWildcard()

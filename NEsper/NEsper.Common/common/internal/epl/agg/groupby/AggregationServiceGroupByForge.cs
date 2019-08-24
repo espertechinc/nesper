@@ -305,7 +305,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupby
             method.Block.ExprDotMethod(REF_CURRENTROW, "ApplyLeave", REF_EPS, REF_EXPREVALCONTEXT);
 
             if (HasRefCounting) {
-                method.Block.IfCondition(Relational(ExprDotName(REF_CURRENTROW, "Refcount"), LE, Constant(0)))
+                method.Block.IfCondition(Relational(ExprDotMethod(REF_CURRENTROW, "GetRefcount"), LE, Constant(0)))
                     .ExprDotMethod(REF_REMOVEDKEYS, "Add", REF_GROUPKEY);
             }
 
@@ -355,8 +355,8 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupby
         {
             method.Block.ExprDotMethod(
                 REF_AGGVISITOR,
-                "visitAggregations",
-                ExprDotMethod(REF_AGGREGATORSPERGROUP, "Size"),
+                "VisitAggregations",
+                ExprDotName(REF_AGGREGATORSPERGROUP, "Count"),
                 REF_AGGREGATORSPERGROUP);
         }
 
@@ -368,7 +368,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupby
                 method.Block.InstanceMethod(HandleRemovedKeysCodegen(method, classScope));
             }
 
-            method.Block.MethodReturn(ExprDotMethod(REF_AGGREGATORSPERGROUP, "KeySet"));
+            method.Block.MethodReturn(ExprDotName(REF_AGGREGATORSPERGROUP, "Keys"));
         }
 
         public void GetGroupKeyCodegen(
@@ -382,14 +382,14 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupby
             CodegenMethod method,
             CodegenClassScope classScope)
         {
-            method.Block.ExprDotMethod(REF_AGGVISITOR, "VisitGrouped", ExprDotMethod(REF_AGGREGATORSPERGROUP, "Size"))
+            method.Block.ExprDotMethod(REF_AGGVISITOR, "VisitGrouped", ExprDotName(REF_AGGREGATORSPERGROUP, "Count"))
                 .ForEach(
                     typeof(KeyValuePair<object, object>),
                     "entry",
-                    ExprDotMethod(REF_AGGREGATORSPERGROUP, "EntrySet"))
+                    REF_AGGREGATORSPERGROUP)
                 .ExprDotMethod(
                     REF_AGGVISITOR,
-                    "visitGroup",
+                    "VisitGroup",
                     ExprDotName(Ref("entry"), "Key"),
                     ExprDotName(Ref("entry"), "Value"));
         }

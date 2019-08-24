@@ -51,7 +51,7 @@ namespace com.espertech.esper.common.@internal.context.controller.hash
                     "factory",
                     ExprDotMethodChain(symbols.GetAddInitSvc(method))
                         .Get(EPStatementInitServicesConstants.CONTEXTSERVICEFACTORY)
-                        .Get("HashFactory"))
+                        .Add("HashFactory"))
                 .SetProperty(Ref("factory"), "HashSpec", detail.MakeCodegen(method, symbols, classScope))
                 .MethodReturn(@Ref("factory"));
             return method;

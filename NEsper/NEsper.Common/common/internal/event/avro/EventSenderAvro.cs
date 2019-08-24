@@ -10,6 +10,7 @@ using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.@event.util;
 using com.espertech.esper.common.@internal.statement.thread;
+using com.espertech.esper.common.@internal.util;
 
 namespace com.espertech.esper.common.@internal.@event.avro
 {
@@ -61,7 +62,7 @@ namespace com.espertech.esper.common.@internal.@event.avro
         {
             if (!theEvent.GetType().IsArray) {
                 throw new EPException(
-                    "Unexpected event object of type " + theEvent.GetType().Name + ", expected Object[]");
+                    "Unexpected event object of type " + theEvent.GetType().GetCleanName() + ", expected Object[]");
             }
 
             var eventBean = eventBeanTypedEventFactory.AdapterForTypedAvro(theEvent, eventType);

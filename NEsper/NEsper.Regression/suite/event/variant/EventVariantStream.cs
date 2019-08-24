@@ -373,8 +373,8 @@ namespace com.espertech.esper.regressionlib.suite.@event.variant
                 Assert.AreEqual(typeof(IList<object>), eventType.GetPropertyType("p3"));
                 Assert.AreEqual(typeof(ICollection<object>), eventType.GetPropertyType("p4"));
                 Assert.AreEqual(typeof(ICollection<object>), eventType.GetPropertyType("p5"));
-                Assert.AreEqual(typeof(int[]), eventType.GetPropertyType("indexed"));
-                Assert.AreEqual(typeof(IDictionary<string, object>), eventType.GetPropertyType("mapped"));
+                Assert.AreEqual(typeof(int[]), eventType.GetPropertyType("Indexed"));
+                Assert.AreEqual(typeof(IDictionary<string, object>), eventType.GetPropertyType("Mapped"));
                 Assert.AreEqual(
                     typeof(SupportBeanVariantOne.SupportBeanVariantOneInner),
                     eventType.GetPropertyType("inneritem"));

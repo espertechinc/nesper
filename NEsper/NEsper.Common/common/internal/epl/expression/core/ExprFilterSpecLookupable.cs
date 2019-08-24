@@ -24,9 +24,13 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             Type returnType,
             bool isNonPropertyGetter)
         {
-            Expression = expression;
-            this.getter = getter;
-            ReturnType = returnType.GetBoxedType(); // For type consistency for recovery and serde define as boxed type
+            Expression = expression ??
+                         throw new ArgumentNullException(nameof(expression));
+            this.getter = getter ?? 
+                          throw new ArgumentNullException(nameof(getter));
+            // For type consistency for recovery and serde define as boxed type
+            ReturnType = returnType?.GetBoxedType() ??
+                         throw new ArgumentNullException(nameof(returnType));
             IsNonPropertyGetter = isNonPropertyGetter;
         }
 

@@ -346,7 +346,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.contained
             {
                 env.CompileDeploy("@Name('s0') @IterableUnbound select BookId from OrderBean[Books]").AddListener("s0");
                 env.CompileDeploy(
-                    "@Name('s1') @IterableUnbound select Books[0].author as val from OrderBean(Books[0].BookId = '10020')");
+                    "@Name('s1') @IterableUnbound select Books[0].Author as val from OrderBean(Books[0].BookId = '10020')");
 
                 env.SendEventBean(MakeEventOne());
                 EPAssertionUtil.AssertPropsPerRow(

@@ -17,7 +17,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
     {
         public void Run(RegressionEnvironment env)
         {
-            var fields = "value".SplitCsv();
+            var fields = new [] { "value" };
             var text = "@Name('s0') select * from SupportRecogBean#length(10) " +
                        "match_recognize (" +
                        "  partition by Value" +

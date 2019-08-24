@@ -20,7 +20,9 @@ namespace com.espertech.esper.compat.collections
 
         public class DefaultComparer<T> : IComparer<T>
         {
-            public int Compare(T x, T y)
+            public int Compare(
+                T x,
+                T y)
             {
                 return ((IComparable) x).CompareTo(y);
             }

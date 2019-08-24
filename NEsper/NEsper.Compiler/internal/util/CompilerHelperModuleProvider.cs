@@ -386,7 +386,7 @@ namespace com.espertech.esper.compiler.@internal.util
                     MakeModulePropValue(entry.Value));
             }
 
-            method.Block.MethodReturn(@Ref("props"));
+            method.Block.BlockReturn(@Ref("props"));
         }
 
         private static CodegenExpression MakeModulePropKey(ModuleProperty key)

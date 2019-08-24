@@ -40,7 +40,7 @@ namespace com.espertech.esper.common.@internal.serde
             return null;
         }
 
-        public DataInputOutputSerdeWCollation<E> LinkedHashMapEventsAndInt<E>(EventType eventType)
+        public DataInputOutputSerdeWCollation<E> LinkedMapEventsAndInt<E>(EventType eventType)
         {
             return null;
         }

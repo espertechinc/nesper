@@ -11,7 +11,7 @@ using NUnit.Framework;
 namespace com.espertech.esper.common.@internal.collection
 {
     [TestFixture]
-    public class TestUniformPair : AbstractTestBase
+    public class TestUniformPair : AbstractCommonTest
     {
         private UniformPair<string> pair1 = new UniformPair<string>("a", "b");
         private UniformPair<string> pair2 = new UniformPair<string>("a", "b");

@@ -11,6 +11,7 @@ using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
+using com.espertech.esper.compat;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
@@ -58,12 +59,12 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
         {
             var lhs = forge.ForgeRenderable.ChildNodes[0].Forge;
             var rhs = forge.ForgeRenderable.ChildNodes[1].Forge;
-            var lhsType = lhs.EvaluationType;
+            var lhsType = lhs.EvaluationType.GetBoxedType();
             if (lhsType == null) {
                 return ConstantNull();
             }
 
-            var rhsType = rhs.EvaluationType;
+            var rhsType = rhs.EvaluationType.GetBoxedType();
             if (rhsType == null) {
                 return ConstantNull();
             }

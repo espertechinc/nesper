@@ -139,7 +139,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             bool max)
         {
             return Relational(
-                ExprDotMethod(lhs, "compareTo", rhs),
+                ExprDotMethod(lhs, "CompareTo", rhs),
                 max
                     ? CodegenExpressionRelational.CodegenRelational.GT
                     : CodegenExpressionRelational.CodegenRelational.LT,

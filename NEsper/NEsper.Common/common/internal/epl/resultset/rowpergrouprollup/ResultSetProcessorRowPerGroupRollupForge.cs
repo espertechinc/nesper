@@ -124,12 +124,13 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                 GetType(),
                 classScope,
                 node => node.GetterBlock.BlockReturn(REF_AGGREGATIONSVC));
-            instance.Properties.AddProperty(
-                typeof(AgentInstanceContext),
-                "AgentInstanceContext",
+            instance.Methods.AddMethod(
+                typeof(ExprEvaluatorContext),
+                "GetAgentInstanceContext",
+                new EmptyList<CodegenNamedParam>(),
                 GetType(),
                 classScope,
-                node => node.GetterBlock.BlockReturn(REF_AGENTINSTANCECONTEXT));
+                node => node.Block.ReturnMethodOrBlock(REF_AGENTINSTANCECONTEXT));
             instance.Properties.AddProperty(
                 typeof(bool),
                 "IsSelectRStream",

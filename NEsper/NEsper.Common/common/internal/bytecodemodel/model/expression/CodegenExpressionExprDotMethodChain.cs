@@ -21,7 +21,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
 
         public CodegenExpressionExprDotMethodChain(CodegenExpression expression)
         {
-            this._expression = expression;
+            _expression = expression;
         }
 
         public void Render(
@@ -56,7 +56,16 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
             string method,
             params CodegenExpression[] @params)
         {
-            _chain.Add(new CodegenChainMethodElement(method, @params));
+            _chain.Add(new CodegenChainMethodElement(method, null, @params));
+            return this;
+        }
+
+        public CodegenExpressionExprDotMethodChain Add(
+            string method,
+            Type[] methodTypeParameters,
+            params CodegenExpression[] @params)
+        {
+            _chain.Add(new CodegenChainMethodElement(method, methodTypeParameters, @params));
             return this;
         }
     }

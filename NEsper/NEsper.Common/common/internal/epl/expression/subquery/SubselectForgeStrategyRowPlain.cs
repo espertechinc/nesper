@@ -40,7 +40,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                 method.Block
                     .IfCondition(
                         Relational(
-                            ExprDotMethod(symbols.GetAddMatchingEvents(method), "Size"),
+                            ExprDotName(symbols.GetAddMatchingEvents(method), "Count"),
                             CodegenExpressionRelational.CodegenRelational.GT,
                             Constant(1)))
                     .BlockReturn(ConstantNull());
@@ -126,7 +126,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                         method.Block.DeclareVar<ICollection<object>>(
                             "events",
                             NewInstance<ArrayDeque<object>>(
-                                ExprDotMethod(symbols.GetAddMatchingEvents(method), "Size")));
+                                ExprDotName(symbols.GetAddMatchingEvents(method), "Count")));
                         CodegenBlock @foreach = method.Block.ForEach(
                             typeof(EventBean),
                             "@event",
@@ -158,7 +158,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                         .DeclareVar<ICollection<object>>(
                             "result",
                             NewInstance<ArrayDeque<object>>(
-                                ExprDotMethod(symbols.GetAddMatchingEvents(methodX), "Size")))
+                                ExprDotName(symbols.GetAddMatchingEvents(methodX), "Count")))
                         .ApplyTri(DECLARE_EVENTS_SHIFTED, methodX, symbols);
                     CodegenBlock foreachX = methodX.Block.ForEach(
                         typeof(EventBean),

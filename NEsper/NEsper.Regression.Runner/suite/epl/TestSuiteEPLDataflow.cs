@@ -72,8 +72,8 @@ namespace com.espertech.esper.regressionrun.suite.epl
 
             DefaultSupportGraphEventUtil.AddTypeConfiguration(configuration);
 
-            configuration.Common.AddImportNamespace(typeof(DefaultSupportSourceOp).Namespace);
-            configuration.Common.AddImportNamespace(typeof(DefaultSupportCaptureOp).Namespace);
+            configuration.Common.AddImportNamespace(typeof(DefaultSupportSourceOp));
+            configuration.Common.AddImportNamespace(typeof(DefaultSupportCaptureOp));
             configuration.Common.AddImportType(typeof(EPLDataflowCustomProperties.MyOperatorOneForge));
             configuration.Common.AddImportType(typeof(EPLDataflowCustomProperties.MyOperatorTwoForge));
             configuration.Common.AddImportType(typeof(EPLDataflowAPIOpLifecycle.SupportGraphSourceForge));
@@ -90,8 +90,8 @@ namespace com.espertech.esper.regressionrun.suite.epl
             configuration.Common.AddImportType(typeof(EPLDataflowTypes.MyMapOutputOp));
             configuration.Common.AddImportType(typeof(MyLineFeedSource));
             configuration.Common.AddImportType(typeof(EPLDataflowAPIInstantiationOptions.MyOpForge));
-            configuration.Common.AddImportNamespace(typeof(MyObjectArrayGraphSource).Namespace);
-            configuration.Common.AddImportNamespace(typeof(MyTokenizerCounter).Namespace);
+            configuration.Common.AddImportNamespace(typeof(MyObjectArrayGraphSource));
+            configuration.Common.AddImportNamespace(typeof(MyTokenizerCounter));
             configuration.Common.AddImportType(typeof(SupportBean));
         }
 

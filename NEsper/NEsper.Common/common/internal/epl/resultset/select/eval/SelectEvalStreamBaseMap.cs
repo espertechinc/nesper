@@ -79,7 +79,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
                         element.TableMetadata,
                         codegenClassScope,
                         GetType());
-                    theEvent = ExprDotMethod(eventToPublic, "convert", theEvent, refEPS, refIsNewData, refExprEvalCtx);
+                    theEvent = ExprDotMethod(eventToPublic, "Convert", theEvent, refEPS, refIsNewData, refExprEvalCtx);
                 }
 
                 block.Expression(ExprDotMethod(Ref("props"), "Put", Constant(context.ColumnNames[count]), theEvent));

@@ -302,9 +302,9 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergroup
 
                 {
                     var forEach = methodNode.Block.ForEach(
-                        typeof(KeyValuePair<object, object>),
+                        typeof(KeyValuePair<object, EventBean>),
                         "entry",
-                        ExprDotMethod(Ref("keysAndEvents"), "EntrySet"));
+                        Ref("keysAndEvents"));
                     forEach.ExprDotMethod(
                             REF_AGGREGATIONSVC,
                             "SetCurrentAccess",
@@ -389,9 +389,9 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergroup
                     NewArrayByLength(typeof(EventBean), Constant(1)));
                 {
                     var forLoop = method.Block.ForEach(
-                        typeof(KeyValuePair<object, object>),
+                        typeof(KeyValuePair<object, EventBean>),
                         "entry",
-                        ExprDotMethod(Ref("keysAndEvents"), "EntrySet"));
+                        Ref("keysAndEvents"));
                     forLoop.ExprDotMethod(
                             REF_AGGREGATIONSVC,
                             "SetCurrentAccess",
@@ -470,9 +470,9 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergroup
 
             Consumer<CodegenMethod> code = method => method.Block
                 .WhileLoop(ExprDotMethod(Ref("keysAndEvents"), "MoveNext"))
-                .DeclareVar<KeyValuePair<object, object>>(
+                .DeclareVar<KeyValuePair<object, EventBean>>(
                     "entry",
-                    Cast(typeof(KeyValuePair<object, object>), ExprDotName(Ref("keysAndEvents"), "Current")))
+                    Cast(typeof(KeyValuePair<object, EventBean>), ExprDotName(Ref("keysAndEvents"), "Current")))
                 .InstanceMethod(
                     generateOutputBatchedRowAddToList,
                     Ref("join"),
@@ -487,18 +487,12 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergroup
                 typeof(void),
                 "GenerateOutputBatchedArrFromIterator",
                 CodegenNamedParam.From(
-                    typeof(bool),
-                    "join",
-                    typeof(IEnumerator),
-                    "keysAndEvents",
-                    typeof(bool),
-                    NAME_ISNEWDATA,
-                    typeof(bool),
-                    NAME_ISSYNTHESIZE,
-                    typeof(IList<object>),
-                    "resultEvents",
-                    typeof(IList<object>),
-                    "optSortKeys"),
+                    typeof(bool), "join",
+                    typeof(IEnumerator<KeyValuePair<object, EventBean[]>>), "keysAndEvents",
+                    typeof(bool), NAME_ISNEWDATA,
+                    typeof(bool), NAME_ISSYNTHESIZE,
+                    typeof(IList<object>), "resultEvents",
+                    typeof(IList<object>), "optSortKeys"),
                 typeof(ResultSetProcessorRowPerGroupImpl),
                 classScope,
                 code);
@@ -560,16 +554,11 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergroup
                     "join",
                     typeof(object),
                     "mk",
-                    typeof(EventBean[]),
-                    ExprForgeCodegenNames.NAME_EPS,
-                    typeof(bool),
-                    NAME_ISNEWDATA,
-                    typeof(bool),
-                    NAME_ISSYNTHESIZE,
-                    typeof(IList<object>),
-                    "resultEvents",
-                    typeof(IList<object>),
-                    "optSortKeys"),
+                    typeof(EventBean[]), ExprForgeCodegenNames.NAME_EPS,
+                    typeof(bool), NAME_ISNEWDATA,
+                    typeof(bool), NAME_ISSYNTHESIZE,
+                    typeof(IList<object>), "resultEvents",
+                    typeof(IList<object>), "optSortKeys"),
                 typeof(ResultSetProcessorRowPerGroupImpl),
                 classScope,
                 code);
@@ -613,16 +602,11 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergroup
                 typeof(EventBean),
                 "GenerateOutputBatchedNoSortWMap",
                 CodegenNamedParam.From(
-                    typeof(bool),
-                    "join",
-                    typeof(object),
-                    "mk",
-                    typeof(EventBean[]),
-                    ExprForgeCodegenNames.NAME_EPS,
-                    typeof(bool),
-                    NAME_ISNEWDATA,
-                    typeof(bool),
-                    NAME_ISSYNTHESIZE),
+                    typeof(bool), "join",
+                    typeof(object), "mk",
+                    typeof(EventBean[]), ExprForgeCodegenNames.NAME_EPS,
+                    typeof(bool), NAME_ISNEWDATA,
+                    typeof(bool), NAME_ISSYNTHESIZE),
                 typeof(ResultSetProcessorRowPerGroupImpl),
                 classScope,
                 code);
@@ -652,9 +636,9 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergroup
 
                 {
                     var forEach = methodNode.Block.ForEach(
-                        typeof(KeyValuePair<object, object>),
+                        typeof(KeyValuePair<object, EventBean>),
                         "entry",
-                        ExprDotMethod(Ref("keysAndEvents"), "EntrySet"));
+                        Ref("keysAndEvents"));
                     forEach.ExprDotMethod(
                             REF_AGGREGATIONSVC,
                             "SetCurrentAccess",
@@ -709,12 +693,9 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergroup
                 typeof(EventBean[]),
                 "GenerateOutputEventsJoin",
                 CodegenNamedParam.From(
-                    typeof(IDictionary<object, object>),
-                    "keysAndEvents",
-                    typeof(bool),
-                    NAME_ISNEWDATA,
-                    typeof(bool),
-                    NAME_ISSYNTHESIZE),
+                    typeof(IDictionary<object, object>), "keysAndEvents",
+                    typeof(bool), NAME_ISNEWDATA,
+                    typeof(bool), NAME_ISSYNTHESIZE),
                 typeof(ResultSetProcessorRowPerGroupImpl),
                 classScope,
                 code);
@@ -805,12 +786,9 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergroup
                 typeof(object[]),
                 "GenerateGroupKeyArrayJoinTakingMapCodegen",
                 CodegenNamedParam.From(
-                    typeof(ISet<EventBean>),
-                    "resultSet",
-                    typeof(IDictionary<object, object>),
-                    "eventPerKey",
-                    typeof(bool),
-                    NAME_ISNEWDATA),
+                    typeof(ISet<EventBean>), "resultSet",
+                    typeof(IDictionary<object, object>), "eventPerKey",
+                    typeof(bool), NAME_ISNEWDATA),
                 typeof(ResultSetProcessorRowPerGroupImpl),
                 classScope,
                 code);
@@ -877,7 +855,8 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergroup
                 .AddParam(typeof(Viewable), NAME_VIEWABLE);
             if (!forge.IsSorting) {
                 iterator.Block.MethodReturn(
-                    NewInstance<ResultSetProcessorRowPerGroupEnumerator>(
+                    StaticMethod<ResultSetProcessorRowPerGroupEnumerator>(
+                        "For",
                         ExprDotMethod(REF_VIEWABLE, "GetEnumerator"),
                         Ref("this"),
                         REF_AGGREGATIONSVC,
@@ -1122,7 +1101,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergroup
                     NAME_OUTPUTALLHELPER,
                     ExprDotMethod(
                         factory,
-                        "makeRSRowPerGroupOutputAllOpt",
+                        "MakeRSRowPerGroupOutputAllOpt",
                         REF_AGENTINSTANCECONTEXT,
                         Ref("this"),
                         Constant(forge.GroupKeyTypes),
@@ -1140,7 +1119,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergroup
                     NAME_OUTPUTLASTHELPER,
                     ExprDotMethod(
                         factory,
-                        "makeRSRowPerGroupOutputLastOpt",
+                        "MakeRSRowPerGroupOutputLastOpt",
                         REF_AGENTINSTANCECONTEXT,
                         Ref("this"),
                         Constant(forge.GroupKeyTypes),
@@ -1168,10 +1147,10 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergroup
             CodegenMethod method)
         {
             if (forge.IsOutputAll) {
-                method.Block.MethodReturn(ExprDotMethod(Ref(NAME_OUTPUTALLHELPER), "outputView", REF_ISSYNTHESIZE));
+                method.Block.MethodReturn(ExprDotMethod(Ref(NAME_OUTPUTALLHELPER), "OutputView", REF_ISSYNTHESIZE));
             }
             else if (forge.IsOutputLast) {
-                method.Block.MethodReturn(ExprDotMethod(Ref(NAME_OUTPUTLASTHELPER), "outputView", REF_ISSYNTHESIZE));
+                method.Block.MethodReturn(ExprDotMethod(Ref(NAME_OUTPUTLASTHELPER), "OutputView", REF_ISSYNTHESIZE));
             }
             else {
                 method.Block.MethodReturn(ConstantNull());
@@ -1183,10 +1162,10 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergroup
             CodegenMethod method)
         {
             if (forge.IsOutputAll) {
-                method.Block.MethodReturn(ExprDotMethod(Ref(NAME_OUTPUTALLHELPER), "outputJoin", REF_ISSYNTHESIZE));
+                method.Block.MethodReturn(ExprDotMethod(Ref(NAME_OUTPUTALLHELPER), "OutputJoin", REF_ISSYNTHESIZE));
             }
             else if (forge.IsOutputLast) {
-                method.Block.MethodReturn(ExprDotMethod(Ref(NAME_OUTPUTLASTHELPER), "outputJoin", REF_ISSYNTHESIZE));
+                method.Block.MethodReturn(ExprDotMethod(Ref(NAME_OUTPUTLASTHELPER), "OutputJoin", REF_ISSYNTHESIZE));
             }
             else {
                 method.Block.MethodReturn(ConstantNull());
@@ -1393,7 +1372,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergroup
                 NAME_OUTPUTFIRSTHELPER,
                 ExprDotMethod(
                     helperFactory,
-                    "makeRSGroupedOutputFirst",
+                    "MakeRSGroupedOutputFirst",
                     REF_AGENTINSTANCECONTEXT,
                     groupKeyTypes,
                     outputFactory,
@@ -1731,7 +1710,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergroup
                 NAME_OUTPUTALLGROUPREPS,
                 ExprDotMethod(
                     helperFactory,
-                    "makeRSGroupedOutputAllNoOpt",
+                    "MakeRSGroupedOutputAllNoOpt",
                     REF_AGENTINSTANCECONTEXT,
                     Constant(forge.GroupKeyTypes),
                     eventTypes));
@@ -2102,7 +2081,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergroup
                 NAME_OUTPUTFIRSTHELPER,
                 ExprDotMethod(
                     helperFactory,
-                    "makeRSGroupedOutputFirst",
+                    "MakeRSGroupedOutputFirst",
                     REF_AGENTINSTANCECONTEXT,
                     groupKeyTypes,
                     outputFactory,
@@ -2429,7 +2408,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergroup
                 NAME_OUTPUTALLGROUPREPS,
                 ExprDotMethod(
                     helperFactory,
-                    "makeRSGroupedOutputAllNoOpt",
+                    "MakeRSGroupedOutputAllNoOpt",
                     REF_AGENTINSTANCECONTEXT,
                     Constant(forge.GroupKeyTypes),
                     eventTypes));
@@ -2670,7 +2649,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergroup
 
             return instance.Methods.AddMethod(
                 typeof(EventBean),
-                "shortcutEvalGivenKey",
+                "ShortcutEvalGivenKey",
                 CodegenNamedParam.From(
                     typeof(EventBean[]),
                     ExprForgeCodegenNames.NAME_EPS,
@@ -2717,7 +2696,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergroup
                         Ref("oldGroupKey"),
                         REF_AGENTINSTANCECONTEXT)
                     .IfCondition(
-                        StaticMethod(typeof(CompatExtensions), "AreEquals", Ref("newGroupKey"), Ref("oldGroupKey")))
+                        StaticMethod(typeof(CompatExtensions), "AreEqual", Ref("newGroupKey"), Ref("oldGroupKey")))
                     .DeclareVar<EventBean>(
                         "istream",
                         LocalMethod(
@@ -2787,22 +2766,19 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergroup
                 }
                 else {
                     methodNode.Block.MethodReturn(
-                        NewInstance<UniformPair<EventBean>>(
+                        NewInstance<UniformPair<EventBean[]>>(
                             NewArrayWithInit(typeof(EventBean), Ref("newKeyEvent"), Ref("oldKeyEvent")),
                             ConstantNull()));
                 }
             };
 
             return instance.Methods.AddMethod(
-                typeof(UniformPair<EventBean>),
-                "processViewResultPairDepthOneNoRStream",
+                typeof(UniformPair<EventBean[]>),
+                "ProcessViewResultPairDepthOneNoRStream",
                 CodegenNamedParam.From(
-                    typeof(EventBean[]),
-                    NAME_NEWDATA,
-                    typeof(EventBean[]),
-                    NAME_OLDDATA,
-                    typeof(bool),
-                    NAME_ISSYNTHESIZE),
+                    typeof(EventBean[]), NAME_NEWDATA,
+                    typeof(EventBean[]), NAME_OLDDATA,
+                    typeof(bool), NAME_ISSYNTHESIZE),
                 typeof(ResultSetProcessorRowPerGroupImpl),
                 classScope,
                 code);
@@ -2864,8 +2840,8 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergroup
             };
 
             return instance.Methods.AddMethod(
-                typeof(UniformPair<EventBean>),
-                "processViewResultNewDepthOneCodegen",
+                typeof(UniformPair<EventBean[]>),
+                "ProcessViewResultNewDepthOneCodegen",
                 CodegenNamedParam.From(typeof(EventBean[]), NAME_NEWDATA, typeof(bool), NAME_ISSYNTHESIZE),
                 typeof(ResultSetProcessorRowPerGroupImpl),
                 classScope,

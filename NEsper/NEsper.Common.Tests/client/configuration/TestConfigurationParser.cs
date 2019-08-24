@@ -30,7 +30,7 @@ using NUnit.Framework;
 
 namespace com.espertech.esper.common.client.configuration
 {
-    public class TestConfigurationParser : AbstractTestBase
+    public class TestConfigurationParser : AbstractCommonTest
     {
         [Test]
         public void TestRegressionFileConfig()
@@ -165,17 +165,16 @@ namespace com.espertech.esper.common.client.configuration
             Assert.AreEqual("com.mycompany.package.MyLegacyTypeEvent", common.EventTypeNames.Get("MyLegacyTypeEvent"));
 
             // assert auto imports
-            Assert.AreEqual(8, common.Imports.Count);
-            Assert.AreEqual("System", common.Imports[0]);
-            Assert.AreEqual("System.Math", common.Imports[1]);
-            Assert.AreEqual("System.Text", common.Imports[2]);
-            //Assert.AreEqual("java.util.*", common.Imports[3]);
-            Assert.AreEqual("com.espertech.esper.common.client.annotation", common.Imports[4]);
-            Assert.AreEqual("com.espertech.esper.common.internal.epl.dataflow.ops", common.Imports[5]);
-            Assert.AreEqual("com.mycompany.myapp", common.Imports[6]);
-            Assert.AreEqual("com.mycompany.myapp.ClassOne", common.Imports[7]);
-            Assert.AreEqual("com.mycompany.myapp.annotations", common.AnnotationImports[0]);
-            Assert.AreEqual("com.mycompany.myapp.annotations.ClassOne", common.AnnotationImports[1]);
+            Assert.AreEqual(9, common.Imports.Count);
+            Assert.That(common.Imports, Contains.Item(new ImportNamespace("System")));
+            Assert.That(common.Imports, Contains.Item(new ImportNamespace("System.Text")));
+            Assert.That(common.Imports, Contains.Item(new ImportNamespace("com.espertech.esper.common.internal.epl.dataflow.ops")));
+            Assert.That(common.Imports, Contains.Item(new ImportNamespace("com.mycompany.myapp")));
+            Assert.That(common.Imports, Contains.Item(new ImportNamespace("com.mycompany.myapp", "AssemblyA")));
+            Assert.That(common.Imports, Contains.Item(new ImportNamespace("com.mycompany.myapp", "AssemblyB.dll")));
+            Assert.That(common.Imports, Contains.Item(new ImportType("com.mycompany.myapp.ClassOne")));
+            Assert.That(common.Imports, Contains.Item(new ImportType("com.mycompany.myapp.ClassTwo", "AssemblyB.dll")));
+            Assert.That(common.Imports, Contains.Item(ImportBuiltinAnnotations.Instance));
 
             // assert XML DOM - no schema
             Assert.AreEqual(2, common.EventTypesXMLDOM.Count);
@@ -217,8 +216,8 @@ namespace com.espertech.esper.common.client.configuration
             Assert.AreEqual(1, common.EventTypesMapEvents.Count);
             Assert.IsTrue(common.EventTypesMapEvents.Keys.Contains("MyMapEvent"));
             var expectedProps = new HashMap<string, string>();
-            expectedProps.Put("myInt", "int");
-            expectedProps.Put("myString", "string");
+            expectedProps.Put("MyInt", "int");
+            expectedProps.Put("MyString", "string");
             Assert.AreEqual(expectedProps, common.EventTypesMapEvents.Get("MyMapEvent"));
             Assert.AreEqual(1, common.MapTypeConfigurations.Count);
             var superTypes = common.MapTypeConfigurations.Get("MyMapEvent").SuperTypes;
@@ -230,8 +229,8 @@ namespace com.espertech.esper.common.client.configuration
             Assert.AreEqual(1, common.EventTypesNestableObjectArrayEvents.Count);
             Assert.IsTrue(common.EventTypesNestableObjectArrayEvents.ContainsKey("MyObjectArrayEvent"));
             var expectedPropsObjectArray = new HashMap<string, string>();
-            expectedPropsObjectArray.Put("myInt", "int");
-            expectedPropsObjectArray.Put("myString", "string");
+            expectedPropsObjectArray.Put("MyInt", "int");
+            expectedPropsObjectArray.Put("MyString", "string");
             Assert.AreEqual(expectedPropsObjectArray, common.EventTypesNestableObjectArrayEvents.Get("MyObjectArrayEvent"));
             Assert.AreEqual(1, common.ObjectArrayTypeConfigurations.Count);
             var superTypesOA = common.ObjectArrayTypeConfigurations.Get("MyObjectArrayEvent").SuperTypes;

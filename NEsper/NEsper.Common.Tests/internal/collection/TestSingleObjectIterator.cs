@@ -16,7 +16,7 @@ using NUnit.Framework;
 namespace com.espertech.esper.common.@internal.collection
 {
     [TestFixture]
-    public class TestSingleObjectIterator : AbstractTestBase
+    public class TestSingleObjectIterator : AbstractCommonTest
     {
         [Test]
         public void TestNext()

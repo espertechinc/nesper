@@ -11,6 +11,8 @@ using System.Collections.Generic;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.epl.spatial.quadtree.core;
 using com.espertech.esper.common.@internal.epl.spatial.quadtree.pointregion;
+using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.prqdfilterindex
 {
@@ -71,20 +73,42 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.prqdfilterin
                 return;
             }
 
-            if (points is XYPointWValue<TL>) {
-                var point = (XYPointWValue<TL>) points;
-                if (BoundingBox.ContainsPoint(x, y, width, height, point.X, point.Y)) {
-                    collector.CollectInto(eventBean, point.Value, target);
+            if (points is XYPointWValue<TL> pointWValueWithType) {
+                if (BoundingBox.ContainsPoint(x, y, width, height, pointWValueWithType.X, pointWValueWithType.Y)) {
+                    collector.CollectInto(eventBean, pointWValueWithType.Value, target);
                 }
 
                 return;
             }
-
-            var collection = (ICollection<XYPointWValue<TL>>) points;
-            foreach (var point in collection) {
-                if (BoundingBox.ContainsPoint(x, y, width, height, point.X, point.Y)) {
-                    collector.CollectInto(eventBean, point.Value, target);
+            else if (points is XYPointWValue<object> pointWValueWithoutType) {
+                if (BoundingBox.ContainsPoint(
+                    x,
+                    y,
+                    width,
+                    height,
+                    pointWValueWithoutType.X,
+                    pointWValueWithoutType.Y)) {
+                    collector.CollectInto(eventBean, (TL) pointWValueWithoutType.Value, target);
                 }
+
+                return;
+            }
+            else if (points is IEnumerable<XYPointWValue<TL>> enumerableWithType) {
+                foreach (var point in enumerableWithType) {
+                    if (BoundingBox.ContainsPoint(x, y, width, height, point.X, point.Y)) {
+                        collector.CollectInto(eventBean, point.Value, target);
+                    }
+                }
+            }
+            else if (points is IEnumerable<XYPointWValue<object>> enumerableWithoutType) {
+                foreach (var point in enumerableWithoutType) {
+                    if (BoundingBox.ContainsPoint(x, y, width, height, point.X, point.Y)) {
+                        collector.CollectInto(eventBean, (TL) point.Value, target);
+                    }
+                }
+            }
+            else {
+                throw new IllegalStateException("unknown type for points");
             }
         }
     }

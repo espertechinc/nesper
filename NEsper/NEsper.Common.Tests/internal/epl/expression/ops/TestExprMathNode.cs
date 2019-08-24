@@ -19,7 +19,7 @@ using NUnit.Framework;
 namespace com.espertech.esper.common.@internal.epl.expression.ops
 {
     [TestFixture]
-    public class TestExprMathNode : AbstractTestBase
+    public class TestExprMathNode : AbstractCommonTest
     {
         private ExprMathNode arithNode;
 

@@ -6,6 +6,8 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using com.espertech.esper.compat.collections;
+
 namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.core
 {
     public class BoundingBox
@@ -87,16 +89,13 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.core
 
         public override string ToString()
         {
-            return "{" +
-                   "minX=" +
-                   _minX +
-                   ", minY=" +
-                   _minY +
-                   ", maxX=" +
-                   _maxX +
-                   ", maxY=" +
-                   _maxY +
-                   '}';
+            return string.Format("{0}minX={1}, minY={2}, maxX={3}, maxY={4}{5}",
+                '{',
+                _minX.RenderAny(),
+                _minY.RenderAny(),
+                _maxX.RenderAny(),
+                _maxY.RenderAny(),
+                '}');
         }
 
         public QuadrantEnum GetQuadrant(

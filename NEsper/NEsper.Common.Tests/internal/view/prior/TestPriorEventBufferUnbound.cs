@@ -17,7 +17,7 @@ using NUnit.Framework;
 namespace com.espertech.esper.common.@internal.view.prior
 {
     [TestFixture]
-    public class TestPriorEventBufferUnbound : AbstractTestBase
+    public class TestPriorEventBufferUnbound : AbstractCommonTest
     {
         [SetUp]
         public void SetUp()

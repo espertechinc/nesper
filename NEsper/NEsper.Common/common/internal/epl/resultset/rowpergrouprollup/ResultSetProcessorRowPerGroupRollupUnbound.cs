@@ -92,7 +92,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                 NAME_UNBOUNDHELPER,
                 ExprDotMethod(
                     factory,
-                    "makeRSRowPerGroupRollupSnapshotUnbound",
+                    "MakeRSRowPerGroupRollupSnapshotUnbound",
                     REF_AGENTINSTANCECONTEXT,
                     Ref("this"),
                     Constant(forge.GroupKeyTypes),

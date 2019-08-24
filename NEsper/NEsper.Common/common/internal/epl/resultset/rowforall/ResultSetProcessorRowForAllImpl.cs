@@ -249,7 +249,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowforall
                 instance.AddMember(NAME_OUTPUTALLHELPER, typeof(ResultSetProcessorRowForAllOutputAllHelper));
                 instance.ServiceCtor.Block.AssignRef(
                     NAME_OUTPUTALLHELPER,
-                    ExprDotMethod(factory, "makeRSRowForAllOutputAll", Ref("this"), REF_AGENTINSTANCECONTEXT));
+                    ExprDotMethod(factory, "MakeRSRowForAllOutputAll", Ref("this"), REF_AGENTINSTANCECONTEXT));
                 method.Block.ExprDotMethod(
                     Ref(NAME_OUTPUTALLHELPER),
                     methodName,
@@ -261,7 +261,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowforall
                 instance.AddMember(NAME_OUTPUTLASTHELPER, typeof(ResultSetProcessorRowForAllOutputLastHelper));
                 instance.ServiceCtor.Block.AssignRef(
                     NAME_OUTPUTLASTHELPER,
-                    ExprDotMethod(factory, "makeRSRowForAllOutputLast", Ref("this"), REF_AGENTINSTANCECONTEXT));
+                    ExprDotMethod(factory, "MakeRSRowForAllOutputLast", Ref("this"), REF_AGENTINSTANCECONTEXT));
                 method.Block.ExprDotMethod(
                     Ref(NAME_OUTPUTLASTHELPER),
                     methodName,
@@ -276,10 +276,10 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowforall
             CodegenMethod method)
         {
             if (forge.OutputLimitSpec.DisplayLimit == OutputLimitLimitType.ALL) {
-                method.Block.MethodReturn(ExprDotMethod(Ref(NAME_OUTPUTALLHELPER), "outputView", REF_ISSYNTHESIZE));
+                method.Block.MethodReturn(ExprDotMethod(Ref(NAME_OUTPUTALLHELPER), "OutputView", REF_ISSYNTHESIZE));
             }
             else {
-                method.Block.MethodReturn(ExprDotMethod(Ref(NAME_OUTPUTLASTHELPER), "outputView", REF_ISSYNTHESIZE));
+                method.Block.MethodReturn(ExprDotMethod(Ref(NAME_OUTPUTLASTHELPER), "OutputView", REF_ISSYNTHESIZE));
             }
         }
 
@@ -288,10 +288,10 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowforall
             CodegenMethod method)
         {
             if (forge.OutputLimitSpec.DisplayLimit == OutputLimitLimitType.ALL) {
-                method.Block.MethodReturn(ExprDotMethod(Ref(NAME_OUTPUTALLHELPER), "outputJoin", REF_ISSYNTHESIZE));
+                method.Block.MethodReturn(ExprDotMethod(Ref(NAME_OUTPUTALLHELPER), "OutputJoin", REF_ISSYNTHESIZE));
             }
             else {
-                method.Block.MethodReturn(ExprDotMethod(Ref(NAME_OUTPUTLASTHELPER), "outputJoin", REF_ISSYNTHESIZE));
+                method.Block.MethodReturn(ExprDotMethod(Ref(NAME_OUTPUTLASTHELPER), "OutputJoin", REF_ISSYNTHESIZE));
             }
         }
 

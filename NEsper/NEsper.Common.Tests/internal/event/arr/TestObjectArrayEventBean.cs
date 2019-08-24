@@ -22,7 +22,7 @@ using NUnit.Framework;
 namespace com.espertech.esper.common.@internal.@event.arr
 {
     [TestFixture]
-    public class TestObjectArrayEventBean : AbstractTestBase
+    public class TestObjectArrayEventBean : AbstractCommonTest
     {
         private string[] testProps;
         private object[] testTypes;
@@ -36,7 +36,7 @@ namespace com.espertech.esper.common.@internal.@event.arr
         [SetUp]
         public void SetUp()
         {
-            testProps = new string[] { "aString", "anInt", "myComplexBean" };
+            testProps = new string[] { "aString", "anInt", "MyComplexBean" };
             testTypes = new object[] { typeof(string), typeof(int?), typeof(SupportBeanComplexProps) };
             IDictionary<string, object> typeRep = new LinkedHashMap<string, object>();
             for (int i = 0; i < testProps.Length; i++)
@@ -61,7 +61,7 @@ namespace com.espertech.esper.common.@internal.@event.arr
             Assert.AreEqual("test", eventBean.Get("aString"));
             Assert.AreEqual(10, eventBean.Get("anInt"));
 
-            Assert.AreEqual("NestedValue", eventBean.Get("myComplexBean.Nested.NestedValue"));
+            Assert.AreEqual("NestedValue", eventBean.Get("MyComplexBean.Nested.NestedValue"));
 
             // test wrong property name
             try

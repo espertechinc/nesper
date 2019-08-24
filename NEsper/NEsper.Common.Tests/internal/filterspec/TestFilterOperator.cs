@@ -11,7 +11,7 @@ using NUnit.Framework;
 namespace com.espertech.esper.common.@internal.filterspec
 {
     [TestFixture]
-    public class TestFilterOperator : AbstractTestBase
+    public class TestFilterOperator : AbstractCommonTest
     {
         [Test]
         public void TestRanges()

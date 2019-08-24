@@ -32,8 +32,8 @@ namespace com.espertech.esper.regressionlib.suite.@event.map
         static EventMapCore()
         {
             map = new Dictionary<string, object>();
-            map.Put("myInt", 3);
-            map.Put("myString", "some string");
+            map.Put("MyInt", 3);
+            map.Put("MyString", "some string");
             map.Put("beanA", SupportBeanComplexProps.MakeDefaultBean());
         }
 
@@ -149,9 +149,9 @@ namespace com.espertech.esper.regressionlib.suite.@event.map
 
                 EPAssertionUtil.AssertEqualsAnyOrder(
                     new object[] {
-                        new EventPropertyDescriptor("myInt", typeof(int?), null, false, false, false, false, false),
+                        new EventPropertyDescriptor("MyInt", typeof(int?), null, false, false, false, false, false),
                         new EventPropertyDescriptor(
-                            "myString",
+                            "MyString",
                             typeof(string),
                             null,
                             false,
@@ -169,7 +169,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.map
                             false,
                             true),
                         new EventPropertyDescriptor(
-                            "myStringArray",
+                            "MyStringArray",
                             typeof(string[]),
                             typeof(string),
                             false,
@@ -195,7 +195,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.map
 
                 env.SendEventMap(map, "myMapEvent");
                 Assert.AreEqual("NestedValue", env.Listener("s0").LastNewData[0].Get("nested"));
-                Assert.AreEqual(2, env.Listener("s0").LastNewData[0].Get("indexed"));
+                Assert.AreEqual(2, env.Listener("s0").LastNewData[0].Get("Indexed"));
                 Assert.AreEqual("nestedNestedValue", env.Listener("s0").LastNewData[0].Get("nestednested"));
 
                 env.UndeployAll();
@@ -217,8 +217,8 @@ namespace com.espertech.esper.regressionlib.suite.@event.map
 
                 // send Map base event
                 IDictionary<string, object> mapNoType = new Dictionary<string, object>();
-                mapNoType.Put("myInt", 4);
-                mapNoType.Put("myString", "string2");
+                mapNoType.Put("MyInt", 4);
+                mapNoType.Put("MyString", "string2");
                 env.SendEventMap(mapNoType, "myMapEvent");
                 Assert.AreEqual(4, env.Listener("s0").LastNewData[0].Get("intVal"));
                 Assert.AreEqual("string2", env.Listener("s0").LastNewData[0].Get("stringVal"));

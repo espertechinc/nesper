@@ -13,7 +13,7 @@ using NUnit.Framework;
 
 namespace com.espertech.esper.common.@internal.collection
 {
-    public class TestPermutationEnumeration : AbstractTestBase
+    public class TestPermutationEnumeration : AbstractCommonTest
     {
         [Test]
         public void TestInvalid()

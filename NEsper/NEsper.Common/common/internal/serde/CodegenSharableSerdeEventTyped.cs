@@ -44,7 +44,7 @@ namespace com.espertech.esper.common.@internal.serde
             var type = EventTypeUtility.ResolveTypeCodegen(eventType, EPStatementInitServicesConstants.REF);
             return ExprDotMethodChain(EPStatementInitServicesConstants.REF)
                 .Get(EPStatementInitServicesConstants.DATAINPUTOUTPUTSERDEPROVIDER)
-                .Add(name.MethodName, type);
+                .Add(name.MethodName, name.MethodTypeArgs, type);
         }
 
         public override bool Equals(object o)
@@ -76,23 +76,34 @@ namespace com.espertech.esper.common.@internal.serde
         public class CodegenSharableSerdeName
         {
             public static readonly CodegenSharableSerdeName EVENTNULLABLE =
-                new CodegenSharableSerdeName("eventNullable");
+                new CodegenSharableSerdeName("EventNullable", typeof(object));
 
             public static readonly CodegenSharableSerdeName LISTEVENTS =
-                new CodegenSharableSerdeName("listEvents");
+                new CodegenSharableSerdeName("ListEvents", typeof(object));
 
-            public static readonly CodegenSharableSerdeName LINKEDHASHMAPEVENTSANDINT =
-                new CodegenSharableSerdeName("linkedHashMapEventsAndInt");
+            public static readonly CodegenSharableSerdeName LINKEDMAPEVENTSANDINT =
+                new CodegenSharableSerdeName("LinkedMapEventsAndInt", typeof(object));
 
             public static readonly CodegenSharableSerdeName REFCOUNTEDSETATOMICINTEGER =
-                new CodegenSharableSerdeName("refCountedSetAtomicInteger");
+                new CodegenSharableSerdeName("RefCountedSetAtomicInteger", typeof(object));
 
             private CodegenSharableSerdeName(string methodName)
             {
                 MethodName = methodName;
+                MethodTypeArgs = new Type[0];
+            }
+
+            public CodegenSharableSerdeName(
+                string methodName,
+                params Type[] methodTypeArgs)
+            {
+                MethodName = methodName;
+                MethodTypeArgs = methodTypeArgs;
             }
 
             public string MethodName { get; }
+
+            public Type[] MethodTypeArgs { get; }
         }
     }
 } // end of namespace

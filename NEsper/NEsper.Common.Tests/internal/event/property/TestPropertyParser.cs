@@ -15,7 +15,7 @@ using NUnit.Framework;
 namespace com.espertech.esper.common.@internal.@event.property
 {
     [TestFixture]
-    public class TestPropertyParser : AbstractTestBase
+    public class TestPropertyParser : AbstractCommonTest
     {
         [Test]
         public void TestParse()

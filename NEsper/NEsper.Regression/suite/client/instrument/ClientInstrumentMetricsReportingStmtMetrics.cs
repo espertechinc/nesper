@@ -84,7 +84,7 @@ namespace com.espertech.esper.regressionlib.suite.client.instrument
             RegressionEnvironment env,
             long timestamp)
         {
-            var fields = "runtimeURI,statementName".SplitCsv();
+            var fields = "RuntimeURI,StatementName".SplitCsv();
 
             var listener = env.Listener("stmt_metrics");
             Assert.AreEqual(4, listener.NewDataList.Count);

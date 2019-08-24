@@ -75,10 +75,10 @@ namespace com.espertech.esper.regressionlib.suite.context
             env.CompileDeploy(
                 soda,
                 "@Name('s0') context SupportBeanInstanceCtx " +
-                "select Id, context.sb.IntPrimitive as sbint, context.startTime as starttime, context.endTime as endtime from SupportBean_S0(P00=context.sb.TheString)",
+                "select Id as id, context.sb.IntPrimitive as sbint, context.startTime as starttime, context.endTime as endtime from SupportBean_S0(P00=context.sb.TheString)",
                 path);
             env.AddListener("s0");
-            var fields = "id,sbint,starttime,endtime".SplitCsv();
+            var fields = new[] {"id", "sbint", "starttime", "endtime"};
             Assert.AreEqual(
                 StatementType.CREATE_CONTEXT,
                 env.Statement("ctx").GetProperty(StatementProperty.STATEMENTTYPE));
@@ -120,10 +120,10 @@ namespace com.espertech.esper.regressionlib.suite.context
             env.CompileDeploy(
                 soda,
                 "@Name('s0') context SupportBeanInstanceCtx " +
-                "select Id, context.sb.IntPrimitive as sbint, context.startTime as starttime, context.endTime as endtime from SupportBean_S0(P00=context.sb.TheString)",
+                "select Id as id, context.sb.IntPrimitive as sbint, context.startTime as starttime, context.endTime as endtime from SupportBean_S0(P00=context.sb.TheString)",
                 path);
             env.AddListener("s0");
-            var fields = "id,sbint,starttime,endtime".SplitCsv();
+            var fields = new[] {"id", "sbint", "starttime", "endtime"};
 
             env.SendEventBean(new SupportBean("P1", 100));
 
@@ -401,7 +401,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 string epl;
 
                 // same event terminates - not included
-                fields = "c1,c2,c3,c4".SplitCsv();
+                fields = new [] { "c1","c2","c3","c4" };
                 env.CompileDeploy(
                     "create context MyCtx as " +
                     "start SupportBean " +
@@ -435,7 +435,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 env.Milestone(3);
 
                 // same event terminates - included
-                fields = "c1,c2,c3,c4".SplitCsv();
+                fields = new [] { "c1","c2","c3","c4" };
                 epl = "create schema MyCtxTerminate(TheString string);\n" +
                       "create context MyCtx as start SupportBean end MyCtxTerminate;\n" +
                       "@Name('s0') context MyCtx " +
@@ -874,7 +874,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                                  "terminated after 1 minute";
                 env.CompileDeploy(eplContext, path);
 
-                var fields = "c1,c2,c3,c4".SplitCsv();
+                var fields = new [] { "c1","c2","c3","c4" };
                 var eplGrouped = "@Name('S1') context CtxInitiated " +
                                  "select TheString as c1, sum(IntPrimitive) as c2, context.s0.P00 as c3, context.s1.P10 as c4 from SupportBean";
                 env.CompileDeploy(eplGrouped, path).AddListener("S1");

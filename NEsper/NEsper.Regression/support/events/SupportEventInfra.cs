@@ -15,6 +15,7 @@ using Avro.Generic;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.@internal.support;
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.util;
 
@@ -38,14 +39,14 @@ namespace com.espertech.esper.regressionlib.support.@event
             env,
             @event,
             name) => {
-            env.SendEventMap((IDictionary<string, object>) @event, name);
+            env.SendEventMap(@event.UnwrapStringDictionary(), name);
         };
 
         public static readonly FunctionSendEvent FOA = (
             env,
             @event,
             name) => {
-            env.SendEventObjectArray((object[]) @event, name);
+            env.SendEventObjectArray(@event.UnwrapIntoArray<object>(), name);
         };
 
         public static readonly FunctionSendEvent FBEAN = (
@@ -99,16 +100,16 @@ namespace com.espertech.esper.regressionlib.support.@event
             @event,
             name) => {
             string xml;
-            if (@event.ToString().Contains("<myevent")) {
+            if (@event.ToString().Contains("<Myevent")) {
                 xml = @event.ToString();
             }
             else {
                 xml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
-                      "<myevent>\n" +
+                      "<Myevent>\n" +
                       "  " +
                       @event +
                       "\n" +
-                      "</myevent>\n";
+                      "</Myevent>\n";
             }
 
             try {

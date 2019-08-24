@@ -24,12 +24,7 @@ namespace com.espertech.esper.common.@internal.context.controller.category
 {
     public class ContextControllerCategoryFactory : ContextControllerFactoryBase
     {
-        public ContextControllerDetailCategory CategorySpec { get; private set; }
-
-        public void SetCategorySpec(ContextControllerDetailCategory categorySpec)
-        {
-            CategorySpec = categorySpec;
-        }
+        public ContextControllerDetailCategory CategorySpec { get; set; }
 
         public override ContextController Create(ContextManagerRealization contextManagerRealization)
         {

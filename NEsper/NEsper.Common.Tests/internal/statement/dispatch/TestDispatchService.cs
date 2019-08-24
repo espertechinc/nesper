@@ -13,7 +13,7 @@ using NUnit.Framework;
 namespace com.espertech.esper.common.@internal.statement.dispatch
 {
     [TestFixture]
-    public class TestDispatchService : AbstractTestBase
+    public class TestDispatchService : AbstractCommonTest
     {
         [SetUp]
         public void SetUp()

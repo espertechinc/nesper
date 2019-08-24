@@ -123,7 +123,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                 .IfElse()
                 .IfCondition(
                     Relational(
-                        ExprDotMethod(@Ref("minKey"), "compareTo", @Ref("value")),
+                        ExprDotMethod(ExprDotName(@Ref("minKey"), "Value"), "CompareTo", @Ref("value")),
                         forge.max ? LT : GT,
                         Constant(0)))
                 .AssignRef("minKey", @Ref("value"));

@@ -18,10 +18,14 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.core
 {
     public class CodegenNamedProperties
     {
-        private IDictionary<string, CodegenProperty> _properties;
+        private readonly IDictionary<string, CodegenProperty> _properties;
 
-        public IDictionary<string, CodegenProperty> Properties =>
-            _properties ?? Collections.GetEmptyMap<string, CodegenProperty>();
+        public CodegenNamedProperties()
+        {
+            _properties = new Dictionary<string, CodegenProperty>();
+        }
+
+        public IDictionary<string, CodegenProperty> Properties => _properties;
 
         public CodegenProperty AddProperty(
             Type returnType,
@@ -47,10 +51,6 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.core
             Consumer<CodegenProperty> code,
             CodegenSymbolProvider symbolProvider)
         {
-            if (_properties == null) {
-                _properties = new Dictionary<string, CodegenProperty>();
-            }
-
             Console.WriteLine("AddPropertyWithSymbols: {0}", propertyName);
 
             var existing = _properties.Get(propertyName);

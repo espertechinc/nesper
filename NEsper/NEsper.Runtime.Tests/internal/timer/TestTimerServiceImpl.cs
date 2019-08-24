@@ -17,7 +17,7 @@ using NUnit.Framework;
 namespace com.espertech.esper.runtime.@internal.timer
 {
     [TestFixture]
-    public class TestTimerServiceImpl : AbstractTestBase
+    public class TestTimerServiceImpl : AbstractRuntimeTest
     {
         [SetUp]
         public void SetUp()

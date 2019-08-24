@@ -20,7 +20,7 @@ using NUnit.Framework;
 namespace com.espertech.esper.common.@internal.@event.bean.introspect
 {
     [TestFixture]
-    public class TestPropertyListBuilderNative : AbstractTestBase
+    public class TestPropertyListBuilderNative : AbstractCommonTest
     {
         [SetUp]
         public void SetUp()

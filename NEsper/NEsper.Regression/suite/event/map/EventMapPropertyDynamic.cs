@@ -36,8 +36,8 @@ namespace com.espertech.esper.regressionlib.suite.@event.map
                                 "innermap.innerTwo?.innerThree.NestedTwo as t2, " +
                                 "dynamicOne? as t3, " +
                                 "dynamicTwo? as t4, " +
-                                "indexed[1]? as t5, " +
-                                "mapped('keyOne')? as t6, " +
+                                "Indexed[1]? as t5, " +
+                                "Mapped('keyOne')? as t6, " +
                                 "innermap.indexedTwo[0]? as t7, " +
                                 "innermap.mappedTwo('keyTwo')? as t8 " +
                                 "from MyLevel2#length(5)";
@@ -50,9 +50,9 @@ namespace com.espertech.esper.regressionlib.suite.@event.map
                 MakeMap(
                     "int",
                     10,
-                    "indexedTwo",
+                    "IndexedTwo",
                     new[] {-10},
-                    "mappedTwo",
+                    "MappedTwo",
                     MakeMap("keyTwo", "def"),
                     "innerTwo",
                     MakeMap(
@@ -60,8 +60,8 @@ namespace com.espertech.esper.regressionlib.suite.@event.map
                         30d,
                         "innerThree",
                         MakeMap("nestedTwo", 99))));
-            map.Put("indexed", new float[] {-1, -2, -3});
-            map.Put("mapped", MakeMap("keyOne", "abc"));
+            map.Put("Indexed", new float[] {-1, -2, -3});
+            map.Put("Mapped", MakeMap("keyOne", "abc"));
             env.SendEventMap(map, "MyLevel2");
             AssertResults(
                 env.Listener("s0").AssertOneGetNewAndReset(),
@@ -71,14 +71,14 @@ namespace com.espertech.esper.regressionlib.suite.@event.map
             map.Put(
                 "innermap",
                 MakeMap(
-                    "indexedTwo",
+                    "IndexedTwo",
                     new int[] { },
-                    "mappedTwo",
+                    "MappedTwo",
                     MakeMap("yyy", "xxx"),
                     "innerTwo",
                     null));
-            map.Put("indexed", new float[] { });
-            map.Put("mapped", MakeMap("xxx", "yyy"));
+            map.Put("Indexed", new float[] { });
+            map.Put("Mapped", MakeMap("xxx", "yyy"));
             env.SendEventMap(map, "MyLevel2");
             AssertResults(
                 env.Listener("s0").AssertOneGetNewAndReset(),
@@ -91,8 +91,8 @@ namespace com.espertech.esper.regressionlib.suite.@event.map
 
             map = new Dictionary<string, object>();
             map.Put("innermap", "xxx");
-            map.Put("indexed", null);
-            map.Put("mapped", "xxx");
+            map.Put("Indexed", null);
+            map.Put("Mapped", "xxx");
             env.SendEventMap(map, "MyLevel2");
             AssertResults(
                 env.Listener("s0").AssertOneGetNewAndReset(),
@@ -123,9 +123,9 @@ namespace com.espertech.esper.regressionlib.suite.@event.map
                 MakeMap(
                     "int",
                     10,
-                    "indexedTwo",
+                    "IndexedTwo",
                     new[] {-10},
-                    "mappedTwo",
+                    "MappedTwo",
                     MakeMap("keyTwo", "def"),
                     "innerTwo",
                     MakeMap(
@@ -133,8 +133,8 @@ namespace com.espertech.esper.regressionlib.suite.@event.map
                         30d,
                         "innerThree",
                         MakeMap("nestedTwo", 99))));
-            map.Put("indexed", new float[] {-1, -2, -3});
-            map.Put("mapped", MakeMap("keyOne", "abc"));
+            map.Put("Indexed", new float[] {-1, -2, -3});
+            map.Put("Mapped", MakeMap("keyOne", "abc"));
             env.SendEventMap(map, "MyLevel2");
             AssertResults(
                 env.Listener("s0").AssertOneGetNewAndReset(),
@@ -144,14 +144,14 @@ namespace com.espertech.esper.regressionlib.suite.@event.map
             map.Put(
                 "innermap",
                 MakeMap(
-                    "indexedTwo",
+                    "IndexedTwo",
                     new int[] { },
-                    "mappedTwo",
+                    "MappedTwo",
                     MakeMap("yyy", "xxx"),
                     "innerTwo",
                     null));
-            map.Put("indexed", new float[] { });
-            map.Put("mapped", MakeMap("xxx", "yyy"));
+            map.Put("Indexed", new float[] { });
+            map.Put("Mapped", MakeMap("xxx", "yyy"));
             env.SendEventMap(map, "MyLevel2");
             AssertResults(
                 env.Listener("s0").AssertOneGetNewAndReset(),
@@ -164,8 +164,8 @@ namespace com.espertech.esper.regressionlib.suite.@event.map
 
             map = new Dictionary<string, object>();
             map.Put("innermap", "xxx");
-            map.Put("indexed", null);
-            map.Put("mapped", "xxx");
+            map.Put("Indexed", null);
+            map.Put("Mapped", "xxx");
             env.SendEventMap(map, "MyLevel2");
             AssertResults(
                 env.Listener("s0").AssertOneGetNewAndReset(),

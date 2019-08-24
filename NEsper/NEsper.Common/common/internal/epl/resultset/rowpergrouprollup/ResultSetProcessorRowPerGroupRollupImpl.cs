@@ -208,11 +208,9 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                         Ref("levels"));
                     {
                         var forEvents = forLevels.ForEach(
-                            typeof(KeyValuePair<object, object>),
+                            typeof(KeyValuePair<object, EventBean>),
                             "entry",
-                            ExprDotMethod(
-                                ArrayAtIndex(Ref("keysAndEvents"), ExprDotName(Ref("level"), "LevelNumber")),
-                                "EntrySet"));
+                             ArrayAtIndex(Ref("keysAndEvents"), ExprDotName(Ref("level"), "LevelNumber")));
                         forEvents.DeclareVar<object>("groupKey", ExprDotName(Ref("entry"), "Key"))
                             .ExprDotMethod(
                                 REF_AGGREGATIONSVC,
@@ -329,11 +327,9 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                         Ref("levels"));
                     {
                         var forEvents = forLevels.ForEach(
-                            typeof(KeyValuePair<object, object>),
+                            typeof(KeyValuePair<object, EventBean>),
                             "entry",
-                            ExprDotMethod(
-                                ArrayAtIndex(Ref("eventPairs"), ExprDotName(Ref("level"), "LevelNumber")),
-                                "EntrySet"));
+                            ArrayAtIndex(Ref("eventPairs"), ExprDotName(Ref("level"), "LevelNumber")));
                         forEvents.DeclareVar<object>("groupKey", ExprDotName(Ref("entry"), "Key"))
                             .ExprDotMethod(
                                 REF_AGGREGATIONSVC,
@@ -2260,13 +2256,13 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                         typeof(AggregationGroupByRollupLevel),
                         "level",
                         ExprDotMethodChain(Ref("this")).Get("GroupByRollupDesc").Get("Levels"))
-                    .DeclareVar<IDictionary<object, object>>(
+                    .DeclareVar<IDictionary<object, EventBean>>(
                         "groupGenerators",
                         ArrayAtIndex(Ref(NAME_GROUPREPSPERLEVELBUF), ExprDotName(Ref("level"), "LevelNumber")))
                     .ForEach(
-                        typeof(KeyValuePair<object, object>),
+                        typeof(KeyValuePair<object, EventBean>),
                         "entry",
-                        ExprDotMethod(Ref("groupGenerators"), "EntrySet"))
+                        Ref("groupGenerators"))
                     .InstanceMethod(
                         generateOutputBatchedGivenArray,
                         ConstantFalse(),
@@ -2422,7 +2418,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                     .ForEach(
                         typeof(KeyValuePair<object, object>),
                         "entry",
-                        ExprDotMethod(Ref("groupGenerators"), "EntrySet"))
+                        Ref("groupGenerators"))
                     .InstanceMethod(
                         generateOutputBatchedGivenArray,
                         ConstantFalse(),
@@ -2567,11 +2563,9 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                     var forEvents = forLevels.ForEach(
                         typeof(KeyValuePair<object, object>),
                         "pair",
-                        ExprDotMethod(
-                            ArrayAtIndex(
-                                Ref("eventPairs"),
-                                ExprDotName(Ref("level"), "LevelNumber")),
-                            "EntrySet"));
+                        ArrayAtIndex(
+                            Ref("eventPairs"),
+                            ExprDotName(Ref("level"), "LevelNumber")));
                     forEvents.AssignArrayElement(
                             "eventsPerStream",
                             Constant(0),
@@ -2626,11 +2620,9 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                     var forEvents = forLevels.ForEach(
                         typeof(KeyValuePair<object, object>),
                         "pair",
-                        ExprDotMethod(
-                            ArrayAtIndex(
-                                Ref("eventPairs"),
-                                ExprDotName(Ref("level"), "LevelNumber")),
-                            "EntrySet"));
+                        ArrayAtIndex(
+                            Ref("eventPairs"),
+                            ExprDotName(Ref("level"), "LevelNumber")));
                     forEvents.InstanceMethod(
                         generateOutputBatched,
                         ExprDotName(Ref("pair"), "Key"),
@@ -2865,7 +2857,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                     .ForEach(
                         typeof(KeyValuePair<object, object>),
                         "entry",
-                        ExprDotMethod(Ref("groupGenerators"), "EntrySet"))
+                        Ref("groupGenerators"))
                     .InstanceMethod(
                         generateOutputBatched,
                         ExprDotName(Ref("entry"), "Key"),
@@ -3036,7 +3028,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                     NAME_OUTPUTALLHELPER,
                     ExprDotMethod(
                         factory,
-                        "makeRSRowPerGroupRollupAll",
+                        "MakeRSRowPerGroupRollupAll",
                         REF_AGENTINSTANCECONTEXT,
                         Ref("this"),
                         Constant(forge.GroupKeyTypes),
@@ -3054,7 +3046,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                     NAME_OUTPUTLASTHELPER,
                     ExprDotMethod(
                         factory,
-                        "makeRSRowPerGroupRollupLast",
+                        "MakeRSRowPerGroupRollupLast",
                         REF_AGENTINSTANCECONTEXT,
                         Ref("this"),
                         Constant(forge.GroupKeyTypes),
@@ -3082,10 +3074,10 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
             CodegenMethod method)
         {
             if (forge.OutputLimitSpec.DisplayLimit == OutputLimitLimitType.ALL) {
-                method.Block.MethodReturn(ExprDotMethod(Ref(NAME_OUTPUTALLHELPER), "outputView", REF_ISSYNTHESIZE));
+                method.Block.MethodReturn(ExprDotMethod(Ref(NAME_OUTPUTALLHELPER), "OutputView", REF_ISSYNTHESIZE));
             }
             else if (forge.OutputLimitSpec.DisplayLimit == OutputLimitLimitType.LAST) {
-                method.Block.MethodReturn(ExprDotMethod(Ref(NAME_OUTPUTLASTHELPER), "outputView", REF_ISSYNTHESIZE));
+                method.Block.MethodReturn(ExprDotMethod(Ref(NAME_OUTPUTLASTHELPER), "OutputView", REF_ISSYNTHESIZE));
             }
             else {
                 method.Block.MethodReturn(ConstantNull());
@@ -3097,10 +3089,10 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
             CodegenMethod method)
         {
             if (forge.OutputLimitSpec.DisplayLimit == OutputLimitLimitType.ALL) {
-                method.Block.MethodReturn(ExprDotMethod(Ref(NAME_OUTPUTALLHELPER), "outputJoin", REF_ISSYNTHESIZE));
+                method.Block.MethodReturn(ExprDotMethod(Ref(NAME_OUTPUTALLHELPER), "OutputJoin", REF_ISSYNTHESIZE));
             }
             else if (forge.OutputLimitSpec.DisplayLimit == OutputLimitLimitType.LAST) {
-                method.Block.MethodReturn(ExprDotMethod(Ref(NAME_OUTPUTLASTHELPER), "outputJoin", REF_ISSYNTHESIZE));
+                method.Block.MethodReturn(ExprDotMethod(Ref(NAME_OUTPUTLASTHELPER), "OutputJoin", REF_ISSYNTHESIZE));
             }
             else {
                 method.Block.MethodReturn(ConstantNull());

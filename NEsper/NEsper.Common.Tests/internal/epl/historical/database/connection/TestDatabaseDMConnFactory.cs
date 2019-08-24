@@ -22,7 +22,7 @@ using NUnit.Framework;
 namespace com.espertech.esper.common.@internal.epl.historical.database.connection
 {
     [TestFixture]
-    public class TestDatabaseDmConnFactory : AbstractTestBase
+    public class TestDatabaseDmConnFactory : AbstractCommonTest
     {
 #if false
         private readonly DriverConnectionFactoryDesc _databaseDmConnConnectionFactoryOne;

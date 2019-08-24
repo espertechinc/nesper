@@ -8,6 +8,7 @@
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.epl.spatial.quadtree.core;
+using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.prqdfilterindex
 {
@@ -19,7 +20,10 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.prqdfilterin
             double y)
         {
             if (!bb.ContainsPoint(x, y)) {
-                throw new EPException("Point (" + x + "," + y + ") not in " + bb);
+                throw new EPException(string.Format("Point ({0},{1}) not in {2}", 
+                    x.RenderAny(), 
+                    y.RenderAny(),
+                    bb));
             }
         }
     }

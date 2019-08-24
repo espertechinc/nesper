@@ -6,15 +6,11 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
-
 using com.espertech.esper.common.client.hook.aggmultifunc;
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.epl.agg.core;
 using com.espertech.esper.common.@internal.epl.table.core;
 using com.espertech.esper.common.@internal.settings;
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.agg.table
 {
@@ -26,29 +22,29 @@ namespace com.espertech.esper.common.@internal.epl.agg.table
         private int[] accessColumnsZeroOffset;
         private AggregationGroupByRollupDesc groupByRollupDesc;
 
-        public void SetTable(Table table)
+        public Table Table
         {
-            this.table = table;
+            set { this.table = value; }
         }
 
-        public void SetMethodPairs(TableColumnMethodPairEval[] methodPairs)
+        public TableColumnMethodPairEval[] MethodPairs
         {
-            this.methodPairs = methodPairs;
+            set { this.methodPairs = value; }
         }
 
-        public void SetAccessAgents(AggregationMultiFunctionAgent[] accessAgents)
+        public AggregationMultiFunctionAgent[] AccessAgents
         {
-            this.accessAgents = accessAgents;
+            set { this.accessAgents = value; }
         }
 
-        public void SetAccessColumnsZeroOffset(int[] accessColumnsZeroOffset)
+        public int[] AccessColumnsZeroOffset
         {
-            this.accessColumnsZeroOffset = accessColumnsZeroOffset;
+            set { this.accessColumnsZeroOffset = value; }
         }
 
-        public void SetGroupByRollupDesc(AggregationGroupByRollupDesc groupByRollupDesc)
+        public AggregationGroupByRollupDesc GroupByRollupDesc
         {
-            this.groupByRollupDesc = groupByRollupDesc;
+            set { this.groupByRollupDesc = value; }
         }
 
         public AggregationService MakeService(
@@ -58,9 +54,10 @@ namespace com.espertech.esper.common.@internal.epl.agg.table
             int? subqueryNumber,
             int[] groupId)
         {
-            TableInstance tableInstance = table.GetTableInstance(agentInstanceContext.AgentInstanceId);
-            if (!table.MetaData.IsKeyed) {
-                TableInstanceUngrouped tableInstanceUngrouped = (TableInstanceUngrouped) tableInstance;
+            var tableInstance = table.GetTableInstance(agentInstanceContext.AgentInstanceId);
+            if (!table.MetaData.IsKeyed)
+            {
+                var tableInstanceUngrouped = (TableInstanceUngrouped) tableInstance;
                 return new AggSvcGroupAllWTableImpl(
                     tableInstanceUngrouped,
                     methodPairs,
@@ -68,8 +65,9 @@ namespace com.espertech.esper.common.@internal.epl.agg.table
                     accessColumnsZeroOffset);
             }
 
-            TableInstanceGrouped tableInstanceGrouped = (TableInstanceGrouped) tableInstance;
-            if (groupByRollupDesc == null) {
+            var tableInstanceGrouped = (TableInstanceGrouped) tableInstance;
+            if (groupByRollupDesc == null)
+            {
                 return new AggSvcGroupByWTableImpl(
                     tableInstanceGrouped,
                     methodPairs,
@@ -77,7 +75,8 @@ namespace com.espertech.esper.common.@internal.epl.agg.table
                     accessColumnsZeroOffset);
             }
 
-            if (table.MetaData.KeyTypes.Length > 1) {
+            if (table.MetaData.KeyTypes.Length > 1)
+            {
                 return new AggSvcGroupByWTableRollupMultiKeyImpl(
                     tableInstanceGrouped,
                     methodPairs,
@@ -85,7 +84,8 @@ namespace com.espertech.esper.common.@internal.epl.agg.table
                     accessColumnsZeroOffset,
                     groupByRollupDesc);
             }
-            else {
+            else
+            {
                 return new AggSvcGroupByWTableRollupSingleKeyImpl(
                     tableInstanceGrouped,
                     methodPairs,

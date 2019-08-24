@@ -58,7 +58,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                 .MakeChild(typeof(ICollection<object>), typeof(EnumDistinctScalarForge), codegenClassScope)
                 .AddParam(EnumForgeCodegenNames.PARAMS)
                 .Block
-                .IfCondition(Relational(ExprDotMethod(EnumForgeCodegenNames.REF_ENUMCOLL, "Size"), LE, Constant(1)))
+                .IfCondition(Relational(ExprDotName(EnumForgeCodegenNames.REF_ENUMCOLL, "Count"), LE, Constant(1)))
                 .BlockReturn(EnumForgeCodegenNames.REF_ENUMCOLL)
                 .IfCondition(InstanceOf(Ref("enumcoll"), typeof(ISet<object>)))
                 .BlockReturn(EnumForgeCodegenNames.REF_ENUMCOLL)

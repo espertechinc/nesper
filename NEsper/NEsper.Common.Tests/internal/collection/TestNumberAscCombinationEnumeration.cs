@@ -15,7 +15,7 @@ using NUnit.Framework;
 namespace com.espertech.esper.common.@internal.collection
 {
     [TestFixture]
-    public class TestNumberAscCombinationEnumeration : AbstractTestBase
+    public class TestNumberAscCombinationEnumeration : AbstractCommonTest
     {
         private static void Compare(
             int[][] expected,

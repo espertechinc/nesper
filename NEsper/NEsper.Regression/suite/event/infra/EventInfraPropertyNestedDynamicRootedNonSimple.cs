@@ -68,10 +68,10 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 
             // Map
             IDictionary<string, object> mapNestedOne = new Dictionary<string, object>();
-            mapNestedOne.Put("indexed", new[] {1, 2});
-            mapNestedOne.Put("arrayProperty", null);
-            mapNestedOne.Put("mapped", TwoEntryMap("keyOne", 100, "keyTwo", 200));
-            mapNestedOne.Put("mapProperty", null);
+            mapNestedOne.Put("Indexed", new[] {1, 2});
+            mapNestedOne.Put("ArrayProperty", null);
+            mapNestedOne.Put("Mapped", TwoEntryMap("keyOne", 100, "keyTwo", 200));
+            mapNestedOne.Put("MapProperty", null);
             var mapOne = Collections.SingletonDataMap("item", mapNestedOne);
             Pair<object, object>[] mapTests = {
                 new Pair<object, object>(Collections.EmptyDataMap, notExists),
@@ -114,8 +114,8 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
             var datumOne = new GenericRecord(schema);
             datumOne.Put("item", null);
             var datumItemTwo = new GenericRecord(itemSchema);
-            datumItemTwo.Put("indexed", Arrays.AsList(1, 2));
-            datumItemTwo.Put("mapped", TwoEntryMap("keyOne", 3, "keyTwo", 4));
+            datumItemTwo.Put("Indexed", Arrays.AsList(1, 2));
+            datumItemTwo.Put("Mapped", TwoEntryMap("keyOne", 3, "keyTwo", 4));
             var datumTwo = new GenericRecord(schema);
             datumTwo.Put("item", datumItemTwo);
             Pair<object, object>[] avroTests = {
@@ -141,8 +141,8 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
                            "exists(item?.indexed[0]) as exists_indexed1, " +
                            "item?.indexed[1]? as indexed2, " +
                            "exists(item?.indexed[1]?) as exists_indexed2, " +
-                           "item?.arrayProperty[1]? as array, " +
-                           "exists(item?.arrayProperty[1]?) as exists_array, " +
+                           "item?.ArrayProperty[1]? as array, " +
+                           "exists(item?.ArrayProperty[1]?) as exists_array, " +
                            "item?.mapped('keyOne') as mapped1, " +
                            "exists(item?.mapped('keyOne')) as exists_mapped1, " +
                            "item?.mapped('keyTwo')? as mapped2,  " +
@@ -153,7 +153,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
                            typename;
             env.CompileDeploy(stmtText).AddListener("s0");
 
-            var propertyNames = "indexed1,indexed2,array,mapped1,mapped2,map".SplitCsv();
+            var propertyNames = "Indexed1,indexed2,array,mapped1,mapped2,map".SplitCsv();
             var eventType = env.Statement("s0").EventType;
             foreach (var propertyName in propertyNames) {
                 Assert.AreEqual(expectedPropertyType, eventType.GetPropertyType(propertyName));

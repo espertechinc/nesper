@@ -41,7 +41,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
                 env,
                 BEAN_TYPE.Name,
                 FBEAN,
-                new MyIMEvent(new[] {"v1", "v2"}, Collections.SingletonMap("k1", "v1")));
+                new MyIMEvent(new[] {"v1", "v2"}, Collections.SingletonDataMap("k1", "v1")));
 
             RunAssertion(
                 env,
@@ -132,9 +132,12 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
             Assert.IsTrue(eventType.IsProperty("Indexed"));
             Assert.IsTrue(eventType.IsProperty("Indexed[0]"));
             Assert.AreEqual(typeof(IDictionary<string, object>), eventType.GetPropertyType("Mapped"));
-            Assert.AreEqual(
-                underlying is IDictionary<string, object> || underlying is object[] ? typeof(object) : typeof(string),
-                eventType.GetPropertyType("Mapped('a')"));
+            Assert.AreEqual(typeof(object), eventType.GetPropertyType("Mapped('a')"));
+
+            //underlying is IDictionary<string, object> ||
+            //    underlying is object[] ? typeof(object) : typeof(string),
+            //     eventType.GetPropertyType("Mapped('a')"));
+
             Assert.AreEqual(
                 underlying is GenericRecord ? typeof(ICollection<object>) : typeof(string[]),
                 eventType.GetPropertyType("Indexed"));
@@ -177,7 +180,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 
             foreach (var prop in Arrays.AsList(
                 "xxxx",
-                "myString[0]",
+                "MyString[0]",
                 "Indexed('a')",
                 "Indexed.x",
                 "Mapped[0]",
@@ -190,11 +193,11 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 
         public class MyIMEvent
         {
-            private readonly IDictionary<string, string> mapped;
+            private readonly IDictionary<string, object> mapped;
 
             public MyIMEvent(
                 string[] indexed,
-                IDictionary<string, string> mapped)
+                IDictionary<string, object> mapped)
             {
                 Indexed = indexed;
                 this.mapped = mapped;
@@ -202,7 +205,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 
             public string[] Indexed { get; }
 
-            public IDictionary<string, string> GetMapped()
+            public IDictionary<string, object> GetMapped()
             {
                 return mapped;
             }

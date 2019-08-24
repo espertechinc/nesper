@@ -19,7 +19,7 @@ using NUnit.Framework;
 namespace com.espertech.esper.runtime.@internal.filtersvcimpl
 {
     [TestFixture]
-    public class TestEventTypeIndexBuilder : AbstractTestBase
+    public class TestEventTypeIndexBuilder : AbstractRuntimeTest
     {
         private EventTypeIndex eventTypeIndex;
         private EventTypeIndexBuilder indexBuilder;

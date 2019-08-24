@@ -23,7 +23,7 @@ using NUnit.Framework;
 namespace com.espertech.esper.common.@internal.epl.expression.ops
 {
     [TestFixture]
-    public class TestExprConcatNode : AbstractTestBase
+    public class TestExprConcatNode : AbstractCommonTest
     {
         private ExprConcatNode concatNode;
 

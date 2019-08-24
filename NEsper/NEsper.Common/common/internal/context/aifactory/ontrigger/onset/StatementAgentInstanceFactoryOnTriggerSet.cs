@@ -21,14 +21,12 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.onset
 {
     public class StatementAgentInstanceFactoryOnTriggerSet : StatementAgentInstanceFactoryOnTriggerBase
     {
-        private ResultSetProcessorFactoryProvider resultSetProcessorFactoryProvider;
+        private ResultSetProcessorFactoryProvider _resultSetProcessorFactoryProvider;
 
         public VariableReadWritePackage VariableReadWrite { get; set; }
 
-        public void SetResultSetProcessorFactoryProvider(
-            ResultSetProcessorFactoryProvider resultSetProcessorFactoryProvider)
-        {
-            this.resultSetProcessorFactoryProvider = resultSetProcessorFactoryProvider;
+        public ResultSetProcessorFactoryProvider ResultSetProcessorFactoryProvider {
+            set => _resultSetProcessorFactoryProvider = value;
         }
 
         public override InfraOnExprBaseViewResult DetermineOnExprView(
@@ -47,7 +45,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.onset
             // create result-processing
             var pair =
                 StatementAgentInstanceFactoryUtil.StartResultSetAndAggregation(
-                    resultSetProcessorFactoryProvider,
+                    _resultSetProcessorFactoryProvider,
                     agentInstanceContext,
                     false,
                     null);

@@ -15,7 +15,7 @@ using NUnit.Framework;
 namespace com.espertech.esper.common.@internal.util
 {
     [TestFixture]
-    public class TestSerializerFactory : AbstractTestBase
+    public class TestSerializerFactory : AbstractCommonTest
     {
         [Serializable]
         public class MyBean

@@ -15,7 +15,7 @@ using NUnit.Framework;
 namespace com.espertech.esper.common.@internal.epl.expression.core
 {
     [TestFixture]
-    public class TestExprNodeUtilityValidate : AbstractTestBase
+    public class TestExprNodeUtilityValidate : AbstractCommonTest
     {
         [Test]
         public void TestGetValidatedSubtree()

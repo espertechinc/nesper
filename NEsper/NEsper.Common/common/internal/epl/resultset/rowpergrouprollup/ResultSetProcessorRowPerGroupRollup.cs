@@ -10,6 +10,7 @@ using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.epl.agg.core;
+using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.resultset.core;
 
 namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
@@ -19,9 +20,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
     {
         AggregationService AggregationService { get; }
 
-#if DUPLICATE
-        ExprEvaluatorContext AgentInstanceContext { get; }
-#endif
+        ExprEvaluatorContext GetAgentInstanceContext();
 
         bool IsSelectRStream { get; }
 

@@ -99,10 +99,10 @@ namespace com.espertech.esper.regressionrun.suite.@event
             }
 
             Properties myMapEvent = new Properties();
-            myMapEvent.Put("myInt", "int");
-            myMapEvent.Put("myString", "string");
+            myMapEvent.Put("MyInt", "int");
+            myMapEvent.Put("MyString", "string");
             myMapEvent.Put("beanA", typeof(SupportBeanComplexProps).FullName);
-            myMapEvent.Put("myStringArray", "string[]");
+            myMapEvent.Put("MyStringArray", "string[]");
             configuration.Common.AddEventType("myMapEvent", myMapEvent);
 
             IDictionary<string, object> myMapLev2def = new Dictionary<string, object>();
@@ -168,7 +168,7 @@ namespace com.espertech.esper.regressionrun.suite.@event
             configuration.Common.AddEventType("MyEvent", type);
 
             Properties properties = new Properties();
-            properties.Put("myInt", typeof(int).FullName);
+            properties.Put("MyInt", typeof(int).FullName);
             properties.Put("byteArr", typeof(byte[]).FullName);
             properties.Put("myInt2", "int");
             properties.Put("double", "double");
@@ -259,7 +259,7 @@ namespace com.espertech.esper.regressionrun.suite.@event
             nmwspPropertiesNested.Put("n2", nmwspPropertiesNestedNested);
 
             IDictionary<string, object> nmwspRoot = new Dictionary<string, object>();
-            nmwspRoot.Put("nested", nmwspPropertiesNested);
+            nmwspRoot.Put("Nested", nmwspPropertiesNested);
 
             configuration.Common.AddEventType("NestedMapWithSimpleProps", nmwspRoot);
         }

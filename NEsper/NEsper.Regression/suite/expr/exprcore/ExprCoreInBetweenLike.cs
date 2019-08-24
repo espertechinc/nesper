@@ -330,11 +330,11 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@Name('s0') select 10 in (arrayProperty) as result from SupportBeanComplexProps";
+                var epl = "@Name('s0') select 10 in (ArrayProperty) as result from SupportBeanComplexProps";
                 env.CompileDeploy(epl).AddListener("s0");
                 Assert.AreEqual(typeof(bool?), env.Statement("s0").EventType.GetPropertyType("result"));
 
-                epl = "@Name('s1') select 5 in (arrayProperty) as result from SupportBeanComplexProps";
+                epl = "@Name('s1') select 5 in (ArrayProperty) as result from SupportBeanComplexProps";
                 env.CompileDeploy(epl).AddListener("s1");
                 env.Milestone(0);
 

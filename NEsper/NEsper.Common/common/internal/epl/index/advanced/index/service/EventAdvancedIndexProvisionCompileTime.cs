@@ -57,7 +57,7 @@ namespace com.espertech.esper.common.@internal.epl.index.advanced.index.service
                 .SetProperty(Ref("desc"), "IndexProperties", Constant(indexProperties))
                 .SetProperty(
                     Ref("desc"),
-                    "IndexExpressionsAllProps",
+                    "IsIndexExpressionsAllProps",
                     Constant(IsExpressionsAllPropsOnly(IndexDesc.IndexedExpressions)))
                 .SetProperty(Ref("desc"), "Factory", Factory.CodegenMake(parent, classScope))
                 .SetProperty(

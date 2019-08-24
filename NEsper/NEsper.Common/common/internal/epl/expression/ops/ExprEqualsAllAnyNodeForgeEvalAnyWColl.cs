@@ -226,7 +226,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                         .AssignRef("hasNullRow", ConstantTrue())
                         .IfElse()
                         .AssignRef("hasNonNullRow", ConstantTrue())
-                        .IfCondition(NotOptional(isNot, ExprDotMethod(Ref(refname), "containsKey", Ref("left"))))
+                        .IfCondition(NotOptional(isNot, ExprDotMethod(Ref(refname), "ContainsKey", Ref("left"))))
                         .BlockReturn(ConstantTrue());
                 }
                 else if (reftype != null && reftype.IsArray) {

@@ -16,7 +16,7 @@ using NUnit.Framework;
 namespace com.espertech.esper.common.@internal.util
 {
     [TestFixture]
-    public class TestHashableMultiKeyComparator : AbstractTestBase
+    public class TestHashableMultiKeyComparator : AbstractCommonTest
     {
         private IComparer<HashableMultiKey> comparator;
         private HashableMultiKey firstValues;

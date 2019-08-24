@@ -14,7 +14,7 @@ using NUnit.Framework;
 namespace com.espertech.esper.common.@internal.epl.join.assemble
 {
     [TestFixture]
-    public class TestAssemblyNode : AbstractTestBase
+    public class TestAssemblyNode : AbstractCommonTest
     {
         [Test]
         public void TestGetSubstreams()

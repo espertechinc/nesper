@@ -20,7 +20,7 @@ using NUnit.Framework;
 namespace com.espertech.esper.runtime.@internal.filtersvcimpl
 {
     [TestFixture]
-    public class TestIndexHelper : AbstractTestBase
+    public class TestIndexHelper : AbstractRuntimeTest
     {
         [SetUp]
         public void SetUp()

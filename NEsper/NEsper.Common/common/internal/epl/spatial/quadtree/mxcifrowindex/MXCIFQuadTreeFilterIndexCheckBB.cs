@@ -8,6 +8,7 @@
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.epl.spatial.quadtree.core;
+using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxcifrowindex
 {
@@ -21,7 +22,12 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxcifrowinde
             double height)
         {
             if (!bb.IntersectsBoxIncludingEnd(x, y, width, height)) {
-                throw new EPException("Rectangle (" + x + "," + y + "," + width + "," + height + ") not in " + bb);
+                throw new EPException(string.Format("Rectangle ({0},{1},{2},{3}) not in {4}", 
+                    x.RenderAny(),
+                    y.RenderAny(),
+                    width.RenderAny(),
+                    height.RenderAny(),
+                    bb));
             }
         }
     }

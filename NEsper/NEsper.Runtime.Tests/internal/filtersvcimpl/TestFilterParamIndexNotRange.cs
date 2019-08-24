@@ -22,7 +22,7 @@ using NUnit.Framework;
 namespace com.espertech.esper.runtime.@internal.filtersvcimpl
 {
     [TestFixture]
-    public class TestFilterParamIndexNotRange : AbstractTestBase
+    public class TestFilterParamIndexNotRange : AbstractRuntimeTest
     {
         private SupportEventEvaluator[] testEvaluators;
         private SupportBean testBean;

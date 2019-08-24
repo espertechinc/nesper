@@ -148,7 +148,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupby
                 .ForEach(
                     typeof(KeyValuePair<object, object>),
                     "entry",
-                    ExprDotMethod(REF_AGGREGATORSPERGROUP, "EntrySet"))
+                    REF_AGGREGATORSPERGROUP)
                 .DeclareVar<long>(
                     "age",
                     Op(

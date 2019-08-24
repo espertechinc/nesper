@@ -19,7 +19,7 @@ using NUnit.Framework;
 namespace com.espertech.esper.common.@internal.schedule
 {
     [TestFixture]
-    public class TestScheduleSpec : AbstractTestBase
+    public class TestScheduleSpec : AbstractCommonTest
     {
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 

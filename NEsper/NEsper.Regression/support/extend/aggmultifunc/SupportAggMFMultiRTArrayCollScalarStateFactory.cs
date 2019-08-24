@@ -15,23 +15,13 @@ namespace com.espertech.esper.regressionlib.support.extend.aggmultifunc
 {
     public class SupportAggMFMultiRTArrayCollScalarStateFactory : AggregationMultiFunctionStateFactory
     {
-        public ExprEvaluator Evaluator { get; private set; }
+        public ExprEvaluator Evaluator { get; set; }
 
-        public Type EvaluationType { get; private set; }
+        public Type EvaluationType { get; set; }
 
         public AggregationMultiFunctionState NewState(AggregationMultiFunctionStateFactoryContext ctx)
         {
             return new SupportAggMFMultiRTArrayCollScalarState(this);
-        }
-
-        public void SetEvaluator(ExprEvaluator evaluator)
-        {
-            Evaluator = evaluator;
-        }
-
-        public void SetEvaluationType(Type evaluationType)
-        {
-            EvaluationType = evaluationType;
         }
     }
 } // end of namespace
