@@ -860,7 +860,7 @@ namespace com.espertech.esper.client
             /// https://github.com/dotnet/corefx/issues/40578
             /// https://stackoverflow.com/a/57662000/706456
             /// </summary>
-            /// <value>time zone</value>
+            /// <value>time zone id</value>
             public string TimeZoneId { get; set; }
 
             /// <summary>
