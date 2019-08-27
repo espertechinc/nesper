@@ -855,10 +855,22 @@ namespace com.espertech.esper.client
             public MathContext MathContext { get; set; }
 
             /// <summary>
+            /// Returns the time zone id for calendar operations.
+            /// Used as a workaround for .net core serialization issue
+            /// https://github.com/dotnet/corefx/issues/40578
+            /// https://stackoverflow.com/a/57662000/706456
+            /// </summary>
+            /// <value>time zone id</value>
+            public string TimeZoneId { get; set; }
+
+            /// <summary>
             /// Returns the time zone for calendar operations.
             /// </summary>
             /// <value>time zone</value>
-            public TimeZoneInfo TimeZone { get; set; }
+            public TimeZoneInfo TimeZone {
+                get => TimeZoneInfo.FindSystemTimeZoneById(TimeZoneId);
+                set => TimeZoneId = value.Id;
+            }
         }
 
         /// <summary>Holds engine execution-related settings.</summary>
